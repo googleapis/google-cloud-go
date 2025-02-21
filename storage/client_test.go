@@ -1120,9 +1120,10 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		}
 		res := make([]multiRangeDownloaderOutput, 4)
 		params := &newMultiRangeDownloaderParams{
-			bucket: bucket,
-			object: objectName,
-			gen:    defaultGen,
+			bucket:         bucket,
+			object:         objectName,
+			gen:            defaultGen,
+			limitPerStream: -1,
 		}
 		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
 		if err != nil {
@@ -1190,9 +1191,10 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 		}
 		buf := new(bytes.Buffer)
 		params := &newMultiRangeDownloaderParams{
-			bucket: bucket,
-			object: objectName,
-			gen:    defaultGen,
+			bucket:         bucket,
+			object:         objectName,
+			gen:            defaultGen,
+			limitPerStream: -1,
 		}
 		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
 		if err != nil {
@@ -1239,10 +1241,11 @@ func TestMRDAddSanityCheck(t *testing.T) {
 		buf := new(bytes.Buffer)
 		sentHandle := ReadHandle([]byte("abcdef"))
 		params := &newMultiRangeDownloaderParams{
-			bucket: bucket,
-			object: objectName,
-			gen:    defaultGen,
-			handle: &sentHandle,
+			bucket:         bucket,
+			object:         objectName,
+			gen:            defaultGen,
+			handle:         &sentHandle,
+			limitPerStream: -1,
 		}
 		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
 		if err != nil {
@@ -1265,7 +1268,7 @@ func TestMRDAddSanityCheck(t *testing.T) {
 		reader.Add(buf, 10000, 3000, callback1)
 		// Request fails as limit is negative.
 		reader.Add(buf, 10, -1, callback2)
-		if got, want := err1, fmt.Errorf("offset larger than size of object"); got.Error() != want.Error() {
+		if got, want := err1, fmt.Errorf("offset larger than size of object: %v", 5000); got.Error() != want.Error() {
 			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
 		}
 		if got, want := err2, fmt.Errorf("limit can't be negative"); got.Error() != want.Error() {

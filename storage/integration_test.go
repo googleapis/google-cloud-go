@@ -406,84 +406,105 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
 	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		content := make([]byte, 5<<20)
-		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloader"
+		for _, test := range []struct {
+			name           string
+			limitPerStream int64
+		}{
+			{
+				name:           "single-stream",
+				limitPerStream: -1,
+			},
+			{
+				name:           "high-subsequent-stream",
+				limitPerStream: 50 << 20,
+			},
+			{
+				name:           "less-subsequent-stream",
+				limitPerStream: 256 << 20,
+			},
+		} {
+			t.Run(test.name, func(t *testing.T) {
+				content := make([]byte, 5<<20)
+				rand.New(rand.NewSource(0)).Read(content)
+				objName := "MultiRangeDownloader"
 
-		// Upload test data.
-		obj := client.Bucket(bucket).Object(objName)
-		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
-			t.Fatal(err)
-		}
-		defer func() {
-			if err := obj.Delete(ctx); err != nil {
-				log.Printf("failed to delete test object: %v", err)
-			}
-		}()
-		reader, err := obj.NewMultiRangeDownloader(ctx)
-		if err != nil {
-			t.Fatalf("NewMultiRangeDownloader: %v", err)
-		}
+				// Upload test data.
+				obj := client.Bucket(bucket).Object(objName)
+				obj.limitPerStream = test.limitPerStream
+				if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+					t.Fatal(err)
+				}
+				defer func() {
+					if err := obj.Delete(ctx); err != nil {
+						log.Printf("failed to delete test object: %v", err)
+					}
+				}()
+				reader, err := obj.NewMultiRangeDownloader(ctx)
+				if err != nil {
+					t.Fatalf("NewMultiRangeDownloader: %v", err)
+				}
 
-		// Create a top-level errgroup for each goroutine
-		eG, ctx := errgroup.WithContext(ctx)
-		goRoutineCount := 10
-		perGoRoutineAddCount := 10
-		res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
+				// Create a top-level errgroup for each goroutine
+				eG, ctx := errgroup.WithContext(ctx)
+				goRoutineCount := 10
+				perGoRoutineAddCount := 10
+				res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
 
-		// Create multiple go routines to read concurrently.
-		for i := 0; i < goRoutineCount; i++ {
-			groupID := i
-			eG.Go(func() error {
+				// Create multiple go routines to read concurrently.
+				for i := 0; i < goRoutineCount; i++ {
+					groupID := i
+					eG.Go(func() error {
 
-				// Subgroup for tasks within this goroutine
-				subGroup, _ := errgroup.WithContext(ctx)
+						// Subgroup for tasks within this goroutine
+						subGroup, _ := errgroup.WithContext(ctx)
 
-				for j := 0; j < perGoRoutineAddCount; j++ {
-					taskID := perGoRoutineAddCount*groupID + j
-					subGroup.Go(func() error {
-						// Use a channel to receive the callback results
-						done := make(chan error, 1)
+						for j := 0; j < perGoRoutineAddCount; j++ {
+							taskID := perGoRoutineAddCount*groupID + j
+							subGroup.Go(func() error {
+								// Use a channel to receive the callback results
+								done := make(chan error, 1)
 
-						reader.Add(&res[taskID].buf, 0, int64(len(content)), func(x, y int64, err error) {
-							res[taskID].offset = x
-							res[taskID].limit = y
-							res[taskID].err = err
-							// Send each callback result to subGroup.
-							done <- err
-						})
-						return <-done
+								reader.Add(&res[taskID].buf, 0, int64(len(content)), func(x, y int64, err error) {
+									res[taskID].offset = x
+									res[taskID].limit = y
+									res[taskID].err = err
+									// Send each callback result to subGroup.
+									done <- err
+								})
+								return <-done
+							})
+						}
+						// Wait for all tasks in current sub-group to complete to send result to main error group.
+						return subGroup.Wait()
 					})
 				}
-				// Wait for all tasks in current sub-group to complete to send result to main error group.
-				return subGroup.Wait()
+
+				// Wait for all top-level goroutines to complete
+				if err := eG.Wait(); err != nil {
+					t.Errorf("Possible deadlock or race condition detected during concurrent Add calls: %v\n", err)
+				}
+
+				reader.Wait()
+				for _, k := range res {
+					if k.offset < 0 {
+						k.offset += int64(len(content))
+					}
+					want := content[k.offset:]
+					if k.limit != 0 {
+						want = content[k.offset : k.offset+k.limit]
+					}
+					if k.err != nil {
+						t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
+					}
+					if !bytes.Equal(k.buf.Bytes(), want) {
+						t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+							k.offset, k.limit, len(k.buf.Bytes()), len(want))
+					}
+				}
+				if err = reader.Close(); err != nil {
+					t.Fatalf("Error while closing reader %v", err)
+				}
 			})
-		}
-
-		// Wait for all top-level goroutines to complete
-		if err := eG.Wait(); err != nil {
-			t.Errorf("Possible deadlock or race condition detected during concurrent Add calls: %v\n", err)
-		}
-
-		reader.Wait()
-		for _, k := range res {
-			if k.offset < 0 {
-				k.offset += int64(len(content))
-			}
-			want := content[k.offset:]
-			if k.limit != 0 {
-				want = content[k.offset : k.offset+k.limit]
-			}
-			if k.err != nil {
-				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
-			}
-			if !bytes.Equal(k.buf.Bytes(), want) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, len(k.buf.Bytes()), len(want))
-			}
-		}
-		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
 		}
 	})
 }
