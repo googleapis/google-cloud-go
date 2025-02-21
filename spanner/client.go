@@ -522,7 +522,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.otConfig = otConfig
 	sc.mu.Unlock()
 
-	var metricsProvider metric.MeterProvider
+	metricsProvider := otConfig.meterProvider
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
 		// Do not emit native metrics when emulator is being used
 		metricsProvider = noop.NewMeterProvider()
