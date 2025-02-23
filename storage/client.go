@@ -284,12 +284,13 @@ type openWriterParams struct {
 }
 
 type newMultiRangeDownloaderParams struct {
-	bucket        string
-	conds         *Conditions
-	encryptionKey []byte
-	gen           int64
-	object        string
-	handle        *ReadHandle
+	bucket         string
+	conds          *Conditions
+	encryptionKey  []byte
+	gen            int64
+	object         string
+	handle         *ReadHandle
+	limitPerStream int64
 }
 
 type newRangeReaderParams struct {
