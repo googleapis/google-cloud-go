@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.26.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.1...deploy/v1.26.2) (2025-02-12)
+
+
+### Documentation
+
+* **deploy:** Minor documentation improvements ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+
 ## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.0...deploy/v1.26.1) (2025-01-02)
 
 

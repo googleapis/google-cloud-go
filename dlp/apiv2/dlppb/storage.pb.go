@@ -1987,7 +1987,7 @@ type BigQueryTable struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The Google Cloud Platform project ID of the project containing the table.
+	// The Google Cloud project ID of the project containing the table.
 	// If omitted, project ID is inferred from the API call.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// Dataset ID of the table.

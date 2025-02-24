@@ -1165,6 +1165,7 @@ type ReadWriteTransaction struct {
 	// ReadWriteTransaction. It is set only once in ReadWriteTransaction.begin()
 	// during the initialization of ReadWriteTransaction.
 	tx             transactionID
+	previousTx     transactionID
 	precommitToken *sppb.MultiplexedSessionPrecommitToken
 
 	// txReadyOrClosed is for broadcasting that transaction ID has been returned
@@ -1468,14 +1469,18 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 			},
 		}
 	}
+	mode := &sppb.TransactionOptions_ReadWrite_{
+		ReadWrite: &sppb.TransactionOptions_ReadWrite{
+			ReadLockMode: t.txOpts.ReadLockMode,
+		},
+	}
+	if t.sp.isMultiplexedSessionForRWEnabled() {
+		mode.ReadWrite.MultiplexedSessionPreviousTransactionId = t.previousTx
+	}
 	return &sppb.TransactionSelector{
 		Selector: &sppb.TransactionSelector_Begin{
 			Begin: &sppb.TransactionOptions{
-				Mode: &sppb.TransactionOptions_ReadWrite_{
-					ReadWrite: &sppb.TransactionOptions_ReadWrite{
-						ReadLockMode: t.txOpts.ReadLockMode,
-					},
-				},
+				Mode:                        mode,
 				ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
 			},
 		},
@@ -1535,18 +1540,24 @@ func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHa
 	}
 }
 
-func beginTransaction(ctx context.Context, sid string, client spannerClient, opts TransactionOptions, mutationKey *sppb.Mutation) (transactionID, *sppb.MultiplexedSessionPrecommitToken, error) {
-	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
-		Session: sid,
+func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transactionID, *sppb.MultiplexedSessionPrecommitToken, error) {
+	readWriteOptions := &sppb.TransactionOptions_ReadWrite{
+		ReadLockMode: opts.txOptions.ReadLockMode,
+	}
+
+	if opts.multiplexEnabled {
+		readWriteOptions.MultiplexedSessionPreviousTransactionId = opts.previousTx
+	}
+
+	res, err := opts.client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
+		Session: opts.sessionID,
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadWrite_{
-				ReadWrite: &sppb.TransactionOptions_ReadWrite{
-					ReadLockMode: opts.ReadLockMode,
-				},
+				ReadWrite: readWriteOptions,
 			},
-			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
+			ExcludeTxnFromChangeStreams: opts.txOptions.ExcludeTxnFromChangeStreams,
 		},
-		MutationKey: mutationKey,
+		MutationKey: opts.mutation,
 	})
 	if err != nil {
 		return nil, nil, err
@@ -1581,6 +1592,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 		return nil
 	}
 	sh := t.sh
+	previousTx := t.previousTx
 	t.mu.Unlock()
 
 	var (
@@ -1604,7 +1616,14 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 		if sh != nil {
 			sh.updateLastUseTime()
 		}
-		tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts, mutation)
+		tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), transactionBeginOptions{
+			multiplexEnabled: t.sp.isMultiplexedSessionForRWEnabled(),
+			sessionID:        sh.getID(),
+			client:           sh.getClient(),
+			txOptions:        t.txOpts,
+			mutation:         mutation,
+			previousTx:       previousTx,
+		})
 		if isSessionNotFoundError(err) {
 			sh.destroy()
 			// this should not happen with multiplexed session, but if it does, we should not retry with multiplexed session
@@ -1791,6 +1810,9 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 		errDuringCommit = err != nil
 	}
 	if err != nil {
+		if t.tx != nil {
+			t.previousTx = t.tx
+		}
 		if isAbortedErr(err) {
 			// Retry the transaction using the same session on ABORT error.
 			// Cloud Spanner will create the new transaction with the previous
@@ -2072,4 +2094,14 @@ func isAbortedErr(err error) bool {
 		return true
 	}
 	return false
+}
+
+// transactionBeginOptions holds the parameters for beginning a transaction.
+type transactionBeginOptions struct {
+	multiplexEnabled bool
+	sessionID        string
+	client           spannerClient
+	txOptions        TransactionOptions
+	previousTx       transactionID
+	mutation         *sppb.Mutation
 }

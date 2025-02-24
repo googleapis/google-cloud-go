@@ -1,5 +1,13 @@
 # Changes
 
+## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.64.1...dialogflow/v1.65.0) (2025-02-12)
+
+
+### Features
+
+* **dialogflow:** Add PhoneNumbers API ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **dialogflow:** Add TelephonyConnectInfo of phone call-related info about the conversation ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
 ## [1.64.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.64.0...dialogflow/v1.64.1) (2025-01-02)
 
 
