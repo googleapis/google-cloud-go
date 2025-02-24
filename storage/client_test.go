@@ -947,6 +947,10 @@ func TestOpenWriterEmulated(t *testing.T) {
 		if o.Finalized.IsZero() {
 			t.Errorf("expected valid finalize time: got %v; want non-zero", o.Finalized)
 		}
+		// For non-appendable objects, created and finalized times are equal.
+		if !o.Finalized.Equal(o.Created) {
+			t.Errorf("expected equal created and finalize times: created %v; finalized %v", o.Created, o.Finalized)
+		}
 	})
 }
 
