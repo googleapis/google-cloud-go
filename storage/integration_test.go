@@ -103,7 +103,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	log.Printf(os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID"))
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
