@@ -40,6 +40,8 @@ type gRPCAppendBidiWriteBufferSender struct {
 	firstMessage    *storagepb.BidiWriteObjectRequest
 	objectChecksums *storagepb.ObjectChecksums
 
+	finalizeOnClose bool
+
 	forceFirstMessage bool
 	progress          func(int64)
 	flushOffset       int64
@@ -63,6 +65,7 @@ func (w *gRPCWriter) newGRPCAppendBidiWriteBufferSender() (*gRPCAppendBidiWriteB
 			CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
 		},
 		objectChecksums:   toProtoChecksums(w.sendCRC32C, w.attrs),
+		finalizeOnClose:   w.finalizeOnClose,
 		forceFirstMessage: true,
 		progress:          w.progress,
 	}
@@ -226,9 +229,10 @@ func (s *gRPCAppendBidiWriteBufferSender) receiveMessages(resps chan<- *storagep
 }
 
 func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offset int64, flush, finishWrite, sendFirstMessage bool) (obj *storagepb.Object, err error) {
-	req := bidiWriteObjectRequest(buf, offset, flush, finishWrite)
-	if finishWrite {
-		// appendable objects pass checksums on the last message only
+	finalizeObject := finishWrite && s.finalizeOnClose
+	req := bidiWriteObjectRequest(buf, offset, flush, finalizeObject)
+	if finalizeObject {
+		// appendable objects pass checksums on the finalize message only
 		req.ObjectChecksums = s.objectChecksums
 	}
 	if sendFirstMessage {

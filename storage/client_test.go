@@ -994,6 +994,14 @@ func TestOpenAppendableWriterEmulated(t *testing.T) {
 		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
 			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
 		}
+
+		o, err := veneerClient.Bucket(bucket).Object(objName).Attrs(ctx)
+		if err != nil {
+			t.Fatalf("getting object attrs: got %v; want ok", err)
+		}
+		if o.Finalized.IsZero() {
+			t.Errorf("expected valid finalize time: got %v; want non-zero", o.Finalized)
+		}
 	})
 }
 
@@ -1048,6 +1056,59 @@ func TestOpenAppendableWriterMultipleFlushesEmulated(t *testing.T) {
 		}
 		if diff := cmp.Diff(got, randomBytes3MiB); diff != "" {
 			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
+		}
+
+		o, err := veneerClient.Bucket(bucket).Object(objName).Attrs(ctx)
+		if err != nil {
+			t.Fatalf("getting object attrs: got %v; want ok", err)
+		}
+		if o.Finalized.IsZero() {
+			t.Errorf("expected valid finalize time: got %v; want non-zero", o.Finalized)
+		}
+	})
+}
+
+func TestOpenAppendableWriterLeaveUnfinalizedEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		w.Append = true
+		w.FinalizeOnClose = false
+		var lastReportedOffset int64
+		w.ProgressFunc = func(offset int64) {
+			lastReportedOffset = offset
+		}
+		_, err = w.Write(randomBytesToWrite)
+		wantLen := int64(len(randomBytesToWrite))
+		if err != nil {
+			t.Fatalf("writing test data: got %v; want ok", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing test data writer: got %v; want ok", err)
+		}
+		if lastReportedOffset != wantLen {
+			t.Errorf("incorrect final progress report: got %d; want %d", lastReportedOffset, wantLen)
+		}
+		// No finalize time on the object.
+		o, err := vc.Bucket(bucket).Object(objName).Attrs(ctx)
+		if err != nil {
+			t.Fatalf("getting object attrs: got %v; want ok", err)
+		}
+		if o.Created.IsZero() {
+			t.Errorf("expected valid  create time: got %v; want non-zero", o.Created)
+		}
+		if !o.Finalized.IsZero() {
+			t.Errorf("unexpected valid finalize time: got %v; want zero", o.Finalized)
 		}
 	})
 }
