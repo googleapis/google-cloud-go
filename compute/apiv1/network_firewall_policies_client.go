@@ -42,28 +42,35 @@ var newNetworkFirewallPoliciesClientHook clientHook
 
 // NetworkFirewallPoliciesCallOptions contains the retry settings for each method of NetworkFirewallPoliciesClient.
 type NetworkFirewallPoliciesCallOptions struct {
-	AddAssociation     []gax.CallOption
-	AddRule            []gax.CallOption
-	AggregatedList     []gax.CallOption
-	CloneRules         []gax.CallOption
-	Delete             []gax.CallOption
-	Get                []gax.CallOption
-	GetAssociation     []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	GetRule            []gax.CallOption
-	Insert             []gax.CallOption
-	List               []gax.CallOption
-	Patch              []gax.CallOption
-	PatchRule          []gax.CallOption
-	RemoveAssociation  []gax.CallOption
-	RemoveRule         []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
+	AddAssociation            []gax.CallOption
+	AddPacketMirroringRule    []gax.CallOption
+	AddRule                   []gax.CallOption
+	AggregatedList            []gax.CallOption
+	CloneRules                []gax.CallOption
+	Delete                    []gax.CallOption
+	Get                       []gax.CallOption
+	GetAssociation            []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	GetPacketMirroringRule    []gax.CallOption
+	GetRule                   []gax.CallOption
+	Insert                    []gax.CallOption
+	List                      []gax.CallOption
+	Patch                     []gax.CallOption
+	PatchPacketMirroringRule  []gax.CallOption
+	PatchRule                 []gax.CallOption
+	RemoveAssociation         []gax.CallOption
+	RemovePacketMirroringRule []gax.CallOption
+	RemoveRule                []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	TestIamPermissions        []gax.CallOption
 }
 
 func defaultNetworkFirewallPoliciesRESTCallOptions() *NetworkFirewallPoliciesCallOptions {
 	return &NetworkFirewallPoliciesCallOptions{
 		AddAssociation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AddPacketMirroringRule: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		AddRule: []gax.CallOption{
@@ -123,6 +130,18 @@ func defaultNetworkFirewallPoliciesRESTCallOptions() *NetworkFirewallPoliciesCal
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetPacketMirroringRule: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetRule: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -153,10 +172,16 @@ func defaultNetworkFirewallPoliciesRESTCallOptions() *NetworkFirewallPoliciesCal
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		PatchPacketMirroringRule: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		PatchRule: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		RemoveAssociation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RemovePacketMirroringRule: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		RemoveRule: []gax.CallOption{
@@ -177,6 +202,7 @@ type internalNetworkFirewallPoliciesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AddAssociation(context.Context, *computepb.AddAssociationNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	AddPacketMirroringRule(context.Context, *computepb.AddPacketMirroringRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	AddRule(context.Context, *computepb.AddRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListNetworkFirewallPoliciesRequest, ...gax.CallOption) *FirewallPoliciesScopedListPairIterator
 	CloneRules(context.Context, *computepb.CloneRulesNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
@@ -184,12 +210,15 @@ type internalNetworkFirewallPoliciesClient interface {
 	Get(context.Context, *computepb.GetNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPolicy, error)
 	GetAssociation(context.Context, *computepb.GetAssociationNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPolicyAssociation, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
+	GetPacketMirroringRule(context.Context, *computepb.GetPacketMirroringRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPolicyRule, error)
 	GetRule(context.Context, *computepb.GetRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPolicyRule, error)
 	Insert(context.Context, *computepb.InsertNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListNetworkFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
 	Patch(context.Context, *computepb.PatchNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	PatchPacketMirroringRule(context.Context, *computepb.PatchPacketMirroringRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	PatchRule(context.Context, *computepb.PatchRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	RemoveAssociation(context.Context, *computepb.RemoveAssociationNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	RemovePacketMirroringRule(context.Context, *computepb.RemovePacketMirroringRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	RemoveRule(context.Context, *computepb.RemoveRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
@@ -235,6 +264,11 @@ func (c *NetworkFirewallPoliciesClient) AddAssociation(ctx context.Context, req 
 	return c.internalClient.AddAssociation(ctx, req, opts...)
 }
 
+// AddPacketMirroringRule inserts a packet mirroring rule into a firewall policy.
+func (c *NetworkFirewallPoliciesClient) AddPacketMirroringRule(ctx context.Context, req *computepb.AddPacketMirroringRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.AddPacketMirroringRule(ctx, req, opts...)
+}
+
 // AddRule inserts a rule into a firewall policy.
 func (c *NetworkFirewallPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddRule(ctx, req, opts...)
@@ -270,6 +304,11 @@ func (c *NetworkFirewallPoliciesClient) GetIamPolicy(ctx context.Context, req *c
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
+// GetPacketMirroringRule gets a packet mirroring rule of the specified priority.
+func (c *NetworkFirewallPoliciesClient) GetPacketMirroringRule(ctx context.Context, req *computepb.GetPacketMirroringRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyRule, error) {
+	return c.internalClient.GetPacketMirroringRule(ctx, req, opts...)
+}
+
 // GetRule gets a rule of the specified priority.
 func (c *NetworkFirewallPoliciesClient) GetRule(ctx context.Context, req *computepb.GetRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyRule, error) {
 	return c.internalClient.GetRule(ctx, req, opts...)
@@ -290,6 +329,11 @@ func (c *NetworkFirewallPoliciesClient) Patch(ctx context.Context, req *computep
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
+// PatchPacketMirroringRule patches a packet mirroring rule of the specified priority.
+func (c *NetworkFirewallPoliciesClient) PatchPacketMirroringRule(ctx context.Context, req *computepb.PatchPacketMirroringRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.PatchPacketMirroringRule(ctx, req, opts...)
+}
+
 // PatchRule patches a rule of the specified priority.
 func (c *NetworkFirewallPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchRule(ctx, req, opts...)
@@ -298,6 +342,11 @@ func (c *NetworkFirewallPoliciesClient) PatchRule(ctx context.Context, req *comp
 // RemoveAssociation removes an association for the specified firewall policy.
 func (c *NetworkFirewallPoliciesClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveAssociation(ctx, req, opts...)
+}
+
+// RemovePacketMirroringRule deletes a packet mirroring rule of the specified priority.
+func (c *NetworkFirewallPoliciesClient) RemovePacketMirroringRule(ctx context.Context, req *computepb.RemovePacketMirroringRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.RemovePacketMirroringRule(ctx, req, opts...)
 }
 
 // RemoveRule deletes a rule of the specified priority.
@@ -454,6 +503,78 @@ func (c *networkFirewallPoliciesRESTClient) AddAssociation(ctx context.Context, 
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddAssociation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// AddPacketMirroringRule inserts a packet mirroring rule into a firewall policy.
+func (c *networkFirewallPoliciesRESTClient) AddPacketMirroringRule(ctx context.Context, req *computepb.AddPacketMirroringRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetFirewallPolicyRuleResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/addPacketMirroringRule", req.GetProject(), req.GetFirewallPolicy())
+
+	params := url.Values{}
+	if req != nil && req.MaxPriority != nil {
+		params.Add("maxPriority", fmt.Sprintf("%v", req.GetMaxPriority()))
+	}
+	if req != nil && req.MinPriority != nil {
+		params.Add("minPriority", fmt.Sprintf("%v", req.GetMinPriority()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall_policy", url.QueryEscape(req.GetFirewallPolicy()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AddPacketMirroringRule[0:len((*c.CallOptions).AddPacketMirroringRule):len((*c.CallOptions).AddPacketMirroringRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddPacketMirroringRule")
 		if err != nil {
 			return err
 		}
@@ -918,6 +1039,58 @@ func (c *networkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, re
 	return resp, nil
 }
 
+// GetPacketMirroringRule gets a packet mirroring rule of the specified priority.
+func (c *networkFirewallPoliciesRESTClient) GetPacketMirroringRule(ctx context.Context, req *computepb.GetPacketMirroringRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyRule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/getPacketMirroringRule", req.GetProject(), req.GetFirewallPolicy())
+
+	params := url.Values{}
+	if req != nil && req.Priority != nil {
+		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall_policy", url.QueryEscape(req.GetFirewallPolicy()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetPacketMirroringRule[0:len((*c.CallOptions).GetPacketMirroringRule):len((*c.CallOptions).GetPacketMirroringRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.FirewallPolicyRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPacketMirroringRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetRule gets a rule of the specified priority.
 func (c *networkFirewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1188,6 +1361,75 @@ func (c *networkFirewallPoliciesRESTClient) Patch(ctx context.Context, req *comp
 	return op, nil
 }
 
+// PatchPacketMirroringRule patches a packet mirroring rule of the specified priority.
+func (c *networkFirewallPoliciesRESTClient) PatchPacketMirroringRule(ctx context.Context, req *computepb.PatchPacketMirroringRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetFirewallPolicyRuleResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/patchPacketMirroringRule", req.GetProject(), req.GetFirewallPolicy())
+
+	params := url.Values{}
+	if req != nil && req.Priority != nil {
+		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall_policy", url.QueryEscape(req.GetFirewallPolicy()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PatchPacketMirroringRule[0:len((*c.CallOptions).PatchPacketMirroringRule):len((*c.CallOptions).PatchPacketMirroringRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PatchPacketMirroringRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
 // PatchRule patches a rule of the specified priority.
 func (c *networkFirewallPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -1296,6 +1538,68 @@ func (c *networkFirewallPoliciesRESTClient) RemoveAssociation(ctx context.Contex
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RemoveAssociation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// RemovePacketMirroringRule deletes a packet mirroring rule of the specified priority.
+func (c *networkFirewallPoliciesRESTClient) RemovePacketMirroringRule(ctx context.Context, req *computepb.RemovePacketMirroringRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/removePacketMirroringRule", req.GetProject(), req.GetFirewallPolicy())
+
+	params := url.Values{}
+	if req != nil && req.Priority != nil {
+		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall_policy", url.QueryEscape(req.GetFirewallPolicy()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RemovePacketMirroringRule[0:len((*c.CallOptions).RemovePacketMirroringRule):len((*c.CallOptions).RemovePacketMirroringRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RemovePacketMirroringRule")
 		if err != nil {
 			return err
 		}
