@@ -4931,8 +4931,8 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("list objects that are not soft deleted; got: %v, expected only one object named: %s", gotNames, liveObject.ObjectName())
 		}
 
-		// Get a soft deleted object and check soft and hard delete times.
 		if err := retry(ctx, func() error {
+			// Get a soft deleted object and check soft and hard delete times.
 			oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
 			if err != nil {
 				t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
