@@ -27,37 +27,76 @@ import (
 const computeMetadataEnvVar = "GCE_METADATA_HOST"
 
 func TestComputeTokenProvider(t *testing.T) {
-	scope := "https://www.googleapis.com/auth/bigquery"
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasSuffix(r.URL.String(), computeTokenURI) {
-			t.Errorf("got %q, want %q", r.URL.String(), computeTokenURI)
-		}
-		if r.URL.Query().Get("scopes") != scope {
-			t.Errorf("got %q, want %q", r.URL.Query().Get("scopes"), scope)
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"access_token": "90d64460d14870c08c81352a05dedd3465940a7c", "token_type": "bearer", "expires_in": 86400}`))
-	}))
-	t.Setenv(computeMetadataEnvVar, strings.TrimPrefix(ts.URL, "http://"))
-	tp := computeTokenProvider(&DetectOptions{
-		EarlyTokenRefresh: 0,
-		Scopes: []string{
-			scope,
+	testCases := []struct {
+		name               string
+		scope              string
+		transport          string
+		bindingEnforcement string
+		tokenBindingType   TokenBindingType
+	}{
+		{
+			name:               "Default",
+			scope:              "https://www.googleapis.com/auth/bigquery",
+			transport:          "",
+			bindingEnforcement: "",
+			tokenBindingType:   NoBinding,
 		},
-	},
-		metadata.NewClient(nil),
-	)
-	tok, err := tp.Token(context.Background())
-	if err != nil {
-		t.Fatal(err)
+		{
+			name:               "MTLSHardBound",
+			scope:              "https://www.googleapis.com/auth/bigquery",
+			transport:          "mtls",
+			bindingEnforcement: "on",
+			tokenBindingType:   MTLSHardBinding,
+		},
+		{
+			name:               "ALTSHardBound",
+			scope:              "https://www.googleapis.com/auth/bigquery",
+			transport:          "alts",
+			bindingEnforcement: "",
+			tokenBindingType:   ALTSHardBinding,
+		},
 	}
-	if want := "90d64460d14870c08c81352a05dedd3465940a7c"; tok.Value != want {
-		t.Errorf("got %q, want %q", tok.Value, want)
-	}
-	if want := "bearer"; tok.Type != want {
-		t.Errorf("got %q, want %q", tok.Type, want)
-	}
-	if got, want := tok.MetadataString("auth.google.tokenSource"), "compute-metadata"; got != want {
-		t.Errorf("got %q, want %q", got, want)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if strings.HasSuffix(r.URL.String(), computeTokenURI) {
+					t.Errorf("got %q, want %q", r.URL.String(), computeTokenURI)
+				}
+				if r.URL.Query().Get("scopes") != tc.scope {
+					t.Errorf("got %q, want %q", r.URL.Query().Get("scopes"), tc.scope)
+				}
+				if r.URL.Query().Get("transport") != tc.transport {
+					t.Errorf("got %q, want %q", r.URL.Query().Get("transport"), tc.transport)
+				}
+				if r.URL.Query().Get("binding-enforcement") != tc.bindingEnforcement {
+					t.Errorf("got %q, want %q", r.URL.Query().Get("binding-enforcement"), tc.bindingEnforcement)
+				}
+				w.Header().Set("Content-Type", "application/json")
+				w.Write([]byte(`{"access_token": "90d64460d14870c08c81352a05dedd3465940a7c", "token_type": "bearer", "expires_in": 86400}`))
+			}))
+			t.Setenv(computeMetadataEnvVar, strings.TrimPrefix(ts.URL, "http://"))
+			tp := computeTokenProvider(&DetectOptions{
+				EarlyTokenRefresh: 0,
+				Scopes: []string{
+					tc.scope,
+				},
+				TokenBindingType: tc.tokenBindingType,
+			},
+				metadata.NewClient(nil),
+			)
+			tok, err := tp.Token(context.Background())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if want := "90d64460d14870c08c81352a05dedd3465940a7c"; tok.Value != want {
+				t.Errorf("got %q, want %q", tok.Value, want)
+			}
+			if want := "bearer"; tok.Type != want {
+				t.Errorf("got %q, want %q", tok.Type, want)
+			}
+			if got, want := tok.MetadataString("auth.google.tokenSource"), "compute-metadata"; got != want {
+				t.Errorf("got %q, want %q", got, want)
+			}
+		})
 	}
 }

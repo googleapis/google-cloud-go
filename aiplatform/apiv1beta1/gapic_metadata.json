@@ -4290,6 +4290,11 @@
                 "DeleteOperation"
               ]
             },
+            "Deploy": {
+              "methods": [
+                "Deploy"
+              ]
+            },
             "DeployPublisherModel": {
               "methods": [
                 "DeployPublisherModel"
@@ -4358,6 +4363,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "Deploy": {
+              "methods": [
+                "Deploy"
               ]
             },
             "DeployPublisherModel": {
