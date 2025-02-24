@@ -4931,16 +4931,15 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("list objects that are not soft deleted; got: %v, expected only one object named: %s", gotNames, liveObject.ObjectName())
 		}
 
-		// Get a soft deleted object and check soft and hard delete times.
-		oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
-		if err != nil {
-			t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
-		}
-		if oAttrs.SoftDeleteTime.Before(testStart) {
-			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
-		}
-
 		if err := retry(ctx, func() error {
+			// Get a soft deleted object and check soft and hard delete times.
+			oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
+			if err != nil {
+				t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
+			}
+			if oAttrs.SoftDeleteTime.Before(testStart) {
+				t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
+			}
 			if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
 				return fmt.Errorf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
 			}
