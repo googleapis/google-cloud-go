@@ -435,3 +435,31 @@ func TestShouldRetry(t *testing.T) {
 		})
 	}
 }
+
+func TestInvokeWithCookie(t *testing.T) {
+	expectedCookie := "C=a_test_cookie"
+	oldCookieHeader := cookieHeader
+	cookieHeader = func() string { return expectedCookie }
+	defer func() {
+		cookieHeader = oldCookieHeader
+	}()
+
+	ctx := context.Background()
+	var gotCookie, gotDirectpathCookie string
+	if err := run(ctx, func(ctx context.Context) error {
+		headers := callctx.HeadersFromContext(ctx)
+		gotCookie = headers["cookie"][0]
+		gotDirectpathCookie = headers["x-directpath-tracing-cookie"][0]
+		return nil
+	}, nil, false); err != nil {
+		t.Errorf("error during run; got %v, want nil", err)
+	}
+
+	if gotCookie != expectedCookie {
+		t.Errorf("incorrect value for cookie header; got %v, want %v", gotCookie, expectedCookie)
+	}
+
+	if gotDirectpathCookie != expectedCookie {
+		t.Errorf("incorrect value for x-directpath-tracing-cookie header; got %v, want %v", gotDirectpathCookie, expectedCookie)
+	}
+}
