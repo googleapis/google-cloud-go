@@ -49,7 +49,7 @@ const (
 
 var (
 	cookieHeader = sync.OnceValue(func() string {
-		return os.Getenv("STORAGE_TRACING_COOKIE")
+		return os.Getenv("GOOGLE_SDK_GO_TRACING_COOKIE")
 	})
 )
 
