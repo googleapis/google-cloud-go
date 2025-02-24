@@ -939,6 +939,14 @@ func TestOpenWriterEmulated(t *testing.T) {
 		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
 			t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
 		}
+
+		o, err := veneerClient.Bucket(bucket).Object(want.Name).Attrs(ctx)
+		if err != nil {
+			t.Fatalf("getting object attrs: got %v; want ok", err)
+		}
+		if o.Finalized.IsZero() {
+			t.Errorf("expected valid finalize time: got %v; want non-zero", o.Finalized)
+		}
 	})
 }
 
