@@ -3,7 +3,7 @@ module cloud.google.com/go/translate
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.118.2
+	cloud.google.com/go v0.118.3
 	cloud.google.com/go/longrunning v0.6.4
 	github.com/googleapis/gax-go/v2 v2.14.1
 	golang.org/x/text v0.22.0
