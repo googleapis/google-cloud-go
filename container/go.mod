@@ -3,7 +3,7 @@ module cloud.google.com/go/container
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.118.2
+	cloud.google.com/go v0.118.3
 	github.com/googleapis/gax-go/v2 v2.14.1
 	google.golang.org/api v0.222.0
 	google.golang.org/genproto v0.0.0-20250122153221-138b5a5a4fd4

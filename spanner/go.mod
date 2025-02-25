@@ -5,12 +5,12 @@ go 1.23.0
 retract v1.76.0 // due to https://github.com/googleapis/google-cloud-go/issues/11630
 
 require (
-	cloud.google.com/go v0.118.2
+	cloud.google.com/go v0.118.3
 	cloud.google.com/go/iam v1.4.0
 	cloud.google.com/go/longrunning v0.6.4
 	cloud.google.com/go/monitoring v1.24.0
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.2
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.14.1
 	go.opencensus.io v0.24.0
