@@ -3,11 +3,11 @@ module cloud.google.com/go/bigtable
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.118.2
+	cloud.google.com/go v0.118.3
 	cloud.google.com/go/iam v1.4.0
 	cloud.google.com/go/longrunning v0.6.4
 	github.com/google/btree v1.1.3
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/googleapis/cloud-bigtable-clients-test v0.0.3
 	github.com/googleapis/gax-go/v2 v2.14.1
 	go.opentelemetry.io/otel v1.34.0

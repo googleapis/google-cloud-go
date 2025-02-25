@@ -3,10 +3,10 @@ module cloud.google.com/go/pubsub
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.118.2
+	cloud.google.com/go v0.118.3
 	cloud.google.com/go/iam v1.4.0
-	cloud.google.com/go/kms v1.20.5
-	github.com/google/go-cmp v0.6.0
+	cloud.google.com/go/kms v1.21.0
+	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.14.1
 	go.einride.tech/aip v0.68.1
@@ -42,5 +42,5 @@ require (
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250212204824-5a70512c5d8b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250219182151-9fdb1cabc7b2 // indirect
 )
