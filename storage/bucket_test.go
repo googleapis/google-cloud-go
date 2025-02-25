@@ -1664,9 +1664,10 @@ func TestDefaultSignBlobRetry(t *testing.T) {
 	b := client.Bucket("fakebucket")
 
 	if _, err := b.SignedURL("fakeobj", &SignedURLOptions{
-		Method:    "GET",
-		Expires:   time.Now().Add(time.Hour),
-		SignBytes: b.defaultSignBytesFunc("example@example.com"),
+		Method:         "GET",
+		Expires:        time.Now().Add(time.Hour),
+		SignBytes:      b.defaultSignBytesFunc("example@example.com"),
+		GoogleAccessID: "example@example.com",
 	}); err != nil {
 		t.Fatalf("BucketHandle.SignedURL: %v", err)
 	}
