@@ -404,7 +404,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		return nil, err
 	}
 
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.NewClient")
+	ctx, _ = startSpan(ctx, "NewClient")
 	defer func() { endSpan(ctx, err) }()
 
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
@@ -1000,7 +1000,7 @@ func checkNestedTxn(ctx context.Context) error {
 // See https://godoc.org/cloud.google.com/go/spanner#ReadWriteTransaction for
 // more details.
 func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (commitTimestamp time.Time, err error) {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransaction")
+	ctx, _ = startSpan(ctx, "ReadWriteTransaction")
 	defer func() { endSpan(ctx, err) }()
 	resp, err := c.rwTransaction(ctx, f, TransactionOptions{})
 	return resp.CommitTs, err
@@ -1014,7 +1014,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 // See https://godoc.org/cloud.google.com/go/spanner#ReadWriteTransaction for
 // more details.
 func (c *Client) ReadWriteTransactionWithOptions(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransactionWithOptions")
+	ctx, _ = startSpan(ctx, "ReadWriteTransactionWithOptions")
 	defer func() { endSpan(ctx, err) }()
 	resp, err = c.rwTransaction(ctx, f, options)
 	return resp, err
@@ -1175,7 +1175,7 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 		opt(ao)
 	}
 
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.Apply")
+	ctx, _ = startSpan(ctx, "Apply")
 	defer func() { endSpan(ctx, err) }()
 
 	if !ao.atLeastOnce {
@@ -1348,7 +1348,7 @@ func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup) *BatchWri
 
 // BatchWriteWithOptions is same as BatchWrite. It accepts additional options to customize the request.
 func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup, opts BatchWriteOptions) *BatchWriteResponseIterator {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.BatchWrite")
+	ctx, _ = startSpan(ctx, "BatchWrite")
 
 	var err error
 	defer func() {
@@ -1409,7 +1409,7 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.BatchWriteResponseIterator")
+	ctx, _ = startSpan(ctx, "BatchWriteResponseIterator")
 	return &BatchWriteResponseIterator{
 		ctx:                ctx,
 		meterTracerFactory: c.metricsTracerFactory,

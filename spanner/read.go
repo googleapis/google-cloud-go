@@ -92,7 +92,7 @@ func streamWithReplaceSessionFunc(
 	gsc *grpcSpannerClient,
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
+	ctx, _ = startSpan(ctx, "RowIterator")
 	return &RowIterator{
 		meterTracerFactory:   meterTracerFactory,
 		streamd:              newResumableStreamDecoder(ctx, logger, rpc, replaceSession, gsc),

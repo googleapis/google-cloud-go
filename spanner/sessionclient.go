@@ -269,7 +269,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client spannerClient, create
 	defer sc.waitWorkers.Done()
 	ctx, cancel := context.WithTimeout(context.Background(), sc.batchTimeout)
 	defer cancel()
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.BatchCreateSessions")
+	ctx, _ = startSpan(ctx, "BatchCreateSessions")
 	defer func() { endSpan(ctx, nil) }()
 	trace.TracePrintf(ctx, nil, "Creating a batch of %d sessions", createCount)
 
@@ -341,7 +341,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client spannerClient, create
 }
 
 func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, client spannerClient, md metadata.MD, consumer sessionConsumer) {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.CreateSession")
+	ctx, _ = startSpan(ctx, "CreateSession")
 	defer func() { endSpan(ctx, nil) }()
 	trace.TracePrintf(ctx, nil, "Creating a multiplexed session")
 	sc.mu.Lock()

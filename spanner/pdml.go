@@ -46,7 +46,7 @@ func (c *Client) PartitionedUpdateWithOptions(ctx context.Context, statement Sta
 }
 
 func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, options QueryOptions) (count int64, err error) {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.PartitionedUpdate")
+	ctx, _ = startSpan(ctx, "PartitionedUpdate")
 	defer func() { endSpan(ctx, err) }()
 	if err := checkNestedTxn(ctx); err != nil {
 		return 0, err

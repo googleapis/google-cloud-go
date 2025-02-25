@@ -249,7 +249,7 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
 // database. Pass a ReadOptions to modify the read operation.
 func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys KeySet, columns []string, opts *ReadOptions) (ri *RowIterator) {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.Read")
+	ctx, _ = startSpan(ctx, "Read")
 	defer func() { endSpan(ctx, ri.err) }()
 	var (
 		sh  *sessionHandle
@@ -596,7 +596,7 @@ func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sp
 }
 
 func (t *txReadOnly) query(ctx context.Context, statement Statement, options QueryOptions) (ri *RowIterator) {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.Query")
+	ctx, _ = startSpan(ctx, "Query")
 	defer func() { endSpan(ctx, ri.err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
 	if err != nil {
@@ -1224,7 +1224,7 @@ func (t *ReadWriteTransaction) UpdateWithOptions(ctx context.Context, stmt State
 }
 
 func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts QueryOptions) (rowCount int64, err error) {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.Update")
+	ctx, _ = startSpan(ctx, "Update")
 	defer func() { endSpan(ctx, err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, stmt, opts)
 	if err != nil {
@@ -1300,7 +1300,7 @@ func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts
 }
 
 func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
-	ctx, _ = startSpan(ctx, "cloud.google.com/go/spanner.BatchUpdate")
+	ctx, _ = startSpan(ctx, "BatchUpdate")
 	defer func() { endSpan(ctx, err) }()
 
 	sh, ts, err := t.acquire(ctx)
