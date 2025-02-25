@@ -1800,24 +1800,24 @@ func TestClient_ReadWriteTransaction(t *testing.T) {
 }
 
 func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpannerInMemTestServer, expected sppb.TransactionOptions_IsolationLevel) {
-	attempt := 0
+	found := false
 	requests := drainRequestsFromServer(server.TestSpanner)
 	for _, req := range requests {
 		switch sqlReq := req.(type) {
 		case *sppb.ExecuteSqlRequest:
-			attempt++
+			found = true
 			if sqlReq.GetTransaction().GetBegin().GetIsolationLevel() != expected {
 				t.Fatalf("Invalid IsolationLevel\n Expected: %v\n Got: %v\n", expected, sqlReq.GetTransaction().GetBegin().GetIsolationLevel())
 			}
 			break
 		case *sppb.BeginTransactionRequest:
-			attempt++
+			found = true
 			if sqlReq.GetOptions().GetIsolationLevel() != expected {
 				t.Fatalf("Invalid IsolationLevel\n Expected: %v\n Got: %v\n", expected, sqlReq.GetOptions().GetIsolationLevel())
 			}
 			break
 		case *sppb.CommitRequest:
-			attempt++
+			found = true
 			if sqlReq.GetSingleUseTransaction().GetIsolationLevel() != expected {
 				t.Fatalf("Invalid IsolationLevel\n Expected: %v\n Got: %v\n", expected, sqlReq.GetSingleUseTransaction().GetIsolationLevel())
 			}
@@ -1825,13 +1825,23 @@ func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpanner
 		default:
 			continue
 		}
-		if attempt > 0 {
+		if found {
 			break
 		}
 	}
-	if attempt == 0 {
+	if !found {
 		t.Fatal("Request is not received")
 	}
+}
+
+func TestClient_ReadWriteTransactionWithNoIsolationLevelForRWTransactionAtClientConfig(t *testing.T) {
+	t.Parallel()
+	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, make(map[string]SimulatedExecutionTime), 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer teardown()
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED)
 }
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtClientConfig(t *testing.T) {
@@ -1841,14 +1851,7 @@ func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtClientCo
 		t.Fatal(err)
 	}
 	defer teardown()
-	requests := drainRequestsFromServer(server.TestSpanner)
-	for _, req := range requests {
-		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
-			if sqlReq.GetTransaction().GetBegin().GetIsolationLevel() != sppb.TransactionOptions_REPEATABLE_READ {
-				t.Fatalf("Invalid IsolationLevel\n Expected: %v\n Got: %v\n", sppb.TransactionOptions_REPEATABLE_READ, sqlReq.GetTransaction().GetBegin().GetIsolationLevel())
-			}
-		}
-	}
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
 }
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtTransactionLevel(t *testing.T) {
@@ -1888,7 +1891,6 @@ func TestClient_ApplyMutationsWithAtLeastOnceIsolationLevel(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	server.TestSpanner.PutExecutionTime(MethodCommitTransaction, SimulatedExecutionTime{})
 	_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce(), IsolationLevel(sppb.TransactionOptions_REPEATABLE_READ))
 	if err != nil {
 		t.Fatal(err)
@@ -1904,15 +1906,65 @@ func TestClient_ApplyMutationsWithIsolationLevel(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
-		})
-	_, err := client.Apply(context.Background(), ms, IsolationLevel(sppb.TransactionOptions_REPEATABLE_READ))
+	_, err := client.Apply(context.Background(), ms, IsolationLevel(sppb.TransactionOptions_SERIALIZABLE))
 	if err != nil {
 		t.Fatal(err)
 	}
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
+		ctx,
+		client,
+		TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ})
+	if err != nil {
+		t.Fatalf("Unexpected error when creating transaction: %v", err)
+	}
+
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+
 	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t *testing.T) {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}})
+	defer teardown()
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
+		ctx,
+		client,
+		TransactionOptions{})
+	if err != nil {
+		t.Fatalf("Unexpected error when creating transaction: %v", err)
+	}
+
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithNoIsolationLevel(t *testing.T) {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: TransactionOptions{}})
+	defer teardown()
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
+		ctx,
+		client,
+		TransactionOptions{})
+	if err != nil {
+		t.Fatalf("Unexpected error when creating transaction: %v", err)
+	}
+
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED)
 }
 
 func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
