@@ -493,14 +493,20 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
 		}
 	}
-	//TODO: Uncomment this once the feature is enabled.
-	//if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" {
-	//	config.enableMultiplexedSessionForRW, err = strconv.ParseBool(isMultiplexForRW)
-	//	if err != nil {
-	//		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
-	//	}
-	//  config.enableMultiplexedSessionForRW = config.enableMultiplexedSessionForRW && config.SessionPoolConfig.enableMultiplexSession
-	//}
+	if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" {
+		config.enableMultiplexedSessionForRW, err = strconv.ParseBool(isMultiplexForRW)
+		if err != nil {
+			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
+		}
+		config.enableMultiplexedSessionForRW = config.enableMultiplexedSessionForRW && config.SessionPoolConfig.enableMultiplexSession
+	}
+	if isMultiplexForPartitionOps := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); isMultiplexForPartitionOps != "" {
+		config.enableMultiplexedSessionForPartitionedOps, err = strconv.ParseBool(isMultiplexForPartitionOps)
+		if err != nil {
+			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS must be either true or false")
+		}
+		config.enableMultiplexedSessionForPartitionedOps = config.enableMultiplexedSessionForPartitionedOps && config.SessionPoolConfig.enableMultiplexSession
+	}
 
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
@@ -867,13 +873,20 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		err error
 	)
 
-	// Create session.
-	s, err = c.sc.createSession(ctx)
-	if err != nil {
-		return nil, err
+	if c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
+		sh, err = c.idleSessions.takeMultiplexed(ctx)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// Create session.
+		s, err = c.sc.createSession(ctx)
+		if err != nil {
+			return nil, err
+		}
+		sh = &sessionHandle{session: s}
+		sh.updateLastUseTime()
 	}
-	sh = &sessionHandle{session: s}
-	sh.updateLastUseTime()
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.BeginTransactionRequest{
@@ -885,6 +898,9 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		},
 	})
 	if err != nil {
+		if isUnimplementedErrorForMultiplexedPartitionedDML(err) && c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
+			c.idleSessions.disableMultiplexedSessionForRW()
+		}
 		return nil, ToSpannerError(err)
 	}
 	tx = res.Id
@@ -1047,8 +1063,13 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 				return ToSpannerError(err)
 			}
 		} else {
+			var previousTx transactionID
+			if t != nil {
+				previousTx = t.previousTx
+			}
 			t = &ReadWriteTransaction{
 				txReadyOrClosed: make(chan struct{}),
+				previousTx:      previousTx,
 			}
 			t.txReadOnly.sh = sh
 		}

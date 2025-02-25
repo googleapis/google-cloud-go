@@ -1805,6 +1805,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				RetentionExpirationTime: "2019-03-31T19:33:36Z",
 				Size:                    1 << 20,
 				TimeCreated:             "2019-03-31T19:32:10Z",
+				TimeFinalized:           "2019-03-31T19:32:10Z",
 				TimeDeleted:             "2019-03-31T19:33:39Z",
 				TemporaryHold:           true,
 				ComponentCount:          2,
@@ -1812,6 +1813,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
 				Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+				Finalized:               time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
 				CustomTime:              time.Date(2020, 8, 25, 19, 33, 36, 0, time.UTC),
@@ -1843,6 +1845,7 @@ func TestObjectAttrsToRawObject(t *testing.T) {
 	in := &ObjectAttrs{
 		Bucket:                  "Test",
 		Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+		Finalized:               time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 		ContentLanguage:         "en-us",
 		ContentType:             "video/mpeg",
 		Deleted:                 time.Date(2019, 3, 31, 19, 33, 39, 0, time.UTC),
@@ -1893,6 +1896,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 				RetentionExpireTime: timestamppb.New(now),
 				Size:                1 << 20,
 				CreateTime:          timestamppb.New(now),
+				FinalizeTime:        timestamppb.New(now),
 				DeleteTime:          timestamppb.New(now),
 				TemporaryHold:       true,
 				ComponentCount:      2,
@@ -1900,6 +1904,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
 				Created:                 now,
+				Finalized:               now,
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
 				CustomTime:              now,
@@ -1940,11 +1945,13 @@ func TestObjectAttrsToProtoObject(t *testing.T) {
 		RetentionExpireTime: timestamppb.New(now),
 		Size:                1 << 20,
 		CreateTime:          timestamppb.New(now),
+		FinalizeTime:        timestamppb.New(now),
 		DeleteTime:          timestamppb.New(now),
 		TemporaryHold:       true,
 	}
 	in := &ObjectAttrs{
 		Created:                 now,
+		Finalized:               now,
 		ContentLanguage:         "en-us",
 		ContentType:             "video/mpeg",
 		CustomTime:              now,

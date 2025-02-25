@@ -1095,7 +1095,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		r.Generation = params.gen
 	}
 
-	if params.handle != nil {
+	if params.handle != nil && len(*params.handle) != 0 {
 		r.ReadHandle = &storagepb.BidiReadHandle{
 			Handle: *params.handle,
 		}
@@ -1110,7 +1110,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		if err := applyCondsProto("grpcStorageClient.BidiReadObject", params.gen, params.conds, r); err != nil {
 			return nil, nil, err
 		}
-		if readHandle != nil {
+		if len(readHandle) != 0 {
 			req.GetReadObjectSpec().ReadHandle = &storagepb.BidiReadHandle{
 				Handle: readHandle,
 			}
@@ -1209,6 +1209,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						delete(rr.mp, key)
 					}
 				}
+				rr.activeTask = 0
 				rr.mu.Unlock()
 				return
 			case currentSpec = <-rr.data:
@@ -1290,6 +1291,11 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					for _, val := range arr {
 						id := val.GetReadRange().GetReadId()
 						rr.mu.Lock()
+						_, ok := rr.mp[id]
+						if !ok {
+							// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
+							continue
+						}
 						_, err = rr.mp[id].writer.Write(val.GetChecksummedData().GetContent())
 						if err != nil {
 							rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].limit, err)
@@ -1340,6 +1346,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, err)
 				delete(rr.mp, key)
 			}
+			// In case we hit an permanent error, delete entries from map and remove active tasks.
+			rr.activeTask = 0
 			rr.mu.Unlock()
 			rr.close()
 		} else {
@@ -1446,11 +1454,10 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 		return
 	}
 	mr.mu.Lock()
-	curentID := (*mr).readID
+	currentID := (*mr).readID
 	(*mr).readID++
 	if !mr.done {
-		spec := rangeSpec{readID: curentID, writer: output, offset: offset, limit: limit, bytesWritten: 0, callback: callback}
-		mr.mp[curentID] = spec
+		spec := rangeSpec{readID: currentID, writer: output, offset: offset, limit: limit, bytesWritten: 0, callback: callback}
 		mr.activeTask++
 		mr.data <- []rangeSpec{spec}
 	} else {
@@ -1461,12 +1468,15 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 
 func (mr *gRPCBidiReader) wait() {
 	mr.mu.Lock()
-	keepWaiting := len(mr.mp) != 0 && mr.activeTask != 0
+	// we should wait until there is active task or an entry in the map.
+	// there can be a scenario we have nothing in map for a moment or too but still have active task.
+	// hence in case we have permanent errors we reduce active task to 0 so that this does not block wait.
+	keepWaiting := len(mr.mp) != 0 || mr.activeTask != 0
 	mr.mu.Unlock()
 
 	for keepWaiting {
 		mr.mu.Lock()
-		keepWaiting = len(mr.mp) != 0 && mr.activeTask != 0
+		keepWaiting = len(mr.mp) != 0 || mr.activeTask != 0
 		mr.mu.Unlock()
 	}
 }
@@ -1519,7 +1529,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	if err := applyCondsProto("gRPCReader.NewRangeReader", params.gen, params.conds, spec); err != nil {
 		return nil, err
 	}
-	if params.handle != nil {
+	if params.handle != nil && len(*params.handle) != 0 {
 		spec.ReadHandle = &storagepb.BidiReadHandle{
 			Handle: *params.handle,
 		}

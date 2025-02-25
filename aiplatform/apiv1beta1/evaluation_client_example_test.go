@@ -61,6 +61,36 @@ func ExampleNewEvaluationRESTClient() {
 	_ = c
 }
 
+func ExampleEvaluationClient_EvaluateDataset() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewEvaluationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.EvaluateDatasetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#EvaluateDatasetRequest.
+	}
+	op, err := c.EvaluateDataset(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleEvaluationClient_EvaluateInstances() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
