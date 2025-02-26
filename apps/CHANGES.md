@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.6.0...apps/v0.7.0) (2025-02-26)
+
+
+### Features
+
+* **apps/meet:** Add `ConnectActiveConference` method to `SpacesService` ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.3...apps/v0.6.0) (2025-01-30)
 
 
