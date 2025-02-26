@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.1...chat/v0.11.0) (2025-02-20)
+
+
+### Features
+
+* **chat:** Add DeletionType.SPACE_MEMBER. This is returned when a message sent by an app is deleted by a human in a space ([#11600](https://github.com/googleapis/google-cloud-go/issues/11600)) ([c08d347](https://github.com/googleapis/google-cloud-go/commit/c08d34776d398a79f6962a26e8e2c75bc4958e2b))
+
 ## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.0...chat/v0.10.1) (2025-02-12)
 
 

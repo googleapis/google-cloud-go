@@ -98,8 +98,10 @@ try3 go mod download
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
   if { [[ $PWD == *"/internal/"* ]] ||
-    [[ $PWD == *"/third_party/"* ]]; } &&
+    [[ $PWD == *"/third_party/"* ]] ||
+    [[ $PWD == *"/aliasshim" ]]; } &&
     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
+    # aliasshim: build constraints exclude all Go files
     # internal tools only expected to work with latest go version
     return
   fi
