@@ -21,13 +21,12 @@
 package firestorepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -419,6 +418,7 @@ func (StructuredQuery_FindNearest_DistanceMeasure) EnumDescriptor() ([]byte, []i
 // 4. order_by + start_at + end_at
 // 5. offset
 // 6. limit
+// 7. find_nearest
 type StructuredQuery struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1310,8 +1310,8 @@ type StructuredQuery_FindNearest struct {
 	// Since DOT_PRODUCT distances increase when the vectors are more similar,
 	// the comparison is inverted.
 	//
-	// For EUCLIDEAN, COSINE: WHERE distance <= distance_threshold
-	// For DOT_PRODUCT:       WHERE distance >= distance_threshold
+	// * For EUCLIDEAN, COSINE: WHERE distance <= distance_threshold
+	// * For DOT_PRODUCT:       WHERE distance >= distance_threshold
 	DistanceThreshold *wrapperspb.DoubleValue `protobuf:"bytes,6,opt,name=distance_threshold,json=distanceThreshold,proto3" json:"distance_threshold,omitempty"`
 }
 
