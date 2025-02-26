@@ -25,7 +25,6 @@ import (
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -66,9 +65,8 @@ func (oi *ourInterceptor) interceptUnary(ctx context.Context, req any, usi *grpc
 // destructive context augmentation call.
 // Please see https://github.com/googleapis/google-cloud-go/issues/11656
 func TestAllHeadersForwardedAppropriately(t *testing.T) {
-	if isMultiplexEnabled {
-		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
-	}
+	// 0. Turn off session multiplexing per #11308.
+	t.Setenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS", "0")
 
 	// 1. Set up the server interceptor that'll record and collect
 	// all the headers that  are received by the server.
@@ -101,7 +99,7 @@ func TestAllHeadersForwardedAppropriately(t *testing.T) {
 	resultSet := &sppb.ResultSet{
 		Rows: []*structpb.ListValue{
 			{Values: []*structpb.Value{
-				{Kind: &structpb.Value_NumberValue{NumberValue: 1}},
+				{Kind: &structpb.Value_StringValue{StringValue: "1"}},
 			}},
 		},
 		Metadata: &sppb.ResultSetMetadata{
@@ -125,15 +123,13 @@ func TestAllHeadersForwardedAppropriately(t *testing.T) {
 	stmt := NewStatement(sqlSELECT1)
 	rowIter := txn.Query(ctx, stmt)
 	defer rowIter.Stop()
-	for {
-		rows, err := rowIter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		_ = rows
+	var got []int64
+	if err := SelectAll(rowIter, &got); err != nil {
+		t.Fatal(err)
+	}
+	want := []int64{1}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Fatalf("Results expectation mismatches: got - want +\n%s", diff)
 	}
 
 	// 3. Now perform the assertions of expected headers.
