@@ -3,12 +3,12 @@ module cloud.google.com/go/logging
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.118.2
+	cloud.google.com/go v0.118.3
 	cloud.google.com/go/compute/metadata v0.6.0
 	cloud.google.com/go/iam v1.4.0
 	cloud.google.com/go/longrunning v0.6.4
 	cloud.google.com/go/storage v1.50.0
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/googleapis/gax-go/v2 v2.14.1
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel/sdk v1.34.0

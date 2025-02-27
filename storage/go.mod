@@ -5,12 +5,12 @@ go 1.23.0
 retract [v1.25.0, v1.27.0] // due to https://github.com/googleapis/google-cloud-go/issues/6857
 
 require (
-	cloud.google.com/go v0.118.2
+	cloud.google.com/go v0.118.3
 	cloud.google.com/go/compute/metadata v0.6.0
 	cloud.google.com/go/iam v1.4.0
 	cloud.google.com/go/longrunning v0.6.4
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.50.0
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.14.1
 	go.opentelemetry.io/contrib/detectors/gcp v1.34.0
