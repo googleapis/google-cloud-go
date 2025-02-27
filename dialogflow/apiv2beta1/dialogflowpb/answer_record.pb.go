@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -622,7 +621,7 @@ type AgentAssistantFeedback struct {
 	//   - Suggested document says: "Items must be returned/exchanged within 60
 	//     days of the purchase date."
 	//   - Ground truth: "No return or exchange is allowed."
-	//   - [document_correctness]: INCORRECT
+	//   - [document_correctness][google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.document_correctness]: [INCORRECT][google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.DocumentCorrectness.INCORRECT]
 	DocumentCorrectness AgentAssistantFeedback_DocumentCorrectness `protobuf:"varint,2,opt,name=document_correctness,json=documentCorrectness,proto3,enum=google.cloud.dialogflow.v2beta1.AgentAssistantFeedback_DocumentCorrectness" json:"document_correctness,omitempty"`
 	// Optional. Whether or not the suggested document is efficient. For example,
 	// if the document is poorly written, hard to understand, hard to use or

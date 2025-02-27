@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2385,6 +2384,11 @@ type SearchKnowledgeRequest_SearchConfig struct {
 	// Optional. Boost specifications for data stores.
 	BoostSpecs []*SearchKnowledgeRequest_SearchConfig_BoostSpecs `protobuf:"bytes,1,rep,name=boost_specs,json=boostSpecs,proto3" json:"boost_specs,omitempty"`
 	// Optional. Filter specification for data store queries.
+	//
+	// Maps from datastore name to the filter expression for that datastore. Do
+	// not specify more than one FilterSpecs for each datastore name. If
+	// multiple FilterSpecs are provided for the same datastore name, the
+	// behavior is undefined.
 	FilterSpecs []*SearchKnowledgeRequest_SearchConfig_FilterSpecs `protobuf:"bytes,2,rep,name=filter_specs,json=filterSpecs,proto3" json:"filter_specs,omitempty"`
 }
 
@@ -2433,6 +2437,10 @@ func (x *SearchKnowledgeRequest_SearchConfig) GetFilterSpecs() []*SearchKnowledg
 }
 
 // Boost specifications for data stores.
+//
+// Maps from datastore name to their boost configuration. Do not specify
+// more than one BoostSpecs for each datastore name. If multiple BoostSpecs
+// are provided for the same datastore name, the behavior is undefined.
 type SearchKnowledgeRequest_SearchConfig_BoostSpecs struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2562,7 +2570,7 @@ type SearchKnowledgeRequest_SearchConfig_BoostSpecs_BoostSpec struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Optional. Condition boost specifications. If a document matches
-	// multiple conditions in the specifictions, boost scores from these
+	// multiple conditions in the specifications, boost scores from these
 	// specifications are all applied and combined in a non-linear way.
 	// Maximum number of specifications is 20.
 	ConditionBoostSpecs []*SearchKnowledgeRequest_SearchConfig_BoostSpecs_BoostSpec_ConditionBoostSpec `protobuf:"bytes,1,rep,name=condition_boost_specs,json=conditionBoostSpecs,proto3" json:"condition_boost_specs,omitempty"`

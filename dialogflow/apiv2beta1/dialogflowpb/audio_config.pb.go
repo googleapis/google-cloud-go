@@ -21,13 +21,12 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1287,7 +1286,7 @@ type SpeechToTextConfig struct {
 	// offsets. If false or unspecified, Speech doesn't return any word-level
 	// information.
 	EnableWordInfo bool `protobuf:"varint,9,opt,name=enable_word_info,json=enableWordInfo,proto3" json:"enable_word_info,omitempty"`
-	// Use timeout based endpointing, interpreting endpointer sensitivy as
+	// Use timeout based endpointing, interpreting endpointer sensitivity as
 	// seconds of timeout value.
 	UseTimeoutBasedEndpointing bool `protobuf:"varint,11,opt,name=use_timeout_based_endpointing,json=useTimeoutBasedEndpointing,proto3" json:"use_timeout_based_endpointing,omitempty"`
 }
