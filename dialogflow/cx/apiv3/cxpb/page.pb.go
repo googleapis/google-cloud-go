@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -104,7 +103,7 @@ type Page struct {
 	// They route the conversation to another page in the same flow, or another
 	// flow.
 	//
-	// When we are in a certain page, the TransitionRoutes are evalauted in the
+	// When we are in a certain page, the TransitionRoutes are evaluated in the
 	// following order:
 	//
 	//   - TransitionRoutes defined in the page with intent specified.

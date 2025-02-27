@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1443,8 +1442,7 @@ type Webhook_GenericWebService struct {
 	//
 	// Deprecated: Marked as deprecated in google/cloud/dialogflow/cx/v3/webhook.proto.
 	Password string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
-	// The HTTP request headers to send together with webhook
-	// requests.
+	// The HTTP request headers to send together with webhook requests.
 	RequestHeaders map[string]string `protobuf:"bytes,4,rep,name=request_headers,json=requestHeaders,proto3" json:"request_headers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Optional. Specifies a list of allowed custom CA certificates (in DER
 	// format) for HTTPS verification. This overrides the default SSL trust

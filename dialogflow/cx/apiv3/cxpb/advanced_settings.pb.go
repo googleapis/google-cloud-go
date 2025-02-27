@@ -21,13 +21,12 @@
 package cxpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -150,7 +149,7 @@ type AdvancedSettings_SpeechSettings struct {
 	EndpointerSensitivity int32 `protobuf:"varint,1,opt,name=endpointer_sensitivity,json=endpointerSensitivity,proto3" json:"endpointer_sensitivity,omitempty"`
 	// Timeout before detecting no speech.
 	NoSpeechTimeout *durationpb.Duration `protobuf:"bytes,2,opt,name=no_speech_timeout,json=noSpeechTimeout,proto3" json:"no_speech_timeout,omitempty"`
-	// Use timeout based endpointing, interpreting endpointer sensitivy as
+	// Use timeout based endpointing, interpreting endpointer sensitivity as
 	// seconds of timeout value.
 	UseTimeoutBasedEndpointing bool `protobuf:"varint,3,opt,name=use_timeout_based_endpointing,json=useTimeoutBasedEndpointing,proto3" json:"use_timeout_based_endpointing,omitempty"`
 	// Mapping from language to Speech-to-Text model. The mapped Speech-to-Text
