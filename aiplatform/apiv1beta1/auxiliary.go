@@ -4472,6 +4472,70 @@ func (op *DeployModelOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeployOperation manages a long-running operation from Deploy.
+type DeployOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeployOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeployResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.DeployResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeployOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeployResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.DeployResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeployOperation) Metadata() (*aiplatformpb.DeployOperationMetadata, error) {
+	var meta aiplatformpb.DeployOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeployOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeployOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeployPublisherModelOperation manages a long-running operation from DeployPublisherModel.
 type DeployPublisherModelOperation struct {
 	lro      *longrunning.Operation
@@ -4533,6 +4597,70 @@ func (op *DeployPublisherModelOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeployPublisherModelOperation) Name() string {
+	return op.lro.Name()
+}
+
+// EvaluateDatasetOperation manages a long-running operation from EvaluateDataset.
+type EvaluateDatasetOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *EvaluateDatasetOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.EvaluateDatasetResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.EvaluateDatasetResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *EvaluateDatasetOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.EvaluateDatasetResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.EvaluateDatasetResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *EvaluateDatasetOperation) Metadata() (*aiplatformpb.EvaluateDatasetOperationMetadata, error) {
+	var meta aiplatformpb.EvaluateDatasetOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *EvaluateDatasetOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *EvaluateDatasetOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -6069,6 +6197,70 @@ func (op *UpdateFeatureGroupOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateFeatureGroupOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateFeatureMonitorOperation manages a long-running operation from UpdateFeatureMonitor.
+type UpdateFeatureMonitorOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateFeatureMonitorOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitor, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.FeatureMonitor
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateFeatureMonitorOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitor, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.FeatureMonitor
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateFeatureMonitorOperation) Metadata() (*aiplatformpb.UpdateFeatureMonitorOperationMetadata, error) {
+	var meta aiplatformpb.UpdateFeatureMonitorOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateFeatureMonitorOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateFeatureMonitorOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -8890,6 +9082,53 @@ func (it *ModelMonitoringStatsIterator) bufLen() int {
 }
 
 func (it *ModelMonitoringStatsIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ModelVersionCheckpointIterator manages a stream of *aiplatformpb.ModelVersionCheckpoint.
+type ModelVersionCheckpointIterator struct {
+	items    []*aiplatformpb.ModelVersionCheckpoint
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelVersionCheckpoint, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ModelVersionCheckpointIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ModelVersionCheckpointIterator) Next() (*aiplatformpb.ModelVersionCheckpoint, error) {
+	var item *aiplatformpb.ModelVersionCheckpoint
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ModelVersionCheckpointIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ModelVersionCheckpointIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

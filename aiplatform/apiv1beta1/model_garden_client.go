@@ -48,6 +48,7 @@ var newModelGardenClientHook clientHook
 type ModelGardenCallOptions struct {
 	GetPublisherModel    []gax.CallOption
 	ListPublisherModels  []gax.CallOption
+	Deploy               []gax.CallOption
 	DeployPublisherModel []gax.CallOption
 	GetLocation          []gax.CallOption
 	ListLocations        []gax.CallOption
@@ -80,6 +81,7 @@ func defaultModelGardenCallOptions() *ModelGardenCallOptions {
 	return &ModelGardenCallOptions{
 		GetPublisherModel:    []gax.CallOption{},
 		ListPublisherModels:  []gax.CallOption{},
+		Deploy:               []gax.CallOption{},
 		DeployPublisherModel: []gax.CallOption{},
 		GetLocation:          []gax.CallOption{},
 		ListLocations:        []gax.CallOption{},
@@ -98,6 +100,7 @@ func defaultModelGardenRESTCallOptions() *ModelGardenCallOptions {
 	return &ModelGardenCallOptions{
 		GetPublisherModel:    []gax.CallOption{},
 		ListPublisherModels:  []gax.CallOption{},
+		Deploy:               []gax.CallOption{},
 		DeployPublisherModel: []gax.CallOption{},
 		GetLocation:          []gax.CallOption{},
 		ListLocations:        []gax.CallOption{},
@@ -119,6 +122,8 @@ type internalModelGardenClient interface {
 	Connection() *grpc.ClientConn
 	GetPublisherModel(context.Context, *aiplatformpb.GetPublisherModelRequest, ...gax.CallOption) (*aiplatformpb.PublisherModel, error)
 	ListPublisherModels(context.Context, *aiplatformpb.ListPublisherModelsRequest, ...gax.CallOption) *PublisherModelIterator
+	Deploy(context.Context, *aiplatformpb.DeployRequest, ...gax.CallOption) (*DeployOperation, error)
+	DeployOperation(name string) *DeployOperation
 	DeployPublisherModel(context.Context, *aiplatformpb.DeployPublisherModelRequest, ...gax.CallOption) (*DeployPublisherModelOperation, error)
 	DeployPublisherModelOperation(name string) *DeployPublisherModelOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -181,6 +186,17 @@ func (c *ModelGardenClient) GetPublisherModel(ctx context.Context, req *aiplatfo
 // ListPublisherModels lists publisher models in Model Garden.
 func (c *ModelGardenClient) ListPublisherModels(ctx context.Context, req *aiplatformpb.ListPublisherModelsRequest, opts ...gax.CallOption) *PublisherModelIterator {
 	return c.internalClient.ListPublisherModels(ctx, req, opts...)
+}
+
+// Deploy deploys a model to a new endpoint.
+func (c *ModelGardenClient) Deploy(ctx context.Context, req *aiplatformpb.DeployRequest, opts ...gax.CallOption) (*DeployOperation, error) {
+	return c.internalClient.Deploy(ctx, req, opts...)
+}
+
+// DeployOperation returns a new DeployOperation from a given name.
+// The name must be that of a previously created DeployOperation, possibly from a different process.
+func (c *ModelGardenClient) DeployOperation(name string) *DeployOperation {
+	return c.internalClient.DeployOperation(name)
 }
 
 // DeployPublisherModel deploys publisher models.
@@ -510,6 +526,26 @@ func (c *modelGardenGRPCClient) ListPublisherModels(ctx context.Context, req *ai
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *modelGardenGRPCClient) Deploy(ctx context.Context, req *aiplatformpb.DeployRequest, opts ...gax.CallOption) (*DeployOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "destination", url.QueryEscape(req.GetDestination()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).Deploy[0:len((*c.CallOptions).Deploy):len((*c.CallOptions).Deploy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.modelGardenClient.Deploy, req, settings.GRPC, c.logger, "Deploy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeployOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *modelGardenGRPCClient) DeployPublisherModel(ctx context.Context, req *aiplatformpb.DeployPublisherModelRequest, opts ...gax.CallOption) (*DeployPublisherModelOperation, error) {
@@ -913,6 +949,65 @@ func (c *modelGardenRESTClient) ListPublisherModels(ctx context.Context, req *ai
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// Deploy deploys a model to a new endpoint.
+func (c *modelGardenRESTClient) Deploy(ctx context.Context, req *aiplatformpb.DeployRequest, opts ...gax.CallOption) (*DeployOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deploy", req.GetDestination())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "destination", url.QueryEscape(req.GetDestination()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Deploy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &DeployOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // DeployPublisherModel deploys publisher models.
@@ -1540,6 +1635,24 @@ func (c *modelGardenRESTClient) WaitOperation(ctx context.Context, req *longrunn
 		return nil, e
 	}
 	return resp, nil
+}
+
+// DeployOperation returns a new DeployOperation from a given name.
+// The name must be that of a previously created DeployOperation, possibly from a different process.
+func (c *modelGardenGRPCClient) DeployOperation(name string) *DeployOperation {
+	return &DeployOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeployOperation returns a new DeployOperation from a given name.
+// The name must be that of a previously created DeployOperation, possibly from a different process.
+func (c *modelGardenRESTClient) DeployOperation(name string) *DeployOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &DeployOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // DeployPublisherModelOperation returns a new DeployPublisherModelOperation from a given name.

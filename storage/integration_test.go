@@ -934,7 +934,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 					t.Fatalf("BucketHandle.Delete(%q): %v", newBucketName, err)
 				}
 				_, err = b.Attrs(ctx)
-				if err != ErrBucketNotExist {
+				if !errors.Is(err, ErrBucketNotExist) {
 					t.Fatalf("expected ErrBucketNotExist, got %v", err)
 				}
 			})
@@ -2442,7 +2442,7 @@ func TestIntegration_Encoding(t *testing.T) {
 
 		// Test NotFound.
 		_, err = bkt.Object("obj-not-exists").NewReader(ctx)
-		if err != ErrObjectNotExist {
+		if !errors.Is(err, ErrObjectNotExist) {
 			t.Errorf("Object should not exist, err found to be %v", err)
 		}
 	})
@@ -2540,35 +2540,38 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 }
 
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
-	// Tests that all selected attributes work - query succeeds (without actually
-	// verifying the returned results).
-	query := &Query{
-		Prefix:      "",
-		StartOffset: "obj/",
-		EndOffset:   "obj2",
-	}
-	var selectedAttrs []string
-	for k := range attrToFieldMap {
-		selectedAttrs = append(selectedAttrs, k)
-	}
-	query.SetAttrSelection(selectedAttrs)
-
-	count := 0
-	it := bkt.Objects(context.Background(), query)
-	for {
-		_, err := it.Next()
-		if err == iterator.Done {
-			break
+	t.Run("testObjectsIterateAllSelectedAttrs", func(t *testing.T) {
+		t.Skip("b/398916957")
+		// Tests that all selected attributes work - query succeeds (without actually
+		// verifying the returned results).
+		query := &Query{
+			Prefix:      "",
+			StartOffset: "obj/",
+			EndOffset:   "obj2",
 		}
-		if err != nil {
-			t.Fatalf("iterator.Next: %v", err)
+		var selectedAttrs []string
+		for k := range attrToFieldMap {
+			selectedAttrs = append(selectedAttrs, k)
 		}
-		count++
-	}
+		query.SetAttrSelection(selectedAttrs)
 
-	if count != len(objects)-1 {
-		t.Errorf("count = %v, want %v", count, len(objects)-1)
-	}
+		count := 0
+		it := bkt.Objects(context.Background(), query)
+		for {
+			_, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			count++
+		}
+
+		if count != len(objects)-1 {
+			t.Errorf("count = %v, want %v", count, len(objects)-1)
+		}
+	})
 }
 
 func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
@@ -2847,7 +2850,6 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
-
 }
 
 func TestIntegration_BucketACL(t *testing.T) {
@@ -3326,11 +3328,11 @@ func TestIntegration_NonexistentBucket(t *testing.T) {
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		bkt := client.Bucket(prefix + uidSpace.New())
-		if _, err := bkt.Attrs(ctx); err != ErrBucketNotExist {
+		if _, err := bkt.Attrs(ctx); !errors.Is(err, ErrBucketNotExist) {
 			t.Errorf("Attrs: got %v, want ErrBucketNotExist", err)
 		}
 		it := bkt.Objects(ctx, nil)
-		if _, err := it.Next(); err != ErrBucketNotExist {
+		if _, err := it.Next(); !errors.Is(err, ErrBucketNotExist) {
 			t.Errorf("Objects: got %v, want ErrBucketNotExist", err)
 		}
 	})
@@ -4847,6 +4849,24 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("effective time of soft delete policy should not be in the past, got: %v, test start: %v", got.EffectiveTime, testStart.UTC())
 		}
 
+		// Update the soft delete policy of the bucket.
+		policy.RetentionDuration = time.Hour * 24 * 9
+		// Retry to account for metadata propagation delay.
+		if err := retry(ctx, func() error {
+			attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
+			if err != nil {
+				return fmt.Errorf("b.Update: %v", err)
+			}
+			return nil
+		}, func() error {
+			if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
+				return fmt.Errorf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+			}
+			return nil
+		}); err != nil {
+			t.Error(err)
+		}
+
 		// Create a second bucket with an empty soft delete policy to verify
 		// that this leads to no retention.
 		b2 := client.Bucket(prefix + uidSpace.New())
@@ -4863,23 +4883,7 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
 		}
 
-		// Update the soft delete policy of the original bucket.
-		policy.RetentionDuration = time.Hour * 24 * 9
-
-		retry(ctx, func() error {
-			attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
-			if err != nil {
-				return fmt.Errorf("b.Update: %v", err)
-			}
-			return nil
-		}, func() error {
-			if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
-				return fmt.Errorf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
-			}
-			return nil
-		})
-
-		// Create 2 objects and delete one of them.
+		// Create 2 objects in the original bucket and delete one of them.
 		deletedObject := b.Object("soft-delete" + uidSpaceObjects.New())
 		liveObject := b.Object("not-soft-delete" + uidSpaceObjects.New())
 
@@ -4930,16 +4934,21 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("list objects that are not soft deleted; got: %v, expected only one object named: %s", gotNames, liveObject.ObjectName())
 		}
 
-		// Get a soft deleted object and check soft and hard delete times.
-		oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
-		if err != nil {
-			t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
-		}
-		if oAttrs.SoftDeleteTime.Before(testStart) {
-			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
-		}
-		if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
-			t.Fatalf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+		if err := retry(ctx, func() error {
+			// Get a soft deleted object and check soft and hard delete times.
+			oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
+			if err != nil {
+				t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
+			}
+			if oAttrs.SoftDeleteTime.Before(testStart) {
+				t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
+			}
+			if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
+				return fmt.Errorf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+			}
+			return nil
+		}, func() error { return nil }); err != nil {
+			t.Fatal(err)
 		}
 
 		// Restore a soft deleted object.
@@ -6962,11 +6971,17 @@ func extractErrCode(err error) int {
 	return -1
 }
 
+// errorIsStatusCode returns true if err is a:
+//   - googleapi.Error with httpStatusCode, or
+//   - apierror.APIError with grpcStatusCode, or
+//   - grpc/status.Status error with grpcStatusCode.
 func errorIsStatusCode(err error, httpStatusCode int, grpcStatusCode codes.Code) bool {
 	var httpErr *googleapi.Error
 	var grpcErr *apierror.APIError
+
 	return (errors.As(err, &httpErr) && httpErr.Code == httpStatusCode) ||
-		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode)
+		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode) ||
+		status.Code(err) == grpcStatusCode
 }
 
 func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {

@@ -164,17 +164,26 @@ func (c *SpacesClient) CreateSpace(ctx context.Context, req *meetpb.CreateSpaceR
 	return c.internalClient.CreateSpace(ctx, req, opts...)
 }
 
-// GetSpace gets a space by space_id or meeting_code.
+// GetSpace gets details about a meeting space.
+//
+// For an example, see Get a meeting
+// space (at https://developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).
 func (c *SpacesClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	return c.internalClient.GetSpace(ctx, req, opts...)
 }
 
-// UpdateSpace updates a space.
+// UpdateSpace updates details about a meeting space.
+//
+// For an example, see Update a meeting
+// space (at https://developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).
 func (c *SpacesClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	return c.internalClient.UpdateSpace(ctx, req, opts...)
 }
 
 // EndActiveConference ends an active conference (if there’s one).
+//
+// For an example, see End active
+// conference (at https://developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).
 func (c *SpacesClient) EndActiveConference(ctx context.Context, req *meetpb.EndActiveConferenceRequest, opts ...gax.CallOption) error {
 	return c.internalClient.EndActiveConference(ctx, req, opts...)
 }
@@ -451,7 +460,10 @@ func (c *spacesRESTClient) CreateSpace(ctx context.Context, req *meetpb.CreateSp
 	return resp, nil
 }
 
-// GetSpace gets a space by space_id or meeting_code.
+// GetSpace gets details about a meeting space.
+//
+// For an example, see Get a meeting
+// space (at https://developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).
 func (c *spacesRESTClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -501,7 +513,10 @@ func (c *spacesRESTClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceReq
 	return resp, nil
 }
 
-// UpdateSpace updates a space.
+// UpdateSpace updates details about a meeting space.
+//
+// For an example, see Update a meeting
+// space (at https://developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).
 func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSpace()
@@ -566,6 +581,9 @@ func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 }
 
 // EndActiveConference ends an active conference (if there’s one).
+//
+// For an example, see End active
+// conference (at https://developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).
 func (c *spacesRESTClient) EndActiveConference(ctx context.Context, req *meetpb.EndActiveConferenceRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

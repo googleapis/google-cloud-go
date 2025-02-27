@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "0.9.1",
+    "version": "0.11.0",
     "language": "GO",
     "apis": [
       {
@@ -152,7 +152,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CreateReaction_sync",
       "title": "chat CreateReaction Sample",
-      "description": "CreateReaction creates a reaction and adds it to a message. Only unicode emojis are\nsupported. For an example, see\n[Add a reaction to a\nmessage](https: //developers.google.com/workspace/chat/create-reactions).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "CreateReaction creates a reaction and adds it to a message. For an example, see\n[Add a reaction to a\nmessage](https: //developers.google.com/workspace/chat/create-reactions).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
       "file": "Client/CreateReaction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -335,7 +335,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_DeleteReaction_sync",
       "title": "chat DeleteReaction Sample",
-      "description": "DeleteReaction deletes a reaction to a message. Only unicode emojis are supported.\nFor an example, see\n[Delete a\nreaction](https: //developers.google.com/workspace/chat/delete-reactions).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "DeleteReaction deletes a reaction to a message. For an example, see\n[Delete a\nreaction](https: //developers.google.com/workspace/chat/delete-reactions).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
       "file": "Client/DeleteReaction/main.go",
       "language": "GO",
       "clientMethod": {

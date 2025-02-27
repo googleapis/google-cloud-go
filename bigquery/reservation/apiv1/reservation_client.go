@@ -129,7 +129,9 @@ func defaultCallOptions() *CallOptions {
 		UpdateReservation: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
-		FailoverReservation: []gax.CallOption{},
+		FailoverReservation: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
 		CreateCapacityCommitment: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
@@ -291,7 +293,9 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateReservation: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
-		FailoverReservation: []gax.CallOption{},
+		FailoverReservation: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
 		CreateCapacityCommitment: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},

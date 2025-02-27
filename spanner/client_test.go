@@ -129,7 +129,7 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 	if err != nil {
 		t.Fatal(err)
 	}
-	if isMultiplexEnabled {
+	if isMultiplexEnabled || config.enableMultiplexSession {
 		waitFor(t, func() error {
 			client.idleSessions.mu.Lock()
 			defer client.idleSessions.mu.Unlock()
@@ -4482,6 +4482,8 @@ func TestClient_WithCustomBatchTimeout(t *testing.T) {
 	}
 }
 
+var makeMockServer = NewMockedSpannerInMemTestServer
+
 func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
 	t.Parallel()
 
@@ -5034,7 +5036,7 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T) {
 	t.Skip("open census spans are no longer exported by gapics")
 	// This test cannot be parallel, as the TestExporter does not support that.
-	te := itestutil.NewTestExporter()
+	te := NewTestExporter()
 	defer te.Unregister()
 	minOpened := uint64(1)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
@@ -5079,7 +5081,7 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	t.Skip("open census spans are no longer exported by gapics")
 	// This test cannot be parallel, as the TestExporter does not support that.
-	te := itestutil.NewTestExporter()
+	te := NewTestExporter()
 	defer te.Unregister()
 	minOpened := uint64(1)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
@@ -5857,7 +5859,7 @@ func TestClient_BatchWrite_Options(t *testing.T) {
 
 func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	// This test cannot be parallel, as the TestExporter does not support that.
-	te := itestutil.NewTestExporter()
+	te := NewTestExporter()
 	defer te.Unregister()
 	minOpened := uint64(1)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{

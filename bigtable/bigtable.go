@@ -53,6 +53,8 @@ const prodAddr = "bigtable.googleapis.com:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 const featureFlagsHeaderKey = "bigtable-features"
 
+var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
+
 // Client is a client for reading and writing data to tables in an instance.
 //
 // A Client is safe to use concurrently, except for its Close method.
@@ -391,7 +393,25 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
+
+	numRowsRead := int64(0)
+	rowLimitSet := false
+	intialRowLimit := int64(0)
+	for _, opt := range opts {
+		if l, ok := opt.(limitRows); ok {
+			rowLimitSet = true
+			intialRowLimit = l.limit
+		}
+	}
+	if intialRowLimit < 0 {
+		return errNegativeRowLimit
+	}
+
 	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		if rowLimitSet && numRowsRead >= intialRowLimit {
+			return nil
+		}
+
 		req := &btpb.ReadRowsRequest{
 			AppProfileId: t.c.appProfile,
 		}
@@ -410,7 +430,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 			}
 			req.Rows = arg.proto()
 		}
-		settings := makeReadSettings(req)
+		settings := makeReadSettings(req, numRowsRead)
 		for _, opt := range opts {
 			opt.set(&settings)
 		}
@@ -473,7 +493,9 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					continue
 				}
 				prevRowKey = row.Key()
-				if !f(row) {
+				continueReading := f(row)
+				numRowsRead++
+				if !continueReading {
 					// Cancel and drain stream.
 					cancel()
 					for {
@@ -939,14 +961,16 @@ type FullReadStatsFunc func(*FullReadStats)
 type readSettings struct {
 	req               *btpb.ReadRowsRequest
 	fullReadStatsFunc FullReadStatsFunc
+	numRowsRead       int64
 }
 
-func makeReadSettings(req *btpb.ReadRowsRequest) readSettings {
-	return readSettings{req, nil}
+func makeReadSettings(req *btpb.ReadRowsRequest, numRowsRead int64) readSettings {
+	return readSettings{req, nil, numRowsRead}
 }
 
 // A ReadOption is an optional argument to ReadRows.
 type ReadOption interface {
+	// set modifies the request stored in the settings
 	set(settings *readSettings)
 }
 
@@ -965,7 +989,11 @@ func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 
 type limitRows struct{ limit int64 }
 
-func (lr limitRows) set(settings *readSettings) { settings.req.RowsLimit = lr.limit }
+func (lr limitRows) set(settings *readSettings) {
+	// Since 'numRowsRead' out of 'limit' requested rows have already been read,
+	// the subsequest requests should fetch only the remaining rows.
+	settings.req.RowsLimit = lr.limit - settings.numRowsRead
+}
 
 // WithFullReadStats returns a ReadOption that will request FullReadStats
 // and invoke the given callback on the resulting FullReadStats.
@@ -1013,7 +1041,7 @@ func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 	return true
 }
 
-// Overriden in tests
+// Overridden in tests
 var maxMutations = 100000
 
 // Apply mutates a row atomically. A mutation must contain at least one
@@ -1039,7 +1067,7 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 	}
 
 	var callOptions []gax.CallOption
-	if m.cond == nil {
+	if !m.isConditional {
 		req := &btpb.MutateRowRequest{
 			AppProfileId: t.c.appProfile,
 			RowKey:       []byte(row),
@@ -1066,9 +1094,11 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 	}
 
 	req := &btpb.CheckAndMutateRowRequest{
-		AppProfileId:    t.c.appProfile,
-		RowKey:          []byte(row),
-		PredicateFilter: m.cond.proto(),
+		AppProfileId: t.c.appProfile,
+		RowKey:       []byte(row),
+	}
+	if m.cond != nil {
+		req.PredicateFilter = m.cond.proto()
 	}
 	if t.authorizedView == "" {
 		req.TableName = t.c.fullTableName(t.table)
@@ -1120,10 +1150,10 @@ func GetCondMutationResult(matched *bool) ApplyOption {
 
 // Mutation represents a set of changes for a single row of a table.
 type Mutation struct {
-	ops []*btpb.Mutation
-
+	ops  []*btpb.Mutation
+	cond Filter
 	// for conditional mutations
-	cond          Filter
+	isConditional bool
 	mtrue, mfalse *Mutation
 }
 
@@ -1141,7 +1171,7 @@ func NewMutation() *Mutation {
 // The application of a ReadModifyWrite is atomic; concurrent ReadModifyWrites will
 // be executed serially by the server.
 func NewCondMutation(cond Filter, mtrue, mfalse *Mutation) *Mutation {
-	return &Mutation{cond: cond, mtrue: mtrue, mfalse: mfalse}
+	return &Mutation{cond: cond, mtrue: mtrue, mfalse: mfalse, isConditional: true}
 }
 
 // Set sets a value in a specified column, with the given timestamp.
@@ -1254,7 +1284,7 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	origEntries := make([]*entryErr, len(rowKeys))
 	for i, key := range rowKeys {
 		mut := muts[i]
-		if mut.cond != nil {
+		if mut.isConditional {
 			return nil, errors.New("conditional mutations cannot be applied in bulk")
 		}
 		origEntries[i] = &entryErr{Entry: &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}}

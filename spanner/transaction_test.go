@@ -504,6 +504,223 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 	}
 }
 
+func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                     1,
+			MaxOpened:                     1,
+			enableMultiplexSession:        true,
+			enableMultiplexedSessionForRW: true,
+		},
+	})
+	defer teardown()
+
+	// newCommitResponseWithPrecommitToken creates a simulated response with a PrecommitToken
+	newCommitResponseWithPrecommitToken := func() *sppb.CommitResponse {
+		precommitToken := &sppb.MultiplexedSessionPrecommitToken{
+			PrecommitToken: []byte("commit-retry-precommit-token"),
+			SeqNum:         4,
+		}
+
+		// Create a CommitResponse with the PrecommitToken
+		return &sppb.CommitResponse{
+			MultiplexedSessionRetry: &sppb.CommitResponse_PrecommitToken{PrecommitToken: precommitToken},
+		}
+	}
+
+	// Simulate a commit response with a MultiplexedSessionRetry
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Responses: []interface{}{newCommitResponseWithPrecommitToken()},
+		})
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		ms := []*Mutation{
+			Insert("t_foo", []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}),
+			Update("t_foo", []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}),
+		}
+		if err := tx.BufferWrite(ms); err != nil {
+			return err
+		}
+
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Commit failed: %v", err)
+	}
+
+	// Verify that the commit was retried
+	requests := drainRequestsFromServer(server.TestSpanner)
+	commitCount := 0
+	for _, req := range requests {
+		if commitReq, ok := req.(*sppb.CommitRequest); ok {
+			if !strings.Contains(commitReq.GetSession(), "multiplexed") {
+				t.Errorf("Expected session to be multiplexed")
+			}
+			commitCount++
+			if commitCount == 1 {
+				// Validate that the first commit had mutations set
+				if len(commitReq.Mutations) == 0 {
+					t.Fatalf("Expected first commit to have mutations set")
+				}
+				if commitReq.PrecommitToken == nil || !strings.Contains(string(commitReq.PrecommitToken.PrecommitToken), "ResultSetPrecommitToken") {
+					t.Fatalf("Expected first commit to have precommit token 'ResultSetPrecommitToken', got: %v", commitReq.PrecommitToken)
+				}
+			} else if commitCount == 2 {
+				// Validate that the second commit attempt had mutations un-set
+				if len(commitReq.Mutations) != 0 {
+					t.Fatalf("Expected second commit to have no mutations set")
+				}
+				// Validate that the second commit had the precommit token set
+				if commitReq.PrecommitToken == nil || string(commitReq.PrecommitToken.PrecommitToken) != "commit-retry-precommit-token" {
+					t.Fatalf("Expected second commit to have precommit token 'commit-retry-precommit-token', got: %v", commitReq.PrecommitToken)
+				}
+			}
+		}
+	}
+	if commitCount != 2 {
+		t.Fatalf("Expected 2 commit attempts, got %d", commitCount)
+	}
+}
+
+func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	cfg := SessionPoolConfig{
+		MinOpened:                     1,
+		MaxOpened:                     1,
+		enableMultiplexSession:        true,
+		enableMultiplexedSessionForRW: true,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig:    cfg,
+	})
+	defer teardown()
+
+	// First ExecuteSql will fail with InvalidArgument to force explicit BeginTransaction
+	invalidSQL := "Update FOO Set BAR=1"
+	server.TestSpanner.PutStatementResult(
+		invalidSQL,
+		&StatementResult{
+			Type: StatementResultError,
+			Err:  status.Error(codes.InvalidArgument, "Invalid update"),
+		},
+	)
+
+	// First Commit will fail with Aborted to force transaction retry
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+		})
+
+	var attempts int
+	expectedAttempts := 4
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		if attempts == 1 || attempts == 3 {
+			// Replace the aborted result with a real result to prevent the
+			// transaction from aborting indefinitely.
+			server.TestSpanner.PutStatementResult(
+				invalidSQL,
+				&StatementResult{
+					Type:        StatementResultUpdateCount,
+					UpdateCount: 3,
+				},
+			)
+		}
+		if attempts == 2 {
+			server.TestSpanner.PutStatementResult(
+				invalidSQL,
+				&StatementResult{
+					Type: StatementResultError,
+					Err:  status.Error(codes.InvalidArgument, "Invalid update"),
+				},
+			)
+		}
+		attempts++
+		// First attempt: Inline begin fails due to invalid update
+		// Second attempt: Explicit begin succeeds but commit aborts
+		// Third attempt: Inline begin fails, previousTx set to txn2
+		// Fourth attempt: Explicit begin succeeds with previousTx=txn2
+		_, err := tx.Update(ctx, NewStatement(invalidSQL))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if attempts != expectedAttempts {
+		t.Fatalf("got %d attempts, want %d", attempts, expectedAttempts)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	var txID2 []byte
+	var foundPrevTxID bool
+
+	// Verify the sequence of requests and transaction IDs
+	for i, req := range requests {
+		switch r := req.(type) {
+		case *sppb.ExecuteSqlRequest:
+			// First and third attempts use inline begin
+			if i == 1 || i == 5 {
+				if _, ok := r.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+					t.Errorf("Request %d: got %T, want Begin", i, r.Transaction.GetSelector())
+				}
+			}
+			if txID2 == nil && r.Transaction.GetId() != nil {
+				txID2 = r.Transaction.GetId()
+			}
+		case *sppb.BeginTransactionRequest:
+			if i == 7 {
+				opts := r.Options.GetReadWrite()
+				if opts == nil {
+					t.Fatal("Request 7: missing ReadWrite options")
+				}
+				if !testEqual(opts.MultiplexedSessionPreviousTransactionId, txID2) {
+					t.Errorf("Request 7: got prev txID %v, want %v",
+						opts.MultiplexedSessionPreviousTransactionId, txID2)
+				}
+				foundPrevTxID = true
+			}
+		}
+	}
+
+	if !foundPrevTxID {
+		t.Error("Did not find BeginTransaction request with previous transaction ID")
+	}
+
+	// Verify the complete sequence of requests
+	wantRequests := []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},       // Attempt 1: Inline begin fails
+		&sppb.BeginTransactionRequest{}, // Attempt 2: Explicit begin
+		&sppb.ExecuteSqlRequest{},       // Attempt 2: Update succeeds
+		&sppb.CommitRequest{},           // Attempt 2: Commit aborts
+		&sppb.ExecuteSqlRequest{},       // Attempt 3: Inline begin fails
+		&sppb.BeginTransactionRequest{}, // Attempt 4: Explicit begin with prev txID
+		&sppb.ExecuteSqlRequest{},       // Attempt 4: Update succeeds
+		&sppb.CommitRequest{},           // Attempt 4: Commit succeeds
+	}
+	if err := compareRequestsWithConfig(wantRequests, requests, &cfg); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestMutationOnlyCaseAborted(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -1137,6 +1354,10 @@ func shouldHaveReceived(server InMemSpannerServer, want []interface{}) ([]interf
 
 // Compares expected requests (want) with actual requests (got).
 func compareRequests(want []interface{}, got []interface{}) error {
+	return compareRequestsWithConfig(want, got, nil)
+}
+
+func compareRequestsWithConfig(want []interface{}, got []interface{}, config *SessionPoolConfig) error {
 	if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 		sessReq := 0
 		for i := 0; i < len(want); i++ {
@@ -1147,7 +1368,7 @@ func compareRequests(want []interface{}, got []interface{}) error {
 		}
 		want[0], want[sessReq] = want[sessReq], want[0]
 	}
-	if isMultiplexEnabled {
+	if isMultiplexEnabled || (config != nil && config.enableMultiplexSession) {
 		if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.CreateSessionRequest{}) {
 			want = append([]interface{}{&sppb.CreateSessionRequest{}}, want...)
 		}

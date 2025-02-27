@@ -702,6 +702,11 @@
                 "DeleteOperation"
               ]
             },
+            "EvaluateDataset": {
+              "methods": [
+                "EvaluateDataset"
+              ]
+            },
             "EvaluateInstances": {
               "methods": [
                 "EvaluateInstances"
@@ -760,6 +765,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "EvaluateDataset": {
+              "methods": [
+                "EvaluateDataset"
               ]
             },
             "EvaluateInstances": {
@@ -1637,6 +1647,11 @@
                 "UpdateFeatureGroup"
               ]
             },
+            "UpdateFeatureMonitor": {
+              "methods": [
+                "UpdateFeatureMonitor"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -1780,6 +1795,11 @@
             "UpdateFeatureGroup": {
               "methods": [
                 "UpdateFeatureGroup"
+              ]
+            },
+            "UpdateFeatureMonitor": {
+              "methods": [
+                "UpdateFeatureMonitor"
               ]
             },
             "WaitOperation": {
@@ -4270,6 +4290,11 @@
                 "DeleteOperation"
               ]
             },
+            "Deploy": {
+              "methods": [
+                "Deploy"
+              ]
+            },
             "DeployPublisherModel": {
               "methods": [
                 "DeployPublisherModel"
@@ -4338,6 +4363,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "Deploy": {
+              "methods": [
+                "Deploy"
               ]
             },
             "DeployPublisherModel": {
@@ -4718,6 +4748,11 @@
                 "ListModelEvaluations"
               ]
             },
+            "ListModelVersionCheckpoints": {
+              "methods": [
+                "ListModelVersionCheckpoints"
+              ]
+            },
             "ListModelVersions": {
               "methods": [
                 "ListModelVersions"
@@ -4861,6 +4896,11 @@
             "ListModelEvaluations": {
               "methods": [
                 "ListModelEvaluations"
+              ]
+            },
+            "ListModelVersionCheckpoints": {
+              "methods": [
+                "ListModelVersionCheckpoints"
               ]
             },
             "ListModelVersions": {

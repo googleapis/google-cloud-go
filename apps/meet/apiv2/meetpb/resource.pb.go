@@ -278,14 +278,26 @@ type Space struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Immutable. Resource name of the space.
-	// Format: `spaces/{space}`
+	//
+	// Format: `spaces/{space}`.
+	//
+	// `{space}` is the resource identifier for the space. It's a unique,
+	// server-generated ID and is case sensitive. For example, `jQCFfuBOdN5z`.
+	//
+	// For more information, see [How Meet identifies a meeting
+	// space](https://developers.google.com/meet/api/guides/meeting-spaces#identify-meeting-space).
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. URI used to join meetings, such as
+	// Output only. URI used to join meetings consisting of
+	// `https://meet.google.com/` followed by the `meeting_code`. For example,
 	// `https://meet.google.com/abc-mnop-xyz`.
 	MeetingUri string `protobuf:"bytes,2,opt,name=meeting_uri,json=meetingUri,proto3" json:"meeting_uri,omitempty"`
-	// Output only. Type friendly code to join the meeting. Format:
-	// `[a-z]+-[a-z]+-[a-z]+` such as `abc-mnop-xyz`. The maximum length is 128
-	// characters. Can only be used as an alias of the space ID to get the space.
+	// Output only. Type friendly unique string used to join the meeting.
+	//
+	// Format: `[a-z]+-[a-z]+-[a-z]+`. For example, `abc-mnop-xyz`.
+	//
+	// The maximum length is 128 characters.
+	//
+	// Can only be used as an alias of the space name to get the space.
 	MeetingCode string `protobuf:"bytes,3,opt,name=meeting_code,json=meetingCode,proto3" json:"meeting_code,omitempty"`
 	// Configuration pertaining to the meeting space.
 	Config *SpaceConfig `protobuf:"bytes,5,opt,name=config,proto3" json:"config,omitempty"`
