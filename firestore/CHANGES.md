@@ -1,5 +1,27 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.18.0...firestore/v1.19.0) (2025-02-27)
+
+
+### Features
+
+* **firestore/apiv1:** Add filter argument to FirestoreAdmin.ListBackupsRequest ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **firestore:** Add String() method to DocumentChangeKind type ([#11580](https://github.com/googleapis/google-cloud-go/issues/11580)) ([6911739](https://github.com/googleapis/google-cloud-go/commit/69117391b2a6f46ed959b4a44a25df32cdc33e41))
+* **firestore:** Add UsesEmulator field to Client ([#11359](https://github.com/googleapis/google-cloud-go/issues/11359)) ([c2eccfe](https://github.com/googleapis/google-cloud-go/commit/c2eccfe941d8e3ccdd50bfacbc8d37b4058f92ab))
+
+
+### Bug Fixes
+
+* **firestore/apiv1:** Bump default deadline on CreateDatabase and RestoreDatabase to 2 minutes ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **firestore:** Convert key before seeting map entry ([#11506](https://github.com/googleapis/google-cloud-go/issues/11506)) ([1438255](https://github.com/googleapis/google-cloud-go/commit/14382558863386fdd853bc9a1e8328416dd8ba5a))
+* **firestore:** Handle nil in String() ([#11383](https://github.com/googleapis/google-cloud-go/issues/11383)) ([d3f81aa](https://github.com/googleapis/google-cloud-go/commit/d3f81aa1c989daec13ec6ff251854b7ecd981d81))
+
+
+### Documentation
+
+* **firestore:** Minor documentation changes for `distance_threshold` ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+* **firestore:** Minor documentation updates to `StructuredQuery` ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.17.0...firestore/v1.18.0) (2025-01-02)
 
 
