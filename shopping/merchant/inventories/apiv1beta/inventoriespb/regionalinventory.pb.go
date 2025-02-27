@@ -21,8 +21,11 @@
 package inventoriespb
 
 import (
-	typepb "cloud.google.com/go/shopping/type/typepb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	typepb "cloud.google.com/go/shopping/type/typepb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -31,8 +34,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
