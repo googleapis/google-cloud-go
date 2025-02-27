@@ -4482,6 +4482,8 @@ func TestClient_WithCustomBatchTimeout(t *testing.T) {
 	}
 }
 
+var makeMockServer = NewMockedSpannerInMemTestServer
+
 func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
 	t.Parallel()
 
