@@ -296,7 +296,7 @@ func (s *session) ping() error {
 	defer cancel()
 
 	// Start parent span that doesn't record.
-	_, span := octrace.StartSpan(ctx, "cloud.google.com/go/spanner.ping", octrace.WithSampler(octrace.NeverSample()))
+	_, span := octrace.StartSpan(ctx, "ping", octrace.WithSampler(octrace.NeverSample()))
 	defer span.End()
 
 	// s.getID is safe even when s is invalid.
