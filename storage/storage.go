@@ -1233,11 +1233,12 @@ type MoveObjectDestination struct {
 func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Writer")
 	return &Writer{
-		ctx:         ctx,
-		o:           o,
-		donec:       make(chan struct{}),
-		ObjectAttrs: ObjectAttrs{Name: o.object},
-		ChunkSize:   googleapi.DefaultUploadChunkSize,
+		ctx:             ctx,
+		o:               o,
+		donec:           make(chan struct{}),
+		ObjectAttrs:     ObjectAttrs{Name: o.object},
+		ChunkSize:       googleapi.DefaultUploadChunkSize,
+		FinalizeOnClose: true,
 	}
 }
 
