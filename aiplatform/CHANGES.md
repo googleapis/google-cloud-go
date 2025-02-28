@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.74.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.73.0...aiplatform/v1.74.0) (2025-02-26)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden deploy API ([2c4fb44](https://github.com/googleapis/google-cloud-go/commit/2c4fb448a2207a6d9988ec3a7646ea6cbb6f65f9))
+
 ## [1.73.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.72.0...aiplatform/v1.73.0) (2025-02-12)
 
 
