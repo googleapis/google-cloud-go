@@ -15,6 +15,11 @@
                 "CreateTrip"
               ]
             },
+            "DeleteTrip": {
+              "methods": [
+                "DeleteTrip"
+              ]
+            },
             "GetTrip": {
               "methods": [
                 "GetTrip"
@@ -47,6 +52,11 @@
             "CreateVehicle": {
               "methods": [
                 "CreateVehicle"
+              ]
+            },
+            "DeleteVehicle": {
+              "methods": [
+                "DeleteVehicle"
               ]
             },
             "GetVehicle": {

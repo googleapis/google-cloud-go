@@ -43,6 +43,7 @@ var newVehicleClientHook clientHook
 type VehicleCallOptions struct {
 	CreateVehicle           []gax.CallOption
 	GetVehicle              []gax.CallOption
+	DeleteVehicle           []gax.CallOption
 	UpdateVehicle           []gax.CallOption
 	UpdateVehicleAttributes []gax.CallOption
 	ListVehicles            []gax.CallOption
@@ -90,6 +91,7 @@ func defaultVehicleCallOptions() *VehicleCallOptions {
 				})
 			}),
 		},
+		DeleteVehicle: []gax.CallOption{},
 		UpdateVehicle: []gax.CallOption{
 			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -137,6 +139,7 @@ type internalVehicleClient interface {
 	Connection() *grpc.ClientConn
 	CreateVehicle(context.Context, *fleetenginepb.CreateVehicleRequest, ...gax.CallOption) (*fleetenginepb.Vehicle, error)
 	GetVehicle(context.Context, *fleetenginepb.GetVehicleRequest, ...gax.CallOption) (*fleetenginepb.Vehicle, error)
+	DeleteVehicle(context.Context, *fleetenginepb.DeleteVehicleRequest, ...gax.CallOption) error
 	UpdateVehicle(context.Context, *fleetenginepb.UpdateVehicleRequest, ...gax.CallOption) (*fleetenginepb.Vehicle, error)
 	UpdateVehicleAttributes(context.Context, *fleetenginepb.UpdateVehicleAttributesRequest, ...gax.CallOption) (*fleetenginepb.UpdateVehicleAttributesResponse, error)
 	ListVehicles(context.Context, *fleetenginepb.ListVehiclesRequest, ...gax.CallOption) *VehicleIterator
@@ -229,6 +232,14 @@ func (c *VehicleClient) CreateVehicle(ctx context.Context, req *fleetenginepb.Cr
 // GetVehicle returns a vehicle from the Fleet Engine.
 func (c *VehicleClient) GetVehicle(ctx context.Context, req *fleetenginepb.GetVehicleRequest, opts ...gax.CallOption) (*fleetenginepb.Vehicle, error) {
 	return c.internalClient.GetVehicle(ctx, req, opts...)
+}
+
+// DeleteVehicle deletes a Vehicle from the Fleet Engine.
+//
+// Returns FAILED_PRECONDITION if the Vehicle has active Trips.
+// assigned to it.
+func (c *VehicleClient) DeleteVehicle(ctx context.Context, req *fleetenginepb.DeleteVehicleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteVehicle(ctx, req, opts...)
 }
 
 // UpdateVehicle writes updated vehicle data to the Fleet Engine.
@@ -404,6 +415,29 @@ func (c *vehicleGRPCClient) GetVehicle(ctx context.Context, req *fleetenginepb.G
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *vehicleGRPCClient) DeleteVehicle(ctx context.Context, req *fleetenginepb.DeleteVehicleRequest, opts ...gax.CallOption) error {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteVehicle[0:len((*c.CallOptions).DeleteVehicle):len((*c.CallOptions).DeleteVehicle)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.vehicleClient.DeleteVehicle, req, settings.GRPC, c.logger, "DeleteVehicle")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *vehicleGRPCClient) UpdateVehicle(ctx context.Context, req *fleetenginepb.UpdateVehicleRequest, opts ...gax.CallOption) (*fleetenginepb.Vehicle, error) {
