@@ -1,5 +1,15 @@
 # Changes
 
+## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.65.0...dialogflow/v1.66.0) (2025-02-26)
+
+
+### Features
+
+* **dialogflow/cx:** Added DocumentProcessingMode & BoostSpec for data stores ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+* **dialogflow/cx:** Added support for answer feedback & latency metrics in conversation history ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+* **dialogflow/cx:** Added support for handlers ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+* **dialogflow/cx:** Added support for playbook level speech settings ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+
 ## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.64.1...dialogflow/v1.65.0) (2025-02-12)
 
 
