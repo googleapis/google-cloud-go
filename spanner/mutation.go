@@ -432,20 +432,24 @@ func (m Mutation) proto() (*sppb.Mutation, error) {
 func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, *sppb.Mutation, error) {
 	var selectedMutation *Mutation
 	var nonInsertMutations []*Mutation
+	var deleteMutations []*Mutation
 
 	l := make([]*sppb.Mutation, 0, len(ms))
 	for _, m := range ms {
-		if m.op != opInsert {
-			nonInsertMutations = append(nonInsertMutations, m)
+		if m.op == opDelete {
+			deleteMutations = append(deleteMutations, m)
+		} else {
+			if m.op != opInsert {
+				nonInsertMutations = append(nonInsertMutations, m)
+			}
+			if selectedMutation == nil {
+				selectedMutation = m
+			}
+			// Track the INSERT mutation with the highest number of values if only INSERT mutation were found
+			if selectedMutation.op == opInsert && m.op == opInsert && len(m.values) > len(selectedMutation.values) {
+				selectedMutation = m
+			}
 		}
-		if selectedMutation == nil {
-			selectedMutation = m
-		}
-		// Track the INSERT mutation with the highest number of values if only INSERT mutation were found
-		if selectedMutation.op == opInsert && m.op == opInsert && len(m.values) > len(selectedMutation.values) {
-			selectedMutation = m
-		}
-
 		// Convert the mutation to sppb.Mutation and add to the list
 		pb, err := m.proto()
 		if err != nil {
@@ -453,9 +457,15 @@ func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, *sppb.Mutation, error) {
 		}
 		l = append(l, pb)
 	}
+
+	// Select from non-insert mutations if available
 	if len(nonInsertMutations) > 0 {
 		selectedMutation = nonInsertMutations[rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(nonInsertMutations))]
+	} else if selectedMutation == nil && len(deleteMutations) > 0 {
+		// Only select from delete mutations if no other mutations are available
+		selectedMutation = deleteMutations[rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(deleteMutations))]
 	}
+
 	if selectedMutation != nil {
 		m, err := selectedMutation.proto()
 		if err != nil {

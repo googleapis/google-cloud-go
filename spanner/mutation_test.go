@@ -637,10 +637,27 @@ func TestEncodeMutationArray(t *testing.T) {
 		{
 			name: "Mixed Operations",
 			ms: []*Mutation{
+				{opDelete, "t_test", Key{"foo"}, nil, nil},
 				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}},
+				{opDelete, "t_test", Key{"foo"}, nil, nil},
 				{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"bar", 2}},
+				{opDelete, "t_test", Key{"foo"}, nil, nil},
+				{opDelete, "t_test", Key{"foo"}, nil, nil},
+				{opDelete, "t_test", Key{"foo"}, nil, nil},
 			},
 			want: []*sppb.Mutation{
+				{
+					Operation: &sppb.Mutation_Delete_{
+						Delete: &sppb.Mutation_Delete{
+							Table: "t_test",
+							KeySet: &sppb.KeySet{
+								Keys: []*proto3.ListValue{
+									listValueProto(stringProto("foo")),
+								},
+							},
+						},
+					},
+				},
 				{
 					Operation: &sppb.Mutation_Insert{
 						Insert: &sppb.Mutation_Write{
@@ -653,12 +670,60 @@ func TestEncodeMutationArray(t *testing.T) {
 					},
 				},
 				{
+					Operation: &sppb.Mutation_Delete_{
+						Delete: &sppb.Mutation_Delete{
+							Table: "t_test",
+							KeySet: &sppb.KeySet{
+								Keys: []*proto3.ListValue{
+									listValueProto(stringProto("foo")),
+								},
+							},
+						},
+					},
+				},
+				{
 					Operation: &sppb.Mutation_Update{
 						Update: &sppb.Mutation_Write{
 							Table:   "t_test",
 							Columns: []string{"key", "val"},
 							Values: []*proto3.ListValue{
 								listValueProto(stringProto("bar"), intProto(2)),
+							},
+						},
+					},
+				},
+				{
+					Operation: &sppb.Mutation_Delete_{
+						Delete: &sppb.Mutation_Delete{
+							Table: "t_test",
+							KeySet: &sppb.KeySet{
+								Keys: []*proto3.ListValue{
+									listValueProto(stringProto("foo")),
+								},
+							},
+						},
+					},
+				},
+				{
+					Operation: &sppb.Mutation_Delete_{
+						Delete: &sppb.Mutation_Delete{
+							Table: "t_test",
+							KeySet: &sppb.KeySet{
+								Keys: []*proto3.ListValue{
+									listValueProto(stringProto("foo")),
+								},
+							},
+						},
+					},
+				},
+				{
+					Operation: &sppb.Mutation_Delete_{
+						Delete: &sppb.Mutation_Delete{
+							Table: "t_test",
+							KeySet: &sppb.KeySet{
+								Keys: []*proto3.ListValue{
+									listValueProto(stringProto("foo")),
+								},
 							},
 						},
 					},
