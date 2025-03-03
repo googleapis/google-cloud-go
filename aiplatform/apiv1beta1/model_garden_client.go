@@ -200,6 +200,8 @@ func (c *ModelGardenClient) DeployOperation(name string) *DeployOperation {
 }
 
 // DeployPublisherModel deploys publisher models.
+//
+// Deprecated: DeployPublisherModel may be removed in a future version.
 func (c *ModelGardenClient) DeployPublisherModel(ctx context.Context, req *aiplatformpb.DeployPublisherModelRequest, opts ...gax.CallOption) (*DeployPublisherModelOperation, error) {
 	return c.internalClient.DeployPublisherModel(ctx, req, opts...)
 }
@@ -809,6 +811,9 @@ func (c *modelGardenRESTClient) GetPublisherModel(ctx context.Context, req *aipl
 	if req.GetHuggingFaceToken() != "" {
 		params.Add("huggingFaceToken", fmt.Sprintf("%v", req.GetHuggingFaceToken()))
 	}
+	if req.GetIncludeEquivalentModelGardenModelDeploymentConfigs() {
+		params.Add("includeEquivalentModelGardenModelDeploymentConfigs", fmt.Sprintf("%v", req.GetIncludeEquivalentModelGardenModelDeploymentConfigs()))
+	}
 	if req.GetIsHuggingFaceModel() {
 		params.Add("isHuggingFaceModel", fmt.Sprintf("%v", req.GetIsHuggingFaceModel()))
 	}
@@ -1011,6 +1016,8 @@ func (c *modelGardenRESTClient) Deploy(ctx context.Context, req *aiplatformpb.De
 }
 
 // DeployPublisherModel deploys publisher models.
+//
+// Deprecated: DeployPublisherModel may be removed in a future version.
 func (c *modelGardenRESTClient) DeployPublisherModel(ctx context.Context, req *aiplatformpb.DeployPublisherModelRequest, opts ...gax.CallOption) (*DeployPublisherModelOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1022,7 +1029,7 @@ func (c *modelGardenRESTClient) DeployPublisherModel(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deploy", req.GetDestination())
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deployPublisherModel", req.GetDestination())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
