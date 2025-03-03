@@ -113,7 +113,6 @@
     "recommender": "1.13.3",
     "redis": "1.18.0",
     "resourcemanager": "1.10.3",
-    "resourcesettings": "1.8.3",
     "retail": "1.19.2",
     "run": "1.9.0",
     "scheduler": "1.11.4",
