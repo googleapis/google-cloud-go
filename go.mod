@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	cloud.google.com/go/storage v1.50.0
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/google/martian/v3 v3.3.3
 	github.com/googleapis/gax-go/v2 v2.14.1
 	go.opentelemetry.io/otel v1.34.0

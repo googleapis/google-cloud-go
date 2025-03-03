@@ -484,8 +484,19 @@ type QueryOptions struct {
 
 	// Controls whether to exclude recording modifications in current partitioned update operation
 	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true). Setting
-	// this value for any sql/dml requests other than partitioned udpate will receive an error.
+	// this value for any sql/dml requests other than partitioned update will receive an error.
 	ExcludeTxnFromChangeStreams bool
+
+	// LastStatement indicates whether this statement is the last statement in this transaction.
+	// If set to true, this option marks the end of the transaction. The transaction should be
+	// committed or rolled back after this statement executes, and attempts to execute any other requests
+	// against this transaction (including reads and queries) will be rejected. Mixing mutations with
+	// statements that are marked as the last statement is not allowed.
+	//
+	// For DML statements, setting this option may cause some error reporting to be deferred until
+	// commit time (e.g. validation of unique constraints). Given this, successful execution of a DML
+	// statement should not be assumed until the transaction commits.
+	LastStatement bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
@@ -499,6 +510,7 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 		DataBoostEnabled:            qo.DataBoostEnabled,
 		DirectedReadOptions:         qo.DirectedReadOptions,
 		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
+		LastStatement:               qo.LastStatement || opts.LastStatement,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -683,6 +695,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
 		DataBoostEnabled:    options.DataBoostEnabled,
 		DirectedReadOptions: options.DirectedReadOptions,
+		LastStatement:       options.LastStatement,
 	}
 	return req, sh, nil
 }
@@ -1347,6 +1360,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		Statements:     sppbStmts,
 		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
+		LastStatements: opts.LastStatement,
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
@@ -1469,15 +1483,18 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 			},
 		}
 	}
+	mode := &sppb.TransactionOptions_ReadWrite_{
+		ReadWrite: &sppb.TransactionOptions_ReadWrite{
+			ReadLockMode: t.txOpts.ReadLockMode,
+		},
+	}
+	if t.sp.isMultiplexedSessionForRWEnabled() {
+		mode.ReadWrite.MultiplexedSessionPreviousTransactionId = t.previousTx
+	}
 	return &sppb.TransactionSelector{
 		Selector: &sppb.TransactionSelector_Begin{
 			Begin: &sppb.TransactionOptions{
-				Mode: &sppb.TransactionOptions_ReadWrite_{
-					ReadWrite: &sppb.TransactionOptions_ReadWrite{
-						ReadLockMode:                            t.txOpts.ReadLockMode,
-						MultiplexedSessionPreviousTransactionId: t.previousTx,
-					},
-				},
+				Mode:                        mode,
 				ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
 			},
 		},
@@ -1538,14 +1555,19 @@ func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHa
 }
 
 func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transactionID, *sppb.MultiplexedSessionPrecommitToken, error) {
+	readWriteOptions := &sppb.TransactionOptions_ReadWrite{
+		ReadLockMode: opts.txOptions.ReadLockMode,
+	}
+
+	if opts.multiplexEnabled {
+		readWriteOptions.MultiplexedSessionPreviousTransactionId = opts.previousTx
+	}
+
 	res, err := opts.client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: opts.sessionID,
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadWrite_{
-				ReadWrite: &sppb.TransactionOptions_ReadWrite{
-					ReadLockMode:                            opts.txOptions.ReadLockMode,
-					MultiplexedSessionPreviousTransactionId: opts.previousTx,
-				},
+				ReadWrite: readWriteOptions,
 			},
 			ExcludeTxnFromChangeStreams: opts.txOptions.ExcludeTxnFromChangeStreams,
 		},
@@ -1609,11 +1631,12 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 			sh.updateLastUseTime()
 		}
 		tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), transactionBeginOptions{
-			sessionID:  sh.getID(),
-			client:     sh.getClient(),
-			txOptions:  t.txOpts,
-			mutation:   mutation,
-			previousTx: previousTx,
+			multiplexEnabled: t.sp.isMultiplexedSessionForRWEnabled(),
+			sessionID:        sh.getID(),
+			client:           sh.getClient(),
+			txOptions:        t.txOpts,
+			mutation:         mutation,
+			previousTx:       previousTx,
 		})
 		if isSessionNotFoundError(err) {
 			sh.destroy()
@@ -2089,9 +2112,10 @@ func isAbortedErr(err error) bool {
 
 // transactionBeginOptions holds the parameters for beginning a transaction.
 type transactionBeginOptions struct {
-	sessionID  string
-	client     spannerClient
-	txOptions  TransactionOptions
-	previousTx transactionID
-	mutation   *sppb.Mutation
+	multiplexEnabled bool
+	sessionID        string
+	client           spannerClient
+	txOptions        TransactionOptions
+	previousTx       transactionID
+	mutation         *sppb.Mutation
 }
