@@ -2269,16 +2269,6 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/resourcesettings/apiv1": {
-    "api_shortname": "resourcesettings",
-    "distribution_name": "cloud.google.com/go/resourcesettings/apiv1",
-    "description": "Resource Settings API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/resourcesettings/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/retail/apiv2": {
     "api_shortname": "retail",
     "distribution_name": "cloud.google.com/go/retail/apiv2",
