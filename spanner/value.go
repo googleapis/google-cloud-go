@@ -1063,12 +1063,12 @@ type NullUUID struct {
 	Valid bool
 }
 
-// IsNull implements NullableValue.IsNull for SpannerNullUUID.
+// IsNull implements NullableValue.IsNull for NullUUID.
 func (n NullUUID) IsNull() bool {
 	return !n.Valid
 }
 
-// String implements Stringer.String for SpannerNullUUID
+// String implements Stringer.String for NullUUID
 func (n NullUUID) String() string {
 	if !n.Valid {
 		return nullString
@@ -1076,12 +1076,12 @@ func (n NullUUID) String() string {
 	return n.UUID.String()
 }
 
-// MarshalJSON SpannerNullUUID json.Marshaler.MarshalJSON for SpannerNullUUID.
+// MarshalJSON NullUUID json.Marshaler.MarshalJSON for NullUUID.
 func (n NullUUID) MarshalJSON() ([]byte, error) {
 	return nulljson(n.Valid, n.UUID)
 }
 
-// MarshalJSON SpannerNullUUID json.Marshaler.MarshalJSON for SpannerNullUUID.
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullUUID.
 func (n *NullUUID) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
@@ -1116,7 +1116,7 @@ func (n *NullUUID) Scan(value interface{}) error {
 	n.Valid = true
 	switch p := value.(type) {
 	default:
-		return spannerErrorf(codes.InvalidArgument, "invalid type for SpannerNullUUID: %v", p)
+		return spannerErrorf(codes.InvalidArgument, "invalid type for NullUUID: %v", p)
 	case *uuid.UUID:
 		n.UUID = *p
 	case uuid.UUID:
@@ -4047,7 +4047,7 @@ func decodeDateArray(pb *proto3.ListValue) ([]civil.Date, error) {
 	return a, nil
 }
 
-// decodeNullUUIDArray decodes proto3.ListValue pb into a SpannerNullUUID slice.
+// decodeNullUUIDArray decodes proto3.ListValue pb into a NullUUID slice.
 func decodeNullUUIDArray(pb *proto3.ListValue) ([]NullUUID, error) {
 	if pb == nil {
 		return nil, errNilListValue("UUID")

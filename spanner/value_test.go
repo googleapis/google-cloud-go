@@ -389,13 +389,13 @@ func TestEncodeValue(t *testing.T) {
 		{[]*float32{&f32Value, f32NilPtr}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat32"},
 		// UUID / UUID ARRAY
 		{uuid1, uuidProto(uuid1), tUUID, "uuid.UUID"},
-		{NullUUID{uuid1, true}, uuidProto(uuid1), tUUID, "SpannerNullUUID with value"},
-		{NullUUID{uuid1, false}, nullProto(), tUUID, "SpannerNullUUID with null"},
+		{NullUUID{uuid1, true}, uuidProto(uuid1), tUUID, "NullUUID with value"},
+		{NullUUID{uuid1, false}, nullProto(), tUUID, "NullUUID with null"},
 		{&uuid1, uuidProto(uuid1), tUUID, "*uuid.UUID with value"},
 		{uuidNilPtr, nullProto(), tUUID, "*uuid.UUID with null"},
 		{[]uuid.UUID{uuid1, uuid2}, listProto(uuidProto(uuid1), uuidProto(uuid2)), listType(tUUID), "[]uuid.UUID"},
 		{[]uuid.UUID(nil), nullProto(), listType(tUUID), "null []uuid.UUID"},
-		{[]NullUUID{{uuid1, true}, {uuid2, false}}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]SpannerNullUUID"},
+		{[]NullUUID{{uuid1, true}, {uuid2, false}}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]NullUUID"},
 		{[]*uuid.UUID{&uuid1, uuidNilPtr}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]*uuid.UUID"},
 		// NUMERIC / NUMERIC ARRAY
 		{*numValuePtr, numericProto(numValuePtr), tNumeric, "big.Rat"},
@@ -1751,11 +1751,11 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to uuid.UUID", proto: nullProto(), protoType: uuidType(), want: "", wantErr: true},
 		{desc: "decode UUID to *uuid.UUID", proto: uuidProto(uuid1), protoType: uuidType(), want: &uuid1},
 		{desc: "decode NULL to *uuid.UUID", proto: nullProto(), protoType: uuidType(), want: uuidNilPtr},
-		{desc: "decode UUID to SpannerNullUUID", proto: uuidProto(uuid1), protoType: uuidType(), want: NullUUID{uuid1, true}},
-		{desc: "decode NULL to SpannerNullUUID", proto: nullProto(), protoType: uuidType(), want: NullUUID{}},
-		// UUID ARRAY with []SpannerNullUUID
-		{desc: "decode ARRAY<UUID> to []SpannerNullUUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []NullUUID{{uuid1, true}, {}, {uuid2, true}}},
-		{desc: "decode NULL to []SpannerNullUUID", proto: nullProto(), protoType: listType(uuidType()), want: []NullUUID(nil)},
+		{desc: "decode UUID to NullUUID", proto: uuidProto(uuid1), protoType: uuidType(), want: NullUUID{uuid1, true}},
+		{desc: "decode NULL to NullUUID", proto: nullProto(), protoType: uuidType(), want: NullUUID{}},
+		// UUID ARRAY with []NullUUID
+		{desc: "decode ARRAY<UUID> to []NullUUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []NullUUID{{uuid1, true}, {}, {uuid2, true}}},
+		{desc: "decode NULL to []NullUUID", proto: nullProto(), protoType: listType(uuidType()), want: []NullUUID(nil)},
 		{desc: "decode ARRAY<UUID> to []uuid.UUID", proto: listProto(uuidProto(uuid1), uuidProto(uuid2)), protoType: listType(uuidType()), want: []uuid.UUID{uuid1, uuid2}},
 		{desc: "decode ARRAY<UUID> to []*uuid.UUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []*uuid.UUID{&uuid1, nil, &uuid2}},
 		{desc: "decode NULL to []*uuid.UUID", proto: nullProto(), protoType: listType(uuidType()), want: []*uuid.UUID(nil)},
