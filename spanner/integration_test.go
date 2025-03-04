@@ -2196,13 +2196,13 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "JSON", val: nil, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
 		{col: "JSONArray", val: nil, wantWithDefaultConfig: []NullJSON(nil), wantWithNumber: []NullJSON(nil)},
 		{col: "UUID", val: uuid1},
-		{col: "UUID", val: uuid1, wantWithDefaultConfig: SpannerNullUUID{uuid1, true}, wantWithNumber: SpannerNullUUID{uuid1, true}},
-		{col: "UUID", val: SpannerNullUUID{uuid1, true}},
-		{col: "UUID", val: SpannerNullUUID{uuid1, true}, wantWithDefaultConfig: uuid1, wantWithNumber: uuid1},
-		{col: "UUID", val: SpannerNullUUID{uuid.UUID{}, false}},
-		{col: "UUIDArray", val: []uuid.UUID(nil), wantWithDefaultConfig: []SpannerNullUUID(nil), wantWithNumber: []SpannerNullUUID(nil)},
-		{col: "UUIDArray", val: []uuid.UUID{}, wantWithDefaultConfig: []SpannerNullUUID{}, wantWithNumber: []SpannerNullUUID{}},
-		{col: "UUIDArray", val: []uuid.UUID{uuid1, uuid2}, wantWithDefaultConfig: []SpannerNullUUID{{uuid1, true}, {uuid2, true}}, wantWithNumber: []SpannerNullUUID{{uuid1, true}, {uuid2, true}}},
+		{col: "UUID", val: uuid1, wantWithDefaultConfig: NullUUID{uuid1, true}, wantWithNumber: NullUUID{uuid1, true}},
+		{col: "UUID", val: NullUUID{uuid1, true}},
+		{col: "UUID", val: NullUUID{uuid1, true}, wantWithDefaultConfig: uuid1, wantWithNumber: uuid1},
+		{col: "UUID", val: NullUUID{uuid.UUID{}, false}},
+		{col: "UUIDArray", val: []uuid.UUID(nil), wantWithDefaultConfig: []NullUUID(nil), wantWithNumber: []NullUUID(nil)},
+		{col: "UUIDArray", val: []uuid.UUID{}, wantWithDefaultConfig: []NullUUID{}, wantWithNumber: []NullUUID{}},
+		{col: "UUIDArray", val: []uuid.UUID{uuid1, uuid2}, wantWithDefaultConfig: []NullUUID{{uuid1, true}, {uuid2, true}}, wantWithNumber: []NullUUID{{uuid1, true}, {uuid2, true}}},
 	}
 
 	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31

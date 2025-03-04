@@ -150,11 +150,11 @@ func TestConvertParams(t *testing.T) {
 		{[]NullTime{{t2, true}, {}}, listProto(timeProto(t2), nullProto()), listType(timeType())},
 		// uuid
 		{uuid1, uuidProto(uuid1), uuidType()},
-		{SpannerNullUUID{uuid1, false}, nullProto(), uuidType()},
+		{NullUUID{uuid1, false}, nullProto(), uuidType()},
 		{[]uuid.UUID(nil), nullProto(), listType(uuidType())},
 		{[]uuid.UUID{}, listProto(), listType(uuidType())},
 		{[]uuid.UUID{uuid1, uuid2}, listProto(uuidProto(uuid1), uuidProto(uuid2)), listType(uuidType())},
-		{[]SpannerNullUUID{{uuid1, true}, {}}, listProto(uuidProto(uuid1), nullProto()), listType(uuidType())},
+		{[]NullUUID{{uuid1, true}, {}}, listProto(uuidProto(uuid1), nullProto()), listType(uuidType())},
 		// Struct
 		{
 			s1,

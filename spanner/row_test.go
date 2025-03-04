@@ -218,10 +218,10 @@ func TestColumnValues(t *testing.T) {
 		{[]NullDate{{}, {dt, true}}},
 		{[]NullDate(nil)},
 		// UUID / UUID ARRAY
-		{uuid1, SpannerNullUUID{uuid1, true}},
-		{SpannerNullUUID{}},
-		{[]SpannerNullUUID{{}, {uuid1, true}}},
-		{[]SpannerNullUUID(nil)},
+		{uuid1, NullUUID{uuid1, true}},
+		{NullUUID{}},
+		{[]NullUUID{{}, {uuid1, true}}},
+		{[]NullUUID(nil)},
 		// STRUCT ARRAY
 		{
 			[]*struct {
@@ -229,7 +229,7 @@ func TestColumnValues(t *testing.T) {
 				Col2 NullFloat64
 				Col3 NullFloat32
 				Col4 string
-				Col5 SpannerNullUUID
+				Col5 NullUUID
 			}{
 				nil,
 
@@ -238,7 +238,7 @@ func TestColumnValues(t *testing.T) {
 					NullFloat64{33.3, true},
 					NullFloat32{0.3, true},
 					"three",
-					SpannerNullUUID{uuid1, true},
+					NullUUID{uuid1, true},
 				},
 				nil,
 			},
@@ -272,7 +272,7 @@ func TestColumnValues(t *testing.T) {
 				Col2 NullFloat64
 				Col3 NullFloat32
 				Col4 string
-				Col5 SpannerNullUUID
+				Col5 NullUUID
 			}(nil),
 			[]NullRow(nil),
 		},
@@ -1102,7 +1102,7 @@ func TestBrokenRow(t *testing.T) {
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
 			},
-			&SpannerNullUUID{uuid1, true},
+			&NullUUID{uuid1, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
 		},
 		{
@@ -1113,7 +1113,7 @@ func TestBrokenRow(t *testing.T) {
 				},
 				[]*proto3.Value{boolProto(true)},
 			},
-			&SpannerNullUUID{uuid1, true},
+			&NullUUID{uuid1, true},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "String")),
 		},
 		{
@@ -1124,7 +1124,7 @@ func TestBrokenRow(t *testing.T) {
 				},
 				[]*proto3.Value{stringProto("xyz")},
 			},
-			&SpannerNullUUID{},
+			&NullUUID{},
 			errDecodeColumn(0, errBadEncoding(stringProto("xyz"), func() error {
 				_, err := uuid.Parse("xyz")
 				return err
@@ -1454,7 +1454,7 @@ func TestBrokenRow(t *testing.T) {
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
 			},
-			&[]SpannerNullUUID{},
+			&[]NullUUID{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
 		},
 		{
@@ -1465,7 +1465,7 @@ func TestBrokenRow(t *testing.T) {
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
 			},
-			&[]SpannerNullUUID{},
+			&[]NullUUID{},
 			errDecodeColumn(0, errNilListValue("UUID")),
 		},
 		{
@@ -1476,7 +1476,7 @@ func TestBrokenRow(t *testing.T) {
 				},
 				[]*proto3.Value{floatProto(1.0)},
 			},
-			&[]SpannerNullUUID{},
+			&[]NullUUID{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
 		},
 		{
@@ -1487,7 +1487,7 @@ func TestBrokenRow(t *testing.T) {
 				},
 				[]*proto3.Value{listProto(floatProto(1.0))},
 			},
-			&[]SpannerNullUUID{},
+			&[]NullUUID{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
 				"UUID", errSrcVal(floatProto(1.0), "String"))),
 		},
@@ -1735,10 +1735,10 @@ func TestToStruct(t *testing.T) {
 			DateArray     []NullDate `spanner:"DATE_ARRAY"`
 			NullDateArray []NullDate `spanner:"NULL_DATE_ARRAY"`
 			// UUID / UUID ARRAY
-			Uuid          uuid.UUID         `spanner:"UUID"`
-			NullUuid      SpannerNullUUID   `spanner:"NULL_UUID"`
-			UuidArray     []SpannerNullUUID `spanner:"UUID_ARRAY"`
-			NullUuidArray []SpannerNullUUID `spanner:"NULL_UUID_ARRAY"`
+			UUID          uuid.UUID  `spanner:"UUID"`
+			NullUUID      NullUUID   `spanner:"NULL_UUID"`
+			UUIDArray     []NullUUID `spanner:"UUID_ARRAY"`
+			NullUUIDArray []NullUUID `spanner:"NULL_UUID_ARRAY"`
 
 			// STRUCT ARRAY
 			StructArray []*struct {
@@ -1800,9 +1800,9 @@ func TestToStruct(t *testing.T) {
 				[]NullDate(nil),
 				// UUID / UUID ARRAY
 				uuid1,
-				SpannerNullUUID{},
-				[]SpannerNullUUID{{}, {uuid1, true}},
-				[]SpannerNullUUID(nil),
+				NullUUID{},
+				[]NullUUID{{}, {uuid1, true}},
+				[]NullUUID(nil),
 				// STRUCT ARRAY
 				[]*struct {
 					Col1 int64
@@ -1855,7 +1855,7 @@ func TestToStructWithCustomTypes(t *testing.T) {
 	type CustomDate civil.Date
 	type CustomNullDate NullDate
 	type CustomUUID uuid.UUID
-	type CustomNullUUID SpannerNullUUID
+	type CustomNullUUID NullUUID
 
 	for i, toStuct := range []func(ptr interface{}) error{row.ToStruct, row.ToStructLenient} {
 		s := []struct {
@@ -1901,10 +1901,10 @@ func TestToStructWithCustomTypes(t *testing.T) {
 			NullDateArray []CustomNullDate `spanner:"NULL_DATE_ARRAY"`
 
 			// UUID / UUID ARRAY
-			Uuid          CustomUUID       `spanner:"UUID"`
-			NullUuid      CustomNullUUID   `spanner:"NULL_UUID"`
-			UuidArray     []CustomNullUUID `spanner:"UUID_ARRAY"`
-			NullUuidArray []CustomNullUUID `spanner:"NULL_UUID_ARRAY"`
+			UUID          CustomUUID       `spanner:"UUID"`
+			NullUUID      CustomNullUUID   `spanner:"NULL_UUID"`
+			UUIDArray     []CustomNullUUID `spanner:"UUID_ARRAY"`
+			NullUUIDArray []CustomNullUUID `spanner:"NULL_UUID_ARRAY"`
 
 			// STRUCT ARRAY
 			StructArray []*struct {

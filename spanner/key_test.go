@@ -157,17 +157,17 @@ func TestKey(t *testing.T) {
 			wantStr:   `(<null>)`,
 		},
 		{
-			k:         Key{SpannerNullUUID{uuid1, false}},
+			k:         Key{NullUUID{uuid1, false}},
 			wantProto: listValueProto(nullProto()),
 			wantStr:   `(<null>)`,
 		},
 		{
-			k:         Key{SpannerNullUUID{uuid1, true}},
+			k:         Key{NullUUID{uuid1, true}},
 			wantProto: listValueProto(uuidProto(uuid1)),
 			wantStr:   fmt.Sprintf("(%s)", uuid1.String()),
 		},
 		{
-			k:         Key{SpannerNullUUID{uuid1, false}},
+			k:         Key{NullUUID{uuid1, false}},
 			wantProto: listValueProto(nullProto()),
 			wantStr:   `(<null>)`,
 		},

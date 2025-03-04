@@ -1057,18 +1057,19 @@ func (n *NullProtoEnum) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
-type SpannerNullUUID struct {
+// NullUUID represents a Cloud Spanner UUID that may be NULL.
+type NullUUID struct {
 	UUID  uuid.UUID
 	Valid bool
 }
 
 // IsNull implements NullableValue.IsNull for SpannerNullUUID.
-func (n SpannerNullUUID) IsNull() bool {
+func (n NullUUID) IsNull() bool {
 	return !n.Valid
 }
 
 // String implements Stringer.String for SpannerNullUUID
-func (n SpannerNullUUID) String() string {
+func (n NullUUID) String() string {
 	if !n.Valid {
 		return nullString
 	}
@@ -1076,12 +1077,12 @@ func (n SpannerNullUUID) String() string {
 }
 
 // MarshalJSON SpannerNullUUID json.Marshaler.MarshalJSON for SpannerNullUUID.
-func (n SpannerNullUUID) MarshalJSON() ([]byte, error) {
+func (n NullUUID) MarshalJSON() ([]byte, error) {
 	return nulljson(n.Valid, n.UUID)
 }
 
 // MarshalJSON SpannerNullUUID json.Marshaler.MarshalJSON for SpannerNullUUID.
-func (n *SpannerNullUUID) UnmarshalJSON(payload []byte) error {
+func (n *NullUUID) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
@@ -1089,17 +1090,17 @@ func (n *SpannerNullUUID) UnmarshalJSON(payload []byte) error {
 		n.Valid = false
 		return nil
 	}
-	parsed_uuid, err := uuid.ParseBytes(payload)
+	parsedUUID, err := uuid.ParseBytes(payload)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to uuid: got %v", string(payload))
 	}
-	n.UUID = parsed_uuid
+	n.UUID = parsedUUID
 	n.Valid = true
 	return nil
 }
 
 // Value implements the driver.Valuer interface.
-func (n SpannerNullUUID) Value() (driver.Value, error) {
+func (n NullUUID) Value() (driver.Value, error) {
 	if n.IsNull() {
 		return nil, nil
 	}
@@ -1107,7 +1108,7 @@ func (n SpannerNullUUID) Value() (driver.Value, error) {
 }
 
 // Scan implements the sql.Scanner interface.
-func (n *SpannerNullUUID) Scan(value interface{}) error {
+func (n *NullUUID) Scan(value interface{}) error {
 	if value == nil {
 		n.Valid = false
 		return nil
@@ -1120,10 +1121,10 @@ func (n *SpannerNullUUID) Scan(value interface{}) error {
 		n.UUID = *p
 	case uuid.UUID:
 		n.UUID = p
-	case *SpannerNullUUID:
+	case *NullUUID:
 		n.UUID = p.UUID
 		n.Valid = p.Valid
-	case SpannerNullUUID:
+	case NullUUID:
 		n.UUID = p.UUID
 		n.Valid = p.Valid
 	}
@@ -1131,7 +1132,7 @@ func (n *SpannerNullUUID) Scan(value interface{}) error {
 }
 
 // GormDataType is used by gorm to determine the default data type for fields with this type.
-func (n SpannerNullUUID) GormDataType() string {
+func (n NullUUID) GormDataType() string {
 	return "UUID"
 }
 
@@ -2434,12 +2435,12 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		if isNull {
 			return errDstNotForNull(ptr)
 		}
-		x, err := getUuidValue(v)
+		x, err := getUUIDValue(v)
 		if err != nil {
 			return err
 		}
 		*p = x
-	case *SpannerNullUUID, **uuid.UUID:
+	case *NullUUID, **uuid.UUID:
 		if p == nil {
 			return errNilDst(p)
 		}
@@ -2448,19 +2449,19 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		}
 		if isNull {
 			switch sp := ptr.(type) {
-			case *SpannerNullUUID:
-				*sp = SpannerNullUUID{}
+			case *NullUUID:
+				*sp = NullUUID{}
 			case **uuid.UUID:
 				*sp = nil
 			}
 			break
 		}
-		x, err := getUuidValue(v)
+		x, err := getUUIDValue(v)
 		if err != nil {
 			return err
 		}
 		switch sp := ptr.(type) {
-		case *SpannerNullUUID:
+		case *NullUUID:
 			sp.Valid = true
 			sp.UUID = x
 		case **uuid.UUID:
@@ -2481,12 +2482,12 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		if err != nil {
 			return err
 		}
-		y, err := decodeUuidArray(x)
+		y, err := decodeUUIDArray(x)
 		if err != nil {
 			return err
 		}
 		*p = y
-	case *[]SpannerNullUUID, *[]*uuid.UUID:
+	case *[]NullUUID, *[]*uuid.UUID:
 		if p == nil {
 			return errNilDst(p)
 		}
@@ -2495,9 +2496,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		}
 		if isNull {
 			switch sp := ptr.(type) {
-			case *[]SpannerNullUUID:
+			case *[]NullUUID:
 				*sp = nil
-			case *[]*SpannerNullUUID:
+			case *[]*NullUUID:
 				*sp = nil
 			}
 			break
@@ -2507,14 +2508,14 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 			return err
 		}
 		switch sp := ptr.(type) {
-		case *[]SpannerNullUUID:
-			y, err := decodeNullUuidArray(x)
+		case *[]NullUUID:
+			y, err := decodeNullUUIDArray(x)
 			if err != nil {
 				return err
 			}
 			*sp = y
 		case *[]*uuid.UUID:
-			y, err := decodeUuidPointerArray(x)
+			y, err := decodeUUIDPointerArray(x)
 			if err != nil {
 				return err
 			}
@@ -2632,7 +2633,7 @@ const (
 	spannerTypeNonNullNumeric
 	spannerTypeNonNullTime
 	spannerTypeNonNullDate
-	spannerTypeNonNullUuid
+	spannerTypeNonNullUUID
 	spannerTypeNullString
 	spannerTypeNullInt64
 	spannerTypeNullBool
@@ -2642,7 +2643,7 @@ const (
 	spannerTypeNullDate
 	spannerTypeNullNumeric
 	spannerTypeNullJSON
-	spannerTypeNullUuid
+	spannerTypeNullUUID
 	spannerTypePGNumeric
 	spannerTypePGJsonB
 	spannerTypeArrayOfNonNullString
@@ -2654,7 +2655,7 @@ const (
 	spannerTypeArrayOfNonNullNumeric
 	spannerTypeArrayOfNonNullTime
 	spannerTypeArrayOfNonNullDate
-	spannerTypeArrayOfNonNullUuid
+	spannerTypeArrayOfNonNullUUID
 	spannerTypeArrayOfNullString
 	spannerTypeArrayOfNullInt64
 	spannerTypeArrayOfNullBool
@@ -2664,7 +2665,7 @@ const (
 	spannerTypeArrayOfNullJSON
 	spannerTypeArrayOfNullTime
 	spannerTypeArrayOfNullDate
-	spannerTypeArrayOfNullUuid
+	spannerTypeArrayOfNullUUID
 	spannerTypeArrayOfPGNumeric
 	spannerTypeArrayOfPGJsonB
 )
@@ -2673,7 +2674,7 @@ const (
 // Spanner.
 func (d decodableSpannerType) supportsNull() bool {
 	switch d {
-	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullFloat32, spannerTypeNonNullTime, spannerTypeNonNullDate, spannerTypeNonNullNumeric, spannerTypeNonNullUuid:
+	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullFloat32, spannerTypeNonNullTime, spannerTypeNonNullDate, spannerTypeNonNullNumeric, spannerTypeNonNullUUID:
 		return false
 	default:
 		return true
@@ -2690,7 +2691,7 @@ func (d decodableSpannerType) supportsNull() bool {
 var typeOfNonNullTime = reflect.TypeOf(time.Time{})
 var typeOfNonNullDate = reflect.TypeOf(civil.Date{})
 var typeOfNonNullNumeric = reflect.TypeOf(big.Rat{})
-var typeOfNonNullUuid = reflect.TypeOf(uuid.UUID{})
+var typeOfNonNullUUID = reflect.TypeOf(uuid.UUID{})
 var typeOfNullString = reflect.TypeOf(NullString{})
 var typeOfNullInt64 = reflect.TypeOf(NullInt64{})
 var typeOfNullBool = reflect.TypeOf(NullBool{})
@@ -2700,7 +2701,7 @@ var typeOfNullTime = reflect.TypeOf(NullTime{})
 var typeOfNullDate = reflect.TypeOf(NullDate{})
 var typeOfNullNumeric = reflect.TypeOf(NullNumeric{})
 var typeOfNullJSON = reflect.TypeOf(NullJSON{})
-var typeOfNullUuid = reflect.TypeOf(SpannerNullUUID{})
+var typeOfNullUUID = reflect.TypeOf(NullUUID{})
 var typeOfPGNumeric = reflect.TypeOf(PGNumeric{})
 var typeOfPGJsonB = reflect.TypeOf(PGJsonB{})
 
@@ -2723,8 +2724,8 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		return spannerTypeInvalid
 	case reflect.Array:
 		t := val.Type()
-		if t.ConvertibleTo(typeOfNonNullUuid) {
-			return spannerTypeNonNullUuid
+		if t.ConvertibleTo(typeOfNonNullUUID) {
+			return spannerTypeNonNullUUID
 		}
 	case reflect.String:
 		return spannerTypeNonNullString
@@ -2785,8 +2786,8 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		if t.ConvertibleTo(typeOfNullJSON) {
 			return spannerTypeNullJSON
 		}
-		if t.ConvertibleTo(typeOfNullUuid) {
-			return spannerTypeNullUuid
+		if t.ConvertibleTo(typeOfNullUUID) {
+			return spannerTypeNullUUID
 		}
 		if t.ConvertibleTo(typeOfPGNumeric) {
 			return spannerTypePGNumeric
@@ -2813,8 +2814,8 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			return spannerTypeArrayOfNonNullFloat32
 		case reflect.Array:
 			elemType := val.Type().Elem()
-			if elemType.ConvertibleTo(typeOfNonNullUuid) {
-				return spannerTypeArrayOfNonNullUuid
+			if elemType.ConvertibleTo(typeOfNonNullUUID) {
+				return spannerTypeArrayOfNonNullUUID
 			}
 		case reflect.Ptr:
 			t := val.Type().Elem()
@@ -2865,8 +2866,8 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			if t.ConvertibleTo(typeOfPGJsonB) {
 				return spannerTypeArrayOfPGJsonB
 			}
-			if t.ConvertibleTo(typeOfNullUuid) {
-				return spannerTypeArrayOfNullUuid
+			if t.ConvertibleTo(typeOfNullUUID) {
+				return spannerTypeArrayOfNullUUID
 			}
 		case reflect.Slice:
 			// The only array-of-array type that is supported is [][]byte.
@@ -3094,22 +3095,22 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		} else {
 			result = &NullDate{y, !isNull}
 		}
-	case spannerTypeNonNullUuid, spannerTypeNullUuid:
+	case spannerTypeNonNullUUID, spannerTypeNullUUID:
 		if code != sppb.TypeCode_UUID {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			result = &SpannerNullUUID{}
+			result = &NullUUID{}
 			break
 		}
-		x, err := getUuidValue(v)
+		x, err := getUUIDValue(v)
 		if err != nil {
 			return err
 		}
-		if dsc == spannerTypeNonNullUuid {
+		if dsc == spannerTypeNonNullUUID {
 			result = &x
 		} else {
-			result = &SpannerNullUUID{x, !isNull}
+			result = &NullUUID{x, !isNull}
 		}
 	case spannerTypeArrayOfNonNullString, spannerTypeArrayOfNullString:
 		if acode != sppb.TypeCode_STRING {
@@ -3315,7 +3316,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return err
 		}
 		result = y
-	case spannerTypeArrayOfNonNullUuid, spannerTypeArrayOfNullUuid:
+	case spannerTypeArrayOfNonNullUUID, spannerTypeArrayOfNullUUID:
 		if acode != sppb.TypeCode_UUID {
 			return errTypeMismatch(code, acode, ptr)
 		}
@@ -3509,9 +3510,9 @@ func getFloat32Value(v *proto3.Value) (float32, error) {
 	return 0, errSrcVal(v, "Number")
 }
 
-// getUuidValue returns the uuid value encoded in proto3.Value v whose
+// getUUIDValue returns the uuid value encoded in proto3.Value v whose
 // kind is proto3.Value_StringValue.
-func getUuidValue(v *proto3.Value) (uuid.UUID, error) {
+func getUUIDValue(v *proto3.Value) (uuid.UUID, error) {
 	x, err := getStringValue(v)
 	if err != nil {
 		return uuid.UUID{}, err
@@ -4046,12 +4047,12 @@ func decodeDateArray(pb *proto3.ListValue) ([]civil.Date, error) {
 	return a, nil
 }
 
-// decodeNullUuidArray decodes proto3.ListValue pb into a SpannerNullUUID slice.
-func decodeNullUuidArray(pb *proto3.ListValue) ([]SpannerNullUUID, error) {
+// decodeNullUUIDArray decodes proto3.ListValue pb into a SpannerNullUUID slice.
+func decodeNullUUIDArray(pb *proto3.ListValue) ([]NullUUID, error) {
 	if pb == nil {
 		return nil, errNilListValue("UUID")
 	}
-	a := make([]SpannerNullUUID, len(pb.Values))
+	a := make([]NullUUID, len(pb.Values))
 	for i, v := range pb.Values {
 		if err := decodeValue(v, uuidType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "UUID", err)
@@ -4060,8 +4061,8 @@ func decodeNullUuidArray(pb *proto3.ListValue) ([]SpannerNullUUID, error) {
 	return a, nil
 }
 
-// decodeUuidPointerArray decodes proto3.ListValue pb into a *uuid.UUID slice.
-func decodeUuidPointerArray(pb *proto3.ListValue) ([]*uuid.UUID, error) {
+// decodeUUIDPointerArray decodes proto3.ListValue pb into a *uuid.UUID slice.
+func decodeUUIDPointerArray(pb *proto3.ListValue) ([]*uuid.UUID, error) {
 	if pb == nil {
 		return nil, errNilListValue("UUID")
 	}
@@ -4074,8 +4075,8 @@ func decodeUuidPointerArray(pb *proto3.ListValue) ([]*uuid.UUID, error) {
 	return a, nil
 }
 
-// decodeUuidArray decodes proto3.ListValue pb into a uuid.UUID slice.
-func decodeUuidArray(pb *proto3.ListValue) ([]uuid.UUID, error) {
+// decodeUUIDArray decodes proto3.ListValue pb into a uuid.UUID slice.
+func decodeUUIDArray(pb *proto3.ListValue) ([]uuid.UUID, error) {
 	if pb == nil {
 		return nil, errNilListValue("UUID")
 	}
@@ -4749,12 +4750,12 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(uuidType())
-	case SpannerNullUUID:
+	case NullUUID:
 		if v.Valid {
 			return encodeValue(v.UUID)
 		}
 		pt = uuidType()
-	case []SpannerNullUUID:
+	case []NullUUID:
 		if v != nil {
 			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
 			if err != nil {
@@ -4763,14 +4764,14 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 		pt = listType(uuidType())
 	case uuid.NullUUID:
-		null_uuid := SpannerNullUUID{UUID: v.UUID, Valid: v.Valid}
-		return encodeValue(null_uuid)
+		nullUUID := NullUUID{UUID: v.UUID, Valid: v.Valid}
+		return encodeValue(nullUUID)
 	case *uuid.UUID:
 		if v != nil {
 			return encodeValue(*v)
 		}
 		pt = uuidType()
-	case *SpannerNullUUID:
+	case *NullUUID:
 		if v != nil {
 			return encodeValue(*v)
 		}
@@ -4937,10 +4938,10 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(PGJsonB{})))
 	case spannerTypePGNumeric:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(PGNumeric{})))
-	case spannerTypeNonNullUuid:
+	case spannerTypeNonNullUUID:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(uuid.UUID{})))
-	case spannerTypeNullUuid:
-		destination = reflect.Indirect(reflect.New(reflect.TypeOf(SpannerNullUUID{})))
+	case spannerTypeNullUUID:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullUUID{})))
 	case spannerTypeArrayOfNonNullString:
 		if reflect.ValueOf(v).IsNil() {
 			return []string(nil), nil
@@ -5041,16 +5042,16 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 			return []PGNumeric(nil), nil
 		}
 		destination = reflect.MakeSlice(reflect.TypeOf([]PGNumeric{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
-	case spannerTypeArrayOfNonNullUuid:
+	case spannerTypeArrayOfNonNullUUID:
 		if reflect.ValueOf(v).IsNil() {
 			return []uuid.UUID{}, nil
 		}
 		destination = reflect.MakeSlice(reflect.TypeOf([]uuid.UUID{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
-	case spannerTypeArrayOfNullUuid:
+	case spannerTypeArrayOfNullUUID:
 		if reflect.ValueOf(v).IsNil() {
-			return []SpannerNullUUID(nil), nil
+			return []NullUUID(nil), nil
 		}
-		destination = reflect.MakeSlice(reflect.TypeOf([]SpannerNullUUID{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullUUID{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
 	default:
 		// This should not be possible.
 		return nil, fmt.Errorf("unknown decodable type found: %v", sourceType)
@@ -5235,7 +5236,7 @@ func isSupportedMutationType(v interface{}) bool {
 		float32, *float32, []float32, []*float32, NullFloat32, []NullFloat32,
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
-		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric, uuid.UUID, []uuid.UUID, *uuid.UUID, []*uuid.UUID, SpannerNullUUID, []SpannerNullUUID,
+		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric, uuid.UUID, []uuid.UUID, *uuid.UUID, []*uuid.UUID, NullUUID, []NullUUID,
 		GenericColumnValue, proto.Message, protoreflect.Enum, NullProtoMessage, NullProtoEnum:
 		return true
 	default:

@@ -389,13 +389,13 @@ func TestEncodeValue(t *testing.T) {
 		{[]*float32{&f32Value, f32NilPtr}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat32"},
 		// UUID / UUID ARRAY
 		{uuid1, uuidProto(uuid1), tUUID, "uuid.UUID"},
-		{SpannerNullUUID{uuid1, true}, uuidProto(uuid1), tUUID, "SpannerNullUUID with value"},
-		{SpannerNullUUID{uuid1, false}, nullProto(), tUUID, "SpannerNullUUID with null"},
+		{NullUUID{uuid1, true}, uuidProto(uuid1), tUUID, "SpannerNullUUID with value"},
+		{NullUUID{uuid1, false}, nullProto(), tUUID, "SpannerNullUUID with null"},
 		{&uuid1, uuidProto(uuid1), tUUID, "*uuid.UUID with value"},
 		{uuidNilPtr, nullProto(), tUUID, "*uuid.UUID with null"},
 		{[]uuid.UUID{uuid1, uuid2}, listProto(uuidProto(uuid1), uuidProto(uuid2)), listType(tUUID), "[]uuid.UUID"},
 		{[]uuid.UUID(nil), nullProto(), listType(tUUID), "null []uuid.UUID"},
-		{[]SpannerNullUUID{{uuid1, true}, {uuid2, false}}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]SpannerNullUUID"},
+		{[]NullUUID{{uuid1, true}, {uuid2, false}}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]SpannerNullUUID"},
 		{[]*uuid.UUID{&uuid1, uuidNilPtr}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]*uuid.UUID"},
 		// NUMERIC / NUMERIC ARRAY
 		{*numValuePtr, numericProto(numValuePtr), tNumeric, "big.Rat"},
@@ -1025,7 +1025,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomNullFloat32 NullFloat32
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
-	type CustomNullUUID SpannerNullUUID
+	type CustomNullUUID NullUUID
 
 	sValue := "abc"
 	iValue := int64(300)
@@ -1162,7 +1162,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    NullTime
 				Datef    NullDate
-				Uuidf    SpannerNullUUID
+				Uuidf    NullUUID
 			}{
 				NullString{"abc", false},
 				NullInt64{4, false},
@@ -1172,7 +1172,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				nil,
 				NullTime{t1, false},
 				NullDate{d1, false},
-				SpannerNullUUID{uuid1, false},
+				NullUUID{uuid1, false},
 			},
 			listProto(
 				nullProto(),
@@ -1751,11 +1751,11 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to uuid.UUID", proto: nullProto(), protoType: uuidType(), want: "", wantErr: true},
 		{desc: "decode UUID to *uuid.UUID", proto: uuidProto(uuid1), protoType: uuidType(), want: &uuid1},
 		{desc: "decode NULL to *uuid.UUID", proto: nullProto(), protoType: uuidType(), want: uuidNilPtr},
-		{desc: "decode UUID to SpannerNullUUID", proto: uuidProto(uuid1), protoType: uuidType(), want: SpannerNullUUID{uuid1, true}},
-		{desc: "decode NULL to SpannerNullUUID", proto: nullProto(), protoType: uuidType(), want: SpannerNullUUID{}},
+		{desc: "decode UUID to SpannerNullUUID", proto: uuidProto(uuid1), protoType: uuidType(), want: NullUUID{uuid1, true}},
+		{desc: "decode NULL to SpannerNullUUID", proto: nullProto(), protoType: uuidType(), want: NullUUID{}},
 		// UUID ARRAY with []SpannerNullUUID
-		{desc: "decode ARRAY<UUID> to []SpannerNullUUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []SpannerNullUUID{{uuid1, true}, {}, {uuid2, true}}},
-		{desc: "decode NULL to []SpannerNullUUID", proto: nullProto(), protoType: listType(uuidType()), want: []SpannerNullUUID(nil)},
+		{desc: "decode ARRAY<UUID> to []SpannerNullUUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []NullUUID{{uuid1, true}, {}, {uuid2, true}}},
+		{desc: "decode NULL to []SpannerNullUUID", proto: nullProto(), protoType: listType(uuidType()), want: []NullUUID(nil)},
 		{desc: "decode ARRAY<UUID> to []uuid.UUID", proto: listProto(uuidProto(uuid1), uuidProto(uuid2)), protoType: listType(uuidType()), want: []uuid.UUID{uuid1, uuid2}},
 		{desc: "decode ARRAY<UUID> to []*uuid.UUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []*uuid.UUID{&uuid1, nil, &uuid2}},
 		{desc: "decode NULL to []*uuid.UUID", proto: nullProto(), protoType: listType(uuidType()), want: []*uuid.UUID(nil)},
@@ -2152,7 +2152,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
-	type CustomNullUUID SpannerNullUUID
+	type CustomNullUUID NullUUID
 
 	type StringEmbedded struct {
 		string
@@ -2174,7 +2174,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{float32(3.14), spannerTypeNonNullFloat32},
 		{time.Now(), spannerTypeNonNullTime},
 		{civil.DateOf(time.Now()), spannerTypeNonNullDate},
-		{uuid1, spannerTypeNonNullUuid},
+		{uuid1, spannerTypeNonNullUUID},
 		{NullString{}, spannerTypeNullString},
 		{NullInt64{}, spannerTypeNullInt64},
 		{NullBool{}, spannerTypeNullBool},
@@ -2185,7 +2185,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{*big.NewRat(1234, 1000), spannerTypeNonNullNumeric},
 		{big.Rat{}, spannerTypeNonNullNumeric},
 		{NullNumeric{}, spannerTypeNullNumeric},
-		{SpannerNullUUID{}, spannerTypeNullUuid},
+		{NullUUID{}, spannerTypeNullUUID},
 
 		{[]string{"foo", "bar"}, spannerTypeArrayOfNonNullString},
 		{[][]byte{{1, 2, 3}, {3, 2, 1}}, spannerTypeArrayOfByteArray},
@@ -2196,7 +2196,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]float32{3.14}, spannerTypeArrayOfNonNullFloat32},
 		{[]time.Time{time.Now()}, spannerTypeArrayOfNonNullTime},
 		{[]civil.Date{civil.DateOf(time.Now())}, spannerTypeArrayOfNonNullDate},
-		{[]uuid.UUID{uuid1}, spannerTypeArrayOfNonNullUuid},
+		{[]uuid.UUID{uuid1}, spannerTypeArrayOfNonNullUUID},
 		{[]NullString{}, spannerTypeArrayOfNullString},
 		{[]NullInt64{}, spannerTypeArrayOfNullInt64},
 		{[]NullBool{}, spannerTypeArrayOfNullBool},
@@ -2207,7 +2207,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]big.Rat{}, spannerTypeArrayOfNonNullNumeric},
 		{[]big.Rat{*big.NewRat(1234, 1000), *big.NewRat(1234, 100)}, spannerTypeArrayOfNonNullNumeric},
 		{[]NullNumeric{}, spannerTypeArrayOfNullNumeric},
-		{[]SpannerNullUUID{}, spannerTypeArrayOfNullUuid},
+		{[]NullUUID{}, spannerTypeArrayOfNullUUID},
 
 		{CustomString("foo"), spannerTypeNonNullString},
 		{CustomInt64(-100), spannerTypeNonNullInt64},
@@ -2217,7 +2217,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomTime(time.Now()), spannerTypeNonNullTime},
 		{CustomDate(civil.DateOf(time.Now())), spannerTypeNonNullDate},
 		{CustomNumeric(*big.NewRat(1234, 1000)), spannerTypeNonNullNumeric},
-		{CustomUUID(uuid1), spannerTypeNonNullUuid},
+		{CustomUUID(uuid1), spannerTypeNonNullUUID},
 
 		{[]CustomString{}, spannerTypeArrayOfNonNullString},
 		{[]CustomInt64{}, spannerTypeArrayOfNonNullInt64},
@@ -2227,7 +2227,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomTime{}, spannerTypeArrayOfNonNullTime},
 		{[]CustomDate{}, spannerTypeArrayOfNonNullDate},
 		{[]CustomNumeric{}, spannerTypeArrayOfNonNullNumeric},
-		{[]CustomUUID{}, spannerTypeArrayOfNonNullUuid},
+		{[]CustomUUID{}, spannerTypeArrayOfNonNullUUID},
 
 		{CustomNullString{}, spannerTypeNullString},
 		{CustomNullInt64{}, spannerTypeNullInt64},
@@ -2237,7 +2237,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomNullTime{}, spannerTypeNullTime},
 		{CustomNullDate{}, spannerTypeNullDate},
 		{CustomNullNumeric{}, spannerTypeNullNumeric},
-		{CustomNullUUID{}, spannerTypeNullUuid},
+		{CustomNullUUID{}, spannerTypeNullUUID},
 
 		{[]CustomNullString{}, spannerTypeArrayOfNullString},
 		{[]CustomNullInt64{}, spannerTypeArrayOfNullInt64},
@@ -2247,7 +2247,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomNullTime{}, spannerTypeArrayOfNullTime},
 		{[]CustomNullDate{}, spannerTypeArrayOfNullDate},
 		{[]CustomNullNumeric{}, spannerTypeArrayOfNullNumeric},
-		{[]CustomNullUUID{}, spannerTypeArrayOfNullUuid},
+		{[]CustomNullUUID{}, spannerTypeArrayOfNullUUID},
 
 		{StringEmbedded{}, spannerTypeUnknown},
 		{NullStringEmbedded{}, spannerTypeUnknown},
@@ -3120,10 +3120,10 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 		{
 			"NullUUID",
 			[]testcase{
-				{input: SpannerNullUUID{uuid1, true}, expect: fmt.Sprintf("%q", uuid1.String())},
-				{input: &SpannerNullUUID{uuid2, true}, expect: fmt.Sprintf("%q", uuid2.String())},
-				{input: &SpannerNullUUID{uuid1, false}, expect: "null"},
-				{input: SpannerNullUUID{}, expect: "null"},
+				{input: NullUUID{uuid1, true}, expect: fmt.Sprintf("%q", uuid1.String())},
+				{input: &NullUUID{uuid2, true}, expect: fmt.Sprintf("%q", uuid2.String())},
+				{input: &NullUUID{uuid1, false}, expect: "null"},
+				{input: NullUUID{}, expect: "null"},
 			},
 		},
 	} {
@@ -3289,11 +3289,11 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 		{
 			"NullUUID",
 			[]testcase{
-				{input: []byte(fmt.Sprintf("%q", uuid1.String())), got: SpannerNullUUID{}, isNull: false, expect: uuid1.String(), expectError: false},
-				{input: []byte("null"), got: SpannerNullUUID{}, isNull: true, expect: nullString, expectError: false},
-				{input: nil, got: SpannerNullUUID{}, isNull: true, expect: nullString, expectError: true},
-				{input: []byte(""), got: SpannerNullUUID{}, isNull: true, expect: nullString, expectError: true},
-				{input: []byte(`"hello`), got: SpannerNullUUID{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(fmt.Sprintf("%q", uuid1.String())), got: NullUUID{}, isNull: false, expect: uuid1.String(), expectError: false},
+				{input: []byte("null"), got: NullUUID{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
 			},
 		},
 	} {
@@ -3336,7 +3336,7 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 				case NullProtoEnum:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
-				case SpannerNullUUID:
+				case NullUUID:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				default:
