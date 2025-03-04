@@ -4311,7 +4311,7 @@ func TestClient_WithGRPCConnectionPool(t *testing.T) {
 	if useGRPCgcp {
 		_, client, teardown = setupMockedTestServerWithConfigAndGCPMultiendpointPool(
 			t,
-			ClientConfig{},
+			ClientConfig{DisableNativeMetrics: true},
 			[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
 			&grpc_gcp.ChannelPoolConfig{
 				MinSize: uint32(gcpPoolNumChannels),
@@ -4321,7 +4321,7 @@ func TestClient_WithGRPCConnectionPool(t *testing.T) {
 	} else {
 		_, client, teardown = setupMockedTestServerWithConfigAndClientOptions(
 			t,
-			ClientConfig{},
+			ClientConfig{DisableNativeMetrics: true},
 			[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
 		)
 	}
@@ -4346,7 +4346,7 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels(t *testing.T) {
 	if useGRPCgcp {
 		_, client, teardown = setupMockedTestServerWithConfigAndGCPMultiendpointPool(
 			t,
-			ClientConfig{NumChannels: configuredNumChannels},
+			ClientConfig{NumChannels: configuredNumChannels, DisableNativeMetrics: true},
 			[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
 			&grpc_gcp.ChannelPoolConfig{
 				MaxSize: uint32(gcpPoolNumChannels),
@@ -4356,7 +4356,7 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels(t *testing.T) {
 	} else {
 		_, client, teardown = setupMockedTestServerWithConfigAndClientOptions(
 			t,
-			ClientConfig{NumChannels: configuredNumChannels},
+			ClientConfig{NumChannels: configuredNumChannels, DisableNativeMetrics: true},
 			[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
 		)
 	}
@@ -4381,7 +4381,7 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	defer serverTeardown()
 	opts = append(opts, option.WithGRPCConnectionPool(configuredConnPool))
 
-	config := ClientConfig{NumChannels: configuredNumChannels}
+	config := ClientConfig{NumChannels: configuredNumChannels, DisableNativeMetrics: true}
 	_, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if useGRPCgcp {
 		// GCPMultiEndpoint channel pool config is preceeding default pool config.
