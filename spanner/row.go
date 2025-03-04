@@ -50,30 +50,30 @@ import (
 //
 // Supported types and their corresponding Cloud Spanner column type(s) are:
 //
-//		*string(not NULL), *NullString - STRING
-//		*[]string, *[]NullString - STRING ARRAY
-//		*[]byte - BYTES
-//		*[][]byte - BYTES ARRAY
-//		*int64(not NULL), *NullInt64 - INT64
-//		*[]int64, *[]NullInt64 - INT64 ARRAY
-//		*bool(not NULL), *NullBool - BOOL
-//		*[]bool, *[]NullBool - BOOL ARRAY
-//		*float32(not NULL), *NullFloat32 - FLOAT32
-//		*[]float32, *[]NullFloat32 - FLOAT32 ARRAY
-//		*float64(not NULL), *NullFloat64 - FLOAT64
-//		*[]float64, *[]NullFloat64 - FLOAT64 ARRAY
-//		*big.Rat(not NULL), *NullNumeric - NUMERIC
-//		*[]big.Rat, *[]NullNumeric - NUMERIC ARRAY
-//		*time.Time(not NULL), *NullTime - TIMESTAMP
-//		*[]time.Time, *[]NullTime - TIMESTAMP ARRAY
-//		*Date(not NULL), *NullDate - DATE
-//		*[]civil.Date, *[]NullDate - DATE ARRAY
-//		*uuid.UUID(not NULL), *NullUuid - UUID
-//		*[]uuid.UUID, *[]NullUuid - UUID Array
-//		*[]*some_go_struct, *[]NullRow - STRUCT ARRAY
-//		*NullJSON - JSON
-//		*[]NullJSON - JSON ARRAY
-//		*GenericColumnValue - any Cloud Spanner type
+//	*string(not NULL), *NullString - STRING
+//	*[]string, *[]NullString - STRING ARRAY
+//	*[]byte - BYTES
+//	*[][]byte - BYTES ARRAY
+//	*int64(not NULL), *NullInt64 - INT64
+//	*[]int64, *[]NullInt64 - INT64 ARRAY
+//	*bool(not NULL), *NullBool - BOOL
+//	*[]bool, *[]NullBool - BOOL ARRAY
+//	*float32(not NULL), *NullFloat32 - FLOAT32
+//	*[]float32, *[]NullFloat32 - FLOAT32 ARRAY
+//	*float64(not NULL), *NullFloat64 - FLOAT64
+//	*[]float64, *[]NullFloat64 - FLOAT64 ARRAY
+//	*big.Rat(not NULL), *NullNumeric - NUMERIC
+//	*[]big.Rat, *[]NullNumeric - NUMERIC ARRAY
+//	*time.Time(not NULL), *NullTime - TIMESTAMP
+//	*[]time.Time, *[]NullTime - TIMESTAMP ARRAY
+//	*Date(not NULL), *NullDate - DATE
+//	*[]civil.Date, *[]NullDate - DATE ARRAY
+//	*uuid.UUID(not NULL), *NullUuid - UUID
+//	*[]uuid.UUID, *[]NullUuid - UUID Array
+//	*[]*some_go_struct, *[]NullRow - STRUCT ARRAY
+//	*NullJSON - JSON
+//	*[]NullJSON - JSON ARRAY
+//	*GenericColumnValue - any Cloud Spanner type
 //
 // For TIMESTAMP columns, the returned time.Time object will be in UTC.
 //
