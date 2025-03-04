@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package connection_test
-
-import (
-	connection "cloud.google.com/go/bigquery/connection/apiv1beta1"
-)

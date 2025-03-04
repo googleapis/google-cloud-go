@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package oslogin_test
-
-import (
-	oslogin "cloud.google.com/go/oslogin/apiv1"
-)
