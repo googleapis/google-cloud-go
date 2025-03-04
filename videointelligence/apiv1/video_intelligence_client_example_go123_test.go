@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package videointelligence_test
-
-import (
-	videointelligence "cloud.google.com/go/videointelligence/apiv1"
-)

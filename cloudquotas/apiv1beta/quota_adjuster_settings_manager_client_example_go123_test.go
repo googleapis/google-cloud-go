@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package cloudquotas_test
-
-import (
-	cloudquotas "cloud.google.com/go/cloudquotas/apiv1beta"
-)

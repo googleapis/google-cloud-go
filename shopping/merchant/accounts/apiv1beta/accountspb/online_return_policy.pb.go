@@ -21,8 +21,11 @@
 package accountspb
 
 import (
-	typepb "cloud.google.com/go/shopping/type/typepb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	typepb "cloud.google.com/go/shopping/type/typepb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	grpc "google.golang.org/grpc"
@@ -30,8 +33,6 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
