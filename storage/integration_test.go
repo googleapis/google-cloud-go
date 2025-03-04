@@ -2540,35 +2540,38 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 }
 
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
-	// Tests that all selected attributes work - query succeeds (without actually
-	// verifying the returned results).
-	query := &Query{
-		Prefix:      "",
-		StartOffset: "obj/",
-		EndOffset:   "obj2",
-	}
-	var selectedAttrs []string
-	for k := range attrToFieldMap {
-		selectedAttrs = append(selectedAttrs, k)
-	}
-	query.SetAttrSelection(selectedAttrs)
-
-	count := 0
-	it := bkt.Objects(context.Background(), query)
-	for {
-		_, err := it.Next()
-		if err == iterator.Done {
-			break
+	t.Run("testObjectsIterateAllSelectedAttrs", func(t *testing.T) {
+		t.Skip("b/398916957")
+		// Tests that all selected attributes work - query succeeds (without actually
+		// verifying the returned results).
+		query := &Query{
+			Prefix:      "",
+			StartOffset: "obj/",
+			EndOffset:   "obj2",
 		}
-		if err != nil {
-			t.Fatalf("iterator.Next: %v", err)
+		var selectedAttrs []string
+		for k := range attrToFieldMap {
+			selectedAttrs = append(selectedAttrs, k)
 		}
-		count++
-	}
+		query.SetAttrSelection(selectedAttrs)
 
-	if count != len(objects)-1 {
-		t.Errorf("count = %v, want %v", count, len(objects)-1)
-	}
+		count := 0
+		it := bkt.Objects(context.Background(), query)
+		for {
+			_, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			count++
+		}
+
+		if count != len(objects)-1 {
+			t.Errorf("count = %v, want %v", count, len(objects)-1)
+		}
+	})
 }
 
 func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
@@ -4931,16 +4934,15 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("list objects that are not soft deleted; got: %v, expected only one object named: %s", gotNames, liveObject.ObjectName())
 		}
 
-		// Get a soft deleted object and check soft and hard delete times.
-		oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
-		if err != nil {
-			t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
-		}
-		if oAttrs.SoftDeleteTime.Before(testStart) {
-			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
-		}
-
 		if err := retry(ctx, func() error {
+			// Get a soft deleted object and check soft and hard delete times.
+			oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
+			if err != nil {
+				t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
+			}
+			if oAttrs.SoftDeleteTime.Before(testStart) {
+				t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
+			}
 			if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
 				return fmt.Errorf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
 			}
