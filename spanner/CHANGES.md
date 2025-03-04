@@ -1,5 +1,25 @@
 # Changes
 
+## [1.76.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.76.0...spanner/v1.76.1) (2025-02-21)
+
+
+### Bug Fixes
+
+* **spanner:** Multiplexed_session_previous_transaction_id is not supported in the request for a non multiplexed session ([#11626](https://github.com/googleapis/google-cloud-go/issues/11626)) ([a940bef](https://github.com/googleapis/google-cloud-go/commit/a940befed09ba7ff0de12c720036bc93fee7e8c7))
+
+## [1.76.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.75.0...spanner/v1.76.0) (2025-02-20)
+
+
+### Features
+
+* **spanner/admin/database:** Add instance partitions field in backup proto ([c6a6dc7](https://github.com/googleapis/google-cloud-go/commit/c6a6dc7c6e63740ec25fc1eb34990f4550a6a1f3))
+* **spanner:** Support multiplexed session for read-write transactions & partition ops ([#11615](https://github.com/googleapis/google-cloud-go/issues/11615)) ([4b40201](https://github.com/googleapis/google-cloud-go/commit/4b40201c5cfa223f3e5c039e18a72d74168f7ae9))
+
+
+### Performance Improvements
+
+* **spanner:** Grab debug stack outside of lock ([#11587](https://github.com/googleapis/google-cloud-go/issues/11587)) ([0ee82ff](https://github.com/googleapis/google-cloud-go/commit/0ee82ff4ff385bc632b5cc9630e7e6c4e25a438c))
+
 ## [1.75.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.74.0...spanner/v1.75.0) (2025-02-02)
 
 

@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/generated
 
-go 1.22.7
+go 1.23.0
 
 require (
 	cloud.google.com/go v0.118.2
@@ -98,7 +98,6 @@ require (
 	cloud.google.com/go/recommender v1.13.3
 	cloud.google.com/go/redis v1.17.3
 	cloud.google.com/go/resourcemanager v1.10.3
-	cloud.google.com/go/resourcesettings v1.8.3
 	cloud.google.com/go/retail v1.19.2
 	cloud.google.com/go/run v1.8.1
 	cloud.google.com/go/scheduler v1.11.3
@@ -314,8 +313,6 @@ replace cloud.google.com/go/recommender => ../../../recommender
 replace cloud.google.com/go/redis => ../../../redis
 
 replace cloud.google.com/go/resourcemanager => ../../../resourcemanager
-
-replace cloud.google.com/go/resourcesettings => ../../../resourcesettings
 
 replace cloud.google.com/go/retail => ../../../retail
 

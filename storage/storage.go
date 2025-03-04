@@ -1332,6 +1332,7 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 		Acl:                 toProtoObjectACL(o.ACL),
 		Metadata:            o.Metadata,
 		CreateTime:          toProtoTimestamp(o.Created),
+		FinalizeTime:        toProtoTimestamp(o.Finalized),
 		CustomTime:          toProtoTimestamp(o.CustomTime),
 		DeleteTime:          toProtoTimestamp(o.Deleted),
 		RetentionExpireTime: toProtoTimestamp(o.RetentionExpirationTime),
@@ -1493,6 +1494,10 @@ type ObjectAttrs struct {
 
 	// Created is the time the object was created. This field is read-only.
 	Created time.Time
+
+	// Finalized is the time the object contents were finalized. This may differ
+	// from Created for appendable objects. This field is read-only.
+	Finalized time.Time
 
 	// Deleted is the time the object was deleted.
 	// If not deleted, it is the zero value. This field is read-only.
@@ -1658,6 +1663,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		CustomerKeySHA256:       sha256,
 		KMSKeyName:              o.KmsKeyName,
 		Created:                 convertTime(o.TimeCreated),
+		Finalized:               convertTime(o.TimeFinalized),
 		Deleted:                 convertTime(o.TimeDeleted),
 		Updated:                 convertTime(o.Updated),
 		Etag:                    o.Etag,
@@ -1697,6 +1703,7 @@ func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
 		CustomerKeySHA256: base64.StdEncoding.EncodeToString(o.GetCustomerEncryption().GetKeySha256Bytes()),
 		KMSKeyName:        o.GetKmsKey(),
 		Created:           convertProtoTime(o.GetCreateTime()),
+		Finalized:         convertProtoTime(o.GetFinalizeTime()),
 		Deleted:           convertProtoTime(o.GetDeleteTime()),
 		Updated:           convertProtoTime(o.GetUpdateTime()),
 		CustomTime:        convertProtoTime(o.GetCustomTime()),
@@ -1844,6 +1851,7 @@ var attrToFieldMap = map[string]string{
 	"CustomerKeySHA256":       "customerEncryption",
 	"KMSKeyName":              "kmsKeyName",
 	"Created":                 "timeCreated",
+	"Finalized":               "timeFinalized",
 	"Deleted":                 "timeDeleted",
 	"Updated":                 "updated",
 	"Etag":                    "etag",
@@ -1872,6 +1880,7 @@ var attrToProtoFieldMap = map[string]string{
 	"Deleted":                 "delete_time",
 	"ContentType":             "content_type",
 	"Created":                 "create_time",
+	"Finalized":               "finalize_time",
 	"CRC32C":                  "checksums.crc32c",
 	"MD5":                     "checksums.md5_hash",
 	"Updated":                 "update_time",
