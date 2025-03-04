@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4702,9 +4701,9 @@ func (x *ResponseMessage_Text) GetText() []string {
 // * In the entry fulfillment of a Dialogflow CX Page if entering the page
 // indicates
 //
-//		something went extremely wrong in the conversation.
-//	  - In a webhook response when you determine that the customer issue can only
-//	    be handled by a human.
+//	something went extremely wrong in the conversation.
+//   - In a webhook response when you determine that the customer issue can only
+//     be handled by a human.
 type ResponseMessage_LiveAgentHandoff struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
