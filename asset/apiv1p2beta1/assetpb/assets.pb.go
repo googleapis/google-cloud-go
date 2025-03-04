@@ -21,9 +21,6 @@
 package assetpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv1/orgpolicypb"
@@ -32,6 +29,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (

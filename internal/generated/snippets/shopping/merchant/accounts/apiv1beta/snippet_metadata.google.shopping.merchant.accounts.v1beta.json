@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
-    "version": "0.16.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -1025,7 +1025,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_GetOnlineReturnPolicy_sync",
       "title": "merchantapi GetOnlineReturnPolicy Sample",
-      "description": "GetOnlineReturnPolicy gets an existing return policy.",
+      "description": "GetOnlineReturnPolicy gets an existing return policy for a given business.",
       "file": "OnlineReturnPolicyClient/GetOnlineReturnPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1071,7 +1071,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_ListOnlineReturnPolicies_sync",
       "title": "merchantapi ListOnlineReturnPolicies Sample",
-      "description": "ListOnlineReturnPolicies lists all existing return policies.",
+      "description": "ListOnlineReturnPolicies lists all existing return policies for a given business.",
       "file": "OnlineReturnPolicyClient/ListOnlineReturnPolicies/main.go",
       "language": "GO",
       "clientMethod": {
