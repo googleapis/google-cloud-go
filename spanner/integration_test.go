@@ -49,6 +49,7 @@ import (
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/uuid"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
@@ -2035,7 +2036,9 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					Numeric		NUMERIC,
 					NumericArray	ARRAY<NUMERIC>,
 					JSON		JSON,
-					JSONArray	ARRAY<JSON>
+					JSONArray	ARRAY<JSON>,
+					UUID 		UUID,
+					UUIDArray	Array<UUID>,
 				) PRIMARY KEY (RowID)`,
 	}
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
@@ -2192,6 +2195,14 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "NumericArray", val: nil, wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
 		{col: "JSON", val: nil, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
 		{col: "JSONArray", val: nil, wantWithDefaultConfig: []NullJSON(nil), wantWithNumber: []NullJSON(nil)},
+		{col: "UUID", val: uuid1},
+		{col: "UUID", val: uuid1, wantWithDefaultConfig: NullUUID{uuid1, true}, wantWithNumber: NullUUID{uuid1, true}},
+		{col: "UUID", val: NullUUID{uuid1, true}},
+		{col: "UUID", val: NullUUID{uuid1, true}, wantWithDefaultConfig: uuid1, wantWithNumber: uuid1},
+		{col: "UUID", val: NullUUID{uuid.UUID{}, false}},
+		{col: "UUIDArray", val: []uuid.UUID(nil), wantWithDefaultConfig: []NullUUID(nil), wantWithNumber: []NullUUID(nil)},
+		{col: "UUIDArray", val: []uuid.UUID{}, wantWithDefaultConfig: []NullUUID{}, wantWithNumber: []NullUUID{}},
+		{col: "UUIDArray", val: []uuid.UUID{uuid1, uuid2}, wantWithDefaultConfig: []NullUUID{{uuid1, true}, {uuid2, true}}, wantWithNumber: []NullUUID{{uuid1, true}, {uuid2, true}}},
 	}
 
 	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31
