@@ -68,8 +68,8 @@ import (
 //		*[]time.Time, *[]NullTime - TIMESTAMP ARRAY
 //		*Date(not NULL), *NullDate - DATE
 //		*[]civil.Date, *[]NullDate - DATE ARRAY
-//	    *uuid.UUID(not NULL), *NullUuid - UUID
-//	    *[]uuid.UUID, *[]NullUuid - UUID Array
+//		*uuid.UUID(not NULL), *NullUuid - UUID
+//		*[]uuid.UUID, *[]NullUuid - UUID Array
 //		*[]*some_go_struct, *[]NullRow - STRUCT ARRAY
 //		*NullJSON - JSON
 //		*[]NullJSON - JSON ARRAY
