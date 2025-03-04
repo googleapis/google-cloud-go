@@ -22,6 +22,9 @@ package dialogflowpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -33,8 +36,6 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -1227,14 +1228,14 @@ func (x *CloudConversationDebuggingInfo) GetClientHalfCloseStreamingTimeOffset()
 // [StreamingDetectIntentRequest.input_audio][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.input_audio]
 // field was
 //
-//	set, the `recognition_result` field is populated for one
-//	or more messages.
-//	See the
-//	[StreamingRecognitionResult][google.cloud.dialogflow.v2.StreamingRecognitionResult]
-//	message for details about the result message sequence.
+//		set, the `recognition_result` field is populated for one
+//		or more messages.
+//		See the
+//		[StreamingRecognitionResult][google.cloud.dialogflow.v2.StreamingRecognitionResult]
+//		message for details about the result message sequence.
 //
-//  2. The next message contains `response_id`, `query_result`
-//     and optionally `webhook_status` if a WebHook was called.
+//	 2. The next message contains `response_id`, `query_result`
+//	    and optionally `webhook_status` if a WebHook was called.
 type StreamingDetectIntentResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
