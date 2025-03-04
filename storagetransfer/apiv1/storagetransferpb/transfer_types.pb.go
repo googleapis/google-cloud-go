@@ -21,6 +21,9 @@
 package storagetransferpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -29,8 +32,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -1988,26 +1989,26 @@ func (x *AzureBlobStorageData) GetCredentialsSecret() string {
 
 // An HttpData resource specifies a list of objects on the web to be
 //
-//	transferred over HTTP.  The information of the objects to be transferred is
-//	contained in a file referenced by a URL. The first line in the file must be
-//	`"TsvHttpData-1.0"`, which specifies the format of the file.  Subsequent
-//	lines specify the information of the list of objects, one object per list
-//	entry. Each entry has the following tab-delimited fields:
+//		transferred over HTTP.  The information of the objects to be transferred is
+//		contained in a file referenced by a URL. The first line in the file must be
+//		`"TsvHttpData-1.0"`, which specifies the format of the file.  Subsequent
+//		lines specify the information of the list of objects, one object per list
+//		entry. Each entry has the following tab-delimited fields:
 //
-//	* **HTTP URL** — The location of the object.
+//		* **HTTP URL** — The location of the object.
 //
-//	* **Length** — The size of the object in bytes.
+//		* **Length** — The size of the object in bytes.
 //
-//	* **MD5** — The base64-encoded MD5 hash of the object.
+//		* **MD5** — The base64-encoded MD5 hash of the object.
 //
-//	For an example of a valid TSV file, see
-//	[Transferring data from
-//	URLs](https://cloud.google.com/storage-transfer/docs/create-url-list).
+//		For an example of a valid TSV file, see
+//		[Transferring data from
+//		URLs](https://cloud.google.com/storage-transfer/docs/create-url-list).
 //
-//	When transferring data based on a URL list, keep the following in mind:
+//		When transferring data based on a URL list, keep the following in mind:
 //
-//   - When an object located at `http(s)://hostname:port/<URL-path>` is
-//     transferred to a data sink, the name of the object at the data sink is
+//	  - When an object located at `http(s)://hostname:port/<URL-path>` is
+//	    transferred to a data sink, the name of the object at the data sink is
 //
 // `<hostname>/<URL-path>`.
 //

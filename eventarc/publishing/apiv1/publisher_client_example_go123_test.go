@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package publishing_test
-
-import (
-	publishing "cloud.google.com/go/eventarc/publishing/apiv1"
-)

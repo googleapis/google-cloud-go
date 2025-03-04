@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package talent_test
-
-import (
-	talent "cloud.google.com/go/talent/apiv4beta1"
-)
