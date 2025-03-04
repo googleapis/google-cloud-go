@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package datacatalog_test
+
+import (
+	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
+)
