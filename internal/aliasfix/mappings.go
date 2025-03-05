@@ -526,10 +526,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb",
 		Status:     StatusMigrated,
 	},
-	"google.golang.org/genproto/googleapis/cloud/resourcesettings/v1": {
-		ImportPath: "cloud.google.com/go/resourcesettings/apiv1/resourcesettingspb",
-		Status:     StatusMigrated,
-	},
 	"google.golang.org/genproto/googleapis/cloud/retail/v2": {
 		ImportPath: "cloud.google.com/go/retail/apiv2/retailpb",
 		Status:     StatusMigrated,

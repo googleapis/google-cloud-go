@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1287,7 +1287,7 @@ type SpeechToTextConfig struct {
 	// offsets. If false or unspecified, Speech doesn't return any word-level
 	// information.
 	EnableWordInfo bool `protobuf:"varint,9,opt,name=enable_word_info,json=enableWordInfo,proto3" json:"enable_word_info,omitempty"`
-	// Use timeout based endpointing, interpreting endpointer sensitivy as
+	// Use timeout based endpointing, interpreting endpointer sensitivity as
 	// seconds of timeout value.
 	UseTimeoutBasedEndpointing bool `protobuf:"varint,11,opt,name=use_timeout_based_endpointing,json=useTimeoutBasedEndpointing,proto3" json:"use_timeout_based_endpointing,omitempty"`
 }

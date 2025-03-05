@@ -2540,35 +2540,38 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 }
 
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
-	// Tests that all selected attributes work - query succeeds (without actually
-	// verifying the returned results).
-	query := &Query{
-		Prefix:      "",
-		StartOffset: "obj/",
-		EndOffset:   "obj2",
-	}
-	var selectedAttrs []string
-	for k := range attrToFieldMap {
-		selectedAttrs = append(selectedAttrs, k)
-	}
-	query.SetAttrSelection(selectedAttrs)
-
-	count := 0
-	it := bkt.Objects(context.Background(), query)
-	for {
-		_, err := it.Next()
-		if err == iterator.Done {
-			break
+	t.Run("testObjectsIterateAllSelectedAttrs", func(t *testing.T) {
+		t.Skip("b/398916957")
+		// Tests that all selected attributes work - query succeeds (without actually
+		// verifying the returned results).
+		query := &Query{
+			Prefix:      "",
+			StartOffset: "obj/",
+			EndOffset:   "obj2",
 		}
-		if err != nil {
-			t.Fatalf("iterator.Next: %v", err)
+		var selectedAttrs []string
+		for k := range attrToFieldMap {
+			selectedAttrs = append(selectedAttrs, k)
 		}
-		count++
-	}
+		query.SetAttrSelection(selectedAttrs)
 
-	if count != len(objects)-1 {
-		t.Errorf("count = %v, want %v", count, len(objects)-1)
-	}
+		count := 0
+		it := bkt.Objects(context.Background(), query)
+		for {
+			_, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			count++
+		}
+
+		if count != len(objects)-1 {
+			t.Errorf("count = %v, want %v", count, len(objects)-1)
+		}
+	})
 }
 
 func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {

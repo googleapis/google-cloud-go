@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -150,7 +150,7 @@ type AdvancedSettings_SpeechSettings struct {
 	EndpointerSensitivity int32 `protobuf:"varint,1,opt,name=endpointer_sensitivity,json=endpointerSensitivity,proto3" json:"endpointer_sensitivity,omitempty"`
 	// Timeout before detecting no speech.
 	NoSpeechTimeout *durationpb.Duration `protobuf:"bytes,2,opt,name=no_speech_timeout,json=noSpeechTimeout,proto3" json:"no_speech_timeout,omitempty"`
-	// Use timeout based endpointing, interpreting endpointer sensitivy as
+	// Use timeout based endpointing, interpreting endpointer sensitivity as
 	// seconds of timeout value.
 	UseTimeoutBasedEndpointing bool `protobuf:"varint,3,opt,name=use_timeout_based_endpointing,json=useTimeoutBasedEndpointing,proto3" json:"use_timeout_based_endpointing,omitempty"`
 	// Mapping from language to Speech-to-Text model. The mapped Speech-to-Text

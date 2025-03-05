@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	cloud.google.com/go/iam v1.4.0
 	cloud.google.com/go/longrunning v0.6.4
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/googleapis/gax-go/v2 v2.14.1
 	google.golang.org/api v0.222.0
 	google.golang.org/genproto v0.0.0-20250122153221-138b5a5a4fd4

@@ -2,6 +2,13 @@
 
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.18.0...maps/v1.19.0) (2025-02-26)
+
+
+### Features
+
+* **maps/places:** Add NACS EVCS connector type support ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.17.1...maps/v1.18.0) (2025-01-30)
 
 
