@@ -1496,6 +1496,12 @@ func (mrr *gRPCBidiReader) getHandle() []byte {
 	return mrr.readHandle
 }
 
+func (mrr *gRPCBidiReader) state() bool {
+	mrr.mu.Lock()
+	defer mrr.mu.Unlock()
+	return (!mrr.done)
+}
+
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
 	// If bidi reads was not selected, use the legacy read object API.
 	if !c.config.grpcBidiReads {
@@ -1917,7 +1923,7 @@ type gRPCBidiReader struct {
 	receiverRetry    chan bool
 	mu               sync.Mutex          // protects all vars in gRPCBidiReader from concurrent access
 	mp               map[int64]rangeSpec // always use the mutex when accessing the map
-	done             bool                // always use the mutex when accessing this variable
+	done             bool                // always use the mutex when accessing this variable, indicates whether stream is closed or not.
 	activeTask       int64               // always use the mutex when accessing this variable
 	objectSize       int64               // always use the mutex when accessing this variable
 	retrier          func(error, string)
