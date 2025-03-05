@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.8.3...clouddms/v1.8.4) (2025-02-26)
+
+
+### Documentation
+
+* **clouddms:** Fix broken link in comment for field `OperationMetadata.requested_cancellation` ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+
 ## [1.8.3](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.8.2...clouddms/v1.8.3) (2025-01-02)
 
 

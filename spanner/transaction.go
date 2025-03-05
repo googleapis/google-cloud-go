@@ -491,8 +491,19 @@ type QueryOptions struct {
 
 	// Controls whether to exclude recording modifications in current partitioned update operation
 	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true). Setting
-	// this value for any sql/dml requests other than partitioned udpate will receive an error.
+	// this value for any sql/dml requests other than partitioned update will receive an error.
 	ExcludeTxnFromChangeStreams bool
+
+	// LastStatement indicates whether this statement is the last statement in this transaction.
+	// If set to true, this option marks the end of the transaction. The transaction should be
+	// committed or rolled back after this statement executes, and attempts to execute any other requests
+	// against this transaction (including reads and queries) will be rejected. Mixing mutations with
+	// statements that are marked as the last statement is not allowed.
+	//
+	// For DML statements, setting this option may cause some error reporting to be deferred until
+	// commit time (e.g. validation of unique constraints). Given this, successful execution of a DML
+	// statement should not be assumed until the transaction commits.
+	LastStatement bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
@@ -506,6 +517,7 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 		DataBoostEnabled:            qo.DataBoostEnabled,
 		DirectedReadOptions:         qo.DirectedReadOptions,
 		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
+		LastStatement:               qo.LastStatement || opts.LastStatement,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -690,6 +702,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
 		DataBoostEnabled:    options.DataBoostEnabled,
 		DirectedReadOptions: options.DirectedReadOptions,
+		LastStatement:       options.LastStatement,
 	}
 	return req, sh, nil
 }
@@ -1354,6 +1367,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		Statements:     sppbStmts,
 		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
+		LastStatements: opts.LastStatement,
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {

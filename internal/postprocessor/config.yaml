@@ -121,7 +121,6 @@ modules:
   - recommender
   - redis
   - resourcemanager
-  - resourcesettings
   - retail
   - run
   - scheduler
@@ -832,9 +831,6 @@ service-configs:
   - input-directory: google/cloud/resourcemanager/v3
     service-config: cloudresourcemanager_v3.yaml
     import-path: cloud.google.com/go/resourcemanager/apiv3
-  - input-directory: google/cloud/resourcesettings/v1
-    service-config: resourcesettings_v1.yaml
-    import-path: cloud.google.com/go/resourcesettings/apiv1
   - input-directory: google/cloud/retail/v2
     service-config: retail_v2.yaml
     import-path: cloud.google.com/go/retail/apiv2
