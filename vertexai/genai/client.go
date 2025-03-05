@@ -187,12 +187,28 @@ func (m *GenerativeModel) Name() string {
 
 // GenerateContent produces a single request and response.
 func (m *GenerativeModel) GenerateContent(ctx context.Context, parts ...Part) (*GenerateContentResponse, error) {
-	return m.generateContent(ctx, m.newGenerateContentRequest(NewUserContent(parts...)))
+	return m.generateContent(ctx, m.NewGenerateContentRequest(NewUserContent(parts...)))
+}
+
+// GenerateContentFromRequest produces a single request and response using a raw request.
+// This provides flexibility for users who need to construct custom requests.
+func (m *GenerativeModel) GenerateContentFromRequest(ctx context.Context, req *pb.GenerateContentRequest) (*GenerateContentResponse, error) {
+	return m.generateContent(ctx, req)
 }
 
 // GenerateContentStream returns an iterator that enumerates responses.
 func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
-	streamClient, err := m.c.pc.StreamGenerateContent(ctx, m.newGenerateContentRequest(NewUserContent(parts...)))
+	streamClient, err := m.c.pc.StreamGenerateContent(ctx, m.NewGenerateContentRequest(NewUserContent(parts...)))
+	return &GenerateContentResponseIterator{
+		sc:  streamClient,
+		err: err,
+	}
+}
+
+// GenerateContentStreamFromRequest returns an iterator that enumerates responses using a raw request.
+// This provides flexibility for users who need to construct custom requests.
+func (m *GenerativeModel) GenerateContentStreamFromRequest(ctx context.Context, req *pb.GenerateContentRequest) *GenerateContentResponseIterator {
+	streamClient, err := m.c.pc.StreamGenerateContent(ctx, req)
 	return &GenerateContentResponseIterator{
 		sc:  streamClient,
 		err: err,
@@ -201,14 +217,13 @@ func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Pa
 
 func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateContentRequest) (*GenerateContentResponse, error) {
 	res, err := m.c.pc.GenerateContent(ctx, req)
-
 	if err != nil {
 		return nil, err
 	}
 	return protoToResponse(res)
 }
 
-func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
+func (m *GenerativeModel) NewGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
 		Model:             m.fullName,
 		Contents:          pvTransformSlice(contents, (*Content).toProto),
