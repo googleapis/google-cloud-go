@@ -1,7 +1,7 @@
 handleGHRelease: true
 manifest: true
 releaseType: go-yoshi
-
+tagPullRequestNumber: true
 branches:
   - branch: main
     handleGHRelease: true
