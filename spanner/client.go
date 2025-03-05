@@ -355,6 +355,9 @@ type ClientConfig struct {
 	//
 	// Default: false
 	DisableNativeMetrics bool
+
+	// Default: false
+	IsExperimentalHost bool
 }
 
 type openTelemetryConfig struct {
@@ -506,6 +509,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS must be either true or false")
 		}
 		config.enableMultiplexedSessionForPartitionedOps = config.enableMultiplexedSessionForPartitionedOps && config.SessionPoolConfig.enableMultiplexSession
+	}
+
+	if config.IsExperimentalHost {
+		config.SessionPoolConfig.enableMultiplexSession = true
+		config.enableMultiplexedSessionForRW = true
+		config.enableMultiplexedSessionForPartitionedOps = true
+		config.SessionPoolConfig.MinOpened = 0
 	}
 
 	// Create a session client.
