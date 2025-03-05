@@ -134,6 +134,9 @@ type TransactionOptions struct {
 	// Controls whether to exclude recording modifications in current transaction
 	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true).
 	ExcludeTxnFromChangeStreams bool
+
+	// sets the isolation level for RW transaction
+	IsolationLevel sppb.TransactionOptions_IsolationLevel
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
@@ -144,6 +147,7 @@ func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 		TransactionTag:              to.TransactionTag,
 		CommitPriority:              to.CommitPriority,
 		ExcludeTxnFromChangeStreams: to.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
+		IsolationLevel:              to.IsolationLevel,
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -153,6 +157,9 @@ func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 	}
 	if opts.ReadLockMode != sppb.TransactionOptions_ReadWrite_READ_LOCK_MODE_UNSPECIFIED {
 		merged.ReadLockMode = opts.ReadLockMode
+	}
+	if opts.IsolationLevel != sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED {
+		merged.IsolationLevel = opts.IsolationLevel
 	}
 	return merged
 }
@@ -1432,6 +1439,7 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
 						},
 						ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
+						IsolationLevel:              t.txOpts.IsolationLevel,
 					},
 				},
 			}
@@ -1496,6 +1504,7 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 			Begin: &sppb.TransactionOptions{
 				Mode:                        mode,
 				ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
+				IsolationLevel:              t.txOpts.IsolationLevel,
 			},
 		},
 	}
@@ -1570,6 +1579,7 @@ func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transa
 				ReadWrite: readWriteOptions,
 			},
 			ExcludeTxnFromChangeStreams: opts.txOptions.ExcludeTxnFromChangeStreams,
+			IsolationLevel:              opts.txOptions.IsolationLevel,
 		},
 		MutationKey: opts.mutation,
 	})
@@ -2016,6 +2026,8 @@ type writeOnlyTransaction struct {
 	excludeTxnFromChangeStreams bool
 	// commitOptions are applied to the Commit request for the writeOnlyTransaction..
 	commitOptions CommitOptions
+	// isolationLevel is used to define the isolation for writeOnlyTransaction
+	isolationLevel sppb.TransactionOptions_IsolationLevel
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -2068,6 +2080,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
 						},
 						ExcludeTxnFromChangeStreams: t.excludeTxnFromChangeStreams,
+						IsolationLevel:              t.isolationLevel,
 					},
 				},
 				Mutations:      mPb,
