@@ -73,6 +73,9 @@ const (
 
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
+
+	// MinSessions for Experimental Host connection
+	experimentalHostMinSessions = 0
 )
 
 const (
@@ -515,7 +518,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.SessionPoolConfig.enableMultiplexSession = true
 		config.enableMultiplexedSessionForRW = true
 		config.enableMultiplexedSessionForPartitionedOps = true
-		config.SessionPoolConfig.MinOpened = 0
+		config.SessionPoolConfig.MinOpened = experimentalHostMinSessions
 	}
 
 	// Create a session client.
