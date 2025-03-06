@@ -938,8 +938,8 @@ func (p *parser) sniff(want ...string) bool {
 	return true
 }
 
-// sniff reports whether the next N+skip tokens are as specified.
-func (p *parser) sniff_ahead(skip int, want ...string) bool {
+// sniffAhead reports whether the next N+skip tokens are as specified.
+func (p *parser) sniffAhead(skip int, want ...string) bool {
 	// Store current parser state and restore on the way out.
 	orig := *p
 	defer func() { *p = orig }()
@@ -4151,7 +4151,7 @@ var sequenceArgParser = func(p *parser) (Expr, *parseError) {
 }
 
 var tokenDefinitionArgParser = func(p *parser) (Expr, *parseError) {
-	if p.sniff_ahead(1, "=", ">") {
+	if p.sniffAhead(1, "=", ">") {
 		tok := p.next()
 		if tok.err != nil {
 			return DefinitionExpr{}, tok.err
@@ -4168,9 +4168,8 @@ var tokenDefinitionArgParser = func(p *parser) (Expr, *parseError) {
 			Key:   definition,
 			Value: value,
 		}, nil
-	} else {
-		return p.parseExpr()
 	}
+	return p.parseExpr()
 }
 
 func (p *parser) parseAggregateFunc() (Func, *parseError) {
