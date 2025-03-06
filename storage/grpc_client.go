@@ -1518,7 +1518,7 @@ func (mr *gRPCBidiReader) close() error {
 	mr.closeReceiver <- true
 	mr.mu.Lock()
 	for key := range mr.mp {
-		mr.mp[key].callback(mr.mp[key].offset, rr.mp[key].totalBytesWritten, fmt.Errorf("stream closed early"))
+		mr.mp[key].callback(mr.mp[key].offset, mr.mp[key].totalBytesWritten, fmt.Errorf("stream closed early"))
 		delete(mr.mp, key)
 	}
 	mr.done = true
