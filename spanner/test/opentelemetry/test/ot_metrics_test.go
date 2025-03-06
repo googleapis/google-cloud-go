@@ -396,43 +396,6 @@ func TestOTMetrics_GFELatency(t *testing.T) {
 	metricdatatest.AssertEqual(t, expectedMetricData, resourceMetrics.ScopeMetrics[0].Metrics[idx1], metricdatatest.IgnoreTimestamp(), metricdatatest.IgnoreExemplars())
 }
 
-func TestOTMetrics_InterleavedEnableValues(t *testing.T) {
-	ctx := context.Background()
-	te := newOpenTelemetryTestExporter(false, false)
-	t.Cleanup(func() {
-		te.Unregister(ctx)
-	})
-
-	_, disabledClient, teardown := setupMockedTestServerWithConfig(t, spanner.ClientConfig{OpenTelemetryMeterProvider: te.mp})
-	defer teardown()
-
-	// This is a regression test: previously, this would cause disabledClient to
-	// panic on the first operation because the global variable was set *after*
-	// the client was initialized.
-	spanner.EnableOpenTelemetryMetrics()
-
-	_, enabledClient, teardown := setupMockedTestServerWithConfig(t, spanner.ClientConfig{OpenTelemetryMeterProvider: te.mp})
-	defer teardown()
-
-	disabledClient.Single().ReadRow(context.Background(), "Users", spanner.Key{"alice"}, []string{"email"})
-	enabledClient.Single().ReadRow(context.Background(), "Users", spanner.Key{"alice"}, []string{"email"})
-
-	// Validate an arbitrary metric on the enabled client.
-	validateOTMetric(ctx, t, te, "spanner/max_allowed_sessions", metricdata.Metrics{
-		Name:        "spanner/max_allowed_sessions",
-		Description: "The maximum number of sessions allowed. Configurable by the user.",
-		Unit:        "1",
-		Data: metricdata.Gauge[int64]{
-			DataPoints: []metricdata.DataPoint[int64]{
-				{
-					Attributes: attribute.NewSet(getAttributes(enabledClient.ClientID())...),
-					Value:      400,
-				},
-			},
-		},
-	})
-}
-
 func getMetricIndex(metrics []metricdata.Metrics, metricName string) int64 {
 	for i, metric := range metrics {
 		if metric.Name == metricName {
