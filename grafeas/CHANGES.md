@@ -1,5 +1,12 @@
 # Changes
 
+## [0.3.14](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.13...grafeas/v0.3.14) (2025-03-06)
+
+
+### Bug Fixes
+
+* **grafeas:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [0.3.13](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.12...grafeas/v0.3.13) (2025-01-02)
 
 
