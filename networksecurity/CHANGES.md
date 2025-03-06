@@ -1,5 +1,12 @@
 # Changes
 
+## [0.10.4](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.10.3...networksecurity/v0.10.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* **networksecurity:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [0.10.3](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.10.2...networksecurity/v0.10.3) (2025-01-02)
 
 
