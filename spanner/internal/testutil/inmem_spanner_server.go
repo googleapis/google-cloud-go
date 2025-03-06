@@ -681,25 +681,30 @@ func (s *inMemSpannerServer) getStatementResult(sql string) (*StatementResult, e
 
 func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{}) (interface{}, error) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 
 	// Check if the server is stopped
 	if s.stopped {
+		s.mu.Unlock()
 		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
 	}
 
 	// Send the request to the receivedRequests channel
 	s.receivedRequests <- req
+	s.mu.Unlock()
+	s.ready()
+	s.mu.Lock()
 
 	// Check for a simulated error
 	if s.err != nil {
 		err := s.err
 		s.err = nil
+		s.mu.Unlock()
 		return nil, err
 	}
 
 	// Check for a simulated execution time
 	executionTime, ok := s.executionTimes[method]
+	s.mu.Unlock()
 	if ok {
 		var randTime int64
 		if executionTime.RandomExecutionTime > 0 {
@@ -707,6 +712,7 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 		}
 		totalExecutionTime := time.Duration(int64(executionTime.MinimumExecutionTime) + randTime)
 		<-time.After(totalExecutionTime)
+		s.mu.Lock()
 
 		// Check for errors in the execution time
 		if len(executionTime.Errors) > 0 {
@@ -714,6 +720,7 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 			if !executionTime.KeepError {
 				executionTime.Errors = executionTime.Errors[1:]
 			}
+			s.mu.Unlock()
 			return nil, err
 		}
 
@@ -721,8 +728,10 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 		if len(executionTime.Responses) > 0 {
 			response := executionTime.Responses[0]
 			executionTime.Responses = executionTime.Responses[1:]
+			s.mu.Unlock()
 			return response, nil
 		}
+		s.mu.Unlock()
 	}
 
 	return nil, nil
@@ -1160,6 +1169,38 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 	if _, err := s.simulateExecutionTime(MethodPartitionQuery, req); err != nil {
 		return nil, err
 	}
+	if req.Session == "" {
+		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
+	}
+	session, err := s.findSession(req.Session)
+	if err != nil {
+		return nil, err
+	}
+	var id []byte
+	var tx *spannerpb.Transaction
+	s.updateSessionLastUseTime(session.Name)
+	if id = s.getTransactionID(session, req.Transaction); id != nil {
+		tx, err = s.getTransactionByID(session, id)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var partitions []*spannerpb.Partition
+	for i := int64(0); i < req.PartitionOptions.MaxPartitions; i++ {
+		token := make([]byte, 10)
+		_, err := rand.Read(token)
+		if err != nil {
+			return nil, gstatus.Error(codes.Internal, "failed to generate random partition token")
+		}
+		partitions = append(partitions, &spannerpb.Partition{PartitionToken: token})
+	}
+	return &spannerpb.PartitionResponse{
+		Partitions:  partitions,
+		Transaction: tx,
+	}, nil
+}
+
+func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest) (*spannerpb.PartitionResponse, error) {
 	s.mu.Lock()
 	if s.stopped {
 		s.mu.Unlock()
@@ -1196,20 +1237,6 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 		Partitions:  partitions,
 		Transaction: tx,
 	}, nil
-}
-
-func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest) (*spannerpb.PartitionResponse, error) {
-	return s.PartitionQuery(ctx, &spannerpb.PartitionQueryRequest{
-		Session:          req.Session,
-		Transaction:      req.Transaction,
-		PartitionOptions: req.PartitionOptions,
-		// KeySet is currently ignored.
-		Sql: fmt.Sprintf(
-			"SELECT %s FROM %s",
-			strings.Join(req.Columns, ", "),
-			req.Table,
-		),
-	})
 }
 
 // EncodeResumeToken return mock resume token encoding for an uint64 integer.

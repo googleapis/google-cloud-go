@@ -962,7 +962,7 @@ func TestConditionErrors(t *testing.T) {
 	}
 }
 
-func expectedAttempts(value int) *int {
+func intPointer(value int) *int {
 	return &value
 }
 
@@ -1000,7 +1000,7 @@ func TestObjectRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
 			},
@@ -1033,7 +1033,7 @@ func TestObjectRetryer(t *testing.T) {
 				return o.Retryer(WithMaxAttempts(11))
 			},
 			want: &retryConfig{
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 			},
 		},
 		{
@@ -1097,7 +1097,7 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
 			},
@@ -1129,7 +1129,7 @@ func TestClientSetRetry(t *testing.T) {
 				WithMaxAttempts(7),
 			},
 			want: &retryConfig{
-				maxAttempts: expectedAttempts(7),
+				maxAttempts: intPointer(7),
 			},
 		},
 		{
@@ -1190,7 +1190,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 			},
 		},
@@ -1213,7 +1213,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				},
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 				policy:      RetryAlways,
 			},
 		},
@@ -1236,7 +1236,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				},
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(7),
+				maxAttempts: intPointer(7),
 				policy:      RetryAlways,
 			},
 		},
@@ -1252,7 +1252,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
 			},
 		},
@@ -1268,7 +1268,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 				shouldRetry: ShouldRetry,
 			},
 		},
@@ -1292,7 +1292,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryAlways,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
@@ -1337,7 +1337,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
@@ -1805,6 +1805,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				RetentionExpirationTime: "2019-03-31T19:33:36Z",
 				Size:                    1 << 20,
 				TimeCreated:             "2019-03-31T19:32:10Z",
+				TimeFinalized:           "2019-03-31T19:32:10Z",
 				TimeDeleted:             "2019-03-31T19:33:39Z",
 				TemporaryHold:           true,
 				ComponentCount:          2,
@@ -1812,6 +1813,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
 				Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+				Finalized:               time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
 				CustomTime:              time.Date(2020, 8, 25, 19, 33, 36, 0, time.UTC),
@@ -1843,6 +1845,7 @@ func TestObjectAttrsToRawObject(t *testing.T) {
 	in := &ObjectAttrs{
 		Bucket:                  "Test",
 		Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+		Finalized:               time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 		ContentLanguage:         "en-us",
 		ContentType:             "video/mpeg",
 		Deleted:                 time.Date(2019, 3, 31, 19, 33, 39, 0, time.UTC),
@@ -1893,6 +1896,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 				RetentionExpireTime: timestamppb.New(now),
 				Size:                1 << 20,
 				CreateTime:          timestamppb.New(now),
+				FinalizeTime:        timestamppb.New(now),
 				DeleteTime:          timestamppb.New(now),
 				TemporaryHold:       true,
 				ComponentCount:      2,
@@ -1900,6 +1904,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
 				Created:                 now,
+				Finalized:               now,
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
 				CustomTime:              now,
@@ -1940,11 +1945,13 @@ func TestObjectAttrsToProtoObject(t *testing.T) {
 		RetentionExpireTime: timestamppb.New(now),
 		Size:                1 << 20,
 		CreateTime:          timestamppb.New(now),
+		FinalizeTime:        timestamppb.New(now),
 		DeleteTime:          timestamppb.New(now),
 		TemporaryHold:       true,
 	}
 	in := &ObjectAttrs{
 		Created:                 now,
+		Finalized:               now,
 		ContentLanguage:         "en-us",
 		ContentType:             "video/mpeg",
 		CustomTime:              now,

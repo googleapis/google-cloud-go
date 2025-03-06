@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.1...chat/v0.11.0) (2025-02-20)
+
+
+### Features
+
+* **chat:** Add DeletionType.SPACE_MEMBER. This is returned when a message sent by an app is deleted by a human in a space ([#11600](https://github.com/googleapis/google-cloud-go/issues/11600)) ([c08d347](https://github.com/googleapis/google-cloud-go/commit/c08d34776d398a79f6962a26e8e2c75bc4958e2b))
+
+## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.0...chat/v0.10.1) (2025-02-12)
+
+
+### Documentation
+
+* **chat:** Update Google chat app command documentation ([#11581](https://github.com/googleapis/google-cloud-go/issues/11581)) ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.9.1...chat/v0.10.0) (2025-01-30)
+
+
+### Features
+
+* **chat:** A new field `custom_emoji_metadata` is added to message `.google.chat.v1.Annotation` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **chat:** A new message `CustomEmojiMetadata` is added ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **chat:** A new value `CUSTOM_EMOJI` is added to enum `AnnotationType` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Documentation
+
+* **chat:** A comment for field `custom_emoji` in message `.google.chat.v1.Emoji` is changed ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **chat:** A comment for method `CreateReaction` in service `ChatService` is changed ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **chat:** A comment for method `DeleteReaction` in service `ChatService` is changed ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
 ## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.9.0...chat/v0.9.1) (2025-01-02)
 
 

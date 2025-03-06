@@ -1,5 +1,12 @@
 # Changes
 
+## [1.42.2](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.1...container/v1.42.2) (2025-01-30)
+
+
+### Documentation
+
+* **container:** Broken (or ambiguous) markdown link ([#11507](https://github.com/googleapis/google-cloud-go/issues/11507)) ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+
 ## [1.42.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.0...container/v1.42.1) (2025-01-02)
 
 

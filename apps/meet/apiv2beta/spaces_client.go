@@ -43,14 +43,15 @@ var newSpacesClientHook clientHook
 
 // SpacesCallOptions contains the retry settings for each method of SpacesClient.
 type SpacesCallOptions struct {
-	CreateSpace         []gax.CallOption
-	GetSpace            []gax.CallOption
-	UpdateSpace         []gax.CallOption
-	EndActiveConference []gax.CallOption
-	CreateMember        []gax.CallOption
-	GetMember           []gax.CallOption
-	ListMembers         []gax.CallOption
-	DeleteMember        []gax.CallOption
+	CreateSpace             []gax.CallOption
+	GetSpace                []gax.CallOption
+	UpdateSpace             []gax.CallOption
+	ConnectActiveConference []gax.CallOption
+	EndActiveConference     []gax.CallOption
+	CreateMember            []gax.CallOption
+	GetMember               []gax.CallOption
+	ListMembers             []gax.CallOption
+	DeleteMember            []gax.CallOption
 }
 
 func defaultSpacesGRPCClientOptions() []option.ClientOption {
@@ -88,6 +89,7 @@ func defaultSpacesCallOptions() *SpacesCallOptions {
 		UpdateSpace: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ConnectActiveConference: []gax.CallOption{},
 		EndActiveConference: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -125,6 +127,7 @@ func defaultSpacesRESTCallOptions() *SpacesCallOptions {
 		UpdateSpace: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ConnectActiveConference: []gax.CallOption{},
 		EndActiveConference: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -151,6 +154,7 @@ type internalSpacesClient interface {
 	CreateSpace(context.Context, *meetpb.CreateSpaceRequest, ...gax.CallOption) (*meetpb.Space, error)
 	GetSpace(context.Context, *meetpb.GetSpaceRequest, ...gax.CallOption) (*meetpb.Space, error)
 	UpdateSpace(context.Context, *meetpb.UpdateSpaceRequest, ...gax.CallOption) (*meetpb.Space, error)
+	ConnectActiveConference(context.Context, *meetpb.ConnectActiveConferenceRequest, ...gax.CallOption) (*meetpb.ConnectActiveConferenceResponse, error)
 	EndActiveConference(context.Context, *meetpb.EndActiveConferenceRequest, ...gax.CallOption) error
 	CreateMember(context.Context, *meetpb.CreateMemberRequest, ...gax.CallOption) (*meetpb.Member, error)
 	GetMember(context.Context, *meetpb.GetMemberRequest, ...gax.CallOption) (*meetpb.Member, error)
@@ -212,6 +216,20 @@ func (c *SpacesClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceRequest
 // space (at https://developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).
 func (c *SpacesClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	return c.internalClient.UpdateSpace(ctx, req, opts...)
+}
+
+// ConnectActiveConference Developer Preview (at https://developers.google.com/workspace/preview):
+// Broker a WebRTC connection to the active conference of a space.
+//
+// On success, clients must use the resulting SDP (Session Description
+// Protocol) answer to establish a WebRTC connection. Once connected,
+// additional functionality is available across WebRTC data channels.
+//
+// See Meet Media API
+// overview (at https://developers.google.com/meet/media-api/guides/overview) for
+// more details about this connection.
+func (c *SpacesClient) ConnectActiveConference(ctx context.Context, req *meetpb.ConnectActiveConferenceRequest, opts ...gax.CallOption) (*meetpb.ConnectActiveConferenceResponse, error) {
+	return c.internalClient.ConnectActiveConference(ctx, req, opts...)
 }
 
 // EndActiveConference ends an active conference (if there’s one).
@@ -457,6 +475,24 @@ func (c *spacesGRPCClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.spacesClient.UpdateSpace, req, settings.GRPC, c.logger, "UpdateSpace")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *spacesGRPCClient) ConnectActiveConference(ctx context.Context, req *meetpb.ConnectActiveConferenceRequest, opts ...gax.CallOption) (*meetpb.ConnectActiveConferenceResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ConnectActiveConference[0:len((*c.CallOptions).ConnectActiveConference):len((*c.CallOptions).ConnectActiveConference)], opts...)
+	var resp *meetpb.ConnectActiveConferenceResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.spacesClient.ConnectActiveConference, req, settings.GRPC, c.logger, "ConnectActiveConference")
 		return err
 	}, opts...)
 	if err != nil {
@@ -733,6 +769,71 @@ func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpace")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ConnectActiveConference Developer Preview (at https://developers.google.com/workspace/preview):
+// Broker a WebRTC connection to the active conference of a space.
+//
+// On success, clients must use the resulting SDP (Session Description
+// Protocol) answer to establish a WebRTC connection. Once connected,
+// additional functionality is available across WebRTC data channels.
+//
+// See Meet Media API
+// overview (at https://developers.google.com/meet/media-api/guides/overview) for
+// more details about this connection.
+func (c *spacesRESTClient) ConnectActiveConference(ctx context.Context, req *meetpb.ConnectActiveConferenceRequest, opts ...gax.CallOption) (*meetpb.ConnectActiveConferenceResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta/%v:connectActiveConference", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ConnectActiveConference[0:len((*c.CallOptions).ConnectActiveConference):len((*c.CallOptions).ConnectActiveConference)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &meetpb.ConnectActiveConferenceResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ConnectActiveConference")
 		if err != nil {
 			return err
 		}

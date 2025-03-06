@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1125,11 +1125,17 @@ func (x *GenerateDataQualityRulesResponse) GetRule() []*DataQualityRule {
 //
 // For example:
 //
-//   - Data Quality: generates queries based on the rules and runs against the
-//     data to get data quality check results.
-//   - Data Profile: analyzes the data in table(s) and generates insights about
+//   - Data quality: generates queries based on the rules and runs against the
+//     data to get data quality check results. For more information, see [Auto
+//     data quality
+//     overview](https://cloud.google.com/dataplex/docs/auto-data-quality-overview).
+//   - Data profile: analyzes the data in tables and generates insights about
 //     the structure, content and relationships (such as null percent,
-//     cardinality, min/max/mean, etc).
+//     cardinality, min/max/mean, etc). For more information, see [About data
+//     profiling](https://cloud.google.com/dataplex/docs/data-profiling-overview).
+//   - Data discovery: scans data in Cloud Storage buckets to extract and then
+//     catalog metadata. For more information, see [Discover and catalog Cloud
+//     Storage data](https://cloud.google.com/bigquery/docs/automatic-discovery).
 type DataScan struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

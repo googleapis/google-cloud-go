@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.6.0...apps/v0.7.0) (2025-02-26)
+
+
+### Features
+
+* **apps/meet:** Add `ConnectActiveConference` method to `SpacesService` ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.3...apps/v0.6.0) (2025-01-30)
+
+
+### Features
+
+* **apps/meet:** Add methods for [configuring meeting spaces and members](https ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **apps/meet:** Add new OAuth scope `https ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **apps/meet:** Add new OAuth scope `https ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Documentation
+
+* **apps/meet:** Improve docs for `GetSpaceRequest`, `EndActiveConferenceRequest`, `ListConferenceRecordsRequest` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **apps/meet:** Improve docs for GetSpaceRequest, EndActiveConferenceRequest, ListConferenceRecordsRequest ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **apps/meet:** Remove *Developer Preview* label from methods that are now generally available ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
 ## [0.5.3](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.2...apps/v0.5.3) (2025-01-02)
 
 

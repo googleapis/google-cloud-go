@@ -56,11 +56,16 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &batchpb.CreateJobRequest{
+//	req := &batchpb.CancelJobRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/batch/apiv1/batchpb#CreateJobRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/batch/apiv1/batchpb#CancelJobRequest.
 //	}
-//	resp, err := c.CreateJob(ctx, req)
+//	op, err := c.CancelJob(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

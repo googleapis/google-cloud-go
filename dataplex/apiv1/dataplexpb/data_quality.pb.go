@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -373,10 +373,10 @@ type DataQualityRuleResult struct {
 	// evaluation, or
 	// * exclude `null` rows from the `evaluated_count`, by setting
 	// `ignore_nulls = true`.
-	EvaluatedCount int64 `protobuf:"varint,9,opt,name=evaluated_count,json=evaluatedCount,proto3" json:"evaluated_count,omitempty"`
-	// The number of rows which passed a rule evaluation.
 	//
-	// This field is only valid for row-level type rules.
+	// This field is not set for rule SqlAssertion.
+	EvaluatedCount int64 `protobuf:"varint,9,opt,name=evaluated_count,json=evaluatedCount,proto3" json:"evaluated_count,omitempty"`
+	// This field is not set for rule SqlAssertion.
 	PassedCount int64 `protobuf:"varint,8,opt,name=passed_count,json=passedCount,proto3" json:"passed_count,omitempty"`
 	// The number of rows with null values in the specified column.
 	NullCount int64 `protobuf:"varint,5,opt,name=null_count,json=nullCount,proto3" json:"null_count,omitempty"`

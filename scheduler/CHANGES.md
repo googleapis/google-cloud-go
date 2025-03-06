@@ -1,5 +1,13 @@
 # Changes
 
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.3...scheduler/v1.11.4) (2025-01-30)
+
+
+### Documentation
+
+* **scheduler:** Annotate output-only fields as such ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **scheduler:** Update comments ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.2...scheduler/v1.11.3) (2025-01-02)
 
 

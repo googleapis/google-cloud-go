@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.3...gsuiteaddons/v1.7.4) (2025-01-30)
+
+
+### Documentation
+
+* **gsuiteaddons:** Minor documentation edits ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+
 ## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.2...gsuiteaddons/v1.7.3) (2025-01-02)
 
 

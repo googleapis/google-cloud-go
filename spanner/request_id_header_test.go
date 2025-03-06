@@ -16,6 +16,7 @@ package spanner
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -132,6 +133,7 @@ func TestRequestIDHeader_sentOnEveryClientCall(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
 	t.Cleanup(tearDown)
@@ -468,6 +470,7 @@ func TestRequestIDHeader_onRetriesWithFailedTransactionCommit(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
 	t.Cleanup(tearDown)
@@ -530,6 +533,7 @@ func TestRequestIDHeader_retriesOnSessionNotFound(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
 	t.Cleanup(tearDown)
@@ -612,6 +616,7 @@ func TestRequestIDHeader_BatchDMLWithMultipleDML(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	ctx := context.Background()
@@ -696,6 +701,7 @@ func TestRequestIDHeader_clientBatchWrite(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -758,6 +764,7 @@ func TestRequestIDHeader_ClientBatchWriteWithSessionNotFound(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -828,6 +835,7 @@ func TestRequestIDHeader_ClientBatchWriteWithError(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -905,6 +913,7 @@ func testRequestIDHeaderPartitionQuery(t *testing.T, mustErrorOnPartitionQuery b
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1076,6 +1085,7 @@ func TestRequestIDHeader_ReadWriteTransactionUpdate(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1163,6 +1173,7 @@ func TestRequestIDHeader_ReadWriteTransactionBatchUpdateWithOptions(t *testing.T
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	_, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1226,6 +1237,7 @@ func TestRequestIDHeader_multipleParallelCallsWithConventionalCustomerCalls(t *t
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	// We created exactly 1 client.
@@ -1357,6 +1369,7 @@ func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1445,6 +1458,7 @@ func TestRequestIDHeader_BatchCreateSessions_Unavailable(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1529,6 +1543,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_Unavailable(t *te
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1612,6 +1627,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_InvalidArgument(t
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1656,6 +1672,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_ContextDeadlineEx
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1701,6 +1718,7 @@ func TestRequestIDHeader_Commit_ContextDeadlineExceeded(t *testing.T) {
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1743,7 +1761,8 @@ func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
 			MaxOpened: 400,
 			incStep:   25,
 		},
-		NumChannels: 4,
+		NumChannels:          4,
+		DisableNativeMetrics: true,
 	}
 
 	_, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1860,6 +1879,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_UnavailableDuring
 			WriteSessions: 0.2,
 			incStep:       2,
 		},
+		DisableNativeMetrics: true,
 	}
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
 	t.Cleanup(tearDown)
@@ -1923,5 +1943,15 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_UnavailableDuring
 	}
 	if diff := cmp.Diff(interceptorTracker.streamClientRequestIDSegments, wantStreamingSegments); diff != "" {
 		t.Fatalf("RequestID streaming segments mismatch: got - want +\n%s", diff)
+	}
+}
+
+func TestRequestID_randIDForProcessIsHexadecimal(t *testing.T) {
+	decoded, err := hex.DecodeString(randIDForProcess)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(decoded) == 0 {
+		t.Fatal("Expected a non-empty decoded result")
 	}
 }

@@ -1,5 +1,17 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.20.1...dlp/v1.21.0) (2025-02-20)
+
+
+### Features
+
+* **dlp:** Discovery of Vertex AI datasets ([#11605](https://github.com/googleapis/google-cloud-go/issues/11605)) ([bd0aec1](https://github.com/googleapis/google-cloud-go/commit/bd0aec1ce63ead39f02ab43b403ebac740e979b7))
+
+
+### Documentation
+
+* **dlp:** Documentation revisions for data profiles ([bd0aec1](https://github.com/googleapis/google-cloud-go/commit/bd0aec1ce63ead39f02ab43b403ebac740e979b7))
+
 ## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.20.0...dlp/v1.20.1) (2025-01-02)
 
 

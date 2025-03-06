@@ -1185,7 +1185,7 @@ func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyCon
 	return c.internalClient.ReidentifyContent(ctx, req, opts...)
 }
 
-// ListInfoTypes returns a list of the sensitive information types that DLP API
+// ListInfoTypes returns a list of the sensitive information types that the DLP API
 // supports. See
 // https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference (at https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference)
 // to learn more.
@@ -3245,7 +3245,7 @@ func (c *restClient) ReidentifyContent(ctx context.Context, req *dlppb.Reidentif
 	return resp, nil
 }
 
-// ListInfoTypes returns a list of the sensitive information types that DLP API
+// ListInfoTypes returns a list of the sensitive information types that the DLP API
 // supports. See
 // https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference (at https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference)
 // to learn more.
