@@ -1,6 +1,26 @@
 # Changes
 
 
+## [1.75.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.74.0...aiplatform/v1.75.0) (2025-03-06)
+
+
+### Features
+
+* **aiplatform:** A new field `include_equivalent_model_garden_model_deployment_configs` is added to message `.google.cloud.aiplatform.v1beta1.GetPublisherModelRequest` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Add EnterpriseWebSearch tool option ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Add VertexAISearch.engine option ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+
+### Bug Fixes
+
+* **aiplatform:** An existing google.api.http annotation `http_uri` is changed for method `DeployPublisherModel` in service `ModelGardenService` ([#11670](https://github.com/googleapis/google-cloud-go/issues/11670)) ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Remove VertexAISearch.engine option ([#11681](https://github.com/googleapis/google-cloud-go/issues/11681)) ([60dc167](https://github.com/googleapis/google-cloud-go/commit/60dc167a3e9c2876fe55a4f50bd7e0682f953d67))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `model` in message `.google.cloud.aiplatform.v1beta1.DeployPublisherModelRequest` is changed ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
 ## [1.74.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.73.0...aiplatform/v1.74.0) (2025-02-26)
 
 
