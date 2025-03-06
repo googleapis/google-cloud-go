@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.8.4...clouddms/v1.8.5) (2025-03-06)
+
+
+### Bug Fixes
+
+* **clouddms:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.8.3...clouddms/v1.8.4) (2025-02-26)
 
 
