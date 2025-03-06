@@ -1112,6 +1112,8 @@ type applyOption struct {
 	excludeTxnFromChangeStreams bool
 	// commitOptions is the commit options to use for the commit operation.
 	commitOptions CommitOptions
+	// It defines the isolationLevel for the RW transactions
+	isolationLevel sppb.TransactionOptions_IsolationLevel
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -1157,6 +1159,13 @@ func ExcludeTxnFromChangeStreams() ApplyOption {
 	}
 }
 
+// IsolationLevel returns an ApplyOptions that sets which isolationLevel for RW transaction
+func IsolationLevel(isolationLevel sppb.TransactionOptions_IsolationLevel) ApplyOption {
+	return func(ao *applyOption) {
+		ao.isolationLevel = isolationLevel
+	}
+}
+
 // ApplyCommitOptions returns an ApplyOption that sets the commit options to use for the commit operation.
 func ApplyCommitOptions(co CommitOptions) ApplyOption {
 	return func(ao *applyOption) {
@@ -1182,10 +1191,10 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	if !ao.atLeastOnce {
 		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: ao.commitOptions})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: ao.commitOptions, IsolationLevel: ao.isolationLevel})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions, isolationLevel: ao.isolationLevel}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 

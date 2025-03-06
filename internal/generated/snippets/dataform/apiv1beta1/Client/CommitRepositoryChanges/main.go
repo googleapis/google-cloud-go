@@ -42,10 +42,12 @@ func main() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CommitRepositoryChangesRequest.
 	}
-	err = c.CommitRepositoryChanges(ctx, req)
+	resp, err := c.CommitRepositoryChanges(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 // [END dataform_v1beta1_generated_Dataform_CommitRepositoryChanges_sync]
