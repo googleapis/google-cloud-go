@@ -424,26 +424,26 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
-		res := make([]multiRangeDownloaderOutput, 3)
+		var res multiRangeDownloaderOutput
 		callback := func(x, y int64, err error) {
-			res[0].offset = x
-			res[0].limit = y
-			res[0].err = err
+			res.offset = x
+			res.limit = y
+			res.err = err
 		}
 		// Read All At Once.
 		offset := 0
 		limit := 10000
-		reader.Add(&res[0].buf, int64(offset), int64(limit), callback)
+		reader.Add(&res.buf, int64(offset), int64(limit), callback)
 		reader.Wait()
-		if res[0].limit != 1000 {
-			t.Errorf("Error in callback want data length 1000, got: %v", res[0].limit)
+		if res.limit != 1000 {
+			t.Errorf("Error in callback want data length 1000, got: %v", res.limit)
 		}
-		if !bytes.Equal(res[0].buf.Bytes(), content) {
+		if !bytes.Equal(res.buf.Bytes(), content) {
 			t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-				offset, limit, res[0].buf.Bytes(), content)
+				offset, limit, res.buf.Bytes(), content)
 		}
-		if res[0].err != nil {
-			t.Errorf("read range %v to %v : %v", res[0].offset, 10000, res[0].err)
+		if res.err != nil {
+			t.Errorf("read range %v to %v : %v", res.offset, 10000, res.err)
 		}
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
