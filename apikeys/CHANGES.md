@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.3...apikeys/v1.2.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* **apikeys:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.2...apikeys/v1.2.3) (2025-01-02)
 
 
