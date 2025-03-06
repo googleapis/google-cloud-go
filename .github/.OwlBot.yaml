@@ -127,6 +127,7 @@ deep-remove-regex:
   - /eventarc/apiv1/
   - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
+  - /financialservices/apiv1/
   - /firestore/apiv1/
   - /firestore/apiv1/admin/
   - /functions/apiv1/
@@ -263,6 +264,7 @@ deep-remove-regex:
   - /internal/generated/snippets/eventarc/apiv1/
   - /internal/generated/snippets/eventarc/publishing/apiv1/
   - /internal/generated/snippets/filestore/apiv1/
+  - /internal/generated/snippets/financialservices/apiv1/
   - /internal/generated/snippets/firestore/apiv1/
   - /internal/generated/snippets/firestore/apiv1/admin/
   - /internal/generated/snippets/functions/apiv1/
@@ -881,6 +883,8 @@ deep-copy-regex:
   - source: /google/cloud/eventarc/publishing/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/filestore/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/financialservices/v1/cloud.google.com/go
     dest: /
   - source: /google/firestore/v1/cloud.google.com/go
     dest: /
