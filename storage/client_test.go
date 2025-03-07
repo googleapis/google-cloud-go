@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -1036,6 +1037,94 @@ func TestOpenAppendableWriterMultipleFlushesEmulated(t *testing.T) {
 			t.Fatalf("Resulting object name: got(-), want(+):\n%s", diff)
 		}
 
+		r, err := veneerClient.Bucket(bucket).Object(objName).NewReader(ctx)
+		defer r.Close()
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytes3MiB)
+		got, err := io.ReadAll(r)
+		if n := len(got); n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d (%v)", wantLen, n, err)
+		}
+		if diff := cmp.Diff(got, randomBytes3MiB); diff != "" {
+			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestWriterFlushEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		w.Append = true
+		w.ChunkSize = MiB
+		var gotOffsets []int64
+		w.ProgressFunc = func(offset int64) {
+			gotOffsets = append(gotOffsets, offset)
+		}
+		// Flush at 0 and at a range of values, both aligned with ChunkSize and where explicit flushes are expected.
+		wantOffsets := []int64{0, MiB, 2 * MiB, 2*MiB + 1024, 2*MiB + 2048, 2*MiB + 3072, 3 * MiB}
+
+		// Flush first with no data since this is a special case.
+		n, err := w.Flush()
+		if err != nil {
+			t.Errorf("flushing at 0: %v", err)
+		}
+		if n != 0 {
+			t.Errorf("flushing at 0: got %v offset, want 0", n)
+		}
+
+		// Write first 2 MiB data, expect progress every 1 MiB.
+		_, err = w.Write(randomBytes3MiB[0 : 2*MiB])
+		if err != nil {
+			t.Fatalf("writing test data: got %v; want ok", err)
+		}
+
+		// Write another 1KiB three times and do a Flush each time.
+		for i := 0; i < 3; i++ {
+			start := int64(2*MiB + i*1024)
+			end := int64(2*MiB + (i+1)*1024)
+			n, err := w.Write(randomBytes3MiB[start:end])
+			if err != nil {
+				t.Fatalf("writing 1k data: got %v; want ok", err)
+			}
+			if n != 1024 {
+				t.Errorf("writing 1k data: got %v bytes written, want %v", n, 1024)
+			}
+			off, err := w.Flush()
+			if err != nil {
+				t.Fatalf("flushing 1k data: got %v; want ok", err)
+			}
+			if off != end {
+				t.Errorf("flushing 1k data: got %v bytes committed, want %v", off, end)
+			}
+		}
+
+		// Write remainder of data and close the writer.
+		if _, err := w.Write(randomBytes3MiB[2*MiB+3072:]); err != nil {
+			t.Fatalf("writing remaining data: got %v; want ok", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+
+		// Check offsets
+		if !slices.Equal(gotOffsets, wantOffsets) {
+			t.Errorf("progress offsets: got %v, want %v", gotOffsets, wantOffsets)
+		}
+
+		// Download object and check data
 		r, err := veneerClient.Bucket(bucket).Object(objName).NewReader(ctx)
 		defer r.Close()
 		if err != nil {
