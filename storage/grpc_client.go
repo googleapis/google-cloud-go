@@ -1185,8 +1185,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		done:             false,
 		activeTask:       0,
 		streamRecreation: false,
-		endReceiver:      false,
-		endSender:        false,
 	}
 
 	// streamManager goroutine runs in background where we send message to gcs and process response.
@@ -1197,21 +1195,18 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			case <-rr.ctx.Done():
 				rr.mu.Lock()
 				rr.done = true
-				rr.endSender = true
-				if rr.stream != nil {
-					rr.stream.CloseSend()
-				}
 				rr.mu.Unlock()
 				return
 			case <-rr.managerRetry:
-				// We are not closing stream here as it is already closed and we are retring it.
 				return
 			case <-rr.closeManager:
 				rr.mu.Lock()
-				if rr.stream != nil {
-					rr.stream.CloseSend()
+				if len(rr.mp) != 0 {
+					for key := range rr.mp {
+						rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, fmt.Errorf("stream closed early"))
+						delete(rr.mp, key)
+					}
 				}
-				rr.endSender = true
 				rr.activeTask = 0
 				rr.mu.Unlock()
 				return
@@ -1260,29 +1255,11 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		for {
 			select {
 			case <-rr.ctx.Done():
-				rr.mu.Lock()
-				rr.endReceiver = true
 				rr.done = true
-				if len(rr.mp) != 0 {
-					drainInboundReadStream(rr.stream)
-				}
-				for key := range rr.mp {
-					rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, rr.ctx.Err())
-					delete(rr.mp, key)
-				}
-				rr.activeTask = 0
-				rr.mu.Unlock()
 				return
 			case <-rr.receiverRetry:
-				// We are not draining from stream here as it is already closed and we are retring it.
 				return
 			case <-rr.closeReceiver:
-				rr.mu.Lock()
-				if len(rr.mp) != 0 {
-					drainInboundReadStream(rr.stream)
-				}
-				rr.endReceiver = true
-				rr.mu.Unlock()
 				return
 			default:
 				// This function reads the data sent for a particular range request and has a callback
@@ -1292,9 +1269,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					rr.readHandle = resp.GetReadHandle().GetHandle()
 				}
 				if err == io.EOF {
-					rr.mu.Lock()
-					rr.endReceiver = true
-					rr.mu.Unlock()
+					err = nil
 				}
 				if err != nil {
 					// cancel stream and reopen the stream again.
@@ -1366,8 +1341,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		err = rr.retryStream(err)
 		if err != nil {
 			rr.mu.Lock()
-			rr.endReceiver = true
-			rr.endSender = true
 			for key := range rr.mp {
 				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, err)
 				delete(rr.mp, key)
@@ -1377,10 +1350,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			rr.mu.Unlock()
 			rr.close()
 		} else {
-			rr.mu.Lock()
-			rr.endReceiver = false
-			rr.endSender = false
-			rr.mu.Unlock()
 			// If stream recreation happened successfully lets again start
 			// both the goroutine making the whole flow asynchronous again.
 			if thread == "receiver" {
@@ -1514,37 +1483,16 @@ func (mr *gRPCBidiReader) wait() {
 
 // Close will notify stream manager goroutine that the reader has been closed, if it's still running.
 func (mr *gRPCBidiReader) close() error {
-	mr.closeManager <- true
-	mr.closeReceiver <- true
-	mr.mu.Lock()
-	for key := range mr.mp {
-		mr.mp[key].callback(mr.mp[key].offset, mr.mp[key].totalBytesWritten, fmt.Errorf("stream closed early"))
-		delete(mr.mp, key)
+	if mr.cancel != nil {
+		mr.cancel()
 	}
+	mr.mu.Lock()
 	mr.done = true
 	mr.activeTask = 0
 	mr.mu.Unlock()
-	mr.mu.Lock()
-	tryClosing := !(mr.endReceiver && mr.endSender)
-	mr.mu.Unlock()
-
-	for tryClosing {
-		mr.mu.Lock()
-		tryClosing = !(mr.endReceiver && mr.endSender)
-		mr.mu.Unlock()
-	}
-	defer mr.cancel()
+	mr.closeReceiver <- true
+	mr.closeManager <- true
 	return nil
-}
-
-// drainInboundReadStream calls stream.Recv() repeatedly until an error is returned.
-// drainInboundReadStream always returns a non-nil error. io.EOF indicates all
-// messages were successfully read.
-func drainInboundReadStream(stream storagepb.Storage_BidiReadObjectClient) (err error) {
-	for err == nil {
-		_, err = stream.Recv()
-	}
-	return err
 }
 
 func (mrr *gRPCBidiReader) getHandle() []byte {
@@ -1977,8 +1925,6 @@ type gRPCBidiReader struct {
 	objectSize       int64               // always use the mutex when accessing this variable
 	retrier          func(error, string)
 	streamRecreation bool // This helps us identify if stream recreation is in progress or not. If stream recreation gets called from two goroutine then this will stop second one.
-	endReceiver      bool
-	endSender        bool
 }
 
 // gRPCReader is used by storage.Reader if the experimental option WithGRPCBidiReads is passed.
@@ -2707,11 +2653,11 @@ func bucketContext(ctx context.Context, bucket string) context.Context {
 	return gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 }
 
-// drainInboundWriteStream calls stream.Recv() repeatedly until an error is returned.
+// drainInboundStream calls stream.Recv() repeatedly until an error is returned.
 // It returns the last Resource received on the stream, or nil if no Resource
-// was returned. drainInboundWriteStream always returns a non-nil error. io.EOF
+// was returned. drainInboundStream always returns a non-nil error. io.EOF
 // indicates all messages were successfully read.
-func drainInboundWriteStream(stream storagepb.Storage_BidiWriteObjectClient) (object *storagepb.Object, err error) {
+func drainInboundStream(stream storagepb.Storage_BidiWriteObjectClient) (object *storagepb.Object, err error) {
 	for err == nil {
 		var resp *storagepb.BidiWriteObjectResponse
 		resp, err = stream.Recv()
@@ -2791,7 +2737,7 @@ func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(ctx context.Context, buf [
 
 	sendErr := s.stream.Send(req)
 	if sendErr != nil {
-		obj, err = drainInboundWriteStream(s.stream)
+		obj, err = drainInboundStream(s.stream)
 		s.stream = nil
 		if sendErr != io.EOF {
 			err = sendErr
@@ -2804,7 +2750,7 @@ func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(ctx context.Context, buf [
 		s.stream.CloseSend()
 		// Oneshot uploads only read from the response stream on completion or
 		// failure
-		obj, err = drainInboundWriteStream(s.stream)
+		obj, err = drainInboundStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			err = nil
@@ -2916,7 +2862,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 
 	sendErr := s.stream.Send(req)
 	if sendErr != nil {
-		obj, err = drainInboundWriteStream(s.stream)
+		obj, err = drainInboundStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			// This is unexpected - we got an error on Send(), but not on Recv().
@@ -2928,7 +2874,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 
 	if finishWrite {
 		s.stream.CloseSend()
-		obj, err = drainInboundWriteStream(s.stream)
+		obj, err = drainInboundStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			err = nil
@@ -3025,5 +2971,6 @@ func checkCanceled(err error) error {
 	if status.Code(err) == codes.Canceled {
 		return context.Canceled
 	}
+
 	return err
 }
