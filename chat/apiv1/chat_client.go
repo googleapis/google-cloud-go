@@ -43,35 +43,37 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateMessage        []gax.CallOption
-	ListMessages         []gax.CallOption
-	ListMemberships      []gax.CallOption
-	GetMembership        []gax.CallOption
-	GetMessage           []gax.CallOption
-	UpdateMessage        []gax.CallOption
-	DeleteMessage        []gax.CallOption
-	GetAttachment        []gax.CallOption
-	UploadAttachment     []gax.CallOption
-	ListSpaces           []gax.CallOption
-	SearchSpaces         []gax.CallOption
-	GetSpace             []gax.CallOption
-	CreateSpace          []gax.CallOption
-	SetUpSpace           []gax.CallOption
-	UpdateSpace          []gax.CallOption
-	DeleteSpace          []gax.CallOption
-	CompleteImportSpace  []gax.CallOption
-	FindDirectMessage    []gax.CallOption
-	CreateMembership     []gax.CallOption
-	UpdateMembership     []gax.CallOption
-	DeleteMembership     []gax.CallOption
-	CreateReaction       []gax.CallOption
-	ListReactions        []gax.CallOption
-	DeleteReaction       []gax.CallOption
-	GetSpaceReadState    []gax.CallOption
-	UpdateSpaceReadState []gax.CallOption
-	GetThreadReadState   []gax.CallOption
-	GetSpaceEvent        []gax.CallOption
-	ListSpaceEvents      []gax.CallOption
+	CreateMessage                  []gax.CallOption
+	ListMessages                   []gax.CallOption
+	ListMemberships                []gax.CallOption
+	GetMembership                  []gax.CallOption
+	GetMessage                     []gax.CallOption
+	UpdateMessage                  []gax.CallOption
+	DeleteMessage                  []gax.CallOption
+	GetAttachment                  []gax.CallOption
+	UploadAttachment               []gax.CallOption
+	ListSpaces                     []gax.CallOption
+	SearchSpaces                   []gax.CallOption
+	GetSpace                       []gax.CallOption
+	CreateSpace                    []gax.CallOption
+	SetUpSpace                     []gax.CallOption
+	UpdateSpace                    []gax.CallOption
+	DeleteSpace                    []gax.CallOption
+	CompleteImportSpace            []gax.CallOption
+	FindDirectMessage              []gax.CallOption
+	CreateMembership               []gax.CallOption
+	UpdateMembership               []gax.CallOption
+	DeleteMembership               []gax.CallOption
+	CreateReaction                 []gax.CallOption
+	ListReactions                  []gax.CallOption
+	DeleteReaction                 []gax.CallOption
+	GetSpaceReadState              []gax.CallOption
+	UpdateSpaceReadState           []gax.CallOption
+	GetThreadReadState             []gax.CallOption
+	GetSpaceEvent                  []gax.CallOption
+	ListSpaceEvents                []gax.CallOption
+	GetSpaceNotificationSetting    []gax.CallOption
+	UpdateSpaceNotificationSetting []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -439,6 +441,30 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		GetSpaceNotificationSetting: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSpaceNotificationSetting: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -763,6 +789,28 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetSpaceNotificationSetting: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateSpaceNotificationSetting: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -800,6 +848,8 @@ type internalClient interface {
 	GetThreadReadState(context.Context, *chatpb.GetThreadReadStateRequest, ...gax.CallOption) (*chatpb.ThreadReadState, error)
 	GetSpaceEvent(context.Context, *chatpb.GetSpaceEventRequest, ...gax.CallOption) (*chatpb.SpaceEvent, error)
 	ListSpaceEvents(context.Context, *chatpb.ListSpaceEventsRequest, ...gax.CallOption) *SpaceEventIterator
+	GetSpaceNotificationSetting(context.Context, *chatpb.GetSpaceNotificationSettingRequest, ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error)
+	UpdateSpaceNotificationSetting(context.Context, *chatpb.UpdateSpaceNotificationSettingRequest, ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error)
 }
 
 // Client is a client for interacting with Google Chat API.
@@ -1401,6 +1451,26 @@ func (c *Client) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEventReq
 // space (at https://developers.google.com/workspace/chat/list-space-events).
 func (c *Client) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceEventsRequest, opts ...gax.CallOption) *SpaceEventIterator {
 	return c.internalClient.ListSpaceEvents(ctx, req, opts...)
+}
+
+// GetSpaceNotificationSetting gets the space notification setting. For an example, see Get the
+// caller’s space notification
+// setting (at https://developers.google.com/workspace/chat/get-space-notification-setting).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *Client) GetSpaceNotificationSetting(ctx context.Context, req *chatpb.GetSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	return c.internalClient.GetSpaceNotificationSetting(ctx, req, opts...)
+}
+
+// UpdateSpaceNotificationSetting updates the space notification setting. For an example, see Update
+// the caller’s space notification
+// setting (at https://developers.google.com/workspace/chat/update-space-notification-setting).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *Client) UpdateSpaceNotificationSetting(ctx context.Context, req *chatpb.UpdateSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	return c.internalClient.UpdateSpaceNotificationSetting(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Google Chat API over gRPC transport.
@@ -2219,6 +2289,42 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) GetSpaceNotificationSetting(ctx context.Context, req *chatpb.GetSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSpaceNotificationSetting[0:len((*c.CallOptions).GetSpaceNotificationSetting):len((*c.CallOptions).GetSpaceNotificationSetting)], opts...)
+	var resp *chatpb.SpaceNotificationSetting
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetSpaceNotificationSetting, req, settings.GRPC, c.logger, "GetSpaceNotificationSetting")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateSpaceNotificationSetting(ctx context.Context, req *chatpb.UpdateSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "space_notification_setting.name", url.QueryEscape(req.GetSpaceNotificationSetting().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSpaceNotificationSetting[0:len((*c.CallOptions).UpdateSpaceNotificationSetting):len((*c.CallOptions).UpdateSpaceNotificationSetting)], opts...)
+	var resp *chatpb.SpaceNotificationSetting
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateSpaceNotificationSetting, req, settings.GRPC, c.logger, "UpdateSpaceNotificationSetting")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateMessage creates a message in a Google Chat space. For an example, see Send a
@@ -4383,4 +4489,128 @@ func (c *restClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetSpaceNotificationSetting gets the space notification setting. For an example, see Get the
+// caller’s space notification
+// setting (at https://developers.google.com/workspace/chat/get-space-notification-setting).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *restClient) GetSpaceNotificationSetting(ctx context.Context, req *chatpb.GetSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSpaceNotificationSetting[0:len((*c.CallOptions).GetSpaceNotificationSetting):len((*c.CallOptions).GetSpaceNotificationSetting)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.SpaceNotificationSetting{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpaceNotificationSetting")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateSpaceNotificationSetting updates the space notification setting. For an example, see Update
+// the caller’s space notification
+// setting (at https://developers.google.com/workspace/chat/update-space-notification-setting).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *restClient) UpdateSpaceNotificationSetting(ctx context.Context, req *chatpb.UpdateSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSpaceNotificationSetting()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSpaceNotificationSetting().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "space_notification_setting.name", url.QueryEscape(req.GetSpaceNotificationSetting().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSpaceNotificationSetting[0:len((*c.CallOptions).UpdateSpaceNotificationSetting):len((*c.CallOptions).UpdateSpaceNotificationSetting)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.SpaceNotificationSetting{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpaceNotificationSetting")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
