@@ -29,11 +29,7 @@ require (
 )
 
 require (
-<<<<<<< HEAD
-	cel.dev/expr v0.19.0 // indirect
-=======
 	cel.dev/expr v0.19.2 // indirect
->>>>>>> 674860fdbc0322d75ea3d4aff68ac4fc8220cc08
 	cloud.google.com/go/auth v0.15.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
