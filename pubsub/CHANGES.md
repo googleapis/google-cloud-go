@@ -1,5 +1,18 @@
 # Changes
 
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.47.0...pubsub/v1.48.0) (2025-03-07)
+
+
+### Features
+
+* **pubsub:** Add support for message transforms to Topic and Subscription ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+
+
+### Documentation
+
+* **pubsub:** A comment for field `code` in message `.google.pubsub.v1.JavaScriptUDF` is changed ([#11553](https://github.com/googleapis/google-cloud-go/issues/11553)) ([678944b](https://github.com/googleapis/google-cloud-go/commit/678944b30e389781687209caf3e3b9d35739a6f0))
+* **pubsub:** Fix link for AnalyticsHubSubscriptionInfo ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.46.0...pubsub/v1.47.0) (2025-01-31)
 
 
