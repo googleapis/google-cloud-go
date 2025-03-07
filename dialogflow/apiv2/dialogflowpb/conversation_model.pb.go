@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -500,7 +499,7 @@ type ConversationModelEvaluation struct {
 	//	*ConversationModelEvaluation_SmartReplyMetrics
 	Metrics isConversationModelEvaluation_Metrics `protobuf_oneof:"metrics"`
 	// Output only. Human eval template in csv format.
-	// It tooks real-world conversations provided through input dataset, generates
+	// It takes real-world conversations provided through input dataset, generates
 	// example suggestions for customer to verify quality of the model.
 	// For Smart Reply, the generated csv file contains columns of
 	// Context, (Suggestions,Q1,Q2)*3, Actual reply.
@@ -687,12 +686,12 @@ type isEvaluationConfig_ModelSpecificConfig interface {
 }
 
 type EvaluationConfig_SmartReplyConfig_ struct {
-	// Configuration for smart reply model evalution.
+	// Configuration for smart reply model evaluation.
 	SmartReplyConfig *EvaluationConfig_SmartReplyConfig `protobuf:"bytes,2,opt,name=smart_reply_config,json=smartReplyConfig,proto3,oneof"`
 }
 
 type EvaluationConfig_SmartComposeConfig_ struct {
-	// Configuration for smart compose model evalution.
+	// Configuration for smart compose model evaluation.
 	SmartComposeConfig *EvaluationConfig_SmartComposeConfig `protobuf:"bytes,4,opt,name=smart_compose_config,json=smartComposeConfig,proto3,oneof"`
 }
 

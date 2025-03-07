@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -898,6 +897,75 @@ func (x *RagFileTransformationConfig) GetRagFileChunkingConfig() *RagFileChunkin
 	return nil
 }
 
+// Specifies the parsing config for RagFiles.
+type RagFileParsingConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The parser to use for RagFiles.
+	//
+	// Types that are assignable to Parser:
+	//
+	//	*RagFileParsingConfig_LayoutParser_
+	Parser isRagFileParsingConfig_Parser `protobuf_oneof:"parser"`
+}
+
+func (x *RagFileParsingConfig) Reset() {
+	*x = RagFileParsingConfig{}
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RagFileParsingConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RagFileParsingConfig) ProtoMessage() {}
+
+func (x *RagFileParsingConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RagFileParsingConfig.ProtoReflect.Descriptor instead.
+func (*RagFileParsingConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDescGZIP(), []int{8}
+}
+
+func (m *RagFileParsingConfig) GetParser() isRagFileParsingConfig_Parser {
+	if m != nil {
+		return m.Parser
+	}
+	return nil
+}
+
+func (x *RagFileParsingConfig) GetLayoutParser() *RagFileParsingConfig_LayoutParser {
+	if x, ok := x.GetParser().(*RagFileParsingConfig_LayoutParser_); ok {
+		return x.LayoutParser
+	}
+	return nil
+}
+
+type isRagFileParsingConfig_Parser interface {
+	isRagFileParsingConfig_Parser()
+}
+
+type RagFileParsingConfig_LayoutParser_ struct {
+	// The Layout Parser to use for RagFiles.
+	LayoutParser *RagFileParsingConfig_LayoutParser `protobuf:"bytes,4,opt,name=layout_parser,json=layoutParser,proto3,oneof"`
+}
+
+func (*RagFileParsingConfig_LayoutParser_) isRagFileParsingConfig_Parser() {}
+
 // Config for uploading RagFile.
 type UploadRagFileConfig struct {
 	state         protoimpl.MessageState
@@ -910,7 +978,7 @@ type UploadRagFileConfig struct {
 
 func (x *UploadRagFileConfig) Reset() {
 	*x = UploadRagFileConfig{}
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -922,7 +990,7 @@ func (x *UploadRagFileConfig) String() string {
 func (*UploadRagFileConfig) ProtoMessage() {}
 
 func (x *UploadRagFileConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -935,7 +1003,7 @@ func (x *UploadRagFileConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadRagFileConfig.ProtoReflect.Descriptor instead.
 func (*UploadRagFileConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UploadRagFileConfig) GetRagFileTransformationConfig() *RagFileTransformationConfig {
@@ -971,6 +1039,9 @@ type ImportRagFilesConfig struct {
 	PartialFailureSink isImportRagFilesConfig_PartialFailureSink `protobuf_oneof:"partial_failure_sink"`
 	// Specifies the transformation config for RagFiles.
 	RagFileTransformationConfig *RagFileTransformationConfig `protobuf:"bytes,16,opt,name=rag_file_transformation_config,json=ragFileTransformationConfig,proto3" json:"rag_file_transformation_config,omitempty"`
+	// Optional. Specifies the parsing config for RagFiles.
+	// RAG will use the default parser if this field is not set.
+	RagFileParsingConfig *RagFileParsingConfig `protobuf:"bytes,8,opt,name=rag_file_parsing_config,json=ragFileParsingConfig,proto3" json:"rag_file_parsing_config,omitempty"`
 	// Optional. The max number of queries per minute that this job is allowed to
 	// make to the embedding model specified on the corpus. This value is specific
 	// to this job and not shared across other import jobs. Consult the Quotas
@@ -981,7 +1052,7 @@ type ImportRagFilesConfig struct {
 
 func (x *ImportRagFilesConfig) Reset() {
 	*x = ImportRagFilesConfig{}
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -993,7 +1064,7 @@ func (x *ImportRagFilesConfig) String() string {
 func (*ImportRagFilesConfig) ProtoMessage() {}
 
 func (x *ImportRagFilesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1006,7 +1077,7 @@ func (x *ImportRagFilesConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportRagFilesConfig.ProtoReflect.Descriptor instead.
 func (*ImportRagFilesConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDescGZIP(), []int{10}
 }
 
 func (m *ImportRagFilesConfig) GetImportSource() isImportRagFilesConfig_ImportSource {
@@ -1077,6 +1148,13 @@ func (x *ImportRagFilesConfig) GetPartialFailureBigquerySink() *BigQueryDestinat
 func (x *ImportRagFilesConfig) GetRagFileTransformationConfig() *RagFileTransformationConfig {
 	if x != nil {
 		return x.RagFileTransformationConfig
+	}
+	return nil
+}
+
+func (x *ImportRagFilesConfig) GetRagFileParsingConfig() *RagFileParsingConfig {
+	if x != nil {
+		return x.RagFileParsingConfig
 	}
 	return nil
 }
@@ -1184,7 +1262,7 @@ type RagEmbeddingModelConfig_VertexPredictionEndpoint struct {
 
 func (x *RagEmbeddingModelConfig_VertexPredictionEndpoint) Reset() {
 	*x = RagEmbeddingModelConfig_VertexPredictionEndpoint{}
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[10]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1196,7 +1274,7 @@ func (x *RagEmbeddingModelConfig_VertexPredictionEndpoint) String() string {
 func (*RagEmbeddingModelConfig_VertexPredictionEndpoint) ProtoMessage() {}
 
 func (x *RagEmbeddingModelConfig_VertexPredictionEndpoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[10]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1242,7 +1320,7 @@ type RagVectorDbConfig_RagManagedDb struct {
 
 func (x *RagVectorDbConfig_RagManagedDb) Reset() {
 	*x = RagVectorDbConfig_RagManagedDb{}
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[11]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1254,7 +1332,7 @@ func (x *RagVectorDbConfig_RagManagedDb) String() string {
 func (*RagVectorDbConfig_RagManagedDb) ProtoMessage() {}
 
 func (x *RagVectorDbConfig_RagManagedDb) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[11]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1283,7 +1361,7 @@ type RagVectorDbConfig_Pinecone struct {
 
 func (x *RagVectorDbConfig_Pinecone) Reset() {
 	*x = RagVectorDbConfig_Pinecone{}
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[12]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1295,7 +1373,7 @@ func (x *RagVectorDbConfig_Pinecone) String() string {
 func (*RagVectorDbConfig_Pinecone) ProtoMessage() {}
 
 func (x *RagVectorDbConfig_Pinecone) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[12]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1336,7 +1414,7 @@ type RagVectorDbConfig_VertexVectorSearch struct {
 
 func (x *RagVectorDbConfig_VertexVectorSearch) Reset() {
 	*x = RagVectorDbConfig_VertexVectorSearch{}
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[13]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1348,7 +1426,7 @@ func (x *RagVectorDbConfig_VertexVectorSearch) String() string {
 func (*RagVectorDbConfig_VertexVectorSearch) ProtoMessage() {}
 
 func (x *RagVectorDbConfig_VertexVectorSearch) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[13]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1392,7 +1470,7 @@ type RagFileChunkingConfig_FixedLengthChunking struct {
 
 func (x *RagFileChunkingConfig_FixedLengthChunking) Reset() {
 	*x = RagFileChunkingConfig_FixedLengthChunking{}
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[14]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1404,7 +1482,7 @@ func (x *RagFileChunkingConfig_FixedLengthChunking) String() string {
 func (*RagFileChunkingConfig_FixedLengthChunking) ProtoMessage() {}
 
 func (x *RagFileChunkingConfig_FixedLengthChunking) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[14]
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1430,6 +1508,71 @@ func (x *RagFileChunkingConfig_FixedLengthChunking) GetChunkSize() int32 {
 func (x *RagFileChunkingConfig_FixedLengthChunking) GetChunkOverlap() int32 {
 	if x != nil {
 		return x.ChunkOverlap
+	}
+	return 0
+}
+
+// Document AI Layout Parser config.
+type RagFileParsingConfig_LayoutParser struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The full resource name of a Document AI processor or processor version.
+	// The processor must have type `LAYOUT_PARSER_PROCESSOR`. If specified, the
+	// `additional_config.parse_as_scanned_pdf` field must be false.
+	// Format:
+	// * `projects/{project_id}/locations/{location}/processors/{processor_id}`
+	// * `projects/{project_id}/locations/{location}/processors/{processor_id}/processorVersions/{processor_version_id}`
+	ProcessorName string `protobuf:"bytes,1,opt,name=processor_name,json=processorName,proto3" json:"processor_name,omitempty"`
+	// The maximum number of requests the job is allowed to make to the Document
+	// AI processor per minute. Consult
+	// https://cloud.google.com/document-ai/quotas and the Quota page for your
+	// project to set an appropriate value here. If unspecified, a default value
+	// of 120 QPM would be used.
+	MaxParsingRequestsPerMin int32 `protobuf:"varint,2,opt,name=max_parsing_requests_per_min,json=maxParsingRequestsPerMin,proto3" json:"max_parsing_requests_per_min,omitempty"`
+}
+
+func (x *RagFileParsingConfig_LayoutParser) Reset() {
+	*x = RagFileParsingConfig_LayoutParser{}
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RagFileParsingConfig_LayoutParser) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RagFileParsingConfig_LayoutParser) ProtoMessage() {}
+
+func (x *RagFileParsingConfig_LayoutParser) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RagFileParsingConfig_LayoutParser.ProtoReflect.Descriptor instead.
+func (*RagFileParsingConfig_LayoutParser) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDescGZIP(), []int{8, 0}
+}
+
+func (x *RagFileParsingConfig_LayoutParser) GetProcessorName() string {
+	if x != nil {
+		return x.ProcessorName
+	}
+	return ""
+}
+
+func (x *RagFileParsingConfig_LayoutParser) GetMaxParsingRequestsPerMin() int32 {
+	if x != nil {
+		return x.MaxParsingRequestsPerMin
 	}
 	return 0
 }
@@ -1668,7 +1811,23 @@ var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDesc = []byte{
 	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65,
 	0x43, 0x68, 0x75, 0x6e, 0x6b, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x15,
 	0x72, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x69, 0x6e, 0x67, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0x93, 0x01, 0x0a, 0x13, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0xfd, 0x01, 0x0a, 0x14, 0x52, 0x61, 0x67, 0x46, 0x69, 0x6c,
+	0x65, 0x50, 0x61, 0x72, 0x73, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x64,
+	0x0a, 0x0d, 0x6c, 0x61, 0x79, 0x6f, 0x75, 0x74, 0x5f, 0x70, 0x61, 0x72, 0x73, 0x65, 0x72, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e,
+	0x76, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x73, 0x69, 0x6e,
+	0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x4c, 0x61, 0x79, 0x6f, 0x75, 0x74, 0x50, 0x61,
+	0x72, 0x73, 0x65, 0x72, 0x48, 0x00, 0x52, 0x0c, 0x6c, 0x61, 0x79, 0x6f, 0x75, 0x74, 0x50, 0x61,
+	0x72, 0x73, 0x65, 0x72, 0x1a, 0x75, 0x0a, 0x0c, 0x4c, 0x61, 0x79, 0x6f, 0x75, 0x74, 0x50, 0x61,
+	0x72, 0x73, 0x65, 0x72, 0x12, 0x25, 0x0a, 0x0e, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x6f,
+	0x72, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x70, 0x72,
+	0x6f, 0x63, 0x65, 0x73, 0x73, 0x6f, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x3e, 0x0a, 0x1c, 0x6d,
+	0x61, 0x78, 0x5f, 0x70, 0x61, 0x72, 0x73, 0x69, 0x6e, 0x67, 0x5f, 0x72, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x73, 0x5f, 0x70, 0x65, 0x72, 0x5f, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x18, 0x6d, 0x61, 0x78, 0x50, 0x61, 0x72, 0x73, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x73, 0x50, 0x65, 0x72, 0x4d, 0x69, 0x6e, 0x42, 0x08, 0x0a, 0x06, 0x70,
+	0x61, 0x72, 0x73, 0x65, 0x72, 0x22, 0x93, 0x01, 0x0a, 0x13, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64,
 	0x52, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x7c, 0x0a,
 	0x1e, 0x72, 0x61, 0x67, 0x5f, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x66,
 	0x6f, 0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18,
@@ -1677,7 +1836,7 @@ var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDesc = []byte{
 	0x76, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66,
 	0x6f, 0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x1b,
 	0x72, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x6f, 0x72, 0x6d,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0x8e, 0x07, 0x0a, 0x14,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0xfc, 0x07, 0x0a, 0x14,
 	0x49, 0x6d, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x73, 0x43, 0x6f,
 	0x6e, 0x66, 0x69, 0x67, 0x12, 0x46, 0x0a, 0x0a, 0x67, 0x63, 0x73, 0x5f, 0x73, 0x6f, 0x75, 0x72,
 	0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x25, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
@@ -1727,28 +1886,35 @@ var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDesc = []byte{
 	0x31, 0x2e, 0x52, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x6f,
 	0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x1b, 0x72,
 	0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x6f, 0x72, 0x6d, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x47, 0x0a, 0x1e, 0x6d, 0x61,
-	0x78, 0x5f, 0x65, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x72, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x73, 0x5f, 0x70, 0x65, 0x72, 0x5f, 0x6d, 0x69, 0x6e, 0x18, 0x05, 0x20, 0x01,
-	0x28, 0x05, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x1a, 0x6d, 0x61, 0x78, 0x45, 0x6d, 0x62, 0x65,
-	0x64, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x73, 0x50, 0x65, 0x72,
-	0x4d, 0x69, 0x6e, 0x42, 0x0f, 0x0a, 0x0d, 0x69, 0x6d, 0x70, 0x6f, 0x72, 0x74, 0x5f, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x42, 0x16, 0x0a, 0x14, 0x70, 0x61, 0x72, 0x74, 0x69, 0x61, 0x6c, 0x5f,
-	0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x5f, 0x73, 0x69, 0x6e, 0x6b, 0x42, 0xd0, 0x01, 0x0a,
-	0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
-	0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42,
-	0x12, 0x56, 0x65, 0x72, 0x74, 0x65, 0x78, 0x52, 0x61, 0x67, 0x44, 0x61, 0x74, 0x61, 0x50, 0x72,
-	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61,
-	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c,
-	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66,
-	0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43,
-	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e,
-	0x56, 0x31, 0xca, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75,
-	0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0xea,
-	0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a,
-	0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x6c, 0x0a, 0x17, 0x72, 0x61,
+	0x67, 0x5f, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x70, 0x61, 0x72, 0x73, 0x69, 0x6e, 0x67, 0x5f, 0x63,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65,
+	0x50, 0x61, 0x72, 0x73, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0,
+	0x41, 0x01, 0x52, 0x14, 0x72, 0x61, 0x67, 0x46, 0x69, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x73, 0x69,
+	0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x47, 0x0a, 0x1e, 0x6d, 0x61, 0x78, 0x5f,
+	0x65, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x73, 0x5f, 0x70, 0x65, 0x72, 0x5f, 0x6d, 0x69, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x05,
+	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x1a, 0x6d, 0x61, 0x78, 0x45, 0x6d, 0x62, 0x65, 0x64, 0x64,
+	0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x73, 0x50, 0x65, 0x72, 0x4d, 0x69,
+	0x6e, 0x42, 0x0f, 0x0a, 0x0d, 0x69, 0x6d, 0x70, 0x6f, 0x72, 0x74, 0x5f, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x42, 0x16, 0x0a, 0x14, 0x70, 0x61, 0x72, 0x74, 0x69, 0x61, 0x6c, 0x5f, 0x66, 0x61,
+	0x69, 0x6c, 0x75, 0x72, 0x65, 0x5f, 0x73, 0x69, 0x6e, 0x6b, 0x42, 0xd0, 0x01, 0x0a, 0x1e, 0x63,
+	0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
+	0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x12, 0x56,
+	0x65, 0x72, 0x74, 0x65, 0x78, 0x52, 0x61, 0x67, 0x44, 0x61, 0x74, 0x61, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66,
+	0x6f, 0x72, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31,
+	0xca, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c,
+	0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x1d,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41,
+	0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1764,7 +1930,7 @@ func file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDescGZIP() []byte 
 }
 
 var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_goTypes = []any{
 	(FileStatus_State)(0),                                    // 0: google.cloud.aiplatform.v1.FileStatus.State
 	(CorpusStatus_State)(0),                                  // 1: google.cloud.aiplatform.v1.CorpusStatus.State
@@ -1776,62 +1942,66 @@ var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_goTypes = []any{
 	(*RagFile)(nil),                                          // 7: google.cloud.aiplatform.v1.RagFile
 	(*RagFileChunkingConfig)(nil),                            // 8: google.cloud.aiplatform.v1.RagFileChunkingConfig
 	(*RagFileTransformationConfig)(nil),                      // 9: google.cloud.aiplatform.v1.RagFileTransformationConfig
-	(*UploadRagFileConfig)(nil),                              // 10: google.cloud.aiplatform.v1.UploadRagFileConfig
-	(*ImportRagFilesConfig)(nil),                             // 11: google.cloud.aiplatform.v1.ImportRagFilesConfig
-	(*RagEmbeddingModelConfig_VertexPredictionEndpoint)(nil), // 12: google.cloud.aiplatform.v1.RagEmbeddingModelConfig.VertexPredictionEndpoint
-	(*RagVectorDbConfig_RagManagedDb)(nil),                   // 13: google.cloud.aiplatform.v1.RagVectorDbConfig.RagManagedDb
-	(*RagVectorDbConfig_Pinecone)(nil),                       // 14: google.cloud.aiplatform.v1.RagVectorDbConfig.Pinecone
-	(*RagVectorDbConfig_VertexVectorSearch)(nil),             // 15: google.cloud.aiplatform.v1.RagVectorDbConfig.VertexVectorSearch
-	(*RagFileChunkingConfig_FixedLengthChunking)(nil),        // 16: google.cloud.aiplatform.v1.RagFileChunkingConfig.FixedLengthChunking
-	(*ApiAuth)(nil),                                          // 17: google.cloud.aiplatform.v1.ApiAuth
-	(*timestamppb.Timestamp)(nil),                            // 18: google.protobuf.Timestamp
-	(*GcsSource)(nil),                                        // 19: google.cloud.aiplatform.v1.GcsSource
-	(*GoogleDriveSource)(nil),                                // 20: google.cloud.aiplatform.v1.GoogleDriveSource
-	(*DirectUploadSource)(nil),                               // 21: google.cloud.aiplatform.v1.DirectUploadSource
-	(*SlackSource)(nil),                                      // 22: google.cloud.aiplatform.v1.SlackSource
-	(*JiraSource)(nil),                                       // 23: google.cloud.aiplatform.v1.JiraSource
-	(*SharePointSources)(nil),                                // 24: google.cloud.aiplatform.v1.SharePointSources
-	(*GcsDestination)(nil),                                   // 25: google.cloud.aiplatform.v1.GcsDestination
-	(*BigQueryDestination)(nil),                              // 26: google.cloud.aiplatform.v1.BigQueryDestination
+	(*RagFileParsingConfig)(nil),                             // 10: google.cloud.aiplatform.v1.RagFileParsingConfig
+	(*UploadRagFileConfig)(nil),                              // 11: google.cloud.aiplatform.v1.UploadRagFileConfig
+	(*ImportRagFilesConfig)(nil),                             // 12: google.cloud.aiplatform.v1.ImportRagFilesConfig
+	(*RagEmbeddingModelConfig_VertexPredictionEndpoint)(nil), // 13: google.cloud.aiplatform.v1.RagEmbeddingModelConfig.VertexPredictionEndpoint
+	(*RagVectorDbConfig_RagManagedDb)(nil),                   // 14: google.cloud.aiplatform.v1.RagVectorDbConfig.RagManagedDb
+	(*RagVectorDbConfig_Pinecone)(nil),                       // 15: google.cloud.aiplatform.v1.RagVectorDbConfig.Pinecone
+	(*RagVectorDbConfig_VertexVectorSearch)(nil),             // 16: google.cloud.aiplatform.v1.RagVectorDbConfig.VertexVectorSearch
+	(*RagFileChunkingConfig_FixedLengthChunking)(nil),        // 17: google.cloud.aiplatform.v1.RagFileChunkingConfig.FixedLengthChunking
+	(*RagFileParsingConfig_LayoutParser)(nil),                // 18: google.cloud.aiplatform.v1.RagFileParsingConfig.LayoutParser
+	(*ApiAuth)(nil),                                          // 19: google.cloud.aiplatform.v1.ApiAuth
+	(*timestamppb.Timestamp)(nil),                            // 20: google.protobuf.Timestamp
+	(*GcsSource)(nil),                                        // 21: google.cloud.aiplatform.v1.GcsSource
+	(*GoogleDriveSource)(nil),                                // 22: google.cloud.aiplatform.v1.GoogleDriveSource
+	(*DirectUploadSource)(nil),                               // 23: google.cloud.aiplatform.v1.DirectUploadSource
+	(*SlackSource)(nil),                                      // 24: google.cloud.aiplatform.v1.SlackSource
+	(*JiraSource)(nil),                                       // 25: google.cloud.aiplatform.v1.JiraSource
+	(*SharePointSources)(nil),                                // 26: google.cloud.aiplatform.v1.SharePointSources
+	(*GcsDestination)(nil),                                   // 27: google.cloud.aiplatform.v1.GcsDestination
+	(*BigQueryDestination)(nil),                              // 28: google.cloud.aiplatform.v1.BigQueryDestination
 }
 var file_google_cloud_aiplatform_v1_vertex_rag_data_proto_depIdxs = []int32{
-	12, // 0: google.cloud.aiplatform.v1.RagEmbeddingModelConfig.vertex_prediction_endpoint:type_name -> google.cloud.aiplatform.v1.RagEmbeddingModelConfig.VertexPredictionEndpoint
-	13, // 1: google.cloud.aiplatform.v1.RagVectorDbConfig.rag_managed_db:type_name -> google.cloud.aiplatform.v1.RagVectorDbConfig.RagManagedDb
-	14, // 2: google.cloud.aiplatform.v1.RagVectorDbConfig.pinecone:type_name -> google.cloud.aiplatform.v1.RagVectorDbConfig.Pinecone
-	15, // 3: google.cloud.aiplatform.v1.RagVectorDbConfig.vertex_vector_search:type_name -> google.cloud.aiplatform.v1.RagVectorDbConfig.VertexVectorSearch
-	17, // 4: google.cloud.aiplatform.v1.RagVectorDbConfig.api_auth:type_name -> google.cloud.aiplatform.v1.ApiAuth
+	13, // 0: google.cloud.aiplatform.v1.RagEmbeddingModelConfig.vertex_prediction_endpoint:type_name -> google.cloud.aiplatform.v1.RagEmbeddingModelConfig.VertexPredictionEndpoint
+	14, // 1: google.cloud.aiplatform.v1.RagVectorDbConfig.rag_managed_db:type_name -> google.cloud.aiplatform.v1.RagVectorDbConfig.RagManagedDb
+	15, // 2: google.cloud.aiplatform.v1.RagVectorDbConfig.pinecone:type_name -> google.cloud.aiplatform.v1.RagVectorDbConfig.Pinecone
+	16, // 3: google.cloud.aiplatform.v1.RagVectorDbConfig.vertex_vector_search:type_name -> google.cloud.aiplatform.v1.RagVectorDbConfig.VertexVectorSearch
+	19, // 4: google.cloud.aiplatform.v1.RagVectorDbConfig.api_auth:type_name -> google.cloud.aiplatform.v1.ApiAuth
 	2,  // 5: google.cloud.aiplatform.v1.RagVectorDbConfig.rag_embedding_model_config:type_name -> google.cloud.aiplatform.v1.RagEmbeddingModelConfig
 	0,  // 6: google.cloud.aiplatform.v1.FileStatus.state:type_name -> google.cloud.aiplatform.v1.FileStatus.State
 	1,  // 7: google.cloud.aiplatform.v1.CorpusStatus.state:type_name -> google.cloud.aiplatform.v1.CorpusStatus.State
-	18, // 8: google.cloud.aiplatform.v1.RagCorpus.create_time:type_name -> google.protobuf.Timestamp
-	18, // 9: google.cloud.aiplatform.v1.RagCorpus.update_time:type_name -> google.protobuf.Timestamp
+	20, // 8: google.cloud.aiplatform.v1.RagCorpus.create_time:type_name -> google.protobuf.Timestamp
+	20, // 9: google.cloud.aiplatform.v1.RagCorpus.update_time:type_name -> google.protobuf.Timestamp
 	5,  // 10: google.cloud.aiplatform.v1.RagCorpus.corpus_status:type_name -> google.cloud.aiplatform.v1.CorpusStatus
 	3,  // 11: google.cloud.aiplatform.v1.RagCorpus.vector_db_config:type_name -> google.cloud.aiplatform.v1.RagVectorDbConfig
-	19, // 12: google.cloud.aiplatform.v1.RagFile.gcs_source:type_name -> google.cloud.aiplatform.v1.GcsSource
-	20, // 13: google.cloud.aiplatform.v1.RagFile.google_drive_source:type_name -> google.cloud.aiplatform.v1.GoogleDriveSource
-	21, // 14: google.cloud.aiplatform.v1.RagFile.direct_upload_source:type_name -> google.cloud.aiplatform.v1.DirectUploadSource
-	22, // 15: google.cloud.aiplatform.v1.RagFile.slack_source:type_name -> google.cloud.aiplatform.v1.SlackSource
-	23, // 16: google.cloud.aiplatform.v1.RagFile.jira_source:type_name -> google.cloud.aiplatform.v1.JiraSource
-	24, // 17: google.cloud.aiplatform.v1.RagFile.share_point_sources:type_name -> google.cloud.aiplatform.v1.SharePointSources
-	18, // 18: google.cloud.aiplatform.v1.RagFile.create_time:type_name -> google.protobuf.Timestamp
-	18, // 19: google.cloud.aiplatform.v1.RagFile.update_time:type_name -> google.protobuf.Timestamp
+	21, // 12: google.cloud.aiplatform.v1.RagFile.gcs_source:type_name -> google.cloud.aiplatform.v1.GcsSource
+	22, // 13: google.cloud.aiplatform.v1.RagFile.google_drive_source:type_name -> google.cloud.aiplatform.v1.GoogleDriveSource
+	23, // 14: google.cloud.aiplatform.v1.RagFile.direct_upload_source:type_name -> google.cloud.aiplatform.v1.DirectUploadSource
+	24, // 15: google.cloud.aiplatform.v1.RagFile.slack_source:type_name -> google.cloud.aiplatform.v1.SlackSource
+	25, // 16: google.cloud.aiplatform.v1.RagFile.jira_source:type_name -> google.cloud.aiplatform.v1.JiraSource
+	26, // 17: google.cloud.aiplatform.v1.RagFile.share_point_sources:type_name -> google.cloud.aiplatform.v1.SharePointSources
+	20, // 18: google.cloud.aiplatform.v1.RagFile.create_time:type_name -> google.protobuf.Timestamp
+	20, // 19: google.cloud.aiplatform.v1.RagFile.update_time:type_name -> google.protobuf.Timestamp
 	4,  // 20: google.cloud.aiplatform.v1.RagFile.file_status:type_name -> google.cloud.aiplatform.v1.FileStatus
-	16, // 21: google.cloud.aiplatform.v1.RagFileChunkingConfig.fixed_length_chunking:type_name -> google.cloud.aiplatform.v1.RagFileChunkingConfig.FixedLengthChunking
+	17, // 21: google.cloud.aiplatform.v1.RagFileChunkingConfig.fixed_length_chunking:type_name -> google.cloud.aiplatform.v1.RagFileChunkingConfig.FixedLengthChunking
 	8,  // 22: google.cloud.aiplatform.v1.RagFileTransformationConfig.rag_file_chunking_config:type_name -> google.cloud.aiplatform.v1.RagFileChunkingConfig
-	9,  // 23: google.cloud.aiplatform.v1.UploadRagFileConfig.rag_file_transformation_config:type_name -> google.cloud.aiplatform.v1.RagFileTransformationConfig
-	19, // 24: google.cloud.aiplatform.v1.ImportRagFilesConfig.gcs_source:type_name -> google.cloud.aiplatform.v1.GcsSource
-	20, // 25: google.cloud.aiplatform.v1.ImportRagFilesConfig.google_drive_source:type_name -> google.cloud.aiplatform.v1.GoogleDriveSource
-	22, // 26: google.cloud.aiplatform.v1.ImportRagFilesConfig.slack_source:type_name -> google.cloud.aiplatform.v1.SlackSource
-	23, // 27: google.cloud.aiplatform.v1.ImportRagFilesConfig.jira_source:type_name -> google.cloud.aiplatform.v1.JiraSource
-	24, // 28: google.cloud.aiplatform.v1.ImportRagFilesConfig.share_point_sources:type_name -> google.cloud.aiplatform.v1.SharePointSources
-	25, // 29: google.cloud.aiplatform.v1.ImportRagFilesConfig.partial_failure_gcs_sink:type_name -> google.cloud.aiplatform.v1.GcsDestination
-	26, // 30: google.cloud.aiplatform.v1.ImportRagFilesConfig.partial_failure_bigquery_sink:type_name -> google.cloud.aiplatform.v1.BigQueryDestination
-	9,  // 31: google.cloud.aiplatform.v1.ImportRagFilesConfig.rag_file_transformation_config:type_name -> google.cloud.aiplatform.v1.RagFileTransformationConfig
-	32, // [32:32] is the sub-list for method output_type
-	32, // [32:32] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	18, // 23: google.cloud.aiplatform.v1.RagFileParsingConfig.layout_parser:type_name -> google.cloud.aiplatform.v1.RagFileParsingConfig.LayoutParser
+	9,  // 24: google.cloud.aiplatform.v1.UploadRagFileConfig.rag_file_transformation_config:type_name -> google.cloud.aiplatform.v1.RagFileTransformationConfig
+	21, // 25: google.cloud.aiplatform.v1.ImportRagFilesConfig.gcs_source:type_name -> google.cloud.aiplatform.v1.GcsSource
+	22, // 26: google.cloud.aiplatform.v1.ImportRagFilesConfig.google_drive_source:type_name -> google.cloud.aiplatform.v1.GoogleDriveSource
+	24, // 27: google.cloud.aiplatform.v1.ImportRagFilesConfig.slack_source:type_name -> google.cloud.aiplatform.v1.SlackSource
+	25, // 28: google.cloud.aiplatform.v1.ImportRagFilesConfig.jira_source:type_name -> google.cloud.aiplatform.v1.JiraSource
+	26, // 29: google.cloud.aiplatform.v1.ImportRagFilesConfig.share_point_sources:type_name -> google.cloud.aiplatform.v1.SharePointSources
+	27, // 30: google.cloud.aiplatform.v1.ImportRagFilesConfig.partial_failure_gcs_sink:type_name -> google.cloud.aiplatform.v1.GcsDestination
+	28, // 31: google.cloud.aiplatform.v1.ImportRagFilesConfig.partial_failure_bigquery_sink:type_name -> google.cloud.aiplatform.v1.BigQueryDestination
+	9,  // 32: google.cloud.aiplatform.v1.ImportRagFilesConfig.rag_file_transformation_config:type_name -> google.cloud.aiplatform.v1.RagFileTransformationConfig
+	10, // 33: google.cloud.aiplatform.v1.ImportRagFilesConfig.rag_file_parsing_config:type_name -> google.cloud.aiplatform.v1.RagFileParsingConfig
+	34, // [34:34] is the sub-list for method output_type
+	34, // [34:34] is the sub-list for method input_type
+	34, // [34:34] is the sub-list for extension type_name
+	34, // [34:34] is the sub-list for extension extendee
+	0,  // [0:34] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_vertex_rag_data_proto_init() }
@@ -1863,7 +2033,10 @@ func file_google_cloud_aiplatform_v1_vertex_rag_data_proto_init() {
 	file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[6].OneofWrappers = []any{
 		(*RagFileChunkingConfig_FixedLengthChunking_)(nil),
 	}
-	file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[8].OneofWrappers = []any{
+		(*RagFileParsingConfig_LayoutParser_)(nil),
+	}
+	file_google_cloud_aiplatform_v1_vertex_rag_data_proto_msgTypes[10].OneofWrappers = []any{
 		(*ImportRagFilesConfig_GcsSource)(nil),
 		(*ImportRagFilesConfig_GoogleDriveSource)(nil),
 		(*ImportRagFilesConfig_SlackSource)(nil),
@@ -1878,7 +2051,7 @@ func file_google_cloud_aiplatform_v1_vertex_rag_data_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1_vertex_rag_data_proto_rawDesc,
 			NumEnums:      2,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

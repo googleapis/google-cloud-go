@@ -21,13 +21,12 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1147,6 +1146,8 @@ type SpeechToTextConfig struct {
 	// for model selection.
 	Model string `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
 	// List of names of Cloud Speech phrase sets that are used for transcription.
+	// For phrase set limitations, please refer to [Cloud Speech API quotas and
+	// limits](https://cloud.google.com/speech-to-text/quotas#content).
 	PhraseSets []string `protobuf:"bytes,4,rep,name=phrase_sets,json=phraseSets,proto3" json:"phrase_sets,omitempty"`
 	// Audio encoding of the audio content to process.
 	AudioEncoding AudioEncoding `protobuf:"varint,6,opt,name=audio_encoding,json=audioEncoding,proto3,enum=google.cloud.dialogflow.v2.AudioEncoding" json:"audio_encoding,omitempty"`
@@ -1168,7 +1169,7 @@ type SpeechToTextConfig struct {
 	// offsets. If false or unspecified, Speech doesn't return any word-level
 	// information.
 	EnableWordInfo bool `protobuf:"varint,9,opt,name=enable_word_info,json=enableWordInfo,proto3" json:"enable_word_info,omitempty"`
-	// Use timeout based endpointing, interpreting endpointer sensitivy as
+	// Use timeout based endpointing, interpreting endpointer sensitivity as
 	// seconds of timeout value.
 	UseTimeoutBasedEndpointing bool `protobuf:"varint,11,opt,name=use_timeout_based_endpointing,json=useTimeoutBasedEndpointing,proto3" json:"use_timeout_based_endpointing,omitempty"`
 }

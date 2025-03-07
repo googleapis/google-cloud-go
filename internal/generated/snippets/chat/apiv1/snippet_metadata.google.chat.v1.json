@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "0.11.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -699,6 +699,52 @@
       ]
     },
     {
+      "regionTag": "chat_v1_generated_ChatService_GetSpaceNotificationSetting_sync",
+      "title": "chat GetSpaceNotificationSetting Sample",
+      "description": "GetSpaceNotificationSetting gets the space notification setting. For an example, see [Get the\ncaller's space notification\nsetting](https: //developers.google.com/workspace/chat/get-space-notification-setting).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/GetSpaceNotificationSetting/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSpaceNotificationSetting",
+        "fullName": "google.chat.v1.Client.GetSpaceNotificationSetting",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetSpaceNotificationSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.SpaceNotificationSetting",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSpaceNotificationSetting",
+          "fullName": "google.chat.v1.ChatService.GetSpaceNotificationSetting",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "chat_v1_generated_ChatService_GetSpaceReadState_sync",
       "title": "chat GetSpaceReadState Sample",
       "description": "GetSpaceReadState returns details about a user's read state within a space, used to identify\nread and unread messages. For an example, see [Get details about a user's\nspace read\nstate](https: //developers.google.com/workspace/chat/get-space-read-state).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
@@ -1235,6 +1281,52 @@
         "method": {
           "shortName": "UpdateSpace",
           "fullName": "google.chat.v1.ChatService.UpdateSpace",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_UpdateSpaceNotificationSetting_sync",
+      "title": "chat UpdateSpaceNotificationSetting Sample",
+      "description": "UpdateSpaceNotificationSetting updates the space notification setting. For an example, see [Update\nthe caller's space notification\nsetting](https: //developers.google.com/workspace/chat/update-space-notification-setting).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/UpdateSpaceNotificationSetting/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSpaceNotificationSetting",
+        "fullName": "google.chat.v1.Client.UpdateSpaceNotificationSetting",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.UpdateSpaceNotificationSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.SpaceNotificationSetting",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSpaceNotificationSetting",
+          "fullName": "google.chat.v1.ChatService.UpdateSpaceNotificationSetting",
           "service": {
             "shortName": "ChatService",
             "fullName": "google.chat.v1.ChatService"
