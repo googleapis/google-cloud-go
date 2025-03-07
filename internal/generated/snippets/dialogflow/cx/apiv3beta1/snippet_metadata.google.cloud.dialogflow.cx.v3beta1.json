@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
-    "version": "1.65.0",
+    "version": "1.67.0",
     "language": "GO",
     "apis": [
       {
@@ -8991,6 +8991,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v3beta1_generated_Tools_CreateToolVersion_sync",
+      "title": "dialogflow CreateToolVersion Sample",
+      "description": "CreateToolVersion creates a version for the specified\n[Tool][google.cloud.dialogflow.cx.v3beta1.Tool].",
+      "file": "ToolsClient/CreateToolVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateToolVersion",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient.CreateToolVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.CreateToolVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cxpb.ToolVersion",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "CreateToolVersion",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools.CreateToolVersion",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v3beta1_generated_Tools_DeleteTool_sync",
       "title": "dialogflow DeleteTool Sample",
       "description": "DeleteTool deletes a specified [Tool][google.cloud.dialogflow.cx.v3beta1.Tool].",
@@ -9020,6 +9066,51 @@
         "method": {
           "shortName": "DeleteTool",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools.DeleteTool",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_Tools_DeleteToolVersion_sync",
+      "title": "dialogflow DeleteToolVersion Sample",
+      "description": "DeleteToolVersion deletes the specified version of the\n[Tool][google.cloud.dialogflow.cx.v3beta1.Tool].",
+      "file": "ToolsClient/DeleteToolVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteToolVersion",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient.DeleteToolVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.DeleteToolVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "DeleteToolVersion",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools.DeleteToolVersion",
           "service": {
             "shortName": "Tools",
             "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools"
@@ -9220,6 +9311,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v3beta1_generated_Tools_GetToolVersion_sync",
+      "title": "dialogflow GetToolVersion Sample",
+      "description": "GetToolVersion retrieves the specified version of the\n[Tool][google.cloud.dialogflow.cx.v3beta1.Tool].",
+      "file": "ToolsClient/GetToolVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetToolVersion",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient.GetToolVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.GetToolVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cxpb.ToolVersion",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "GetToolVersion",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools.GetToolVersion",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v3beta1_generated_Tools_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
       "description": "ListLocations lists information about the supported locations for this service.",
@@ -9312,6 +9449,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v3beta1_generated_Tools_ListToolVersions_sync",
+      "title": "dialogflow ListToolVersions Sample",
+      "description": "ListToolVersions list versions of the specified\n[Tool][google.cloud.dialogflow.cx.v3beta1.Tool].",
+      "file": "ToolsClient/ListToolVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListToolVersions",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient.ListToolVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.ListToolVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ToolVersionIterator",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "ListToolVersions",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools.ListToolVersions",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v3beta1_generated_Tools_ListTools_sync",
       "title": "dialogflow ListTools Sample",
       "description": "ListTools returns a list of [Tools][google.cloud.dialogflow.cx.v3beta1.Tool] in the\nspecified agent.",
@@ -9353,6 +9536,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_Tools_RestoreToolVersion_sync",
+      "title": "dialogflow RestoreToolVersion Sample",
+      "description": "RestoreToolVersion retrieves the specified version of the Tool and stores it as the\ncurrent tool draft, returning the tool with resources updated.",
+      "file": "ToolsClient/RestoreToolVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreToolVersion",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient.RestoreToolVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.RestoreToolVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cxpb.RestoreToolVersionResponse",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "RestoreToolVersion",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools.RestoreToolVersion",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

@@ -70,6 +70,12 @@ func (it *RepositoryIterator) All() iter.Seq2[*dataformpb.Repository, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *SearchResultIterator) All() iter.Seq2[*dataformpb.SearchResult, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *WorkflowConfigIterator) All() iter.Seq2[*dataformpb.WorkflowConfig, error] {
 	return iterator.RangeAdapter(it.Next)
 }
