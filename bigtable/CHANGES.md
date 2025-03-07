@@ -1,5 +1,17 @@
 # Changes
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.35.0...bigtable/v1.36.0) (2025-03-07)
+
+
+### Features
+
+* **bigtable/admin:** Publish row_key_schema fields in table proto and relevant admin APIs to setup a table with a row_key_schema ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+
+### Bug Fixes
+
+* **bigtable:** Allow GC updates on emulated aggregate column family ([#11499](https://github.com/googleapis/google-cloud-go/issues/11499)) ([0682bfa](https://github.com/googleapis/google-cloud-go/commit/0682bfa5563ec81e2cf3fa9138142ebe482fb6fd))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.34.0...bigtable/v1.35.0) (2025-01-22)
 
 
