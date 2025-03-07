@@ -72,7 +72,7 @@ require (
 	cloud.google.com/go/language v1.14.3
 	cloud.google.com/go/lifesciences v0.10.3
 	cloud.google.com/go/logging v1.13.0
-	cloud.google.com/go/longrunning v0.6.4
+	cloud.google.com/go/longrunning v0.6.5
 	cloud.google.com/go/managedidentities v1.7.3
 	cloud.google.com/go/maps v1.19.0
 	cloud.google.com/go/mediatranslation v0.9.3
@@ -147,6 +147,7 @@ require (
 	cloud.google.com/go/config v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/developerconnect v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/financialservices v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/identitytoolkit v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/managedkafka v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/memorystore v0.0.0-00010101000000-000000000000
@@ -527,3 +528,5 @@ replace cloud.google.com/go/oracledatabase => ../../../oracledatabase
 replace cloud.google.com/go/memorystore => ../../../memorystore
 
 replace cloud.google.com/go/parametermanager => ../../../parametermanager
+
+replace cloud.google.com/go/financialservices => ../../../financialservices
