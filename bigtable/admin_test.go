@@ -205,6 +205,32 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	}
 }
 
+func TestTableAdmin_CreateTableFromConf_WithRowKeySchema(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "my-table", RowKeySchema: &StructType{
+		Fields: []StructField{
+			{FieldName: "key1", FieldType: Int64Type{Encoding: Int64OrderedCodeBytesEncoding{}}},
+			{FieldName: "key2", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+		},
+		Encoding: StructDelimitedBytesEncoding{Delimiter: []byte{'#', '#'}},
+	}})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "my-table") {
+		t.Errorf("Unexpected tableID: %v, want: %v", createTableReq.TableId, "my-table")
+	}
+	if createTableReq.Table.RowKeySchema == nil {
+		t.Errorf("Unexpected nil RowKeySchema in request")
+	}
+	if len(createTableReq.Table.RowKeySchema.Fields) != 2 {
+		t.Errorf("Unexpected field length in row key schema: %v, want: %v", createTableReq.Table.RowKeySchema, 2)
+	}
+}
+
 func TestTableAdmin_CreateBackupWithOptions_NoExpiryTime(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
@@ -372,6 +398,59 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithRowKeySchema(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	rks := StructType{
+		Fields: []StructField{
+			{FieldName: "key1", FieldType: Int64Type{Encoding: Int64OrderedCodeBytesEncoding{}}},
+			{FieldName: "key2", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+		},
+		Encoding: StructDelimitedBytesEncoding{Delimiter: []byte{'#', '#'}}}
+	err := c.UpdateTableWithRowKeySchema(context.Background(), "my-table", rks)
+	if err != nil {
+		t.Fatalf("UpdateTableWithRowKeySchema error: %v", err)
+	}
+	req := mock.updateTableReq
+
+	expectedTableName := "projects/my-cool-project/instances/my-cool-instance/tables/my-table"
+	if !cmp.Equal(req.Table.Name, expectedTableName) {
+		t.Errorf("Unexpected table name: %v, want: %v", req.Table.Name, expectedTableName)
+	}
+	if !cmp.Equal(len(req.UpdateMask.Paths), 1) {
+		t.Errorf("Unexpected mask size: %v, want: %v", len(req.UpdateMask.Paths), 1)
+	}
+	if !cmp.Equal(req.UpdateMask.Paths[0], "row_key_schema") {
+		t.Errorf("Unexpected mask path: %v, want: %v", req.UpdateMask.Paths[0], "row_key_schema")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithClearRowKeySchema(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	err := c.UpdateTableClearRowKeySchema(context.Background(), "my-table")
+	if err != nil {
+		t.Fatalf("UpdateTableWithRowKeySchema error: %v", err)
+	}
+	req := mock.updateTableReq
+	expectedTableName := "projects/my-cool-project/instances/my-cool-instance/tables/my-table"
+	if !cmp.Equal(req.Table.Name, expectedTableName) {
+		t.Errorf("Unexpected table name: %v, want: %v", req.Table.Name, expectedTableName)
+	}
+	if !cmp.Equal(len(req.UpdateMask.Paths), 1) {
+		t.Errorf("Unexpected mask size: %v, want: %v", len(req.UpdateMask.Paths), 1)
+	}
+	if !cmp.Equal(req.UpdateMask.Paths[0], "row_key_schema") {
+		t.Errorf("Unexpected mask path: %v, want: %v", req.UpdateMask.Paths[0], "row_key_schema")
+	}
+	if req.Table.RowKeySchema != nil {
+		t.Errorf("Unexpected row key schema in table during clear schema request: %v", req.Table.RowKeySchema)
+	}
+	if !req.IgnoreWarnings {
+		t.Errorf("Expect IgnoreWarnings set to true when clearing row key schema")
 	}
 }
 
