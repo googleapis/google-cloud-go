@@ -3,13 +3,13 @@ module cloud.google.com/go/internal/generated
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.118.2
+	cloud.google.com/go v0.118.3
 	cloud.google.com/go/accessapproval v1.8.3
 	cloud.google.com/go/accesscontextmanager v1.9.3
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/aiplatform v1.70.0
+	cloud.google.com/go/aiplatform v1.74.0
 	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/analytics v0.25.3
+	cloud.google.com/go/analytics v0.26.0
 	cloud.google.com/go/apigateway v1.7.3
 	cloud.google.com/go/apigeeconnect v1.7.3
 	cloud.google.com/go/apigeeregistry v0.9.3
@@ -21,36 +21,36 @@ require (
 	cloud.google.com/go/assuredworkloads v1.12.3
 	cloud.google.com/go/automl v1.14.4
 	cloud.google.com/go/baremetalsolution v1.3.3
-	cloud.google.com/go/batch v1.11.5
+	cloud.google.com/go/batch v1.12.0
 	cloud.google.com/go/beyondcorp v1.1.3
-	cloud.google.com/go/bigquery v1.66.0
+	cloud.google.com/go/bigquery v1.66.2
 	cloud.google.com/go/billing v1.20.1
 	cloud.google.com/go/binaryauthorization v1.9.3
 	cloud.google.com/go/certificatemanager v1.9.3
 	cloud.google.com/go/channel v1.19.2
-	cloud.google.com/go/cloudbuild v1.20.0
-	cloud.google.com/go/clouddms v1.8.3
+	cloud.google.com/go/cloudbuild v1.22.0
+	cloud.google.com/go/clouddms v1.8.4
 	cloud.google.com/go/cloudtasks v1.13.3
-	cloud.google.com/go/compute v1.31.1
+	cloud.google.com/go/compute v1.34.0
 	cloud.google.com/go/confidentialcomputing v0.1.0
 	cloud.google.com/go/contactcenterinsights v1.17.1
-	cloud.google.com/go/container v1.42.1
+	cloud.google.com/go/container v1.42.2
 	cloud.google.com/go/containeranalysis v0.13.3
 	cloud.google.com/go/datacatalog v1.24.3
 	cloud.google.com/go/dataflow v0.10.3
 	cloud.google.com/go/dataform v0.10.3
 	cloud.google.com/go/datafusion v1.8.3
 	cloud.google.com/go/datalabeling v0.9.3
-	cloud.google.com/go/dataplex v1.21.0
-	cloud.google.com/go/dataproc/v2 v2.10.1
+	cloud.google.com/go/dataplex v1.22.0
+	cloud.google.com/go/dataproc/v2 v2.11.0
 	cloud.google.com/go/dataqna v0.9.3
 	cloud.google.com/go/datastore v1.20.0
-	cloud.google.com/go/datastream v1.12.1
-	cloud.google.com/go/deploy v1.26.1
-	cloud.google.com/go/dialogflow v1.64.1
+	cloud.google.com/go/datastream v1.13.0
+	cloud.google.com/go/deploy v1.26.2
+	cloud.google.com/go/dialogflow v1.66.0
 	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/dlp v1.20.1
-	cloud.google.com/go/documentai v1.35.1
+	cloud.google.com/go/dlp v1.21.0
+	cloud.google.com/go/documentai v1.35.2
 	cloud.google.com/go/domains v0.10.3
 	cloud.google.com/go/edgecontainer v1.4.1
 	cloud.google.com/go/errorreporting v0.3.2
@@ -63,18 +63,18 @@ require (
 	cloud.google.com/go/gkeconnect v0.12.1
 	cloud.google.com/go/gkehub v0.15.3
 	cloud.google.com/go/gkemulticloud v1.5.1
-	cloud.google.com/go/gsuiteaddons v1.7.3
-	cloud.google.com/go/iam v1.3.1
+	cloud.google.com/go/gsuiteaddons v1.7.4
+	cloud.google.com/go/iam v1.4.0
 	cloud.google.com/go/iap v1.10.3
 	cloud.google.com/go/ids v1.5.3
 	cloud.google.com/go/iot v1.8.3
-	cloud.google.com/go/kms v1.20.5
+	cloud.google.com/go/kms v1.21.0
 	cloud.google.com/go/language v1.14.3
 	cloud.google.com/go/lifesciences v0.10.3
 	cloud.google.com/go/logging v1.13.0
-	cloud.google.com/go/longrunning v0.6.4
+	cloud.google.com/go/longrunning v0.6.5
 	cloud.google.com/go/managedidentities v1.7.3
-	cloud.google.com/go/maps v1.17.1
+	cloud.google.com/go/maps v1.19.0
 	cloud.google.com/go/mediatranslation v0.9.3
 	cloud.google.com/go/memcache v1.11.3
 	cloud.google.com/go/metastore v1.14.3
@@ -96,20 +96,20 @@ require (
 	cloud.google.com/go/recaptchaenterprise/v2 v2.19.4
 	cloud.google.com/go/recommendationengine v0.9.3
 	cloud.google.com/go/recommender v1.13.3
-	cloud.google.com/go/redis v1.17.3
+	cloud.google.com/go/redis v1.18.0
 	cloud.google.com/go/resourcemanager v1.10.3
 	cloud.google.com/go/retail v1.19.2
-	cloud.google.com/go/run v1.8.1
-	cloud.google.com/go/scheduler v1.11.3
-	cloud.google.com/go/secretmanager v1.14.3
+	cloud.google.com/go/run v1.9.0
+	cloud.google.com/go/scheduler v1.11.4
+	cloud.google.com/go/secretmanager v1.14.5
 	cloud.google.com/go/security v1.18.3
-	cloud.google.com/go/securitycenter v1.35.3
+	cloud.google.com/go/securitycenter v1.36.0
 	cloud.google.com/go/servicecontrol v1.11.1
 	cloud.google.com/go/servicedirectory v1.12.3
 	cloud.google.com/go/servicemanagement v1.8.0
 	cloud.google.com/go/serviceusage v1.6.0
 	cloud.google.com/go/shell v1.8.3
-	cloud.google.com/go/spanner v1.73.0
+	cloud.google.com/go/spanner v1.76.1
 	cloud.google.com/go/speech v1.26.0
 	cloud.google.com/go/storageinsights v0.0.0
 	cloud.google.com/go/storagetransfer v1.12.1
@@ -129,8 +129,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.3
 	cloud.google.com/go/workflows v1.13.3
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.220.0
-	google.golang.org/genproto v0.0.0-20250124145028-65684f501c47
+	google.golang.org/api v0.224.0
+	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb
 )
 
 require (
@@ -147,6 +147,7 @@ require (
 	cloud.google.com/go/config v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/developerconnect v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/financialservices v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/identitytoolkit v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/managedkafka v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/memorystore v0.0.0-00010101000000-000000000000
@@ -172,7 +173,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.14.1 // indirect
+	cloud.google.com/go/auth v0.15.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -180,24 +181,24 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.58.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.59.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.59.0 // indirect
 	go.opentelemetry.io/otel v1.34.0 // indirect
 	go.opentelemetry.io/otel/metric v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/oauth2 v0.26.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250207221924-e9438ea467c6 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250207221924-e9438ea467c6 // indirect
-	google.golang.org/grpc v1.70.0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250303144028-a0af3efb3deb // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250227231956-55c901821b1e // indirect
+	google.golang.org/grpc v1.71.0 // indirect
 )
 
 replace cloud.google.com/go/storageinsights => ../../../storageinsights
