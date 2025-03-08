@@ -114,24 +114,35 @@ var (
 )
 
 // OnGCE reports whether this process is running on Google Compute Platforms.
-// NOTE: True returned from `OnGCE` does not guarantee that the metadata server
-// is accessible from this process and have all the metadata defined.
+//
+// Deprecated: Please use the context aware variant [OnGCEWithContext].
 func OnGCE() bool {
-	onGCEOnce.Do(initOnGCE)
+	return OnGCEWithContext(context.Background())
+}
+
+// OnGCEWithContext reports whether this process is running on Google Compute Platforms.
+// This function's return value is memoized for better performance.
+//
+// NOTE: True returned from `OnGCEWithContext` does not guarantee that the metadata server
+// is accessible from this process and have all the metadata defined.
+func OnGCEWithContext(ctx context.Context) bool {
+	onGCEOnce.Do(func() {
+		initOnGCE(ctx)
+	})
 	return onGCE
 }
 
-func initOnGCE() {
-	onGCE = testOnGCE()
+func initOnGCE(ctx context.Context) {
+	onGCE = testOnGCE(ctx)
 }
 
-func testOnGCE() bool {
+func testOnGCE(ctx context.Context) bool {
 	// The user explicitly said they're on GCE, so trust them.
 	if os.Getenv(metadataHostEnv) != "" {
 		return true
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	resc := make(chan bool, 2)
@@ -167,16 +178,18 @@ func testOnGCE() bool {
 			// The first strategy succeeded, so let's use it.
 			return true
 		}
+
 		// Wait for either the DNS or metadata server probe to
 		// contradict the other one and say we are running on
 		// GCE. Give it a lot of time to do so, since the system
 		// info already suggests we're running on a GCE BIOS.
-		timer := time.NewTimer(5 * time.Second)
-		defer timer.Stop()
+		// Ensure cancellations from the calling context are respected.
+		waitContext, cancelWait := context.WithTimeout(ctx, 5*time.Second)
+		defer cancelWait()
 		select {
 		case res = <-resc:
 			return res
-		case <-timer.C:
+		case <-waitContext.Done():
 			// Too slow. Who knows what this system is.
 			return false
 		}
