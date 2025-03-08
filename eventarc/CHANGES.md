@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.2...eventarc/v1.15.3) (2025-03-08)
+
+
+### Documentation
+
+* **eventarc/publishing:** Documentation improvements for the Publisher service ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.1...eventarc/v1.15.2) (2025-03-06)
 
 
