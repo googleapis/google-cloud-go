@@ -1151,7 +1151,7 @@ func orderMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]
 		if orderingKey == "" {
 			orderingKey = id
 		}
-		if val, ok := orderingKeyMap[orderingKey]; !ok || m.proto.Message.PublishTime.AsTime().Before(val.m.proto.Message.PublishTime.AsTime()) {
+		if val, ok := orderingKeyMap[orderingKey]; !ok || m.publishTime.Before(val.m.publishTime) {
 			orderingKeyMap[orderingKey] = msg{m: m, id: id}
 		}
 	}
