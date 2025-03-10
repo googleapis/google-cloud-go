@@ -4330,6 +4330,118 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	}
 }
 
+func TestIntegration_AdminLogicalView(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support logicalViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	instanceAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer instanceAdminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create logical view
+	logicalViewUUID := uid.NewSpace("logicalView-", &uid.Options{})
+	logicalView := logicalViewUUID.New()
+	defer instanceAdminClient.DeleteLogicalView(ctx, testEnv.Config().Instance, logicalView)
+
+	logicalViewInfo := LogicalViewInfo{
+		LogicalViewID: logicalView,
+		Query:         fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+	}
+	if err = instanceAdminClient.CreateLogicalView(ctx, testEnv.Config().Instance, &logicalViewInfo); err != nil {
+		t.Fatalf("Creating logical view: %v", err)
+	}
+
+	// List logical views
+	logicalViews, err := instanceAdminClient.LogicalViews(ctx, testEnv.Config().Instance)
+	if err != nil {
+		t.Fatalf("Listing logical views: %v", err)
+	}
+	if got, want := len(logicalViews), 1; got != want {
+		t.Fatalf("Listing logical views count: %d, want: != %d", got, want)
+	}
+	if got, want := logicalViews[0].LogicalViewID, logicalView; got != want {
+		t.Errorf("LogicalView Name: %s, want: %s", got, want)
+	}
+	if got, want := logicalViews[0].Query, logicalViewInfo.Query; got != want {
+		t.Errorf("LogicalView Query: %q, want: %q", got, want)
+	}
+
+	// Get logical view
+	lvInfo, err := instanceAdminClient.LogicalViewInfo(ctx, testEnv.Config().Instance, logicalView)
+	if err != nil {
+		t.Fatalf("Getting logical view: %v", err)
+	}
+	if got, want := lvInfo.Query, logicalViewInfo.Query; got != want {
+		t.Errorf("LogicalView Query: %q, want: %q", got, want)
+	}
+
+	// Update logical view
+	newLogicalViewInfo := LogicalViewInfo{
+		LogicalViewID: logicalView,
+		Query:         fmt.Sprintf("SELECT _key, fam2[col1] as col FROM %s", tblConf.TableID),
+	}
+	err = instanceAdminClient.UpdateLogicalView(ctx, testEnv.Config().Instance, newLogicalViewInfo)
+	if err != nil {
+		t.Fatalf("UpdateLogicalView failed: %v", err)
+	}
+
+	// Check that updated logical view has the correct deletion protection
+	lvInfo, err = instanceAdminClient.LogicalViewInfo(ctx, testEnv.Config().Instance, logicalView)
+	if err != nil {
+		t.Fatalf("Getting logical view: %v", err)
+	}
+	if got, want := lvInfo.Query, newLogicalViewInfo.Query; got != want {
+		t.Errorf("LogicalView Query: %q, want: %q", got, want)
+	}
+
+	// Delete logical view
+	if err = instanceAdminClient.DeleteLogicalView(ctx, testEnv.Config().Instance, logicalView); err != nil {
+		t.Fatalf("DeleteLogicalView: %v", err)
+	}
+
+	// Verify the logical view was deleted.
+	logicalViews, err = instanceAdminClient.LogicalViews(ctx, testEnv.Config().Instance)
+	if err != nil {
+		t.Fatalf("Listing logical views: %v", err)
+	}
+	if got, want := len(logicalViews), 0; got != want {
+		t.Fatalf("Listing logical views count: %d, want: != %d", got, want)
+	}
+}
+
 // TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
 func TestIntegration_DirectPathFallback(t *testing.T) {
 	ctx := context.Background()
