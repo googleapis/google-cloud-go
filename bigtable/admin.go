@@ -2879,3 +2879,151 @@ func (iac *InstanceAdminClient) DeleteLogicalView(ctx context.Context, instanceI
 	_, err := iac.iClient.DeleteLogicalView(ctx, req)
 	return err
 }
+
+// Materialized Views
+
+// CreateMaterializedView creates a new materialized view in an instance.
+func (iac *InstanceAdminClient) CreateMaterializedView(ctx context.Context, instanceID string, conf *MaterializedViewInfo) error {
+	if conf.MaterializedViewID == "" {
+		return errors.New("MaterializedViewID is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	mv := &btapb.MaterializedView{
+		Query: conf.Query,
+	}
+	if conf.DeletionProtection != None {
+		switch dp := conf.DeletionProtection; dp {
+		case Protected:
+			mv.DeletionProtection = true
+		case Unprotected:
+			mv.DeletionProtection = false
+		default:
+			break
+		}
+	}
+	req := &btapb.CreateMaterializedViewRequest{
+		Parent:             "projects/" + iac.project + "/instances/" + instanceID,
+		MaterializedViewId: conf.MaterializedViewID,
+		MaterializedView:   mv,
+	}
+	_, err := iac.iClient.CreateMaterializedView(ctx, req)
+	return err
+}
+
+// MaterializedViewInfo contains materialized view metadata. This struct is read-only.
+type MaterializedViewInfo struct {
+	MaterializedViewID string
+
+	Query              string
+	DeletionProtection DeletionProtection
+	ETag               string
+}
+
+// MaterializedViewInfo retrieves information about a materialized view.
+func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instanceID, materializedViewID string) (*MaterializedViewInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.GetMaterializedViewRequest{
+		Name: fmt.Sprintf("projects/%s/instances/%s/materializedViews/%s", iac.project, instanceID, materializedViewID),
+	}
+	var res *btapb.MaterializedView
+
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.GetMaterializedView(ctx, req)
+		return err
+	}, retryOptions...)
+
+	if err != nil {
+		return nil, err
+	}
+	mv := &MaterializedViewInfo{MaterializedViewID: materializedViewID, Query: res.Query, ETag: res.Etag}
+	if res.DeletionProtection {
+		mv.DeletionProtection = Protected
+	} else {
+		mv.DeletionProtection = Unprotected
+	}
+	return mv, nil
+}
+
+// MaterializedViews returns a list of the materialized views in the instance.
+func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceID string) ([]MaterializedViewInfo, error) {
+	views := []MaterializedViewInfo{}
+
+	req := &btapb.ListMaterializedViewsRequest{
+		Parent: fmt.Sprintf("projects/%s/instances/%s", iac.project, instanceID),
+	}
+	var res *btapb.ListMaterializedViewsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.ListMaterializedViews(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, mView := range res.MaterializedViews {
+		mv := MaterializedViewInfo{MaterializedViewID: mView.MaterializedViewId, Query: mView.Query, ETag: mView.Etag}
+		if res.DeletionProtection {
+			mv.DeletionProtection = Protected
+		} else {
+			mv.DeletionProtection = Unprotected
+		}
+		views = append(views, mv)
+	}
+	return views, nil
+}
+
+// UpdateMaterializedView updates a materialized view in an instance according to the given configuration.
+func (iac *InstanceAdminClient) UpdateMaterializedView(ctx context.Context, instanceID string, conf MaterializedViewInfo) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	if conf.MaterializedViewID == "" {
+		return errors.New("MaterializedViewID is required")
+	}
+	mv := &btapb.MaterializedView{}
+	mv.Name = fmt.Sprintf("projects/%s/instances/%s/materializedViews/%s", iac.project, instanceID, conf.MaterializedViewID)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{},
+	}
+	if conf.Query != "" {
+		updateMask.Paths = append(updateMask.Paths, "query")
+		mv.Query = conf.Query
+	}
+	if conf.DeletionProtection != None {
+		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+		switch dp := conf.DeletionProtection; dp {
+		case Protected:
+			mv.DeletionProtection = true
+		case Unprotected:
+			mv.DeletionProtection = false
+		default:
+			break
+		}
+	}
+	req := &btapb.UpdateMaterializedViewRequest{
+		MaterializedView: mv,
+		UpdateMask:       updateMask,
+	}
+	lro, err := iac.iClient.UpdateMaterializedView(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update materialized view: %w", err)
+	}
+	var res btapb.MaterializedView
+	op := longrunning.InternalNewOperation(iac.lroClient, lro)
+	if err = op.Wait(ctx, &res); err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
+// DeleteMaterializedView deletes a materialized view in an instance.
+func (iac *InstanceAdminClient) DeleteMaterializedView(ctx context.Context, instanceID, materializedViewID string) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.DeleteMaterializedViewRequest{
+		Name: fmt.Sprintf("projects/%s/instances/%s/materializedViews/%s", iac.project, instanceID, materializedViewID),
+	}
+	_, err := iac.iClient.DeleteMaterializedView(ctx, req)
+	return err
+}

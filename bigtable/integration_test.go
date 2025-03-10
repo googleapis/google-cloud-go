@@ -4442,6 +4442,129 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	}
 }
 
+func TestIntegration_AdminMaterializedView(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support materializedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	instanceAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer instanceAdminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create materialized view
+	materializedViewUUID := uid.NewSpace("materializedView-", &uid.Options{})
+	materializedView := materializedViewUUID.New()
+	defer instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView)
+
+	materializedViewInfo := MaterializedViewInfo{
+		MaterializedViewID: materializedView,
+		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+		DeletionProtection: Protected,
+	}
+	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
+		t.Fatalf("Creating materialized view: %v", err)
+	}
+
+	// List materialized views
+	materializedViews, err := instanceAdminClient.MaterializedViews(ctx, testEnv.Config().Instance)
+	if err != nil {
+		t.Fatalf("Listing materialized views: %v", err)
+	}
+	if got, want := len(materializedViews), 1; got != want {
+		t.Fatalf("Listing materialized views count: %d, want: != %d", got, want)
+	}
+	if got, want := materializedViews[0].MaterializedViewID, materializedView; got != want {
+		t.Errorf("MaterializedView Name: %s, want: %s", got, want)
+	}
+	if got, want := materializedViews[0].Query, materializedViewInfo.Query; got != want {
+		t.Errorf("MaterializedView Query: %q, want: %q", got, want)
+	}
+
+	// Get materialized view
+	mvInfo, err := instanceAdminClient.MaterializedViewInfo(ctx, testEnv.Config().Instance, materializedView)
+	if err != nil {
+		t.Fatalf("Getting materialized view: %v", err)
+	}
+	if got, want := mvInfo.Query, materializedViewInfo.Query; got != want {
+		t.Errorf("MaterializedView Query: %q, want: %q", got, want)
+	}
+	// Cannot delete the authorized view because it is deletion protected
+	if err = instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView); err == nil {
+		t.Fatalf("DeleteMaterializedView: %v", err)
+	}
+
+	// Update authorized view
+
+	// Update materialized view
+	newMaterializedViewInfo := MaterializedViewInfo{
+		MaterializedViewID: materializedView,
+		DeletionProtection: Unprotected,
+	}
+	err = instanceAdminClient.UpdateMaterializedView(ctx, testEnv.Config().Instance, newMaterializedViewInfo)
+	if err != nil {
+		t.Fatalf("UpdateMaterializedView failed: %v", err)
+	}
+
+	// Check that updated materialized view has the correct deletion protection
+	mvInfo, err = instanceAdminClient.MaterializedViewInfo(ctx, testEnv.Config().Instance, materializedView)
+	if err != nil {
+		t.Fatalf("Getting materialized view: %v", err)
+	}
+	if got, want := mvInfo.DeletionProtection, Unprotected; got != want {
+		t.Errorf("MaterializedViewInfo deletion protection: %v, want: %v", got, want)
+	}
+	// Check that the subset_view field doesn't change
+	if got, want := mvInfo.Query, materializedViewInfo.Query; cmp.Equal(got, want) {
+		t.Errorf("Query: %v, want: %v", got, want)
+	}
+
+	// Delete materialized view
+	if err = instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView); err != nil {
+		t.Fatalf("DeleteMaterializedView: %v", err)
+	}
+
+	// Verify the materialized view was deleted.
+	materializedViews, err = instanceAdminClient.MaterializedViews(ctx, testEnv.Config().Instance)
+	if err != nil {
+		t.Fatalf("Listing materialized views: %v", err)
+	}
+	if got, want := len(materializedViews), 0; got != want {
+		t.Fatalf("Listing materialized views count: %d, want: != %d", got, want)
+	}
+}
+
 // TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
 func TestIntegration_DirectPathFallback(t *testing.T) {
 	ctx := context.Background()
