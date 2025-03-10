@@ -1,5 +1,12 @@
 # Changes
 
+## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.77.0...spanner/v1.78.0) (2025-03-07)
+
+
+### Features
+
+* **spanner/spansql:** Add support for tokenlist and create search index ([#11522](https://github.com/googleapis/google-cloud-go/issues/11522)) ([cd894f8](https://github.com/googleapis/google-cloud-go/commit/cd894f8aea935c43a6c5625c2fd66b132a9b2f8b))
+
 ## [1.77.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.76.1...spanner/v1.77.0) (2025-03-03)
 
 
