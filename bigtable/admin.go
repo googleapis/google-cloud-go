@@ -2819,9 +2819,9 @@ func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID,
 // LogicalViews returns a list of the logical views in the instance.
 func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID string) ([]LogicalViewInfo, error) {
 	views := []LogicalViewInfo{}
-
+	prefix := fmt.Sprintf("projects/%s/instances/%s", iac.project, instanceID)
 	req := &btapb.ListLogicalViewsRequest{
-		Parent: fmt.Sprintf("projects/%s/instances/%s", iac.project, instanceID),
+		Parent: prefix,
 	}
 	var res *btapb.ListLogicalViewsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
@@ -2834,7 +2834,7 @@ func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID str
 	}
 
 	for _, lv := range res.LogicalViews {
-		views = append(views, LogicalViewInfo{LogicalViewID: lv.LogicalViewId, Query: lv.Query, ETag: lv.Etag})
+		views = append(views, LogicalViewInfo{LogicalViewID: strings.TrimPrefix(lv.Name, prefix+"/logicalViews/"), Query: lv.Query, ETag: lv.Etag})
 	}
 	return views, nil
 }
