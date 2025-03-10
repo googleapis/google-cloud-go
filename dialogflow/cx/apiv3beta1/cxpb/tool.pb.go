@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1925,7 +1924,7 @@ type Tool_ConnectorTool struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The full resource name of the referenced Integration Connectors
-	// Connection. Format: 'projects/*/locations/*/connections/*'
+	// Connection. Format: `projects/*/locations/*/connections/*`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Actions for the tool to use.
 	Actions []*Tool_ConnectorTool_Action `protobuf:"bytes,2,rep,name=actions,proto3" json:"actions,omitempty"`
@@ -2769,12 +2768,16 @@ type Tool_TLSConfig_CACert struct {
 	// is empty or unspecified, Dialogflow will use Google's default trust
 	// store to verify certificates. N.B. Make sure the HTTPS server
 	// certificates are signed with "subject alt name". For instance a
-	// certificate can be self-signed using the following command,
+	// certificate can be self-signed using the following command:
+	//
+	// ```
 	//
 	//	openssl x509 -req -days 200 -in example.com.csr \
 	//	  -signkey example.com.key \
 	//	  -out example.com.crt \
 	//	  -extfile <(printf "\nsubjectAltName='DNS:www.example.com'")
+	//
+	// ```
 	Cert []byte `protobuf:"bytes,2,opt,name=cert,proto3" json:"cert,omitempty"`
 }
 
