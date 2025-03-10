@@ -164,12 +164,12 @@ func (c *OnlineReturnPolicyClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetOnlineReturnPolicy gets an existing return policy.
+// GetOnlineReturnPolicy gets an existing return policy for a given business.
 func (c *OnlineReturnPolicyClient) GetOnlineReturnPolicy(ctx context.Context, req *accountspb.GetOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
 	return c.internalClient.GetOnlineReturnPolicy(ctx, req, opts...)
 }
 
-// ListOnlineReturnPolicies lists all existing return policies.
+// ListOnlineReturnPolicies lists all existing return policies for a given business.
 func (c *OnlineReturnPolicyClient) ListOnlineReturnPolicies(ctx context.Context, req *accountspb.ListOnlineReturnPoliciesRequest, opts ...gax.CallOption) *OnlineReturnPolicyIterator {
 	return c.internalClient.ListOnlineReturnPolicies(ctx, req, opts...)
 }
@@ -397,7 +397,7 @@ func (c *onlineReturnPolicyGRPCClient) ListOnlineReturnPolicies(ctx context.Cont
 	return it
 }
 
-// GetOnlineReturnPolicy gets an existing return policy.
+// GetOnlineReturnPolicy gets an existing return policy for a given business.
 func (c *onlineReturnPolicyRESTClient) GetOnlineReturnPolicy(ctx context.Context, req *accountspb.GetOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -447,7 +447,7 @@ func (c *onlineReturnPolicyRESTClient) GetOnlineReturnPolicy(ctx context.Context
 	return resp, nil
 }
 
-// ListOnlineReturnPolicies lists all existing return policies.
+// ListOnlineReturnPolicies lists all existing return policies for a given business.
 func (c *onlineReturnPolicyRESTClient) ListOnlineReturnPolicies(ctx context.Context, req *accountspb.ListOnlineReturnPoliciesRequest, opts ...gax.CallOption) *OnlineReturnPolicyIterator {
 	it := &OnlineReturnPolicyIterator{}
 	req = proto.Clone(req).(*accountspb.ListOnlineReturnPoliciesRequest)
