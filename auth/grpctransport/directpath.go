@@ -91,6 +91,15 @@ func isDirectPathXdsUsed(o *Options) bool {
 	return false
 }
 
+func isDirectPathBoundTokenEnabled(opts *InternalOptions) bool {
+	for _, ev := range opts.AllowHardBoundTokens {
+		if ev == "ALTS" {
+			return true
+		}
+	}
+	return false
+}
+
 // configureDirectPath returns some dial options and an endpoint to use if the
 // configuration allows the use of direct path. If it does not the provided
 // grpcOpts and endpoint are returned.
@@ -98,18 +107,15 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 	if isDirectPathEnabled(endpoint, opts) && compute.OnComputeEngine() && isTokenProviderDirectPathCompatible(creds, opts) {
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
 		defaultCredetialsOptions := grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds}}
-		for _, ev := range opts.InternalOptions.AllowHardBoundTokens {
-			if ev == "ALTS" {
-				opts.DetectOpts.TokenBindingType = credentials.ALTSHardBinding
-				altsCreds, err := credentials.DetectDefault(opts.resolveDetectOptions())
-				// Revert it back since the same opts will be used in subsequent dial() calls.
-				opts.DetectOpts.TokenBindingType = credentials.NoBinding
-				if err != nil {
-					return nil, "", err
-				}
-				defaultCredetialsOptions.ALTSPerRPCCreds = &grpcCredentialsProvider{creds: altsCreds}
-				break
+		if isDirectPathBoundTokenEnabled(opts.InternalOptions) {
+			opts.DetectOpts.TokenBindingType = credentials.ALTSHardBinding
+			altsCreds, err := credentials.DetectDefault(opts.resolveDetectOptions())
+			// Revert it back since the same opts will be used in subsequent dial() calls.
+			opts.DetectOpts.TokenBindingType = credentials.NoBinding
+			if err != nil {
+				return nil, "", err
 			}
+			defaultCredetialsOptions.ALTSPerRPCCreds = &grpcCredentialsProvider{creds: altsCreds}
 		}
 		grpcOpts = []grpc.DialOption{
 			grpc.WithCredentialsBundle(grpcgoogle.NewDefaultCredentialsWithOptions(defaultCredetialsOptions))}
