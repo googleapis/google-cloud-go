@@ -66,6 +66,7 @@ modules:
   - essentialcontacts
   - eventarc
   - filestore
+  - financialservices
   - firestore
   - functions
   - gkebackup
@@ -528,9 +529,6 @@ service-configs:
   - input-directory: google/cloud/datacatalog/v1beta1
     service-config: datacatalog_v1beta1.yaml
     import-path: cloud.google.com/go/datacatalog/apiv1beta1
-  - input-directory: google/cloud/dataform/v1alpha2
-    service-config: dataform_v1alpha2.yaml
-    import-path: cloud.google.com/go/dataform/apiv1alpha2
   - input-directory: google/cloud/dataform/v1beta1
     service-config: dataform_v1beta1.yaml
     import-path: cloud.google.com/go/dataform/apiv1beta1
@@ -610,6 +608,9 @@ service-configs:
   - input-directory: google/cloud/filestore/v1
     service-config: file_v1.yaml
     import-path: cloud.google.com/go/filestore/apiv1
+  - input-directory: google/cloud/financialservices/v1
+    service-config: financialservices_v1.yaml
+    import-path: cloud.google.com/go/financialservices/apiv1
   - input-directory: google/cloud/functions/v1
     service-config: cloudfunctions_v1.yaml
     import-path: cloud.google.com/go/functions/apiv1
