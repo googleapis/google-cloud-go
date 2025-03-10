@@ -2,7 +2,7 @@ module cloud.google.com/go/financialservices
 
 go 1.23.0
 
-toolchain go1.23.6
+toolchain go1.24.1
 
 require (
 	cloud.google.com/go/longrunning v0.6.5
