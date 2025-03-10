@@ -341,21 +341,10 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			}),
 		)
 		// Attempt Direct Path
-		var altsCreds *auth.Credentials
-		for _, ev := range opts.InternalOptions.AllowHardBoundTokens {
-			if ev == "ALTS" {
-				opts.DetectOpts.TokenBindingType = credentials.ALTSHardBinding
-				ac, err := credentials.DetectDefault(opts.resolveDetectOptions())
-				// Revert it back since the same opts will be used in subsequent dial() calls.
-				opts.DetectOpts.TokenBindingType = credentials.NoBinding
-				if err != nil {
-					return nil, err
-				}
-				altsCreds = ac
-				break
-			}
+		grpcOpts, transportCreds.Endpoint, err = configureDirectPath(grpcOpts, opts, transportCreds.Endpoint, creds)
+		if err != nil {
+			return nil, err
 		}
-		grpcOpts, transportCreds.Endpoint = configureDirectPath(grpcOpts, opts, transportCreds.Endpoint, creds, altsCreds)
 	}
 
 	// Add tracing, but before the other options, so that clients can override the
