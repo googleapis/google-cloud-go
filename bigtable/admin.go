@@ -2949,9 +2949,9 @@ func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instan
 // MaterializedViews returns a list of the materialized views in the instance.
 func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceID string) ([]MaterializedViewInfo, error) {
 	views := []MaterializedViewInfo{}
-
+	prefix := fmt.Sprintf("projects/%s/instances/%s", iac.project, instanceID)
 	req := &btapb.ListMaterializedViewsRequest{
-		Parent: fmt.Sprintf("projects/%s/instances/%s", iac.project, instanceID),
+		Parent: prefix,
 	}
 	var res *btapb.ListMaterializedViewsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
@@ -2964,8 +2964,8 @@ func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceI
 	}
 
 	for _, mView := range res.MaterializedViews {
-		mv := MaterializedViewInfo{MaterializedViewID: mView.MaterializedViewId, Query: mView.Query, ETag: mView.Etag}
-		if res.DeletionProtection {
+		mv := MaterializedViewInfo{MaterializedViewID: strings.TrimPrefix(mView.Name, prefix+"/materializedViews/"), Query: mView.Query, ETag: mView.Etag}
+		if mView.DeletionProtection {
 			mv.DeletionProtection = Protected
 		} else {
 			mv.DeletionProtection = Unprotected
