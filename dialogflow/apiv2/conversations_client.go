@@ -49,11 +49,13 @@ type ConversationsCallOptions struct {
 	ListConversations           []gax.CallOption
 	GetConversation             []gax.CallOption
 	CompleteConversation        []gax.CallOption
+	IngestContextReferences     []gax.CallOption
 	ListMessages                []gax.CallOption
 	SuggestConversationSummary  []gax.CallOption
 	GenerateStatelessSummary    []gax.CallOption
 	GenerateStatelessSuggestion []gax.CallOption
 	SearchKnowledge             []gax.CallOption
+	GenerateSuggestions         []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -126,6 +128,18 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 				})
 			}),
 		},
+		IngestContextReferences: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListMessages: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -175,6 +189,18 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		SearchKnowledge: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GenerateSuggestions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -240,6 +266,17 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		IngestContextReferences: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListMessages: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -295,6 +332,17 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GenerateSuggestions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -312,11 +360,13 @@ type internalConversationsClient interface {
 	ListConversations(context.Context, *dialogflowpb.ListConversationsRequest, ...gax.CallOption) *ConversationIterator
 	GetConversation(context.Context, *dialogflowpb.GetConversationRequest, ...gax.CallOption) (*dialogflowpb.Conversation, error)
 	CompleteConversation(context.Context, *dialogflowpb.CompleteConversationRequest, ...gax.CallOption) (*dialogflowpb.Conversation, error)
+	IngestContextReferences(context.Context, *dialogflowpb.IngestContextReferencesRequest, ...gax.CallOption) (*dialogflowpb.IngestContextReferencesResponse, error)
 	ListMessages(context.Context, *dialogflowpb.ListMessagesRequest, ...gax.CallOption) *MessageIterator
 	SuggestConversationSummary(context.Context, *dialogflowpb.SuggestConversationSummaryRequest, ...gax.CallOption) (*dialogflowpb.SuggestConversationSummaryResponse, error)
 	GenerateStatelessSummary(context.Context, *dialogflowpb.GenerateStatelessSummaryRequest, ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error)
 	GenerateStatelessSuggestion(context.Context, *dialogflowpb.GenerateStatelessSuggestionRequest, ...gax.CallOption) (*dialogflowpb.GenerateStatelessSuggestionResponse, error)
 	SearchKnowledge(context.Context, *dialogflowpb.SearchKnowledgeRequest, ...gax.CallOption) (*dialogflowpb.SearchKnowledgeResponse, error)
+	GenerateSuggestions(context.Context, *dialogflowpb.GenerateSuggestionsRequest, ...gax.CallOption) (*dialogflowpb.GenerateSuggestionsResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -401,6 +451,12 @@ func (c *ConversationsClient) CompleteConversation(ctx context.Context, req *dia
 	return c.internalClient.CompleteConversation(ctx, req, opts...)
 }
 
+// IngestContextReferences data ingestion API.
+// Ingests context references for an existing conversation.
+func (c *ConversationsClient) IngestContextReferences(ctx context.Context, req *dialogflowpb.IngestContextReferencesRequest, opts ...gax.CallOption) (*dialogflowpb.IngestContextReferencesResponse, error) {
+	return c.internalClient.IngestContextReferences(ctx, req, opts...)
+}
+
 // ListMessages lists messages that belong to a given conversation.
 // messages are ordered by create_time in descending order. To fetch
 // updates without duplication, send request with filter
@@ -431,6 +487,13 @@ func (c *ConversationsClient) GenerateStatelessSuggestion(ctx context.Context, r
 // SearchKnowledge get answers for the given query based on knowledge documents.
 func (c *ConversationsClient) SearchKnowledge(ctx context.Context, req *dialogflowpb.SearchKnowledgeRequest, opts ...gax.CallOption) (*dialogflowpb.SearchKnowledgeResponse, error) {
 	return c.internalClient.SearchKnowledge(ctx, req, opts...)
+}
+
+// GenerateSuggestions generates all the suggestions using generators configured in the
+// conversation profile. A generator is used only if its trigger event is
+// matched.
+func (c *ConversationsClient) GenerateSuggestions(ctx context.Context, req *dialogflowpb.GenerateSuggestionsRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateSuggestionsResponse, error) {
+	return c.internalClient.GenerateSuggestions(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -719,6 +782,24 @@ func (c *conversationsGRPCClient) CompleteConversation(ctx context.Context, req 
 	return resp, nil
 }
 
+func (c *conversationsGRPCClient) IngestContextReferences(ctx context.Context, req *dialogflowpb.IngestContextReferencesRequest, opts ...gax.CallOption) (*dialogflowpb.IngestContextReferencesResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "conversation", url.QueryEscape(req.GetConversation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).IngestContextReferences[0:len((*c.CallOptions).IngestContextReferences):len((*c.CallOptions).IngestContextReferences)], opts...)
+	var resp *dialogflowpb.IngestContextReferencesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.conversationsClient.IngestContextReferences, req, settings.GRPC, c.logger, "IngestContextReferences")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *conversationsGRPCClient) ListMessages(ctx context.Context, req *dialogflowpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -829,6 +910,24 @@ func (c *conversationsGRPCClient) SearchKnowledge(ctx context.Context, req *dial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.conversationsClient.SearchKnowledge, req, settings.GRPC, c.logger, "SearchKnowledge")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *conversationsGRPCClient) GenerateSuggestions(ctx context.Context, req *dialogflowpb.GenerateSuggestionsRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateSuggestionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "conversation", url.QueryEscape(req.GetConversation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateSuggestions[0:len((*c.CallOptions).GenerateSuggestions):len((*c.CallOptions).GenerateSuggestions)], opts...)
+	var resp *dialogflowpb.GenerateSuggestionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.conversationsClient.GenerateSuggestions, req, settings.GRPC, c.logger, "GenerateSuggestions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1247,6 +1346,63 @@ func (c *conversationsRESTClient) CompleteConversation(ctx context.Context, req 
 	return resp, nil
 }
 
+// IngestContextReferences data ingestion API.
+// Ingests context references for an existing conversation.
+func (c *conversationsRESTClient) IngestContextReferences(ctx context.Context, req *dialogflowpb.IngestContextReferencesRequest, opts ...gax.CallOption) (*dialogflowpb.IngestContextReferencesResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:ingestContextReferences", req.GetConversation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "conversation", url.QueryEscape(req.GetConversation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).IngestContextReferences[0:len((*c.CallOptions).IngestContextReferences):len((*c.CallOptions).IngestContextReferences)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dialogflowpb.IngestContextReferencesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IngestContextReferences")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // ListMessages lists messages that belong to a given conversation.
 // messages are ordered by create_time in descending order. To fetch
 // updates without duplication, send request with filter
@@ -1543,6 +1699,64 @@ func (c *conversationsRESTClient) SearchKnowledge(ctx context.Context, req *dial
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchKnowledge")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GenerateSuggestions generates all the suggestions using generators configured in the
+// conversation profile. A generator is used only if its trigger event is
+// matched.
+func (c *conversationsRESTClient) GenerateSuggestions(ctx context.Context, req *dialogflowpb.GenerateSuggestionsRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateSuggestionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v/suggestions:generate", req.GetConversation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "conversation", url.QueryEscape(req.GetConversation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateSuggestions[0:len((*c.CallOptions).GenerateSuggestions):len((*c.CallOptions).GenerateSuggestions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dialogflowpb.GenerateSuggestionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateSuggestions")
 		if err != nil {
 			return err
 		}

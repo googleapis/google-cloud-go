@@ -1342,6 +1342,191 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	}
 }
 
+func TestLastStatement_Update(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+		if _, err := tx.Update(context.Background(), NewStatement(UpdateBarSetFoo)); err != nil {
+			return err
+		}
+		if _, err := tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), QueryOptions{LastStatement: true}); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("transaction failed: %v", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 2; g != w {
+		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	for i := 0; i < len(executeRequests); i++ {
+		if g, w := executeRequests[i].(*sppb.ExecuteSqlRequest).LastStatement, i == len(executeRequests)-1; g != w {
+			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
+		}
+	}
+}
+
+func TestLastStatement_Query(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+		for i := 0; i < 2; i++ {
+			iter := tx.QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{LastStatement: i == 1})
+			for {
+				_, err := iter.Next()
+				if errors.Is(err, iterator.Done) {
+					break
+				}
+				if err != nil {
+					return err
+				}
+			}
+			iter.Stop()
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("transaction failed: %v", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 2; g != w {
+		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	for i := 0; i < len(executeRequests); i++ {
+		if g, w := executeRequests[i].(*sppb.ExecuteSqlRequest).LastStatement, i == len(executeRequests)-1; g != w {
+			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
+		}
+	}
+}
+
+func TestLastStatement_BatchUpdate(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+		if _, err := tx.BatchUpdate(context.Background(), []Statement{NewStatement(UpdateBarSetFoo)}); err != nil {
+			return err
+		}
+		if _, err := tx.BatchUpdateWithOptions(context.Background(), []Statement{NewStatement(UpdateBarSetFoo)}, QueryOptions{LastStatement: true}); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("transaction failed: %v", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	batchRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteBatchDmlRequest{}))
+	if g, w := len(batchRequests), 2; g != w {
+		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	for i := 0; i < len(batchRequests); i++ {
+		if g, w := batchRequests[i].(*sppb.ExecuteBatchDmlRequest).LastStatements, i == len(batchRequests)-1; g != w {
+			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
+		}
+	}
+}
+
+func TestLastStatement_StmtBasedTransaction_Update(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	tx, err := NewReadWriteStmtBasedTransaction(context.Background(), client)
+	if err != nil {
+		t.Fatalf("failed to create transaction: %v", err)
+	}
+	if _, err := tx.Update(context.Background(), NewStatement(UpdateBarSetFoo)); err != nil {
+		t.Fatalf("failed to update: %v", err)
+	}
+	if _, err := tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), QueryOptions{LastStatement: true}); err != nil {
+		t.Fatalf("failed to update: %v", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 2; g != w {
+		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	for i := 0; i < len(executeRequests); i++ {
+		if g, w := executeRequests[i].(*sppb.ExecuteSqlRequest).LastStatement, i == len(executeRequests)-1; g != w {
+			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
+		}
+	}
+}
+
+func TestLastStatement_StmtBasedTx_Query(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	tx, err := NewReadWriteStmtBasedTransaction(context.Background(), client)
+	if err != nil {
+		t.Fatalf("failed to create transaction: %v", err)
+	}
+	for i := 0; i < 2; i++ {
+		iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{LastStatement: i == 1})
+		for {
+			_, err := iter.Next()
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+			if err != nil {
+				t.Fatalf("failed to query: %v", err)
+			}
+		}
+		iter.Stop()
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 2; g != w {
+		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	for i := 0; i < len(executeRequests); i++ {
+		if g, w := executeRequests[i].(*sppb.ExecuteSqlRequest).LastStatement, i == len(executeRequests)-1; g != w {
+			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
+		}
+	}
+}
+
+func TestLastStatement_StmtBasedTx_BatchUpdate(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true})
+	defer teardown()
+
+	tx, err := NewReadWriteStmtBasedTransaction(context.Background(), client)
+	if err != nil {
+		t.Fatalf("failed to create transaction: %v", err)
+	}
+	if _, err := tx.BatchUpdate(context.Background(), []Statement{NewStatement(UpdateBarSetFoo)}); err != nil {
+		t.Fatalf("failed to update: %v", err)
+	}
+	if _, err := tx.BatchUpdateWithOptions(context.Background(), []Statement{NewStatement(UpdateBarSetFoo)}, QueryOptions{LastStatement: true}); err != nil {
+		t.Fatalf("failed to update: %v", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	batchRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteBatchDmlRequest{}))
+	if g, w := len(batchRequests), 2; g != w {
+		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	for i := 0; i < len(batchRequests); i++ {
+		if g, w := batchRequests[i].(*sppb.ExecuteBatchDmlRequest).LastStatements, i == len(batchRequests)-1; g != w {
+			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
+		}
+	}
+}
+
 // shouldHaveReceived asserts that exactly expectedRequests were present in
 // the server's ReceivedRequests channel. It only looks at type, not contents.
 //
@@ -1417,6 +1602,16 @@ loop:
 		}
 	}
 	return reqs
+}
+
+func requestsOfType(requests []interface{}, t reflect.Type) []interface{} {
+	res := make([]interface{}, 0)
+	for _, req := range requests {
+		if reflect.TypeOf(req) == t {
+			res = append(res, req)
+		}
+	}
+	return res
 }
 
 func newAbortedErrorWithMinimalRetryDelay() error {

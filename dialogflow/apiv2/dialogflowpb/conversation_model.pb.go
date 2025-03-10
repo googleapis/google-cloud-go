@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -500,7 +500,7 @@ type ConversationModelEvaluation struct {
 	//	*ConversationModelEvaluation_SmartReplyMetrics
 	Metrics isConversationModelEvaluation_Metrics `protobuf_oneof:"metrics"`
 	// Output only. Human eval template in csv format.
-	// It tooks real-world conversations provided through input dataset, generates
+	// It takes real-world conversations provided through input dataset, generates
 	// example suggestions for customer to verify quality of the model.
 	// For Smart Reply, the generated csv file contains columns of
 	// Context, (Suggestions,Q1,Q2)*3, Actual reply.
@@ -687,12 +687,12 @@ type isEvaluationConfig_ModelSpecificConfig interface {
 }
 
 type EvaluationConfig_SmartReplyConfig_ struct {
-	// Configuration for smart reply model evalution.
+	// Configuration for smart reply model evaluation.
 	SmartReplyConfig *EvaluationConfig_SmartReplyConfig `protobuf:"bytes,2,opt,name=smart_reply_config,json=smartReplyConfig,proto3,oneof"`
 }
 
 type EvaluationConfig_SmartComposeConfig_ struct {
-	// Configuration for smart compose model evalution.
+	// Configuration for smart compose model evaluation.
 	SmartComposeConfig *EvaluationConfig_SmartComposeConfig `protobuf:"bytes,4,opt,name=smart_compose_config,json=smartComposeConfig,proto3,oneof"`
 }
 
