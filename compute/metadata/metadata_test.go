@@ -27,6 +27,7 @@ import (
 )
 
 func TestOnGCE_Stress(t *testing.T) {
+	ctx := context.Background()
 	if testing.Short() {
 		t.Skip("skipping in -short mode")
 	}
@@ -34,7 +35,7 @@ func TestOnGCE_Stress(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		onGCEOnce = sync.Once{}
 
-		now := OnGCE()
+		now := OnGCEWithContext(ctx)
 		if i > 0 && now != last {
 			t.Errorf("%d. changed from %v to %v", i, last, now)
 		}
@@ -44,12 +45,22 @@ func TestOnGCE_Stress(t *testing.T) {
 }
 
 func TestOnGCE_Force(t *testing.T) {
+	ctx := context.Background()
 	onGCEOnce = sync.Once{}
 	old := os.Getenv(metadataHostEnv)
 	defer os.Setenv(metadataHostEnv, old)
 	os.Setenv(metadataHostEnv, "127.0.0.1")
-	if !OnGCE() {
+	if !OnGCEWithContext(ctx) {
 		t.Error("OnGCE() = false; want true")
+	}
+}
+
+func TestOnGCE_Cancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	onGCEOnce = sync.Once{}
+	if OnGCEWithContext(ctx) {
+		t.Error("OnGCE() = true; want false")
 	}
 }
 
