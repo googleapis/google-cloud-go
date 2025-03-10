@@ -346,6 +346,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			if ev == "ALTS" {
 				opts.DetectOpts.TokenBindingType = credentials.ALTSHardBinding
 				ac, err := credentials.DetectDefault(opts.resolveDetectOptions())
+				// Revert it back since the same opts will be used in subsequent dial() calls.
+				opts.DetectOpts.TokenBindingType = credentials.NoBinding
 				if err != nil {
 					return nil, err
 				}
