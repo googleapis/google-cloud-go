@@ -1703,6 +1703,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	var offset int64
 	errorf := params.setError
 	setObj := params.setObj
+	setFlush := params.setFlush
 	pr, pw := io.Pipe()
 
 	s := callSettings(c.settings, opts...)
@@ -1728,15 +1729,23 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			}
 
 			var gw *gRPCWriter
-			gw, err := newGRPCWriter(c, s, params, r)
+			gw, err := newGRPCWriter(c, s, params, r, pw, params.setPipeWriter)
 			if err != nil {
 				return err
 			}
+
+			// Set Flush func for use by exported Writer.Flush.
+			setFlush(func() (int64, error) {
+				return gw.flush()
+			})
 
 			// Loop until there is an error or the Object has been finalized.
 			for {
 				// Note: This blocks until either the buffer is full or EOF is read.
 				recvd, doneReading, err := gw.read()
+				if gw.flushInProgress {
+					doneReading = false
+				}
 				if err != nil {
 					return err
 				}
@@ -2572,7 +2581,7 @@ func (r *gRPCReader) reopenStream() error {
 	return nil
 }
 
-func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader) (*gRPCWriter, error) {
+func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pw *io.PipeWriter, setPipeWriter func(*io.PipeWriter)) (*gRPCWriter, error) {
 	if params.attrs.Retention != nil {
 		// TO-DO: remove once ObjectRetention is available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
@@ -2609,6 +2618,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		c:                     c,
 		ctx:                   params.ctx,
 		reader:                r,
+		pw:                    pw,
 		bucket:                params.bucket,
 		attrs:                 params.attrs,
 		conds:                 params.conds,
@@ -2626,9 +2636,11 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 // gRPCWriter is a wrapper around the the gRPC client-stream API that manages
 // sending chunks of data provided by the user over the stream.
 type gRPCWriter struct {
-	c      *grpcStorageClient
-	buf    []byte
-	reader io.Reader
+	c             *grpcStorageClient
+	buf           []byte
+	reader        io.Reader
+	pw            *io.PipeWriter
+	setPipeWriter func(*io.PipeWriter) // used to set in parent storage.Writer
 
 	ctx context.Context
 
@@ -2645,7 +2657,9 @@ type gRPCWriter struct {
 	forceEmptyContentType bool
 	append                bool
 
-	streamSender gRPCBidiWriteBufferSender
+	streamSender    gRPCBidiWriteBufferSender
+	offset          int64 // current offset of data sent to GCS.
+	flushInProgress bool  // true when the pipe is being recreated for a flush.
 }
 
 func bucketContext(ctx context.Context, bucket string) context.Context {
@@ -2950,6 +2964,8 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 
 // read copies the data in the reader to the given buffer and reports how much
 // data was read into the buffer and if there is no more data to read (EOF).
+// read returns when either 1. the buffer is full, 2. Writer.Flush was called,
+// or 3. Writer.Close was called.
 func (w *gRPCWriter) read() (int, bool, error) {
 	// Set n to -1 to start the Read loop.
 	var n, recvd int = -1, 0
@@ -2965,6 +2981,29 @@ func (w *gRPCWriter) read() (int, bool, error) {
 		err = nil
 	}
 	return recvd, done, err
+}
+
+// flush flushes the current buffer regardless of whether it is full or not.
+// It's the implementation for Writer.Flush.
+func (w *gRPCWriter) flush() (int64, error) {
+	log.Printf("calling flush")
+	if !w.append {
+		return 0, errors.New("Flush is supported only if Writer.Append is set to true")
+	}
+
+	// Close PipeWriter to trigger EOF on read side of the stream.
+	w.flushInProgress = true
+	w.pw.Close()
+
+	// Wait for flush to complete
+
+	// Reset pipe
+	pr, pw := io.Pipe()
+	w.reader = pr
+	w.pw = pw
+	w.setPipeWriter(pw)
+
+	return 0, nil
 }
 
 func checkCanceled(err error) error {
