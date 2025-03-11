@@ -1888,6 +1888,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 						},
 						progress: nil,
 						setObj:   nil,
+						setFlush: func(f func() (int64, error)) {},
 					})
 					return err
 				},
