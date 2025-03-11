@@ -905,6 +905,7 @@ func TestOpenWriterEmulated(t *testing.T) {
 			setError: func(_ error) {}, // no-op
 			progress: func(_ int64) {}, // no-op
 			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
+			setFlush: func(f func() (int64, error)) {},
 		}
 		pw, err := client.OpenWriter(params)
 		if err != nil {
