@@ -1265,6 +1265,8 @@ type SpeechToTextConfig struct {
 	// for model selection.
 	Model string `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
 	// List of names of Cloud Speech phrase sets that are used for transcription.
+	// For phrase set limitations, please refer to [Cloud Speech API quotas and
+	// limits](https://cloud.google.com/speech-to-text/quotas#content).
 	PhraseSets []string `protobuf:"bytes,4,rep,name=phrase_sets,json=phraseSets,proto3" json:"phrase_sets,omitempty"`
 	// Audio encoding of the audio content to process.
 	AudioEncoding AudioEncoding `protobuf:"varint,6,opt,name=audio_encoding,json=audioEncoding,proto3,enum=google.cloud.dialogflow.v2beta1.AudioEncoding" json:"audio_encoding,omitempty"`
