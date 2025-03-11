@@ -21,11 +21,8 @@
 package dataplexpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -216,7 +215,9 @@ func (MetadataJob_Type) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{41, 0}
 }
 
-// Specifies how the entries and aspects in a metadata job are updated.
+// Specifies how the entries and aspects in a metadata job are updated. For
+// more information, see [Sync
+// mode](https://cloud.google.com/dataplex/docs/import-metadata#sync-mode).
 type MetadataJob_ImportJobSpec_SyncMode int32
 
 const (
@@ -226,14 +227,20 @@ const (
 	// Dataplex but isn't included in the metadata import file, the resource
 	// is deleted when you run the metadata job. Use this mode to perform a
 	// full sync of the set of entries in the job scope.
+	//
+	// This sync mode is supported for entries.
 	MetadataJob_ImportJobSpec_FULL MetadataJob_ImportJobSpec_SyncMode = 1
-	// Only the entries and aspects that are explicitly included in the
+	// Only the resources that are explicitly included in the
 	// metadata import file are modified. Use this mode to modify a subset of
 	// resources while leaving unreferenced resources unchanged.
+	//
+	// This sync mode is supported for aspects.
 	MetadataJob_ImportJobSpec_INCREMENTAL MetadataJob_ImportJobSpec_SyncMode = 2
-	// If entry sync mode is NONE, then the entry-specific fields (apart from
-	// aspects) are not modified and the aspects are modified according to the
-	// aspect_sync_mode
+	// If entry sync mode is `NONE`, then aspects are modified according
+	// to the aspect sync mode. Other metadata that belongs to entries in the
+	// job's scope isn't modified.
+	//
+	// This sync mode is supported for entries.
 	MetadataJob_ImportJobSpec_NONE MetadataJob_ImportJobSpec_SyncMode = 3
 )
 
@@ -3351,6 +3358,9 @@ type ImportItem struct {
 	//
 	// The `update_mask` field is ignored when an entry is created or re-created.
 	//
+	// In an aspect-only metadata job (when entry sync mode is `NONE`), set this
+	// value to `aspects`.
+	//
 	// Dataplex also determines which entries and aspects to modify by comparing
 	// the values and timestamps that you provide in the metadata import file with
 	// the values and timestamps that exist in your project. For more information,
@@ -3363,18 +3373,18 @@ type ImportItem struct {
 	// aspect type and are attached directly to the entry.
 	// * `{aspect_type_reference}@{path}`: matches aspects that belong to the
 	// specified aspect type and path.
-	// * `<aspect_type_reference>@*` : matches aspects of the given type for all
+	// * `{aspect_type_reference}@*` : matches aspects of the given type for all
 	// paths.
 	// * `*@path` : matches aspects of all types on the given path.
+	//
 	// Replace `{aspect_type_reference}` with a reference to the aspect type, in
 	// the format
 	// `{project_id_or_number}.{location_id}.{aspect_type_id}`.
 	//
-	// If you leave this field empty, it is treated as specifying exactly those
-	// aspects that are present within the specified entry.
-	//
-	// In `FULL` entry sync mode, Dataplex implicitly adds the keys for all of the
-	// required aspects of an entry.
+	// In `FULL` entry sync mode, if you leave this field empty, it is treated as
+	// specifying exactly those aspects that are present within the specified
+	// entry. Dataplex implicitly adds the keys for all of the required aspects of
+	// an entry.
 	AspectKeys []string `protobuf:"bytes,3,rep,name=aspect_keys,json=aspectKeys,proto3" json:"aspect_keys,omitempty"`
 }
 
@@ -4662,7 +4672,16 @@ func (x *MetadataJob_ImportJobResult) GetUpdateTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// Job specification for a metadata import job
+// Job specification for a metadata import job.
+//
+// You can run the following kinds of metadata import jobs:
+//
+// * Full sync of entries with incremental import of their aspects.
+// Supported for custom entries.
+// * Incremental import of aspects only. Supported for aspects that belong
+// to custom entries and system entries. For custom entries, you can modify
+// both optional aspects and required aspects. For system entries, you can
+// modify optional aspects.
 type MetadataJob_ImportJobSpec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4694,14 +4713,8 @@ type MetadataJob_ImportJobSpec struct {
 	// can have.
 	Scope *MetadataJob_ImportJobSpec_ImportJobScope `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
 	// Required. The sync mode for entries.
-	// Only `FULL` mode is supported for entries. All entries in the job's scope
-	// are modified. If an entry exists in Dataplex but isn't included in the
-	// metadata import file, the entry is deleted when you run the metadata job.
 	EntrySyncMode MetadataJob_ImportJobSpec_SyncMode `protobuf:"varint,3,opt,name=entry_sync_mode,json=entrySyncMode,proto3,enum=google.cloud.dataplex.v1.MetadataJob_ImportJobSpec_SyncMode" json:"entry_sync_mode,omitempty"`
 	// Required. The sync mode for aspects.
-	// Only `INCREMENTAL` mode is supported for aspects. An aspect is modified
-	// only if the metadata import file includes a reference to the aspect in
-	// the `update_mask` field and the `aspect_keys` field.
 	AspectSyncMode MetadataJob_ImportJobSpec_SyncMode `protobuf:"varint,4,opt,name=aspect_sync_mode,json=aspectSyncMode,proto3,enum=google.cloud.dataplex.v1.MetadataJob_ImportJobSpec_SyncMode" json:"aspect_sync_mode,omitempty"`
 	// Optional. The level of logs to write to Cloud Logging for this job.
 	//
@@ -4869,8 +4882,8 @@ type MetadataJob_ImportJobSpec_ImportJobScope struct {
 	// Required. The entry group that is in scope for the import job,
 	// specified as a relative resource name in the format
 	// `projects/{project_number_or_id}/locations/{location_id}/entryGroups/{entry_group_id}`.
-	// Only entries that belong to the specified entry group are affected by
-	// the job.
+	// Only entries and aspects that belong to the specified entry group are
+	// affected by the job.
 	//
 	// Must contain exactly one element. The entry group and the job
 	// must be in the same location.
@@ -4878,7 +4891,8 @@ type MetadataJob_ImportJobSpec_ImportJobScope struct {
 	// Required. The entry types that are in scope for the import job,
 	// specified as relative resource names in the format
 	// `projects/{project_number_or_id}/locations/{location_id}/entryTypes/{entry_type_id}`.
-	// The job modifies only the entries that belong to these entry types.
+	// The job modifies only the entries and aspects that belong to these
+	// entry types.
 	//
 	// If the metadata import file attempts to modify an entry whose type
 	// isn't included in this list, the import job is halted before modifying
@@ -4891,6 +4905,8 @@ type MetadataJob_ImportJobSpec_ImportJobScope struct {
 	// specified as relative resource names in the format
 	// `projects/{project_number_or_id}/locations/{location_id}/aspectTypes/{aspect_type_id}`.
 	// The job modifies only the aspects that belong to these aspect types.
+	//
+	// This field is required when creating an aspect-only import job.
 	//
 	// If the metadata import file attempts to modify an aspect whose type
 	// isn't included in this list, the import job is halted before modifying
@@ -6553,18 +6569,8 @@ type CatalogServiceClient interface {
 	// Lists Entries within an EntryGroup.
 	ListEntries(ctx context.Context, in *ListEntriesRequest, opts ...grpc.CallOption) (*ListEntriesResponse, error)
 	// Gets an Entry.
-	//
-	// **Caution**: The BigQuery metadata that is stored in Dataplex Catalog is
-	// changing. For more information, see [Changes to BigQuery metadata stored in
-	// Dataplex
-	// Catalog](https://cloud.google.com/dataplex/docs/biqquery-metadata-changes).
 	GetEntry(ctx context.Context, in *GetEntryRequest, opts ...grpc.CallOption) (*Entry, error)
-	// Looks up a single Entry by name using the permission on the source system.
-	//
-	// **Caution**: The BigQuery metadata that is stored in Dataplex Catalog is
-	// changing. For more information, see [Changes to BigQuery metadata stored in
-	// Dataplex
-	// Catalog](https://cloud.google.com/dataplex/docs/biqquery-metadata-changes).
+	// Looks up an entry by name using the permission on the source system.
 	LookupEntry(ctx context.Context, in *LookupEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Searches for Entries matching the given query and scope.
 	SearchEntries(ctx context.Context, in *SearchEntriesRequest, opts ...grpc.CallOption) (*SearchEntriesResponse, error)
@@ -6867,18 +6873,8 @@ type CatalogServiceServer interface {
 	// Lists Entries within an EntryGroup.
 	ListEntries(context.Context, *ListEntriesRequest) (*ListEntriesResponse, error)
 	// Gets an Entry.
-	//
-	// **Caution**: The BigQuery metadata that is stored in Dataplex Catalog is
-	// changing. For more information, see [Changes to BigQuery metadata stored in
-	// Dataplex
-	// Catalog](https://cloud.google.com/dataplex/docs/biqquery-metadata-changes).
 	GetEntry(context.Context, *GetEntryRequest) (*Entry, error)
-	// Looks up a single Entry by name using the permission on the source system.
-	//
-	// **Caution**: The BigQuery metadata that is stored in Dataplex Catalog is
-	// changing. For more information, see [Changes to BigQuery metadata stored in
-	// Dataplex
-	// Catalog](https://cloud.google.com/dataplex/docs/biqquery-metadata-changes).
+	// Looks up an entry by name using the permission on the source system.
 	LookupEntry(context.Context, *LookupEntryRequest) (*Entry, error)
 	// Searches for Entries matching the given query and scope.
 	SearchEntries(context.Context, *SearchEntriesRequest) (*SearchEntriesResponse, error)

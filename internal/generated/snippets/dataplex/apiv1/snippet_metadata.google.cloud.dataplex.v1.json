@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.22.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -609,7 +609,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntry_sync",
       "title": "dataplex GetEntry Sample",
-      "description": "GetEntry gets an Entry.\n\n**Caution**: The BigQuery metadata that is stored in Dataplex Catalog is\nchanging. For more information, see [Changes to BigQuery metadata stored in\nDataplex\nCatalog](https: //cloud.google.com/dataplex/docs/biqquery-metadata-changes).",
+      "description": "GetEntry gets an Entry.",
       "file": "CatalogClient/GetEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1207,7 +1207,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_LookupEntry_sync",
       "title": "dataplex LookupEntry Sample",
-      "description": "LookupEntry looks up a single Entry by name using the permission on the source system.\n\n**Caution**: The BigQuery metadata that is stored in Dataplex Catalog is\nchanging. For more information, see [Changes to BigQuery metadata stored in\nDataplex\nCatalog](https: //cloud.google.com/dataplex/docs/biqquery-metadata-changes).",
+      "description": "LookupEntry looks up an entry by name using the permission on the source system.",
       "file": "CatalogClient/LookupEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2857,7 +2857,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataAttribute_sync",
       "title": "dataplex CreateDataAttribute Sample",
-      "description": "CreateDataAttribute create a DataAttribute resource.",
+      "description": "CreateDataAttribute create a DataAttribute resource.\n\n\nDeprecated: CreateDataAttribute may be removed in a future version.",
       "file": "DataTaxonomyClient/CreateDataAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2903,7 +2903,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataAttributeBinding_sync",
       "title": "dataplex CreateDataAttributeBinding Sample",
-      "description": "CreateDataAttributeBinding create a DataAttributeBinding resource.",
+      "description": "CreateDataAttributeBinding create a DataAttributeBinding resource.\n\n\nDeprecated: CreateDataAttributeBinding may be removed in a future version.",
       "file": "DataTaxonomyClient/CreateDataAttributeBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2949,7 +2949,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataTaxonomy_sync",
       "title": "dataplex CreateDataTaxonomy Sample",
-      "description": "CreateDataTaxonomy create a DataTaxonomy resource.",
+      "description": "CreateDataTaxonomy create a DataTaxonomy resource.\n\n\nDeprecated: CreateDataTaxonomy may be removed in a future version.",
       "file": "DataTaxonomyClient/CreateDataTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2995,7 +2995,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataAttribute_sync",
       "title": "dataplex DeleteDataAttribute Sample",
-      "description": "DeleteDataAttribute deletes a Data Attribute resource.",
+      "description": "DeleteDataAttribute deletes a Data Attribute resource.\n\n\nDeprecated: DeleteDataAttribute may be removed in a future version.",
       "file": "DataTaxonomyClient/DeleteDataAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3041,7 +3041,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataAttributeBinding_sync",
       "title": "dataplex DeleteDataAttributeBinding Sample",
-      "description": "DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the\nDataAttributeBinding must be deleted before the DataAttributeBinding can be\ndeleted.",
+      "description": "DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the\nDataAttributeBinding must be deleted before the DataAttributeBinding can be\ndeleted.\n\n\nDeprecated: DeleteDataAttributeBinding may be removed in a future version.",
       "file": "DataTaxonomyClient/DeleteDataAttributeBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3087,7 +3087,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataTaxonomy_sync",
       "title": "dataplex DeleteDataTaxonomy Sample",
-      "description": "DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy\nmust be deleted before the DataTaxonomy can be deleted.",
+      "description": "DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy\nmust be deleted before the DataTaxonomy can be deleted.\n\n\nDeprecated: DeleteDataTaxonomy may be removed in a future version.",
       "file": "DataTaxonomyClient/DeleteDataTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3178,7 +3178,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataAttribute_sync",
       "title": "dataplex GetDataAttribute Sample",
-      "description": "GetDataAttribute retrieves a Data Attribute resource.",
+      "description": "GetDataAttribute retrieves a Data Attribute resource.\n\n\nDeprecated: GetDataAttribute may be removed in a future version.",
       "file": "DataTaxonomyClient/GetDataAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3224,7 +3224,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataAttributeBinding_sync",
       "title": "dataplex GetDataAttributeBinding Sample",
-      "description": "GetDataAttributeBinding retrieves a DataAttributeBinding resource.",
+      "description": "GetDataAttributeBinding retrieves a DataAttributeBinding resource.\n\n\nDeprecated: GetDataAttributeBinding may be removed in a future version.",
       "file": "DataTaxonomyClient/GetDataAttributeBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3270,7 +3270,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataTaxonomy_sync",
       "title": "dataplex GetDataTaxonomy Sample",
-      "description": "GetDataTaxonomy retrieves a DataTaxonomy resource.",
+      "description": "GetDataTaxonomy retrieves a DataTaxonomy resource.\n\n\nDeprecated: GetDataTaxonomy may be removed in a future version.",
       "file": "DataTaxonomyClient/GetDataTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3408,7 +3408,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataAttributeBindings_sync",
       "title": "dataplex ListDataAttributeBindings Sample",
-      "description": "ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.",
+      "description": "ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.\n\n\nDeprecated: ListDataAttributeBindings may be removed in a future version.",
       "file": "DataTaxonomyClient/ListDataAttributeBindings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3454,7 +3454,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataAttributes_sync",
       "title": "dataplex ListDataAttributes Sample",
-      "description": "ListDataAttributes lists Data Attribute resources in a DataTaxonomy.",
+      "description": "ListDataAttributes lists Data Attribute resources in a DataTaxonomy.\n\n\nDeprecated: ListDataAttributes may be removed in a future version.",
       "file": "DataTaxonomyClient/ListDataAttributes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3500,7 +3500,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataTaxonomies_sync",
       "title": "dataplex ListDataTaxonomies Sample",
-      "description": "ListDataTaxonomies lists DataTaxonomy resources in a project and location.",
+      "description": "ListDataTaxonomies lists DataTaxonomy resources in a project and location.\n\n\nDeprecated: ListDataTaxonomies may be removed in a future version.",
       "file": "DataTaxonomyClient/ListDataTaxonomies/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3638,7 +3638,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataAttribute_sync",
       "title": "dataplex UpdateDataAttribute Sample",
-      "description": "UpdateDataAttribute updates a DataAttribute resource.",
+      "description": "UpdateDataAttribute updates a DataAttribute resource.\n\n\nDeprecated: UpdateDataAttribute may be removed in a future version.",
       "file": "DataTaxonomyClient/UpdateDataAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3684,7 +3684,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataAttributeBinding_sync",
       "title": "dataplex UpdateDataAttributeBinding Sample",
-      "description": "UpdateDataAttributeBinding updates a DataAttributeBinding resource.",
+      "description": "UpdateDataAttributeBinding updates a DataAttributeBinding resource.\n\n\nDeprecated: UpdateDataAttributeBinding may be removed in a future version.",
       "file": "DataTaxonomyClient/UpdateDataAttributeBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3730,7 +3730,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataTaxonomy_sync",
       "title": "dataplex UpdateDataTaxonomy Sample",
-      "description": "UpdateDataTaxonomy updates a DataTaxonomy resource.",
+      "description": "UpdateDataTaxonomy updates a DataTaxonomy resource.\n\n\nDeprecated: UpdateDataTaxonomy may be removed in a future version.",
       "file": "DataTaxonomyClient/UpdateDataTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {

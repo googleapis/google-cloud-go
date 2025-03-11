@@ -526,21 +526,11 @@ func (c *CatalogClient) ListEntries(ctx context.Context, req *dataplexpb.ListEnt
 }
 
 // GetEntry gets an Entry.
-//
-// Caution: The BigQuery metadata that is stored in Dataplex Catalog is
-// changing. For more information, see Changes to BigQuery metadata stored in
-// Dataplex
-// Catalog (at https://cloud.google.com/dataplex/docs/biqquery-metadata-changes).
 func (c *CatalogClient) GetEntry(ctx context.Context, req *dataplexpb.GetEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	return c.internalClient.GetEntry(ctx, req, opts...)
 }
 
-// LookupEntry looks up a single Entry by name using the permission on the source system.
-//
-// Caution: The BigQuery metadata that is stored in Dataplex Catalog is
-// changing. For more information, see Changes to BigQuery metadata stored in
-// Dataplex
-// Catalog (at https://cloud.google.com/dataplex/docs/biqquery-metadata-changes).
+// LookupEntry looks up an entry by name using the permission on the source system.
 func (c *CatalogClient) LookupEntry(ctx context.Context, req *dataplexpb.LookupEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	return c.internalClient.LookupEntry(ctx, req, opts...)
 }

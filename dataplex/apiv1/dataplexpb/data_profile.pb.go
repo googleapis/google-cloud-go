@@ -21,12 +21,11 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -109,8 +108,10 @@ type DataProfileSpec struct {
 	// 100.
 	SamplingPercent float32 `protobuf:"fixed32,2,opt,name=sampling_percent,json=samplingPercent,proto3" json:"sampling_percent,omitempty"`
 	// Optional. A filter applied to all rows in a single DataScan job.
-	// The filter needs to be a valid SQL expression for a WHERE clause in
-	// BigQuery standard SQL syntax.
+	// The filter needs to be a valid SQL expression for a [WHERE clause in
+	// GoogleSQL
+	// syntax](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#where_clause).
+	//
 	// Example: col1 >= 0 AND col2 < 10
 	RowFilter string `protobuf:"bytes,3,opt,name=row_filter,json=rowFilter,proto3" json:"row_filter,omitempty"`
 	// Optional. Actions to take upon job completion..
