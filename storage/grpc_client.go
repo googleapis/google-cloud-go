@@ -1062,12 +1062,13 @@ func contextMetadataFromBidiReadObject(req *storagepb.BidiReadObjectRequest) []s
 }
 
 type rangeSpec struct {
-	readID       int64
-	writer       io.Writer
-	offset       int64
-	limit        int64
-	bytesWritten int64
-	callback     func(int64, int64, error)
+	readID              int64
+	writer              io.Writer
+	offset              int64
+	limit               int64
+	currentBytesWritten int64
+	totalBytesWritten   int64
+	callback            func(int64, int64, error)
 }
 
 func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (mr *MultiRangeDownloader, err error) {
@@ -1202,7 +1203,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				rr.mu.Lock()
 				if len(rr.mp) != 0 {
 					for key := range rr.mp {
-						rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, fmt.Errorf("stream closed early"))
+						rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, fmt.Errorf("stream closed early"))
 						delete(rr.mp, key)
 					}
 				}
@@ -1295,21 +1296,22 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						}
 						_, err = rr.mp[id].writer.Write(val.GetChecksummedData().GetContent())
 						if err != nil {
-							rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].limit, err)
+							rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].totalBytesWritten, err)
 							rr.activeTask--
 							delete(rr.mp, id)
 						} else {
 							rr.mp[id] = rangeSpec{
-								readID:       rr.mp[id].readID,
-								writer:       rr.mp[id].writer,
-								offset:       rr.mp[id].offset,
-								limit:        rr.mp[id].limit,
-								bytesWritten: rr.mp[id].bytesWritten + int64(len(val.GetChecksummedData().GetContent())),
-								callback:     rr.mp[id].callback,
+								readID:              rr.mp[id].readID,
+								writer:              rr.mp[id].writer,
+								offset:              rr.mp[id].offset,
+								limit:               rr.mp[id].limit,
+								currentBytesWritten: rr.mp[id].currentBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
+								totalBytesWritten:   rr.mp[id].totalBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
+								callback:            rr.mp[id].callback,
 							}
 						}
 						if val.GetRangeEnd() {
-							rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].limit, nil)
+							rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].totalBytesWritten, nil)
 							rr.activeTask--
 							delete(rr.mp, id)
 						}
@@ -1340,7 +1342,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		if err != nil {
 			rr.mu.Lock()
 			for key := range rr.mp {
-				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, err)
+				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, err)
 				delete(rr.mp, key)
 			}
 			// In case we hit an permanent error, delete entries from map and remove active tasks.
@@ -1388,12 +1390,13 @@ func getActiveRange(r *gRPCBidiReader) []rangeSpec {
 	var activeRange []rangeSpec
 	for k, v := range r.mp {
 		activeRange = append(activeRange, rangeSpec{
-			readID:       k,
-			writer:       v.writer,
-			offset:       (v.offset + v.bytesWritten),
-			limit:        v.limit - v.bytesWritten,
-			callback:     v.callback,
-			bytesWritten: 0,
+			readID:              k,
+			writer:              v.writer,
+			offset:              (v.offset + v.currentBytesWritten),
+			limit:               v.limit - v.currentBytesWritten,
+			callback:            v.callback,
+			currentBytesWritten: 0,
+			totalBytesWritten:   v.totalBytesWritten,
 		})
 		r.mp[k] = activeRange[len(activeRange)-1]
 	}
@@ -1443,22 +1446,22 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 	mr.mu.Unlock()
 
 	if offset > objectSize {
-		callback(offset, limit, fmt.Errorf("offset larger than size of object: %v", objectSize))
+		callback(offset, 0, fmt.Errorf("offset larger than size of object: %v", objectSize))
 		return
 	}
 	if limit < 0 {
-		callback(offset, limit, fmt.Errorf("limit can't be negative"))
+		callback(offset, 0, fmt.Errorf("limit can't be negative"))
 		return
 	}
 	mr.mu.Lock()
 	currentID := (*mr).readID
 	(*mr).readID++
 	if !mr.done {
-		spec := rangeSpec{readID: currentID, writer: output, offset: offset, limit: limit, bytesWritten: 0, callback: callback}
+		spec := rangeSpec{readID: currentID, writer: output, offset: offset, limit: limit, currentBytesWritten: 0, totalBytesWritten: 0, callback: callback}
 		mr.activeTask++
 		mr.data <- []rangeSpec{spec}
 	} else {
-		callback(offset, limit, fmt.Errorf("stream is closed, can't add range"))
+		callback(offset, 0, fmt.Errorf("stream is closed, can't add range"))
 	}
 	mr.mu.Unlock()
 }

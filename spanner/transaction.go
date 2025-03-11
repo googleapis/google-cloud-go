@@ -134,6 +134,9 @@ type TransactionOptions struct {
 	// Controls whether to exclude recording modifications in current transaction
 	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true).
 	ExcludeTxnFromChangeStreams bool
+
+	// sets the isolation level for RW transaction
+	IsolationLevel sppb.TransactionOptions_IsolationLevel
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
@@ -144,6 +147,7 @@ func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 		TransactionTag:              to.TransactionTag,
 		CommitPriority:              to.CommitPriority,
 		ExcludeTxnFromChangeStreams: to.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
+		IsolationLevel:              to.IsolationLevel,
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -153,6 +157,9 @@ func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 	}
 	if opts.ReadLockMode != sppb.TransactionOptions_ReadWrite_READ_LOCK_MODE_UNSPECIFIED {
 		merged.ReadLockMode = opts.ReadLockMode
+	}
+	if opts.IsolationLevel != sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED {
+		merged.IsolationLevel = opts.IsolationLevel
 	}
 	return merged
 }
@@ -484,8 +491,19 @@ type QueryOptions struct {
 
 	// Controls whether to exclude recording modifications in current partitioned update operation
 	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true). Setting
-	// this value for any sql/dml requests other than partitioned udpate will receive an error.
+	// this value for any sql/dml requests other than partitioned update will receive an error.
 	ExcludeTxnFromChangeStreams bool
+
+	// LastStatement indicates whether this statement is the last statement in this transaction.
+	// If set to true, this option marks the end of the transaction. The transaction should be
+	// committed or rolled back after this statement executes, and attempts to execute any other requests
+	// against this transaction (including reads and queries) will be rejected. Mixing mutations with
+	// statements that are marked as the last statement is not allowed.
+	//
+	// For DML statements, setting this option may cause some error reporting to be deferred until
+	// commit time (e.g. validation of unique constraints). Given this, successful execution of a DML
+	// statement should not be assumed until the transaction commits.
+	LastStatement bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
@@ -499,6 +517,7 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 		DataBoostEnabled:            qo.DataBoostEnabled,
 		DirectedReadOptions:         qo.DirectedReadOptions,
 		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
+		LastStatement:               qo.LastStatement || opts.LastStatement,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -683,6 +702,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
 		DataBoostEnabled:    options.DataBoostEnabled,
 		DirectedReadOptions: options.DirectedReadOptions,
+		LastStatement:       options.LastStatement,
 	}
 	return req, sh, nil
 }
@@ -1347,6 +1367,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		Statements:     sppbStmts,
 		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
+		LastStatements: opts.LastStatement,
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
@@ -1418,6 +1439,7 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
 						},
 						ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
+						IsolationLevel:              t.txOpts.IsolationLevel,
 					},
 				},
 			}
@@ -1482,6 +1504,7 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 			Begin: &sppb.TransactionOptions{
 				Mode:                        mode,
 				ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
+				IsolationLevel:              t.txOpts.IsolationLevel,
 			},
 		},
 	}
@@ -1556,6 +1579,7 @@ func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transa
 				ReadWrite: readWriteOptions,
 			},
 			ExcludeTxnFromChangeStreams: opts.txOptions.ExcludeTxnFromChangeStreams,
+			IsolationLevel:              opts.txOptions.IsolationLevel,
 		},
 		MutationKey: opts.mutation,
 	})
@@ -2002,6 +2026,8 @@ type writeOnlyTransaction struct {
 	excludeTxnFromChangeStreams bool
 	// commitOptions are applied to the Commit request for the writeOnlyTransaction..
 	commitOptions CommitOptions
+	// isolationLevel is used to define the isolation for writeOnlyTransaction
+	isolationLevel sppb.TransactionOptions_IsolationLevel
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -2054,6 +2080,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
 						},
 						ExcludeTxnFromChangeStreams: t.excludeTxnFromChangeStreams,
+						IsolationLevel:              t.isolationLevel,
 					},
 				},
 				Mutations:      mPb,
