@@ -3033,18 +3033,18 @@ func (w *gRPCWriter) read() (int, bool, error) {
 		recvd += n
 	}
 	var done bool
-	if err == io.EOF && !w.flushInProgress {
+	if err == io.EOF {
 		err = nil
-		done = true
-	}
-
-	if w.flushInProgress {
-		err = nil
-		// Reset pipe
-		pr, pw := io.Pipe()
-		w.reader = pr
-		w.pw = pw
-		w.setPipeWriter(pw)
+		// EOF can come from Writer.Flush or Writer.Close.
+		if w.flushInProgress {
+			// Reset pipe for additional writes after the flush.
+			pr, pw := io.Pipe()
+			w.reader = pr
+			w.pw = pw
+			w.setPipeWriter(pw)
+		} else {
+			done = true
+		}
 	}
 	return recvd, done, err
 }
