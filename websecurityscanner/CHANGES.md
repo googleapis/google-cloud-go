@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.7.3...websecurityscanner/v1.7.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* **websecurityscanner:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.7.2...websecurityscanner/v1.7.3) (2025-01-02)
 
 

@@ -1,5 +1,23 @@
 # Changes
 
+## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.66.0...dialogflow/v1.67.0) (2025-03-06)
+
+
+### Features
+
+* **dialogflow/cx:** Added support for document_processing_mode ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow/cx:** Exposed Zone Separation & Zone Isolation status of an agent ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified wording around StreamingDetectIntentRequest ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow/cx:** Clarified wording around use_timeout_based_endpointing ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow:** Clarified wording around BoostSpec and filter_specs ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow:** Clarified wording around document_correctness ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow:** Clarified wording around send_time ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow:** Clarified wording around use_timeout_based_endpointing ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
 ## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.65.0...dialogflow/v1.66.0) (2025-02-26)
 
 

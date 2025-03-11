@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.16.1...artifactregistry/v1.16.2) (2025-03-06)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.16.0...artifactregistry/v1.16.1) (2025-01-02)
 
 
