@@ -1173,6 +1173,68 @@ func TestWriterFlushEmulated(t *testing.T) {
 	})
 }
 
+func TestWriterFlushAtCloseEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		w.Append = true
+		w.ChunkSize = MiB
+		var gotOffsets []int64
+		w.ProgressFunc = func(offset int64) {
+			gotOffsets = append(gotOffsets, offset)
+		}
+		wantOffsets := []int64{MiB, 2 * MiB, 3 * MiB}
+
+		// Test Flush right before close only.
+		n, err := w.Write(randomBytes3MiB)
+		if err != nil {
+			t.Fatalf("writing data: got %v; want ok", err)
+		}
+		if n != 3*MiB {
+			t.Errorf("writing data: got %v bytes written, want %v", n, 3*MiB)
+		}
+		off, err := w.Flush()
+		if err != nil {
+			t.Fatalf("flush: got %v; want ok", err)
+		}
+		if off != 3*MiB {
+			t.Errorf("flushing data: got %v bytes written, want %v", off, 3*MiB)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+		// Check offsets
+		if !slices.Equal(gotOffsets, wantOffsets) {
+			t.Errorf("progress offsets: got %v, want %v", gotOffsets, wantOffsets)
+		}
+
+		// Download object and check data
+		r, err := veneerClient.Bucket(bucket).Object(objName).NewReader(ctx)
+		defer r.Close()
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := 3 * MiB
+		got, err := io.ReadAll(r)
+		if n := len(got); n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d (%v)", wantLen, n, err)
+		}
+		if diff := cmp.Diff(got, randomBytes3MiB); diff != "" {
+			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
+		}
+	})
+}
+
 func TestListNotificationsEmulated(t *testing.T) {
 	transportClientTest(skipGRPC("notifications not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
