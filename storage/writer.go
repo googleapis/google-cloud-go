@@ -190,7 +190,7 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 func (w *Writer) Flush() (int64, error) {
 	// Return error if Append is not true.
 	if !w.Append {
-		return 0, errors.New("Flush not supported unless client uses gRPC and Append is set to true")
+		return 0, errors.New("storage: Flush not supported unless client uses gRPC and Append is set to true")
 	}
 	// Return error if already in error state.
 	w.mu.Lock()

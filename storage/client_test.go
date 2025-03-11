@@ -1074,7 +1074,7 @@ func TestWriterFlushEmulated(t *testing.T) {
 			gotOffsets = append(gotOffsets, offset)
 		}
 		// Flush at 0 and at a range of values, both aligned with ChunkSize and where explicit flushes are expected.
-		wantOffsets := []int64{0, 3 * MiB, 4*MiB + 1024, 4*MiB + 2048, 4*MiB + 3072, 7*MiB + 3072, 9 * MiB}
+		wantOffsets := []int64{0, 3 * MiB, 4*MiB + 1024, 4*MiB + 2048, 4*MiB + 3072, 6*MiB + 4096, 9 * MiB}
 
 		// Flush first with no data since this is a special case to test.
 		off, err := w.Flush()
@@ -1103,6 +1103,7 @@ func TestWriterFlushEmulated(t *testing.T) {
 				t.Errorf("writing 1k data: got %v bytes written, want %v", n, 1024)
 			}
 			off, err := w.Flush()
+
 			if err != nil {
 				t.Fatalf("flushing 1k data: got %v; want ok", err)
 			}
@@ -1118,6 +1119,22 @@ func TestWriterFlushEmulated(t *testing.T) {
 		}
 		if n != 2*MiB+1024 {
 			t.Errorf("writing 2 MiB + 1k data: got %v bytes written, want %v", n, 1024)
+		}
+		off, err = w.Flush()
+		if err != nil {
+			t.Fatalf("flushing 2 MiB + 1k data: got %v; want ok", err)
+		}
+		if off != 6*MiB+4096 {
+			t.Errorf("flushing 2 MiB + 1k data: got %v bytes committed, want %v", off, 6*MiB+4096)
+		}
+
+		// Do one more zero-byte flush; expect noop for this.
+		off, err = w.Flush()
+		if err != nil {
+			t.Fatalf("flushing 0b data: got %v; want ok", err)
+		}
+		if off != 6*MiB+4096 {
+			t.Errorf("flushing 0b data: got %v bytes committed, want %v", off, 6*MiB+4096)
 		}
 
 		// Write remainder of data and close the writer.
