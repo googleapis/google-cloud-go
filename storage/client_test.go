@@ -969,6 +969,7 @@ func TestOpenAppendableWriterEmulated(t *testing.T) {
 		vc := &Client{tc: client}
 		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 		w.Append = true
+		w.FinalizeOnClose = true
 		_, err = w.Write(randomBytesToWrite)
 		if err != nil {
 			t.Fatalf("writing test data: got %v; want ok", err)
@@ -1020,6 +1021,7 @@ func TestOpenAppendableWriterMultipleFlushesEmulated(t *testing.T) {
 		vc := &Client{tc: client}
 		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 		w.Append = true
+		w.FinalizeOnClose = true
 		// This should chunk the request into three separate flushes to storage.
 		w.ChunkSize = MiB
 		var lastReportedOffset int64

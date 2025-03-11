@@ -118,6 +118,10 @@ type Writer struct {
 	// true, since append semantics allow a prefix of the object to be durable and
 	// readable. For other writers, the correct way to abandon an upload is to
 	// cancel its context.
+	//
+	// FinalizeOnClose is supported only on gRPC clients where [Writer.Append] is
+	// set to true. This feature is in preview and is not yet available for
+	// general use.
 	FinalizeOnClose bool
 
 	// ProgressFunc can be used to monitor the progress of a large write
