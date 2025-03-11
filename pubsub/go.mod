@@ -3,7 +3,7 @@ module cloud.google.com/go/pubsub
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.118.3
+	cloud.google.com/go v0.119.0
 	cloud.google.com/go/iam v1.4.0
 	cloud.google.com/go/kms v1.21.0
 	github.com/google/go-cmp v0.7.0
