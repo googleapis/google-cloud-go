@@ -2269,7 +2269,7 @@ func TestIntegration_UpdateRowKeySchemaInTable(t *testing.T) {
 		}
 
 		// Clear schema ok
-		if err = adminClient.UpdateTableClearRowKeySchema(ctx, tableConf.TableID); err != nil {
+		if err = adminClient.UpdateTableRemoveRowKeySchema(ctx, tableConf.TableID); err != nil {
 			t.Errorf("Unexpected error trying to clear row key schema: %v", err)
 		}
 	}

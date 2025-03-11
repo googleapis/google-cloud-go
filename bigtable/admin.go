@@ -571,14 +571,13 @@ func (ac *AdminClient) UpdateTableWithRowKeySchema(ctx context.Context, tableID 
 	if err != nil {
 		return err
 	}
-	rksProto := rowKeySchema.proto()
 	req.UpdateMask.Paths = append(req.UpdateMask.Paths, rowKeySchemaMaskPath)
-	req.Table.RowKeySchema = rksProto.GetStructType()
+	req.Table.RowKeySchema = rowKeySchema.proto().GetStructType()
 	return ac.updateTableAndWait(ctx, req)
 }
 
-// UpdateTableClearRowKeySchema clears a RowKeySchema from a table.
-func (ac *AdminClient) UpdateTableClearRowKeySchema(ctx context.Context, tableID string) error {
+// UpdateTableRemoveRowKeySchema removes a RowKeySchema from a table.
+func (ac *AdminClient) UpdateTableRemoveRowKeySchema(ctx context.Context, tableID string) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
 		return err

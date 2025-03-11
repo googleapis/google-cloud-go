@@ -431,7 +431,7 @@ func TestTableAdmin_UpdateTableWithRowKeySchema(t *testing.T) {
 func TestTableAdmin_UpdateTableWithClearRowKeySchema(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
-	err := c.UpdateTableClearRowKeySchema(context.Background(), "my-table")
+	err := c.UpdateTableRemoveRowKeySchema(context.Background(), "my-table")
 	if err != nil {
 		t.Fatalf("UpdateTableWithRowKeySchema error: %v", err)
 	}

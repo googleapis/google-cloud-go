@@ -180,6 +180,9 @@ func (it Int64Type) proto() *btapb.Type {
 	var encoding *btapb.Type_Int64_Encoding
 	if it.Encoding != nil {
 		encoding = it.Encoding.proto()
+	} else {
+		// default encoding to BigEndianBytes
+		encoding = BigEndianBytesEncoding{}.proto()
 	}
 
 	return &btapb.Type{
