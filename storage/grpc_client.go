@@ -3013,8 +3013,8 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 		}
 	}
 	if w.flushInProgress {
-		w.flushComplete <- offset
 		w.flushInProgress = false
+		w.flushComplete <- offset
 	}
 	return
 }
