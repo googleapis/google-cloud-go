@@ -1119,7 +1119,7 @@ func TestWriterFlushEmulated(t *testing.T) {
 			t.Fatalf("writing 2MiB + 1k data: got %v; want ok", err)
 		}
 		if n != 2*MiB+1024 {
-			t.Errorf("writing 2 MiB + 1k data: got %v bytes written, want %v", n, 1024)
+			t.Errorf("writing 2 MiB + 1k data: got %v bytes written, want %v", n, 2*MiB+1024)
 		}
 		off, err = w.Flush()
 		if err != nil {
