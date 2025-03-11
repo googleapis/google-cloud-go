@@ -147,6 +147,8 @@ type internalDataTaxonomyClient interface {
 //
 // DataTaxonomyService enables attribute-based governance. The resources
 // currently offered include DataTaxonomy and DataAttribute.
+//
+// Deprecated: DataTaxonomyService may be removed in a future version.
 type DataTaxonomyClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDataTaxonomyClient
@@ -184,6 +186,8 @@ func (c *DataTaxonomyClient) Connection() *grpc.ClientConn {
 }
 
 // CreateDataTaxonomy create a DataTaxonomy resource.
+//
+// Deprecated: CreateDataTaxonomy may be removed in a future version.
 func (c *DataTaxonomyClient) CreateDataTaxonomy(ctx context.Context, req *dataplexpb.CreateDataTaxonomyRequest, opts ...gax.CallOption) (*CreateDataTaxonomyOperation, error) {
 	return c.internalClient.CreateDataTaxonomy(ctx, req, opts...)
 }
@@ -195,6 +199,8 @@ func (c *DataTaxonomyClient) CreateDataTaxonomyOperation(name string) *CreateDat
 }
 
 // UpdateDataTaxonomy updates a DataTaxonomy resource.
+//
+// Deprecated: UpdateDataTaxonomy may be removed in a future version.
 func (c *DataTaxonomyClient) UpdateDataTaxonomy(ctx context.Context, req *dataplexpb.UpdateDataTaxonomyRequest, opts ...gax.CallOption) (*UpdateDataTaxonomyOperation, error) {
 	return c.internalClient.UpdateDataTaxonomy(ctx, req, opts...)
 }
@@ -207,6 +213,8 @@ func (c *DataTaxonomyClient) UpdateDataTaxonomyOperation(name string) *UpdateDat
 
 // DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy
 // must be deleted before the DataTaxonomy can be deleted.
+//
+// Deprecated: DeleteDataTaxonomy may be removed in a future version.
 func (c *DataTaxonomyClient) DeleteDataTaxonomy(ctx context.Context, req *dataplexpb.DeleteDataTaxonomyRequest, opts ...gax.CallOption) (*DeleteDataTaxonomyOperation, error) {
 	return c.internalClient.DeleteDataTaxonomy(ctx, req, opts...)
 }
@@ -218,16 +226,22 @@ func (c *DataTaxonomyClient) DeleteDataTaxonomyOperation(name string) *DeleteDat
 }
 
 // ListDataTaxonomies lists DataTaxonomy resources in a project and location.
+//
+// Deprecated: ListDataTaxonomies may be removed in a future version.
 func (c *DataTaxonomyClient) ListDataTaxonomies(ctx context.Context, req *dataplexpb.ListDataTaxonomiesRequest, opts ...gax.CallOption) *DataTaxonomyIterator {
 	return c.internalClient.ListDataTaxonomies(ctx, req, opts...)
 }
 
 // GetDataTaxonomy retrieves a DataTaxonomy resource.
+//
+// Deprecated: GetDataTaxonomy may be removed in a future version.
 func (c *DataTaxonomyClient) GetDataTaxonomy(ctx context.Context, req *dataplexpb.GetDataTaxonomyRequest, opts ...gax.CallOption) (*dataplexpb.DataTaxonomy, error) {
 	return c.internalClient.GetDataTaxonomy(ctx, req, opts...)
 }
 
 // CreateDataAttributeBinding create a DataAttributeBinding resource.
+//
+// Deprecated: CreateDataAttributeBinding may be removed in a future version.
 func (c *DataTaxonomyClient) CreateDataAttributeBinding(ctx context.Context, req *dataplexpb.CreateDataAttributeBindingRequest, opts ...gax.CallOption) (*CreateDataAttributeBindingOperation, error) {
 	return c.internalClient.CreateDataAttributeBinding(ctx, req, opts...)
 }
@@ -239,6 +253,8 @@ func (c *DataTaxonomyClient) CreateDataAttributeBindingOperation(name string) *C
 }
 
 // UpdateDataAttributeBinding updates a DataAttributeBinding resource.
+//
+// Deprecated: UpdateDataAttributeBinding may be removed in a future version.
 func (c *DataTaxonomyClient) UpdateDataAttributeBinding(ctx context.Context, req *dataplexpb.UpdateDataAttributeBindingRequest, opts ...gax.CallOption) (*UpdateDataAttributeBindingOperation, error) {
 	return c.internalClient.UpdateDataAttributeBinding(ctx, req, opts...)
 }
@@ -252,6 +268,8 @@ func (c *DataTaxonomyClient) UpdateDataAttributeBindingOperation(name string) *U
 // DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the
 // DataAttributeBinding must be deleted before the DataAttributeBinding can be
 // deleted.
+//
+// Deprecated: DeleteDataAttributeBinding may be removed in a future version.
 func (c *DataTaxonomyClient) DeleteDataAttributeBinding(ctx context.Context, req *dataplexpb.DeleteDataAttributeBindingRequest, opts ...gax.CallOption) (*DeleteDataAttributeBindingOperation, error) {
 	return c.internalClient.DeleteDataAttributeBinding(ctx, req, opts...)
 }
@@ -263,16 +281,22 @@ func (c *DataTaxonomyClient) DeleteDataAttributeBindingOperation(name string) *D
 }
 
 // ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.
+//
+// Deprecated: ListDataAttributeBindings may be removed in a future version.
 func (c *DataTaxonomyClient) ListDataAttributeBindings(ctx context.Context, req *dataplexpb.ListDataAttributeBindingsRequest, opts ...gax.CallOption) *DataAttributeBindingIterator {
 	return c.internalClient.ListDataAttributeBindings(ctx, req, opts...)
 }
 
 // GetDataAttributeBinding retrieves a DataAttributeBinding resource.
+//
+// Deprecated: GetDataAttributeBinding may be removed in a future version.
 func (c *DataTaxonomyClient) GetDataAttributeBinding(ctx context.Context, req *dataplexpb.GetDataAttributeBindingRequest, opts ...gax.CallOption) (*dataplexpb.DataAttributeBinding, error) {
 	return c.internalClient.GetDataAttributeBinding(ctx, req, opts...)
 }
 
 // CreateDataAttribute create a DataAttribute resource.
+//
+// Deprecated: CreateDataAttribute may be removed in a future version.
 func (c *DataTaxonomyClient) CreateDataAttribute(ctx context.Context, req *dataplexpb.CreateDataAttributeRequest, opts ...gax.CallOption) (*CreateDataAttributeOperation, error) {
 	return c.internalClient.CreateDataAttribute(ctx, req, opts...)
 }
@@ -284,6 +308,8 @@ func (c *DataTaxonomyClient) CreateDataAttributeOperation(name string) *CreateDa
 }
 
 // UpdateDataAttribute updates a DataAttribute resource.
+//
+// Deprecated: UpdateDataAttribute may be removed in a future version.
 func (c *DataTaxonomyClient) UpdateDataAttribute(ctx context.Context, req *dataplexpb.UpdateDataAttributeRequest, opts ...gax.CallOption) (*UpdateDataAttributeOperation, error) {
 	return c.internalClient.UpdateDataAttribute(ctx, req, opts...)
 }
@@ -295,6 +321,8 @@ func (c *DataTaxonomyClient) UpdateDataAttributeOperation(name string) *UpdateDa
 }
 
 // DeleteDataAttribute deletes a Data Attribute resource.
+//
+// Deprecated: DeleteDataAttribute may be removed in a future version.
 func (c *DataTaxonomyClient) DeleteDataAttribute(ctx context.Context, req *dataplexpb.DeleteDataAttributeRequest, opts ...gax.CallOption) (*DeleteDataAttributeOperation, error) {
 	return c.internalClient.DeleteDataAttribute(ctx, req, opts...)
 }
@@ -306,11 +334,15 @@ func (c *DataTaxonomyClient) DeleteDataAttributeOperation(name string) *DeleteDa
 }
 
 // ListDataAttributes lists Data Attribute resources in a DataTaxonomy.
+//
+// Deprecated: ListDataAttributes may be removed in a future version.
 func (c *DataTaxonomyClient) ListDataAttributes(ctx context.Context, req *dataplexpb.ListDataAttributesRequest, opts ...gax.CallOption) *DataAttributeIterator {
 	return c.internalClient.ListDataAttributes(ctx, req, opts...)
 }
 
 // GetDataAttribute retrieves a Data Attribute resource.
+//
+// Deprecated: GetDataAttribute may be removed in a future version.
 func (c *DataTaxonomyClient) GetDataAttribute(ctx context.Context, req *dataplexpb.GetDataAttributeRequest, opts ...gax.CallOption) (*dataplexpb.DataAttribute, error) {
 	return c.internalClient.GetDataAttribute(ctx, req, opts...)
 }
@@ -378,6 +410,8 @@ type dataTaxonomyGRPCClient struct {
 //
 // DataTaxonomyService enables attribute-based governance. The resources
 // currently offered include DataTaxonomy and DataAttribute.
+//
+// Deprecated: DataTaxonomyService may be removed in a future version.
 func NewDataTaxonomyClient(ctx context.Context, opts ...option.ClientOption) (*DataTaxonomyClient, error) {
 	clientOpts := defaultDataTaxonomyGRPCClientOptions()
 	if newDataTaxonomyClientHook != nil {
