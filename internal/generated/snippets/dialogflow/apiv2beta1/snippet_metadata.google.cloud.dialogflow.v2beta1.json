@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2beta1",
-    "version": "1.66.0",
+    "version": "1.67.0",
     "language": "GO",
     "apis": [
       {
@@ -2349,6 +2349,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v2beta1_generated_Conversations_GenerateSuggestions_sync",
+      "title": "dialogflow GenerateSuggestions Sample",
+      "description": "GenerateSuggestions generates all the suggestions using generators configured in the\nconversation profile. A generator is used only if its trigger event is\nmatched.",
+      "file": "ConversationsClient/GenerateSuggestions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateSuggestions",
+        "fullName": "google.cloud.dialogflow.v2beta1.ConversationsClient.GenerateSuggestions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.GenerateSuggestionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.GenerateSuggestionsResponse",
+        "client": {
+          "shortName": "ConversationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ConversationsClient"
+        },
+        "method": {
+          "shortName": "GenerateSuggestions",
+          "fullName": "google.cloud.dialogflow.v2beta1.Conversations.GenerateSuggestions",
+          "service": {
+            "shortName": "Conversations",
+            "fullName": "google.cloud.dialogflow.v2beta1.Conversations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v2beta1_generated_Conversations_GetConversation_sync",
       "title": "dialogflow GetConversation Sample",
       "description": "GetConversation retrieves the specific conversation.",
@@ -2474,6 +2520,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Conversations_IngestContextReferences_sync",
+      "title": "dialogflow IngestContextReferences Sample",
+      "description": "IngestContextReferences data ingestion API.\nIngests context references for an existing conversation.",
+      "file": "ConversationsClient/IngestContextReferences/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "IngestContextReferences",
+        "fullName": "google.cloud.dialogflow.v2beta1.ConversationsClient.IngestContextReferences",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.IngestContextReferencesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.IngestContextReferencesResponse",
+        "client": {
+          "shortName": "ConversationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ConversationsClient"
+        },
+        "method": {
+          "shortName": "IngestContextReferences",
+          "fullName": "google.cloud.dialogflow.v2beta1.Conversations.IngestContextReferences",
+          "service": {
+            "shortName": "Conversations",
+            "fullName": "google.cloud.dialogflow.v2beta1.Conversations"
           }
         }
       },

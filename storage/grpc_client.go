@@ -1185,8 +1185,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		done:             false,
 		activeTask:       0,
 		streamRecreation: false,
-		endReceiver:      false,
-		endSender:        false,
 	}
 
 	// streamManager goroutine runs in background where we send message to gcs and process response.
@@ -1197,21 +1195,18 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			case <-rr.ctx.Done():
 				rr.mu.Lock()
 				rr.done = true
-				rr.endSender = true
-				if rr.stream != nil {
-					rr.stream.CloseSend()
-				}
 				rr.mu.Unlock()
 				return
 			case <-rr.managerRetry:
-				// We are not closing stream here as it is already closed and we are retring it.
 				return
 			case <-rr.closeManager:
 				rr.mu.Lock()
-				if rr.stream != nil {
-					rr.stream.CloseSend()
+				if len(rr.mp) != 0 {
+					for key := range rr.mp {
+						rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, fmt.Errorf("stream closed early"))
+						delete(rr.mp, key)
+					}
 				}
-				rr.endSender = true
 				rr.activeTask = 0
 				rr.mu.Unlock()
 				return
@@ -1260,29 +1255,11 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		for {
 			select {
 			case <-rr.ctx.Done():
-				rr.mu.Lock()
-				rr.endReceiver = true
 				rr.done = true
-				if len(rr.mp) != 0 {
-					drainInboundReadStream(rr.stream)
-				}
-				for key := range rr.mp {
-					rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, rr.ctx.Err())
-					delete(rr.mp, key)
-				}
-				rr.activeTask = 0
-				rr.mu.Unlock()
 				return
 			case <-rr.receiverRetry:
-				// We are not draining from stream here as it is already closed and we are retring it.
 				return
 			case <-rr.closeReceiver:
-				rr.mu.Lock()
-				if len(rr.mp) != 0 {
-					drainInboundReadStream(rr.stream)
-				}
-				rr.endReceiver = true
-				rr.mu.Unlock()
 				return
 			default:
 				// This function reads the data sent for a particular range request and has a callback
@@ -1292,9 +1269,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					rr.readHandle = resp.GetReadHandle().GetHandle()
 				}
 				if err == io.EOF {
-					rr.mu.Lock()
-					rr.endReceiver = true
-					rr.mu.Unlock()
+					err = nil
 				}
 				if err != nil {
 					// cancel stream and reopen the stream again.
@@ -1366,8 +1341,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		err = rr.retryStream(err)
 		if err != nil {
 			rr.mu.Lock()
-			rr.endReceiver = true
-			rr.endSender = true
 			for key := range rr.mp {
 				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, err)
 				delete(rr.mp, key)
@@ -1377,10 +1350,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			rr.mu.Unlock()
 			rr.close()
 		} else {
-			rr.mu.Lock()
-			rr.endReceiver = false
-			rr.endSender = false
-			rr.mu.Unlock()
 			// If stream recreation happened successfully lets again start
 			// both the goroutine making the whole flow asynchronous again.
 			if thread == "receiver" {
@@ -1514,37 +1483,16 @@ func (mr *gRPCBidiReader) wait() {
 
 // Close will notify stream manager goroutine that the reader has been closed, if it's still running.
 func (mr *gRPCBidiReader) close() error {
-	mr.closeManager <- true
-	mr.closeReceiver <- true
-	mr.mu.Lock()
-	for key := range mr.mp {
-		mr.mp[key].callback(mr.mp[key].offset, mr.mp[key].totalBytesWritten, fmt.Errorf("stream closed early"))
-		delete(mr.mp, key)
+	if mr.cancel != nil {
+		mr.cancel()
 	}
+	mr.mu.Lock()
 	mr.done = true
 	mr.activeTask = 0
 	mr.mu.Unlock()
-	mr.mu.Lock()
-	tryClosing := !(mr.endReceiver && mr.endSender)
-	mr.mu.Unlock()
-
-	for tryClosing {
-		mr.mu.Lock()
-		tryClosing = !(mr.endReceiver && mr.endSender)
-		mr.mu.Unlock()
-	}
-	defer mr.cancel()
+	mr.closeReceiver <- true
+	mr.closeManager <- true
 	return nil
-}
-
-// drainInboundReadStream calls stream.Recv() repeatedly until an error is returned.
-// drainInboundReadStream always returns a non-nil error. io.EOF indicates all
-// messages were successfully read.
-func drainInboundReadStream(stream storagepb.Storage_BidiReadObjectClient) (err error) {
-	for err == nil {
-		_, err = stream.Recv()
-	}
-	return err
 }
 
 func (mrr *gRPCBidiReader) getHandle() []byte {
@@ -1755,6 +1703,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	var offset int64
 	errorf := params.setError
 	setObj := params.setObj
+	setFlush := params.setFlush
 	pr, pw := io.Pipe()
 
 	s := callSettings(c.settings, opts...)
@@ -1780,10 +1729,15 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			}
 
 			var gw *gRPCWriter
-			gw, err := newGRPCWriter(c, s, params, r)
+			gw, err := newGRPCWriter(c, s, params, r, pw, params.setPipeWriter)
 			if err != nil {
 				return err
 			}
+
+			// Set Flush func for use by exported Writer.Flush.
+			setFlush(func() (int64, error) {
+				return gw.flush()
+			})
 
 			// Loop until there is an error or the Object has been finalized.
 			for {
@@ -1977,8 +1931,6 @@ type gRPCBidiReader struct {
 	objectSize       int64               // always use the mutex when accessing this variable
 	retrier          func(error, string)
 	streamRecreation bool // This helps us identify if stream recreation is in progress or not. If stream recreation gets called from two goroutine then this will stop second one.
-	endReceiver      bool
-	endSender        bool
 }
 
 // gRPCReader is used by storage.Reader if the experimental option WithGRPCBidiReads is passed.
@@ -2626,7 +2578,7 @@ func (r *gRPCReader) reopenStream() error {
 	return nil
 }
 
-func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader) (*gRPCWriter, error) {
+func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pw *io.PipeWriter, setPipeWriter func(*io.PipeWriter)) (*gRPCWriter, error) {
 	if params.attrs.Retention != nil {
 		// TO-DO: remove once ObjectRetention is available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
@@ -2663,6 +2615,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		c:                     c,
 		ctx:                   params.ctx,
 		reader:                r,
+		pw:                    pw,
 		bucket:                params.bucket,
 		attrs:                 params.attrs,
 		conds:                 params.conds,
@@ -2674,15 +2627,19 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		forceOneShot:          params.chunkSize <= 0,
 		forceEmptyContentType: params.forceEmptyContentType,
 		append:                params.append,
+		setPipeWriter:         setPipeWriter,
+		flushComplete:         make(chan int64),
 	}, nil
 }
 
 // gRPCWriter is a wrapper around the the gRPC client-stream API that manages
 // sending chunks of data provided by the user over the stream.
 type gRPCWriter struct {
-	c      *grpcStorageClient
-	buf    []byte
-	reader io.Reader
+	c             *grpcStorageClient
+	buf           []byte
+	reader        io.Reader
+	pw            *io.PipeWriter
+	setPipeWriter func(*io.PipeWriter) // used to set in parent storage.Writer
 
 	ctx context.Context
 
@@ -2699,7 +2656,9 @@ type gRPCWriter struct {
 	forceEmptyContentType bool
 	append                bool
 
-	streamSender gRPCBidiWriteBufferSender
+	streamSender    gRPCBidiWriteBufferSender
+	flushInProgress bool       // true when the pipe is being recreated for a flush.
+	flushComplete   chan int64 // use to signal back to flush call that flush to server was completed.
 }
 
 func bucketContext(ctx context.Context, bucket string) context.Context {
@@ -2707,11 +2666,11 @@ func bucketContext(ctx context.Context, bucket string) context.Context {
 	return gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 }
 
-// drainInboundWriteStream calls stream.Recv() repeatedly until an error is returned.
+// drainInboundStream calls stream.Recv() repeatedly until an error is returned.
 // It returns the last Resource received on the stream, or nil if no Resource
-// was returned. drainInboundWriteStream always returns a non-nil error. io.EOF
+// was returned. drainInboundStream always returns a non-nil error. io.EOF
 // indicates all messages were successfully read.
-func drainInboundWriteStream(stream storagepb.Storage_BidiWriteObjectClient) (object *storagepb.Object, err error) {
+func drainInboundStream(stream storagepb.Storage_BidiWriteObjectClient) (object *storagepb.Object, err error) {
 	for err == nil {
 		var resp *storagepb.BidiWriteObjectResponse
 		resp, err = stream.Recv()
@@ -2791,7 +2750,7 @@ func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(ctx context.Context, buf [
 
 	sendErr := s.stream.Send(req)
 	if sendErr != nil {
-		obj, err = drainInboundWriteStream(s.stream)
+		obj, err = drainInboundStream(s.stream)
 		s.stream = nil
 		if sendErr != io.EOF {
 			err = sendErr
@@ -2804,7 +2763,7 @@ func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(ctx context.Context, buf [
 		s.stream.CloseSend()
 		// Oneshot uploads only read from the response stream on completion or
 		// failure
-		obj, err = drainInboundWriteStream(s.stream)
+		obj, err = drainInboundStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			err = nil
@@ -2916,7 +2875,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 
 	sendErr := s.stream.Send(req)
 	if sendErr != nil {
-		obj, err = drainInboundWriteStream(s.stream)
+		obj, err = drainInboundStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			// This is unexpected - we got an error on Send(), but not on Recv().
@@ -2928,7 +2887,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 
 	if finishWrite {
 		s.stream.CloseSend()
-		obj, err = drainInboundWriteStream(s.stream)
+		obj, err = drainInboundStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			err = nil
@@ -2999,11 +2958,17 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 			break
 		}
 	}
+	if w.flushInProgress {
+		w.flushInProgress = false
+		w.flushComplete <- offset
+	}
 	return
 }
 
 // read copies the data in the reader to the given buffer and reports how much
 // data was read into the buffer and if there is no more data to read (EOF).
+// read returns when either 1. the buffer is full, 2. Writer.Flush was called,
+// or 3. Writer.Close was called.
 func (w *gRPCWriter) read() (int, bool, error) {
 	// Set n to -1 to start the Read loop.
 	var n, recvd int = -1, 0
@@ -3015,15 +2980,41 @@ func (w *gRPCWriter) read() (int, bool, error) {
 	}
 	var done bool
 	if err == io.EOF {
-		done = true
 		err = nil
+		// EOF can come from Writer.Flush or Writer.Close.
+		if w.flushInProgress {
+			// Reset pipe for additional writes after the flush.
+			pr, pw := io.Pipe()
+			w.reader = pr
+			w.pw = pw
+			w.setPipeWriter(pw)
+		} else {
+			done = true
+		}
 	}
 	return recvd, done, err
+}
+
+// flush flushes the current buffer regardless of whether it is full or not.
+// It's the implementation for Writer.Flush.
+func (w *gRPCWriter) flush() (int64, error) {
+	if !w.append {
+		return 0, errors.New("Flush is supported only if Writer.Append is set to true")
+	}
+
+	// Close PipeWriter to trigger EOF on read side of the stream.
+	w.flushInProgress = true
+	w.pw.Close()
+
+	// Wait for flush to complete
+	offset := <-w.flushComplete
+	return offset, nil
 }
 
 func checkCanceled(err error) error {
 	if status.Code(err) == codes.Canceled {
 		return context.Canceled
 	}
+
 	return err
 }

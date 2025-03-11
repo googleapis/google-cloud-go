@@ -195,6 +195,9 @@
         "filestore": {
             "component": "filestore"
         },
+        "financialservices": {
+            "component": "financialservices"
+        },
         "functions": {
             "component": "functions"
         },
