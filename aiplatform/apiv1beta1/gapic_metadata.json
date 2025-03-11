@@ -702,6 +702,11 @@
                 "DeleteOperation"
               ]
             },
+            "EvaluateDataset": {
+              "methods": [
+                "EvaluateDataset"
+              ]
+            },
             "EvaluateInstances": {
               "methods": [
                 "EvaluateInstances"
@@ -760,6 +765,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "EvaluateDataset": {
+              "methods": [
+                "EvaluateDataset"
               ]
             },
             "EvaluateInstances": {
@@ -4280,6 +4290,11 @@
                 "DeleteOperation"
               ]
             },
+            "Deploy": {
+              "methods": [
+                "Deploy"
+              ]
+            },
             "DeployPublisherModel": {
               "methods": [
                 "DeployPublisherModel"
@@ -4348,6 +4363,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "Deploy": {
+              "methods": [
+                "Deploy"
               ]
             },
             "DeployPublisherModel": {

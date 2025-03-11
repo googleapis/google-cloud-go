@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.6.0...netapp/v1.7.0) (2025-02-05)
+
+
+### Features
+
+* **netapp:** Add ipAddress field to MountOption ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+* **netapp:** Add support for Quota Rule apis ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.1...netapp/v1.6.0) (2025-01-08)
 
 

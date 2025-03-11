@@ -47,10 +47,12 @@ var newClientHook clientHook
 type CallOptions struct {
 	CreateDeliveryVehicle []gax.CallOption
 	GetDeliveryVehicle    []gax.CallOption
+	DeleteDeliveryVehicle []gax.CallOption
 	UpdateDeliveryVehicle []gax.CallOption
 	BatchCreateTasks      []gax.CallOption
 	CreateTask            []gax.CallOption
 	GetTask               []gax.CallOption
+	DeleteTask            []gax.CallOption
 	UpdateTask            []gax.CallOption
 	ListTasks             []gax.CallOption
 	GetTaskTrackingInfo   []gax.CallOption
@@ -98,6 +100,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		DeleteDeliveryVehicle: []gax.CallOption{},
 		UpdateDeliveryVehicle: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -146,6 +149,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		DeleteTask: []gax.CallOption{},
 		UpdateTask: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -221,6 +225,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		DeleteDeliveryVehicle: []gax.CallOption{},
 		UpdateDeliveryVehicle: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -265,6 +270,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		DeleteTask: []gax.CallOption{},
 		UpdateTask: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -319,10 +325,12 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	CreateDeliveryVehicle(context.Context, *deliverypb.CreateDeliveryVehicleRequest, ...gax.CallOption) (*deliverypb.DeliveryVehicle, error)
 	GetDeliveryVehicle(context.Context, *deliverypb.GetDeliveryVehicleRequest, ...gax.CallOption) (*deliverypb.DeliveryVehicle, error)
+	DeleteDeliveryVehicle(context.Context, *deliverypb.DeleteDeliveryVehicleRequest, ...gax.CallOption) error
 	UpdateDeliveryVehicle(context.Context, *deliverypb.UpdateDeliveryVehicleRequest, ...gax.CallOption) (*deliverypb.DeliveryVehicle, error)
 	BatchCreateTasks(context.Context, *deliverypb.BatchCreateTasksRequest, ...gax.CallOption) (*deliverypb.BatchCreateTasksResponse, error)
 	CreateTask(context.Context, *deliverypb.CreateTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
 	GetTask(context.Context, *deliverypb.GetTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
+	DeleteTask(context.Context, *deliverypb.DeleteTaskRequest, ...gax.CallOption) error
 	UpdateTask(context.Context, *deliverypb.UpdateTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
 	ListTasks(context.Context, *deliverypb.ListTasksRequest, ...gax.CallOption) *TaskIterator
 	GetTaskTrackingInfo(context.Context, *deliverypb.GetTaskTrackingInfoRequest, ...gax.CallOption) (*deliverypb.TaskTrackingInfo, error)
@@ -374,6 +382,14 @@ func (c *Client) GetDeliveryVehicle(ctx context.Context, req *deliverypb.GetDeli
 	return c.internalClient.GetDeliveryVehicle(ctx, req, opts...)
 }
 
+// DeleteDeliveryVehicle deletes a DeliveryVehicle from the Fleet Engine.
+//
+// Returns FAILED_PRECONDITION if the DeliveryVehicle has OPEN Tasks
+// assigned to it.
+func (c *Client) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.DeleteDeliveryVehicleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDeliveryVehicle(ctx, req, opts...)
+}
+
 // UpdateDeliveryVehicle writes updated DeliveryVehicle data to Fleet Engine, and assigns
 // Tasks to the DeliveryVehicle. You cannot update the name of the
 // DeliveryVehicle. You can update remaining_vehicle_journey_segments,
@@ -398,6 +414,14 @@ func (c *Client) CreateTask(ctx context.Context, req *deliverypb.CreateTaskReque
 // GetTask gets information about a Task.
 func (c *Client) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest, opts ...gax.CallOption) (*deliverypb.Task, error) {
 	return c.internalClient.GetTask(ctx, req, opts...)
+}
+
+// DeleteTask deletes a single Task.
+//
+// Returns FAILED_PRECONDITION if the Task is OPEN and assigned to a
+// DeliveryVehicle.
+func (c *Client) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTask(ctx, req, opts...)
 }
 
 // UpdateTask updates Task data.
@@ -627,6 +651,29 @@ func (c *gRPCClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 	return resp, nil
 }
 
+func (c *gRPCClient) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.DeleteDeliveryVehicleRequest, opts ...gax.CallOption) error {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDeliveryVehicle[0:len((*c.CallOptions).DeleteDeliveryVehicle):len((*c.CallOptions).DeleteDeliveryVehicle)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteDeliveryVehicle, req, settings.GRPC, c.logger, "DeleteDeliveryVehicle")
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *gRPCClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.UpdateDeliveryVehicleRequest, opts ...gax.CallOption) (*deliverypb.DeliveryVehicle, error) {
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
@@ -733,6 +780,29 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskRequest, opts ...gax.CallOption) error {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteTask[0:len((*c.CallOptions).DeleteTask):len((*c.CallOptions).DeleteTask)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteTask, req, settings.GRPC, c.logger, "DeleteTask")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *gRPCClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskRequest, opts ...gax.CallOption) (*deliverypb.Task, error) {
@@ -1091,6 +1161,87 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 		return nil, e
 	}
 	return resp, nil
+}
+
+// DeleteDeliveryVehicle deletes a DeliveryVehicle from the Fleet Engine.
+//
+// Returns FAILED_PRECONDITION if the DeliveryVehicle has OPEN Tasks
+// assigned to it.
+func (c *restClient) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.DeleteDeliveryVehicleRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetHeader().GetAndroidApiLevel() != 0 {
+		params.Add("header.androidApiLevel", fmt.Sprintf("%v", req.GetHeader().GetAndroidApiLevel()))
+	}
+	if req.GetHeader().GetDeviceModel() != "" {
+		params.Add("header.deviceModel", fmt.Sprintf("%v", req.GetHeader().GetDeviceModel()))
+	}
+	if req.GetHeader().GetLanguageCode() != "" {
+		params.Add("header.languageCode", fmt.Sprintf("%v", req.GetHeader().GetLanguageCode()))
+	}
+	if req.GetHeader().GetManufacturer() != "" {
+		params.Add("header.manufacturer", fmt.Sprintf("%v", req.GetHeader().GetManufacturer()))
+	}
+	if req.GetHeader().GetMapsSdkVersion() != "" {
+		params.Add("header.mapsSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetMapsSdkVersion()))
+	}
+	if req.GetHeader().GetNavSdkVersion() != "" {
+		params.Add("header.navSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetNavSdkVersion()))
+	}
+	if req.GetHeader().GetOsVersion() != "" {
+		params.Add("header.osVersion", fmt.Sprintf("%v", req.GetHeader().GetOsVersion()))
+	}
+	if req.GetHeader().GetPlatform() != 0 {
+		params.Add("header.platform", fmt.Sprintf("%v", req.GetHeader().GetPlatform()))
+	}
+	params.Add("header.regionCode", fmt.Sprintf("%v", req.GetHeader().GetRegionCode()))
+	if req.GetHeader().GetSdkType() != 0 {
+		params.Add("header.sdkType", fmt.Sprintf("%v", req.GetHeader().GetSdkType()))
+	}
+	if req.GetHeader().GetSdkVersion() != "" {
+		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeliveryVehicle")
+		return err
+	}, opts...)
 }
 
 // UpdateDeliveryVehicle writes updated DeliveryVehicle data to Fleet Engine, and assigns
@@ -1463,6 +1614,87 @@ func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 		return nil, e
 	}
 	return resp, nil
+}
+
+// DeleteTask deletes a single Task.
+//
+// Returns FAILED_PRECONDITION if the Task is OPEN and assigned to a
+// DeliveryVehicle.
+func (c *restClient) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetHeader().GetAndroidApiLevel() != 0 {
+		params.Add("header.androidApiLevel", fmt.Sprintf("%v", req.GetHeader().GetAndroidApiLevel()))
+	}
+	if req.GetHeader().GetDeviceModel() != "" {
+		params.Add("header.deviceModel", fmt.Sprintf("%v", req.GetHeader().GetDeviceModel()))
+	}
+	if req.GetHeader().GetLanguageCode() != "" {
+		params.Add("header.languageCode", fmt.Sprintf("%v", req.GetHeader().GetLanguageCode()))
+	}
+	if req.GetHeader().GetManufacturer() != "" {
+		params.Add("header.manufacturer", fmt.Sprintf("%v", req.GetHeader().GetManufacturer()))
+	}
+	if req.GetHeader().GetMapsSdkVersion() != "" {
+		params.Add("header.mapsSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetMapsSdkVersion()))
+	}
+	if req.GetHeader().GetNavSdkVersion() != "" {
+		params.Add("header.navSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetNavSdkVersion()))
+	}
+	if req.GetHeader().GetOsVersion() != "" {
+		params.Add("header.osVersion", fmt.Sprintf("%v", req.GetHeader().GetOsVersion()))
+	}
+	if req.GetHeader().GetPlatform() != 0 {
+		params.Add("header.platform", fmt.Sprintf("%v", req.GetHeader().GetPlatform()))
+	}
+	params.Add("header.regionCode", fmt.Sprintf("%v", req.GetHeader().GetRegionCode()))
+	if req.GetHeader().GetSdkType() != 0 {
+		params.Add("header.sdkType", fmt.Sprintf("%v", req.GetHeader().GetSdkType()))
+	}
+	if req.GetHeader().GetSdkVersion() != "" {
+		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTask")
+		return err
+	}, opts...)
 }
 
 // UpdateTask updates Task data.

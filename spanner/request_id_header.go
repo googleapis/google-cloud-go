@@ -138,9 +138,9 @@ func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID r
 func (wr *requestIDHeaderInjector) interceptUnary(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	// It is imperative to search for the requestID before the call
 	// because gRPC's internals will consume the headers.
-	metadataWithRequestID, reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
+	_, reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
 	if foundRequestID {
-		ctx = metadata.NewOutgoingContext(ctx, metadataWithRequestID)
+		ctx = metadata.AppendToOutgoingContext(ctx, xSpannerRequestIDHeader, string(reqID))
 	}
 
 	err := invoker(ctx, method, req, reply, cc, opts...)
@@ -179,9 +179,9 @@ type requestIDHeaderInjector int
 func (wr *requestIDHeaderInjector) interceptStream(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	// It is imperative to search for the requestID before the call
 	// because gRPC's internals will consume the headers.
-	metadataWithRequestID, reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
+	_, reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
 	if foundRequestID {
-		ctx = metadata.NewOutgoingContext(ctx, metadataWithRequestID)
+		ctx = metadata.AppendToOutgoingContext(ctx, xSpannerRequestIDHeader, string(reqID))
 	}
 
 	cs, err := streamer(ctx, desc, cc, method, opts...)

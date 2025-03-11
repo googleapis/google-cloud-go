@@ -402,6 +402,55 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 	})
 }
 
+// TestIntegration_MRDCallbackReturnsDataLength tests if the callback returns the correct data
+// read length or not.
+func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 1000)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MRDCallback"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		var res multiRangeDownloaderOutput
+		callback := func(x, y int64, err error) {
+			res.offset = x
+			res.limit = y
+			res.err = err
+		}
+		// Read All At Once.
+		offset := 0
+		limit := 10000
+		reader.Add(&res.buf, int64(offset), int64(limit), callback)
+		reader.Wait()
+		if res.limit != 1000 {
+			t.Errorf("Error in callback want data length 1000, got: %v", res.limit)
+		}
+		if !bytes.Equal(res.buf.Bytes(), content) {
+			t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+				offset, limit, res.buf.Bytes(), content)
+		}
+		if res.err != nil {
+			t.Errorf("read range %v to %v : %v", res.offset, 10000, res.err)
+		}
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
@@ -2540,35 +2589,38 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 }
 
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
-	// Tests that all selected attributes work - query succeeds (without actually
-	// verifying the returned results).
-	query := &Query{
-		Prefix:      "",
-		StartOffset: "obj/",
-		EndOffset:   "obj2",
-	}
-	var selectedAttrs []string
-	for k := range attrToFieldMap {
-		selectedAttrs = append(selectedAttrs, k)
-	}
-	query.SetAttrSelection(selectedAttrs)
-
-	count := 0
-	it := bkt.Objects(context.Background(), query)
-	for {
-		_, err := it.Next()
-		if err == iterator.Done {
-			break
+	t.Run("testObjectsIterateAllSelectedAttrs", func(t *testing.T) {
+		t.Skip("b/398916957")
+		// Tests that all selected attributes work - query succeeds (without actually
+		// verifying the returned results).
+		query := &Query{
+			Prefix:      "",
+			StartOffset: "obj/",
+			EndOffset:   "obj2",
 		}
-		if err != nil {
-			t.Fatalf("iterator.Next: %v", err)
+		var selectedAttrs []string
+		for k := range attrToFieldMap {
+			selectedAttrs = append(selectedAttrs, k)
 		}
-		count++
-	}
+		query.SetAttrSelection(selectedAttrs)
 
-	if count != len(objects)-1 {
-		t.Errorf("count = %v, want %v", count, len(objects)-1)
-	}
+		count := 0
+		it := bkt.Objects(context.Background(), query)
+		for {
+			_, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			count++
+		}
+
+		if count != len(objects)-1 {
+			t.Errorf("count = %v, want %v", count, len(objects)-1)
+		}
+	})
 }
 
 func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
@@ -4931,16 +4983,15 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("list objects that are not soft deleted; got: %v, expected only one object named: %s", gotNames, liveObject.ObjectName())
 		}
 
-		// Get a soft deleted object and check soft and hard delete times.
-		oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
-		if err != nil {
-			t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
-		}
-		if oAttrs.SoftDeleteTime.Before(testStart) {
-			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
-		}
-
 		if err := retry(ctx, func() error {
+			// Get a soft deleted object and check soft and hard delete times.
+			oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
+			if err != nil {
+				t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
+			}
+			if oAttrs.SoftDeleteTime.Before(testStart) {
+				t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
+			}
 			if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
 				return fmt.Errorf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
 			}

@@ -284,10 +284,11 @@ func TestGetEndpointWithClientCertSource(t *testing.T) {
 
 func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 	testCases := []struct {
-		name      string
-		opts      *Options
-		s2ARespFn func(*slog.Logger) (string, error)
-		want      string
+		name         string
+		opts         *Options
+		s2ARespFn    func(*slog.Logger) (string, error)
+		wantEndpoint string
+		wantType     Type
 	}{
 		{
 			name: "has client cert",
@@ -296,8 +297,9 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 				ClientCertProvider:      fakeClientCertSource,
 			},
-			s2ARespFn: validConfigResp,
-			want:      testDefaultUniverseMTLSEndpoint,
+			s2ARespFn:    validConfigResp,
+			wantEndpoint: testDefaultUniverseMTLSEndpoint,
+			wantType:     TransportTypeUnknown,
 		},
 		{
 			name: "has client cert, MTLSEndpointTemplate",
@@ -306,8 +308,9 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 				DefaultMTLSEndpoint:     testMTLSEndpointTemplate,
 				ClientCertProvider:      fakeClientCertSource,
 			},
-			s2ARespFn: validConfigResp,
-			want:      testDefaultUniverseMTLSEndpoint,
+			s2ARespFn:    validConfigResp,
+			wantEndpoint: testDefaultUniverseMTLSEndpoint,
+			wantType:     TransportTypeUnknown,
 		},
 		{
 			name: "no client cert, S2A address not empty",
@@ -315,8 +318,9 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 			},
-			s2ARespFn: validConfigResp,
-			want:      testDefaultUniverseMTLSEndpoint,
+			s2ARespFn:    validConfigResp,
+			wantEndpoint: testDefaultUniverseMTLSEndpoint,
+			wantType:     TransportTypeMTLSS2A,
 		},
 		{
 			name: "no client cert, S2A address not empty, MTLSEndpointTemplate",
@@ -324,8 +328,9 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpointTemplate,
 			},
-			s2ARespFn: validConfigResp,
-			want:      testDefaultUniverseMTLSEndpoint,
+			s2ARespFn:    validConfigResp,
+			wantEndpoint: testDefaultUniverseMTLSEndpoint,
+			wantType:     TransportTypeMTLSS2A,
 		},
 		{
 			name: "no client cert, S2A address not empty, EnableDirectPath == true",
@@ -334,8 +339,9 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 				DefaultMTLSEndpoint:     testMTLSEndpointTemplate,
 				EnableDirectPath:        true,
 			},
-			s2ARespFn: validConfigResp,
-			want:      testDefaultUniverseEndpoint,
+			s2ARespFn:    validConfigResp,
+			wantEndpoint: testDefaultUniverseEndpoint,
+			wantType:     TransportTypeUnknown,
 		},
 		{
 			name: "no client cert, S2A address not empty, EnableDirectPathXds == true",
@@ -344,8 +350,9 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 				DefaultMTLSEndpoint:     testMTLSEndpointTemplate,
 				EnableDirectPathXds:     true,
 			},
-			s2ARespFn: validConfigResp,
-			want:      testDefaultUniverseEndpoint,
+			s2ARespFn:    validConfigResp,
+			wantEndpoint: testDefaultUniverseEndpoint,
+			wantType:     TransportTypeUnknown,
 		},
 		{
 			name: "no client cert, S2A address empty",
@@ -353,8 +360,9 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpointTemplate,
 			},
-			s2ARespFn: invalidConfigResp,
-			want:      testDefaultUniverseEndpoint,
+			s2ARespFn:    invalidConfigResp,
+			wantEndpoint: testDefaultUniverseEndpoint,
+			wantType:     TransportTypeUnknown,
 		},
 		{
 			name: "no client cert, S2A address not empty, override endpoint",
@@ -363,44 +371,49 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 				DefaultMTLSEndpoint:     testMTLSEndpointTemplate,
 				Endpoint:                testOverrideEndpoint,
 			},
-			s2ARespFn: validConfigResp,
-			want:      testOverrideEndpoint,
+			s2ARespFn:    validConfigResp,
+			wantEndpoint: testOverrideEndpoint,
+			wantType:     TransportTypeUnknown,
 		},
 		{
-			"no client cert, S2A address not empty, DefaultMTLSEndpoint not set",
-			&Options{
+			name: "no client cert, S2A address not empty, DefaultMTLSEndpoint not set",
+			opts: &Options{
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     "",
 			},
-			validConfigResp,
-			testDefaultUniverseEndpoint,
+			s2ARespFn:    validConfigResp,
+			wantEndpoint: testDefaultUniverseEndpoint,
+			wantType:     TransportTypeUnknown,
 		},
 		{
-			"no client cert, MTLS S2A address not empty, no MTLS MDS cert",
-			&Options{
+			name: "no client cert, MTLS S2A address not empty, no MTLS MDS cert",
+			opts: &Options{
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpointTemplate,
 			},
-			validConfigRespMTLSS2A,
-			testDefaultUniverseEndpoint,
+			s2ARespFn:    validConfigRespMTLSS2A,
+			wantEndpoint: testDefaultUniverseEndpoint,
+			wantType:     TransportTypeUnknown,
 		},
 		{
-			"no client cert, dual S2A addresses, no MTLS MDS cert",
-			&Options{
+			name: "no client cert, dual S2A addresses, no MTLS MDS cert",
+			opts: &Options{
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 			},
-			validConfigRespDualS2A,
-			testDefaultUniverseMTLSEndpoint,
+			s2ARespFn:    validConfigRespDualS2A,
+			wantEndpoint: testDefaultUniverseMTLSEndpoint,
+			wantType:     TransportTypeMTLSS2A,
 		},
 		{
-			"no client cert, dual S2A addresses, no MTLS MDS cert, MTLSEndpointTemplate",
-			&Options{
+			name: "no client cert, dual S2A addresses, no MTLS MDS cert, MTLSEndpointTemplate",
+			opts: &Options{
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpointTemplate,
 			},
-			validConfigRespDualS2A,
-			testDefaultUniverseMTLSEndpoint,
+			s2ARespFn:    validConfigRespDualS2A,
+			wantEndpoint: testDefaultUniverseMTLSEndpoint,
+			wantType:     TransportTypeMTLSS2A,
 		},
 	}
 	defer setupTest(t)()
@@ -413,9 +426,12 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 			} else {
 				t.Setenv(googleAPIUseCertSource, "false")
 			}
-			_, endpoint, _ := GetGRPCTransportCredsAndEndpoint(tc.opts)
-			if tc.want != endpoint {
-				t.Fatalf("want endpoint: %s, got %s", tc.want, endpoint)
+			transportCreds, _ := GetGRPCTransportCredsAndEndpoint(tc.opts)
+			if tc.wantEndpoint != transportCreds.Endpoint {
+				t.Fatalf("want endpoint: %s, got %s", tc.wantEndpoint, transportCreds.Endpoint)
+			}
+			if tc.wantType != transportCreds.TransportType {
+				t.Fatalf("want type: %v, got %v", tc.wantType, transportCreds.TransportType)
 			}
 		})
 	}
@@ -764,12 +780,12 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 			} else {
 				t.Setenv(googleAPIUseCertSource, "false")
 			}
-			_, endpoint, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
+			transportCreds, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
 			if err != nil {
 				t.Fatalf("err: %v", err)
 			} else {
-				if tc.wantEndpoint != endpoint {
-					t.Errorf("want endpoint: %s, got %s", tc.wantEndpoint, endpoint)
+				if tc.wantEndpoint != transportCreds.Endpoint {
+					t.Errorf("want endpoint: %s, got %s", tc.wantEndpoint, transportCreds.Endpoint)
 				}
 			}
 		})

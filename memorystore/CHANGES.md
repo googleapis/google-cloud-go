@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/memorystore/v0.1.1...memorystore/v0.2.0) (2025-02-12)
+
+
+### Features
+
+* **memorystore:** Add Instance.Mode.CLUSTER_DISABLED value, and deprecate STANDALONE ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **memorystore:** Add Instance.Mode.CLUSTER_DISABLED value, and deprecate STANDALONE ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
+
+### Documentation
+
+* **memorystore:** A comment for enum value `STANDALONE` in enum `Mode` is changed ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **memorystore:** A comment for enum value `STANDALONE` in enum `Mode` is changed ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/memorystore/v0.1.0...memorystore/v0.1.1) (2025-01-02)
 
 

@@ -1,5 +1,41 @@
 # Changes
 
+## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.66.0...dialogflow/v1.67.0) (2025-03-06)
+
+
+### Features
+
+* **dialogflow/cx:** Added support for document_processing_mode ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow/cx:** Exposed Zone Separation & Zone Isolation status of an agent ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified wording around StreamingDetectIntentRequest ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow/cx:** Clarified wording around use_timeout_based_endpointing ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow:** Clarified wording around BoostSpec and filter_specs ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow:** Clarified wording around document_correctness ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow:** Clarified wording around send_time ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dialogflow:** Clarified wording around use_timeout_based_endpointing ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.65.0...dialogflow/v1.66.0) (2025-02-26)
+
+
+### Features
+
+* **dialogflow/cx:** Added DocumentProcessingMode & BoostSpec for data stores ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+* **dialogflow/cx:** Added support for answer feedback & latency metrics in conversation history ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+* **dialogflow/cx:** Added support for handlers ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+* **dialogflow/cx:** Added support for playbook level speech settings ([1eb601e](https://github.com/googleapis/google-cloud-go/commit/1eb601ee788e5fbc0a9f55cde580493191782df3))
+
+## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.64.1...dialogflow/v1.65.0) (2025-02-12)
+
+
+### Features
+
+* **dialogflow:** Add PhoneNumbers API ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **dialogflow:** Add TelephonyConnectInfo of phone call-related info about the conversation ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
 ## [1.64.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.64.0...dialogflow/v1.64.1) (2025-01-02)
 
 

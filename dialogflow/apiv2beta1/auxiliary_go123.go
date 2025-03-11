@@ -125,6 +125,12 @@ func (it *ParticipantIterator) All() iter.Seq2[*dialogflowpb.Participant, error]
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *PhoneNumberIterator) All() iter.Seq2[*dialogflowpb.PhoneNumber, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *SessionEntityTypeIterator) All() iter.Seq2[*dialogflowpb.SessionEntityType, error] {
 	return iterator.RangeAdapter(it.Next)
 }
