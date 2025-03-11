@@ -2620,6 +2620,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		forceOneShot:          params.chunkSize <= 0,
 		forceEmptyContentType: params.forceEmptyContentType,
 		append:                params.append,
+		finalizeOnClose:       params.finalizeOnClose,
 	}, nil
 }
 
@@ -2644,6 +2645,7 @@ type gRPCWriter struct {
 	forceOneShot          bool
 	forceEmptyContentType bool
 	append                bool
+	finalizeOnClose       bool
 
 	streamSender gRPCBidiWriteBufferSender
 }

@@ -113,6 +113,17 @@ type Writer struct {
 	// yet available for general use.
 	Append bool
 
+	// FinalizeOnClose indicates whether the writer should finalize an object when
+	// closing the write stream. This only applies to writers where Append is
+	// true, since append semantics allow a prefix of the object to be durable and
+	// readable. For other writers, the correct way to abandon an upload is to
+	// cancel its context.
+	//
+	// FinalizeOnClose is supported only on gRPC clients where [Writer.Append] is
+	// set to true. This feature is in preview and is not yet available for
+	// general use.
+	FinalizeOnClose bool
+
 	// ProgressFunc can be used to monitor the progress of a large write
 	// operation. If ProgressFunc is not nil and writing requires multiple
 	// calls to the underlying service (see
@@ -215,6 +226,7 @@ func (w *Writer) openWriter() (err error) {
 		encryptionKey:         w.o.encryptionKey,
 		sendCRC32C:            w.SendCRC32C,
 		append:                w.Append,
+		finalizeOnClose:       w.FinalizeOnClose,
 		donec:                 w.donec,
 		setError:              w.error,
 		progress:              w.progress,
@@ -283,6 +295,9 @@ func (w *Writer) validateWriteAttrs() error {
 	}
 	if w.ChunkSize < 0 {
 		return errors.New("storage: Writer.ChunkSize must be non-negative")
+	}
+	if !w.FinalizeOnClose && !w.Append {
+		return errors.New("storage: Writer.FinalizeOnClose may only be true if Writer.Append is true")
 	}
 	return nil
 }
