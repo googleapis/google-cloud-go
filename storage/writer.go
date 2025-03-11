@@ -127,6 +127,7 @@ type Writer struct {
 	o   *ObjectHandle
 
 	opened bool
+	closed bool
 	pw     *io.PipeWriter
 
 	donec chan struct{} // closed after err and obj are set.
@@ -192,6 +193,9 @@ func (w *Writer) Flush() (int64, error) {
 	if !w.Append {
 		return 0, errors.New("storage: Flush not supported unless client uses gRPC and Append is set to true")
 	}
+	if w.closed {
+		return 0, errors.New("storage: Flush called on closed Writer")
+	}
 	// Return error if already in error state.
 	w.mu.Lock()
 	werr := w.err
@@ -226,6 +230,7 @@ func (w *Writer) Close() error {
 	}
 
 	<-w.donec
+	w.closed = true
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	trace.EndSpan(w.ctx, w.err)

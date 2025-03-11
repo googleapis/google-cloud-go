@@ -1146,6 +1146,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 			t.Fatalf("closing writer: %v", err)
 		}
 
+		// Check that Flush after close fails.
+		if _, err = w.Flush(); err == nil {
+			t.Errorf("flush: expected error after close, got nil")
+		}
+
 		// Check offsets
 		if !slices.Equal(gotOffsets, wantOffsets) {
 			t.Errorf("progress offsets: got %v, want %v", gotOffsets, wantOffsets)
