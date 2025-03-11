@@ -169,8 +169,10 @@ type DataQualitySpec struct {
 	// 100.
 	SamplingPercent float32 `protobuf:"fixed32,4,opt,name=sampling_percent,json=samplingPercent,proto3" json:"sampling_percent,omitempty"`
 	// Optional. A filter applied to all rows in a single DataScan job.
-	// The filter needs to be a valid SQL expression for a WHERE clause in
-	// BigQuery standard SQL syntax.
+	// The filter needs to be a valid SQL expression for a [WHERE clause in
+	// GoogleSQL
+	// syntax](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#where_clause).
+	//
 	// Example: col1 >= 0 AND col2 < 10
 	RowFilter string `protobuf:"bytes,5,opt,name=row_filter,json=rowFilter,proto3" json:"row_filter,omitempty"`
 	// Optional. Actions to take upon job completion.
@@ -1754,8 +1756,9 @@ func (x *DataQualityRule_StatisticRangeExpectation) GetStrictMaxEnabled() bool {
 
 // Evaluates whether each row passes the specified condition.
 //
-// The SQL expression needs to use BigQuery standard SQL syntax and should
-// produce a boolean value per row as the result.
+// The SQL expression needs to use [GoogleSQL
+// syntax](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax)
+// and should produce a boolean value per row as the result.
 //
 // Example: col1 >= 0 AND col2 < 10
 type DataQualityRule_RowConditionExpectation struct {
@@ -1806,8 +1809,9 @@ func (x *DataQualityRule_RowConditionExpectation) GetSqlExpression() string {
 
 // Evaluates whether the provided expression is true.
 //
-// The SQL expression needs to use BigQuery standard SQL syntax and should
-// produce a scalar boolean result.
+// The SQL expression needs to use [GoogleSQL
+// syntax](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax)
+// and should produce a scalar boolean result.
 //
 // Example: MIN(col1) >= 0
 type DataQualityRule_TableConditionExpectation struct {
@@ -1859,8 +1863,9 @@ func (x *DataQualityRule_TableConditionExpectation) GetSqlExpression() string {
 // A SQL statement that is evaluated to return rows that match an invalid
 // state. If any rows are are returned, this rule fails.
 //
-// The SQL statement must use BigQuery standard SQL syntax, and must not
-// contain any semicolons.
+// The SQL statement must use [GoogleSQL
+// syntax](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax),
+// and must not contain any semicolons.
 //
 // You can use the data reference parameter `${data()}` to reference the
 // source table with all of its precondition filters applied. Examples of

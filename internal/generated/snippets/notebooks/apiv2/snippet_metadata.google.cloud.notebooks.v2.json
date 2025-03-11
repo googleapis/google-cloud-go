@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/notebooks/apiv2",
-    "version": "1.11.10",
+    "version": "1.12.4",
     "language": "GO",
     "apis": [
       {
