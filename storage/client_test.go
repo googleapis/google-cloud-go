@@ -2258,6 +2258,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					setError:             func(_ error) {}, // no-op
 					progress:             func(_ int64) {}, // no-op
 					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
+					setFlush:             func(func() (int64, error)) {}, // no-op
 				}
 
 				pw, err := client.OpenWriter(params)
@@ -2352,6 +2353,7 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 			setError:           func(_ error) {}, // no-op
 			progress:           func(_ int64) {}, // no-op
 			setObj:             func(_ *ObjectAttrs) {},
+			setFlush:           func(f func() (int64, error)) {},
 		}
 
 		pw, err := client.OpenWriter(params, &idempotentOption{true})
