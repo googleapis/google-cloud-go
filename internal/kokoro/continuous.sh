@@ -101,6 +101,10 @@ runDirectoryTests() {
     # aliasshim: build constraints exclude all Go files
     return
   fi
+  if [[ $PWD == *"bigquery/benchmarks" ]]; then
+    # bigquery/benchmarks: build constraints exclude all Go files
+    return
+  fi
   if { [[ $PWD == *"/internal/"* ]] ||
     [[ $PWD == *"/third_party/"* ]]; } &&
     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
