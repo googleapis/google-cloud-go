@@ -15,6 +15,8 @@
 package civil
 
 import (
+	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 	"testing"
 	"time"
@@ -704,4 +706,75 @@ func TestUnmarshalJSON(t *testing.T) {
 			t.Errorf("%q, DateTime: got nil, want error", bad)
 		}
 	}
+}
+
+func TestValuer(t *testing.T) {
+	for _, test := range []struct {
+		data driver.Valuer
+		want interface{}
+	}{
+		{&Date{1987, 4, 15}, `1987-04-15`},
+		{&Time{18, 54, 2, 0}, `18:54:02`},
+		{&DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}, `1987-04-15T18:54:02`},
+	} {
+		got, err := test.data.Value()
+		if err != nil {
+			t.Fatalf("%s: %v", test.data, err)
+		}
+		if !cmp.Equal(got, test.want) {
+			t.Errorf("%s: got %#v, want %#v", test.data, test.data, test.want)
+		}
+	}
+}
+
+func TestScanner(t *testing.T) {
+	var d Date
+	var tm Time
+	var dt DateTime
+	for _, test := range []struct {
+		data interface{}
+		ptr  sql.Scanner
+		want interface{}
+	}{
+		// time input
+		{time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC), &d, &Date{1987, 4, 15}},
+		{time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC), &tm, &Time{18, 54, 2, 0}},
+		{time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC), &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+
+		// *time input
+		{toPtr(time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC)), &d, &Date{1987, 4, 15}},
+		{toPtr(time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC)), &tm, &Time{18, 54, 2, 0}},
+		{toPtr(time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC)), &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+
+		// string input
+		{`1987-04-15`, &d, &Date{1987, 4, 15}},
+		{`18:54:02`, &tm, &Time{18, 54, 2, 0}},
+		{`1987-04-15T18:54:02`, &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+
+		// *string input
+		{toPtr(`1987-04-15`), &d, &Date{1987, 4, 15}},
+		{toPtr(`18:54:02`), &tm, &Time{18, 54, 2, 0}},
+		{toPtr(`1987-04-15T18:54:02`), &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+
+		// []byte input
+		{[]byte(`1987-04-15`), &d, &Date{1987, 4, 15}},
+		{[]byte(`18:54:02`), &tm, &Time{18, 54, 2, 0}},
+		{[]byte(`1987-04-15T18:54:02`), &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+
+		// *[]byte input
+		{toPtr([]byte(`1987-04-15`)), &d, &Date{1987, 4, 15}},
+		{toPtr([]byte(`18:54:02`)), &tm, &Time{18, 54, 2, 0}},
+		{toPtr([]byte(`1987-04-15T18:54:02`)), &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+	} {
+		if err := test.ptr.Scan(test.data); err != nil {
+			t.Fatalf("%s: %v", test.data, err)
+		}
+		if !cmp.Equal(test.ptr, test.want) {
+			t.Errorf("%s: got %#v, want %#v", test.data, test.ptr, test.want)
+		}
+	}
+}
+
+func toPtr[V any](v V) *V {
+	return &v
 }
