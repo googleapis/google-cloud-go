@@ -1,5 +1,12 @@
 # Changes
 
+## [0.27.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.26.0...analytics/v0.27.0) (2025-03-12)
+
+
+### Features
+
+* **analytics/admin:** Added support for KeyEvents AdminAPI ChangeHistory ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [0.26.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.3...analytics/v0.26.0) (2025-01-30)
 
 
