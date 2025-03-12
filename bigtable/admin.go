@@ -2911,7 +2911,7 @@ func (iac *InstanceAdminClient) CreateMaterializedView(ctx context.Context, inst
 		}
 	}
 	req := &btapb.CreateMaterializedViewRequest{
-		Parent:             "projects/" + iac.project + "/instances/" + instanceID,
+		Parent:             instancePrefix(iac.project, instanceID),
 		MaterializedViewId: conf.MaterializedViewID,
 		MaterializedView:   mv,
 	}
