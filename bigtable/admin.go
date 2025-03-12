@@ -2792,8 +2792,13 @@ func (iac *InstanceAdminClient) CreateLogicalView(ctx context.Context, instanceI
 			Query: conf.Query,
 		},
 	}
-	_, err := iac.iClient.CreateLogicalView(ctx, req)
-	return err
+
+	op, err := iac.iClient.CreateLogicalView(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.LogicalView{}
+	return longrunning.InternalNewOperation(iac.lroClient, op).Wait(ctx, &resp)
 }
 
 // LogicalViewInfo contains logical view metadata. This struct is read-only.
@@ -2915,8 +2920,12 @@ func (iac *InstanceAdminClient) CreateMaterializedView(ctx context.Context, inst
 		MaterializedViewId: conf.MaterializedViewID,
 		MaterializedView:   mv,
 	}
-	_, err := iac.iClient.CreateMaterializedView(ctx, req)
-	return err
+	op, err := iac.iClient.CreateMaterializedView(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.MaterializedView{}
+	return longrunning.InternalNewOperation(iac.lroClient, op).Wait(ctx, &resp)
 }
 
 // MaterializedViewInfo contains materialized view metadata. This struct is read-only.
