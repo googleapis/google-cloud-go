@@ -60,11 +60,16 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &controlpb.CreateFolderRequest{
+//	req := &controlpb.CreateAnywhereCacheRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#CreateFolderRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#CreateAnywhereCacheRequest.
 //	}
-//	resp, err := c.CreateFolder(ctx, req)
+//	op, err := c.CreateAnywhereCache(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

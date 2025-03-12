@@ -130,6 +130,10 @@ func (ac *AdminClient) authorizedViewPath(table, authorizedView string) string {
 	return fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), table, authorizedView)
 }
 
+func logicalViewPath(project, instance, logicalView string) string {
+	return fmt.Sprintf("%s/logicalViews/%s", instancePrefix(project, instance), logicalView)
+}
+
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	Status        *Status
@@ -2778,7 +2782,7 @@ func (iac *InstanceAdminClient) CreateLogicalView(ctx context.Context, instanceI
 
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.CreateLogicalViewRequest{
-		Parent:        "projects/" + iac.project + "/instances/" + instanceID,
+		Parent:        instancePrefix(iac.project, instanceID),
 		LogicalViewId: conf.LogicalViewID,
 		LogicalView: &btapb.LogicalView{
 			Query: conf.Query,
@@ -2793,14 +2797,14 @@ type LogicalViewInfo struct {
 	LogicalViewID string
 
 	Query string
-	ETag  string
 }
 
 // LogicalViewInfo retrieves information about a logical view.
 func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID, logicalViewID string) (*LogicalViewInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	prefix := instancePrefix(iac.project, instanceID)
 	req := &btapb.GetLogicalViewRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s/logicalViews/%s", iac.project, instanceID, logicalViewID),
+		Name: logicalViewPath(iac.project, instanceID, logicalViewID),
 	}
 	var res *btapb.LogicalView
 
@@ -2813,15 +2817,15 @@ func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID,
 	if err != nil {
 		return nil, err
 	}
-	return &LogicalViewInfo{LogicalViewID: logicalViewID, Query: res.Query, ETag: res.Etag}, nil
+	return &LogicalViewInfo{LogicalViewID: strings.TrimPrefix(res.Name, prefix+"/logicalViews/"), Query: res.Query}, nil
 }
 
 // LogicalViews returns a list of the logical views in the instance.
 func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID string) ([]LogicalViewInfo, error) {
 	views := []LogicalViewInfo{}
-
+	prefix := instancePrefix(iac.project, instanceID)
 	req := &btapb.ListLogicalViewsRequest{
-		Parent: fmt.Sprintf("projects/%s/instances/%s", iac.project, instanceID),
+		Parent: prefix,
 	}
 	var res *btapb.ListLogicalViewsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
@@ -2834,7 +2838,7 @@ func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID str
 	}
 
 	for _, lv := range res.LogicalViews {
-		views = append(views, LogicalViewInfo{LogicalViewID: lv.LogicalViewId, Query: lv.Query, ETag: lv.Etag})
+		views = append(views, LogicalViewInfo{LogicalViewID: strings.TrimPrefix(lv.Name, prefix+"/logicalViews/"), Query: lv.Query})
 	}
 	return views, nil
 }
@@ -2846,7 +2850,7 @@ func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceI
 		return errors.New("LogicalViewID is required")
 	}
 	lv := &btapb.LogicalView{}
-	lv.Name = fmt.Sprintf("projects/%s/instances/%s/logicalViews/%s", iac.project, instanceID, conf.LogicalViewID)
+	lv.Name = logicalViewPath(iac.project, instanceID, conf.LogicalViewID)
 
 	updateMask := &field_mask.FieldMask{
 		Paths: []string{},
@@ -2874,7 +2878,7 @@ func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceI
 func (iac *InstanceAdminClient) DeleteLogicalView(ctx context.Context, instanceID, logicalViewID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.DeleteLogicalViewRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s/logicalViews/%s", iac.project, instanceID, logicalViewID),
+		Name: logicalViewPath(iac.project, instanceID, logicalViewID),
 	}
 	_, err := iac.iClient.DeleteLogicalView(ctx, req)
 	return err
