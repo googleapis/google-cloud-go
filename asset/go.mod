@@ -3,16 +3,16 @@ module cloud.google.com/go/asset
 go 1.23.0
 
 require (
-	cloud.google.com/go/accesscontextmanager v1.9.3
-	cloud.google.com/go/iam v1.4.0
-	cloud.google.com/go/longrunning v0.6.4
+	cloud.google.com/go/accesscontextmanager v1.9.4
+	cloud.google.com/go/iam v1.4.1
+	cloud.google.com/go/longrunning v0.6.5
 	cloud.google.com/go/orgpolicy v1.14.2
 	cloud.google.com/go/osconfig v1.14.3
 	github.com/googleapis/gax-go/v2 v2.14.1
 	google.golang.org/api v0.224.0
 	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb
 	google.golang.org/genproto/googleapis/api v0.0.0-20250303144028-a0af3efb3deb
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250227231956-55c901821b1e
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250303144028-a0af3efb3deb
 	google.golang.org/grpc v1.71.0
 	google.golang.org/protobuf v1.36.5
 )
