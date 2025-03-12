@@ -101,8 +101,8 @@ runDirectoryTests() {
     # aliasshim: build constraints exclude all Go files
     return
   fi
-  if [[ $PWD == *"/benchmark" ]]; then
-    # benchmark: build constraints exclude all Go files
+  if [[ $PWD == *"bigquery/benchmarks" ]]; then
+    # bigquery/benchmarks: build constraints exclude all Go files
     return
   fi
   if { [[ $PWD == *"/internal/"* ]] ||
