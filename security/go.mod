@@ -3,8 +3,8 @@ module cloud.google.com/go/security
 go 1.23.0
 
 require (
-	cloud.google.com/go/iam v1.4.0
-	cloud.google.com/go/longrunning v0.6.4
+	cloud.google.com/go/iam v1.4.1
+	cloud.google.com/go/longrunning v0.6.5
 	github.com/googleapis/gax-go/v2 v2.14.1
 	google.golang.org/api v0.224.0
 	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb
