@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.11.0...chat/v0.12.0) (2025-03-12)
+
+
+### Features
+
+* **chat:** Addition of space notification setting Chat API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.1...chat/v0.11.0) (2025-02-20)
 
 

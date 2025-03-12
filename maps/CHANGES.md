@@ -2,6 +2,18 @@
 
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.19.0...maps/v1.20.0) (2025-03-12)
+
+
+### Features
+
+* **maps/places:** Add postal_address and time_zone to Place ([b323f88](https://github.com/googleapis/google-cloud-go/commit/b323f888e349168b4e30a9edb4630dfb6060ed4d))
+
+
+### Documentation
+
+* **maps/places:** Change comments in some fields in Places API ([#11798](https://github.com/googleapis/google-cloud-go/issues/11798)) ([b323f88](https://github.com/googleapis/google-cloud-go/commit/b323f888e349168b4e30a9edb4630dfb6060ed4d))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.18.0...maps/v1.19.0) (2025-02-26)
 
 
