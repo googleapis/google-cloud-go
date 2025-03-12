@@ -134,6 +134,10 @@ func logicalViewPath(project, instance, logicalView string) string {
 	return fmt.Sprintf("%s/logicalViews/%s", instancePrefix(project, instance), logicalView)
 }
 
+func materializedlViewPath(project, instance, materializedView string) string {
+	return fmt.Sprintf("%s/materializedViews/%s", instancePrefix(project, instance), materializedView)
+}
+
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	Status        *Status
@@ -2921,14 +2925,14 @@ type MaterializedViewInfo struct {
 
 	Query              string
 	DeletionProtection DeletionProtection
-	ETag               string
 }
 
 // MaterializedViewInfo retrieves information about a materialized view.
 func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instanceID, materializedViewID string) (*MaterializedViewInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	prefix := instancePrefix(iac.project, instanceID)
 	req := &btapb.GetMaterializedViewRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s/materializedViews/%s", iac.project, instanceID, materializedViewID),
+		Name: materializedlViewPath(iac.project, instanceID, materializedViewID),
 	}
 	var res *btapb.MaterializedView
 
@@ -2941,7 +2945,7 @@ func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instan
 	if err != nil {
 		return nil, err
 	}
-	mv := &MaterializedViewInfo{MaterializedViewID: materializedViewID, Query: res.Query, ETag: res.Etag}
+	mv := &MaterializedViewInfo{MaterializedViewID: strings.TrimPrefix(res.Name, prefix+"/materializedViews/"), Query: res.Query}
 	if res.DeletionProtection {
 		mv.DeletionProtection = Protected
 	} else {
@@ -2953,7 +2957,7 @@ func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instan
 // MaterializedViews returns a list of the materialized views in the instance.
 func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceID string) ([]MaterializedViewInfo, error) {
 	views := []MaterializedViewInfo{}
-	prefix := fmt.Sprintf("projects/%s/instances/%s", iac.project, instanceID)
+	prefix := instancePrefix(iac.project, instanceID)
 	req := &btapb.ListMaterializedViewsRequest{
 		Parent: prefix,
 	}
@@ -2968,7 +2972,7 @@ func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceI
 	}
 
 	for _, mView := range res.MaterializedViews {
-		mv := MaterializedViewInfo{MaterializedViewID: strings.TrimPrefix(mView.Name, prefix+"/materializedViews/"), Query: mView.Query, ETag: mView.Etag}
+		mv := MaterializedViewInfo{MaterializedViewID: strings.TrimPrefix(mView.Name, prefix+"/materializedViews/"), Query: mView.Query}
 		if mView.DeletionProtection {
 			mv.DeletionProtection = Protected
 		} else {
@@ -2986,7 +2990,7 @@ func (iac *InstanceAdminClient) UpdateMaterializedView(ctx context.Context, inst
 		return errors.New("MaterializedViewID is required")
 	}
 	mv := &btapb.MaterializedView{}
-	mv.Name = fmt.Sprintf("projects/%s/instances/%s/materializedViews/%s", iac.project, instanceID, conf.MaterializedViewID)
+	mv.Name = materializedlViewPath(iac.project, instanceID, conf.MaterializedViewID)
 
 	updateMask := &field_mask.FieldMask{
 		Paths: []string{},
@@ -3026,7 +3030,7 @@ func (iac *InstanceAdminClient) UpdateMaterializedView(ctx context.Context, inst
 func (iac *InstanceAdminClient) DeleteMaterializedView(ctx context.Context, instanceID, materializedViewID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.DeleteMaterializedViewRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s/materializedViews/%s", iac.project, instanceID, materializedViewID),
+		Name: materializedlViewPath(iac.project, instanceID, materializedViewID),
 	}
 	_, err := iac.iClient.DeleteMaterializedView(ctx, req)
 	return err
