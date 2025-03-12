@@ -134,6 +134,10 @@ func logicalViewPath(project, instance, logicalView string) string {
 	return fmt.Sprintf("%s/logicalViews/%s", instancePrefix(project, instance), logicalView)
 }
 
+func materializedlViewPath(project, instance, materializedView string) string {
+	return fmt.Sprintf("%s/materializedViews/%s", instancePrefix(project, instance), materializedView)
+}
+
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	Status        *Status
@@ -2788,8 +2792,13 @@ func (iac *InstanceAdminClient) CreateLogicalView(ctx context.Context, instanceI
 			Query: conf.Query,
 		},
 	}
-	_, err := iac.iClient.CreateLogicalView(ctx, req)
-	return err
+
+	op, err := iac.iClient.CreateLogicalView(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.LogicalView{}
+	return longrunning.InternalNewOperation(iac.lroClient, op).Wait(ctx, &resp)
 }
 
 // LogicalViewInfo contains logical view metadata. This struct is read-only.
