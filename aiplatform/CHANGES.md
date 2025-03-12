@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.76.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.75.0...aiplatform/v1.76.0) (2025-03-12)
+
+
+### Features
+
+* **aiplatform:** Add Layout Parser to RAG v1 API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Add multihost_gpu_node_count to Vertex SDK for multihost GPU support ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Add reranker config to RAG v1 API ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+* **aiplatform:** Allowing users to choose whether to use the hf model cache ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to choose whether to use the hf model cache ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to specify the version id of the Model Garden model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to specify the version id of the Model Garden model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [1.75.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.74.0...aiplatform/v1.75.0) (2025-03-06)
 
 

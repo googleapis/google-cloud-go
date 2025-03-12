@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.17.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.16.0...shopping/v0.17.0) (2025-03-12)
+
+
+### Features
+
+* **shopping/merchant/accounts:** A new field `seasonal_overrides` is added to message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** A new message `SeasonalOverride` is added ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+
+### Bug Fixes
+
+* **shopping/merchant/accounts:** An existing optional field `countries` is converted to required field in message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** An existing optional field `label` is converted to required field in message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** An existing optional field `return_policy_uri` is converted to required field in message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** An existing optional field `type` is converted to required field in message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** The documentation for field `countries` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for field `label` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for field `parent` in message `.google.shopping.merchant.accounts.v1beta.ListOnlineReturnPoliciesRequest` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for field `return_policy_uri` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for field `type` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for method `GetOnlineReturnPolicy` in service `OnlineReturnPolicyService` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for method `ListOnlineReturnPolicies` in service `OnlineReturnPolicyService` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.15.0...shopping/v0.16.0) (2025-01-08)
 
 

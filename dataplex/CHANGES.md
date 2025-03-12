@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.22.0...dataplex/v1.23.0) (2025-03-12)
+
+
+### Features
+
+* **dataplex:** Add custom BigQuery dataset location support in Auto Discovery ([484978a](https://github.com/googleapis/google-cloud-go/commit/484978aa8ad4213172e7ffefcfd939071b90ee14))
+* **dataplex:** DataTaxonomyService is now deprecated ([484978a](https://github.com/googleapis/google-cloud-go/commit/484978aa8ad4213172e7ffefcfd939071b90ee14))
+
+
+### Documentation
+
+* **dataplex:** Update the Dataplex Catalog proto to remove the info about schema changes ([484978a](https://github.com/googleapis/google-cloud-go/commit/484978aa8ad4213172e7ffefcfd939071b90ee14))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.21.0...dataplex/v1.22.0) (2025-02-12)
 
 
