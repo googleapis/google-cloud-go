@@ -141,6 +141,7 @@ func TestIsDirectPathBoundTokenEnabled(t *testing.T) {
 		})
 	}
 }
+
 type errTP struct {
 }
 
