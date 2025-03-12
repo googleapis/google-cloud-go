@@ -40,6 +40,15 @@ func isDirectPathEnabled(endpoint string, opts *Options) bool {
 	return true
 }
 
+func isDirectPathBoundTokenEnabled(opts *InternalOptions) bool {
+	for _, ev := range opts.AllowHardBoundTokens {
+		if ev == "ALTS" {
+			return true
+		}
+	}
+	return false
+}
+
 func checkDirectPathEndPoint(endpoint string) bool {
 	// Only [dns:///]host[:port] is supported, not other schemes (e.g., "tcp://" or "unix://").
 	// Also don't try direct path if the user has chosen an alternate name resolver
@@ -96,8 +105,12 @@ func isDirectPathXdsUsed(o *Options) bool {
 func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials) ([]grpc.DialOption, string) {
 	if isDirectPathEnabled(endpoint, opts) && compute.OnComputeEngine() && isTokenProviderDirectPathCompatible(creds, opts) {
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
+		defaultCredetialsOptions := grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds}}
+		if opts.InternalOptions.altsCredentials != nil {
+			defaultCredetialsOptions.ALTSPerRPCCreds = &grpcCredentialsProvider{creds: opts.InternalOptions.altsCredentials}
+		}
 		grpcOpts = []grpc.DialOption{
-			grpc.WithCredentialsBundle(grpcgoogle.NewDefaultCredentialsWithOptions(grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds}}))}
+			grpc.WithCredentialsBundle(grpcgoogle.NewDefaultCredentialsWithOptions(defaultCredetialsOptions))}
 		if timeoutDialerOption != nil {
 			grpcOpts = append(grpcOpts, timeoutDialerOption)
 		}

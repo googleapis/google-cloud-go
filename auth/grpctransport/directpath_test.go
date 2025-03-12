@@ -95,6 +95,52 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 	}
 }
 
+func TestIsDirectPathBoundTokenEnabled(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		opts *InternalOptions
+		want bool
+	}{
+		{
+			name: "empty list",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{},
+			},
+		},
+		{
+			name: "nil list",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{},
+			},
+		},
+		{
+			name: "list does not contain ALTS",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"MTLS_S2A"},
+			},
+		},
+		{
+			name: "list only contains ALTS",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"ALTS"},
+			},
+			want: true,
+		},
+		{
+			name: "list contains ALTS and others",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"ALTS", "MTLS_S2A"},
+			},
+			want: true,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isDirectPathBoundTokenEnabled(tt.opts); got != tt.want {
+				t.Fatalf("isDirectPathBoundTokenEnabled() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 type errTP struct {
 }
 
