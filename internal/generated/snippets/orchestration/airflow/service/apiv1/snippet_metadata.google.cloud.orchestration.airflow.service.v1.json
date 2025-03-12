@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
-    "version": "1.11.4",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -106,7 +106,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_CreateUserWorkloadsConfigMap_sync",
       "title": "composer CreateUserWorkloadsConfigMap Sample",
-      "description": "CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/CreateUserWorkloadsConfigMap/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_CreateUserWorkloadsSecret_sync",
       "title": "composer CreateUserWorkloadsSecret Sample",
-      "description": "CreateUserWorkloadsSecret creates a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "CreateUserWorkloadsSecret creates a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/CreateUserWorkloadsSecret/main.go",
       "language": "GO",
       "clientMethod": {
@@ -335,7 +335,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_DeleteUserWorkloadsConfigMap_sync",
       "title": "composer DeleteUserWorkloadsConfigMap Sample",
-      "description": "DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/DeleteUserWorkloadsConfigMap/main.go",
       "language": "GO",
       "clientMethod": {
@@ -380,7 +380,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_DeleteUserWorkloadsSecret_sync",
       "title": "composer DeleteUserWorkloadsSecret Sample",
-      "description": "DeleteUserWorkloadsSecret deletes a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "DeleteUserWorkloadsSecret deletes a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/DeleteUserWorkloadsSecret/main.go",
       "language": "GO",
       "clientMethod": {
@@ -609,7 +609,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_GetUserWorkloadsConfigMap_sync",
       "title": "composer GetUserWorkloadsConfigMap Sample",
-      "description": "GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/GetUserWorkloadsConfigMap/main.go",
       "language": "GO",
       "clientMethod": {
@@ -655,7 +655,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_GetUserWorkloadsSecret_sync",
       "title": "composer GetUserWorkloadsSecret Sample",
-      "description": "GetUserWorkloadsSecret gets an existing user workloads Secret.\nValues of the \"data\" field in the response are cleared.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "GetUserWorkloadsSecret gets an existing user workloads Secret.\nValues of the \"data\" field in the response are cleared.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/GetUserWorkloadsSecret/main.go",
       "language": "GO",
       "clientMethod": {
@@ -793,7 +793,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_ListUserWorkloadsConfigMaps_sync",
       "title": "composer ListUserWorkloadsConfigMaps Sample",
-      "description": "ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/ListUserWorkloadsConfigMaps/main.go",
       "language": "GO",
       "clientMethod": {
@@ -839,7 +839,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_ListUserWorkloadsSecrets_sync",
       "title": "composer ListUserWorkloadsSecrets Sample",
-      "description": "ListUserWorkloadsSecrets lists user workloads Secrets.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "ListUserWorkloadsSecrets lists user workloads Secrets.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/ListUserWorkloadsSecrets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1161,7 +1161,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_UpdateUserWorkloadsConfigMap_sync",
       "title": "composer UpdateUserWorkloadsConfigMap Sample",
-      "description": "UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/UpdateUserWorkloadsConfigMap/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1207,7 +1207,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_UpdateUserWorkloadsSecret_sync",
       "title": "composer UpdateUserWorkloadsSecret Sample",
-      "description": "UpdateUserWorkloadsSecret updates a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "UpdateUserWorkloadsSecret updates a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3-airflow-*.*.*-build.* and newer.",
       "file": "EnvironmentsClient/UpdateUserWorkloadsSecret/main.go",
       "language": "GO",
       "clientMethod": {

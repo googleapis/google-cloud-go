@@ -21,11 +21,8 @@
 package servicepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3625,7 +3624,7 @@ type SoftwareConfig struct {
 	// If unspecified, the field defaults to `PLUGINS_ENABLED`.
 	//
 	// This field is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	WebServerPluginsMode SoftwareConfig_WebServerPluginsMode `protobuf:"varint,10,opt,name=web_server_plugins_mode,json=webServerPluginsMode,proto3,enum=google.cloud.orchestration.airflow.service.v1.SoftwareConfig_WebServerPluginsMode" json:"web_server_plugins_mode,omitempty"`
 }
 
@@ -4012,7 +4011,7 @@ type NodeConfig struct {
 	// projects/{project}/regions/{region}/networkAttachments/{networkAttachment}.
 	//
 	// This field is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	ComposerNetworkAttachment string `protobuf:"bytes,12,opt,name=composer_network_attachment,json=composerNetworkAttachment,proto3" json:"composer_network_attachment,omitempty"`
 	// Optional. The IP range in CIDR notation to use internally by Cloud
 	// Composer. IP addresses are not reserved - and the same range can be used by
@@ -4021,7 +4020,7 @@ type NodeConfig struct {
 	// If not specified, the default value of '100.64.128.0/20' is used.
 	//
 	// This field is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	ComposerInternalIpv4CidrBlock string `protobuf:"bytes,13,opt,name=composer_internal_ipv4_cidr_block,json=composerInternalIpv4CidrBlock,proto3" json:"composer_internal_ipv4_cidr_block,omitempty"`
 }
 
@@ -4281,7 +4280,7 @@ type PrivateEnvironmentConfig struct {
 	// internet.
 	//
 	// This field is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	EnablePrivateBuildsOnly bool `protobuf:"varint,11,opt,name=enable_private_builds_only,json=enablePrivateBuildsOnly,proto3" json:"enable_private_builds_only,omitempty"`
 	// Optional. Configuration for the private GKE cluster for a Private IP
 	// Cloud Composer environment.
@@ -4457,7 +4456,7 @@ type WorkloadsConfig struct {
 	// Optional. Resources used by Airflow DAG processors.
 	//
 	// This field is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	DagProcessor *WorkloadsConfig_DagProcessorResource `protobuf:"bytes,5,opt,name=dag_processor,json=dagProcessor,proto3" json:"dag_processor,omitempty"`
 }
 
@@ -5826,7 +5825,7 @@ func (x *WorkloadsConfig_TriggererResource) GetMemoryGb() float32 {
 // Configuration for resources used by Airflow DAG processors.
 //
 // This field is supported for Cloud Composer environments in versions
-// composer-3.*.*-airflow-*.*.* and newer.
+// composer-3-airflow-*.*.*-build.* and newer.
 type WorkloadsConfig_DagProcessorResource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -7858,53 +7857,53 @@ type EnvironmentsClient interface {
 	// Creates a user workloads Secret.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	CreateUserWorkloadsSecret(ctx context.Context, in *CreateUserWorkloadsSecretRequest, opts ...grpc.CallOption) (*UserWorkloadsSecret, error)
 	// Gets an existing user workloads Secret.
 	// Values of the "data" field in the response are cleared.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	GetUserWorkloadsSecret(ctx context.Context, in *GetUserWorkloadsSecretRequest, opts ...grpc.CallOption) (*UserWorkloadsSecret, error)
 	// Lists user workloads Secrets.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	ListUserWorkloadsSecrets(ctx context.Context, in *ListUserWorkloadsSecretsRequest, opts ...grpc.CallOption) (*ListUserWorkloadsSecretsResponse, error)
 	// Updates a user workloads Secret.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	UpdateUserWorkloadsSecret(ctx context.Context, in *UpdateUserWorkloadsSecretRequest, opts ...grpc.CallOption) (*UserWorkloadsSecret, error)
 	// Deletes a user workloads Secret.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	DeleteUserWorkloadsSecret(ctx context.Context, in *DeleteUserWorkloadsSecretRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a user workloads ConfigMap.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	CreateUserWorkloadsConfigMap(ctx context.Context, in *CreateUserWorkloadsConfigMapRequest, opts ...grpc.CallOption) (*UserWorkloadsConfigMap, error)
 	// Gets an existing user workloads ConfigMap.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	GetUserWorkloadsConfigMap(ctx context.Context, in *GetUserWorkloadsConfigMapRequest, opts ...grpc.CallOption) (*UserWorkloadsConfigMap, error)
 	// Lists user workloads ConfigMaps.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	ListUserWorkloadsConfigMaps(ctx context.Context, in *ListUserWorkloadsConfigMapsRequest, opts ...grpc.CallOption) (*ListUserWorkloadsConfigMapsResponse, error)
 	// Updates a user workloads ConfigMap.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	UpdateUserWorkloadsConfigMap(ctx context.Context, in *UpdateUserWorkloadsConfigMapRequest, opts ...grpc.CallOption) (*UserWorkloadsConfigMap, error)
 	// Deletes a user workloads ConfigMap.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	DeleteUserWorkloadsConfigMap(ctx context.Context, in *DeleteUserWorkloadsConfigMapRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a snapshots of a Cloud Composer environment.
 	//
@@ -8177,53 +8176,53 @@ type EnvironmentsServer interface {
 	// Creates a user workloads Secret.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	CreateUserWorkloadsSecret(context.Context, *CreateUserWorkloadsSecretRequest) (*UserWorkloadsSecret, error)
 	// Gets an existing user workloads Secret.
 	// Values of the "data" field in the response are cleared.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	GetUserWorkloadsSecret(context.Context, *GetUserWorkloadsSecretRequest) (*UserWorkloadsSecret, error)
 	// Lists user workloads Secrets.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	ListUserWorkloadsSecrets(context.Context, *ListUserWorkloadsSecretsRequest) (*ListUserWorkloadsSecretsResponse, error)
 	// Updates a user workloads Secret.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	UpdateUserWorkloadsSecret(context.Context, *UpdateUserWorkloadsSecretRequest) (*UserWorkloadsSecret, error)
 	// Deletes a user workloads Secret.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	DeleteUserWorkloadsSecret(context.Context, *DeleteUserWorkloadsSecretRequest) (*emptypb.Empty, error)
 	// Creates a user workloads ConfigMap.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	CreateUserWorkloadsConfigMap(context.Context, *CreateUserWorkloadsConfigMapRequest) (*UserWorkloadsConfigMap, error)
 	// Gets an existing user workloads ConfigMap.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	GetUserWorkloadsConfigMap(context.Context, *GetUserWorkloadsConfigMapRequest) (*UserWorkloadsConfigMap, error)
 	// Lists user workloads ConfigMaps.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	ListUserWorkloadsConfigMaps(context.Context, *ListUserWorkloadsConfigMapsRequest) (*ListUserWorkloadsConfigMapsResponse, error)
 	// Updates a user workloads ConfigMap.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	UpdateUserWorkloadsConfigMap(context.Context, *UpdateUserWorkloadsConfigMapRequest) (*UserWorkloadsConfigMap, error)
 	// Deletes a user workloads ConfigMap.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-3-airflow-*.*.*-build.* and newer.
 	DeleteUserWorkloadsConfigMap(context.Context, *DeleteUserWorkloadsConfigMapRequest) (*emptypb.Empty, error)
 	// Creates a snapshots of a Cloud Composer environment.
 	//
