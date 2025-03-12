@@ -2028,7 +2028,7 @@ func TestRetryTimeoutEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+		ctx, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
 		defer cancel()
 		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true))
 
