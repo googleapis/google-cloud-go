@@ -2,6 +2,13 @@
 
 
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.0...cloudquotas/v1.3.1) (2025-03-12)
+
+
+### Documentation
+
+* **cloudquotas:** Improved comment clarity ([#11805](https://github.com/googleapis/google-cloud-go/issues/11805)) ([30f8af9](https://github.com/googleapis/google-cloud-go/commit/30f8af98c23feec33fa1fe873833b7f4e7783119))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.2.1...cloudquotas/v1.3.0) (2025-01-08)
 
 

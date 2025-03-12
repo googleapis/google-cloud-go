@@ -1,5 +1,12 @@
 # Changes
 
+## [1.24.4](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.3...datacatalog/v1.24.4) (2025-03-12)
+
+
+### Documentation
+
+* **datacatalog:** Mark DataCatalog v1beta1 service and corresponding methods as deprecated ([#11800](https://github.com/googleapis/google-cloud-go/issues/11800)) ([484978a](https://github.com/googleapis/google-cloud-go/commit/484978aa8ad4213172e7ffefcfd939071b90ee14))
+
 ## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.2...datacatalog/v1.24.3) (2025-01-08)
 
 

@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.9.3...filestore/v1.10.0) (2025-03-12)
+
+
+### Features
+
+* **filestore:** Added REGIONAL tier support in the v1 API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.9.2...filestore/v1.9.3) (2025-01-02)
 
 
