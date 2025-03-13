@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/iap/v1.10.4...iap/v1.10.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **iap:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.10.4](https://github.com/googleapis/google-cloud-go/compare/iap/v1.10.3...iap/v1.10.4) (2025-03-06)
 
 
