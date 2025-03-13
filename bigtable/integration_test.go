@@ -4763,28 +4763,28 @@ func TestIntegration_PrepareStatement(t *testing.T) {
 			"tsParam":      TimestampSQLType{},
 			"dateParam":    DateSQLType{},
 			"bytesArrayParam": ArraySQLType{
-				ElementType: BytesSQLType{},
+				ElemType: BytesSQLType{},
 			},
 			"stringArrayParam": ArraySQLType{
-				ElementType: StringSQLType{},
+				ElemType: StringSQLType{},
 			},
 			"int64ArrayParam": ArraySQLType{
-				ElementType: Int64SQLType{},
+				ElemType: Int64SQLType{},
 			},
 			"float32ArrayParam": ArraySQLType{
-				ElementType: Float32SQLType{},
+				ElemType: Float32SQLType{},
 			},
 			"float64ArrayParam": ArraySQLType{
-				ElementType: Float64SQLType{},
+				ElemType: Float64SQLType{},
 			},
 			"boolArrayParam": ArraySQLType{
-				ElementType: BoolSQLType{},
+				ElemType: BoolSQLType{},
 			},
 			"tsArrayParam": ArraySQLType{
-				ElementType: TimestampSQLType{},
+				ElemType: TimestampSQLType{},
 			},
 			"dateArrayParam": ArraySQLType{
-				ElementType: DateSQLType{},
+				ElemType: DateSQLType{},
 			},
 		},
 	); err != nil {
