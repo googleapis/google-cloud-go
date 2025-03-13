@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/managedidentities/apiv1",
-    "version": "$VERSION",
+    "version": "1.7.4",
     "language": "GO",
     "apis": [
       {
