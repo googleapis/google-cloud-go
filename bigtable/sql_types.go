@@ -120,15 +120,15 @@ func (s DateSQLType) typeProto() (*btpb.Type, error) {
 
 // ArraySQLType represents an ordered list of elements of a given type.
 type ArraySQLType struct {
-	ElementType SQLType
+	ElemType SQLType
 }
 
 func (s ArraySQLType) typeProto() (*btpb.Type, error) {
-	if s.ElementType == nil {
+	if s.ElemType == nil {
 		return nil, errors.New("must specify an explicit element type")
 	}
 
-	tp, err := s.ElementType.typeProto()
+	tp, err := s.ElemType.typeProto()
 	if err != nil {
 		return nil, err
 	}
