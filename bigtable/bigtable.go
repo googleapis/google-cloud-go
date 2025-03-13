@@ -42,6 +42,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	// Install google-c2p resolver, which is required for direct path.
 	_ "google.golang.org/grpc/xds/googledirectpath"
@@ -240,6 +241,10 @@ func convertToGrpcStatusErr(err error) (codes.Code, error) {
 	return codes.Unknown, err
 }
 
+func (c *Client) fullInstanceName() string {
+	return fmt.Sprintf("projects/%s/instances/%s", c.project, c.instance)
+}
+
 func (c *Client) fullTableName(table string) string {
 	return fmt.Sprintf("projects/%s/instances/%s/tables/%s", c.project, c.instance, table)
 }
@@ -252,8 +257,12 @@ func (c *Client) fullMaterializedViewName(materializedView string) string {
 	return fmt.Sprintf("projects/%s/instances/%s/materializedViews/%s", c.project, c.instance, materializedView)
 }
 
-func (c *Client) requestParamsHeaderValue(table string) string {
+func (c *Client) reqParamsHeaderValTable(table string) string {
 	return fmt.Sprintf("table_name=%s&app_profile_id=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
+}
+
+func (c *Client) reqParamsHeaderValInstance() string {
+	return fmt.Sprintf("name=%s&app_profile_id=%s", url.QueryEscape(c.fullInstanceName()), url.QueryEscape(c.appProfile))
 }
 
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
@@ -319,7 +328,7 @@ func (c *Client) Open(table string) *Table {
 		table: table,
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
-			requestParamsHeader, c.requestParamsHeaderValue(table),
+			requestParamsHeader, c.reqParamsHeaderValTable(table),
 		), c.newFeatureFlags()),
 	}
 }
@@ -331,7 +340,7 @@ func (c *Client) OpenTable(table string) TableAPI {
 		table: table,
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
-			requestParamsHeader, c.requestParamsHeaderValue(table),
+			requestParamsHeader, c.reqParamsHeaderValTable(table),
 		), c.newFeatureFlags()),
 	}}
 }
@@ -343,7 +352,7 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 		table: table,
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullAuthorizedViewName(table, authorizedView),
-			requestParamsHeader, c.requestParamsHeaderValue(table),
+			requestParamsHeader, c.reqParamsHeaderValTable(table),
 		), c.newFeatureFlags()),
 		authorizedView: authorizedView,
 	}}
@@ -355,10 +364,92 @@ func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
 		c: c,
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullMaterializedViewName(materializedView),
-			requestParamsHeader, c.requestParamsHeaderValue(materializedView),
+			requestParamsHeader, c.reqParamsHeaderValTable(materializedView),
 		), c.newFeatureFlags()),
 		materializedView: materializedView,
 	}}
+}
+
+// PreparedStatement stores the results of query preparation that can be used to
+// create [BoundStatements]s to execute queries.
+//
+// Whenever possible this should be shared across different instances of the same query,
+// in order to amortize query preparation costs.
+type PreparedStatement struct {
+	c          *Client
+	paramTypes map[string]*btpb.Type
+	// Structure of rows in the response stream of `ExecuteQueryResponse` for the
+	// returned `prepared_query`.
+	metadata *btpb.ResultSetMetadata
+	// A serialized prepared query. It is an opaque
+	// blob of bytes to send in `ExecuteQueryRequest`.
+	preparedQuery []byte
+	// The time at which the prepared query token becomes invalid.
+	// A token may become invalid early due to changes in the data being read, but
+	// it provides a guideline to refresh query plans asynchronously.
+	validUntil *timestamppb.Timestamp
+}
+
+// PrepareOption can be passed while preparing a query statement.
+type PrepareOption interface {
+}
+
+// PrepareStatement prepares a query for execution. If possible, this should be called once and
+// reused across requests. This will amortize the cost of query preparation.
+func (c *Client) PrepareStatement(ctx context.Context, query string, paramTypes map[string]SQLType, opts ...PrepareOption) (preparedStatement *PreparedStatement, err error) {
+	md := metadata.Join(metadata.Pairs(
+		resourcePrefixHeader, c.fullInstanceName(),
+		requestParamsHeader, c.reqParamsHeaderValInstance(),
+	), c.newFeatureFlags())
+
+	ctx = mergeOutgoingMetadata(ctx, md)
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable.PrepareQuery")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	mt := c.newBuiltinMetricsTracer(ctx, "", false)
+	defer recordOperationCompletion(mt)
+
+	preparedStatement, err = c.prepareStatement(ctx, mt, query, paramTypes, opts...)
+	statusCode, statusErr := convertToGrpcStatusErr(err)
+	mt.currOp.setStatus(statusCode.String())
+	return preparedStatement, statusErr
+}
+
+func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer, query string, paramTypes map[string]SQLType, opts ...PrepareOption) (*PreparedStatement, error) {
+	reqParamTypes := map[string]*btpb.Type{}
+	for k, v := range paramTypes {
+		if v == nil {
+			return nil, errors.New("bigtable: invalid SQLType: nil")
+		}
+		tpb, err := v.typeProto()
+		if err != nil {
+			return nil, err
+		}
+		reqParamTypes[k] = tpb
+	}
+	req := &btpb.PrepareQueryRequest{
+		InstanceName: c.fullInstanceName(),
+		AppProfileId: c.appProfile,
+		Query:        query,
+		ParamTypes:   reqParamTypes,
+	}
+	var res *btpb.PrepareQueryResponse
+	err := gaxInvokeWithRecorder(ctx, mt, "PrepareQuery", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		var err error
+		res, err = c.client.PrepareQuery(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PreparedStatement{
+		c:             c,
+		metadata:      res.Metadata,
+		preparedQuery: res.PreparedQuery,
+		validUntil:    res.ValidUntil,
+		paramTypes:    reqParamTypes,
+	}, err
 }
 
 func (ti *tableImpl) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
@@ -1650,7 +1741,11 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 }
 
 func (t *Table) newBuiltinMetricsTracer(ctx context.Context, isStreaming bool) *builtinMetricsTracer {
-	mt := t.c.metricsTracerFactory.createBuiltinMetricsTracer(ctx, t.table, isStreaming)
+	return t.c.newBuiltinMetricsTracer(ctx, t.table, isStreaming)
+}
+
+func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isStreaming bool) *builtinMetricsTracer {
+	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx, table, isStreaming)
 	return &mt
 }
 
