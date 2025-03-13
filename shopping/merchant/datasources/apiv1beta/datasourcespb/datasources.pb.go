@@ -22,9 +22,6 @@ package datasourcespb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -303,9 +302,8 @@ type DataSource_RegionalInventoryDataSource struct {
 }
 
 type DataSource_PromotionDataSource struct {
-	// The
-	// [promotion](https://support.google.com/merchants/answer/2906014) data
-	// source.
+	// The [promotion](https://support.google.com/merchants/answer/2906014)
+	// data source.
 	PromotionDataSource *PromotionDataSource `protobuf:"bytes,8,opt,name=promotion_data_source,json=promotionDataSource,proto3,oneof"`
 }
 
