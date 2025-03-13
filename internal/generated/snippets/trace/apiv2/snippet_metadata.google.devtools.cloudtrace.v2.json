@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/trace/apiv2",
-    "version": "$VERSION",
+    "version": "1.11.4",
     "language": "GO",
     "apis": [
       {
