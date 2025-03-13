@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
-    "version": "0.17.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -550,6 +550,98 @@
           "service": {
             "shortName": "AutofeedSettingsService",
             "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AutomaticImprovementsService_GetAutomaticImprovements_sync",
+      "title": "merchantapi GetAutomaticImprovements Sample",
+      "description": "GetAutomaticImprovements retrieves the automatic improvements of an account.",
+      "file": "AutomaticImprovementsClient/GetAutomaticImprovements/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAutomaticImprovements",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsClient.GetAutomaticImprovements",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetAutomaticImprovementsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.AutomaticImprovements",
+        "client": {
+          "shortName": "AutomaticImprovementsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsClient"
+        },
+        "method": {
+          "shortName": "GetAutomaticImprovements",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService.GetAutomaticImprovements",
+          "service": {
+            "shortName": "AutomaticImprovementsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AutomaticImprovementsService_UpdateAutomaticImprovements_sync",
+      "title": "merchantapi UpdateAutomaticImprovements Sample",
+      "description": "UpdateAutomaticImprovements updates the automatic improvements of an account.",
+      "file": "AutomaticImprovementsClient/UpdateAutomaticImprovements/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAutomaticImprovements",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsClient.UpdateAutomaticImprovements",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateAutomaticImprovementsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.AutomaticImprovements",
+        "client": {
+          "shortName": "AutomaticImprovementsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsClient"
+        },
+        "method": {
+          "shortName": "UpdateAutomaticImprovements",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService.UpdateAutomaticImprovements",
+          "service": {
+            "shortName": "AutomaticImprovementsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService"
           }
         }
       },
