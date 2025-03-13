@@ -56,6 +56,17 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 			want: false,
 		},
 		{
+			name: "compute-metadata but non default SA",
+			tp: &staticTP{
+				tok: token(map[string]interface{}{
+					"auth.google.tokenSource":    "compute-metadata",
+					"auth.google.serviceAccount": "NON-default",
+				}),
+			},
+			opts: &Options{},
+			want: false,
+		},
+		{
 			name: "non-default service account",
 			tp:   &staticTP{tok: token(map[string]interface{}{"auth.google.serviceAccount": "NOT-default"})},
 			opts: &Options{},
