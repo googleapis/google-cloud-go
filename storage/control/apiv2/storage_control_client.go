@@ -45,23 +45,16 @@ var newStorageControlClientHook clientHook
 
 // StorageControlCallOptions contains the retry settings for each method of StorageControlClient.
 type StorageControlCallOptions struct {
-	CreateFolder         []gax.CallOption
-	DeleteFolder         []gax.CallOption
-	GetFolder            []gax.CallOption
-	ListFolders          []gax.CallOption
-	RenameFolder         []gax.CallOption
-	GetStorageLayout     []gax.CallOption
-	CreateManagedFolder  []gax.CallOption
-	DeleteManagedFolder  []gax.CallOption
-	GetManagedFolder     []gax.CallOption
-	ListManagedFolders   []gax.CallOption
-	CreateAnywhereCache  []gax.CallOption
-	UpdateAnywhereCache  []gax.CallOption
-	DisableAnywhereCache []gax.CallOption
-	PauseAnywhereCache   []gax.CallOption
-	ResumeAnywhereCache  []gax.CallOption
-	GetAnywhereCache     []gax.CallOption
-	ListAnywhereCaches   []gax.CallOption
+	CreateFolder        []gax.CallOption
+	DeleteFolder        []gax.CallOption
+	GetFolder           []gax.CallOption
+	ListFolders         []gax.CallOption
+	RenameFolder        []gax.CallOption
+	GetStorageLayout    []gax.CallOption
+	CreateManagedFolder []gax.CallOption
+	DeleteManagedFolder []gax.CallOption
+	GetManagedFolder    []gax.CallOption
+	ListManagedFolders  []gax.CallOption
 }
 
 func defaultStorageControlGRPCClientOptions() []option.ClientOption {
@@ -189,27 +182,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				})
 			}),
 		},
-		CreateAnywhereCache: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		UpdateAnywhereCache: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		DisableAnywhereCache: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		PauseAnywhereCache: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		ResumeAnywhereCache: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		GetAnywhereCache: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		ListAnywhereCaches: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
 	}
 }
 
@@ -229,15 +201,6 @@ type internalStorageControlClient interface {
 	DeleteManagedFolder(context.Context, *controlpb.DeleteManagedFolderRequest, ...gax.CallOption) error
 	GetManagedFolder(context.Context, *controlpb.GetManagedFolderRequest, ...gax.CallOption) (*controlpb.ManagedFolder, error)
 	ListManagedFolders(context.Context, *controlpb.ListManagedFoldersRequest, ...gax.CallOption) *ManagedFolderIterator
-	CreateAnywhereCache(context.Context, *controlpb.CreateAnywhereCacheRequest, ...gax.CallOption) (*CreateAnywhereCacheOperation, error)
-	CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation
-	UpdateAnywhereCache(context.Context, *controlpb.UpdateAnywhereCacheRequest, ...gax.CallOption) (*UpdateAnywhereCacheOperation, error)
-	UpdateAnywhereCacheOperation(name string) *UpdateAnywhereCacheOperation
-	DisableAnywhereCache(context.Context, *controlpb.DisableAnywhereCacheRequest, ...gax.CallOption) (*controlpb.AnywhereCache, error)
-	PauseAnywhereCache(context.Context, *controlpb.PauseAnywhereCacheRequest, ...gax.CallOption) (*controlpb.AnywhereCache, error)
-	ResumeAnywhereCache(context.Context, *controlpb.ResumeAnywhereCacheRequest, ...gax.CallOption) (*controlpb.AnywhereCache, error)
-	GetAnywhereCache(context.Context, *controlpb.GetAnywhereCacheRequest, ...gax.CallOption) (*controlpb.AnywhereCache, error)
-	ListAnywhereCaches(context.Context, *controlpb.ListAnywhereCachesRequest, ...gax.CallOption) *AnywhereCacheIterator
 }
 
 // StorageControlClient is a client for interacting with Storage Control API.
@@ -341,57 +304,6 @@ func (c *StorageControlClient) GetManagedFolder(ctx context.Context, req *contro
 // ListManagedFolders retrieves a list of managed folders for a given bucket.
 func (c *StorageControlClient) ListManagedFolders(ctx context.Context, req *controlpb.ListManagedFoldersRequest, opts ...gax.CallOption) *ManagedFolderIterator {
 	return c.internalClient.ListManagedFolders(ctx, req, opts...)
-}
-
-// CreateAnywhereCache creates an Anywhere Cache instance.
-func (c *StorageControlClient) CreateAnywhereCache(ctx context.Context, req *controlpb.CreateAnywhereCacheRequest, opts ...gax.CallOption) (*CreateAnywhereCacheOperation, error) {
-	return c.internalClient.CreateAnywhereCache(ctx, req, opts...)
-}
-
-// CreateAnywhereCacheOperation returns a new CreateAnywhereCacheOperation from a given name.
-// The name must be that of a previously created CreateAnywhereCacheOperation, possibly from a different process.
-func (c *StorageControlClient) CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation {
-	return c.internalClient.CreateAnywhereCacheOperation(name)
-}
-
-// UpdateAnywhereCache updates an Anywhere Cache instance. Mutable fields include ttl and
-// admission_policy.
-func (c *StorageControlClient) UpdateAnywhereCache(ctx context.Context, req *controlpb.UpdateAnywhereCacheRequest, opts ...gax.CallOption) (*UpdateAnywhereCacheOperation, error) {
-	return c.internalClient.UpdateAnywhereCache(ctx, req, opts...)
-}
-
-// UpdateAnywhereCacheOperation returns a new UpdateAnywhereCacheOperation from a given name.
-// The name must be that of a previously created UpdateAnywhereCacheOperation, possibly from a different process.
-func (c *StorageControlClient) UpdateAnywhereCacheOperation(name string) *UpdateAnywhereCacheOperation {
-	return c.internalClient.UpdateAnywhereCacheOperation(name)
-}
-
-// DisableAnywhereCache disables an Anywhere Cache instance. A disabled instance is read-only. The
-// disablement could be revoked by calling ResumeAnywhereCache. The cache
-// instance will be deleted automatically if it remains in the disabled state
-// for at least one hour.
-func (c *StorageControlClient) DisableAnywhereCache(ctx context.Context, req *controlpb.DisableAnywhereCacheRequest, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
-	return c.internalClient.DisableAnywhereCache(ctx, req, opts...)
-}
-
-// PauseAnywhereCache pauses an Anywhere Cache instance.
-func (c *StorageControlClient) PauseAnywhereCache(ctx context.Context, req *controlpb.PauseAnywhereCacheRequest, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
-	return c.internalClient.PauseAnywhereCache(ctx, req, opts...)
-}
-
-// ResumeAnywhereCache resumes a disabled or paused Anywhere Cache instance.
-func (c *StorageControlClient) ResumeAnywhereCache(ctx context.Context, req *controlpb.ResumeAnywhereCacheRequest, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
-	return c.internalClient.ResumeAnywhereCache(ctx, req, opts...)
-}
-
-// GetAnywhereCache gets an Anywhere Cache instance.
-func (c *StorageControlClient) GetAnywhereCache(ctx context.Context, req *controlpb.GetAnywhereCacheRequest, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
-	return c.internalClient.GetAnywhereCache(ctx, req, opts...)
-}
-
-// ListAnywhereCaches lists Anywhere Cache instances for a given bucket.
-func (c *StorageControlClient) ListAnywhereCaches(ctx context.Context, req *controlpb.ListAnywhereCachesRequest, opts ...gax.CallOption) *AnywhereCacheIterator {
-	return c.internalClient.ListAnywhereCaches(ctx, req, opts...)
 }
 
 // storageControlGRPCClient is a client for interacting with Storage Control API over gRPC transport.
@@ -828,247 +740,10 @@ func (c *storageControlGRPCClient) ListManagedFolders(ctx context.Context, req *
 	return it
 }
 
-func (c *storageControlGRPCClient) CreateAnywhereCache(ctx context.Context, req *controlpb.CreateAnywhereCacheRequest, opts ...gax.CallOption) (*CreateAnywhereCacheOperation, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).CreateAnywhereCache[0:len((*c.CallOptions).CreateAnywhereCache):len((*c.CallOptions).CreateAnywhereCache)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.storageControlClient.CreateAnywhereCache, req, settings.GRPC, c.logger, "CreateAnywhereCache")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *storageControlGRPCClient) UpdateAnywhereCache(ctx context.Context, req *controlpb.UpdateAnywhereCacheRequest, opts ...gax.CallOption) (*UpdateAnywhereCacheOperation, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetAnywhereCache().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetAnywhereCache().GetName())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetAnywhereCache().GetName())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).UpdateAnywhereCache[0:len((*c.CallOptions).UpdateAnywhereCache):len((*c.CallOptions).UpdateAnywhereCache)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.storageControlClient.UpdateAnywhereCache, req, settings.GRPC, c.logger, "UpdateAnywhereCache")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &UpdateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *storageControlGRPCClient) DisableAnywhereCache(ctx context.Context, req *controlpb.DisableAnywhereCacheRequest, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).DisableAnywhereCache[0:len((*c.CallOptions).DisableAnywhereCache):len((*c.CallOptions).DisableAnywhereCache)], opts...)
-	var resp *controlpb.AnywhereCache
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.storageControlClient.DisableAnywhereCache, req, settings.GRPC, c.logger, "DisableAnywhereCache")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *storageControlGRPCClient) PauseAnywhereCache(ctx context.Context, req *controlpb.PauseAnywhereCacheRequest, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).PauseAnywhereCache[0:len((*c.CallOptions).PauseAnywhereCache):len((*c.CallOptions).PauseAnywhereCache)], opts...)
-	var resp *controlpb.AnywhereCache
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.storageControlClient.PauseAnywhereCache, req, settings.GRPC, c.logger, "PauseAnywhereCache")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *storageControlGRPCClient) ResumeAnywhereCache(ctx context.Context, req *controlpb.ResumeAnywhereCacheRequest, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ResumeAnywhereCache[0:len((*c.CallOptions).ResumeAnywhereCache):len((*c.CallOptions).ResumeAnywhereCache)], opts...)
-	var resp *controlpb.AnywhereCache
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.storageControlClient.ResumeAnywhereCache, req, settings.GRPC, c.logger, "ResumeAnywhereCache")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *storageControlGRPCClient) GetAnywhereCache(ctx context.Context, req *controlpb.GetAnywhereCacheRequest, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).GetAnywhereCache[0:len((*c.CallOptions).GetAnywhereCache):len((*c.CallOptions).GetAnywhereCache)], opts...)
-	var resp *controlpb.AnywhereCache
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.storageControlClient.GetAnywhereCache, req, settings.GRPC, c.logger, "GetAnywhereCache")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *storageControlGRPCClient) ListAnywhereCaches(ctx context.Context, req *controlpb.ListAnywhereCachesRequest, opts ...gax.CallOption) *AnywhereCacheIterator {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ListAnywhereCaches[0:len((*c.CallOptions).ListAnywhereCaches):len((*c.CallOptions).ListAnywhereCaches)], opts...)
-	it := &AnywhereCacheIterator{}
-	req = proto.Clone(req).(*controlpb.ListAnywhereCachesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.AnywhereCache, string, error) {
-		resp := &controlpb.ListAnywhereCachesResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.storageControlClient.ListAnywhereCaches, req, settings.GRPC, c.logger, "ListAnywhereCaches")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetAnywhereCaches(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-// CreateAnywhereCacheOperation returns a new CreateAnywhereCacheOperation from a given name.
-// The name must be that of a previously created CreateAnywhereCacheOperation, possibly from a different process.
-func (c *storageControlGRPCClient) CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation {
-	return &CreateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
 // RenameFolderOperation returns a new RenameFolderOperation from a given name.
 // The name must be that of a previously created RenameFolderOperation, possibly from a different process.
 func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFolderOperation {
 	return &RenameFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// UpdateAnywhereCacheOperation returns a new UpdateAnywhereCacheOperation from a given name.
-// The name must be that of a previously created UpdateAnywhereCacheOperation, possibly from a different process.
-func (c *storageControlGRPCClient) UpdateAnywhereCacheOperation(name string) *UpdateAnywhereCacheOperation {
-	return &UpdateAnywhereCacheOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

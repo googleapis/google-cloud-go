@@ -1,6 +1,18 @@
 # Changes
 
 
+## [2.20.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.4...recaptchaenterprise/v2.20.0) (2025-03-12)
+
+
+### Features
+
+* **recaptchaenterprise:** A new field `ja4` is added to message `Event` ([30f8af9](https://github.com/googleapis/google-cloud-go/commit/30f8af98c23feec33fa1fe873833b7f4e7783119))
+
+
+### Documentation
+
+* **recaptchaenterprise:** Update documentation ([30f8af9](https://github.com/googleapis/google-cloud-go/commit/30f8af98c23feec33fa1fe873833b7f4e7783119))
+
 ## [2.19.4](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.3...recaptchaenterprise/v2.19.4) (2025-01-15)
 
 

@@ -1,5 +1,37 @@
 # Changes
 
+## [1.68.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.67.0...dialogflow/v1.68.0) (2025-03-12)
+
+
+### Features
+
+* **dialogflow/cx:** Added support for document_processing_mode ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow/cx:** Change client_secret in OAuthConfig from required to optional ([#11682](https://github.com/googleapis/google-cloud-go/issues/11682)) ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow/cx:** Exposed Zone Separation & Zone Isolation status of an agent ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Add new RPC IngestContextReferences, GenerateSuggestions ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Add new RPC IngestContextReferences, GenerateSuggestions ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Added ConversatioalTrainingAssignments, ConversationalTrainingMembers, ConversationalTrainingModules,ConversationalTrainingTeams API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Added support for audio_input and speech_model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Added support for CONVERSATION_SUMMARIZATION ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Added support for TelephonyConnectionInfo, country_code and ControlPoint ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Changed enablle_partial_automated_agent_reply to optional ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+
+### Documentation
+
+* **dialogflow/cx:** A comment for field `cert` in message `.google.cloud.dialogflow.cx.v3beta1.Tool` is changed ([bba6f65](https://github.com/googleapis/google-cloud-go/commit/bba6f6556b9ce5400df74ddcc04b31f57b6cf2a8))
+* **dialogflow/cx:** A comment for field `client_secret` in message `.google.cloud.dialogflow.cx.v3.Webhook` is changed ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow/cx:** A comment for field `name` in message `.google.cloud.dialogflow.cx.v3beta1.Tool` is changed ([#11797](https://github.com/googleapis/google-cloud-go/issues/11797)) ([bba6f65](https://github.com/googleapis/google-cloud-go/commit/bba6f6556b9ce5400df74ddcc04b31f57b6cf2a8))
+* **dialogflow/cx:** Clarified wording around StreamingDetectIntentRequest ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow/cx:** Clarified wording around use_timeout_based_endpointing ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Changed reference link around ConversationStage ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Clarified wording around boost_specs and filter_specs ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Clarified wording around filter and document_correctness ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Clarified wording around phrase_sets ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Clarified wording around phrase_sets ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Clarified wording around send_time ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **dialogflow:** Clarified wording around use_timeout_based_endpointing ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.66.0...dialogflow/v1.67.0) (2025-03-06)
 
 
