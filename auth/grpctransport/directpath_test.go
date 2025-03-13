@@ -41,27 +41,13 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 		},
 		{
 			name: "EnableNonDefaultSAForDirectPath",
-			tp: &staticTP{
-				tok: token(map[string]interface{}{
-					"auth.google.tokenSource": "compute-metadata",
-				}),
-			},
+			tp:   &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 			opts: &Options{
 				InternalOptions: &InternalOptions{
 					EnableNonDefaultSAForDirectPath: true,
 				},
 			},
 			want: true,
-		},
-		{
-			name: "EnableNonDefaultSAForDirectPathButNotCompute",
-			tp:   &staticTP{},
-			opts: &Options{
-				InternalOptions: &InternalOptions{
-					EnableNonDefaultSAForDirectPath: true,
-				},
-			},
-			want: false,
 		},
 		{
 			name: "non-compute token source",
