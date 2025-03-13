@@ -21,14 +21,13 @@ import (
 )
 
 // SQLType represents the type of data that can be used to query Cloud Bigtable.
-// It is heavily based on the GoogleSQL standard to help maintain
-// familiarity and consistency across products and features.
+// It is based on the GoogleSQL standard.
 type SQLType interface {
 	// Used while preparing the query
 	typeProto() *btpb.Type
 }
 
-// BytesSQLType represents a slice of bytes
+// BytesSQLType represents a slice of bytes.
 type BytesSQLType struct{}
 
 func (s BytesSQLType) typeProto() *btpb.Type {
@@ -39,7 +38,7 @@ func (s BytesSQLType) typeProto() *btpb.Type {
 	}
 }
 
-// StringSQLType represents a string
+// StringSQLType represents a string.
 type StringSQLType struct {
 }
 
@@ -62,7 +61,7 @@ func (s Int64SQLType) typeProto() *btpb.Type {
 	}
 }
 
-// Float32SQLType represents a 32-bit floating-point number
+// Float32SQLType represents a 32-bit floating-point number.
 type Float32SQLType struct{}
 
 func (s Float32SQLType) typeProto() *btpb.Type {
@@ -73,7 +72,7 @@ func (s Float32SQLType) typeProto() *btpb.Type {
 	}
 }
 
-// Float64SQLType represents a 64-bit floating-point number
+// Float64SQLType represents a 64-bit floating-point number.
 type Float64SQLType struct{}
 
 func (s Float64SQLType) typeProto() *btpb.Type {
@@ -84,7 +83,7 @@ func (s Float64SQLType) typeProto() *btpb.Type {
 	}
 }
 
-// BoolSQLType represents a boolean
+// BoolSQLType represents a boolean.
 type BoolSQLType struct{}
 
 func (s BoolSQLType) typeProto() *btpb.Type {
@@ -95,7 +94,7 @@ func (s BoolSQLType) typeProto() *btpb.Type {
 	}
 }
 
-// TimestampSQLType represents a point in time
+// TimestampSQLType represents a point in time.
 type TimestampSQLType struct{}
 
 func (s TimestampSQLType) typeProto() *btpb.Type {
@@ -106,7 +105,7 @@ func (s TimestampSQLType) typeProto() *btpb.Type {
 	}
 }
 
-// DateSQLType represents a calendar date
+// DateSQLType represents a calendar date.
 type DateSQLType struct{}
 
 func (s DateSQLType) typeProto() *btpb.Type {
@@ -117,7 +116,7 @@ func (s DateSQLType) typeProto() *btpb.Type {
 	}
 }
 
-// ArraySQLType represents an ordered list of elements of a given type
+// ArraySQLType represents an ordered list of elements of a given type.
 type ArraySQLType struct {
 	ElemType SQLType
 }
