@@ -114,15 +114,14 @@ var (
 )
 
 // OnGCE reports whether this process is running on Google Compute Platforms.
-//
-// Deprecated: Please use the context aware variant [OnGCEWithContext].
+// NOTE: True returned from `OnGCE` does not guarantee that the metadata server
+// is accessible from this process and have all the metadata defined.
 func OnGCE() bool {
 	return OnGCEWithContext(context.Background())
 }
 
 // OnGCEWithContext reports whether this process is running on Google Compute Platforms.
 // This function's return value is memoized for better performance.
-//
 // NOTE: True returned from `OnGCEWithContext` does not guarantee that the metadata server
 // is accessible from this process and have all the metadata defined.
 func OnGCEWithContext(ctx context.Context) bool {
