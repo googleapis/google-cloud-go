@@ -1,5 +1,12 @@
 # Changes
 
+## [0.13.4](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.13.3...containeranalysis/v0.13.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [0.13.3](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.13.2...containeranalysis/v0.13.3) (2025-01-02)
 
 
