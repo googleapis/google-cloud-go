@@ -194,13 +194,16 @@ func TestTableMetadataToBQ(t *testing.T) {
 		{&TableMetadata{}, &bq.Table{}},
 		{
 			&TableMetadata{
-				Name:               "n",
-				Description:        "d",
-				Schema:             sc,
-				ExpirationTime:     aTime,
-				Labels:             map[string]string{"a": "b"},
-				ExternalDataConfig: &ExternalDataConfig{SourceFormat: Bigtable},
-				EncryptionConfig:   &EncryptionConfig{KMSKeyName: "keyName"},
+				Name:           "n",
+				Description:    "d",
+				Schema:         sc,
+				ExpirationTime: aTime,
+				Labels:         map[string]string{"a": "b"},
+				ExternalDataConfig: &ExternalDataConfig{
+					SourceFormat:      Bigtable,
+					MetadataCacheMode: Automatic,
+				},
+				EncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				ResourceTags: map[string]string{
 					"key1": "val1",
 					"key2": "val2",
@@ -214,10 +217,13 @@ func TestTableMetadataToBQ(t *testing.T) {
 						bqTableFieldSchema("desc", "name", "STRING", "REQUIRED", nil),
 					},
 				},
-				ExpirationTime:            aTimeMillis,
-				Labels:                    map[string]string{"a": "b"},
-				ExternalDataConfiguration: &bq.ExternalDataConfiguration{SourceFormat: "BIGTABLE"},
-				EncryptionConfiguration:   &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
+				ExpirationTime: aTimeMillis,
+				Labels:         map[string]string{"a": "b"},
+				ExternalDataConfiguration: &bq.ExternalDataConfiguration{
+					SourceFormat:      "BIGTABLE",
+					MetadataCacheMode: "AUTOMATIC",
+				},
+				EncryptionConfiguration: &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
 				ResourceTags: map[string]string{
 					"key1": "val1",
 					"key2": "val2",

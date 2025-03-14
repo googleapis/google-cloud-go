@@ -1703,6 +1703,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	var offset int64
 	errorf := params.setError
 	setObj := params.setObj
+	setFlush := params.setFlush
 	pr, pw := io.Pipe()
 
 	s := callSettings(c.settings, opts...)
@@ -1728,10 +1729,15 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			}
 
 			var gw *gRPCWriter
-			gw, err := newGRPCWriter(c, s, params, r)
+			gw, err := newGRPCWriter(c, s, params, r, pw, params.setPipeWriter)
 			if err != nil {
 				return err
 			}
+
+			// Set Flush func for use by exported Writer.Flush.
+			setFlush(func() (int64, error) {
+				return gw.flush()
+			})
 
 			// Loop until there is an error or the Object has been finalized.
 			for {
@@ -2572,7 +2578,7 @@ func (r *gRPCReader) reopenStream() error {
 	return nil
 }
 
-func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader) (*gRPCWriter, error) {
+func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pw *io.PipeWriter, setPipeWriter func(*io.PipeWriter)) (*gRPCWriter, error) {
 	if params.attrs.Retention != nil {
 		// TO-DO: remove once ObjectRetention is available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
@@ -2609,6 +2615,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		c:                     c,
 		ctx:                   params.ctx,
 		reader:                r,
+		pw:                    pw,
 		bucket:                params.bucket,
 		attrs:                 params.attrs,
 		conds:                 params.conds,
@@ -2620,15 +2627,19 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		forceOneShot:          params.chunkSize <= 0,
 		forceEmptyContentType: params.forceEmptyContentType,
 		append:                params.append,
+		setPipeWriter:         setPipeWriter,
+		flushComplete:         make(chan int64),
 	}, nil
 }
 
 // gRPCWriter is a wrapper around the the gRPC client-stream API that manages
 // sending chunks of data provided by the user over the stream.
 type gRPCWriter struct {
-	c      *grpcStorageClient
-	buf    []byte
-	reader io.Reader
+	c             *grpcStorageClient
+	buf           []byte
+	reader        io.Reader
+	pw            *io.PipeWriter
+	setPipeWriter func(*io.PipeWriter) // used to set in parent storage.Writer
 
 	ctx context.Context
 
@@ -2645,7 +2656,9 @@ type gRPCWriter struct {
 	forceEmptyContentType bool
 	append                bool
 
-	streamSender gRPCBidiWriteBufferSender
+	streamSender    gRPCBidiWriteBufferSender
+	flushInProgress bool       // true when the pipe is being recreated for a flush.
+	flushComplete   chan int64 // use to signal back to flush call that flush to server was completed.
 }
 
 func bucketContext(ctx context.Context, bucket string) context.Context {
@@ -2945,11 +2958,17 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 			break
 		}
 	}
+	if w.flushInProgress {
+		w.flushInProgress = false
+		w.flushComplete <- offset
+	}
 	return
 }
 
 // read copies the data in the reader to the given buffer and reports how much
 // data was read into the buffer and if there is no more data to read (EOF).
+// read returns when either 1. the buffer is full, 2. Writer.Flush was called,
+// or 3. Writer.Close was called.
 func (w *gRPCWriter) read() (int, bool, error) {
 	// Set n to -1 to start the Read loop.
 	var n, recvd int = -1, 0
@@ -2961,10 +2980,35 @@ func (w *gRPCWriter) read() (int, bool, error) {
 	}
 	var done bool
 	if err == io.EOF {
-		done = true
 		err = nil
+		// EOF can come from Writer.Flush or Writer.Close.
+		if w.flushInProgress {
+			// Reset pipe for additional writes after the flush.
+			pr, pw := io.Pipe()
+			w.reader = pr
+			w.pw = pw
+			w.setPipeWriter(pw)
+		} else {
+			done = true
+		}
 	}
 	return recvd, done, err
+}
+
+// flush flushes the current buffer regardless of whether it is full or not.
+// It's the implementation for Writer.Flush.
+func (w *gRPCWriter) flush() (int64, error) {
+	if !w.append {
+		return 0, errors.New("Flush is supported only if Writer.Append is set to true")
+	}
+
+	// Close PipeWriter to trigger EOF on read side of the stream.
+	w.flushInProgress = true
+	w.pw.Close()
+
+	// Wait for flush to complete
+	offset := <-w.flushComplete
+	return offset, nil
 }
 
 func checkCanceled(err error) error {

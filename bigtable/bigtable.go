@@ -248,6 +248,10 @@ func (c *Client) fullAuthorizedViewName(table string, authorizedView string) str
 	return fmt.Sprintf("projects/%s/instances/%s/tables/%s/authorizedViews/%s", c.project, c.instance, table, authorizedView)
 }
 
+func (c *Client) fullMaterializedViewName(materializedView string) string {
+	return fmt.Sprintf("projects/%s/instances/%s/materializedViews/%s", c.project, c.instance, materializedView)
+}
+
 func (c *Client) requestParamsHeaderValue(table string) string {
 	return fmt.Sprintf("table_name=%s&app_profile_id=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
 }
@@ -261,13 +265,14 @@ func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Cont
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
 }
 
-// TableAPI interface allows existing data APIs to be applied to either an authorized view or a table.
+// TableAPI interface allows existing data APIs to be applied to either an authorized view, a materialized view or a table.
+// A materialized view is a read-only entity.
 type TableAPI interface {
 	ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error
 	ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error)
+	SampleRowKeys(ctx context.Context) ([]string, error)
 	Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error
 	ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error)
-	SampleRowKeys(ctx context.Context) ([]string, error)
 	ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error)
 }
 
@@ -283,8 +288,9 @@ type Table struct {
 	table string
 
 	// Metadata to be sent with each request.
-	md             metadata.MD
-	authorizedView string
+	md               metadata.MD
+	authorizedView   string
+	materializedView string
 }
 
 // newFeatureFlags creates the feature flags `bigtable-features` header
@@ -340,6 +346,18 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 			requestParamsHeader, c.requestParamsHeaderValue(table),
 		), c.newFeatureFlags()),
 		authorizedView: authorizedView,
+	}}
+}
+
+// OpenMaterializedView opens a materialized view.
+func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
+	return &tableImpl{Table{
+		c: c,
+		md: metadata.Join(metadata.Pairs(
+			resourcePrefixHeader, c.fullMaterializedViewName(materializedView),
+			requestParamsHeader, c.requestParamsHeaderValue(materializedView),
+		), c.newFeatureFlags()),
+		materializedView: materializedView,
 	}}
 }
 
@@ -415,7 +433,9 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		req := &btpb.ReadRowsRequest{
 			AppProfileId: t.c.appProfile,
 		}
-		if t.authorizedView == "" {
+		if t.materializedView != "" {
+			req.MaterializedViewName = t.c.fullMaterializedViewName(t.materializedView)
+		} else if t.authorizedView == "" {
 			req.TableName = t.c.fullTableName(t.table)
 		} else {
 			req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
@@ -1587,7 +1607,9 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 		req := &btpb.SampleRowKeysRequest{
 			AppProfileId: t.c.appProfile,
 		}
-		if t.authorizedView == "" {
+		if t.materializedView != "" {
+			req.MaterializedViewName = t.c.fullMaterializedViewName(t.materializedView)
+		} else if t.authorizedView == "" {
 			req.TableName = t.c.fullTableName(t.table)
 		} else {
 			req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
