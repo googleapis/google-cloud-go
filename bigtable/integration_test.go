@@ -4330,7 +4330,126 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	}
 }
 
+func TestIntegration_DataMaterializedView(t *testing.T) {
+	t.Skip("Feature not out yet")
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support materializedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	instanceAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer instanceAdminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create materialized view
+	materializedViewUUID := uid.NewSpace("materializedView-", &uid.Options{})
+	materializedView := materializedViewUUID.New()
+	defer instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView)
+
+	materializedViewInfo := MaterializedViewInfo{
+		MaterializedViewID: materializedView,
+		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col, count(*) as count FROM %s", tblConf.TableID),
+		DeletionProtection: Unprotected,
+	}
+	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
+		t.Fatalf("Creating materialized view: %v", err)
+	}
+
+	client, err := testEnv.NewClient()
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+	mv := client.OpenMaterializedView(materializedView)
+	tbl := client.OpenTable(tblConf.TableID)
+
+	// Test ReadRow
+	gotRow, err := mv.ReadRow(ctx, "r1")
+	if err != nil {
+		t.Fatalf("Reading row from a materialized view: %v", err)
+	}
+	wantRow := Row{
+		"fam1": []ReadItem{
+			{Row: "r1", Column: "fam1:col1", Timestamp: 1000, Value: []byte("1")},
+			{Row: "r1", Column: "fam1:col2", Timestamp: 1000, Value: []byte("1")},
+		},
+	}
+	if !testutil.Equal(gotRow, wantRow) {
+		t.Fatalf("Error reading row from materialized view.\n Got %v\n Want %v", gotRow, wantRow)
+	}
+	gotRow, err = mv.ReadRow(ctx, "r2")
+	if err != nil {
+		t.Fatalf("Reading row from an materialized view: %v", err)
+	}
+	if len(gotRow) != 0 {
+		t.Fatalf("Expect empty result when reading row from outside an materialized view")
+	}
+
+	// Test ReadRows
+	var elt []string
+	f := func(row Row) bool {
+		for _, ris := range row {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	}
+	if err = mv.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from an materialized view: %v", err)
+	}
+	want := "r1-col1-1,r1-col2-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from materialized view.\n Got %v\n Want %v", got, want)
+	}
+	elt = nil
+	if err = tbl.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from a table: %v", err)
+	}
+	want = "r1-col1-1,r1-col2-1,r2-col1-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from table.\n Got %v\n Want %v", got, want)
+	}
+
+	// Test SampleRowKeys
+	if _, err := mv.SampleRowKeys(ctx); err != nil {
+		t.Fatalf("Sampling row keys from an materialized view: %v", err)
+	}
+}
+
 func TestIntegration_AdminLogicalView(t *testing.T) {
+	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -4443,6 +4562,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 }
 
 func TestIntegration_AdminMaterializedView(t *testing.T) {
+	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
