@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.4.2](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.4.1...managedkafka/v0.4.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **managedkafka:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.4.0...managedkafka/v0.4.1) (2025-03-12)
+
+
+### Bug Fixes
+
+* **managedkafka:** An existing google.api.http annotation `http_uri` is changed for method `DeleteConsumerGroup` in service `ManagedKafka` ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+* **managedkafka:** An existing google.api.http annotation `http_uri` is changed for method `GetConsumerGroup` in service `ManagedKafka` ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+* **managedkafka:** An existing google.api.http annotation `http_uri` is changed for method `UpdateConsumerGroup` in service `ManagedKafka` ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+
+
+### Documentation
+
+* **managedkafka:** A comment for field `subnet` in message `.google.cloud.managedkafka.v1.NetworkConfig` is changed ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.3.1...managedkafka/v0.4.0) (2025-01-08)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.34.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.34.0...compute/v1.34.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **compute:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.33.0...compute/v1.34.0) (2025-02-20)
 
 

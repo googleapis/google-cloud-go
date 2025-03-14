@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/run/v1.9.1...run/v1.9.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **run:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.9.0...run/v1.9.1) (2025-03-06)
 
 
