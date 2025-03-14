@@ -2064,6 +2064,217 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 	}
 }
 
+func TestIntegration_CreateTableWithRowKeySchema(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support Automated Backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	myTableName := myTableNameSpace.New()
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+
+	testCases := []struct {
+		desc          string
+		rks           StructType
+		errorExpected bool
+	}{
+		{
+			desc: "Create fail with conflict family and row key column",
+			rks: StructType{
+				Fields:   []StructField{{FieldName: "fam1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+				Encoding: StructOrderedCodeBytesEncoding{},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Create fail with missing encoding in struct type",
+			rks: StructType{
+				Fields: []StructField{{FieldName: "myfield", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Create fail on DelimitedBytes missing delimiter",
+			rks: StructType{
+				Fields:   []StructField{{FieldName: "myfield", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}}},
+				Encoding: StructDelimitedBytesEncoding{},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Create with Singleton failed with more than 1 field",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield1", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+					{FieldName: "myfield2", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+				},
+				Encoding: StructSingletonEncoding{},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Create with Singleton ok",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield1", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+				},
+				Encoding: StructSingletonEncoding{},
+			},
+		},
+		{
+			desc: "Create with OrderedCode ok",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield1", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+					{FieldName: "myfield2", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+				},
+				Encoding: StructOrderedCodeBytesEncoding{},
+			},
+		},
+		{
+			desc: "Create with DelimitedBytes ok",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield1", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+					{FieldName: "myfield2", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+				},
+				Encoding: StructDelimitedBytesEncoding{
+					Delimiter: []byte{'#'},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tableConf.RowKeySchema = &tc.rks
+		err := adminClient.CreateTableFromConf(ctx, &tableConf)
+
+		if tc.errorExpected && err == nil {
+			t.Errorf("Want error from test: '%v', got nil", tc.desc)
+		}
+
+		if !tc.errorExpected && err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
+
+		// get the table and see the new schema is updated
+		tbl, err := adminClient.getTable(ctx, tableConf.TableID, btapb.Table_SCHEMA_VIEW)
+		if !tc.errorExpected && tbl.RowKeySchema == nil {
+			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.rks, tbl)
+		}
+
+		if tbl != nil {
+			// clean up table
+			err = adminClient.DeleteTable(ctx, tableConf.TableID)
+			if err != nil {
+				t.Fatalf("Unexpected error trying to clean up table: %v", err)
+			}
+		}
+	}
+}
+
+func TestIntegration_UpdateRowKeySchemaInTable(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support Automated Backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	myTableName := myTableNameSpace.New()
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+		},
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Fatalf("Unexpected error trying to create table: %v", err)
+	}
+
+	testCases := []struct {
+		desc          string
+		rks           StructType
+		errorExpected bool
+	}{
+		{desc: "Update fail with conflicting family name",
+			rks: StructType{
+				Fields:   []StructField{{FieldName: "fam1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+				Encoding: StructSingletonEncoding{},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Update ok",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+					{FieldName: "myfield2", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}}},
+				Encoding: StructDelimitedBytesEncoding{
+					Delimiter: []byte{'#'},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		err := adminClient.UpdateTableWithRowKeySchema(ctx, tableConf.TableID, tc.rks)
+		if tc.errorExpected && err == nil {
+			t.Errorf("Expecting error from test '%v', got nil", tc.desc)
+		}
+
+		if !tc.errorExpected && err != nil {
+			t.Errorf("Unexpected error from test '%v': %v", tc.desc, err)
+		}
+
+		// Get the table to check if the schema is updated
+		tbl, err := adminClient.getTable(ctx, tableConf.TableID, btapb.Table_SCHEMA_VIEW)
+		if !tc.errorExpected && tbl.RowKeySchema == nil {
+			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.rks, tbl)
+		}
+
+		// Clear schema ok
+		if err = adminClient.UpdateTableRemoveRowKeySchema(ctx, tableConf.TableID); err != nil {
+			t.Errorf("Unexpected error trying to clear row key schema: %v", err)
+		}
+	}
+}
+
 func TestIntegration_Admin(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
