@@ -431,7 +431,10 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		InstanceName: c.fullInstanceName(),
 		AppProfileId: c.appProfile,
 		Query:        query,
-		ParamTypes:   reqParamTypes,
+		DataFormat: &btpb.PrepareQueryRequest_ProtoFormat{
+			ProtoFormat: &btpb.ProtoFormat{},
+		},
+		ParamTypes: reqParamTypes,
 	}
 	var res *btpb.PrepareQueryResponse
 	err := gaxInvokeWithRecorder(ctx, mt, "PrepareQuery", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
