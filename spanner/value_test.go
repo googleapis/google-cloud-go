@@ -3361,3 +3361,165 @@ func TestDecodeProtoArrayUsingBaseVariant(t *testing.T) {
 		t.Errorf("%s: got %+v, want %+v", "Test PROTO decode to [][]byte custom type", nb, b)
 	}
 }
+
+func TestNewInterval(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    time.Duration
+		wantErr bool
+	}{
+		{"Full duration", "P2Y3M4DT5H6M7.8S", 2*365*24*time.Hour + 3*30*24*time.Hour + 4*24*time.Hour + 5*time.Hour + 6*time.Minute + 7*time.Second + 800*time.Millisecond, false},
+		{"Only date components", "P1Y2M3D", 365*24*time.Hour + 2*30*24*time.Hour + 3*24*time.Hour, false},
+		{"Only time components", "PT4H5M6S", 4*time.Hour + 5*time.Minute + 6*time.Second, false},
+		{"Mixed components", "P1YT2M", 365*24*time.Hour + 2*time.Minute, false},
+		{"Zero duration", "PT0S", 0, false},
+		{"Invalid format", "P1X", 0, true},
+		{"Empty string", "", 0, true},
+		{"Invalid zero", "P0", 0, true},
+		{"Missing T in time part", "P1YT", 0, true},
+		{"Invalid character", "P1Y2M3DX", 0, true},
+		{"Only P", "P", 0, true},
+		{"Only PT", "PT", 0, true},
+		{"Decimal years", "P1.5Y", 0, true},
+		{"Decimal months", "P1.5M", 0, true},
+		{"Decimal days", "P1.5D", 0, true},
+		{"Valid complex duration", "P1Y2M3DT4H5M6.789S", 365*24*time.Hour + 2*30*24*time.Hour + 3*24*time.Hour + 4*time.Hour + 5*time.Minute + 6*time.Second + 789*time.Millisecond, false},
+		{"Negative year", "P-1Y", -365 * 24 * time.Hour, false},
+		{"Negative month", "P-1M", -30 * 24 * time.Hour, false},
+		{"Negative day", "P-1D", -24 * time.Hour, false},
+		{"Negative hour", "PT-1H", -time.Hour, false},
+		{"Negative minute", "PT-1M", -time.Minute, false},
+		{"Negative second", "PT-1S", -time.Second, false},
+		{"Mixed positive and negative", "P1Y-2M3DT-4H5M-6S", 365*24*time.Hour - 2*30*24*time.Hour + 3*24*time.Hour - 4*time.Hour + 5*time.Minute - 6*time.Second, false},
+		{"Invalid empty", "P", 0, true},
+		{"Invalid empty time", "PT", 0, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewInterval(tt.input)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewInterval() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if err == nil && got.Duration != tt.want {
+				t.Errorf("NewInterval() = %v, want %v", got.Duration, tt.want)
+			}
+		})
+	}
+}
+
+func TestInterval_String(t *testing.T) {
+	tests := []struct {
+		name     string
+		interval Interval
+		want     string
+	}{
+		{"Full duration", Interval{2*365*24*time.Hour + 3*30*24*time.Hour + 4*24*time.Hour + 5*time.Hour + 6*time.Minute + 7*time.Second + 800*time.Millisecond}, "P2Y3M4DT5H6M7.800000000S"},
+		{"Only date components", Interval{365*24*time.Hour + 2*30*24*time.Hour + 3*24*time.Hour}, "P1Y2M3D"},
+		{"Only time components", Interval{4*time.Hour + 5*time.Minute + 6*time.Second}, "PT4H5M6.000000000S"},
+		{"Mixed components", Interval{365*24*time.Hour + 2*time.Minute}, "P1YT2M"},
+		{"Zero duration", Interval{0}, "PT0S"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.interval.String(); got != tt.want {
+				t.Errorf("Interval.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNullInterval_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		ni      NullInterval
+		want    string
+		wantErr bool
+	}{
+		{"Valid interval", NullInterval{Interval{24 * time.Hour}, true}, `"P1D"`, false},
+		{"Null interval", NullInterval{Interval{}, false}, "null", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := json.Marshal(tt.ni)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NullInterval.MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if string(got) != tt.want {
+				t.Errorf("NullInterval.MarshalJSON() = %v, want %v", string(got), tt.want)
+			}
+		})
+	}
+}
+
+func TestNullInterval_UnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    NullInterval
+		wantErr bool
+	}{
+		{"Valid interval", `"P1D"`, NullInterval{Interval{24 * time.Hour}, true}, false},
+		{"Null interval", "null", NullInterval{Interval{}, false}, false},
+		{"Invalid JSON", `"invalid"`, NullInterval{}, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var got NullInterval
+			err := json.Unmarshal([]byte(tt.input), &got)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NullInterval.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if err == nil && (got.Valid != tt.want.Valid || got.Interval.Duration != tt.want.Interval.Duration) {
+				t.Errorf("NullInterval.UnmarshalJSON() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInterval_RoundTrip(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+	}{
+		{"Full duration", "P2Y3M4DT5H6M7.8S"},
+		{"Only date components", "P1Y2M3D"},
+		{"Only time components", "PT4H5M6S"},
+		{"Mixed components", "P1YT2M"},
+		{"Zero duration", "PT0S"},
+		{"With fractional seconds", "PT1.5S"},
+		{"Complex duration", "P1Y2M3DT4H5M6.789S"},
+		{"Negative year", "P-1Y"},
+		{"Negative month", "P-1M"},
+		{"Negative day", "P-1D"},
+		{"Negative hour", "PT-1H"},
+		{"Negative minute", "PT-1M"},
+		{"Negative second", "PT-1S"},
+		{"Mixed positive and negative", "P1Y-2M3DT-4H5M-6S"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			interval, err := NewInterval(tt.input)
+			if err != nil {
+				t.Fatalf("NewInterval() error = %v", err)
+			}
+			got := interval.String()
+
+			// Parse both the input and output to compare the actual durations
+			inputInterval, _ := NewInterval(tt.input)
+			outputInterval, _ := NewInterval(got)
+
+			if inputInterval.Duration != outputInterval.Duration {
+				t.Errorf("Round trip failed: input = %v, got = %v", tt.input, got)
+			}
+		})
+	}
+}
