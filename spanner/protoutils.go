@@ -24,6 +24,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
@@ -121,6 +122,14 @@ func dateProto(d civil.Date) *proto3.Value {
 
 func dateType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_DATE}
+}
+
+func uuidProto(u uuid.UUID) *proto3.Value {
+	return stringProto(u.String())
+}
+
+func uuidType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_UUID}
 }
 
 func listProto(p ...*proto3.Value) *proto3.Value {
