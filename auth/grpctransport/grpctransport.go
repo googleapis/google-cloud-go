@@ -156,6 +156,17 @@ func (o *Options) validate() error {
 	if o.DisableAuthentication && hasCreds {
 		return errors.New("grpctransport: DisableAuthentication is incompatible with options that set or detect credentials")
 	}
+	// Only attempts ALTS hard bound credentials if it's enabled and the credentials in the options are compute engine if any.
+	isCredsCompatible := o.Credentials == nil || isTokenProviderDirectPathCompatible(o.Credentials, o)
+	if o.InternalOptions.altsCredentials == nil && o.DetectOpts != nil && isCredsCompatible && isDirectPathBoundTokenEnabled(o.InternalOptions) {
+		oldBindingType := o.DetectOpts.TokenBindingType
+		o.DetectOpts.TokenBindingType = credentials.ALTSHardBinding
+		altsCreds, err := credentials.DetectDefault(o.resolveDetectOptions())
+		o.DetectOpts.TokenBindingType = oldBindingType
+		if err == nil {
+			o.InternalOptions.altsCredentials = altsCreds
+		}
+	}
 	return nil
 }
 
@@ -222,6 +233,9 @@ type InternalOptions struct {
 	// SkipValidation bypasses validation on Options. It should only be used
 	// internally for clients that needs more control over their transport.
 	SkipValidation bool
+	// altsCredentials is used for gRPC's DefaultCredentialsOptions.ALTSPerRPCCreds
+	// in the DirectPath case.
+	altsCredentials *auth.Credentials
 }
 
 // Dial returns a GRPCClientConnPool that can be used to communicate with a
