@@ -567,6 +567,19 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	rowPbs := rrq.Rows
 	rs := rowSetFromProto(rowPbs)
 
+	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
+	// provided for ReadRows. Use InfiniteRange() to get the full table.
+	if rs == nil {
+		// Should be lowest possible key value, an empty byte array
+		rs = bigtable.InfiniteRange("")
+	}
+
+	var opts []bigtable.ReadOption
+
+	if rrq.Reversed {
+		opts = append(opts, bigtable.ReverseScan())
+	}
+
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
