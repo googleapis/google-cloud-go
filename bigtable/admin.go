@@ -130,6 +130,14 @@ func (ac *AdminClient) authorizedViewPath(table, authorizedView string) string {
 	return fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), table, authorizedView)
 }
 
+func logicalViewPath(project, instance, logicalView string) string {
+	return fmt.Sprintf("%s/logicalViews/%s", instancePrefix(project, instance), logicalView)
+}
+
+func materializedlViewPath(project, instance, materializedView string) string {
+	return fmt.Sprintf("%s/materializedViews/%s", instancePrefix(project, instance), materializedView)
+}
+
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	Status        *Status
@@ -2634,6 +2642,8 @@ func (s *SubsetViewConf) AddFamilySubsetQualifierPrefix(familyName string, quali
 	s.FamilySubsets[familyName] = fs
 }
 
+// Authorized Views
+
 // CreateAuthorizedView creates a new authorized view in a table.
 func (ac *AdminClient) CreateAuthorizedView(ctx context.Context, conf *AuthorizedViewConf) error {
 	if conf.TableID == "" || conf.AuthorizedViewID == "" {
@@ -2793,5 +2803,274 @@ func (ac *AdminClient) DeleteAuthorizedView(ctx context.Context, tableID, author
 		Name: ac.authorizedViewPath(tableID, authorizedViewID),
 	}
 	_, err := ac.tClient.DeleteAuthorizedView(ctx, req)
+	return err
+}
+
+// Logical Views
+
+// CreateLogicalView creates a new logical view in an instance.
+func (iac *InstanceAdminClient) CreateLogicalView(ctx context.Context, instanceID string, conf *LogicalViewInfo) error {
+	if conf.LogicalViewID == "" {
+		return errors.New("LogicalViewID is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.CreateLogicalViewRequest{
+		Parent:        instancePrefix(iac.project, instanceID),
+		LogicalViewId: conf.LogicalViewID,
+		LogicalView: &btapb.LogicalView{
+			Query: conf.Query,
+		},
+	}
+
+	op, err := iac.iClient.CreateLogicalView(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.LogicalView{}
+	return longrunning.InternalNewOperation(iac.lroClient, op).Wait(ctx, &resp)
+}
+
+// LogicalViewInfo contains logical view metadata. This struct is read-only.
+type LogicalViewInfo struct {
+	LogicalViewID string
+
+	Query string
+}
+
+// LogicalViewInfo retrieves information about a logical view.
+func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID, logicalViewID string) (*LogicalViewInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	prefix := instancePrefix(iac.project, instanceID)
+	req := &btapb.GetLogicalViewRequest{
+		Name: logicalViewPath(iac.project, instanceID, logicalViewID),
+	}
+	var res *btapb.LogicalView
+
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.GetLogicalView(ctx, req)
+		return err
+	}, retryOptions...)
+
+	if err != nil {
+		return nil, err
+	}
+	return &LogicalViewInfo{LogicalViewID: strings.TrimPrefix(res.Name, prefix+"/logicalViews/"), Query: res.Query}, nil
+}
+
+// LogicalViews returns a list of the logical views in the instance.
+func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID string) ([]LogicalViewInfo, error) {
+	views := []LogicalViewInfo{}
+	prefix := instancePrefix(iac.project, instanceID)
+	req := &btapb.ListLogicalViewsRequest{
+		Parent: prefix,
+	}
+	var res *btapb.ListLogicalViewsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.ListLogicalViews(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, lv := range res.LogicalViews {
+		views = append(views, LogicalViewInfo{LogicalViewID: strings.TrimPrefix(lv.Name, prefix+"/logicalViews/"), Query: lv.Query})
+	}
+	return views, nil
+}
+
+// UpdateLogicalView updates a logical view in an instance according to the given configuration.
+func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceID string, conf LogicalViewInfo) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	if conf.LogicalViewID == "" {
+		return errors.New("LogicalViewID is required")
+	}
+	lv := &btapb.LogicalView{}
+	lv.Name = logicalViewPath(iac.project, instanceID, conf.LogicalViewID)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{},
+	}
+	if conf.Query != "" {
+		updateMask.Paths = append(updateMask.Paths, "query")
+	}
+	req := &btapb.UpdateLogicalViewRequest{
+		LogicalView: lv,
+		UpdateMask:  updateMask,
+	}
+	lro, err := iac.iClient.UpdateLogicalView(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update logical view: %w", err)
+	}
+	var res btapb.LogicalView
+	op := longrunning.InternalNewOperation(iac.lroClient, lro)
+	if err = op.Wait(ctx, &res); err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
+// DeleteLogicalView deletes a logical view in an instance.
+func (iac *InstanceAdminClient) DeleteLogicalView(ctx context.Context, instanceID, logicalViewID string) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.DeleteLogicalViewRequest{
+		Name: logicalViewPath(iac.project, instanceID, logicalViewID),
+	}
+	_, err := iac.iClient.DeleteLogicalView(ctx, req)
+	return err
+}
+
+// Materialized Views
+
+// CreateMaterializedView creates a new materialized view in an instance.
+func (iac *InstanceAdminClient) CreateMaterializedView(ctx context.Context, instanceID string, conf *MaterializedViewInfo) error {
+	if conf.MaterializedViewID == "" {
+		return errors.New("MaterializedViewID is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	mv := &btapb.MaterializedView{
+		Query: conf.Query,
+	}
+	if conf.DeletionProtection != None {
+		switch dp := conf.DeletionProtection; dp {
+		case Protected:
+			mv.DeletionProtection = true
+		case Unprotected:
+			mv.DeletionProtection = false
+		default:
+			break
+		}
+	}
+	req := &btapb.CreateMaterializedViewRequest{
+		Parent:             instancePrefix(iac.project, instanceID),
+		MaterializedViewId: conf.MaterializedViewID,
+		MaterializedView:   mv,
+	}
+	op, err := iac.iClient.CreateMaterializedView(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.MaterializedView{}
+	return longrunning.InternalNewOperation(iac.lroClient, op).Wait(ctx, &resp)
+}
+
+// MaterializedViewInfo contains materialized view metadata. This struct is read-only.
+type MaterializedViewInfo struct {
+	MaterializedViewID string
+
+	Query              string
+	DeletionProtection DeletionProtection
+}
+
+// MaterializedViewInfo retrieves information about a materialized view.
+func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instanceID, materializedViewID string) (*MaterializedViewInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	prefix := instancePrefix(iac.project, instanceID)
+	req := &btapb.GetMaterializedViewRequest{
+		Name: materializedlViewPath(iac.project, instanceID, materializedViewID),
+	}
+	var res *btapb.MaterializedView
+
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.GetMaterializedView(ctx, req)
+		return err
+	}, retryOptions...)
+
+	if err != nil {
+		return nil, err
+	}
+	mv := &MaterializedViewInfo{MaterializedViewID: strings.TrimPrefix(res.Name, prefix+"/materializedViews/"), Query: res.Query}
+	if res.DeletionProtection {
+		mv.DeletionProtection = Protected
+	} else {
+		mv.DeletionProtection = Unprotected
+	}
+	return mv, nil
+}
+
+// MaterializedViews returns a list of the materialized views in the instance.
+func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceID string) ([]MaterializedViewInfo, error) {
+	views := []MaterializedViewInfo{}
+	prefix := instancePrefix(iac.project, instanceID)
+	req := &btapb.ListMaterializedViewsRequest{
+		Parent: prefix,
+	}
+	var res *btapb.ListMaterializedViewsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.ListMaterializedViews(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, mView := range res.MaterializedViews {
+		mv := MaterializedViewInfo{MaterializedViewID: strings.TrimPrefix(mView.Name, prefix+"/materializedViews/"), Query: mView.Query}
+		if mView.DeletionProtection {
+			mv.DeletionProtection = Protected
+		} else {
+			mv.DeletionProtection = Unprotected
+		}
+		views = append(views, mv)
+	}
+	return views, nil
+}
+
+// UpdateMaterializedView updates a materialized view in an instance according to the given configuration.
+func (iac *InstanceAdminClient) UpdateMaterializedView(ctx context.Context, instanceID string, conf MaterializedViewInfo) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	if conf.MaterializedViewID == "" {
+		return errors.New("MaterializedViewID is required")
+	}
+	mv := &btapb.MaterializedView{}
+	mv.Name = materializedlViewPath(iac.project, instanceID, conf.MaterializedViewID)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{},
+	}
+	if conf.Query != "" {
+		updateMask.Paths = append(updateMask.Paths, "query")
+		mv.Query = conf.Query
+	}
+	if conf.DeletionProtection != None {
+		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+		switch dp := conf.DeletionProtection; dp {
+		case Protected:
+			mv.DeletionProtection = true
+		case Unprotected:
+			mv.DeletionProtection = false
+		default:
+			break
+		}
+	}
+	req := &btapb.UpdateMaterializedViewRequest{
+		MaterializedView: mv,
+		UpdateMask:       updateMask,
+	}
+	lro, err := iac.iClient.UpdateMaterializedView(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update materialized view: %w", err)
+	}
+	var res btapb.MaterializedView
+	op := longrunning.InternalNewOperation(iac.lroClient, lro)
+	if err = op.Wait(ctx, &res); err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
+// DeleteMaterializedView deletes a materialized view in an instance.
+func (iac *InstanceAdminClient) DeleteMaterializedView(ctx context.Context, instanceID, materializedViewID string) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.DeleteMaterializedViewRequest{
+		Name: materializedlViewPath(iac.project, instanceID, materializedViewID),
+	}
+	_, err := iac.iClient.DeleteMaterializedView(ctx, req)
 	return err
 }

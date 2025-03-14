@@ -970,6 +970,9 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	setObj := params.setObj
 	progress := params.progress
 	attrs := params.attrs
+	params.setFlush(func() (int64, error) {
+		return 0, errors.New("Writer.Flush is only supported for gRPC-based clients")
+	})
 
 	mediaOpts := []googleapi.MediaOption{
 		googleapi.ChunkSize(params.chunkSize),
