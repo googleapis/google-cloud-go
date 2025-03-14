@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.26.3](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.2...deploy/v1.26.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **deploy:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.26.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.1...deploy/v1.26.2) (2025-02-12)
 
 

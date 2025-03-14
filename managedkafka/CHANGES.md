@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.4.1...managedkafka/v0.4.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **managedkafka:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.4.0...managedkafka/v0.4.1) (2025-03-12)
 
 
