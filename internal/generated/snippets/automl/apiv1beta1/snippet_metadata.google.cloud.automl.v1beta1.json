@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/automl/apiv1beta1",
-    "version": "1.14.5",
+    "version": "1.14.6",
     "language": "GO",
     "apis": [
       {
