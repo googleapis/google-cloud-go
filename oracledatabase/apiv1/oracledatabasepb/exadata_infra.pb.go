@@ -21,15 +21,14 @@
 package oracledatabasepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
 	month "google.golang.org/genproto/googleapis/type/month"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -648,9 +647,7 @@ type MaintenanceWindow struct {
 	// down time. The lead time is in weeks and valid value is between 1 to 4.
 	LeadTimeWeek int32 `protobuf:"varint,6,opt,name=lead_time_week,json=leadTimeWeek,proto3" json:"lead_time_week,omitempty"`
 	// Optional. Cloud CloudExadataInfrastructure node patching method, either
-	// "ROLLING"
-	//
-	//	or "NONROLLING". Default value is ROLLING.
+	// "ROLLING" or "NONROLLING". Default value is ROLLING.
 	PatchingMode MaintenanceWindow_PatchingMode `protobuf:"varint,7,opt,name=patching_mode,json=patchingMode,proto3,enum=google.cloud.oracledatabase.v1.MaintenanceWindow_PatchingMode" json:"patching_mode,omitempty"`
 	// Optional. Determines the amount of time the system will wait before the
 	// start of each database server patching operation. Custom action timeout is
