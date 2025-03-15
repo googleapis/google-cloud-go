@@ -4736,6 +4736,65 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
+func TestIntegration_PrepareStatement(t *testing.T) {
+	ctx := context.Background()
+	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support PrepareQuery")
+	}
+
+	if _, err = client.PrepareStatement(ctx,
+		"SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, "+
+			"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, "+
+			"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, "+
+			"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, "+
+			"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, "+
+			"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, "+
+			"@dateArrayParam AS dateArrayCol",
+		map[string]SQLType{
+			"bytesParam":   BytesSQLType{},
+			"stringParam":  StringSQLType{},
+			"int64Param":   Int64SQLType{},
+			"float32Param": Float32SQLType{},
+			"float64Param": Float64SQLType{},
+			"boolParam":    BoolSQLType{},
+			"tsParam":      TimestampSQLType{},
+			"dateParam":    DateSQLType{},
+			"bytesArrayParam": ArraySQLType{
+				ElemType: BytesSQLType{},
+			},
+			"stringArrayParam": ArraySQLType{
+				ElemType: StringSQLType{},
+			},
+			"int64ArrayParam": ArraySQLType{
+				ElemType: Int64SQLType{},
+			},
+			"float32ArrayParam": ArraySQLType{
+				ElemType: Float32SQLType{},
+			},
+			"float64ArrayParam": ArraySQLType{
+				ElemType: Float64SQLType{},
+			},
+			"boolArrayParam": ArraySQLType{
+				ElemType: BoolSQLType{},
+			},
+			"tsArrayParam": ArraySQLType{
+				ElemType: TimestampSQLType{},
+			},
+			"dateArrayParam": ArraySQLType{
+				ElemType: DateSQLType{},
+			},
+		},
+	); err != nil {
+		t.Fatal("PrepareStatement: " + err.Error())
+	}
+}
+
 // examineTraffic returns whether RPCs use DirectPath (blackholeDP = false) or CFE (blackholeDP = true).
 func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, blackholeDP bool) bool {
 	numCount := 0
