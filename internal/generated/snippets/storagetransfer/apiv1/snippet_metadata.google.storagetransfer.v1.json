@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/storagetransfer/apiv1",
-    "version": "$VERSION",
+    "version": "1.12.3",
     "language": "GO",
     "apis": [
       {
