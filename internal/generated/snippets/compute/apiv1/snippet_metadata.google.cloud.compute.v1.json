@@ -10316,6 +10316,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Instances_ReportHostAsFaulty_sync",
+      "title": "compute ReportHostAsFaulty Sample",
+      "description": "ReportHostAsFaulty mark the host as faulty and try to restart the instance on a new host.",
+      "file": "InstancesClient/ReportHostAsFaulty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReportHostAsFaulty",
+        "fullName": "google.cloud.compute.v1.InstancesClient.ReportHostAsFaulty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ReportHostAsFaultyInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "ReportHostAsFaulty",
+          "fullName": "google.cloud.compute.v1.Instances.ReportHostAsFaulty",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Instances_Reset_sync",
       "title": "compute Reset Sample",
       "description": "Reset performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance.",
