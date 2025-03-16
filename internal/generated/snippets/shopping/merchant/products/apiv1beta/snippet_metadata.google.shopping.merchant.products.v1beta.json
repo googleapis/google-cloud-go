@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/products/apiv1beta",
-    "version": "0.17.1",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -87,6 +87,52 @@
         "method": {
           "shortName": "InsertProductInput",
           "fullName": "google.shopping.merchant.products.v1beta.ProductInputsService.InsertProductInput",
+          "service": {
+            "shortName": "ProductInputsService",
+            "fullName": "google.shopping.merchant.products.v1beta.ProductInputsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductInputsService_UpdateProductInput_sync",
+      "title": "merchantapi UpdateProductInput Sample",
+      "description": "UpdateProductInput updates the existing product input in your Merchant Center account.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the processed product can be retrieved.",
+      "file": "ProductInputsClient/UpdateProductInput/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateProductInput",
+        "fullName": "google.shopping.merchant.products.v1beta.ProductInputsClient.UpdateProductInput",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productspb.UpdateProductInputRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*productspb.ProductInput",
+        "client": {
+          "shortName": "ProductInputsClient",
+          "fullName": "google.shopping.merchant.products.v1beta.ProductInputsClient"
+        },
+        "method": {
+          "shortName": "UpdateProductInput",
+          "fullName": "google.shopping.merchant.products.v1beta.ProductInputsService.UpdateProductInput",
           "service": {
             "shortName": "ProductInputsService",
             "fullName": "google.shopping.merchant.products.v1beta.ProductInputsService"
