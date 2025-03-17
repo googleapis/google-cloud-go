@@ -1910,16 +1910,20 @@ func NewReadWriteStmtBasedTransaction(ctx context.Context, c *Client) (*ReadWrit
 // NewReadWriteStmtBasedTransactionWithOptions is a configurable version of
 // NewReadWriteStmtBasedTransaction.
 func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client, options TransactionOptions) (*ReadWriteStmtBasedTransaction, error) {
-	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, c, options, nil)
+	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, c, options, nil, nil)
 }
 
-func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *Client, options TransactionOptions, sh *sessionHandle) (*ReadWriteStmtBasedTransaction, error) {
+func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *Client, options TransactionOptions, sh *sessionHandle, previousTransactionID transactionID) (*ReadWriteStmtBasedTransaction, error) {
 	var (
 		err error
 		t   *ReadWriteStmtBasedTransaction
 	)
 	if sh == nil {
-		sh, err = c.idleSessions.take(ctx)
+		if c.idleSessions.isMultiplexedSessionForRWEnabled() {
+			sh, err = c.idleSessions.takeMultiplexed(ctx)
+		} else {
+			sh, err = c.idleSessions.take(ctx)
+		}
 		if err != nil {
 			// If session retrieval fails, just fail the transaction.
 			return nil, err
@@ -1930,6 +1934,12 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 			txReadyOrClosed: make(chan struct{}),
 		},
 		client: c,
+	}
+	if previousTransactionID != nil {
+		// The previousTx field is updated with the most recent transaction ID. This is needed for multiplexed sessions
+		// to increase the priority of the new transaction during retry attempt.
+		// This assignment is ignored for regular sessions.
+		t.previousTx = previousTransactionID
 	}
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
@@ -1957,6 +1967,9 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 			sh.recycle()
 		}
 		return nil, err
+	}
+	if isUnimplementedErrorForMultiplexedRW(err) {
+		c.idleSessions.disableMultiplexedSessionForRW()
 	}
 	return t, err
 }
@@ -2003,8 +2016,17 @@ func (t *ReadWriteStmtBasedTransaction) ResetForRetry(ctx context.Context) (*Rea
 	if t.state != txAborted {
 		return nil, fmt.Errorf("ResetForRetry should only be called on an active transaction that was aborted by Spanner")
 	}
+
+	var previousTransactionID transactionID
+	if t.tx != nil {
+		// Track the current transactionId that is ABORTED.
+		previousTransactionID = t.tx
+	} else {
+		// In case the current transactionId is nil, then look at the previousTx.
+		previousTransactionID = t.previousTx
+	}
 	// Create a new transaction that re-uses the current session if it is available.
-	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, t.client, t.options, t.sh)
+	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, t.client, t.options, t.sh, previousTransactionID)
 }
 
 // writeOnlyTransaction provides the most efficient way of doing write-only
