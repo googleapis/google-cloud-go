@@ -773,6 +773,37 @@ func TestScanner(t *testing.T) {
 			t.Errorf("%s: got %#v, want %#v", test.data, test.ptr, test.want)
 		}
 	}
+
+	// expected test failures
+	for _, test := range []struct {
+		data interface{}
+		ptr  sql.Scanner
+		want string
+	}{
+		// int64 input
+		{int64(12345), &d, "unsupported scan type for Date: int64"},
+		{int64(12345), &tm, "unsupported scan type for Time: int64"},
+		{int64(12345), &dt, "unsupported scan type for DateTime: int64"},
+
+		// float64 input
+		{float64(0.9876), &d, "unsupported scan type for Date: float64"},
+		{float64(0.9876), &tm, "unsupported scan type for Time: float64"},
+		{float64(0.9876), &dt, "unsupported scan type for DateTime: float64"},
+
+		// bool input
+		{true, &d, "unsupported scan type for Date: bool"},
+		{true, &tm, "unsupported scan type for Time: bool"},
+		{true, &dt, "unsupported scan type for DateTime: bool"},
+	} {
+		err := test.ptr.Scan(test.data)
+		if err == nil {
+			t.Errorf("%q, got nil, want error", test.data)
+			continue
+		}
+		if err.Error() != test.want {
+			t.Errorf("%v: got %s, want %s", test.data, err, test.want)
+		}
+	}
 }
 
 func toPtr[V any](v V) *V {
