@@ -1,5 +1,12 @@
 # Changes
 
+## [0.9.5](https://github.com/googleapis/google-cloud-go/compare/mediatranslation/v0.9.4...mediatranslation/v0.9.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **mediatranslation:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [0.9.4](https://github.com/googleapis/google-cloud-go/compare/mediatranslation/v0.9.3...mediatranslation/v0.9.4) (2025-03-06)
 
 

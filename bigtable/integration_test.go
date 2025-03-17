@@ -2064,6 +2064,217 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 	}
 }
 
+func TestIntegration_CreateTableWithRowKeySchema(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support Automated Backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	myTableName := myTableNameSpace.New()
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+
+	testCases := []struct {
+		desc          string
+		rks           StructType
+		errorExpected bool
+	}{
+		{
+			desc: "Create fail with conflict family and row key column",
+			rks: StructType{
+				Fields:   []StructField{{FieldName: "fam1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+				Encoding: StructOrderedCodeBytesEncoding{},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Create fail with missing encoding in struct type",
+			rks: StructType{
+				Fields: []StructField{{FieldName: "myfield", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Create fail on DelimitedBytes missing delimiter",
+			rks: StructType{
+				Fields:   []StructField{{FieldName: "myfield", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}}},
+				Encoding: StructDelimitedBytesEncoding{},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Create with Singleton failed with more than 1 field",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield1", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+					{FieldName: "myfield2", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+				},
+				Encoding: StructSingletonEncoding{},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Create with Singleton ok",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield1", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+				},
+				Encoding: StructSingletonEncoding{},
+			},
+		},
+		{
+			desc: "Create with OrderedCode ok",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield1", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+					{FieldName: "myfield2", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+				},
+				Encoding: StructOrderedCodeBytesEncoding{},
+			},
+		},
+		{
+			desc: "Create with DelimitedBytes ok",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield1", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+					{FieldName: "myfield2", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+				},
+				Encoding: StructDelimitedBytesEncoding{
+					Delimiter: []byte{'#'},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tableConf.RowKeySchema = &tc.rks
+		err := adminClient.CreateTableFromConf(ctx, &tableConf)
+
+		if tc.errorExpected && err == nil {
+			t.Errorf("Want error from test: '%v', got nil", tc.desc)
+		}
+
+		if !tc.errorExpected && err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
+
+		// get the table and see the new schema is updated
+		tbl, err := adminClient.getTable(ctx, tableConf.TableID, btapb.Table_SCHEMA_VIEW)
+		if !tc.errorExpected && tbl.RowKeySchema == nil {
+			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.rks, tbl)
+		}
+
+		if tbl != nil {
+			// clean up table
+			err = adminClient.DeleteTable(ctx, tableConf.TableID)
+			if err != nil {
+				t.Fatalf("Unexpected error trying to clean up table: %v", err)
+			}
+		}
+	}
+}
+
+func TestIntegration_UpdateRowKeySchemaInTable(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support Automated Backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	myTableName := myTableNameSpace.New()
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+		},
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Fatalf("Unexpected error trying to create table: %v", err)
+	}
+
+	testCases := []struct {
+		desc          string
+		rks           StructType
+		errorExpected bool
+	}{
+		{desc: "Update fail with conflicting family name",
+			rks: StructType{
+				Fields:   []StructField{{FieldName: "fam1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+				Encoding: StructSingletonEncoding{},
+			},
+			errorExpected: true,
+		},
+		{
+			desc: "Update ok",
+			rks: StructType{
+				Fields: []StructField{
+					{FieldName: "myfield", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+					{FieldName: "myfield2", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}}},
+				Encoding: StructDelimitedBytesEncoding{
+					Delimiter: []byte{'#'},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		err := adminClient.UpdateTableWithRowKeySchema(ctx, tableConf.TableID, tc.rks)
+		if tc.errorExpected && err == nil {
+			t.Errorf("Expecting error from test '%v', got nil", tc.desc)
+		}
+
+		if !tc.errorExpected && err != nil {
+			t.Errorf("Unexpected error from test '%v': %v", tc.desc, err)
+		}
+
+		// Get the table to check if the schema is updated
+		tbl, err := adminClient.getTable(ctx, tableConf.TableID, btapb.Table_SCHEMA_VIEW)
+		if !tc.errorExpected && tbl.RowKeySchema == nil {
+			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.rks, tbl)
+		}
+
+		// Clear schema ok
+		if err = adminClient.UpdateTableRemoveRowKeySchema(ctx, tableConf.TableID); err != nil {
+			t.Errorf("Unexpected error trying to clear row key schema: %v", err)
+		}
+	}
+}
+
 func TestIntegration_Admin(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -4330,7 +4541,126 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	}
 }
 
+func TestIntegration_DataMaterializedView(t *testing.T) {
+	t.Skip("Feature not out yet")
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support materializedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	instanceAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer instanceAdminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create materialized view
+	materializedViewUUID := uid.NewSpace("materializedView-", &uid.Options{})
+	materializedView := materializedViewUUID.New()
+	defer instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView)
+
+	materializedViewInfo := MaterializedViewInfo{
+		MaterializedViewID: materializedView,
+		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col, count(*) as count FROM %s", tblConf.TableID),
+		DeletionProtection: Unprotected,
+	}
+	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
+		t.Fatalf("Creating materialized view: %v", err)
+	}
+
+	client, err := testEnv.NewClient()
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+	mv := client.OpenMaterializedView(materializedView)
+	tbl := client.OpenTable(tblConf.TableID)
+
+	// Test ReadRow
+	gotRow, err := mv.ReadRow(ctx, "r1")
+	if err != nil {
+		t.Fatalf("Reading row from a materialized view: %v", err)
+	}
+	wantRow := Row{
+		"fam1": []ReadItem{
+			{Row: "r1", Column: "fam1:col1", Timestamp: 1000, Value: []byte("1")},
+			{Row: "r1", Column: "fam1:col2", Timestamp: 1000, Value: []byte("1")},
+		},
+	}
+	if !testutil.Equal(gotRow, wantRow) {
+		t.Fatalf("Error reading row from materialized view.\n Got %v\n Want %v", gotRow, wantRow)
+	}
+	gotRow, err = mv.ReadRow(ctx, "r2")
+	if err != nil {
+		t.Fatalf("Reading row from an materialized view: %v", err)
+	}
+	if len(gotRow) != 0 {
+		t.Fatalf("Expect empty result when reading row from outside an materialized view")
+	}
+
+	// Test ReadRows
+	var elt []string
+	f := func(row Row) bool {
+		for _, ris := range row {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	}
+	if err = mv.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from an materialized view: %v", err)
+	}
+	want := "r1-col1-1,r1-col2-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from materialized view.\n Got %v\n Want %v", got, want)
+	}
+	elt = nil
+	if err = tbl.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from a table: %v", err)
+	}
+	want = "r1-col1-1,r1-col2-1,r2-col1-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from table.\n Got %v\n Want %v", got, want)
+	}
+
+	// Test SampleRowKeys
+	if _, err := mv.SampleRowKeys(ctx); err != nil {
+		t.Fatalf("Sampling row keys from an materialized view: %v", err)
+	}
+}
+
 func TestIntegration_AdminLogicalView(t *testing.T) {
+	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -4443,6 +4773,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 }
 
 func TestIntegration_AdminMaterializedView(t *testing.T) {
+	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -4613,6 +4944,65 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	dpEnabled = examineTraffic(ctx, testEnv, table, false)
 	if !dpEnabled {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
+func TestIntegration_PrepareStatement(t *testing.T) {
+	ctx := context.Background()
+	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support PrepareQuery")
+	}
+
+	if _, err = client.PrepareStatement(ctx,
+		"SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, "+
+			"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, "+
+			"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, "+
+			"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, "+
+			"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, "+
+			"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, "+
+			"@dateArrayParam AS dateArrayCol",
+		map[string]SQLType{
+			"bytesParam":   BytesSQLType{},
+			"stringParam":  StringSQLType{},
+			"int64Param":   Int64SQLType{},
+			"float32Param": Float32SQLType{},
+			"float64Param": Float64SQLType{},
+			"boolParam":    BoolSQLType{},
+			"tsParam":      TimestampSQLType{},
+			"dateParam":    DateSQLType{},
+			"bytesArrayParam": ArraySQLType{
+				ElemType: BytesSQLType{},
+			},
+			"stringArrayParam": ArraySQLType{
+				ElemType: StringSQLType{},
+			},
+			"int64ArrayParam": ArraySQLType{
+				ElemType: Int64SQLType{},
+			},
+			"float32ArrayParam": ArraySQLType{
+				ElemType: Float32SQLType{},
+			},
+			"float64ArrayParam": ArraySQLType{
+				ElemType: Float64SQLType{},
+			},
+			"boolArrayParam": ArraySQLType{
+				ElemType: BoolSQLType{},
+			},
+			"tsArrayParam": ArraySQLType{
+				ElemType: TimestampSQLType{},
+			},
+			"dateArrayParam": ArraySQLType{
+				ElemType: DateSQLType{},
+			},
+		},
+	); err != nil {
+		t.Fatal("PrepareStatement: " + err.Error())
 	}
 }
 
