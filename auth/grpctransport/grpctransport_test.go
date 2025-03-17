@@ -139,6 +139,75 @@ func TestDial_SkipValidation(t *testing.T) {
 	})
 }
 
+func TestOptions_ValidateWithAllowBoundTokenTypes(t *testing.T) {
+	tests := []struct {
+		name         string
+		in           *Options
+		hasALTSCreds bool
+	}{
+		{
+			name: "ALTS hard bound tokens not enabled",
+			in: &Options{
+				InternalOptions: &InternalOptions{},
+			},
+		},
+		{
+			name: "ALTS hard bound tokens enabled and no credentials supplied",
+			in: &Options{
+				InternalOptions: &InternalOptions{
+					AllowHardBoundTokens: []string{"ALTS"},
+				},
+				DetectOpts: &credentials.DetectOptions{},
+			},
+			hasALTSCreds: true,
+		},
+		{
+			name: "ALTS hard bound tokens enabled and credentials incompatible",
+			in: &Options{
+				InternalOptions: &InternalOptions{
+					AllowHardBoundTokens: []string{"ALTS"},
+				},
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: &staticTP{
+						tok: token(map[string]interface{}{
+							"auth.google.tokenSource": "user",
+						}),
+					},
+				}),
+				DetectOpts: &credentials.DetectOptions{},
+			},
+		},
+		{
+			name: "ALTS hard bound tokens enabled and credentials compatible",
+			in: &Options{
+				InternalOptions: &InternalOptions{
+					AllowHardBoundTokens: []string{"ALTS"},
+				},
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: &staticTP{
+						tok: token(map[string]interface{}{
+							"auth.google.tokenSource":    "compute-metadata",
+							"auth.google.serviceAccount": "default",
+						}),
+					},
+				}),
+				DetectOpts: &credentials.DetectOptions{},
+			},
+			hasALTSCreds: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.in.validate(); err != nil {
+				t.Fatalf("validate() err = %v, want no error", err)
+			}
+			if got := tt.in.InternalOptions.altsCredentials != nil; got != tt.hasALTSCreds {
+				t.Errorf("InternalOptions.altsCredentials != nil is %v, want %v", got, tt.hasALTSCreds)
+			}
+		})
+	}
+}
+
 func TestOptions_ResolveDetectOptions(t *testing.T) {
 	tests := []struct {
 		name string
