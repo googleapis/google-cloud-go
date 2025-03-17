@@ -4330,6 +4330,361 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	}
 }
 
+func TestIntegration_DataMaterializedView(t *testing.T) {
+	t.Skip("Feature not out yet")
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support materializedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	instanceAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer instanceAdminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create materialized view
+	materializedViewUUID := uid.NewSpace("materializedView-", &uid.Options{})
+	materializedView := materializedViewUUID.New()
+	defer instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView)
+
+	materializedViewInfo := MaterializedViewInfo{
+		MaterializedViewID: materializedView,
+		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col, count(*) as count FROM %s", tblConf.TableID),
+		DeletionProtection: Unprotected,
+	}
+	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
+		t.Fatalf("Creating materialized view: %v", err)
+	}
+
+	client, err := testEnv.NewClient()
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+	mv := client.OpenMaterializedView(materializedView)
+	tbl := client.OpenTable(tblConf.TableID)
+
+	// Test ReadRow
+	gotRow, err := mv.ReadRow(ctx, "r1")
+	if err != nil {
+		t.Fatalf("Reading row from a materialized view: %v", err)
+	}
+	wantRow := Row{
+		"fam1": []ReadItem{
+			{Row: "r1", Column: "fam1:col1", Timestamp: 1000, Value: []byte("1")},
+			{Row: "r1", Column: "fam1:col2", Timestamp: 1000, Value: []byte("1")},
+		},
+	}
+	if !testutil.Equal(gotRow, wantRow) {
+		t.Fatalf("Error reading row from materialized view.\n Got %v\n Want %v", gotRow, wantRow)
+	}
+	gotRow, err = mv.ReadRow(ctx, "r2")
+	if err != nil {
+		t.Fatalf("Reading row from an materialized view: %v", err)
+	}
+	if len(gotRow) != 0 {
+		t.Fatalf("Expect empty result when reading row from outside an materialized view")
+	}
+
+	// Test ReadRows
+	var elt []string
+	f := func(row Row) bool {
+		for _, ris := range row {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	}
+	if err = mv.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from an materialized view: %v", err)
+	}
+	want := "r1-col1-1,r1-col2-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from materialized view.\n Got %v\n Want %v", got, want)
+	}
+	elt = nil
+	if err = tbl.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from a table: %v", err)
+	}
+	want = "r1-col1-1,r1-col2-1,r2-col1-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from table.\n Got %v\n Want %v", got, want)
+	}
+
+	// Test SampleRowKeys
+	if _, err := mv.SampleRowKeys(ctx); err != nil {
+		t.Fatalf("Sampling row keys from an materialized view: %v", err)
+	}
+}
+
+func TestIntegration_AdminLogicalView(t *testing.T) {
+	t.Skip("Feature not out yet")
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support logicalViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	instanceAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer instanceAdminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create logical view
+	logicalViewUUID := uid.NewSpace("logicalView-", &uid.Options{})
+	logicalView := logicalViewUUID.New()
+	defer instanceAdminClient.DeleteLogicalView(ctx, testEnv.Config().Instance, logicalView)
+
+	logicalViewInfo := LogicalViewInfo{
+		LogicalViewID: logicalView,
+		Query:         fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+	}
+	if err = instanceAdminClient.CreateLogicalView(ctx, testEnv.Config().Instance, &logicalViewInfo); err != nil {
+		t.Fatalf("Creating logical view: %v", err)
+	}
+
+	// List logical views
+	logicalViews, err := instanceAdminClient.LogicalViews(ctx, testEnv.Config().Instance)
+	if err != nil {
+		t.Fatalf("Listing logical views: %v", err)
+	}
+	if got, want := len(logicalViews), 1; got != want {
+		t.Fatalf("Listing logical views count: %d, want: != %d", got, want)
+	}
+	if got, want := logicalViews[0].LogicalViewID, logicalView; got != want {
+		t.Errorf("LogicalView Name: %s, want: %s", got, want)
+	}
+	if got, want := logicalViews[0].Query, logicalViewInfo.Query; got != want {
+		t.Errorf("LogicalView Query: %q, want: %q", got, want)
+	}
+
+	// Get logical view
+	lvInfo, err := instanceAdminClient.LogicalViewInfo(ctx, testEnv.Config().Instance, logicalView)
+	if err != nil {
+		t.Fatalf("Getting logical view: %v", err)
+	}
+	if got, want := lvInfo.Query, logicalViewInfo.Query; got != want {
+		t.Errorf("LogicalView Query: %q, want: %q", got, want)
+	}
+
+	// Update logical view
+	newLogicalViewInfo := LogicalViewInfo{
+		LogicalViewID: logicalView,
+		Query:         fmt.Sprintf("SELECT _key, fam2[col1] as col FROM %s", tblConf.TableID),
+	}
+	err = instanceAdminClient.UpdateLogicalView(ctx, testEnv.Config().Instance, newLogicalViewInfo)
+	if err != nil {
+		t.Fatalf("UpdateLogicalView failed: %v", err)
+	}
+
+	// Check that updated logical view has the correct deletion protection
+	lvInfo, err = instanceAdminClient.LogicalViewInfo(ctx, testEnv.Config().Instance, logicalView)
+	if err != nil {
+		t.Fatalf("Getting logical view: %v", err)
+	}
+	if got, want := lvInfo.Query, newLogicalViewInfo.Query; got != want {
+		t.Errorf("LogicalView Query: %q, want: %q", got, want)
+	}
+
+	// Delete logical view
+	if err = instanceAdminClient.DeleteLogicalView(ctx, testEnv.Config().Instance, logicalView); err != nil {
+		t.Fatalf("DeleteLogicalView: %v", err)
+	}
+
+	// Verify the logical view was deleted.
+	logicalViews, err = instanceAdminClient.LogicalViews(ctx, testEnv.Config().Instance)
+	if err != nil {
+		t.Fatalf("Listing logical views: %v", err)
+	}
+	if got, want := len(logicalViews), 0; got != want {
+		t.Fatalf("Listing logical views count: %d, want: != %d", got, want)
+	}
+}
+
+func TestIntegration_AdminMaterializedView(t *testing.T) {
+	t.Skip("Feature not out yet")
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support materializedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	instanceAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer instanceAdminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create materialized view
+	materializedViewUUID := uid.NewSpace("materializedView-", &uid.Options{})
+	materializedView := materializedViewUUID.New()
+	defer instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView)
+
+	materializedViewInfo := MaterializedViewInfo{
+		MaterializedViewID: materializedView,
+		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+		DeletionProtection: Protected,
+	}
+	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
+		t.Fatalf("Creating materialized view: %v", err)
+	}
+
+	// List materialized views
+	materializedViews, err := instanceAdminClient.MaterializedViews(ctx, testEnv.Config().Instance)
+	if err != nil {
+		t.Fatalf("Listing materialized views: %v", err)
+	}
+	if got, want := len(materializedViews), 1; got != want {
+		t.Fatalf("Listing materialized views count: %d, want: != %d", got, want)
+	}
+	if got, want := materializedViews[0].MaterializedViewID, materializedView; got != want {
+		t.Errorf("MaterializedView Name: %s, want: %s", got, want)
+	}
+	if got, want := materializedViews[0].Query, materializedViewInfo.Query; got != want {
+		t.Errorf("MaterializedView Query: %q, want: %q", got, want)
+	}
+
+	// Get materialized view
+	mvInfo, err := instanceAdminClient.MaterializedViewInfo(ctx, testEnv.Config().Instance, materializedView)
+	if err != nil {
+		t.Fatalf("Getting materialized view: %v", err)
+	}
+	if got, want := mvInfo.Query, materializedViewInfo.Query; got != want {
+		t.Errorf("MaterializedView Query: %q, want: %q", got, want)
+	}
+	// Cannot delete the authorized view because it is deletion protected
+	if err = instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView); err == nil {
+		t.Fatalf("DeleteMaterializedView: %v", err)
+	}
+
+	// Update authorized view
+
+	// Update materialized view
+	newMaterializedViewInfo := MaterializedViewInfo{
+		MaterializedViewID: materializedView,
+		DeletionProtection: Unprotected,
+	}
+	err = instanceAdminClient.UpdateMaterializedView(ctx, testEnv.Config().Instance, newMaterializedViewInfo)
+	if err != nil {
+		t.Fatalf("UpdateMaterializedView failed: %v", err)
+	}
+
+	// Check that updated materialized view has the correct deletion protection
+	mvInfo, err = instanceAdminClient.MaterializedViewInfo(ctx, testEnv.Config().Instance, materializedView)
+	if err != nil {
+		t.Fatalf("Getting materialized view: %v", err)
+	}
+	if got, want := mvInfo.DeletionProtection, Unprotected; got != want {
+		t.Errorf("MaterializedViewInfo deletion protection: %v, want: %v", got, want)
+	}
+	// Check that the subset_view field doesn't change
+	if got, want := mvInfo.Query, materializedViewInfo.Query; cmp.Equal(got, want) {
+		t.Errorf("Query: %v, want: %v", got, want)
+	}
+
+	// Delete materialized view
+	if err = instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView); err != nil {
+		t.Fatalf("DeleteMaterializedView: %v", err)
+	}
+
+	// Verify the materialized view was deleted.
+	materializedViews, err = instanceAdminClient.MaterializedViews(ctx, testEnv.Config().Instance)
+	if err != nil {
+		t.Fatalf("Listing materialized views: %v", err)
+	}
+	if got, want := len(materializedViews), 0; got != want {
+		t.Fatalf("Listing materialized views count: %d, want: != %d", got, want)
+	}
+}
+
 // TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
 func TestIntegration_DirectPathFallback(t *testing.T) {
 	ctx := context.Background()
@@ -4378,6 +4733,65 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	dpEnabled = examineTraffic(ctx, testEnv, table, false)
 	if !dpEnabled {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
+func TestIntegration_PrepareStatement(t *testing.T) {
+	ctx := context.Background()
+	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support PrepareQuery")
+	}
+
+	if _, err = client.PrepareStatement(ctx,
+		"SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, "+
+			"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, "+
+			"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, "+
+			"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, "+
+			"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, "+
+			"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, "+
+			"@dateArrayParam AS dateArrayCol",
+		map[string]SQLType{
+			"bytesParam":   BytesSQLType{},
+			"stringParam":  StringSQLType{},
+			"int64Param":   Int64SQLType{},
+			"float32Param": Float32SQLType{},
+			"float64Param": Float64SQLType{},
+			"boolParam":    BoolSQLType{},
+			"tsParam":      TimestampSQLType{},
+			"dateParam":    DateSQLType{},
+			"bytesArrayParam": ArraySQLType{
+				ElemType: BytesSQLType{},
+			},
+			"stringArrayParam": ArraySQLType{
+				ElemType: StringSQLType{},
+			},
+			"int64ArrayParam": ArraySQLType{
+				ElemType: Int64SQLType{},
+			},
+			"float32ArrayParam": ArraySQLType{
+				ElemType: Float32SQLType{},
+			},
+			"float64ArrayParam": ArraySQLType{
+				ElemType: Float64SQLType{},
+			},
+			"boolArrayParam": ArraySQLType{
+				ElemType: BoolSQLType{},
+			},
+			"tsArrayParam": ArraySQLType{
+				ElemType: TimestampSQLType{},
+			},
+			"dateArrayParam": ArraySQLType{
+				ElemType: DateSQLType{},
+			},
+		},
+	); err != nil {
+		t.Fatal("PrepareStatement: " + err.Error())
 	}
 }
 
