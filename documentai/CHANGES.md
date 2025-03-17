@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.35.3](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.2...documentai/v1.35.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.35.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.1...documentai/v1.35.2) (2025-02-12)
 
 

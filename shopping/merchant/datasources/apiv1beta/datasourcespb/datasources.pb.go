@@ -303,9 +303,8 @@ type DataSource_RegionalInventoryDataSource struct {
 }
 
 type DataSource_PromotionDataSource struct {
-	// The
-	// [promotion](https://support.google.com/merchants/answer/2906014) data
-	// source.
+	// The [promotion](https://support.google.com/merchants/answer/2906014)
+	// data source.
 	PromotionDataSource *PromotionDataSource `protobuf:"bytes,8,opt,name=promotion_data_source,json=promotionDataSource,proto3,oneof"`
 }
 

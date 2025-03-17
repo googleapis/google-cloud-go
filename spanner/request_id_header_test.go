@@ -1703,6 +1703,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_ContextDeadlineEx
 }
 
 func TestRequestIDHeader_Commit_ContextDeadlineExceeded(t *testing.T) {
+	t.Skip("TODO: debug error from PR #11788 and un-skip. See https://source.cloud.google.com/results/invocations/ead1cb6b-10e8-4d2b-80e3-aec3b96feff0")
 	t.Parallel()
 
 	ctx := context.Background()

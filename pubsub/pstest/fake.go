@@ -112,18 +112,33 @@ func NewServer(opts ...ServerReactorOption) *Server {
 	return NewServerWithPort(0, opts...)
 }
 
-// NewServerWithPort creates a new fake server running in the current process at the specified port.
+// NewServerWithPort creates a new fake server running in the current process at
+// the specified port.
 func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
-	return NewServerWithCallback(port, func(*grpc.Server) { /* empty */ }, opts...)
+	return NewServerWithAddress(fmt.Sprintf("localhost:%d", port), opts...)
 }
 
-// NewServerWithCallback creates new fake server running in the current process at the specified port.
-// Before starting the server, the provided callback is called to allow caller to register additional fakes
-// into grpc server.
+// NewServerWithAddress creates a new fake server running in the current process
+// at the specified address (host and port).
+func NewServerWithAddress(address string, opts ...ServerReactorOption) *Server {
+	return initNewServer(address, func(*grpc.Server) { /* empty */ }, opts...)
+}
+
+// NewServerWithCallback creates new fake server running in the current process
+// at the specified port. Before starting the server, the provided callback is
+// called to allow caller to register additional fakes into grpc server.
 func NewServerWithCallback(port int, callback func(*grpc.Server), opts ...ServerReactorOption) *Server {
-	srv, err := testutil.NewServerWithPort(port)
+	return initNewServer(fmt.Sprintf("localhost:%d", port), callback, opts...)
+}
+
+// NewServerByAddressWithCallback creates new fake server running in the current
+// process at with the provided address (host and port).
+// Before starting the server, the provided callback is called to allow caller
+// to register additional fakes into grpc server.
+func initNewServer(address string, callback func(*grpc.Server), opts ...ServerReactorOption) *Server {
+	srv, err := testutil.NewServerWithAddress(address)
 	if err != nil {
-		panic(fmt.Sprintf("pstest.NewServerWithPort: %v", err))
+		panic(fmt.Sprintf("pstest.initNewServer: %v", err))
 	}
 	reactorOptions := ReactorOptions{}
 	for _, opt := range opts {
@@ -1151,7 +1166,7 @@ func orderMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]
 		if orderingKey == "" {
 			orderingKey = id
 		}
-		if val, ok := orderingKeyMap[orderingKey]; !ok || m.proto.Message.PublishTime.AsTime().Before(val.m.proto.Message.PublishTime.AsTime()) {
+		if val, ok := orderingKeyMap[orderingKey]; !ok || m.publishTime.Before(val.m.publishTime) {
 			orderingKeyMap[orderingKey] = msg{m: m, id: id}
 		}
 	}
