@@ -681,25 +681,30 @@ func (s *inMemSpannerServer) getStatementResult(sql string) (*StatementResult, e
 
 func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{}) (interface{}, error) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 
 	// Check if the server is stopped
 	if s.stopped {
+		s.mu.Unlock()
 		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
 	}
 
 	// Send the request to the receivedRequests channel
 	s.receivedRequests <- req
+	s.mu.Unlock()
+	s.ready()
+	s.mu.Lock()
 
 	// Check for a simulated error
 	if s.err != nil {
 		err := s.err
 		s.err = nil
+		s.mu.Unlock()
 		return nil, err
 	}
 
 	// Check for a simulated execution time
 	executionTime, ok := s.executionTimes[method]
+	s.mu.Unlock()
 	if ok {
 		var randTime int64
 		if executionTime.RandomExecutionTime > 0 {
@@ -707,6 +712,7 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 		}
 		totalExecutionTime := time.Duration(int64(executionTime.MinimumExecutionTime) + randTime)
 		<-time.After(totalExecutionTime)
+		s.mu.Lock()
 
 		// Check for errors in the execution time
 		if len(executionTime.Errors) > 0 {
@@ -714,6 +720,7 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 			if !executionTime.KeepError {
 				executionTime.Errors = executionTime.Errors[1:]
 			}
+			s.mu.Unlock()
 			return nil, err
 		}
 
@@ -721,8 +728,10 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 		if len(executionTime.Responses) > 0 {
 			response := executionTime.Responses[0]
 			executionTime.Responses = executionTime.Responses[1:]
+			s.mu.Unlock()
 			return response, nil
 		}
+		s.mu.Unlock()
 	}
 
 	return nil, nil

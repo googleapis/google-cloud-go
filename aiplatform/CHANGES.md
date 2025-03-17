@@ -1,6 +1,58 @@
 # Changes
 
 
+## [1.77.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.76.0...aiplatform/v1.77.0) (2025-03-13)
+
+
+### Features
+
+* **aiplatform:** Add function_call.id and function_response.id ([#11820](https://github.com/googleapis/google-cloud-go/issues/11820)) ([1c7cc4b](https://github.com/googleapis/google-cloud-go/commit/1c7cc4b06d24a1af6c4df23f0417880b9629a3a7))
+
+
+### Bug Fixes
+
+* **aiplatform:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.76.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.75.0...aiplatform/v1.76.0) (2025-03-12)
+
+
+### Features
+
+* **aiplatform:** Add Layout Parser to RAG v1 API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Add multihost_gpu_node_count to Vertex SDK for multihost GPU support ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Add reranker config to RAG v1 API ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+* **aiplatform:** Allowing users to choose whether to use the hf model cache ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to choose whether to use the hf model cache ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to specify the version id of the Model Garden model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to specify the version id of the Model Garden model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+## [1.75.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.74.0...aiplatform/v1.75.0) (2025-03-06)
+
+
+### Features
+
+* **aiplatform:** A new field `include_equivalent_model_garden_model_deployment_configs` is added to message `.google.cloud.aiplatform.v1beta1.GetPublisherModelRequest` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Add EnterpriseWebSearch tool option ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Add VertexAISearch.engine option ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+
+### Bug Fixes
+
+* **aiplatform:** An existing google.api.http annotation `http_uri` is changed for method `DeployPublisherModel` in service `ModelGardenService` ([#11670](https://github.com/googleapis/google-cloud-go/issues/11670)) ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Remove VertexAISearch.engine option ([#11681](https://github.com/googleapis/google-cloud-go/issues/11681)) ([60dc167](https://github.com/googleapis/google-cloud-go/commit/60dc167a3e9c2876fe55a4f50bd7e0682f953d67))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `model` in message `.google.cloud.aiplatform.v1beta1.DeployPublisherModelRequest` is changed ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+## [1.74.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.73.0...aiplatform/v1.74.0) (2025-02-26)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden deploy API ([2c4fb44](https://github.com/googleapis/google-cloud-go/commit/2c4fb448a2207a6d9988ec3a7646ea6cbb6f65f9))
+
 ## [1.73.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.72.0...aiplatform/v1.73.0) (2025-02-12)
 
 

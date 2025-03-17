@@ -85,6 +85,11 @@
                 "GetSpaceEvent"
               ]
             },
+            "GetSpaceNotificationSetting": {
+              "methods": [
+                "GetSpaceNotificationSetting"
+              ]
+            },
             "GetSpaceReadState": {
               "methods": [
                 "GetSpaceReadState"
@@ -143,6 +148,11 @@
             "UpdateSpace": {
               "methods": [
                 "UpdateSpace"
+              ]
+            },
+            "UpdateSpaceNotificationSetting": {
+              "methods": [
+                "UpdateSpaceNotificationSetting"
               ]
             },
             "UpdateSpaceReadState": {
@@ -235,6 +245,11 @@
                 "GetSpaceEvent"
               ]
             },
+            "GetSpaceNotificationSetting": {
+              "methods": [
+                "GetSpaceNotificationSetting"
+              ]
+            },
             "GetSpaceReadState": {
               "methods": [
                 "GetSpaceReadState"
@@ -293,6 +308,11 @@
             "UpdateSpace": {
               "methods": [
                 "UpdateSpace"
+              ]
+            },
+            "UpdateSpaceNotificationSetting": {
+              "methods": [
+                "UpdateSpaceNotificationSetting"
               ]
             },
             "UpdateSpaceReadState": {

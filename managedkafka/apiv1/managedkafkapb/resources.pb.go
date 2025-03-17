@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -420,9 +420,6 @@ type NetworkConfig struct {
 	// The subnet must be located in the same region as the Kafka cluster. The
 	// project may differ. Multiple subnets from the same parent network must not
 	// be specified.
-	//
-	// The CIDR range of the subnet must be within the IPv4 address ranges for
-	// private networks, as specified in RFC 1918.
 	Subnet string `protobuf:"bytes,2,opt,name=subnet,proto3" json:"subnet,omitempty"`
 }
 
