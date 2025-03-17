@@ -1913,7 +1913,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, c, options, nil, nil)
 }
 
-func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *Client, options TransactionOptions, sh *sessionHandle, previousTransactionId transactionID) (*ReadWriteStmtBasedTransaction, error) {
+func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *Client, options TransactionOptions, sh *sessionHandle, previousTransactionID transactionID) (*ReadWriteStmtBasedTransaction, error) {
 	var (
 		err error
 		t   *ReadWriteStmtBasedTransaction
@@ -1935,11 +1935,11 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 		},
 		client: c,
 	}
-	if previousTransactionId != nil {
+	if previousTransactionID != nil {
 		// The previousTx field is updated with the most recent transaction ID. This is needed for multiplexed sessions
 		// to increase the priority of the new transaction during retry attempt.
 		// This assignment is ignored for regular sessions.
-		t.previousTx = previousTransactionId
+		t.previousTx = previousTransactionID
 	}
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
@@ -2017,16 +2017,16 @@ func (t *ReadWriteStmtBasedTransaction) ResetForRetry(ctx context.Context) (*Rea
 		return nil, fmt.Errorf("ResetForRetry should only be called on an active transaction that was aborted by Spanner")
 	}
 
-	var previousTransactionId transactionID
+	var previousTransactionID transactionID
 	if t.tx != nil {
 		// Track the current transactionId that is ABORTED.
-		previousTransactionId = t.tx
+		previousTransactionID = t.tx
 	} else {
 		// In case the current transactionId is nil, then look at the previousTx.
-		previousTransactionId = t.previousTx
+		previousTransactionID = t.previousTx
 	}
 	// Create a new transaction that re-uses the current session if it is available.
-	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, t.client, t.options, t.sh, previousTransactionId)
+	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, t.client, t.options, t.sh, previousTransactionID)
 }
 
 // writeOnlyTransaction provides the most efficient way of doing write-only
