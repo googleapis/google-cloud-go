@@ -70,6 +70,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
 		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour},
 		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
+		// OwnerEntity:           storagepb.Owner{Entity: "project-owner-projectId"}.Entity,
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
