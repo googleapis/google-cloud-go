@@ -70,6 +70,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
 		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour},
 		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
+		// OwnerEntity:           storagepb.Owner{Entity: "project-owner-projectId"}.Entity,
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -674,6 +675,7 @@ func TestNewBucket(t *testing.T) {
 			RetentionDurationSeconds: 3600,
 		},
 		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
+		Owner:                 &raw.BucketOwner{Entity: "project-owner-projectId"},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -737,6 +739,7 @@ func TestNewBucket(t *testing.T) {
 			RetentionDuration: time.Hour,
 		},
 		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
+		OwnerEntity:           "project-owner-projectId",
 	}
 	got, err := newBucket(rb)
 	if err != nil {
@@ -810,6 +813,7 @@ func TestNewBucketFromProto(t *testing.T) {
 				},
 			},
 		},
+		Owner: &storagepb.Owner{Entity: "project-owner-projectId"},
 	}
 	want := &BucketAttrs{
 		Name:             "name",
@@ -859,6 +863,7 @@ func TestNewBucketFromProto(t *testing.T) {
 				},
 			}},
 		},
+		OwnerEntity: "project-owner-projectId",
 	}
 	got := newBucketFromProto(pb)
 	if diff := cmp.Diff(got, want); diff != "" {
