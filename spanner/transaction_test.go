@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -718,6 +719,165 @@ func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
 	}
 	if err := compareRequestsWithConfig(wantRequests, requests, &cfg); err != nil {
 		t.Fatal(err)
+	}
+}
+
+// Verify that requests in a ReadWriteStmtBasedTransaction uses multiplexed sessions when enabled
+func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	cfg := SessionPoolConfig{
+		// Avoid regular session creation
+		MinOpened: 0,
+		MaxOpened: 0,
+		// Enabled multiplexed sessions
+		enableMultiplexSession:        true,
+		enableMultiplexedSessionForRW: true,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: cfg,
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.Aborted, "Transaction aborted")},
+		})
+
+	txn, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+	_, err = txn.Commit(ctx)
+	if status.Code(err) != codes.Aborted || !strings.Contains(err.Error(), "Transaction aborted") {
+		t.Fatalf("got an incorrect error: %v", err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	for _, req := range requests {
+		if c, ok := req.(*sppb.CommitRequest); ok {
+			if !strings.Contains(c.GetSession(), "multiplexed") {
+				t.Errorf("Expected session to be multiplexed")
+			}
+		}
+		if b, ok := req.(*sppb.BeginTransactionRequest); ok {
+			if !strings.Contains(b.GetSession(), "multiplexed") {
+				t.Errorf("Expected session to be multiplexed")
+			}
+		}
+	}
+}
+
+// Verify that in ReadWriteStmtBasedTransaction when a transaction using a multiplexed session fails with ABORTED then during retry the previousTransactionID is passed
+func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSession_OnAbort(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	cfg := SessionPoolConfig{
+		// Avoid regular session creation
+		MinOpened: 0,
+		MaxOpened: 0,
+		// Enabled multiplexed sessions
+		enableMultiplexSession:        true,
+		enableMultiplexedSessionForRW: true,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: cfg,
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.Aborted, "Transaction aborted")},
+		})
+
+	txn, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+	_, err = txn.Commit(ctx)
+	if status.Code(err) != codes.Aborted || !strings.Contains(err.Error(), "Transaction aborted") {
+		t.Fatalf("got an incorrect error: %v", err)
+	}
+	// Fetch the transaction ID of the first attempt
+	previousTransactionID := txn.tx
+	txn, err = txn.ResetForRetry(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = txn.Commit(ctx)
+	if err != nil {
+		t.Fatalf("expect commit to succeed but failed with error: %v", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	beginTransactionRequestCount := 0
+	for _, req := range requests {
+		if b, ok := req.(*sppb.BeginTransactionRequest); ok {
+			beginTransactionRequestCount++
+			// The first BeginTransactionRequest will not have any previousTransactionID.
+			// Check if the second BeginTransactionRequest sets the previousTransactionID to correct value.
+			if beginTransactionRequestCount == 2 {
+				if !strings.Contains(b.GetSession(), "multiplexed") {
+					t.Errorf("Expected session to be multiplexed")
+				}
+				opts := b.Options.GetReadWrite()
+				if opts == nil {
+					t.Fatal("missing ReadWrite options")
+				}
+				if !bytes.Equal(opts.MultiplexedSessionPreviousTransactionId, previousTransactionID) {
+					t.Errorf("BeginTransactionRequest during retry: got prev txID %v, want %v",
+						opts.MultiplexedSessionPreviousTransactionId, previousTransactionID)
+				}
+			}
+		}
+	}
+}
+
+// Verify that in ReadWriteStmtBasedTransaction, commit request has precommit token set when using multiplexed sessions
+func TestReadWriteStmtBasedTransaction_SetsPrecommitToken(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	cfg := SessionPoolConfig{
+		// Avoid regular session creation
+		MinOpened: 0,
+		MaxOpened: 0,
+		// Enabled multiplexed sessions
+		enableMultiplexSession:        true,
+		enableMultiplexedSessionForRW: true,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: cfg,
+	})
+	defer teardown()
+
+	txn, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+	c, err := txn.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+		t.Fatalf("update count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	_, err = txn.Commit(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	for _, req := range requests {
+		if commitReq, ok := req.(*sppb.CommitRequest); ok {
+			if commitReq.GetPrecommitToken() == nil || !strings.Contains(string(commitReq.GetPrecommitToken().PrecommitToken), "ResultSetPrecommitToken") {
+				t.Errorf("Expected precommit token 'ResultSetPrecommitToken', got %v", commitReq.GetPrecommitToken())
+			}
+			if !strings.Contains(commitReq.GetSession(), "multiplexed") {
+				t.Errorf("Expected session to be multiplexed")
+			}
+		}
 	}
 }
 
