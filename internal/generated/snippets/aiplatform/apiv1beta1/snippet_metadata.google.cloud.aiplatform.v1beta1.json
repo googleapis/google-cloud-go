@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.73.0",
+    "version": "1.76.0",
     "language": "GO",
     "apis": [
       {
@@ -18405,7 +18405,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_DeployPublisherModel_sync",
       "title": "aiplatform DeployPublisherModel Sample",
-      "description": "DeployPublisherModel deploys publisher models.",
+      "description": "DeployPublisherModel deploys publisher models.\n\n\nDeprecated: DeployPublisherModel may be removed in a future version.",
       "file": "ModelGardenClient/DeployPublisherModel/main.go",
       "language": "GO",
       "clientMethod": {

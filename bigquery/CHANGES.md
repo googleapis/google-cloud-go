@@ -3,6 +3,28 @@
 
 
 
+## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.66.2...bigquery/v1.67.0) (2025-03-14)
+
+
+### Features
+
+* **bigquery/reservation:** Add a new field `enable_gemini_in_bigquery` to `.google.cloud.bigquery.reservation.v1.Assignment` that indicates if "Gemini in Bigquery"(https ([601e742](https://github.com/googleapis/google-cloud-go/commit/601e74202ca6bf28506f06f27abc1d99018f9dc5))
+* **bigquery/reservation:** Add a new field `replication_status` to `.google.cloud.bigquery.reservation.v1.Reservation` to provide visibility into errors that could arise during Disaster Recovery(DR) replication ([#11666](https://github.com/googleapis/google-cloud-go/issues/11666)) ([601e742](https://github.com/googleapis/google-cloud-go/commit/601e74202ca6bf28506f06f27abc1d99018f9dc5))
+* **bigquery/reservation:** Add the CONTINUOUS Job type to `.google.cloud.bigquery.reservation.v1.Assignment.JobType` for continuous SQL jobs ([601e742](https://github.com/googleapis/google-cloud-go/commit/601e74202ca6bf28506f06f27abc1d99018f9dc5))
+* **bigquery:** Support MetadataCacheMode for ExternalDataConfig ([#11803](https://github.com/googleapis/google-cloud-go/issues/11803)) ([af5174d](https://github.com/googleapis/google-cloud-go/commit/af5174daa535bb1ceee4bf5eee894eedeca66498)), refs [#11802](https://github.com/googleapis/google-cloud-go/issues/11802)
+
+
+### Bug Fixes
+
+* **bigquery:** Increase timeout for storage api test and remove usage of deprecated pkg ([#11810](https://github.com/googleapis/google-cloud-go/issues/11810)) ([f47e038](https://github.com/googleapis/google-cloud-go/commit/f47e038e360375558da50c185f16002f1b1f73f4)), refs [#11801](https://github.com/googleapis/google-cloud-go/issues/11801)
+* **bigquery:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+
+### Documentation
+
+* **bigquery/reservation:** Remove the section about `EDITION_UNSPECIFIED` in the comment for `slot_capacity` in `.google.cloud.bigquery.reservation.v1.Reservation` to clarify that ([601e742](https://github.com/googleapis/google-cloud-go/commit/601e74202ca6bf28506f06f27abc1d99018f9dc5))
+* **bigquery/reservation:** Update the `google.api.field_behavior` for the `.google.cloud.bigquery.reservation.v1.Reservation.primary_location` and `.google.cloud.bigquery.reservation.v1.Reservation.original_primary_location` fields to clarify that they are `OUTPUT_ONLY` ([601e742](https://github.com/googleapis/google-cloud-go/commit/601e74202ca6bf28506f06f27abc1d99018f9dc5))
+
 ## [1.66.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.66.1...bigquery/v1.66.2) (2025-02-04)
 
 
