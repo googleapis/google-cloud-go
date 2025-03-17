@@ -25,6 +25,16 @@
                 "CreateTask"
               ]
             },
+            "DeleteDeliveryVehicle": {
+              "methods": [
+                "DeleteDeliveryVehicle"
+              ]
+            },
+            "DeleteTask": {
+              "methods": [
+                "DeleteTask"
+              ]
+            },
             "GetDeliveryVehicle": {
               "methods": [
                 "GetDeliveryVehicle"
@@ -78,6 +88,16 @@
             "CreateTask": {
               "methods": [
                 "CreateTask"
+              ]
+            },
+            "DeleteDeliveryVehicle": {
+              "methods": [
+                "DeleteDeliveryVehicle"
+              ]
+            },
+            "DeleteTask": {
+              "methods": [
+                "DeleteTask"
               ]
             },
             "GetDeliveryVehicle": {

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -101,8 +101,8 @@ type GetQuotaAdjusterSettingsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the config. Required to be “settings”, as only a single
-	// setting per container will be supported initially.
+	// Required. Name of the `quotaAdjusterSettings` configuration. Only a single
+	// setting per project is supported.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -153,9 +153,9 @@ type UpdateQuotaAdjusterSettingsRequest struct {
 	QuotaAdjusterSettings *QuotaAdjusterSettings `protobuf:"bytes,1,opt,name=quota_adjuster_settings,json=quotaAdjusterSettings,proto3" json:"quota_adjuster_settings,omitempty"`
 	// Optional. The list of fields to update.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// Optional. If set to true, validate the request, but do not actually update.
-	// Note that a request being valid does not mean that the request is
-	// guaranteed to be fulfilled.
+	// Optional. If set to true, checks the syntax of the request but doesn't
+	// update the quota adjuster settings value. Note that although a request can
+	// be valid, that doesn't guarantee that the request will be fulfilled.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -217,19 +217,21 @@ type QuotaAdjusterSettings struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier. Name of the config would be of the format:
+	// Identifier. Name of the configuration, in the following format:
 	//
-	//	projects/12345/locations/global/quotaAdjusterSettings
+	//	`projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings`.
+	//
+	// Replace PROJECT_NUMBER with the project number for your project.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The configured value of the enablement at the given resource.
 	Enablement QuotaAdjusterSettings_Enablement `protobuf:"varint,2,opt,name=enablement,proto3,enum=google.api.cloudquotas.v1beta.QuotaAdjusterSettings_Enablement" json:"enablement,omitempty"`
-	// Output only. The timestamp when the QuotaAdjusterSettings was last updated.
+	// Output only. The timestamp when the QuotaAdjusterSettings resource was last
+	// updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Optional. The current etag of the QuotaAdjusterSettings. If an etag is
-	// provided on update and does not match the current server's etag of the
-	// QuotaAdjusterSettings, the request will be blocked and an ABORTED error
-	// will be returned. See https://google.aip.dev/134#etags for more details on
-	// etags.
+	// Optional. The current ETag of the QuotaAdjusterSettings. If an ETag is
+	// provided on update and does not match the current server's ETag in the
+	// QuotaAdjusterSettings, the request is blocked and returns an ABORTED error.
+	// See https://google.aip.dev/134#etags for more details on ETags.
 	Etag string `protobuf:"bytes,6,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 

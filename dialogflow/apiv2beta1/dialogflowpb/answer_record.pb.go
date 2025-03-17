@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -622,7 +622,7 @@ type AgentAssistantFeedback struct {
 	//   - Suggested document says: "Items must be returned/exchanged within 60
 	//     days of the purchase date."
 	//   - Ground truth: "No return or exchange is allowed."
-	//   - [document_correctness]: INCORRECT
+	//   - [document_correctness][google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.document_correctness]: [INCORRECT][google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.DocumentCorrectness.INCORRECT]
 	DocumentCorrectness AgentAssistantFeedback_DocumentCorrectness `protobuf:"varint,2,opt,name=document_correctness,json=documentCorrectness,proto3,enum=google.cloud.dialogflow.v2beta1.AgentAssistantFeedback_DocumentCorrectness" json:"document_correctness,omitempty"`
 	// Optional. Whether or not the suggested document is efficient. For example,
 	// if the document is poorly written, hard to understand, hard to use or
