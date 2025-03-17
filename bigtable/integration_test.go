@@ -3630,6 +3630,65 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 }
 
+func TestIntegration_NodeScalingFactor(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance update testing")
+	}
+	instanceToCreate += "5"
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	clusterID := instanceToCreate + "-cluster"
+
+	t.Log("creating an instance with node scaling factor")
+	conf := &InstanceWithClustersConfig{
+		InstanceID:  instanceToCreate,
+		DisplayName: "test instance",
+		Clusters: []ClusterConfig{
+			{
+				ClusterID:         clusterID,
+				NumNodes:          2,
+				NodeScalingFactor: NODE_SCALING_FACTOR_2X,
+				Zone:              instanceToCreateZone,
+			},
+		},
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+	err = retry(func() error { return iAdminClient.CreateInstanceWithClusters(ctx, conf) },
+		func() error { return iAdminClient.DeleteInstance(ctx, conf.InstanceID) })
+	if err != nil {
+		t.Fatalf("CreateInstanceWithClusters: %v", err)
+	}
+
+	cluster, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+
+	wantNodeScalingFactor := NODE_SCALING_FACTOR_2X
+	if gotNodeScalingFactor := cluster.NodeScalingFactor; gotNodeScalingFactor != wantNodeScalingFactor {
+		t.Fatalf("want node scaling factor = %v, got = %v", wantNodeScalingFactor, gotNodeScalingFactor)
+	}
+}
+
 func TestIntegration_InstanceUpdate(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
