@@ -27,6 +27,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+var int64ReflectType = reflect.TypeOf(int64(0))
+
 // SQLType represents the type of data that can be used to query Cloud Bigtable.
 // It is based on the GoogleSQL standard.
 type SQLType interface {

@@ -24,7 +24,6 @@ import (
 	"io"
 	"net/url"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -54,8 +53,6 @@ import (
 const prodAddr = "bigtable.googleapis.com:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 const featureFlagsHeaderKey = "bigtable-features"
-
-var int64ReflectType = reflect.TypeOf(int64(0))
 
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
 
