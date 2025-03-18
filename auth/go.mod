@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.6.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/s2a-go v0.1.9
-	github.com/googleapis/enterprise-certificate-proxy v0.3.5
+	github.com/googleapis/enterprise-certificate-proxy v0.3.6
 	github.com/googleapis/gax-go/v2 v2.14.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.60.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0
