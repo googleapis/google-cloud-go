@@ -31,7 +31,6 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
-	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
@@ -39,7 +38,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	"google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -496,11 +494,7 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 		}
 
 		// Convert value specified by user to *btpb.Value
-		sqlVal, err := paramValToSQLVal(paramName, paramVal, psType)
-		if err != nil {
-			return nil, err
-		}
-		pbVal, err := sqlVal.dataProto()
+		pbVal, err := anySQLTypeToPbVal(paramVal, psType)
 		if err != nil {
 			return nil, err
 		}
@@ -511,121 +505,6 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 		ps:     ps,
 		params: boundParams,
 	}, nil
-}
-
-func paramValToSQLVal(name string, val any, expectedSQLType SQLType) (SQLType, error) {
-	switch paramTypePs := expectedSQLType.(type) {
-	case BytesSQLType:
-		if val == nil {
-			return BytesSQLType{}, nil
-		}
-		v, ok := val.([]byte)
-		if !ok {
-			return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-		}
-		return BytesSQLType{value: &v}, nil
-	case StringSQLType:
-		if val == nil {
-			return StringSQLType{}, nil
-		}
-		v, ok := val.(string)
-		if !ok {
-			return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-		}
-		return StringSQLType{value: &v}, nil
-	case Int64SQLType:
-		if val == nil {
-			return Int64SQLType{}, nil
-		}
-		reflectVal := reflect.ValueOf(val)
-		if reflectVal.CanConvert(int64ReflectType) {
-			int64Val := reflectVal.Convert(int64ReflectType).Int()
-			return Int64SQLType{value: &int64Val}, nil
-		}
-		return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-	case Float32SQLType:
-		if val == nil {
-			return Float32SQLType{}, nil
-		}
-		v, ok := val.(float32)
-		if !ok {
-			return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-		}
-		return Float32SQLType{value: &v}, nil
-	case Float64SQLType:
-		if val == nil {
-			return Float64SQLType{}, nil
-		}
-		v, ok := val.(float64)
-		if !ok {
-			return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-		}
-		return Float64SQLType{value: &v}, nil
-	case BoolSQLType:
-		if val == nil {
-			return BoolSQLType{}, nil
-		}
-		v, ok := val.(bool)
-		if !ok {
-			return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-		}
-		return BoolSQLType{value: &v}, nil
-	case TimestampSQLType:
-		if val == nil {
-			return TimestampSQLType{}, nil
-		}
-		v, ok := val.(time.Time)
-		if !ok {
-			return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-		}
-		return TimestampSQLType{value: &v}, nil
-	case DateSQLType:
-		if val == nil {
-			return DateSQLType{}, nil
-		}
-		v, ok := val.(civil.Date)
-		if !ok {
-			return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-		}
-		return DateSQLType{value: &date.Date{Year: int32(v.Year), Month: int32(v.Month), Day: int32(v.Day)}}, nil
-	case ArraySQLType:
-		if val == nil {
-			return ArraySQLType{}, nil
-		}
-
-		// Use reflect to check if val is an array.
-		valType := reflect.TypeOf(val)
-		if valType.Kind() != reflect.Slice && valType.Kind() != reflect.Array {
-			return nil, &errTypeMismatchBindAndPrepare{paramName: name, psType: paramTypePs}
-		}
-
-		valReflectValue := reflect.ValueOf(val)
-		var sqlArr []SQLType
-		// Convert each element to SQLType.
-		for i := 0; i < valReflectValue.Len(); i++ {
-			elem := valReflectValue.Index(i).Interface()
-			elemSqlVal, err := paramValToSQLVal(name+".ElemType", elem, paramTypePs.ElemType)
-			if err != nil {
-				return nil, err
-			}
-			sqlArr = append(sqlArr, elemSqlVal)
-		}
-		return ArraySQLType{value: sqlArr}, nil
-	default:
-		return nil, errors.New("bigtable: unsupported SQLType for parameter " + name)
-	}
-}
-
-type errTypeMismatchBindAndPrepare struct {
-	paramName string
-	psType    SQLType
-}
-
-func (e *errTypeMismatchBindAndPrepare) Error() string {
-	if e == nil {
-		return ""
-	}
-	return "bigtable: type mismatch for parameter " + e.paramName + ". Expected " + reflect.TypeOf(e.psType).Name()
 }
 
 func (ti *tableImpl) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
