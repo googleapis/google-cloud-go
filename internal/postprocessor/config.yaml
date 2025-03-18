@@ -93,6 +93,7 @@ modules:
   - memorystore
   - metastore
   - migrationcenter
+  - modelarmor
   - monitoring
   - netapp
   - networkconnectivity
@@ -1147,6 +1148,9 @@ service-configs:
   - input-directory: google/maps/solar/v1
     service-config: solar_v1.yaml
     import-path: cloud.google.com/go/maps/solar/apiv1
+  - input-directory: google/cloud/modelarmor/v1
+    service-config: modelarmor_v1.yaml
+    import-path: cloud.google.com/go/modelarmor/apiv1
   - input-directory: google/monitoring/dashboard/v1
     service-config: monitoring.yaml
     import-path: cloud.google.com/go/monitoring/dashboard/apiv1
