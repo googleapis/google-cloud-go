@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/workflows/executions/apiv1beta",
-    "version": "$VERSION",
+    "version": "1.13.5",
     "language": "GO",
     "apis": [
       {
