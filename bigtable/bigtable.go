@@ -499,6 +499,13 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 		}
 		boundParams[paramName] = pbVal
 	}
+	// check that every parameter is bound
+	for paramName := range ps.paramTypes {
+		_, found := boundParams[paramName]
+		if !found {
+			return &bs, errors.New("bigtable: parameter " + paramName + " not bound in prepared statement")
+		}
+	}
 
 	return &BoundStatement{
 		ps:     ps,

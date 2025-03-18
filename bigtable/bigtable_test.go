@@ -1420,31 +1420,19 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 					ArrayValue: &btpb.ArrayValue{
 						Values: []*btpb.Value{
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(1),
 								},
 							},
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(2),
 								},
 							},
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(3),
 								},
@@ -1474,41 +1462,25 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 					ArrayValue: &btpb.ArrayValue{
 						Values: []*btpb.Value{
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(1),
 								},
 							},
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(2),
 								},
 							},
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(3),
 								},
 							},
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 							},
 						},
 					},
@@ -1535,31 +1507,19 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 					ArrayValue: &btpb.ArrayValue{
 						Values: []*btpb.Value{
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(1),
 								},
 							},
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(2),
 								},
 							},
 							{
-								Type: &btpb.Type{
-									Kind: &btpb.Type_Int64Type{
-										Int64Type: &btpb.Type_Int64{},
-									},
-								},
+								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(3),
 								},
@@ -1643,6 +1603,47 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 				),
 				cmpopts.IgnoreFields(btpb.Value_FloatValue{}, "FloatValue")) {
 				t.Errorf("SQLType value got: %v, want: %v", got, tt.wantPbVal)
+			}
+		})
+	}
+}
+
+func TestPreparedStatement_Bind(t *testing.T) {
+	tests := []struct {
+		testName   string
+		query      string
+		paramTypes map[string]SQLType
+		values     map[string]any
+		wantErr    bool
+		wantErrMsg string
+	}{
+		{
+			testName:   "Bind no parameter error",
+			paramTypes: map[string]SQLType{},
+			values:     map[string]any{"param1": "value1"},
+			wantErr:    true,
+			wantErrMsg: "bigtable: no parameter with name param1 in prepared statement",
+		},
+		{
+			testName:   "Bind not bound error",
+			paramTypes: map[string]SQLType{"param1": StringSQLType{}, "param2": StringSQLType{}},
+			values:     map[string]any{"param1": "value1"},
+			wantErr:    true,
+			wantErrMsg: "bigtable: parameter param2 not bound in prepared statement",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.testName, func(t *testing.T) {
+			ps := PreparedStatement{
+				paramTypes: tt.paramTypes,
+			}
+
+			_, err := ps.Bind(tt.values)
+			if err == nil && tt.wantErr {
+				t.Fatalf("Bind: err got: nil, want: %v", tt.wantErrMsg)
+			}
+			if err != nil && err.Error() != tt.wantErrMsg {
+				t.Fatalf("Bind: err got: %v, want: %v", err, tt.wantErrMsg)
 			}
 		})
 	}
