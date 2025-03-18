@@ -1420,19 +1420,16 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 					ArrayValue: &btpb.ArrayValue{
 						Values: []*btpb.Value{
 							{
-								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(1),
 								},
 							},
 							{
-								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(2),
 								},
 							},
 							{
-								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(3),
 								},
@@ -1462,26 +1459,21 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 					ArrayValue: &btpb.ArrayValue{
 						Values: []*btpb.Value{
 							{
-								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(1),
 								},
 							},
 							{
-								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(2),
 								},
 							},
 							{
-								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(3),
 								},
 							},
-							{
-								Type: &btpb.Type{},
-							},
+							{},
 						},
 					},
 				},
@@ -1507,19 +1499,17 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 					ArrayValue: &btpb.ArrayValue{
 						Values: []*btpb.Value{
 							{
-								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(1),
 								},
 							},
 							{
-								Type: &btpb.Type{},
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(2),
 								},
 							},
 							{
-								Type: &btpb.Type{},
+
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(3),
 								},

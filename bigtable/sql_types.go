@@ -452,10 +452,8 @@ func newArraySQLType(value any, elemType SQLType) (*ArraySQLType, error) {
 			return nil, err
 		}
 
-		// Kind shouldn't be set in nested Values. It should only be at the top level
-		if elemPbVal.Type != nil {
-			elemPbVal.Type.Kind = nil
-		}
+		// Type shouldn't be set in nested Values. It should only be at the top level
+		elemPbVal.Type = nil
 		pbValues = append(pbValues, elemPbVal)
 	}
 
