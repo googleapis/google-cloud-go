@@ -22,9 +22,6 @@ package recaptchaenterprisepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -469,8 +468,8 @@ const (
 	// Enable Fraud Prevention for this assessment, if Fraud Prevention is
 	// enabled in the Google Cloud console.
 	Event_ENABLED Event_FraudPrevention = 1
-	// Disable Fraud Prevention for this assessment, regardless of Google Cloud
-	// console settings.
+	// Disable Fraud Prevention for this assessment, regardless of the Google
+	// Cloud console settings.
 	Event_DISABLED Event_FraudPrevention = 2
 )
 
