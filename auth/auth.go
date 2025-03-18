@@ -33,6 +33,7 @@ import (
 
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/jwt"
+	"cloud.google.com/go/auth/internal/trustboundary"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -53,6 +54,7 @@ const (
 
 // tokenState represents different states for a [Token].
 type tokenState int
+type TrustBoundaryData = trustboundary.TrustBoundaryData
 
 const (
 	// fresh indicates that the [Token] is valid. It is not expired or close to
@@ -99,6 +101,11 @@ type Token struct {
 	// Metadata  may include, but is not limited to, the body of the token
 	// response returned by the server.
 	Metadata map[string]interface{} // TODO(codyoss): maybe make a method to flatten metadata to avoid []string for url.Values
+	// TrustBoundaryData represents the trust boundary data associated with the token.
+	// It contains information about the regions or environments where the token is valid.
+	// This data is used to enforce trust boundary restrictions on requests made with the token.
+	// TrustBoundaryData is a value type for immutability after token creation.
+	TrustBoundaryData TrustBoundaryData
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -485,6 +492,8 @@ type Options2LO struct {
 	Audience string
 	// PrivateClaims allows specifying any custom claims for the JWT. Optional.
 	PrivateClaims map[string]interface{}
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	UniverseDomain string
 
 	// Client is the client to be used to make the underlying token requests.
 	// Optional.
@@ -497,6 +506,18 @@ type Options2LO struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
+
+	// TrustBoundaryData specifies the trust boundary settings for the credential.
+	// It defines the regions or environments where the credential is allowed to be used.
+	// This data is used to enforce trust boundary restrictions on requests made with the credential.
+	// The TrustBoundaryData field is a pointer to allow for caching and updates to the trust boundary data.
+	// This is particularly relevant for certain credential types, such as service accounts,
+	// where trust boundaries are enforced to limit credential usage to authorized locations.
+	// For other credential types, this field will be nil.
+	TrustBoundaryData *TrustBoundaryData
+	// IsServiceAccount indicates if the token provider uses a Google Cloud service account.
+	// When true, service account specific trust boundary logic is enabled.
+	IsServiceAccount bool
 }
 
 func (o *Options2LO) client() *http.Client {
@@ -614,5 +635,30 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		}
 		token.Value = tokenRes.IDToken
 	}
+	if tp.opts.IsServiceAccount {
+		trustBoundaryData, err := tp.lookupServiceAccountTrustBoundaryData(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
+		}
+		token.TrustBoundaryData = *trustBoundaryData
+	}
 	return token, nil
+}
+
+// lookupServiceAccountTrustBoundaryData fetches trust boundary data for a Google Cloud service account.
+// It retrieves the allowed locations for the service account, which are used to enforce trust boundary restrictions.
+// If the token provider is not configured for a service account (IsServiceAccount is false),
+// it returns a no-op TrustBoundaryData, indicating that no trust boundary restrictions apply.
+func (tp *tokenProvider2LO) lookupServiceAccountTrustBoundaryData(ctx context.Context) (*TrustBoundaryData, error) {
+	if !tp.opts.IsServiceAccount {
+		return trustboundary.NewNoOpTrustBoundaryData(), nil
+	}
+	trustBoundaryData, err := trustboundary.LookupServiceAccountTrustBoundary(ctx, tp.opts.client(), tp.opts.Email, tp.opts.TrustBoundaryData, tp.opts.UniverseDomain)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the cached trust boundary data in the token provider options.
+	tp.opts.TrustBoundaryData = trustBoundaryData
+	return trustBoundaryData, nil
 }

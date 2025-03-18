@@ -428,6 +428,7 @@ func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ..
 	}
 	metadata := make(map[string]string, len(c.metadata)+1)
 	setAuthMetadata(token, metadata)
+	setTrustBoundaryMetadata(token, metadata)
 	for k, v := range c.metadata {
 		metadata[k] = v
 	}
@@ -442,6 +443,18 @@ func setAuthMetadata(token *auth.Token, m map[string]string) {
 		typ = internal.TokenTypeBearer
 	}
 	m["authorization"] = typ + " " + token.Value
+}
+
+// setTrustBoundaryMetadata adds the "x-allowed-locations" metadata to the provided map if the token contains trust boundary data.
+// If the token's TrustBoundaryData is nil, empty, or indicates a no-op (no restrictions),
+// this function does nothing.
+// The "x-allowed-locations" metadata contains the encoded representation of the allowed locations
+// where the token can be used, as specified in the TrustBoundaryData.
+func setTrustBoundaryMetadata(token *auth.Token, m map[string]string) {
+	if token.TrustBoundaryData.IsNoOpOrEmpty() {
+		return
+	}
+	m["x-allowed-locations"] = token.TrustBoundaryData.EncodedLocations()
 }
 
 func (c *grpcCredentialsProvider) RequireTransportSecurity() bool {
