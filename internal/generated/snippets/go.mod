@@ -530,3 +530,5 @@ replace cloud.google.com/go/memorystore => ../../../memorystore
 replace cloud.google.com/go/parametermanager => ../../../parametermanager
 
 replace cloud.google.com/go/financialservices => ../../../financialservices
+
+replace cloud.google.com/go/modelarmor => ../../../modelarmor
