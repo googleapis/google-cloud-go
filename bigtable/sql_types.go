@@ -36,7 +36,7 @@ type SQLType interface {
 	typeProto() (*btpb.Type, error)
 
 	// Used while binding parameters to prepared query
-	pbVal() *btpb.Value
+	valueProto() *btpb.Value
 
 	isValidArrayElemType() bool
 }
@@ -75,11 +75,11 @@ func newBytesSQLType(value any) (*BytesSQLType, error) {
 	}, nil
 }
 
-func (s BytesSQLType) pbVal() *btpb.Value {
-	return s.value
-}
 func (s BytesSQLType) isValidArrayElemType() bool {
 	return true
+}
+func (s BytesSQLType) valueProto() *btpb.Value {
+	return s.value
 }
 func (s BytesSQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
@@ -121,11 +121,12 @@ func newStringSQLType(value any) (*StringSQLType, error) {
 		},
 	}, nil
 }
-func (s StringSQLType) pbVal() *btpb.Value {
-	return s.value
-}
+
 func (s StringSQLType) isValidArrayElemType() bool {
 	return true
+}
+func (s StringSQLType) valueProto() *btpb.Value {
+	return s.value
 }
 func (s StringSQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
@@ -170,11 +171,11 @@ func newInt64SQLType(value any) (*Int64SQLType, error) {
 	return nil, &errTypeMismatch{value: value, psType: Int64SQLType{}}
 }
 
-func (s Int64SQLType) pbVal() *btpb.Value {
-	return s.value
-}
 func (s Int64SQLType) isValidArrayElemType() bool {
 	return true
+}
+func (s Int64SQLType) valueProto() *btpb.Value {
+	return s.value
 }
 func (s Int64SQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
@@ -215,11 +216,12 @@ func newFloat32SQLType(value any) (*Float32SQLType, error) {
 		},
 	}, nil
 }
-func (s Float32SQLType) pbVal() *btpb.Value {
-	return s.value
-}
+
 func (s Float32SQLType) isValidArrayElemType() bool {
 	return true
+}
+func (s Float32SQLType) valueProto() *btpb.Value {
+	return s.value
 }
 func (s Float32SQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
@@ -261,11 +263,12 @@ func newFloat64SQLType(value any) (*Float64SQLType, error) {
 		},
 	}, nil
 }
-func (s Float64SQLType) pbVal() *btpb.Value {
-	return s.value
-}
+
 func (s Float64SQLType) isValidArrayElemType() bool {
 	return true
+}
+func (s Float64SQLType) valueProto() *btpb.Value {
+	return s.value
 }
 func (s Float64SQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
@@ -307,11 +310,12 @@ func newBoolSQLType(value any) (*BoolSQLType, error) {
 		},
 	}, nil
 }
-func (s BoolSQLType) pbVal() *btpb.Value {
-	return s.value
-}
+
 func (s BoolSQLType) isValidArrayElemType() bool {
 	return true
+}
+func (s BoolSQLType) valueProto() *btpb.Value {
+	return s.value
 }
 func (s BoolSQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
@@ -354,11 +358,11 @@ func newTimestampSQLType(value any) (*TimestampSQLType, error) {
 	}, nil
 }
 
-func (s TimestampSQLType) pbVal() *btpb.Value {
-	return s.value
-}
 func (s TimestampSQLType) isValidArrayElemType() bool {
 	return true
+}
+func (s TimestampSQLType) valueProto() *btpb.Value {
+	return s.value
 }
 func (s TimestampSQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
@@ -400,13 +404,13 @@ func newDateSQLType(value any) (*DateSQLType, error) {
 		},
 	}, nil
 }
-func (s DateSQLType) pbVal() *btpb.Value {
-	return s.value
-}
+
 func (s DateSQLType) isValidArrayElemType() bool {
 	return true
 }
-
+func (s DateSQLType) valueProto() *btpb.Value {
+	return s.value
+}
 func (s DateSQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
 		Kind: &btpb.Type_DateType{
@@ -469,14 +473,12 @@ func newArraySQLType(value any, elemType SQLType) (*ArraySQLType, error) {
 	}, nil
 }
 
-func (s ArraySQLType) pbVal() *btpb.Value {
-	return s.value
-}
-
 func (s ArraySQLType) isValidArrayElemType() bool {
 	return false
 }
-
+func (s ArraySQLType) valueProto() *btpb.Value {
+	return s.value
+}
 func (s ArraySQLType) typeProto() (*btpb.Type, error) {
 	if s.ElemType == nil {
 		return nil, errors.New("bigtable: ArraySQLType must specify an explicit ElemType")
@@ -499,64 +501,34 @@ func (s ArraySQLType) typeProto() (*btpb.Type, error) {
 }
 
 func anySQLTypeToPbVal(value any, sqlType SQLType) (*btpb.Value, error) {
+	var err error
+	var sqlTypeVal SQLType
 	switch t := sqlType.(type) {
 	case BytesSQLType:
-		sqlTypeVal, err := newBytesSQLType(value)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newBytesSQLType(value)
 	case StringSQLType:
-		sqlTypeVal, err := newStringSQLType(value)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newStringSQLType(value)
 	case Int64SQLType:
-		sqlTypeVal, err := newInt64SQLType(value)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newInt64SQLType(value)
 	case Float32SQLType:
-		sqlTypeVal, err := newFloat32SQLType(value)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newFloat32SQLType(value)
 	case Float64SQLType:
-		sqlTypeVal, err := newFloat64SQLType(value)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newFloat64SQLType(value)
 	case BoolSQLType:
-		sqlTypeVal, err := newBoolSQLType(value)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newBoolSQLType(value)
 	case TimestampSQLType:
-		sqlTypeVal, err := newTimestampSQLType(value)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newTimestampSQLType(value)
 	case DateSQLType:
-		sqlTypeVal, err := newDateSQLType(value)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newDateSQLType(value)
 	case ArraySQLType:
-		sqlTypeVal, err := newArraySQLType(value, t.ElemType)
-		if err != nil {
-			return nil, err
-		}
-		return sqlTypeVal.pbVal(), nil
+		sqlTypeVal, err = newArraySQLType(value, t.ElemType)
 	default:
 		return nil, errors.New("bigtable: unsupported SQLType: " + reflect.TypeOf(t).String())
 	}
+	if err != nil {
+		return nil, err
+	}
+	return sqlTypeVal.valueProto(), nil
 }
 
 type errTypeMismatch struct {

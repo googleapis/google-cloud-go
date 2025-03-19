@@ -477,9 +477,6 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 		ps:     ps,
 		params: map[string]*btpb.Value{},
 	}
-	if values == nil {
-		return &bs, nil
-	}
 
 	boundParams := map[string]*btpb.Value{}
 	for paramName, paramVal := range values {

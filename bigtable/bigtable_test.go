@@ -1608,18 +1608,25 @@ func TestPreparedStatement_Bind(t *testing.T) {
 		wantErrMsg string
 	}{
 		{
-			testName:   "Bind no parameter error",
+			testName:   "no parameter error",
 			paramTypes: map[string]SQLType{},
 			values:     map[string]any{"param1": "value1"},
 			wantErr:    true,
 			wantErrMsg: "bigtable: no parameter with name param1 in prepared statement",
 		},
 		{
-			testName:   "Bind not bound error",
+			testName:   "not bound error - single missing",
 			paramTypes: map[string]SQLType{"param1": StringSQLType{}, "param2": StringSQLType{}},
 			values:     map[string]any{"param1": "value1"},
 			wantErr:    true,
 			wantErrMsg: "bigtable: parameter param2 not bound in prepared statement",
+		},
+		{
+			testName:   "not bound error - all missing",
+			paramTypes: map[string]SQLType{"param1": StringSQLType{}, "param2": StringSQLType{}},
+			values:     nil,
+			wantErr:    true,
+			wantErrMsg: "bigtable: parameter param1 not bound in prepared statement",
 		},
 	}
 	for _, tt := range tests {
