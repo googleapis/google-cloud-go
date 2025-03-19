@@ -4218,7 +4218,7 @@ type NetworkingConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Indicates the user requested specifc connection type between
+	// Optional. Indicates the user requested specific connection type between
 	// Tenant and Customer projects. You cannot set networking connection type in
 	// public IP environment.
 	ConnectionType NetworkingConfig_ConnectionType `protobuf:"varint,1,opt,name=connection_type,json=connectionType,proto3,enum=google.cloud.orchestration.airflow.service.v1.NetworkingConfig_ConnectionType" json:"connection_type,omitempty"`
