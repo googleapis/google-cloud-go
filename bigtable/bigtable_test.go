@@ -22,15 +22,20 @@ import (
 	"encoding/binary"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"cloud.google.com/go/civil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var disableMetricsConfig = ClientConfig{MetricsProvider: NoopMetricsProvider{}}
@@ -1116,5 +1121,563 @@ func TestApplyBulk_MutationsSucceedAfterGroupError(t *testing.T) {
 	})
 	if gotErr != nil {
 		t.Fatalf("ReadRows failed: %v", gotErr)
+	}
+}
+
+func Test_anySQLTypeToPbVal(t *testing.T) {
+	testTime := time.Now()
+	testDate := civil.DateOf(time.Now())
+
+	tests := []struct {
+		testName   string
+		paramVal   any
+		psType     SQLType
+		wantPbVal  *btpb.Value
+		wantErr    bool
+		wantErrMsg string
+	}{
+		{
+			testName: "BytesSQLType success",
+			paramVal: []byte("test"),
+			psType:   BytesSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_BytesType{
+						BytesType: &btpb.Type_Bytes{},
+					},
+				},
+				Kind: &btpb.Value_BytesValue{
+					BytesValue: []byte("test"),
+				},
+			},
+		},
+		{
+			testName: "BytesSQLType nil success",
+			psType:   BytesSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_BytesType{
+						BytesType: &btpb.Type_Bytes{},
+					},
+				},
+			},
+		},
+		{
+			testName:   "BytesSQLType type mismatch",
+			paramVal:   "test",
+			psType:     BytesSQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "test", psType: BytesSQLType{}}).Error(),
+		},
+		{
+			testName: "StringSQLType success",
+			paramVal: "test",
+			psType:   StringSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_StringType{
+						StringType: &btpb.Type_String{},
+					},
+				},
+				Kind: &btpb.Value_StringValue{
+					StringValue: "test",
+				},
+			},
+		},
+		{
+			testName: "StringSQLType nil success",
+			psType:   StringSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_StringType{
+						StringType: &btpb.Type_String{},
+					},
+				},
+			},
+		},
+		{
+			testName:   "StringSQLType type mismatch",
+			paramVal:   123,
+			psType:     StringSQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: 123, psType: StringSQLType{}}).Error(),
+		},
+		{
+			testName: "Int64SQLType success",
+			paramVal: int64(123),
+			psType:   Int64SQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_Int64Type{
+						Int64Type: &btpb.Type_Int64{},
+					},
+				},
+				Kind: &btpb.Value_IntValue{
+					IntValue: int64(123),
+				},
+			},
+		},
+		{
+			testName: "Int64SQLType nil success",
+			psType:   Int64SQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_Int64Type{
+						Int64Type: &btpb.Type_Int64{},
+					},
+				},
+			},
+		},
+		{
+			testName:   "Int64SQLType type mismatch",
+			paramVal:   "123",
+			psType:     Int64SQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "123", psType: Int64SQLType{}}).Error(),
+		},
+		{
+			testName: "Float32SQLType success",
+			paramVal: float32(1.23),
+			psType:   Float32SQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_Float32Type{
+						Float32Type: &btpb.Type_Float32{},
+					},
+				},
+				Kind: &btpb.Value_FloatValue{
+					FloatValue: float64(1.23),
+				},
+			},
+		},
+		{
+			testName: "Float32SQLType nil success",
+			psType:   Float32SQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_Float32Type{
+						Float32Type: &btpb.Type_Float32{},
+					},
+				},
+			},
+		},
+		{
+			testName:   "Float32SQLType type mismatch - string",
+			paramVal:   "1.23",
+			psType:     Float32SQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "1.23", psType: Float32SQLType{}}).Error(),
+		},
+		{
+			testName:   "Float32SQLType type mismatch - float64",
+			paramVal:   float64(1.23),
+			psType:     Float32SQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: float64(1.23), psType: Float32SQLType{}}).Error(),
+		},
+		{
+			testName: "Float64SQLType success",
+			paramVal: float64(1.23),
+			psType:   Float64SQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_Float64Type{
+						Float64Type: &btpb.Type_Float64{},
+					},
+				},
+				Kind: &btpb.Value_FloatValue{
+					FloatValue: float64(1.23),
+				},
+			},
+		},
+		{
+			testName: "Float64SQLType nil success",
+			psType:   Float64SQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_Float64Type{
+						Float64Type: &btpb.Type_Float64{},
+					},
+				},
+			},
+		},
+		{
+			testName:   "Float64SQLType type mismatch - string",
+			paramVal:   "1.23",
+			psType:     Float64SQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "1.23", psType: Float64SQLType{}}).Error(),
+		},
+		{
+			testName:   "Float64SQLType type mismatch - float32",
+			paramVal:   float32(1.23),
+			psType:     Float64SQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: float32(1.23), psType: Float64SQLType{}}).Error(),
+		},
+		{
+			testName: "BoolSQLType success",
+			paramVal: true,
+			psType:   BoolSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_BoolType{
+						BoolType: &btpb.Type_Bool{},
+					},
+				},
+				Kind: &btpb.Value_BoolValue{
+					BoolValue: true,
+				},
+			},
+		},
+		{
+			testName: "BoolSQLType nil success",
+			psType:   BoolSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_BoolType{
+						BoolType: &btpb.Type_Bool{},
+					},
+				},
+			},
+		},
+		{
+			testName:   "BoolSQLType type mismatch",
+			paramVal:   "true",
+			psType:     BoolSQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "true", psType: BoolSQLType{}}).Error(),
+		},
+		{
+			testName: "TimestampSQLType success",
+			paramVal: testTime,
+			psType:   TimestampSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_TimestampType{
+						TimestampType: &btpb.Type_Timestamp{},
+					},
+				},
+				Kind: &btpb.Value_TimestampValue{
+					TimestampValue: timestamppb.New(testTime),
+				},
+			},
+		},
+		{
+			testName: "TimestampSQLType nil success",
+			psType:   TimestampSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_TimestampType{
+						TimestampType: &btpb.Type_Timestamp{},
+					},
+				},
+			},
+		},
+		{
+			testName:   "TimestampSQLType type mismatch",
+			paramVal:   "2024-01-01",
+			psType:     TimestampSQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "2024-01-01", psType: TimestampSQLType{}}).Error(),
+		},
+		{
+			testName: "DateSQLType success",
+			paramVal: testDate,
+			psType:   DateSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_DateType{
+						DateType: &btpb.Type_Date{},
+					},
+				},
+				Kind: &btpb.Value_DateValue{
+					DateValue: &date.Date{Year: int32(testDate.Year), Month: int32(testDate.Month), Day: int32(testDate.Day)},
+				},
+			},
+		},
+		{
+			testName: "DateSQLType nil success",
+			psType:   DateSQLType{},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_DateType{
+						DateType: &btpb.Type_Date{},
+					},
+				},
+			},
+		},
+		{
+			testName:   "DateSQLType type mismatch",
+			paramVal:   "2024-01-01",
+			psType:     DateSQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "2024-01-01", psType: DateSQLType{}}).Error(),
+		},
+		{
+			testName: "ArraySQLType success concrete type",
+			paramVal: []int64{1, 2, 3},
+			psType:   ArraySQLType{ElemType: Int64SQLType{}},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ArrayType{
+						ArrayType: &btpb.Type_Array{
+							ElementType: &btpb.Type{
+								Kind: &btpb.Type_Int64Type{
+									Int64Type: &btpb.Type_Int64{},
+								},
+							},
+						},
+					},
+				},
+				Kind: &btpb.Value_ArrayValue{
+					ArrayValue: &btpb.ArrayValue{
+						Values: []*btpb.Value{
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(1),
+								},
+							},
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(2),
+								},
+							},
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(3),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			testName: "ArraySQLType success any type with nil",
+			paramVal: []any{1, 2, 3, nil},
+			psType:   ArraySQLType{ElemType: Int64SQLType{}},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ArrayType{
+						ArrayType: &btpb.Type_Array{
+							ElementType: &btpb.Type{
+								Kind: &btpb.Type_Int64Type{
+									Int64Type: &btpb.Type_Int64{},
+								},
+							},
+						},
+					},
+				},
+				Kind: &btpb.Value_ArrayValue{
+					ArrayValue: &btpb.ArrayValue{
+						Values: []*btpb.Value{
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(1),
+								},
+							},
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(2),
+								},
+							},
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(3),
+								},
+							},
+							{},
+						},
+					},
+				},
+			},
+		},
+		{
+			testName: "ArraySQLType success int32 in int64",
+			paramVal: []int32{1, 2, 3},
+			psType:   ArraySQLType{ElemType: Int64SQLType{}},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ArrayType{
+						ArrayType: &btpb.Type_Array{
+							ElementType: &btpb.Type{
+								Kind: &btpb.Type_Int64Type{
+									Int64Type: &btpb.Type_Int64{},
+								},
+							},
+						},
+					},
+				},
+				Kind: &btpb.Value_ArrayValue{
+					ArrayValue: &btpb.ArrayValue{
+						Values: []*btpb.Value{
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(1),
+								},
+							},
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(2),
+								},
+							},
+							{
+								Kind: &btpb.Value_IntValue{
+									IntValue: int64(3),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			testName: "ArraySQLType nil success",
+			psType:   ArraySQLType{ElemType: Int64SQLType{}},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ArrayType{
+						ArrayType: &btpb.Type_Array{
+							ElementType: &btpb.Type{
+								Kind: &btpb.Type_Int64Type{
+									Int64Type: &btpb.Type_Int64{},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			testName: "ArraySQLType empty array success",
+			paramVal: []int64{},
+			psType:   ArraySQLType{ElemType: Int64SQLType{}},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ArrayType{
+						ArrayType: &btpb.Type_Array{
+							ElementType: &btpb.Type{
+								Kind: &btpb.Type_Int64Type{
+									Int64Type: &btpb.Type_Int64{},
+								},
+							},
+						},
+					},
+				},
+				Kind: &btpb.Value_ArrayValue{
+					ArrayValue: &btpb.ArrayValue{},
+				},
+			},
+		},
+		{
+			testName:   "ArraySQLType type mismatch",
+			paramVal:   "not an array",
+			psType:     ArraySQLType{ElemType: Int64SQLType{}},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "not an array", psType: ArraySQLType{ElemType: Int64SQLType{}}}).Error(),
+		},
+		{
+			testName:   "ArraySQLType element type mismatch",
+			paramVal:   []any{int64(1), "not an int", int64(3)},
+			psType:     ArraySQLType{ElemType: Int64SQLType{}},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "not an int", psType: Int64SQLType{}}).Error(),
+		},
+		{
+			testName:   "ArraySQLType unsupported ElemType",
+			paramVal:   []int64{1, 2, 3},
+			psType:     ArraySQLType{ElemType: ArraySQLType{ElemType: Int64SQLType{}}},
+			wantErr:    true,
+			wantErrMsg: "bigtable: unsupported ElemType: bigtable.ArraySQLType",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.testName, func(t *testing.T) {
+			got, err := anySQLTypeToPbVal(tt.paramVal, tt.psType)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("error got: %v, want: nil", err)
+				return
+			}
+			if tt.wantErr {
+				if err != nil && err.Error() != tt.wantErrMsg {
+					t.Errorf("error got: %v, want: %v", err, tt.wantErrMsg)
+				}
+				return
+			}
+			if !cmp.Equal(got, tt.wantPbVal, cmpOptionsBtpbValue()...) {
+				t.Errorf("SQLType value got: %+v, want: %+v, diff: %v", got, tt.wantPbVal, cmp.Diff(got, tt.wantPbVal, cmpOptionsBtpbValue()...))
+			}
+		})
+	}
+}
+
+func cmpOptionsBtpbValue() []cmp.Option {
+	return []cmp.Option{cmpopts.IgnoreUnexported(btpb.Value{}, btpb.Type{},
+		btpb.Type_BytesType{}, btpb.Type_Bytes{},
+		btpb.Type_StringType{}, btpb.Type_String{},
+		btpb.Type_Int64Type{}, btpb.Type_Int64{},
+		btpb.Type_Float32Type{}, btpb.Type_Float32{},
+		btpb.Type_Float64Type{}, btpb.Type_Float64{},
+		btpb.Type_BoolType{}, btpb.Type_Bool{},
+		btpb.Type_TimestampType{}, btpb.Type_Timestamp{},
+		btpb.Type_DateType{}, btpb.Type_Date{},
+		btpb.Type_ArrayType{}, btpb.Type_Array{},
+		btpb.Value_BytesValue{},
+		btpb.Value_StringValue{},
+		btpb.Value_IntValue{},
+		btpb.Value_FloatValue{},
+		btpb.Value_BoolValue{},
+		btpb.Value_TimestampValue{}, timestamppb.Timestamp{},
+		btpb.Value_DateValue{}, date.Date{},
+		btpb.Value_ArrayValue{}, btpb.ArrayValue{}),
+		cmpopts.IgnoreFields(btpb.Value_FloatValue{}, "FloatValue")}
+}
+
+func TestPreparedStatement_Bind(t *testing.T) {
+	tests := []struct {
+		testName   string
+		query      string
+		paramTypes map[string]SQLType
+		values     map[string]any
+		wantErr    bool
+		wantErrMsg string
+	}{
+		{
+			testName:   "no parameter error",
+			paramTypes: map[string]SQLType{},
+			values:     map[string]any{"param1": "value1"},
+			wantErr:    true,
+			wantErrMsg: "bigtable: no parameter with name param1 in prepared statement",
+		},
+		{
+			testName:   "not bound error - single missing",
+			paramTypes: map[string]SQLType{"param1": StringSQLType{}, "param2": StringSQLType{}},
+			values:     map[string]any{"param1": "value1"},
+			wantErr:    true,
+			wantErrMsg: "bigtable: parameter param2 not bound in prepared statement",
+		},
+		{
+			testName:   "not bound error - all missing",
+			paramTypes: map[string]SQLType{"param1": StringSQLType{}, "param2": StringSQLType{}},
+			values:     nil,
+			wantErr:    true,
+			wantErrMsg: "not bound in prepared statement",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.testName, func(t *testing.T) {
+			ps := PreparedStatement{
+				paramTypes: tt.paramTypes,
+			}
+
+			_, err := ps.Bind(tt.values)
+			if err == nil && tt.wantErr {
+				t.Fatalf("Bind: err got: nil, want: %v", tt.wantErrMsg)
+			}
+			if err != nil && !strings.Contains(err.Error(), tt.wantErrMsg) {
+				t.Fatalf("Bind: err got: %v, want: %v", err, tt.wantErrMsg)
+			}
+		})
 	}
 }

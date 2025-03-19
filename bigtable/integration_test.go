@@ -35,6 +35,7 @@ import (
 	"time"
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/optional"
@@ -4947,7 +4948,7 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
-func TestIntegration_PrepareStatement(t *testing.T) {
+func TestIntegration_PrepareAndBindStatement(t *testing.T) {
 	ctx := context.Background()
 	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
@@ -4959,7 +4960,7 @@ func TestIntegration_PrepareStatement(t *testing.T) {
 		t.Skip("emulator doesn't support PrepareQuery")
 	}
 
-	if _, err = client.PrepareStatement(ctx,
+	ps, err := client.PrepareStatement(ctx,
 		"SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, "+
 			"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, "+
 			"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, "+
@@ -5001,8 +5002,31 @@ func TestIntegration_PrepareStatement(t *testing.T) {
 				ElemType: DateSQLType{},
 			},
 		},
-	); err != nil {
+	)
+	if err != nil {
 		t.Fatal("PrepareStatement: " + err.Error())
+	}
+
+	_, err = ps.Bind(map[string]any{
+		"bytesParam":        []byte("foo"),
+		"stringParam":       "stringVal",
+		"int64Param":        int64(1),
+		"float32Param":      float32(1.3),
+		"float64Param":      float64(1.4),
+		"boolParam":         true,
+		"tsParam":           time.Now(),
+		"dateParam":         civil.DateOf(time.Now()),
+		"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
+		"stringArrayParam":  []any{"foo", nil, "bar"},
+		"int64ArrayParam":   []any{int64(1), nil, int64(2)},
+		"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
+		"float64ArrayParam": []float64{1.4, 2.4, 3.4},
+		"boolArrayParam":    []any{true, nil, false},
+		"tsArrayParam":      []any{time.Now(), nil},
+		"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
+	})
+	if err != nil {
+		t.Fatal("Bind: " + err.Error())
 	}
 }
 
