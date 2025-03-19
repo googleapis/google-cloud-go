@@ -81,9 +81,7 @@ func (s BytesSQLType) typeProto() (*btpb.Type, error) {
 }
 
 // StringSQLType represents a string.
-type StringSQLType struct {
-	value *btpb.Value
-}
+type StringSQLType struct{}
 
 func (s StringSQLType) isValidArrayElemType() bool {
 	return true
@@ -121,9 +119,7 @@ func (s StringSQLType) typeProto() (*btpb.Type, error) {
 }
 
 // Int64SQLType represents an 8-byte integer.
-type Int64SQLType struct {
-	value *btpb.Value
-}
+type Int64SQLType struct{}
 
 func (s Int64SQLType) isValidArrayElemType() bool {
 	return true
@@ -163,9 +159,7 @@ func (s Int64SQLType) typeProto() (*btpb.Type, error) {
 }
 
 // Float32SQLType represents a 32-bit floating-point number.
-type Float32SQLType struct {
-	value *btpb.Value
-}
+type Float32SQLType struct{}
 
 func (s Float32SQLType) isValidArrayElemType() bool {
 	return true
@@ -202,9 +196,7 @@ func (s Float32SQLType) typeProto() (*btpb.Type, error) {
 }
 
 // Float64SQLType represents a 64-bit floating-point number.
-type Float64SQLType struct {
-	value *btpb.Value
-}
+type Float64SQLType struct{}
 
 func (s Float64SQLType) isValidArrayElemType() bool {
 	return true
@@ -242,9 +234,7 @@ func (s Float64SQLType) typeProto() (*btpb.Type, error) {
 }
 
 // BoolSQLType represents a boolean.
-type BoolSQLType struct {
-	value *btpb.Value
-}
+type BoolSQLType struct{}
 
 func (s BoolSQLType) isValidArrayElemType() bool {
 	return true
@@ -282,9 +272,7 @@ func (s BoolSQLType) typeProto() (*btpb.Type, error) {
 }
 
 // TimestampSQLType represents a point in time.
-type TimestampSQLType struct {
-	value *btpb.Value
-}
+type TimestampSQLType struct{}
 
 func (s TimestampSQLType) isValidArrayElemType() bool {
 	return true
@@ -322,9 +310,7 @@ func (s TimestampSQLType) typeProto() (*btpb.Type, error) {
 }
 
 // DateSQLType represents a calendar date.
-type DateSQLType struct {
-	value *btpb.Value
-}
+type DateSQLType struct{}
 
 func (s DateSQLType) isValidArrayElemType() bool {
 	return true
@@ -364,7 +350,6 @@ func (s DateSQLType) typeProto() (*btpb.Type, error) {
 // ArraySQLType represents an ordered list of elements of a given type.
 type ArraySQLType struct {
 	ElemType SQLType
-	value    *btpb.Value
 }
 
 func (s ArraySQLType) isValidArrayElemType() bool {

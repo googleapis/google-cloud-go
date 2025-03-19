@@ -1415,7 +1415,6 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 		},
 		{
 			testName: "ArraySQLType success concrete type",
-
 			paramVal: []int64{1, 2, 3},
 			psType:   ArraySQLType{ElemType: Int64SQLType{}},
 			wantPbVal: &btpb.Value{
@@ -1523,7 +1522,6 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 								},
 							},
 							{
-
 								Kind: &btpb.Value_IntValue{
 									IntValue: int64(3),
 								},
@@ -1547,6 +1545,27 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 							},
 						},
 					},
+				},
+			},
+		},
+		{
+			testName: "ArraySQLType empty array success",
+			paramVal: []int64{},
+			psType:   ArraySQLType{ElemType: Int64SQLType{}},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ArrayType{
+						ArrayType: &btpb.Type_Array{
+							ElementType: &btpb.Type{
+								Kind: &btpb.Type_Int64Type{
+									Int64Type: &btpb.Type_Int64{},
+								},
+							},
+						},
+					},
+				},
+				Kind: &btpb.Value_ArrayValue{
+					ArrayValue: &btpb.ArrayValue{},
 				},
 			},
 		},
@@ -1585,31 +1604,33 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 				}
 				return
 			}
-			if !cmp.Equal(got, tt.wantPbVal,
-				cmpopts.IgnoreUnexported(btpb.Value{}, btpb.Type{},
-					btpb.Type_BytesType{}, btpb.Type_Bytes{},
-					btpb.Type_StringType{}, btpb.Type_String{},
-					btpb.Type_Int64Type{}, btpb.Type_Int64{},
-					btpb.Type_Float32Type{}, btpb.Type_Float32{},
-					btpb.Type_Float64Type{}, btpb.Type_Float64{},
-					btpb.Type_BoolType{}, btpb.Type_Bool{},
-					btpb.Type_TimestampType{}, btpb.Type_Timestamp{},
-					btpb.Type_DateType{}, btpb.Type_Date{},
-					btpb.Type_ArrayType{}, btpb.Type_Array{},
-					btpb.Value_BytesValue{},
-					btpb.Value_StringValue{},
-					btpb.Value_IntValue{},
-					btpb.Value_FloatValue{},
-					btpb.Value_BoolValue{},
-					btpb.Value_TimestampValue{}, timestamppb.Timestamp{},
-					btpb.Value_DateValue{}, date.Date{},
-					btpb.Value_ArrayValue{}, btpb.ArrayValue{},
-				),
-				cmpopts.IgnoreFields(btpb.Value_FloatValue{}, "FloatValue")) {
-				t.Errorf("SQLType value got: %v, want: %v", got, tt.wantPbVal)
+			if !cmp.Equal(got, tt.wantPbVal, cmpOptionsBtpbValue()...) {
+				t.Errorf("SQLType value got: %+v, want: %+v, diff: %v", got, tt.wantPbVal, cmp.Diff(got, tt.wantPbVal, cmpOptionsBtpbValue()...))
 			}
 		})
 	}
+}
+
+func cmpOptionsBtpbValue() []cmp.Option {
+	return []cmp.Option{cmpopts.IgnoreUnexported(btpb.Value{}, btpb.Type{},
+		btpb.Type_BytesType{}, btpb.Type_Bytes{},
+		btpb.Type_StringType{}, btpb.Type_String{},
+		btpb.Type_Int64Type{}, btpb.Type_Int64{},
+		btpb.Type_Float32Type{}, btpb.Type_Float32{},
+		btpb.Type_Float64Type{}, btpb.Type_Float64{},
+		btpb.Type_BoolType{}, btpb.Type_Bool{},
+		btpb.Type_TimestampType{}, btpb.Type_Timestamp{},
+		btpb.Type_DateType{}, btpb.Type_Date{},
+		btpb.Type_ArrayType{}, btpb.Type_Array{},
+		btpb.Value_BytesValue{},
+		btpb.Value_StringValue{},
+		btpb.Value_IntValue{},
+		btpb.Value_FloatValue{},
+		btpb.Value_BoolValue{},
+		btpb.Value_TimestampValue{}, timestamppb.Timestamp{},
+		btpb.Value_DateValue{}, date.Date{},
+		btpb.Value_ArrayValue{}, btpb.ArrayValue{}),
+		cmpopts.IgnoreFields(btpb.Value_FloatValue{}, "FloatValue")}
 }
 
 func TestPreparedStatement_Bind(t *testing.T) {
