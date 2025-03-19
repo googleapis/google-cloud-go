@@ -401,7 +401,7 @@ type PrepareOption interface {
 // Parameter names may consist of any combination of letters, numbers, and underscores.
 //
 // Parameters can appear anywhere that a literal value is expected. The same parameter name can
-// be used more than once, for example: WHERE cf["qualifier1"] = @value OR cf["qualifier2"] * = @value
+// be used more than once, for example: WHERE cf["qualifier1"] = @value OR cf["qualifier2"] = @value
 func (c *Client) PrepareStatement(ctx context.Context, query string, paramTypes map[string]SQLType, opts ...PrepareOption) (preparedStatement *PreparedStatement, err error) {
 	md := metadata.Join(metadata.Pairs(
 		resourcePrefixHeader, c.fullInstanceName(),

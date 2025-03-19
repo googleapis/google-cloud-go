@@ -1261,11 +1261,18 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 			},
 		},
 		{
-			testName:   "Float32SQLType type mismatch",
+			testName:   "Float32SQLType type mismatch - string",
 			paramVal:   "1.23",
 			psType:     Float32SQLType{},
 			wantErr:    true,
 			wantErrMsg: ptr(errTypeMismatch{value: "1.23", psType: Float32SQLType{}}).Error(),
+		},
+		{
+			testName:   "Float32SQLType type mismatch - float64",
+			paramVal:   float64(1.23),
+			psType:     Float32SQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: float64(1.23), psType: Float32SQLType{}}).Error(),
 		},
 		{
 			testName: "Float64SQLType success",
@@ -1294,11 +1301,18 @@ func Test_anySQLTypeToPbVal(t *testing.T) {
 			},
 		},
 		{
-			testName:   "Float64SQLType type mismatch",
+			testName:   "Float64SQLType type mismatch - string",
 			paramVal:   "1.23",
 			psType:     Float64SQLType{},
 			wantErr:    true,
 			wantErrMsg: ptr(errTypeMismatch{value: "1.23", psType: Float64SQLType{}}).Error(),
+		},
+		{
+			testName:   "Float64SQLType type mismatch - float32",
+			paramVal:   float32(1.23),
+			psType:     Float64SQLType{},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: float32(1.23), psType: Float64SQLType{}}).Error(),
 		},
 		{
 			testName: "BoolSQLType success",
