@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.2.1...oracledatabase/v0.3.0) (2025-03-19)
+
+
+### Features
+
+* **oracledatabase:** Add enum value `State ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **oracledatabase:** Update comment for field `MaintenanceWindow.patching_mode` ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.2.0...oracledatabase/v0.2.1) (2025-03-13)
 
 

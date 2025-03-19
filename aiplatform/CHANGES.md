@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.77.0...aiplatform/v1.78.0) (2025-03-19)
+
+
+### Features
+
+* **aiplatform:** Add env variables and agent framework to ReasoningEngineSpec ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Add env variables and agent framework to ReasoningEngineSpec in v1beta1 ([#11867](https://github.com/googleapis/google-cloud-go/issues/11867)) ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+* **aiplatform:** Add VertexAISearch.engine option ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **aiplatform:** Add `deployment_spec` and `agent_framework` field to `ReasoningEngineSpec`. ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Add `deployment_spec` and `agent_framework` field to `ReasoningEngineSpec`. ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+* **aiplatform:** Update comment for `package_spec` from required to optional in `ReasoningEngineSpec`. ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Update comment for `package_spec` from required to optional in `ReasoningEngineSpec`. ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+
 ## [1.77.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.76.0...aiplatform/v1.77.0) (2025-03-13)
 
 
