@@ -234,6 +234,9 @@ type CredentialsOptions struct {
 	QuotaProjectIDProvider CredentialsPropertyProvider
 	// UniverseDomainProvider resolves the universe domain with the credentials.
 	UniverseDomainProvider CredentialsPropertyProvider
+	// IsServiceAccount indicates if the token provider uses a Google Cloud service account.
+	// When true, service account specific trust boundary logic is enabled.
+	IsServiceAccount bool
 }
 
 // NewCredentials returns new [Credentials] from the provided options.
