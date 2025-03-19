@@ -460,6 +460,7 @@ deep-remove-regex:
   - /metastore/apiv1alpha/
   - /metastore/apiv1beta/
   - /migrationcenter/apiv1/
+  - /modelarmor/apiv1/
   - /monitoring/apiv3/v2/
   - /monitoring/dashboard/apiv1/
   - /monitoring/metricsscope/apiv1/
@@ -971,6 +972,8 @@ deep-copy-regex:
   - source: /google/cloud/metastore/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/migrationcenter/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/modelarmor/v1/cloud.google.com/go
     dest: /
   - source: /google/monitoring/v3/cloud.google.com/go
     dest: /

@@ -326,6 +326,8 @@ type TableConf struct {
 	ChangeStreamRetention ChangeStreamRetention
 	// Configure an automated backup policy for the table
 	AutomatedBackupConfig TableAutomatedBackupConfig
+	// Configure a row key schema for the table
+	RowKeySchema *StructType
 }
 
 // CreateTable creates a new table in the instance.
@@ -372,6 +374,11 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 			return err
 		}
 		tbl.AutomatedBackupConfig = proto
+	}
+
+	if conf.RowKeySchema != nil {
+		proto := conf.RowKeySchema.proto()
+		tbl.RowKeySchema = proto.GetStructType()
 	}
 
 	if conf.Families != nil && conf.ColumnFamilies != nil {
@@ -458,6 +465,7 @@ const (
 	automatedBackupPolicyFieldMask = "automated_backup_policy"
 	retentionPeriodFieldMaskPath   = "retention_period"
 	frequencyFieldMaskPath         = "frequency"
+	rowKeySchemaMaskPath           = "row_key_schema"
 )
 
 func (ac *AdminClient) newUpdateTableRequestProto(tableID string) (*btapb.UpdateTableRequest, error) {
@@ -562,6 +570,28 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+frequencyFieldMaskPath)
 	}
 	req.Table.AutomatedBackupConfig = abc
+	return ac.updateTableAndWait(ctx, req)
+}
+
+// UpdateTableWithRowKeySchema updates a table with RowKeySchema.
+func (ac *AdminClient) UpdateTableWithRowKeySchema(ctx context.Context, tableID string, rowKeySchema StructType) error {
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
+	}
+	req.UpdateMask.Paths = append(req.UpdateMask.Paths, rowKeySchemaMaskPath)
+	req.Table.RowKeySchema = rowKeySchema.proto().GetStructType()
+	return ac.updateTableAndWait(ctx, req)
+}
+
+// UpdateTableRemoveRowKeySchema removes a RowKeySchema from a table.
+func (ac *AdminClient) UpdateTableRemoveRowKeySchema(ctx context.Context, tableID string) error {
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
+	}
+	req.UpdateMask.Paths = append(req.UpdateMask.Paths, rowKeySchemaMaskPath)
+	req.IgnoreWarnings = true
 	return ac.updateTableAndWait(ctx, req)
 }
 

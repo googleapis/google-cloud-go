@@ -88,6 +88,7 @@
     "memorystore": "0.2.1",
     "metastore": "1.14.5",
     "migrationcenter": "1.1.4",
+    "modelarmor": "0.0.0",
     "monitoring": "1.24.1",
     "netapp": "1.7.1",
     "networkconnectivity": "1.16.3",

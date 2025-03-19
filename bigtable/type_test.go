@@ -25,7 +25,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func aggregateProto() *btapb.Type {
+func int64BigEndianBytesProto() *btapb.Type {
 	return &btapb.Type{
 		Kind: &btapb.Type_Int64Type{
 			Int64Type: &btapb.Type_Int64{
@@ -54,9 +54,25 @@ func TestUnknown(t *testing.T) {
 }
 
 func TestInt64Proto(t *testing.T) {
-	want := aggregateProto()
+	want := int64BigEndianBytesProto()
 	it := Int64Type{Encoding: BigEndianBytesEncoding{}}
 
+	assertType(t, it, want)
+}
+
+func TestInt64ProtoOrderedCodeEncoding(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_Int64Type{
+			Int64Type: &btapb.Type_Int64{
+				Encoding: &btapb.Type_Int64_Encoding{
+					Encoding: &btapb.Type_Int64_Encoding_OrderedCodeBytes_{
+						OrderedCodeBytes: &btapb.Type_Int64_Encoding_OrderedCodeBytes{},
+					},
+				},
+			},
+		},
+	}
+	it := Int64Type{Encoding: Int64OrderedCodeBytesEncoding{}}
 	assertType(t, it, want)
 }
 
@@ -75,8 +91,111 @@ func TestStringProto(t *testing.T) {
 	assertType(t, st, want)
 }
 
+func TestTimestampProto(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_TimestampType{
+			TimestampType: &btapb.Type_Timestamp{
+				Encoding: &btapb.Type_Timestamp_Encoding{
+					Encoding: &btapb.Type_Timestamp_Encoding_UnixMicrosInt64{
+						UnixMicrosInt64: &btapb.Type_Int64_Encoding{
+							Encoding: &btapb.Type_Int64_Encoding_OrderedCodeBytes_{
+								OrderedCodeBytes: &btapb.Type_Int64_Encoding_OrderedCodeBytes{},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	tt := TimestampType{Encoding: TimestampUnixMicrosInt64Encoding{
+		UnixMicrosInt64Encoding: Int64OrderedCodeBytesEncoding{},
+	}}
+
+	assertType(t, tt, want)
+}
+
+func TestStructProto_DelimitedBytes(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_StructType{
+			StructType: &btapb.Type_Struct{
+				Fields: []*btapb.Type_Struct_Field{
+					{FieldName: "key1", Type: int64BigEndianBytesProto()},
+					{FieldName: "key2", Type: int64BigEndianBytesProto()},
+				},
+				Encoding: &btapb.Type_Struct_Encoding{
+					Encoding: &btapb.Type_Struct_Encoding_DelimitedBytes_{
+						DelimitedBytes: &btapb.Type_Struct_Encoding_DelimitedBytes{
+							Delimiter: []byte{'#'},
+						},
+					},
+				},
+			},
+		},
+	}
+	st := StructType{
+		Fields: []StructField{
+			{FieldName: "key1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+			{FieldName: "key2", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+		},
+		Encoding: StructDelimitedBytesEncoding{
+			Delimiter: []byte{'#'},
+		},
+	}
+	assertType(t, st, want)
+}
+
+func TestStructProto_Singleton(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_StructType{
+			StructType: &btapb.Type_Struct{
+				Fields: []*btapb.Type_Struct_Field{
+					{FieldName: "key1", Type: int64BigEndianBytesProto()},
+				},
+				Encoding: &btapb.Type_Struct_Encoding{
+					Encoding: &btapb.Type_Struct_Encoding_Singleton_{
+						Singleton: &btapb.Type_Struct_Encoding_Singleton{},
+					},
+				},
+			},
+		},
+	}
+	st := StructType{
+		Fields: []StructField{
+			{FieldName: "key1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+		},
+		Encoding: StructSingletonEncoding{},
+	}
+	assertType(t, st, want)
+}
+
+func TestStructProto_OrderedCodeBytes(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_StructType{
+			StructType: &btapb.Type_Struct{
+				Fields: []*btapb.Type_Struct_Field{
+					{FieldName: "key1", Type: int64BigEndianBytesProto()},
+					{FieldName: "key2", Type: int64BigEndianBytesProto()},
+				},
+				Encoding: &btapb.Type_Struct_Encoding{
+					Encoding: &btapb.Type_Struct_Encoding_OrderedCodeBytes_{
+						OrderedCodeBytes: &btapb.Type_Struct_Encoding_OrderedCodeBytes{},
+					},
+				},
+			},
+		},
+	}
+	st := StructType{
+		Fields: []StructField{
+			{FieldName: "key1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+			{FieldName: "key2", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
+		},
+		Encoding: StructOrderedCodeBytesEncoding{},
+	}
+	assertType(t, st, want)
+}
+
 func TestProtoBijection(t *testing.T) {
-	want := aggregateProto()
+	want := int64BigEndianBytesProto()
 	got := ProtoToType(want).proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)

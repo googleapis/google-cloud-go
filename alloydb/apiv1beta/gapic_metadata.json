@@ -80,6 +80,11 @@
                 "ExecuteSql"
               ]
             },
+            "ExportCluster": {
+              "methods": [
+                "ExportCluster"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -288,6 +293,11 @@
             "ExecuteSql": {
               "methods": [
                 "ExecuteSql"
+              ]
+            },
+            "ExportCluster": {
+              "methods": [
+                "ExportCluster"
               ]
             },
             "FailoverInstance": {

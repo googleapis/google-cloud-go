@@ -50,8 +50,8 @@ const (
 	// destination network.
 	Endpoint_GCP_NETWORK Endpoint_NetworkType = 1
 	// A network hosted outside of Google Cloud.
-	// This can be an on-premises network, or a network hosted by another cloud
-	// provider.
+	// This can be an on-premises network, an internet resource or a network
+	// hosted by another cloud provider.
 	Endpoint_NON_GCP_NETWORK Endpoint_NetworkType = 2
 )
 
@@ -371,45 +371,21 @@ type ConnectivityTest struct {
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// Required. Source specification of the Connectivity Test.
 	//
-	// You can use a combination of source IP address, virtual machine
-	// (VM) instance, or Compute Engine network to uniquely identify
-	// the source location.
+	// You can use a combination of source IP address, URI of a supported
+	// endpoint, project ID, or VPC network to identify the source location.
 	//
-	// Examples:
-	// If the source IP address is an internal IP address within a Google Cloud
-	// Virtual Private Cloud (VPC) network, then you must also specify the VPC
-	// network. Otherwise, specify the VM instance, which already contains its
-	// internal IP address and VPC network information.
-	//
-	// If the source of the test is within an on-premises network, then you must
-	// provide the destination VPC network.
-	//
-	// If the source endpoint is a Compute Engine VM instance with multiple
-	// network interfaces, the instance itself is not sufficient to identify the
-	// endpoint. So, you must also specify the source IP address or VPC network.
-	//
-	// A reachability analysis proceeds even if the source location is
-	// ambiguous. However, the test result may include endpoints that you don't
-	// intend to test.
+	// Reachability analysis might proceed even if the source location is
+	// ambiguous. However, the test result might include endpoints or use a source
+	// that you don't intend to test.
 	Source *Endpoint `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
 	// Required. Destination specification of the Connectivity Test.
 	//
-	// You can use a combination of destination IP address, Compute Engine
-	// VM instance, or VPC network to uniquely identify the destination
-	// location.
+	// You can use a combination of destination IP address, URI of a supported
+	// endpoint, project ID, or VPC network to identify the destination location.
 	//
-	// Even if the destination IP address is not unique, the source IP
-	// location is unique. Usually, the analysis can infer the destination
-	// endpoint from route information.
-	//
-	// If the destination you specify is a VM instance and the instance has
-	// multiple network interfaces, then you must also specify either
-	// a destination IP address  or VPC network to identify the destination
-	// interface.
-	//
-	// A reachability analysis proceeds even if the destination location is
-	// ambiguous. However, the result can include endpoints that you don't
-	// intend to test.
+	// Reachability analysis proceeds even if the destination location is
+	// ambiguous. However, the test result might include endpoints or use a
+	// destination that you don't intend to test.
 	Destination *Endpoint `protobuf:"bytes,4,opt,name=destination,proto3" json:"destination,omitempty"`
 	// IP Protocol of the test. When not provided, "TCP" is assumed.
 	Protocol string `protobuf:"bytes,5,opt,name=protocol,proto3" json:"protocol,omitempty"`
@@ -441,8 +417,7 @@ type ConnectivityTest struct {
 	// updating an existing test, or triggering a one-time rerun of an existing
 	// test.
 	ReturnReachabilityDetails *ReachabilityDetails `protobuf:"bytes,16,opt,name=return_reachability_details,json=returnReachabilityDetails,proto3" json:"return_reachability_details,omitempty"`
-	// Whether the test should skip firewall checking.
-	// If not provided, we assume false.
+	// Whether the analysis should skip firewall checking. Default value is false.
 	BypassFirewallChecks bool `protobuf:"varint,17,opt,name=bypass_firewall_checks,json=bypassFirewallChecks,proto3" json:"bypass_firewall_checks,omitempty"`
 }
 
@@ -597,7 +572,8 @@ type Endpoint struct {
 	// A forwarding rule and its corresponding IP address represent the frontend
 	// configuration of a Google Cloud load balancer. Forwarding rules are also
 	// used for protocol forwarding, Private Service Connect and other network
-	// services to provide forwarding information in the control plane. Format:
+	// services to provide forwarding information in the control plane. Applicable
+	// only to destination endpoint. Format:
 	//
 	//	projects/{project}/global/forwardingRules/{id} or
 	//	projects/{project}/regions/{region}/forwardingRules/{id}
@@ -619,30 +595,33 @@ type Endpoint struct {
 	Fqdn string `protobuf:"bytes,19,opt,name=fqdn,proto3" json:"fqdn,omitempty"`
 	// A [Cloud SQL](https://cloud.google.com/sql) instance URI.
 	CloudSqlInstance string `protobuf:"bytes,8,opt,name=cloud_sql_instance,json=cloudSqlInstance,proto3" json:"cloud_sql_instance,omitempty"`
-	// A [Redis Instance](https://cloud.google.com/memorystore/docs/redis)
-	// URI.
+	// A [Redis Instance](https://cloud.google.com/memorystore/docs/redis) URI.
+	// Applicable only to destination endpoint.
 	RedisInstance string `protobuf:"bytes,17,opt,name=redis_instance,json=redisInstance,proto3" json:"redis_instance,omitempty"`
-	// A [Redis Cluster](https://cloud.google.com/memorystore/docs/cluster)
-	// URI.
+	// A [Redis Cluster](https://cloud.google.com/memorystore/docs/cluster) URI.
+	// Applicable only to destination endpoint.
 	RedisCluster string `protobuf:"bytes,18,opt,name=redis_cluster,json=redisCluster,proto3" json:"redis_cluster,omitempty"`
-	// A [Cloud Function](https://cloud.google.com/functions).
+	// A [Cloud Function](https://cloud.google.com/functions). Applicable only to
+	// source endpoint.
 	CloudFunction *Endpoint_CloudFunctionEndpoint `protobuf:"bytes,10,opt,name=cloud_function,json=cloudFunction,proto3" json:"cloud_function,omitempty"`
 	// An [App Engine](https://cloud.google.com/appengine) [service
 	// version](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions).
+	// Applicable only to source endpoint.
 	AppEngineVersion *Endpoint_AppEngineVersionEndpoint `protobuf:"bytes,11,opt,name=app_engine_version,json=appEngineVersion,proto3" json:"app_engine_version,omitempty"`
 	// A [Cloud Run](https://cloud.google.com/run)
 	// [revision](https://cloud.google.com/run/docs/reference/rest/v1/namespaces.revisions/get)
+	// Applicable only to source endpoint.
 	CloudRunRevision *Endpoint_CloudRunRevisionEndpoint `protobuf:"bytes,12,opt,name=cloud_run_revision,json=cloudRunRevision,proto3" json:"cloud_run_revision,omitempty"`
-	// A Compute Engine network URI.
+	// A VPC network URI.
 	Network string `protobuf:"bytes,4,opt,name=network,proto3" json:"network,omitempty"`
 	// Type of the network where the endpoint is located.
 	// Applicable only to source endpoint, as destination network type can be
 	// inferred from the source.
 	NetworkType Endpoint_NetworkType `protobuf:"varint,5,opt,name=network_type,json=networkType,proto3,enum=google.cloud.networkmanagement.v1.Endpoint_NetworkType" json:"network_type,omitempty"`
 	// Project ID where the endpoint is located.
-	// The Project ID can be derived from the URI if you provide a VM instance or
+	// The project ID can be derived from the URI if you provide a endpoint or
 	// network URI.
-	// The following are two cases where you must provide the project ID:
+	// The following are two cases where you may need to provide the project ID:
 	// 1. Only the IP address is specified, and the IP address is within a Google
 	// Cloud project.
 	// 2. When you are using Shared VPC and the IP address that you provide is

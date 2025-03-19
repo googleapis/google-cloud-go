@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/storage/apiv1alpha",
-    "version": "1.66.2",
+    "version": "1.67.0",
     "language": "GO",
     "apis": [
       {

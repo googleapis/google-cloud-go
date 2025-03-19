@@ -1,0 +1,133 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.modelarmor.v1",
+  "libraryPackage": "cloud.google.com/go/modelarmor/apiv1",
+  "services": {
+    "ModelArmor": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateTemplate": {
+              "methods": [
+                "CreateTemplate"
+              ]
+            },
+            "DeleteTemplate": {
+              "methods": [
+                "DeleteTemplate"
+              ]
+            },
+            "GetFloorSetting": {
+              "methods": [
+                "GetFloorSetting"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetTemplate": {
+              "methods": [
+                "GetTemplate"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListTemplates": {
+              "methods": [
+                "ListTemplates"
+              ]
+            },
+            "SanitizeModelResponse": {
+              "methods": [
+                "SanitizeModelResponse"
+              ]
+            },
+            "SanitizeUserPrompt": {
+              "methods": [
+                "SanitizeUserPrompt"
+              ]
+            },
+            "UpdateFloorSetting": {
+              "methods": [
+                "UpdateFloorSetting"
+              ]
+            },
+            "UpdateTemplate": {
+              "methods": [
+                "UpdateTemplate"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateTemplate": {
+              "methods": [
+                "CreateTemplate"
+              ]
+            },
+            "DeleteTemplate": {
+              "methods": [
+                "DeleteTemplate"
+              ]
+            },
+            "GetFloorSetting": {
+              "methods": [
+                "GetFloorSetting"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetTemplate": {
+              "methods": [
+                "GetTemplate"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListTemplates": {
+              "methods": [
+                "ListTemplates"
+              ]
+            },
+            "SanitizeModelResponse": {
+              "methods": [
+                "SanitizeModelResponse"
+              ]
+            },
+            "SanitizeUserPrompt": {
+              "methods": [
+                "SanitizeUserPrompt"
+              ]
+            },
+            "UpdateFloorSetting": {
+              "methods": [
+                "UpdateFloorSetting"
+              ]
+            },
+            "UpdateTemplate": {
+              "methods": [
+                "UpdateTemplate"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
