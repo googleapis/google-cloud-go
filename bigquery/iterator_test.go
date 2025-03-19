@@ -80,11 +80,12 @@ func TestRowIteratorCacheBehavior(t *testing.T) {
 		{
 			// primary success case: schema in cache
 			inSource: &rowSource{
-				cachedSchema: testSchema,
-				cachedRows:   testRows,
+				cachedSchema:    testSchema,
+				cachedRows:      testRows,
+				cachedTotalRows: 10,
 			},
 			wantResult: &fetchPageResult{
-				totalRows: uint64(len(convertedRows)),
+				totalRows: uint64(10),
 				schema:    convertedSchema,
 				rows:      convertedRows,
 			},
@@ -94,10 +95,11 @@ func TestRowIteratorCacheBehavior(t *testing.T) {
 			inSource: &rowSource{
 				cachedRows:      testRows,
 				cachedNextToken: "foo",
+				cachedTotalRows: 20,
 			},
 			inSchema: convertedSchema,
 			wantResult: &fetchPageResult{
-				totalRows: uint64(len(convertedRows)),
+				totalRows: uint64(20),
 				schema:    convertedSchema,
 				rows:      convertedRows,
 				pageToken: "foo",
