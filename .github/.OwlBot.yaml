@@ -95,7 +95,6 @@ deep-remove-regex:
   - /datacatalog/apiv1beta1/
   - /datacatalog/lineage/apiv1/
   - /dataflow/apiv1beta3/
-  - /dataform/apiv1alpha2/
   - /dataform/apiv1beta1/
   - /datafusion/apiv1/
   - /datalabeling/apiv1beta1/
@@ -127,6 +126,7 @@ deep-remove-regex:
   - /eventarc/apiv1/
   - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
+  - /financialservices/apiv1/
   - /firestore/apiv1/
   - /firestore/apiv1/admin/
   - /functions/apiv1/
@@ -232,7 +232,6 @@ deep-remove-regex:
   - /internal/generated/snippets/datacatalog/apiv1beta1/
   - /internal/generated/snippets/datacatalog/lineage/apiv1/
   - /internal/generated/snippets/dataflow/apiv1beta3/
-  - /internal/generated/snippets/dataform/apiv1alpha2/
   - /internal/generated/snippets/dataform/apiv1beta1/
   - /internal/generated/snippets/datafusion/apiv1/
   - /internal/generated/snippets/datalabeling/apiv1beta1/
@@ -263,6 +262,7 @@ deep-remove-regex:
   - /internal/generated/snippets/eventarc/apiv1/
   - /internal/generated/snippets/eventarc/publishing/apiv1/
   - /internal/generated/snippets/filestore/apiv1/
+  - /internal/generated/snippets/financialservices/apiv1/
   - /internal/generated/snippets/firestore/apiv1/
   - /internal/generated/snippets/firestore/apiv1/admin/
   - /internal/generated/snippets/functions/apiv1/
@@ -460,6 +460,7 @@ deep-remove-regex:
   - /metastore/apiv1alpha/
   - /metastore/apiv1beta/
   - /migrationcenter/apiv1/
+  - /modelarmor/apiv1/
   - /monitoring/apiv3/v2/
   - /monitoring/dashboard/apiv1/
   - /monitoring/metricsscope/apiv1/
@@ -815,8 +816,6 @@ deep-copy-regex:
     dest: /
   - source: /google/dataflow/v1beta3/cloud.google.com/go
     dest: /
-  - source: /google/cloud/dataform/v1alpha2/cloud.google.com/go
-    dest: /
   - source: /google/cloud/dataform/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/datafusion/v1/cloud.google.com/go
@@ -881,6 +880,8 @@ deep-copy-regex:
   - source: /google/cloud/eventarc/publishing/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/filestore/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/financialservices/v1/cloud.google.com/go
     dest: /
   - source: /google/firestore/v1/cloud.google.com/go
     dest: /
@@ -971,6 +972,8 @@ deep-copy-regex:
   - source: /google/cloud/metastore/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/migrationcenter/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/modelarmor/v1/cloud.google.com/go
     dest: /
   - source: /google/monitoring/v3/cloud.google.com/go
     dest: /

@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.5...orchestration/v1.11.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* **orchestration:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.4...orchestration/v1.11.5) (2025-03-12)
+
+
+### Documentation
+
+* **orchestration/airflow/service:** Fix Composer 3 image version format in API docs ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+
 ## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.3...orchestration/v1.11.4) (2025-01-15)
 
 
