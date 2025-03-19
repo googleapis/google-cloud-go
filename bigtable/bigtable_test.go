@@ -22,6 +22,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -1661,7 +1662,7 @@ func TestPreparedStatement_Bind(t *testing.T) {
 			paramTypes: map[string]SQLType{"param1": StringSQLType{}, "param2": StringSQLType{}},
 			values:     nil,
 			wantErr:    true,
-			wantErrMsg: "bigtable: parameter param1 not bound in prepared statement",
+			wantErrMsg: "not bound in prepared statement",
 		},
 	}
 	for _, tt := range tests {
@@ -1674,7 +1675,7 @@ func TestPreparedStatement_Bind(t *testing.T) {
 			if err == nil && tt.wantErr {
 				t.Fatalf("Bind: err got: nil, want: %v", tt.wantErrMsg)
 			}
-			if err != nil && err.Error() != tt.wantErrMsg {
+			if err != nil && !strings.Contains(err.Error(), tt.wantErrMsg) {
 				t.Fatalf("Bind: err got: %v, want: %v", err, tt.wantErrMsg)
 			}
 		})
