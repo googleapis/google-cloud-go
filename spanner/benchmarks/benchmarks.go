@@ -134,8 +134,9 @@ func executeQuery(ctx context.Context, client *spanner.Client) (int64, error) {
 			return time.Duration(0).Microseconds(), err
 		}
 
-		if row.ColumnValue(0).GetStringValue() == "" {
-			return time.Duration(0).Microseconds(), errors.New("empty ID in the table")
+		var id int64
+		if err := row.Columns(&id); err != nil {
+			return time.Duration(0).Microseconds(), err
 		}
 	}
 
@@ -162,5 +163,5 @@ func generateUniqueID() int64 {
 }
 
 func getRandomWaitTime(waitTime int64) time.Duration {
-	return time.Duration(rand.Int64N(waitTime-1) + 1)
+	return time.Duration(rand.Int64N(2*waitTime-1) + 1)
 }
