@@ -4320,6 +4320,11 @@
                 "DeployPublisherModel"
               ]
             },
+            "ExportPublisherModel": {
+              "methods": [
+                "ExportPublisherModel"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -4393,6 +4398,11 @@
             "DeployPublisherModel": {
               "methods": [
                 "DeployPublisherModel"
+              ]
+            },
+            "ExportPublisherModel": {
+              "methods": [
+                "ExportPublisherModel"
               ]
             },
             "GetIamPolicy": {

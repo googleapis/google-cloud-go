@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.77.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -18525,6 +18525,52 @@
         "method": {
           "shortName": "DeployPublisherModel",
           "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService.DeployPublisherModel",
+          "service": {
+            "shortName": "ModelGardenService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_ExportPublisherModel_sync",
+      "title": "aiplatform ExportPublisherModel Sample",
+      "description": "ExportPublisherModel exports a publisher model to a user provided Google Cloud Storage bucket.",
+      "file": "ModelGardenClient/ExportPublisherModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportPublisherModel",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.ExportPublisherModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ExportPublisherModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportPublisherModelOperation",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "ExportPublisherModel",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService.ExportPublisherModel",
           "service": {
             "shortName": "ModelGardenService",
             "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService"
