@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.6...orchestration/v1.11.7) (2025-03-19)
+
+
+### Documentation
+
+* **orchestration/airflow/service:** A comment for field `connection_type` in message `.google.cloud.orchestration.airflow.service.v1.NetworkingConfig` is changed ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
+## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.5...orchestration/v1.11.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* **orchestration:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.4...orchestration/v1.11.5) (2025-03-12)
 
 

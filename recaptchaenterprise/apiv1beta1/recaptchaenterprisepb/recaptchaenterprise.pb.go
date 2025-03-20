@@ -469,8 +469,8 @@ const (
 	// Enable Fraud Prevention for this assessment, if Fraud Prevention is
 	// enabled in the Google Cloud console.
 	Event_ENABLED Event_FraudPrevention = 1
-	// Disable Fraud Prevention for this assessment, regardless of Google Cloud
-	// console settings.
+	// Disable Fraud Prevention for this assessment, regardless of the Google
+	// Cloud console settings.
 	Event_DISABLED Event_FraudPrevention = 2
 )
 
