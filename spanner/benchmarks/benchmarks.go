@@ -126,12 +126,16 @@ func executeQuery(ctx context.Context, client *spanner.Client) (int64, error) {
 		"p1": generateUniqueID(),
 	}})
 	for {
-		_, err := iter.Next()
+		row, err := iter.Next()
 		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {
 			return time.Duration(0).Microseconds(), err
+		}
+
+		if row.ColumnValue(0).GetStringValue() == "" {
+			return time.Duration(0).Microseconds(), errors.New("empty ID in the table")
 		}
 	}
 
