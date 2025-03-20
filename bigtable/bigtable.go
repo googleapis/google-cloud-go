@@ -377,7 +377,7 @@ func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
 // in order to amortize query preparation costs.
 type PreparedStatement struct {
 	c          *Client
-	paramTypes map[string]*btpb.Type
+	paramTypes map[string]SQLType
 	// Structure of rows in the response stream of `ExecuteQueryResponse` for the
 	// returned `prepared_query`.
 	metadata *btpb.ResultSetMetadata
@@ -396,6 +396,12 @@ type PrepareOption interface {
 
 // PrepareStatement prepares a query for execution. If possible, this should be called once and
 // reused across requests. This will amortize the cost of query preparation.
+//
+// The query string can be a parameterized query containing placeholders in the form of @ followed by the parameter name
+// Parameter names may consist of any combination of letters, numbers, and underscores.
+//
+// Parameters can appear anywhere that a literal value is expected. The same parameter name can
+// be used more than once, for example: WHERE cf["qualifier1"] = @value OR cf["qualifier2"] = @value
 func (c *Client) PrepareStatement(ctx context.Context, query string, paramTypes map[string]SQLType, opts ...PrepareOption) (preparedStatement *PreparedStatement, err error) {
 	md := metadata.Join(metadata.Pairs(
 		resourcePrefixHeader, c.fullInstanceName(),
@@ -451,8 +457,54 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		metadata:      res.Metadata,
 		preparedQuery: res.PreparedQuery,
 		validUntil:    res.ValidUntil,
-		paramTypes:    reqParamTypes,
+		paramTypes:    paramTypes,
 	}, err
+}
+
+// BoundStatement is a statement that has been bound to a set of parameters.
+// It is created by calling [PreparedStatement.Bind].
+type BoundStatement struct {
+	ps     *PreparedStatement
+	params map[string]*btpb.Value
+}
+
+// Bind binds a set of parameters to a prepared statement.
+//
+// Allowed parameter value types are []byte, string, int64, float32, float64, bool,
+// time.Time, civil.Date, array, slice and nil
+func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error) {
+	bs := BoundStatement{
+		ps:     ps,
+		params: map[string]*btpb.Value{},
+	}
+
+	boundParams := map[string]*btpb.Value{}
+	for paramName, paramVal := range values {
+		// Validate that the parameter was specified during prepare
+		psType, found := ps.paramTypes[paramName]
+		if !found {
+			return &bs, errors.New("bigtable: no parameter with name " + paramName + " in prepared statement")
+		}
+
+		// Convert value specified by user to *btpb.Value
+		pbVal, err := anySQLTypeToPbVal(paramVal, psType)
+		if err != nil {
+			return nil, err
+		}
+		boundParams[paramName] = pbVal
+	}
+	// check that every parameter is bound
+	for paramName := range ps.paramTypes {
+		_, found := boundParams[paramName]
+		if !found {
+			return &bs, errors.New("bigtable: parameter " + paramName + " not bound in prepared statement")
+		}
+	}
+
+	return &BoundStatement{
+		ps:     ps,
+		params: boundParams,
+	}, nil
 }
 
 func (ti *tableImpl) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
