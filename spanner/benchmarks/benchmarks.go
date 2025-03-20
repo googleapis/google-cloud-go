@@ -57,6 +57,8 @@ func main() {
 
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/%v", project, instance, database)
 
+	fmt.Printf("Running benchmark on %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\n", db, warmupTime, executionTime, waitBetweenRequests)
+
 	client, err := spanner.NewClientWithConfig(ctx, db, spanner.ClientConfig{})
 	if err != nil {
 		return
@@ -68,7 +70,7 @@ func main() {
 		return
 	}
 
-	latencies, err := runBenchMark(ctx, client, executionTime, waitBetweenRequests)
+	latencies, err := runBenchmark(ctx, client, executionTime, waitBetweenRequests)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -96,7 +98,7 @@ func warmUp(ctx context.Context, client *spanner.Client, warmupTime int64) error
 	return nil
 }
 
-func runBenchMark(ctx context.Context, client *spanner.Client, executionTime int64, waitBetweenRequests int64) ([]int64, error) {
+func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int64, waitBetweenRequests int64) ([]int64, error) {
 	endTime := time.Now().Local().Add(time.Minute * time.Duration(executionTime))
 
 	go runTimer(endTime, "Remaining operation time")
@@ -111,7 +113,7 @@ func runBenchMark(ctx context.Context, client *spanner.Client, executionTime int
 			return make([]int64, 0), err
 		}
 		durations = append(durations, duration)
-		time.Sleep(time.Millisecond * time.Duration(waitBetweenRequests))
+		time.Sleep(time.Millisecond * time.Duration(getRandomWaitTime(waitBetweenRequests)))
 	}
 
 	return durations, nil
@@ -152,5 +154,9 @@ func percentiles(percentile int, latencies []int64) any {
 }
 
 func generateUniqueID() int64 {
-	return rand.Int64N(totalRecords)
+	return rand.Int64N(totalRecords) + 1
+}
+
+func getRandomWaitTime(waitTime int64) time.Duration {
+	return time.Duration(rand.Int64N(waitTime-1) + 1)
 }
