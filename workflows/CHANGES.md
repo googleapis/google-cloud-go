@@ -1,5 +1,21 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.5...workflows/v1.14.0) (2025-03-19)
+
+
+### Features
+
+* **workflows:** Add crypto key config to Workflow ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **workflows:** Add ExecutionHistoryLevel enum ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **workflows:** Add ExecutionHistoryLevel to Workflow ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **workflows:** Add ListWorkflowRevisions method ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **workflows:** Add tags to Workflow ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+
+
+### Documentation
+
+* **workflows:** Update Workflow some standard field docs ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+
 ## [1.13.5](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.4...workflows/v1.13.5) (2025-03-13)
 
 

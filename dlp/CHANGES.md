@@ -1,5 +1,18 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.21.1...dlp/v1.22.0) (2025-03-19)
+
+
+### Features
+
+* **dlp:** Add sample findings for data profiles ([#11869](https://github.com/googleapis/google-cloud-go/issues/11869)) ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **dlp:** List tags on resources for data profiles ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
+
+### Documentation
+
+* **dlp:** Updated documentation for various fields and messages ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
 ## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.21.0...dlp/v1.21.1) (2025-03-13)
 
 
