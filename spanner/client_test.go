@@ -5052,6 +5052,40 @@ func TestBatchReadOnlyTransactionFromID_ReadOptions(t *testing.T) {
 	}
 }
 
+func TestReadOnlyTransaction_ExplicitBegin(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	// Create a read-only transaction with explicit begin
+	tx := client.ReadOnlyTransaction().WithExplicitBegin(true)
+	defer tx.Close()
+
+	// Verify that subsequent operations use the transaction ID
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+	_, _ = iter.Next()
+
+	// The BeginTransaction RPC should be called immediately
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+
+	// Verify that the ExecuteSqlRequest uses the transaction ID from the explicit begin
+	for _, req := range requests {
+		if execSqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			if _, ok := execSqlReq.Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+				t.Fatal("expected query to use transaction ID from explicit begin")
+			}
+		}
+	}
+}
+
 type QueryOptionsTestCase struct {
 	name      string
 	client    QueryOptions
