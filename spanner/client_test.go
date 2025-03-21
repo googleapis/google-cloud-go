@@ -5078,8 +5078,8 @@ func TestReadOnlyTransaction_ExplicitBegin(t *testing.T) {
 
 	// Verify that the ExecuteSqlRequest uses the transaction ID from the explicit begin
 	for _, req := range requests {
-		if execSqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
-			if _, ok := execSqlReq.Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		if execSQLReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			if _, ok := execSQLReq.Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 				t.Fatal("expected query to use transaction ID from explicit begin")
 			}
 		}
