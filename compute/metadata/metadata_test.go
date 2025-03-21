@@ -27,6 +27,7 @@ import (
 )
 
 func TestOnGCE_Stress(t *testing.T) {
+	ctx := context.Background()
 	if testing.Short() {
 		t.Skip("skipping in -short mode")
 	}
@@ -34,7 +35,7 @@ func TestOnGCE_Stress(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		onGCEOnce = sync.Once{}
 
-		now := OnGCE()
+		now := OnGCEWithContext(ctx)
 		if i > 0 && now != last {
 			t.Errorf("%d. changed from %v to %v", i, last, now)
 		}
@@ -44,12 +45,55 @@ func TestOnGCE_Stress(t *testing.T) {
 }
 
 func TestOnGCE_Force(t *testing.T) {
+	ctx := context.Background()
 	onGCEOnce = sync.Once{}
 	old := os.Getenv(metadataHostEnv)
 	defer os.Setenv(metadataHostEnv, old)
 	os.Setenv(metadataHostEnv, "127.0.0.1")
-	if !OnGCE() {
+	if !OnGCEWithContext(ctx) {
 		t.Error("OnGCE() = false; want true")
+	}
+}
+
+func TestOnGCE_Cancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	onGCEOnce = sync.Once{}
+	if OnGCEWithContext(ctx) {
+		t.Error("OnGCE() = true; want false")
+	}
+}
+
+func TestOnGCE_CancelTryHarder(t *testing.T) {
+	// If system info suggests GCE, we allow extra time for the
+	// probe with higher latency (HTTP or DNS) to return. In this
+	// test, the DNS probe fails organically, but we spoof the
+	// system info suggestion so that it waits longer for the HTTP
+	// probe to return. However, that additional wait budget should
+	// still be controlled by the calling context.
+	//
+	// NOTE: This code could create a data race if tests are run
+	// in parallel.
+	defaultSystemInfoSuggestsGCE = true
+	defer func() {
+		defaultSystemInfoSuggestsGCE = false
+	}()
+
+	// Set deadline upper-limit to 500ms
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	defer cancel()
+
+	// Set HTTP deadline to 1s
+	c := NewClient(&http.Client{Transport: sleepyTransport{1 * time.Second}})
+
+	start := time.Now()
+	if c.OnGCEWithContext(ctx) {
+		t.Error("OnGCE() = true; want false")
+	}
+
+	// Should have returned around 500ms, but account for some scheduling budget
+	if time.Now().Sub(start) > 510*time.Millisecond {
+		t.Error("OnGCE() did not return within deadline")
 	}
 }
 
@@ -214,7 +258,7 @@ func TestClientGetWithContext(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), tc.ctxTimeout)
 			defer cancel()
-			c := NewClient(&http.Client{Transport: sleepyTransport{}})
+			c := NewClient(&http.Client{Transport: sleepyTransport{500 * time.Millisecond}})
 			_, err := c.GetWithContext(ctx, "foo")
 			if tc.wantErr && err == nil {
 				t.Fatal("c.GetWithContext() == nil, want an error")
@@ -227,6 +271,7 @@ func TestClientGetWithContext(t *testing.T) {
 }
 
 type sleepyTransport struct {
+	delay time.Duration
 }
 
 func (s sleepyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -234,7 +279,7 @@ func (s sleepyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	select {
 	case <-req.Context().Done():
 		return nil, req.Context().Err()
-	case <-time.After(500 * time.Millisecond):
+	case <-time.After(s.delay):
 	}
 	return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(strings.NewReader("I woke up"))}, nil
 }
