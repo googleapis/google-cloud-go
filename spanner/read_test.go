@@ -1672,6 +1672,75 @@ func setupStatementResult(t *testing.T, server *MockedSpannerInMemTestServer, st
 	return server.TestSpanner.PutStatementResult(stmt, result)
 }
 
+func TestSkippingTrailersForExecuteStreamingSql(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	res := server.CreateSingersResults(4, true)
+	sql := "SELECT SingerId, AlbumId, AlbumTitle FROM Albums WHERE 1=2"
+	err := server.TestSpanner.PutStatementResult(sql, res)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer teardown()
+	ctx := context.Background()
+	iter := client.Single().Query(ctx, NewStatement(sql))
+	defer iter.Stop()
+	var noOfRows int
+	for {
+		row, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		noOfRows++
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if row.ColumnValue(0).GetStringValue() != fmt.Sprintf("%v", noOfRows) {
+			t.Fatalf("ID Mismatch in the result")
+		}
+	}
+	if g, w := noOfRows, 4; g != w {
+		t.Fatalf("num rows mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestSkippingTrailersForStreamingRead(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+
+	res := server.CreateSingersResults(5, true)
+	sql := "SELECT SingerId, AlbumId, AlbumTitle FROM Albums"
+	err := server.TestSpanner.PutStatementResult(sql, res)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer teardown()
+	ctx := context.Background()
+	iter := client.Single().Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+	var noOfRows int
+	for {
+		row, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		noOfRows++
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if row.ColumnValue(0).GetStringValue() != fmt.Sprintf("%v", noOfRows) {
+			t.Fatalf("ID Mismatch in the result")
+		}
+	}
+	if g, w := noOfRows, 5; g != w {
+		t.Fatalf("num rows mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 func TestRowIteratorDo(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
