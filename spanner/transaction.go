@@ -783,6 +783,8 @@ type ReadOnlyTransaction struct {
 	tb TimestampBound
 	// isLongRunningTransaction indicates whether the transaction is long-running or not.
 	isLongRunningTransaction bool
+	// explicitBegin indicates whether to begin the transaction explicitly during initialization
+	explicitBegin bool
 }
 
 // errTxInitTimeout returns error for timeout in waiting for initialization of
@@ -954,8 +956,18 @@ func (t *ReadOnlyTransaction) acquireMultiUse(ctx context.Context) (*sessionHand
 			t.mu.Unlock()
 			return nil, nil, errTxClosed()
 		case txNew:
-			// State transit to txInit so that no further TimestampBound change
-			// is accepted.
+			// If explicit begin is requested, start the transaction immediately
+			if t.explicitBegin {
+				// State transit to txInit so that no further TimestampBound change
+				// is accepted.
+				t.state = txInit
+				t.mu.Unlock()
+				if err := t.begin(ctx); err != nil {
+					return nil, nil, err
+				}
+				continue
+			}
+			// Otherwise, proceed with implicit begin
 			t.state = txInit
 			t.mu.Unlock()
 			continue
@@ -978,11 +990,6 @@ func (t *ReadOnlyTransaction) acquireMultiUse(ctx context.Context) (*sessionHand
 			t.tx = transactionID{}
 			t.mu.Unlock()
 			// Begin a read-only transaction.
-			//
-			// TODO: consider adding a transaction option which allow queries to
-			//  initiate transactions by themselves. Note that this option might
-			//  not be always good because the ID of the new transaction won't
-			//  be ready till the query returns some data or completes.
 			if err := t.begin(ctx); err != nil {
 				return nil, nil, err
 			}
@@ -1100,6 +1107,21 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 	if t.state == txNew {
 		// Only allow to set TimestampBound before the first query.
 		t.tb = tb
+	}
+	return t
+}
+
+// WithExplicitBegin specifies whether to begin the transaction explicitly during initialization.
+// By default, transactions begin implicitly with the first operation.
+// This option must be set before any operations are performed on the transaction.
+//
+// The returned value is the ReadOnlyTransaction so calls can be chained.
+func (t *ReadOnlyTransaction) WithExplicitBegin(explicit bool) *ReadOnlyTransaction {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if t.state == txNew {
+		// Only allow to set explicitBegin before the first operation
+		t.explicitBegin = explicit
 	}
 	return t
 }
