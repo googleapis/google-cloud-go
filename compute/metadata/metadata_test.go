@@ -71,6 +71,9 @@ func TestOnGCE_CancelTryHarder(t *testing.T) {
 	// system info suggestion so that it waits longer for the HTTP
 	// probe to return. However, that additional wait budget should
 	// still be controlled by the calling context.
+	//
+	// NOTE: This code could create a data race if tests are run
+	// in parallel.
 	defaultSystemInfoSuggestsGCE = true
 	defer func() {
 		defaultSystemInfoSuggestsGCE = false
