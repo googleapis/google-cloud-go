@@ -326,6 +326,8 @@ type TableConf struct {
 	ChangeStreamRetention ChangeStreamRetention
 	// Configure an automated backup policy for the table
 	AutomatedBackupConfig TableAutomatedBackupConfig
+	// Configure a row key schema for the table
+	RowKeySchema *StructType
 }
 
 // CreateTable creates a new table in the instance.
@@ -372,6 +374,11 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 			return err
 		}
 		tbl.AutomatedBackupConfig = proto
+	}
+
+	if conf.RowKeySchema != nil {
+		proto := conf.RowKeySchema.proto()
+		tbl.RowKeySchema = proto.GetStructType()
 	}
 
 	if conf.Families != nil && conf.ColumnFamilies != nil {
@@ -458,6 +465,7 @@ const (
 	automatedBackupPolicyFieldMask = "automated_backup_policy"
 	retentionPeriodFieldMaskPath   = "retention_period"
 	frequencyFieldMaskPath         = "frequency"
+	rowKeySchemaMaskPath           = "row_key_schema"
 )
 
 func (ac *AdminClient) newUpdateTableRequestProto(tableID string) (*btapb.UpdateTableRequest, error) {
@@ -562,6 +570,28 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+frequencyFieldMaskPath)
 	}
 	req.Table.AutomatedBackupConfig = abc
+	return ac.updateTableAndWait(ctx, req)
+}
+
+// UpdateTableWithRowKeySchema updates a table with RowKeySchema.
+func (ac *AdminClient) UpdateTableWithRowKeySchema(ctx context.Context, tableID string, rowKeySchema StructType) error {
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
+	}
+	req.UpdateMask.Paths = append(req.UpdateMask.Paths, rowKeySchemaMaskPath)
+	req.Table.RowKeySchema = rowKeySchema.proto().GetStructType()
+	return ac.updateTableAndWait(ctx, req)
+}
+
+// UpdateTableRemoveRowKeySchema removes a RowKeySchema from a table.
+func (ac *AdminClient) UpdateTableRemoveRowKeySchema(ctx context.Context, tableID string) error {
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
+	}
+	req.UpdateMask.Paths = append(req.UpdateMask.Paths, rowKeySchemaMaskPath)
+	req.IgnoreWarnings = true
 	return ac.updateTableAndWait(ctx, req)
 }
 
@@ -1208,6 +1238,12 @@ type InstanceConf struct {
 	// AutoscalingConfig configures the autoscaling properties on the cluster
 	// created with the instance. It is optional.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+	// increment in which NumNodes can be set). Node scaling delivers better
+	// latency and more throughput by removing node boundaries. It is optional,
+	// with the default being 1X.
+	NodeScalingFactor NodeScalingFactor
 }
 
 // InstanceWithClustersConfig contains the information necessary to create an Instance
@@ -1237,6 +1273,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 				NumNodes:          conf.NumNodes,
 				StorageType:       conf.StorageType,
 				AutoscalingConfig: conf.AutoscalingConfig,
+				NodeScalingFactor: conf.NodeScalingFactor,
 			},
 		},
 	}
@@ -1477,6 +1514,44 @@ func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
 	}
 }
 
+// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+// increment in which NumNodes can be set). Node scaling delivers better
+// latency and more throughput by removing node boundaries.
+type NodeScalingFactor int32
+
+const (
+	// NodeScalingFactorUnspecified default to 1X.
+	NodeScalingFactorUnspecified NodeScalingFactor = iota
+	// NodeScalingFactor1X runs the cluster with a scaling factor of 1.
+	NodeScalingFactor1X
+	// NodeScalingFactor2X runs the cluster with a scaling factor of 2.
+	// All node count values must be in increments of 2 with this scaling
+	// factor enabled, otherwise an INVALID_ARGUMENT error will be returned.
+	NodeScalingFactor2X
+)
+
+func (nsf NodeScalingFactor) proto() btapb.Cluster_NodeScalingFactor {
+	switch nsf {
+	case NodeScalingFactor1X:
+		return btapb.Cluster_NODE_SCALING_FACTOR_1X
+	case NodeScalingFactor2X:
+		return btapb.Cluster_NODE_SCALING_FACTOR_2X
+	default:
+		return btapb.Cluster_NODE_SCALING_FACTOR_UNSPECIFIED
+	}
+}
+
+func nodeScalingFactorFromProto(nsf btapb.Cluster_NodeScalingFactor) NodeScalingFactor {
+	switch nsf {
+	case btapb.Cluster_NODE_SCALING_FACTOR_1X:
+		return NodeScalingFactor1X
+	case btapb.Cluster_NODE_SCALING_FACTOR_2X:
+		return NodeScalingFactor2X
+	default:
+		return NodeScalingFactorUnspecified
+	}
+}
+
 // ClusterConfig contains the information necessary to create a cluster
 type ClusterConfig struct {
 	// InstanceID specifies the unique name of the instance. Required.
@@ -1518,6 +1593,12 @@ type ClusterConfig struct {
 	// AutoscalingConfig configures the autoscaling properties on a cluster.
 	// One of NumNodes or AutoscalingConfig is required.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+	// increment in which NumNodes can be set). Node scaling delivers better
+	// latency and more throughput by removing node boundaries. It is optional,
+	// with the default being 1X.
+	NodeScalingFactor NodeScalingFactor
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
@@ -1528,6 +1609,7 @@ func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
 		EncryptionConfig: &btapb.Cluster_EncryptionConfig{
 			KmsKeyName: cc.KMSKeyName,
 		},
+		NodeScalingFactor: cc.NodeScalingFactor.proto(),
 	}
 
 	if asc := cc.AutoscalingConfig; asc != nil {
@@ -1562,6 +1644,9 @@ type ClusterInfo struct {
 
 	// AutoscalingConfig are the configured values for a cluster.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster.
+	NodeScalingFactor NodeScalingFactor
 }
 
 // CreateCluster creates a new cluster in an instance.
@@ -1665,12 +1750,13 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 			kmsKeyName = c.EncryptionConfig.KmsKeyName
 		}
 		ci := &ClusterInfo{
-			Name:        nameParts[len(nameParts)-1],
-			Zone:        locParts[len(locParts)-1],
-			ServeNodes:  int(c.ServeNodes),
-			State:       c.State.String(),
-			StorageType: storageTypeFromProto(c.DefaultStorageType),
-			KMSKeyName:  kmsKeyName,
+			Name:              nameParts[len(nameParts)-1],
+			Zone:              locParts[len(locParts)-1],
+			ServeNodes:        int(c.ServeNodes),
+			State:             c.State.String(),
+			StorageType:       storageTypeFromProto(c.DefaultStorageType),
+			KMSKeyName:        kmsKeyName,
+			NodeScalingFactor: nodeScalingFactorFromProto(c.NodeScalingFactor),
 		}
 		if cfg := c.GetClusterConfig(); cfg != nil {
 			if asc := fromClusterConfigProto(cfg); asc != nil {
@@ -1710,12 +1796,13 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 	nameParts := strings.Split(c.Name, "/")
 	locParts := strings.Split(c.Location, "/")
 	ci := &ClusterInfo{
-		Name:        nameParts[len(nameParts)-1],
-		Zone:        locParts[len(locParts)-1],
-		ServeNodes:  int(c.ServeNodes),
-		State:       c.State.String(),
-		StorageType: storageTypeFromProto(c.DefaultStorageType),
-		KMSKeyName:  kmsKeyName,
+		Name:              nameParts[len(nameParts)-1],
+		Zone:              locParts[len(locParts)-1],
+		ServeNodes:        int(c.ServeNodes),
+		State:             c.State.String(),
+		StorageType:       storageTypeFromProto(c.DefaultStorageType),
+		KMSKeyName:        kmsKeyName,
+		NodeScalingFactor: nodeScalingFactorFromProto(c.NodeScalingFactor),
 	}
 	// Use type assertion to handle protobuf oneof type
 	if cfg := c.GetClusterConfig(); cfg != nil {

@@ -235,8 +235,7 @@ type SshPublicKey struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Public key text in SSH format, defined by
-	// <a href="https://www.ietf.org/rfc/rfc4253.txt" target="_blank">RFC4253</a>
-	// section 6.6.
+	// [RFC4253](https://www.ietf.org/rfc/rfc4253.txt) section 6.6.
 	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	// An expiration time in microseconds since epoch.
 	ExpirationTimeUsec int64 `protobuf:"varint,2,opt,name=expiration_time_usec,json=expirationTimeUsec,proto3" json:"expiration_time_usec,omitempty"`
