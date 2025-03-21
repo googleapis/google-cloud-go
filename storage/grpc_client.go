@@ -2863,6 +2863,9 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 		buf = buf[trim:]
 	}
 	if len(buf) == 0 && !flush && !finishWrite {
+		if reconnected {
+			s.forceFirstMessage = true
+		}
 		// no need to send anything
 		return nil, nil
 	}
