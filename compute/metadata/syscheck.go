@@ -17,8 +17,7 @@
 package metadata
 
 // defaultSystemInfoSuggestsGCE holds a default placeholder value for
-// the systemInfoSuggestsGCE check, for when no specific build flags are
-// defined. It is exposed for testing purposes.
+// the systemInfoSuggestsGCE check. It is exposed for testing purposes.
 var defaultSystemInfoSuggestsGCE = false
 
 // systemInfoSuggestsGCE reports whether the local system (without
