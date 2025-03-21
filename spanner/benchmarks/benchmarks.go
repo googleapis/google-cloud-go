@@ -54,7 +54,7 @@ func main() {
 		return
 	}
 
-	if len(os.Args) < 5 {
+	if len(os.Args) < 6 {
 		fmt.Println("Please set warm up time, execution time, wait between requests and staleness in the command line arguments")
 		return
 	}
@@ -63,7 +63,11 @@ func main() {
 	executionTime, _ := strconv.ParseInt(os.Args[2], 10, 8)       // in minutes
 	waitBetweenRequests, _ := strconv.ParseInt(os.Args[3], 10, 8) // in milliseconds
 	staleness, _ := strconv.ParseInt(os.Args[4], 10, 8)           // in seconds
-	transactionType := parseTransactionType(os.Args[5])
+	parsedTransactionType, err := parseTransactionType(os.Args[5])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/%v", project, instance, database)
 
@@ -75,13 +79,13 @@ func main() {
 	}
 	defer client.Close()
 
-	err = warmUp(ctx, client, warmupTime, staleness, transactionType)
+	err = warmUp(ctx, client, warmupTime, staleness, parsedTransactionType)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	latencies, err := runBenchmark(ctx, client, executionTime, staleness, waitBetweenRequests, transactionType)
+	latencies, err := runBenchmark(ctx, client, executionTime, staleness, waitBetweenRequests, parsedTransactionType)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -200,12 +204,14 @@ func runTimer(endTime time.Time, text string) {
 	}
 }
 
-func parseTransactionType(s string) transactionType {
+func parseTransactionType(s string) (transactionType, error) {
 	switch s {
-	case "read":
-		return read
+	case "READ":
+		return read, nil
+	case "QUERY":
+		return query, nil
 	default:
-		return query
+		return query, errors.New("invalid transaction type")
 	}
 }
 
