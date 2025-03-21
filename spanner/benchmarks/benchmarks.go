@@ -64,6 +64,7 @@ func main() {
 	if err != nil {
 		return
 	}
+	defer client.Close()
 
 	err = warmUp(ctx, client, warmupTime, staleness)
 	if err != nil {
@@ -77,11 +78,10 @@ func main() {
 		return
 	}
 
-	client.Close()
 	slices.Sort(latencies)
 
-	fmt.Printf("\nResults\np50 %v\n p95 %v\n p99 %v\n", percentiles(50, latencies),
-		percentiles(95, latencies), percentiles(99, latencies))
+	fmt.Printf("\nResults\np50 %v\np95 %v\np99 %v\n", percentiles(0.5, latencies),
+		percentiles(0.95, latencies), percentiles(0.99, latencies))
 }
 
 func warmUp(ctx context.Context, client *spanner.Client, warmupTime int64, staleness int64) error {
@@ -156,9 +156,9 @@ func runTimer(endTime time.Time, text string) {
 	}
 }
 
-func percentiles(percentile int, latencies []int64) any {
-	rank := ((percentile / 100) * (len(latencies) - 1)) + 1
-	return latencies[rank]
+func percentiles(percentile float32, latencies []int64) any {
+	rank := (percentile * float32(len(latencies)-1)) + 1
+	return latencies[uint(rank)]
 }
 
 func generateUniqueID() int64 {
