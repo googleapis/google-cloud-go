@@ -33,10 +33,12 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		return nil, err
 	}
 
+	isServiceAccount := false
 	var projectID, universeDomain string
 	var tp auth.TokenProvider
 	switch fileType {
 	case credsfile.ServiceAccountKey:
+		isServiceAccount = true
 		f, err := credsfile.ParseServiceAccount(b)
 		if err != nil {
 			return nil, err
@@ -78,6 +80,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		}
 		universeDomain = f.UniverseDomain
 	case credsfile.ImpersonatedServiceAccountKey:
+		isServiceAccount = true
 		f, err := credsfile.ParseImpersonatedServiceAccount(b)
 		if err != nil {
 			return nil, err
@@ -109,6 +112,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		ProjectIDProvider: internalauth.StaticCredentialsProperty(projectID),
 		// TODO(codyoss): only set quota project here if there was a user override
 		UniverseDomainProvider: internalauth.StaticCredentialsProperty(universeDomain),
+		IsServiceAccount:       isServiceAccount,
 	}), nil
 }
 
@@ -134,14 +138,16 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 		return configureSelfSignedJWT(f, opts)
 	}
 	opts2LO := &auth.Options2LO{
-		Email:        f.ClientEmail,
-		PrivateKey:   []byte(f.PrivateKey),
-		PrivateKeyID: f.PrivateKeyID,
-		Scopes:       opts.scopes(),
-		TokenURL:     f.TokenURL,
-		Subject:      opts.Subject,
-		Client:       opts.client(),
-		Logger:       opts.logger(),
+		Email:            f.ClientEmail,
+		PrivateKey:       []byte(f.PrivateKey),
+		PrivateKeyID:     f.PrivateKeyID,
+		Scopes:           opts.scopes(),
+		TokenURL:         f.TokenURL,
+		Subject:          opts.Subject,
+		Client:           opts.client(),
+		Logger:           opts.logger(),
+		IsServiceAccount: true,
+		UniverseDomain:   ud,
 	}
 	if opts2LO.TokenURL == "" {
 		opts2LO.TokenURL = jwtTokenURL
@@ -212,13 +218,15 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	if err != nil {
 		return nil, err
 	}
+	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	return impersonate.NewTokenProvider(&impersonate.Options{
-		URL:       f.ServiceAccountImpersonationURL,
-		Scopes:    opts.scopes(),
-		Tp:        tp,
-		Delegates: f.Delegates,
-		Client:    opts.client(),
-		Logger:    opts.logger(),
+		URL:            f.ServiceAccountImpersonationURL,
+		Scopes:         opts.scopes(),
+		Tp:             tp,
+		Delegates:      f.Delegates,
+		Client:         opts.client(),
+		Logger:         opts.logger(),
+		UniverseDomain: ud,
 	})
 }
 
