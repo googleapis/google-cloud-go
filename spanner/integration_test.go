@@ -5335,8 +5335,18 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
 			// convert the error to lower case because resource names are in lower case for PG dialect.
-			if gotErr != nil && !strings.EqualFold(gotErr.Error(), tt.wantErr.Error()) {
-				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+			if gotErr != nil {
+				gotErrStr := gotErr.Error()
+				wantErrStr := tt.wantErr.Error()
+				if idx := strings.Index(gotErrStr, "requestID"); idx != -1 {
+					gotErrStr = gotErrStr[:idx]
+				}
+				if idx := strings.Index(wantErrStr, "requestID"); idx != -1 {
+					wantErrStr = wantErrStr[:idx]
+				}
+				if !strings.EqualFold(gotErrStr, wantErrStr) {
+					t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+				}
 			} else {
 				tt.validate()
 			}
