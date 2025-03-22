@@ -42,7 +42,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := networkconnectivity.NewHubClient(ctx)
+//	c, err := networkconnectivity.NewCrossNetworkAutomationClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -56,11 +56,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &networkconnectivitypb.AcceptHubSpokeRequest{
+//	req := &networkconnectivitypb.CreateServiceConnectionMapRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#AcceptHubSpokeRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#CreateServiceConnectionMapRequest.
 //	}
-//	op, err := c.AcceptHubSpoke(ctx, req)
+//	op, err := c.CreateServiceConnectionMap(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -74,7 +74,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewHubClient is used for authentication requests and
+// The ctx passed to NewCrossNetworkAutomationClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

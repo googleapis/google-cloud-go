@@ -780,7 +780,7 @@ const (
 	// The deploy operation did not complete successfully; check Cloud Build
 	// logs.
 	Rollout_EXECUTION_FAILED Rollout_FailureCause = 2
-	// Deployment did not complete within the alloted time.
+	// Deployment did not complete within the allotted time.
 	Rollout_DEADLINE_EXCEEDED Rollout_FailureCause = 3
 	// Release is in a failed state.
 	Rollout_RELEASE_FAILED Rollout_FailureCause = 4
@@ -1072,7 +1072,7 @@ const (
 	// The deploy operation did not complete successfully; check Cloud Build
 	// logs.
 	DeployJobRun_EXECUTION_FAILED DeployJobRun_FailureCause = 2
-	// The deploy job run did not complete within the alloted time.
+	// The deploy job run did not complete within the allotted time.
 	DeployJobRun_DEADLINE_EXCEEDED DeployJobRun_FailureCause = 3
 	// There were missing resources in the runtime environment required for a
 	// canary deployment. Check the Cloud Build logs for more information.
@@ -1146,7 +1146,7 @@ const (
 	// The verify operation did not complete successfully; check Cloud Build
 	// logs.
 	VerifyJobRun_EXECUTION_FAILED VerifyJobRun_FailureCause = 2
-	// The verify job run did not complete within the alloted time.
+	// The verify job run did not complete within the allotted time.
 	VerifyJobRun_DEADLINE_EXCEEDED VerifyJobRun_FailureCause = 3
 	// No Skaffold verify configuration was found.
 	VerifyJobRun_VERIFICATION_CONFIG_NOT_FOUND VerifyJobRun_FailureCause = 4
@@ -1215,7 +1215,7 @@ const (
 	// The predeploy operation did not complete successfully; check Cloud Build
 	// logs.
 	PredeployJobRun_EXECUTION_FAILED PredeployJobRun_FailureCause = 2
-	// The predeploy job run did not complete within the alloted time.
+	// The predeploy job run did not complete within the allotted time.
 	PredeployJobRun_DEADLINE_EXCEEDED PredeployJobRun_FailureCause = 3
 	// Cloud Build failed to fulfill Cloud Deploy's request. See failure_message
 	// for additional details.
@@ -1280,7 +1280,7 @@ const (
 	// The postdeploy operation did not complete successfully; check Cloud Build
 	// logs.
 	PostdeployJobRun_EXECUTION_FAILED PostdeployJobRun_FailureCause = 2
-	// The postdeploy job run did not complete within the alloted time.
+	// The postdeploy job run did not complete within the allotted time.
 	PostdeployJobRun_DEADLINE_EXCEEDED PostdeployJobRun_FailureCause = 3
 	// Cloud Build failed to fulfill Cloud Deploy's request. See failure_message
 	// for additional details.
@@ -9379,7 +9379,7 @@ func (x *ListRolloutsRequest) GetOrderBy() string {
 	return ""
 }
 
-// ListRolloutsResponse is the response object reutrned by `ListRollouts`.
+// ListRolloutsResponse is the response object returned by `ListRollouts`.
 type ListRolloutsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -14524,8 +14524,8 @@ type KubernetesConfig_GatewayServiceMesh_RouteDestinations struct {
 	// Optional. Whether to propagate the Kubernetes Service to the route
 	// destination clusters. The Service will always be deployed to the Target
 	// cluster even if the HTTPRoute is not. This option may be used to
-	// facilitiate successful DNS lookup in the route destination clusters.
-	// Can only be set to true if destinations are specified.
+	// facilitate successful DNS lookup in the route destination clusters. Can
+	// only be set to true if destinations are specified.
 	PropagateService bool `protobuf:"varint,2,opt,name=propagate_service,json=propagateService,proto3" json:"propagate_service,omitempty"`
 }
 

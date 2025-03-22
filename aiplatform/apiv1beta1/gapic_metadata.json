@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "DatasetClient",
           "rpcs": {
+            "AssembleData": {
+              "methods": [
+                "AssembleData"
+              ]
+            },
+            "AssessData": {
+              "methods": [
+                "AssessData"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -160,6 +170,16 @@
         "rest": {
           "libraryClient": "DatasetClient",
           "rpcs": {
+            "AssembleData": {
+              "methods": [
+                "AssembleData"
+              ]
+            },
+            "AssessData": {
+              "methods": [
+                "AssessData"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -4300,6 +4320,11 @@
                 "DeployPublisherModel"
               ]
             },
+            "ExportPublisherModel": {
+              "methods": [
+                "ExportPublisherModel"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -4373,6 +4398,11 @@
             "DeployPublisherModel": {
               "methods": [
                 "DeployPublisherModel"
+              ]
+            },
+            "ExportPublisherModel": {
+              "methods": [
+                "ExportPublisherModel"
               ]
             },
             "GetIamPolicy": {

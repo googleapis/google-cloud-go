@@ -50,6 +50,7 @@ type ModelGardenCallOptions struct {
 	ListPublisherModels  []gax.CallOption
 	Deploy               []gax.CallOption
 	DeployPublisherModel []gax.CallOption
+	ExportPublisherModel []gax.CallOption
 	GetLocation          []gax.CallOption
 	ListLocations        []gax.CallOption
 	GetIamPolicy         []gax.CallOption
@@ -83,6 +84,7 @@ func defaultModelGardenCallOptions() *ModelGardenCallOptions {
 		ListPublisherModels:  []gax.CallOption{},
 		Deploy:               []gax.CallOption{},
 		DeployPublisherModel: []gax.CallOption{},
+		ExportPublisherModel: []gax.CallOption{},
 		GetLocation:          []gax.CallOption{},
 		ListLocations:        []gax.CallOption{},
 		GetIamPolicy:         []gax.CallOption{},
@@ -102,6 +104,7 @@ func defaultModelGardenRESTCallOptions() *ModelGardenCallOptions {
 		ListPublisherModels:  []gax.CallOption{},
 		Deploy:               []gax.CallOption{},
 		DeployPublisherModel: []gax.CallOption{},
+		ExportPublisherModel: []gax.CallOption{},
 		GetLocation:          []gax.CallOption{},
 		ListLocations:        []gax.CallOption{},
 		GetIamPolicy:         []gax.CallOption{},
@@ -126,6 +129,8 @@ type internalModelGardenClient interface {
 	DeployOperation(name string) *DeployOperation
 	DeployPublisherModel(context.Context, *aiplatformpb.DeployPublisherModelRequest, ...gax.CallOption) (*DeployPublisherModelOperation, error)
 	DeployPublisherModelOperation(name string) *DeployPublisherModelOperation
+	ExportPublisherModel(context.Context, *aiplatformpb.ExportPublisherModelRequest, ...gax.CallOption) (*ExportPublisherModelOperation, error)
+	ExportPublisherModelOperation(name string) *ExportPublisherModelOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -210,6 +215,17 @@ func (c *ModelGardenClient) DeployPublisherModel(ctx context.Context, req *aipla
 // The name must be that of a previously created DeployPublisherModelOperation, possibly from a different process.
 func (c *ModelGardenClient) DeployPublisherModelOperation(name string) *DeployPublisherModelOperation {
 	return c.internalClient.DeployPublisherModelOperation(name)
+}
+
+// ExportPublisherModel exports a publisher model to a user provided Google Cloud Storage bucket.
+func (c *ModelGardenClient) ExportPublisherModel(ctx context.Context, req *aiplatformpb.ExportPublisherModelRequest, opts ...gax.CallOption) (*ExportPublisherModelOperation, error) {
+	return c.internalClient.ExportPublisherModel(ctx, req, opts...)
+}
+
+// ExportPublisherModelOperation returns a new ExportPublisherModelOperation from a given name.
+// The name must be that of a previously created ExportPublisherModelOperation, possibly from a different process.
+func (c *ModelGardenClient) ExportPublisherModelOperation(name string) *ExportPublisherModelOperation {
+	return c.internalClient.ExportPublisherModelOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -566,6 +582,26 @@ func (c *modelGardenGRPCClient) DeployPublisherModel(ctx context.Context, req *a
 		return nil, err
 	}
 	return &DeployPublisherModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *modelGardenGRPCClient) ExportPublisherModel(ctx context.Context, req *aiplatformpb.ExportPublisherModelRequest, opts ...gax.CallOption) (*ExportPublisherModelOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportPublisherModel[0:len((*c.CallOptions).ExportPublisherModel):len((*c.CallOptions).ExportPublisherModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.modelGardenClient.ExportPublisherModel, req, settings.GRPC, c.logger, "ExportPublisherModel")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportPublisherModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1071,6 +1107,65 @@ func (c *modelGardenRESTClient) DeployPublisherModel(ctx context.Context, req *a
 
 	override := fmt.Sprintf("/ui/%s", resp.GetName())
 	return &DeployPublisherModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportPublisherModel exports a publisher model to a user provided Google Cloud Storage bucket.
+func (c *modelGardenRESTClient) ExportPublisherModel(ctx context.Context, req *aiplatformpb.ExportPublisherModelRequest, opts ...gax.CallOption) (*ExportPublisherModelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/%v:export", req.GetParent(), req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportPublisherModel")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &ExportPublisherModelOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -1675,6 +1770,24 @@ func (c *modelGardenGRPCClient) DeployPublisherModelOperation(name string) *Depl
 func (c *modelGardenRESTClient) DeployPublisherModelOperation(name string) *DeployPublisherModelOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &DeployPublisherModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExportPublisherModelOperation returns a new ExportPublisherModelOperation from a given name.
+// The name must be that of a previously created ExportPublisherModelOperation, possibly from a different process.
+func (c *modelGardenGRPCClient) ExportPublisherModelOperation(name string) *ExportPublisherModelOperation {
+	return &ExportPublisherModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportPublisherModelOperation returns a new ExportPublisherModelOperation from a given name.
+// The name must be that of a previously created ExportPublisherModelOperation, possibly from a different process.
+func (c *modelGardenRESTClient) ExportPublisherModelOperation(name string) *ExportPublisherModelOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &ExportPublisherModelOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
