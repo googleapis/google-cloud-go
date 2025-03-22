@@ -5345,7 +5345,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 					wantErrStr = wantErrStr[:idx]
 				}
 				if !strings.EqualFold(gotErrStr, wantErrStr) {
-					t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+					t.Errorf("FKDC error=%v, wantErr: %v", gotErrStr, wantErrStr)
 				}
 			} else {
 				tt.validate()
