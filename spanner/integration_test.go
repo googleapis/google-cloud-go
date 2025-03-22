@@ -5344,6 +5344,8 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 				if idx := strings.Index(wantErrStr, "requestID"); idx != -1 {
 					wantErrStr = wantErrStr[:idx]
 				}
+				gotErrStr = strings.TrimSpace(strings.TrimSuffix(gotErrStr, ","))
+				wantErrStr = strings.TrimSpace(strings.TrimSuffix(wantErrStr, ","))
 				if !strings.EqualFold(gotErrStr, wantErrStr) {
 					t.Errorf("FKDC error=%v, wantErr: %v", gotErrStr, wantErrStr)
 				}
