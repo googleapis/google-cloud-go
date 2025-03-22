@@ -5138,6 +5138,24 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
+func compareErrors(got, want error) bool {
+	if got == nil || want == nil {
+		return got == want
+	}
+	gotStr := got.Error()
+	wantStr := want.Error()
+	if idx := strings.Index(gotStr, "requestID"); idx != -1 {
+		gotStr = gotStr[:idx]
+	}
+	if idx := strings.Index(wantStr, "requestID"); idx != -1 {
+		wantStr = wantStr[:idx]
+	}
+	// Clean up trailing commas and any extra whitespace
+	gotStr = strings.TrimSpace(strings.TrimRight(gotStr, `",`))
+	wantStr = strings.TrimSpace(strings.TrimRight(wantStr, `",`))
+	return strings.EqualFold(gotStr, wantStr)
+}
+
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	skipEmulatorTest(t)
 	t.Parallel()
@@ -5334,20 +5352,9 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
-			// convert the error to lower case because resource names are in lower case for PG dialect.
 			if gotErr != nil {
-				gotErrStr := gotErr.Error()
-				wantErrStr := tt.wantErr.Error()
-				if idx := strings.Index(gotErrStr, "requestID"); idx != -1 {
-					gotErrStr = gotErrStr[:idx]
-				}
-				if idx := strings.Index(wantErrStr, "requestID"); idx != -1 {
-					wantErrStr = wantErrStr[:idx]
-				}
-				gotErrStr = strings.TrimSpace(strings.TrimSuffix(gotErrStr, ","))
-				wantErrStr = strings.TrimSpace(strings.TrimSuffix(wantErrStr, ","))
-				if !strings.EqualFold(gotErrStr, wantErrStr) {
-					t.Errorf("FKDC error=%v, wantErr: %v", gotErrStr, wantErrStr)
+				if !compareErrors(gotErr, tt.wantErr) {
+					t.Errorf(`FKDC error=%v, wantErr: %v`, gotErr, tt.wantErr)
 				}
 			} else {
 				tt.validate()
