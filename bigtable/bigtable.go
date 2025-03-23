@@ -45,6 +45,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -58,7 +59,7 @@ const prodAddr = "bigtable.googleapis.com:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 const featureFlagsHeaderKey = "bigtable-features"
 const queryExpiredViolationType = "PREPARED_QUERY_EXPIRED"
-const preparedQueryExpireEarlyDuration = time.Minute
+const preparedQueryExpireEarlyDuration = time.Second
 
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
 
@@ -414,6 +415,8 @@ type PreparedStatement struct {
 	c          *Client
 	query      string
 	paramTypes map[string]SQLType
+	opts       []PrepareOption
+
 	// Structure of rows in the response stream of `ExecuteQueryResponse` for the
 	// returned `prepared_query`.
 	metadata *btpb.ResultSetMetadata
@@ -446,6 +449,11 @@ func (c *Client) PrepareStatement(ctx context.Context, query string, paramTypes 
 	), c.newFeatureFlags())
 
 	ctx = mergeOutgoingMetadata(ctx, md)
+	return c.prepareStatementWithMetadata(ctx, query, paramTypes, opts...)
+}
+
+// Called when context already has the required metadata
+func (c *Client) prepareStatementWithMetadata(ctx context.Context, query string, paramTypes map[string]SQLType, opts ...PrepareOption) (preparedStatement *PreparedStatement, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable.PrepareQuery")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -496,22 +504,8 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		validUntil:    res.ValidUntil,
 		query:         query,
 		paramTypes:    paramTypes,
+		opts:          opts,
 	}, err
-}
-
-func (ps *PreparedStatement) refresh(ctx context.Context) error {
-	newPs, err := ps.c.PrepareStatement(ctx, ps.query, ps.paramTypes)
-	ps.metadata = newPs.metadata
-	ps.preparedQuery = newPs.preparedQuery
-	ps.validUntil = newPs.validUntil
-	return err
-}
-
-// BoundStatement is a statement that has been bound to a set of parameters.
-// It is created by calling [PreparedStatement.Bind].
-type BoundStatement struct {
-	ps     *PreparedStatement
-	params map[string]*btpb.Value
 }
 
 // Bind binds a set of parameters to a prepared statement.
@@ -553,6 +547,22 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 	}, nil
 }
 
+func (ps *PreparedStatement) refresh(ctx context.Context) error {
+	newPs, err := ps.c.prepareStatementWithMetadata(ctx, ps.query, ps.paramTypes, ps.opts...)
+	ps.metadata = newPs.metadata
+	ps.preparedQuery = newPs.preparedQuery
+	ps.validUntil = newPs.validUntil
+	return err
+}
+
+// BoundStatement is a statement that has been bound to a set of parameters.
+// It is created by calling [PreparedStatement.Bind].
+type BoundStatement struct {
+	ps     *PreparedStatement
+	params map[string]*btpb.Value
+}
+
+// ResultRow represents a single row in the result set returned from an Execute query.
 type ResultRow struct {
 	values   []*btpb.Value
 	metadata *btpb.ResultSetMetadata
@@ -560,31 +570,6 @@ type ResultRow struct {
 
 // ExecuteOption is an optional argument to Execute.
 type ExecuteOption interface{}
-
-func (bs *BoundStatement) valid() bool {
-	readableTime := bs.ps.validUntil.AsTime().Format("2006-01-02 15:04:05")
-	fmt.Println("bs.ps.validUntil.AsTime():", readableTime)
-
-	readableTime = time.Now().Format("2006-01-02 15:04:05")
-	fmt.Println("time.Now():", readableTime)
-	return !time.Now().Add(preparedQueryExpireEarlyDuration).After(bs.ps.validUntil.AsTime())
-}
-func (bs *BoundStatement) refreshIfInvalid(ctx context.Context) error {
-	valid := bs.valid()
-	if valid {
-		return nil
-	}
-	bs.ps.refreshMutex.Lock()
-	defer bs.ps.refreshMutex.Unlock()
-
-	// Recheck whether validity changed while acquiring lock
-	valid = bs.valid()
-	if valid {
-		return nil
-	}
-
-	return bs.ps.refresh(ctx)
-}
 
 // Execute executes a previously prepared query. f is called for each row in result set.
 // If f returns false, the stream is shut down and Execute returns.
@@ -614,16 +599,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 	valuesBuffer := []*btpb.Value{}
 	var resumeToken []byte
 
-	// TODO(bhshkh): use this value to prevent mid stream metadata refresh
-	receivedFirstResumeToken := false
 	err := gaxInvokeWithRecorder(ctx, mt, "ExecuteQuery", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
-		req := &btpb.ExecuteQueryRequest{
-			InstanceName:  bs.ps.c.fullInstanceName(),
-			AppProfileId:  bs.ps.c.appProfile,
-			PreparedQuery: bs.ps.preparedQuery,
-			Params:        bs.params,
-		}
-
 		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 		defer cancel()
 
@@ -631,6 +607,13 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 		err = bs.refreshIfInvalid(ctx)
 		if err != nil {
 			return err
+		}
+
+		req := &btpb.ExecuteQueryRequest{
+			InstanceName:  bs.ps.c.fullInstanceName(),
+			AppProfileId:  bs.ps.c.appProfile,
+			PreparedQuery: bs.ps.preparedQuery,
+			Params:        bs.params,
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
 		if err != nil {
@@ -653,6 +636,8 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err)
 			}
 
+			bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(eqResp)
+			fmt.Println("eqResp: " + string(bytes))
 			resp := eqResp.GetResponse()
 			results, ok := resp.(*btpb.ExecuteQueryResponse_Results)
 			if !ok {
@@ -695,6 +680,8 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				if err := proto.Unmarshal(ongoingResultBatch.Bytes(), protoRows); err != nil {
 					return err
 				}
+				bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(protoRows)
+				fmt.Println("protoRows: " + string(bytes))
 				valuesBuffer = append(valuesBuffer, protoRows.GetValues()...)
 
 				// Prepare to receive next batch of results
@@ -703,9 +690,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			if partialResultSet.GetResumeToken() != nil {
 				// Values can be yielded to the caller
 
-				if !receivedFirstResumeToken {
-					receivedFirstResumeToken = true
-				}
 				// Save ResumeToken for subsequent requests
 				resumeToken = partialResultSet.GetResumeToken()
 
@@ -748,6 +732,27 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 		return err
 	}
 	return nil
+}
+
+func (bs *BoundStatement) refreshIfInvalid(ctx context.Context) error {
+	valid := bs.valid()
+	if valid {
+		return nil
+	}
+	bs.ps.refreshMutex.Lock()
+	defer bs.ps.refreshMutex.Unlock()
+
+	// Recheck whether validity changed while acquiring lock
+	valid = bs.valid()
+	if valid {
+		return nil
+	}
+
+	return bs.ps.refresh(ctx)
+}
+
+func (bs *BoundStatement) valid() bool {
+	return !time.Now().UTC().Add(preparedQueryExpireEarlyDuration).After(bs.ps.validUntil.AsTime())
 }
 
 func handleExecuteStreamEnd(stream btpb.Bigtable_ExecuteQueryClient, trailerMD *metadata.MD, valuesBuffer []*btpb.Value, err error) error {

@@ -5012,10 +5012,6 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 		t.Fatal("-it.allowdpv4-cmd unset")
 	}
 
-	if err := populatePresidentsGraph(table); err != nil {
-		t.Fatal(err)
-	}
-
 	// Precondition: wait for DirectPath to connect.
 	dpEnabled := examineTraffic(ctx, testEnv, table, false)
 	if !dpEnabled {
@@ -5037,85 +5033,192 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
-func TestIntegration_PrepareAndBindStatement(t *testing.T) {
+func populateAddresses(t *testing.T, ctx context.Context, table *Table, colFam string) {
+	v1Timestamp := Time(time.Now().Add(-time.Minute))
+	v2Timestamp := Time(time.Now())
+	type cell struct {
+		Ts    Timestamp
+		Value []byte
+	}
+	muts := []*Mutation{}
+	rowKeys := []string{}
+	for rowKey, mutData := range map[string]map[string]any{
+		"row-01": {
+			"state": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("WA"),
+				},
+				{
+					Ts:    v2Timestamp,
+					Value: []byte("CA"),
+				},
+			},
+			"city": []cell{
+				{
+					Ts:    v2Timestamp,
+					Value: []byte("San Francisco"),
+				},
+			},
+		},
+		"row-02": {
+			"state": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("AZ"),
+				},
+			},
+			"city": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("Phoenix"),
+				},
+			},
+		},
+	} {
+		mut := NewMutation()
+		for col, v := range mutData {
+			cells, ok := v.([]cell)
+			if ok {
+				for _, cell := range cells {
+					mut.Set(colFam, col, cell.Ts, cell.Value)
+				}
+			}
+		}
+		muts = append(muts, mut)
+		rowKeys = append(rowKeys, rowKey)
+	}
+
+	rowErrs, err := table.ApplyBulk(ctx, rowKeys, muts)
+	if err != nil || rowErrs != nil {
+		t.Fatal("ApplyBulk: ", err)
+	}
+}
+
+func TestIntegration_Execute(t *testing.T) {
+	// Set up table and clients
 	ctx := context.Background()
-	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, client, adminClient, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer cleanup()
-
+	t.Cleanup(func() { cleanup() })
 	if !testEnv.Config().UseProd {
 		t.Skip("emulator doesn't support PrepareQuery")
 	}
-
-	ps, err := client.PrepareStatement(ctx,
-		"SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, "+
-			"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, "+
-			"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, "+
-			"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, "+
-			"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, "+
-			"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, "+
-			"@dateArrayParam AS dateArrayCol",
-		map[string]SQLType{
-			"bytesParam":   BytesSQLType{},
-			"stringParam":  StringSQLType{},
-			"int64Param":   Int64SQLType{},
-			"float32Param": Float32SQLType{},
-			"float64Param": Float64SQLType{},
-			"boolParam":    BoolSQLType{},
-			"tsParam":      TimestampSQLType{},
-			"dateParam":    DateSQLType{},
-			"bytesArrayParam": ArraySQLType{
-				ElemType: BytesSQLType{},
-			},
-			"stringArrayParam": ArraySQLType{
-				ElemType: StringSQLType{},
-			},
-			"int64ArrayParam": ArraySQLType{
-				ElemType: Int64SQLType{},
-			},
-			"float32ArrayParam": ArraySQLType{
-				ElemType: Float32SQLType{},
-			},
-			"float64ArrayParam": ArraySQLType{
-				ElemType: Float64SQLType{},
-			},
-			"boolArrayParam": ArraySQLType{
-				ElemType: BoolSQLType{},
-			},
-			"tsArrayParam": ArraySQLType{
-				ElemType: TimestampSQLType{},
-			},
-			"dateArrayParam": ArraySQLType{
-				ElemType: DateSQLType{},
-			},
-		},
-	)
+	colFam := "address"
+	err = createColumnFamily(ctx, t, adminClient, table.table, colFam, map[codes.Code]bool{codes.Unavailable: true})
 	if err != nil {
-		t.Fatal("PrepareStatement: " + err.Error())
+		t.Fatal("createColumnFamily: " + err.Error())
 	}
 
-	_, err = ps.Bind(map[string]any{
-		"bytesParam":        []byte("foo"),
-		"stringParam":       "stringVal",
-		"int64Param":        int64(1),
-		"float32Param":      float32(1.3),
-		"float64Param":      float64(1.4),
-		"boolParam":         true,
-		"tsParam":           time.Now(),
-		"dateParam":         civil.DateOf(time.Now()),
-		"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
-		"stringArrayParam":  []any{"foo", nil, "bar"},
-		"int64ArrayParam":   []any{int64(1), nil, int64(2)},
-		"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
-		"float64ArrayParam": []float64{1.4, 2.4, 3.4},
-		"boolArrayParam":    []any{true, nil, false},
-		"tsArrayParam":      []any{time.Now(), nil},
-		"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
-	})
-	if err != nil {
-		t.Fatal("Bind: " + err.Error())
+	// Add data
+	populateAddresses(t, ctx, table, colFam)
+
+	// Run test cases
+	for _, tc := range []struct {
+		desc          string
+		psQuery       string
+		psParamTypes  map[string]SQLType
+		bsParamValues map[string]any
+	}{
+		{
+			desc:    "select *",
+			psQuery: "SELECT * FROM `" + table.table + "` LIMIT 5",
+		},
+		{
+			desc:    "WITH_HISTORY",
+			psQuery: "SELECT _key, " + colFam + "['state'] AS state FROM `" + table.table + "`(WITH_HISTORY=>TRUE) LIMIT 5",
+		},
+		{
+			desc: "all types in result set",
+			psQuery: "SELECT 'stringVal' AS strCol, b'foo' as bytesCol, 1 AS intCol, CAST(1.2 AS FLOAT32) as f32Col, " +
+				"CAST(1.3 AS FLOAT64) as f64Col, true as boolCol, TIMESTAMP_FROM_UNIX_MILLIS(1000) AS tsCol, " +
+				"DATE(2024, 06, 01) as dateCol, STRUCT(1 as a, \"foo\" as b) AS structCol, [1,2,3] AS arrCol, " +
+				colFam +
+				" as mapCol FROM `" +
+				table.table +
+				"` WHERE _key='row-01' LIMIT 1",
+		},
+		{
+			desc: "all types in query parameters",
+			psQuery: "SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, " +
+				"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, " +
+				"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, " +
+				"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, " +
+				"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, " +
+				"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, " +
+				"@dateArrayParam AS dateArrayCol",
+			psParamTypes: map[string]SQLType{
+				"bytesParam":   BytesSQLType{},
+				"stringParam":  StringSQLType{},
+				"int64Param":   Int64SQLType{},
+				"float32Param": Float32SQLType{},
+				"float64Param": Float64SQLType{},
+				"boolParam":    BoolSQLType{},
+				"tsParam":      TimestampSQLType{},
+				"dateParam":    DateSQLType{},
+				"bytesArrayParam": ArraySQLType{
+					ElemType: BytesSQLType{},
+				},
+				"stringArrayParam": ArraySQLType{
+					ElemType: StringSQLType{},
+				},
+				"int64ArrayParam": ArraySQLType{
+					ElemType: Int64SQLType{},
+				},
+				"float32ArrayParam": ArraySQLType{
+					ElemType: Float32SQLType{},
+				},
+				"float64ArrayParam": ArraySQLType{
+					ElemType: Float64SQLType{},
+				},
+				"boolArrayParam": ArraySQLType{
+					ElemType: BoolSQLType{},
+				},
+				"tsArrayParam": ArraySQLType{
+					ElemType: TimestampSQLType{},
+				},
+				"dateArrayParam": ArraySQLType{
+					ElemType: DateSQLType{},
+				},
+			},
+			bsParamValues: map[string]any{
+				"bytesParam":        []byte("foo"),
+				"stringParam":       "stringVal",
+				"int64Param":        int64(1),
+				"float32Param":      float32(1.3),
+				"float64Param":      float64(1.4),
+				"boolParam":         true,
+				"tsParam":           time.Now(),
+				"dateParam":         civil.DateOf(time.Now()),
+				"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
+				"stringArrayParam":  []any{"foo", nil, "bar"},
+				"int64ArrayParam":   []any{int64(1), nil, int64(2)},
+				"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
+				"float64ArrayParam": []float64{1.4, 2.4, 3.4},
+				"boolArrayParam":    []any{true, nil, false},
+				"tsArrayParam":      []any{time.Now(), nil},
+				"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			ps, err := client.PrepareStatement(ctx, tc.psQuery, tc.psParamTypes)
+			if err != nil {
+				t.Fatal("PrepareStatement: " + err.Error())
+			}
+
+			bs, err := ps.Bind(tc.bsParamValues)
+			if err != nil {
+				t.Fatal("Bind: " + err.Error())
+			}
+			if err = bs.Execute(ctx, func(rr ResultRow) bool {
+				return true
+			}); err != nil {
+				t.Fatal("Execute: " + err.Error())
+			}
+		})
 	}
 }
 
