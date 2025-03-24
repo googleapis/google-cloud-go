@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1beta",
-    "version": "1.14.1",
+    "version": "1.14.2",
     "language": "GO",
     "apis": [
       {
@@ -648,6 +648,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_ExportCluster_sync",
+      "title": "alloydb ExportCluster Sample",
+      "description": "ExportCluster exports data from the cluster.\nImperative only.",
+      "file": "AlloyDBAdminClient/ExportCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportCluster",
+        "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient.ExportCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ExportClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportClusterOperation",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ExportCluster",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.ExportCluster",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

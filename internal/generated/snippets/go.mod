@@ -3,9 +3,9 @@ module cloud.google.com/go/internal/generated
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.118.3
+	cloud.google.com/go v0.119.0
 	cloud.google.com/go/accessapproval v1.8.3
-	cloud.google.com/go/accesscontextmanager v1.9.3
+	cloud.google.com/go/accesscontextmanager v1.9.4
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/aiplatform v1.74.0
 	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
@@ -64,7 +64,7 @@ require (
 	cloud.google.com/go/gkehub v0.15.3
 	cloud.google.com/go/gkemulticloud v1.5.1
 	cloud.google.com/go/gsuiteaddons v1.7.4
-	cloud.google.com/go/iam v1.4.0
+	cloud.google.com/go/iam v1.4.1
 	cloud.google.com/go/iap v1.10.3
 	cloud.google.com/go/ids v1.5.3
 	cloud.google.com/go/iot v1.8.3
@@ -189,15 +189,15 @@ require (
 	go.opentelemetry.io/otel v1.34.0 // indirect
 	go.opentelemetry.io/otel/metric v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
-	golang.org/x/crypto v0.35.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/oauth2 v0.27.0 // indirect
-	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
-	golang.org/x/time v0.10.0 // indirect
+	golang.org/x/crypto v0.36.0 // indirect
+	golang.org/x/net v0.37.0 // indirect
+	golang.org/x/oauth2 v0.28.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/time v0.11.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250303144028-a0af3efb3deb // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250227231956-55c901821b1e // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250303144028-a0af3efb3deb // indirect
 	google.golang.org/grpc v1.71.0 // indirect
 )
 
@@ -530,3 +530,5 @@ replace cloud.google.com/go/memorystore => ../../../memorystore
 replace cloud.google.com/go/parametermanager => ../../../parametermanager
 
 replace cloud.google.com/go/financialservices => ../../../financialservices
+
+replace cloud.google.com/go/modelarmor => ../../../modelarmor

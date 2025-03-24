@@ -2,6 +2,13 @@
 
 
 
+## [1.6.4](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.6.3...gkebackup/v1.6.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **gkebackup:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.6.2...gkebackup/v1.6.3) (2025-01-02)
 
 
