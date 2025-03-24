@@ -241,7 +241,10 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 		meterProvider = sdkmetric.NewMeterProvider(mpOptions...)
 
 		tracerFactory.enabled = true
-		tracerFactory.shutdown = func(ctx context.Context) { meterProvider.Shutdown(ctx) }
+		tracerFactory.shutdown = func(ctx context.Context) {
+			meterProvider.ForceFlush(ctx)
+			meterProvider.Shutdown(ctx)
+		}
 	} else {
 		switch metricsProvider.(type) {
 		case noop.MeterProvider:
