@@ -53,11 +53,11 @@ const (
 	read
 )
 
-type cloudEnvironment int8
+type cloudEnvironment string
 
 const (
-	production cloudEnvironment = iota
-	devel
+	production cloudEnvironment = "PRODUCTION"
+	devel                       = "DEVEL"
 )
 
 var spannerHosts = map[cloudEnvironment]string{
@@ -109,7 +109,7 @@ func main() {
 
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/%v", project, instance, database)
 
-	fmt.Printf("Running benchmark on %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\nStaleness: %v\n", db, warmupTime, executionTime, waitBetweenRequests, staleness)
+	fmt.Printf("Running benchmark on %v\nEnvironment: %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\nStaleness: %v\n", db, environment, warmupTime, executionTime, waitBetweenRequests, staleness)
 
 	client, err := spanner.NewClientWithConfig(ctx, db, spanner.ClientConfig{}, option.WithEndpoint(host))
 	if err != nil {
