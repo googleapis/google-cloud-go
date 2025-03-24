@@ -4494,8 +4494,9 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	defer instanceAdminClient.DeleteLogicalView(ctx, testEnv.Config().Instance, logicalView)
 
 	logicalViewInfo := LogicalViewInfo{
-		LogicalViewID: logicalView,
-		Query:         fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+		LogicalViewID:      logicalView,
+		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+		DeletionProtection: Protected,
 	}
 	if err = instanceAdminClient.CreateLogicalView(ctx, testEnv.Config().Instance, &logicalViewInfo); err != nil {
 		t.Fatalf("Creating logical view: %v", err)
@@ -4515,6 +4516,9 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	if got, want := logicalViews[0].Query, logicalViewInfo.Query; got != want {
 		t.Errorf("LogicalView Query: %q, want: %q", got, want)
 	}
+	if got, want := logicalViews[0].DeletionProtection, logicalViewInfo.DeletionProtection; got != want {
+		t.Errorf("LogicalView DeletionProtection: %v, want: %v", got, want)
+	}
 
 	// Get logical view
 	lvInfo, err := instanceAdminClient.LogicalViewInfo(ctx, testEnv.Config().Instance, logicalView)
@@ -4524,11 +4528,15 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	if got, want := lvInfo.Query, logicalViewInfo.Query; got != want {
 		t.Errorf("LogicalView Query: %q, want: %q", got, want)
 	}
+	if got, want := lvInfo.DeletionProtection, logicalViewInfo.DeletionProtection; got != want {
+		t.Errorf("LogicalView DeletionProtection: %v, want: %v", got, want)
+	}
 
 	// Update logical view
 	newLogicalViewInfo := LogicalViewInfo{
-		LogicalViewID: logicalView,
-		Query:         fmt.Sprintf("SELECT _key, fam2[col1] as col FROM %s", tblConf.TableID),
+		LogicalViewID:      logicalView,
+		Query:              fmt.Sprintf("SELECT _key, fam2[col1] as col FROM %s", tblConf.TableID),
+		DeletionProtection: Unprotected,
 	}
 	err = instanceAdminClient.UpdateLogicalView(ctx, testEnv.Config().Instance, newLogicalViewInfo)
 	if err != nil {
@@ -4542,6 +4550,9 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	}
 	if got, want := lvInfo.Query, newLogicalViewInfo.Query; got != want {
 		t.Errorf("LogicalView Query: %q, want: %q", got, want)
+	}
+	if got, want := lvInfo.DeletionProtection, newLogicalViewInfo.DeletionProtection; got != want {
+		t.Errorf("LogicalView DeletionProtection: %v, want: %v", got, want)
 	}
 
 	// Delete logical view
