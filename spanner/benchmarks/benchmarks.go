@@ -26,20 +26,49 @@ import (
 
 	"cloud.google.com/go/spanner"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
+/*
+**
+Employees table schema:
+
+CREATE TABLE Employees(
+
+	ID int64,
+	NAME STRING(50)
+
+) PRIMARY KEY(ID)
+*/
 const (
 	selectQuery  = "SELECT ID from EMPLOYEES WHERE ID = @p1"
 	totalRecords = 100000
 	tableName    = "EMPLOYEES"
 )
 
-type transactionType string
+type transactionType int8
 
 const (
-	query transactionType = "query"
-	read                  = "read"
+	query transactionType = iota
+	read
 )
+
+type cloudEnvironment string
+
+const (
+	production cloudEnvironment = "PRODUCTION"
+	devel                       = "DEVEL"
+)
+
+var spannerHosts = map[cloudEnvironment]string{
+	production: "spanner.googleapis.com:443",
+	devel:      "staging-wrenchworks.sandbox.googleapis.com:443",
+}
+
+var monitoringHosts = map[cloudEnvironment]string{
+	production: "monitoring.googleapis.com:443",
+	devel:      "staging-monitoring.sandbox.googleapis.com:443",
+}
 
 func main() {
 	ctx := context.Background()
@@ -59,6 +88,15 @@ func main() {
 		return
 	}
 
+	environment := parseCloudEnvironment(os.Getenv("SPANNER_CLIENT_BENCHMARK_CLOUD_ENVIRONMENT"))
+	host := spannerHosts[environment]
+	monitoringHost := monitoringHosts[environment]
+	err := setMonitoringHost(monitoringHost)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	warmupTime, _ := strconv.ParseInt(os.Args[1], 10, 8)          // in minutes
 	executionTime, _ := strconv.ParseInt(os.Args[2], 10, 8)       // in minutes
 	waitBetweenRequests, _ := strconv.ParseInt(os.Args[3], 10, 8) // in milliseconds
@@ -71,9 +109,9 @@ func main() {
 
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/%v", project, instance, database)
 
-	fmt.Printf("Running benchmark on %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\nStaleness: %v\n", db, warmupTime, executionTime, waitBetweenRequests, staleness)
+	fmt.Printf("Running benchmark on %v\nEnvironment: %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\nStaleness: %v\n", db, environment, warmupTime, executionTime, waitBetweenRequests, staleness)
 
-	client, err := spanner.NewClientWithConfig(ctx, db, spanner.ClientConfig{})
+	client, err := spanner.NewClientWithConfig(ctx, db, spanner.ClientConfig{}, option.WithEndpoint(host))
 	if err != nil {
 		return
 	}
@@ -118,7 +156,7 @@ func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int
 	endTime := time.Now().Local().Add(time.Minute * time.Duration(executionTime))
 
 	go runTimer(endTime, "Remaining operation time")
-	var durations []int64
+	var latencies []int64
 	for {
 		if time.Now().Local().After(endTime) {
 			break
@@ -128,14 +166,13 @@ func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int
 			fmt.Println(err)
 			return make([]int64, 0), err
 		}
-		durations = append(durations, duration)
+		latencies = append(latencies, duration.Microseconds())
 		time.Sleep(time.Millisecond * getRandomWaitTime(waitBetweenRequests))
 	}
-
-	return durations, nil
+	return latencies, nil
 }
 
-func execute(ctx context.Context, transactionType transactionType, client *spanner.Client, staleness int64) (int64, error) {
+func execute(ctx context.Context, transactionType transactionType, client *spanner.Client, staleness int64) (time.Duration, error) {
 	switch transactionType {
 	case query:
 		return executeQuery(ctx, client, staleness)
@@ -146,7 +183,7 @@ func execute(ctx context.Context, transactionType transactionType, client *spann
 	}
 }
 
-func executeQuery(ctx context.Context, client *spanner.Client, staleness int64) (int64, error) {
+func executeQuery(ctx context.Context, client *spanner.Client, staleness int64) (time.Duration, error) {
 	start := time.Now()
 
 	iter := client.Single().WithTimestampBound(spanner.ExactStaleness(time.Second*time.Duration(staleness))).Query(ctx, spanner.Statement{SQL: selectQuery, Params: map[string]interface{}{
@@ -158,19 +195,19 @@ func executeQuery(ctx context.Context, client *spanner.Client, staleness int64) 
 			break
 		}
 		if err != nil {
-			return time.Duration(0).Microseconds(), err
+			return time.Duration(0), err
 		}
 
 		var id int64
 		if err := row.Columns(&id); err != nil {
-			return time.Duration(0).Microseconds(), err
+			return time.Duration(0), err
 		}
 	}
 
-	return time.Since(start).Microseconds(), nil
+	return time.Since(start), nil
 }
 
-func executeRead(ctx context.Context, client *spanner.Client, staleness int64) (int64, error) {
+func executeRead(ctx context.Context, client *spanner.Client, staleness int64) (time.Duration, error) {
 	start := time.Now()
 
 	iter := client.Single().WithTimestampBound(spanner.ExactStaleness(time.Second*time.Duration(staleness))).Read(ctx, tableName, spanner.Key{generateUniqueID()}, []string{"ID"})
@@ -180,16 +217,16 @@ func executeRead(ctx context.Context, client *spanner.Client, staleness int64) (
 			break
 		}
 		if err != nil {
-			return time.Duration(0).Microseconds(), err
+			return time.Duration(0), err
 		}
 
 		var id int64
 		if err := row.Columns(&id); err != nil {
-			return time.Duration(0).Microseconds(), err
+			return time.Duration(0), err
 		}
 	}
 
-	return time.Since(start).Microseconds(), nil
+	return time.Since(start), nil
 }
 
 func runTimer(endTime time.Time, text string) {
@@ -204,6 +241,13 @@ func runTimer(endTime time.Time, text string) {
 	}
 }
 
+func setMonitoringHost(monitoringHost string) error {
+	if err := os.Setenv("SPANNER_MONITORING_HOST", monitoringHost); err != nil {
+		return err
+	}
+	return nil
+}
+
 func parseTransactionType(s string) (transactionType, error) {
 	switch s {
 	case "READ":
@@ -212,6 +256,15 @@ func parseTransactionType(s string) (transactionType, error) {
 		return query, nil
 	default:
 		return query, errors.New("invalid transaction type")
+	}
+}
+
+func parseCloudEnvironment(environment string) cloudEnvironment {
+	switch environment {
+	case "DEVEL":
+		return devel
+	default:
+		return production
 	}
 }
 

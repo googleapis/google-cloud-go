@@ -91,6 +91,21 @@ func TestStringProto(t *testing.T) {
 	assertType(t, st, want)
 }
 
+func TestStringProto_Utf8Bytes(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_StringType{
+			StringType: &btapb.Type_String{
+				Encoding: &btapb.Type_String_Encoding{
+					Encoding: &btapb.Type_String_Encoding_Utf8Bytes_{},
+				},
+			},
+		},
+	}
+	st := StringType{Encoding: StringUtf8BytesEncoding{}}
+
+	assertType(t, st, want)
+}
+
 func TestTimestampProto(t *testing.T) {
 	want := &btapb.Type{
 		Kind: &btapb.Type_TimestampType{
