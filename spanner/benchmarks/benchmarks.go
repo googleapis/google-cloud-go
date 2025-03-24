@@ -31,6 +31,14 @@ import (
 const (
 	selectQuery  = "SELECT ID from EMPLOYEES WHERE ID = @p1"
 	totalRecords = 100000
+	tableName    = "EMPLOYEES"
+)
+
+type transactionType string
+
+const (
+	query transactionType = "query"
+	read                  = "read"
 )
 
 func main() {
@@ -46,7 +54,7 @@ func main() {
 		return
 	}
 
-	if len(os.Args) < 5 {
+	if len(os.Args) < 6 {
 		fmt.Println("Please set warm up time, execution time, wait between requests and staleness in the command line arguments")
 		return
 	}
@@ -54,7 +62,12 @@ func main() {
 	warmupTime, _ := strconv.ParseInt(os.Args[1], 10, 8)          // in minutes
 	executionTime, _ := strconv.ParseInt(os.Args[2], 10, 8)       // in minutes
 	waitBetweenRequests, _ := strconv.ParseInt(os.Args[3], 10, 8) // in milliseconds
-	staleness, _ := strconv.ParseInt(os.Args[4], 10, 8)           // in milliseconds
+	staleness, _ := strconv.ParseInt(os.Args[4], 10, 8)           // in seconds
+	parsedTransactionType, err := parseTransactionType(os.Args[5])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/%v", project, instance, database)
 
@@ -64,27 +77,27 @@ func main() {
 	if err != nil {
 		return
 	}
+	defer client.Close()
 
-	err = warmUp(ctx, client, warmupTime, staleness)
+	err = warmUp(ctx, client, warmupTime, staleness, parsedTransactionType)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	latencies, err := runBenchmark(ctx, client, executionTime, staleness, waitBetweenRequests)
+	latencies, err := runBenchmark(ctx, client, executionTime, staleness, waitBetweenRequests, parsedTransactionType)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	client.Close()
 	slices.Sort(latencies)
 
-	fmt.Printf("\nResults\np50 %v\n p95 %v\n p99 %v\n", percentiles(50, latencies),
-		percentiles(95, latencies), percentiles(99, latencies))
+	fmt.Printf("\nResults\np50 %v\np95 %v\np99 %v\n", percentiles(0.5, latencies),
+		percentiles(0.95, latencies), percentiles(0.99, latencies))
 }
 
-func warmUp(ctx context.Context, client *spanner.Client, warmupTime int64, staleness int64) error {
+func warmUp(ctx context.Context, client *spanner.Client, warmupTime int64, staleness int64, transactionType transactionType) error {
 	endTime := time.Now().Local().Add(time.Minute * time.Duration(warmupTime))
 
 	go runTimer(endTime, "Remaining warmup time")
@@ -92,7 +105,7 @@ func warmUp(ctx context.Context, client *spanner.Client, warmupTime int64, stale
 		if time.Now().Local().After(endTime) {
 			break
 		}
-		_, err := executeQuery(ctx, client, staleness)
+		_, err := execute(ctx, transactionType, client, staleness)
 		if err != nil {
 			fmt.Println(err)
 			return err
@@ -101,7 +114,7 @@ func warmUp(ctx context.Context, client *spanner.Client, warmupTime int64, stale
 	return nil
 }
 
-func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int64, staleness int64, waitBetweenRequests int64) ([]int64, error) {
+func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int64, staleness int64, waitBetweenRequests int64, transactionType transactionType) ([]int64, error) {
 	endTime := time.Now().Local().Add(time.Minute * time.Duration(executionTime))
 
 	go runTimer(endTime, "Remaining operation time")
@@ -110,7 +123,7 @@ func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int
 		if time.Now().Local().After(endTime) {
 			break
 		}
-		duration, err := executeQuery(ctx, client, staleness)
+		duration, err := execute(ctx, transactionType, client, staleness)
 		if err != nil {
 			fmt.Println(err)
 			return make([]int64, 0), err
@@ -120,6 +133,17 @@ func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int
 	}
 
 	return durations, nil
+}
+
+func execute(ctx context.Context, transactionType transactionType, client *spanner.Client, staleness int64) (int64, error) {
+	switch transactionType {
+	case query:
+		return executeQuery(ctx, client, staleness)
+	case read:
+		return executeRead(ctx, client, staleness)
+	default:
+		return 0, errors.New("invalid transaction type")
+	}
 }
 
 func executeQuery(ctx context.Context, client *spanner.Client, staleness int64) (int64, error) {
@@ -146,9 +170,33 @@ func executeQuery(ctx context.Context, client *spanner.Client, staleness int64) 
 	return time.Since(start).Microseconds(), nil
 }
 
+func executeRead(ctx context.Context, client *spanner.Client, staleness int64) (int64, error) {
+	start := time.Now()
+
+	iter := client.Single().WithTimestampBound(spanner.ExactStaleness(time.Second*time.Duration(staleness))).Read(ctx, tableName, spanner.Key{generateUniqueID()}, []string{"ID"})
+	for {
+		row, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			return time.Duration(0).Microseconds(), err
+		}
+
+		var id int64
+		if err := row.Columns(&id); err != nil {
+			return time.Duration(0).Microseconds(), err
+		}
+	}
+
+	return time.Since(start).Microseconds(), nil
+}
+
 func runTimer(endTime time.Time, text string) {
 	for {
-		fmt.Printf("\r\r%v %v", text, int(endTime.Sub(time.Now()).Seconds()))
+		var t time.Time
+		t = t.Add(endTime.Sub(time.Now()))
+		fmt.Printf("\r%v %v", text, t.Format(time.TimeOnly))
 		time.Sleep(time.Second)
 		if time.Now().Local().After(endTime) {
 			break
@@ -156,9 +204,20 @@ func runTimer(endTime time.Time, text string) {
 	}
 }
 
-func percentiles(percentile int, latencies []int64) any {
-	rank := ((percentile / 100) * (len(latencies) - 1)) + 1
-	return latencies[rank]
+func parseTransactionType(s string) (transactionType, error) {
+	switch s {
+	case "READ":
+		return read, nil
+	case "QUERY":
+		return query, nil
+	default:
+		return query, errors.New("invalid transaction type")
+	}
+}
+
+func percentiles(percentile float32, latencies []int64) any {
+	rank := (percentile * float32(len(latencies)-1)) + 1
+	return latencies[uint(rank)]
 }
 
 func generateUniqueID() int64 {
