@@ -77,6 +77,30 @@ func (it *RouteTableIterator) All() iter.Seq2[*networkconnectivitypb.RouteTable,
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ServiceClassIterator) All() iter.Seq2[*networkconnectivitypb.ServiceClass, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceConnectionMapIterator) All() iter.Seq2[*networkconnectivitypb.ServiceConnectionMap, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceConnectionPolicyIterator) All() iter.Seq2[*networkconnectivitypb.ServiceConnectionPolicy, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceConnectionTokenIterator) All() iter.Seq2[*networkconnectivitypb.ServiceConnectionToken, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *SpokeIterator) All() iter.Seq2[*networkconnectivitypb.Spoke, error] {
 	return iterator.RangeAdapter(it.Next)
 }
