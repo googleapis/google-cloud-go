@@ -2957,6 +2957,7 @@ func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceI
 	}
 	if conf.Query != "" {
 		updateMask.Paths = append(updateMask.Paths, "query")
+		lv.Query = conf.Query
 	}
 	req := &btapb.UpdateLogicalViewRequest{
 		LogicalView: lv,
