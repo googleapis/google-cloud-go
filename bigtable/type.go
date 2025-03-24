@@ -432,6 +432,8 @@ func stringEncodingProtoToType(se *btapb.Type_String_Encoding) StringEncoding {
 	switch se.Encoding.(type) {
 	case *btapb.Type_String_Encoding_Utf8Raw_:
 		return StringUtf8Encoding{}
+	case *btapb.Type_String_Encoding_Utf8Bytes_:
+		return StringUtf8BytesEncoding{}
 	default:
 		return unknown[btapb.Type_String_Encoding]{wrapped: se}
 	}

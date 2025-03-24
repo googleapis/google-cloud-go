@@ -842,6 +842,7 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 				Location:           ".../us-central1-a",
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
+				NodeScalingFactor:  btapb.Cluster_NODE_SCALING_FACTOR_1X,
 			},
 			wantConfig: nil,
 		},
@@ -852,6 +853,7 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 				Location:           ".../us-central1-a",
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
+				NodeScalingFactor:  btapb.Cluster_NODE_SCALING_FACTOR_1X,
 				Config: &btapb.Cluster_ClusterConfig_{
 					ClusterConfig: &btapb.Cluster_ClusterConfig{
 						ClusterAutoscalingConfig: &btapb.Cluster_ClusterAutoscalingConfig{
@@ -900,6 +902,7 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 				Location:           ".../us-central1-a",
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
+				NodeScalingFactor:  btapb.Cluster_NODE_SCALING_FACTOR_1X,
 			},
 			wantConfig: nil,
 		},
@@ -910,6 +913,7 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 				Location:           ".../us-central1-a",
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
+				NodeScalingFactor:  btapb.Cluster_NODE_SCALING_FACTOR_1X,
 				Config: &btapb.Cluster_ClusterConfig_{
 					ClusterConfig: &btapb.Cluster_ClusterConfig{
 						ClusterAutoscalingConfig: &btapb.Cluster_ClusterAutoscalingConfig{
@@ -1027,6 +1031,7 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 		ClusterId:         "mycluster",
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
+		NodeScalingFactor: NodeScalingFactor1X,
 		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 	})
 	if err != nil {
@@ -1053,13 +1058,14 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 	}
 
 	err = c.CreateInstance(context.Background(), &InstanceConf{
-		InstanceId:   "myinst",
-		DisplayName:  "myinst",
-		InstanceType: PRODUCTION,
-		ClusterId:    "mycluster",
-		Zone:         "us-central1-a",
-		StorageType:  SSD,
-		NumNodes:     1,
+		InstanceId:        "myinst",
+		DisplayName:       "myinst",
+		InstanceType:      PRODUCTION,
+		ClusterId:         "mycluster",
+		Zone:              "us-central1-a",
+		StorageType:       SSD,
+		NodeScalingFactor: NodeScalingFactor1X,
+		NumNodes:          1,
 	})
 	if err != nil {
 		t.Fatalf("CreateInstance failed: %v", err)
@@ -1085,6 +1091,7 @@ func TestInstanceAdmin_CreateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
 				StorageType:       SSD,
+				NodeScalingFactor: NodeScalingFactor1X,
 				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 			},
 		},
@@ -1122,6 +1129,7 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
 		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
+		NodeScalingFactor: NodeScalingFactor1X,
 	})
 	if err != nil {
 		t.Fatalf("CreateCluster failed: %v", err)
@@ -1151,10 +1159,11 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 	}
 
 	err = c.CreateCluster(context.Background(), &ClusterConfig{
-		ClusterID:   "mycluster",
-		Zone:        "us-central1-a",
-		StorageType: SSD,
-		NumNodes:    1,
+		ClusterID:         "mycluster",
+		Zone:              "us-central1-a",
+		StorageType:       SSD,
+		NumNodes:          1,
+		NodeScalingFactor: NodeScalingFactor1X,
 	})
 	if err != nil {
 		t.Fatalf("CreateCluster failed: %v", err)
