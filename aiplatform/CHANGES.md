@@ -1,6 +1,48 @@
 # Changes
 
 
+## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.77.0...aiplatform/v1.78.0) (2025-03-19)
+
+
+### Features
+
+* **aiplatform:** Add env variables and agent framework to ReasoningEngineSpec ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Add env variables and agent framework to ReasoningEngineSpec in v1beta1 ([#11867](https://github.com/googleapis/google-cloud-go/issues/11867)) ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+* **aiplatform:** Add VertexAISearch.engine option ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **aiplatform:** Add `deployment_spec` and `agent_framework` field to `ReasoningEngineSpec`. ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Add `deployment_spec` and `agent_framework` field to `ReasoningEngineSpec`. ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+* **aiplatform:** Update comment for `package_spec` from required to optional in `ReasoningEngineSpec`. ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Update comment for `package_spec` from required to optional in `ReasoningEngineSpec`. ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+
+## [1.77.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.76.0...aiplatform/v1.77.0) (2025-03-13)
+
+
+### Features
+
+* **aiplatform:** Add function_call.id and function_response.id ([#11820](https://github.com/googleapis/google-cloud-go/issues/11820)) ([1c7cc4b](https://github.com/googleapis/google-cloud-go/commit/1c7cc4b06d24a1af6c4df23f0417880b9629a3a7))
+
+
+### Bug Fixes
+
+* **aiplatform:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.76.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.75.0...aiplatform/v1.76.0) (2025-03-12)
+
+
+### Features
+
+* **aiplatform:** Add Layout Parser to RAG v1 API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Add multihost_gpu_node_count to Vertex SDK for multihost GPU support ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Add reranker config to RAG v1 API ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+* **aiplatform:** Allowing users to choose whether to use the hf model cache ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to choose whether to use the hf model cache ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to specify the version id of the Model Garden model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to specify the version id of the Model Garden model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [1.75.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.74.0...aiplatform/v1.75.0) (2025-03-06)
 
 

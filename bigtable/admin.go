@@ -130,6 +130,14 @@ func (ac *AdminClient) authorizedViewPath(table, authorizedView string) string {
 	return fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), table, authorizedView)
 }
 
+func logicalViewPath(project, instance, logicalView string) string {
+	return fmt.Sprintf("%s/logicalViews/%s", instancePrefix(project, instance), logicalView)
+}
+
+func materializedlViewPath(project, instance, materializedView string) string {
+	return fmt.Sprintf("%s/materializedViews/%s", instancePrefix(project, instance), materializedView)
+}
+
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	Status        *Status
@@ -318,6 +326,8 @@ type TableConf struct {
 	ChangeStreamRetention ChangeStreamRetention
 	// Configure an automated backup policy for the table
 	AutomatedBackupConfig TableAutomatedBackupConfig
+	// Configure a row key schema for the table
+	RowKeySchema *StructType
 }
 
 // CreateTable creates a new table in the instance.
@@ -364,6 +374,11 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 			return err
 		}
 		tbl.AutomatedBackupConfig = proto
+	}
+
+	if conf.RowKeySchema != nil {
+		proto := conf.RowKeySchema.proto()
+		tbl.RowKeySchema = proto.GetStructType()
 	}
 
 	if conf.Families != nil && conf.ColumnFamilies != nil {
@@ -450,6 +465,7 @@ const (
 	automatedBackupPolicyFieldMask = "automated_backup_policy"
 	retentionPeriodFieldMaskPath   = "retention_period"
 	frequencyFieldMaskPath         = "frequency"
+	rowKeySchemaMaskPath           = "row_key_schema"
 )
 
 func (ac *AdminClient) newUpdateTableRequestProto(tableID string) (*btapb.UpdateTableRequest, error) {
@@ -554,6 +570,28 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+frequencyFieldMaskPath)
 	}
 	req.Table.AutomatedBackupConfig = abc
+	return ac.updateTableAndWait(ctx, req)
+}
+
+// UpdateTableWithRowKeySchema updates a table with RowKeySchema.
+func (ac *AdminClient) UpdateTableWithRowKeySchema(ctx context.Context, tableID string, rowKeySchema StructType) error {
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
+	}
+	req.UpdateMask.Paths = append(req.UpdateMask.Paths, rowKeySchemaMaskPath)
+	req.Table.RowKeySchema = rowKeySchema.proto().GetStructType()
+	return ac.updateTableAndWait(ctx, req)
+}
+
+// UpdateTableRemoveRowKeySchema removes a RowKeySchema from a table.
+func (ac *AdminClient) UpdateTableRemoveRowKeySchema(ctx context.Context, tableID string) error {
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
+	}
+	req.UpdateMask.Paths = append(req.UpdateMask.Paths, rowKeySchemaMaskPath)
+	req.IgnoreWarnings = true
 	return ac.updateTableAndWait(ctx, req)
 }
 
@@ -1200,6 +1238,12 @@ type InstanceConf struct {
 	// AutoscalingConfig configures the autoscaling properties on the cluster
 	// created with the instance. It is optional.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+	// increment in which NumNodes can be set). Node scaling delivers better
+	// latency and more throughput by removing node boundaries. It is optional,
+	// with the default being 1X.
+	NodeScalingFactor NodeScalingFactor
 }
 
 // InstanceWithClustersConfig contains the information necessary to create an Instance
@@ -1229,6 +1273,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 				NumNodes:          conf.NumNodes,
 				StorageType:       conf.StorageType,
 				AutoscalingConfig: conf.AutoscalingConfig,
+				NodeScalingFactor: conf.NodeScalingFactor,
 			},
 		},
 	}
@@ -1469,6 +1514,44 @@ func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
 	}
 }
 
+// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+// increment in which NumNodes can be set). Node scaling delivers better
+// latency and more throughput by removing node boundaries.
+type NodeScalingFactor int32
+
+const (
+	// NodeScalingFactorUnspecified default to 1X.
+	NodeScalingFactorUnspecified NodeScalingFactor = iota
+	// NodeScalingFactor1X runs the cluster with a scaling factor of 1.
+	NodeScalingFactor1X
+	// NodeScalingFactor2X runs the cluster with a scaling factor of 2.
+	// All node count values must be in increments of 2 with this scaling
+	// factor enabled, otherwise an INVALID_ARGUMENT error will be returned.
+	NodeScalingFactor2X
+)
+
+func (nsf NodeScalingFactor) proto() btapb.Cluster_NodeScalingFactor {
+	switch nsf {
+	case NodeScalingFactor1X:
+		return btapb.Cluster_NODE_SCALING_FACTOR_1X
+	case NodeScalingFactor2X:
+		return btapb.Cluster_NODE_SCALING_FACTOR_2X
+	default:
+		return btapb.Cluster_NODE_SCALING_FACTOR_UNSPECIFIED
+	}
+}
+
+func nodeScalingFactorFromProto(nsf btapb.Cluster_NodeScalingFactor) NodeScalingFactor {
+	switch nsf {
+	case btapb.Cluster_NODE_SCALING_FACTOR_1X:
+		return NodeScalingFactor1X
+	case btapb.Cluster_NODE_SCALING_FACTOR_2X:
+		return NodeScalingFactor2X
+	default:
+		return NodeScalingFactorUnspecified
+	}
+}
+
 // ClusterConfig contains the information necessary to create a cluster
 type ClusterConfig struct {
 	// InstanceID specifies the unique name of the instance. Required.
@@ -1510,6 +1593,12 @@ type ClusterConfig struct {
 	// AutoscalingConfig configures the autoscaling properties on a cluster.
 	// One of NumNodes or AutoscalingConfig is required.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+	// increment in which NumNodes can be set). Node scaling delivers better
+	// latency and more throughput by removing node boundaries. It is optional,
+	// with the default being 1X.
+	NodeScalingFactor NodeScalingFactor
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
@@ -1520,6 +1609,7 @@ func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
 		EncryptionConfig: &btapb.Cluster_EncryptionConfig{
 			KmsKeyName: cc.KMSKeyName,
 		},
+		NodeScalingFactor: cc.NodeScalingFactor.proto(),
 	}
 
 	if asc := cc.AutoscalingConfig; asc != nil {
@@ -1554,6 +1644,9 @@ type ClusterInfo struct {
 
 	// AutoscalingConfig are the configured values for a cluster.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster.
+	NodeScalingFactor NodeScalingFactor
 }
 
 // CreateCluster creates a new cluster in an instance.
@@ -1657,12 +1750,13 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 			kmsKeyName = c.EncryptionConfig.KmsKeyName
 		}
 		ci := &ClusterInfo{
-			Name:        nameParts[len(nameParts)-1],
-			Zone:        locParts[len(locParts)-1],
-			ServeNodes:  int(c.ServeNodes),
-			State:       c.State.String(),
-			StorageType: storageTypeFromProto(c.DefaultStorageType),
-			KMSKeyName:  kmsKeyName,
+			Name:              nameParts[len(nameParts)-1],
+			Zone:              locParts[len(locParts)-1],
+			ServeNodes:        int(c.ServeNodes),
+			State:             c.State.String(),
+			StorageType:       storageTypeFromProto(c.DefaultStorageType),
+			KMSKeyName:        kmsKeyName,
+			NodeScalingFactor: nodeScalingFactorFromProto(c.NodeScalingFactor),
 		}
 		if cfg := c.GetClusterConfig(); cfg != nil {
 			if asc := fromClusterConfigProto(cfg); asc != nil {
@@ -1702,12 +1796,13 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 	nameParts := strings.Split(c.Name, "/")
 	locParts := strings.Split(c.Location, "/")
 	ci := &ClusterInfo{
-		Name:        nameParts[len(nameParts)-1],
-		Zone:        locParts[len(locParts)-1],
-		ServeNodes:  int(c.ServeNodes),
-		State:       c.State.String(),
-		StorageType: storageTypeFromProto(c.DefaultStorageType),
-		KMSKeyName:  kmsKeyName,
+		Name:              nameParts[len(nameParts)-1],
+		Zone:              locParts[len(locParts)-1],
+		ServeNodes:        int(c.ServeNodes),
+		State:             c.State.String(),
+		StorageType:       storageTypeFromProto(c.DefaultStorageType),
+		KMSKeyName:        kmsKeyName,
+		NodeScalingFactor: nodeScalingFactorFromProto(c.NodeScalingFactor),
 	}
 	// Use type assertion to handle protobuf oneof type
 	if cfg := c.GetClusterConfig(); cfg != nil {
@@ -2604,6 +2699,8 @@ func (s *SubsetViewConf) AddFamilySubsetQualifierPrefix(familyName string, quali
 	s.FamilySubsets[familyName] = fs
 }
 
+// Authorized Views
+
 // CreateAuthorizedView creates a new authorized view in a table.
 func (ac *AdminClient) CreateAuthorizedView(ctx context.Context, conf *AuthorizedViewConf) error {
 	if conf.TableID == "" || conf.AuthorizedViewID == "" {
@@ -2763,5 +2860,274 @@ func (ac *AdminClient) DeleteAuthorizedView(ctx context.Context, tableID, author
 		Name: ac.authorizedViewPath(tableID, authorizedViewID),
 	}
 	_, err := ac.tClient.DeleteAuthorizedView(ctx, req)
+	return err
+}
+
+// Logical Views
+
+// CreateLogicalView creates a new logical view in an instance.
+func (iac *InstanceAdminClient) CreateLogicalView(ctx context.Context, instanceID string, conf *LogicalViewInfo) error {
+	if conf.LogicalViewID == "" {
+		return errors.New("LogicalViewID is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.CreateLogicalViewRequest{
+		Parent:        instancePrefix(iac.project, instanceID),
+		LogicalViewId: conf.LogicalViewID,
+		LogicalView: &btapb.LogicalView{
+			Query: conf.Query,
+		},
+	}
+
+	op, err := iac.iClient.CreateLogicalView(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.LogicalView{}
+	return longrunning.InternalNewOperation(iac.lroClient, op).Wait(ctx, &resp)
+}
+
+// LogicalViewInfo contains logical view metadata. This struct is read-only.
+type LogicalViewInfo struct {
+	LogicalViewID string
+
+	Query string
+}
+
+// LogicalViewInfo retrieves information about a logical view.
+func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID, logicalViewID string) (*LogicalViewInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	prefix := instancePrefix(iac.project, instanceID)
+	req := &btapb.GetLogicalViewRequest{
+		Name: logicalViewPath(iac.project, instanceID, logicalViewID),
+	}
+	var res *btapb.LogicalView
+
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.GetLogicalView(ctx, req)
+		return err
+	}, retryOptions...)
+
+	if err != nil {
+		return nil, err
+	}
+	return &LogicalViewInfo{LogicalViewID: strings.TrimPrefix(res.Name, prefix+"/logicalViews/"), Query: res.Query}, nil
+}
+
+// LogicalViews returns a list of the logical views in the instance.
+func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID string) ([]LogicalViewInfo, error) {
+	views := []LogicalViewInfo{}
+	prefix := instancePrefix(iac.project, instanceID)
+	req := &btapb.ListLogicalViewsRequest{
+		Parent: prefix,
+	}
+	var res *btapb.ListLogicalViewsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.ListLogicalViews(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, lv := range res.LogicalViews {
+		views = append(views, LogicalViewInfo{LogicalViewID: strings.TrimPrefix(lv.Name, prefix+"/logicalViews/"), Query: lv.Query})
+	}
+	return views, nil
+}
+
+// UpdateLogicalView updates a logical view in an instance according to the given configuration.
+func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceID string, conf LogicalViewInfo) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	if conf.LogicalViewID == "" {
+		return errors.New("LogicalViewID is required")
+	}
+	lv := &btapb.LogicalView{}
+	lv.Name = logicalViewPath(iac.project, instanceID, conf.LogicalViewID)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{},
+	}
+	if conf.Query != "" {
+		updateMask.Paths = append(updateMask.Paths, "query")
+	}
+	req := &btapb.UpdateLogicalViewRequest{
+		LogicalView: lv,
+		UpdateMask:  updateMask,
+	}
+	lro, err := iac.iClient.UpdateLogicalView(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update logical view: %w", err)
+	}
+	var res btapb.LogicalView
+	op := longrunning.InternalNewOperation(iac.lroClient, lro)
+	if err = op.Wait(ctx, &res); err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
+// DeleteLogicalView deletes a logical view in an instance.
+func (iac *InstanceAdminClient) DeleteLogicalView(ctx context.Context, instanceID, logicalViewID string) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.DeleteLogicalViewRequest{
+		Name: logicalViewPath(iac.project, instanceID, logicalViewID),
+	}
+	_, err := iac.iClient.DeleteLogicalView(ctx, req)
+	return err
+}
+
+// Materialized Views
+
+// CreateMaterializedView creates a new materialized view in an instance.
+func (iac *InstanceAdminClient) CreateMaterializedView(ctx context.Context, instanceID string, conf *MaterializedViewInfo) error {
+	if conf.MaterializedViewID == "" {
+		return errors.New("MaterializedViewID is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	mv := &btapb.MaterializedView{
+		Query: conf.Query,
+	}
+	if conf.DeletionProtection != None {
+		switch dp := conf.DeletionProtection; dp {
+		case Protected:
+			mv.DeletionProtection = true
+		case Unprotected:
+			mv.DeletionProtection = false
+		default:
+			break
+		}
+	}
+	req := &btapb.CreateMaterializedViewRequest{
+		Parent:             instancePrefix(iac.project, instanceID),
+		MaterializedViewId: conf.MaterializedViewID,
+		MaterializedView:   mv,
+	}
+	op, err := iac.iClient.CreateMaterializedView(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.MaterializedView{}
+	return longrunning.InternalNewOperation(iac.lroClient, op).Wait(ctx, &resp)
+}
+
+// MaterializedViewInfo contains materialized view metadata. This struct is read-only.
+type MaterializedViewInfo struct {
+	MaterializedViewID string
+
+	Query              string
+	DeletionProtection DeletionProtection
+}
+
+// MaterializedViewInfo retrieves information about a materialized view.
+func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instanceID, materializedViewID string) (*MaterializedViewInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	prefix := instancePrefix(iac.project, instanceID)
+	req := &btapb.GetMaterializedViewRequest{
+		Name: materializedlViewPath(iac.project, instanceID, materializedViewID),
+	}
+	var res *btapb.MaterializedView
+
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.GetMaterializedView(ctx, req)
+		return err
+	}, retryOptions...)
+
+	if err != nil {
+		return nil, err
+	}
+	mv := &MaterializedViewInfo{MaterializedViewID: strings.TrimPrefix(res.Name, prefix+"/materializedViews/"), Query: res.Query}
+	if res.DeletionProtection {
+		mv.DeletionProtection = Protected
+	} else {
+		mv.DeletionProtection = Unprotected
+	}
+	return mv, nil
+}
+
+// MaterializedViews returns a list of the materialized views in the instance.
+func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceID string) ([]MaterializedViewInfo, error) {
+	views := []MaterializedViewInfo{}
+	prefix := instancePrefix(iac.project, instanceID)
+	req := &btapb.ListMaterializedViewsRequest{
+		Parent: prefix,
+	}
+	var res *btapb.ListMaterializedViewsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.ListMaterializedViews(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, mView := range res.MaterializedViews {
+		mv := MaterializedViewInfo{MaterializedViewID: strings.TrimPrefix(mView.Name, prefix+"/materializedViews/"), Query: mView.Query}
+		if mView.DeletionProtection {
+			mv.DeletionProtection = Protected
+		} else {
+			mv.DeletionProtection = Unprotected
+		}
+		views = append(views, mv)
+	}
+	return views, nil
+}
+
+// UpdateMaterializedView updates a materialized view in an instance according to the given configuration.
+func (iac *InstanceAdminClient) UpdateMaterializedView(ctx context.Context, instanceID string, conf MaterializedViewInfo) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	if conf.MaterializedViewID == "" {
+		return errors.New("MaterializedViewID is required")
+	}
+	mv := &btapb.MaterializedView{}
+	mv.Name = materializedlViewPath(iac.project, instanceID, conf.MaterializedViewID)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{},
+	}
+	if conf.Query != "" {
+		updateMask.Paths = append(updateMask.Paths, "query")
+		mv.Query = conf.Query
+	}
+	if conf.DeletionProtection != None {
+		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+		switch dp := conf.DeletionProtection; dp {
+		case Protected:
+			mv.DeletionProtection = true
+		case Unprotected:
+			mv.DeletionProtection = false
+		default:
+			break
+		}
+	}
+	req := &btapb.UpdateMaterializedViewRequest{
+		MaterializedView: mv,
+		UpdateMask:       updateMask,
+	}
+	lro, err := iac.iClient.UpdateMaterializedView(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update materialized view: %w", err)
+	}
+	var res btapb.MaterializedView
+	op := longrunning.InternalNewOperation(iac.lroClient, lro)
+	if err = op.Wait(ctx, &res); err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
+// DeleteMaterializedView deletes a materialized view in an instance.
+func (iac *InstanceAdminClient) DeleteMaterializedView(ctx context.Context, instanceID, materializedViewID string) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.DeleteMaterializedViewRequest{
+		Name: materializedlViewPath(iac.project, instanceID, materializedViewID),
+	}
+	_, err := iac.iClient.DeleteMaterializedView(ctx, req)
 	return err
 }

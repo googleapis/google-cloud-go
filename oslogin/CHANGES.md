@@ -1,5 +1,19 @@
 # Changes
 
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.14.4...oslogin/v1.14.5) (2025-03-19)
+
+
+### Documentation
+
+* **oslogin:** Use Markdown links instead of HTML ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.14.3...oslogin/v1.14.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **oslogin:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.14.2...oslogin/v1.14.3) (2025-01-02)
 
 
