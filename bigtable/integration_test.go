@@ -35,6 +35,7 @@ import (
 	"time"
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/optional"
@@ -2072,7 +2073,7 @@ func TestIntegration_CreateTableWithRowKeySchema(t *testing.T) {
 	defer testEnv.Close()
 
 	if !testEnv.Config().UseProd {
-		t.Skip("emulator doesn't support Automated Backups")
+		t.Skip("emulator doesn't support row key schema")
 	}
 
 	timeout := 5 * time.Minute
@@ -2084,15 +2085,6 @@ func TestIntegration_CreateTableWithRowKeySchema(t *testing.T) {
 		t.Fatalf("NewAdminClient: %v", err)
 	}
 	defer adminClient.Close()
-
-	myTableName := myTableNameSpace.New()
-	tableConf := TableConf{
-		TableID: myTableName,
-		Families: map[string]GCPolicy{
-			"fam1": MaxVersionsPolicy(1),
-			"fam2": MaxVersionsPolicy(2),
-		},
-	}
 
 	testCases := []struct {
 		desc          string
@@ -2167,21 +2159,30 @@ func TestIntegration_CreateTableWithRowKeySchema(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		myTableName := myTableNameSpace.New()
+		tableConf := TableConf{
+			TableID: myTableName,
+			Families: map[string]GCPolicy{
+				"fam1": MaxVersionsPolicy(1),
+				"fam2": MaxVersionsPolicy(2),
+			},
+		}
+
 		tableConf.RowKeySchema = &tc.rks
 		err := adminClient.CreateTableFromConf(ctx, &tableConf)
 
 		if tc.errorExpected && err == nil {
-			t.Errorf("Want error from test: '%v', got nil", tc.desc)
+			t.Fatalf("Want error from test: '%v', got nil", tc.desc)
 		}
 
 		if !tc.errorExpected && err != nil {
-			t.Errorf("Unexpected error: %v", err)
+			t.Fatalf("Unexpected error: %v", err)
 		}
 
 		// get the table and see the new schema is updated
-		tbl, err := adminClient.getTable(ctx, tableConf.TableID, btapb.Table_SCHEMA_VIEW)
+		tbl, err := adminClient.TableInfo(ctx, tableConf.TableID)
 		if !tc.errorExpected && tbl.RowKeySchema == nil {
-			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.rks, tbl)
+			t.Errorf("Expecting row key schema %v to be created in table, got nil", tc.rks)
 		}
 
 		if tbl != nil {
@@ -2215,33 +2216,36 @@ func TestIntegration_UpdateRowKeySchemaInTable(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	myTableName := myTableNameSpace.New()
-	tableConf := TableConf{
-		TableID: myTableName,
-		Families: map[string]GCPolicy{
-			"fam1": MaxVersionsPolicy(1),
-		},
-	}
-
-	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
-		t.Fatalf("Unexpected error trying to create table: %v", err)
-	}
-
 	testCases := []struct {
 		desc          string
-		rks           StructType
+		updateRks     StructType
 		errorExpected bool
+		currentRks    *StructType
 	}{
-		{desc: "Update fail with conflicting family name",
-			rks: StructType{
+		{
+			desc: "Update fail with conflicting family name",
+			updateRks: StructType{
 				Fields:   []StructField{{FieldName: "fam1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
 				Encoding: StructSingletonEncoding{},
+			},
+			errorExpected: true,
+			currentRks:    nil,
+		},
+		{
+			desc: "Update fail for table with existing row key schema",
+			updateRks: StructType{
+				Fields:   []StructField{{FieldName: "mycol", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+				Encoding: StructSingletonEncoding{},
+			},
+			currentRks: &StructType{
+				Fields:   []StructField{{FieldName: "myfirstcol", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+				Encoding: StructDelimitedBytesEncoding{Delimiter: []byte{'#'}},
 			},
 			errorExpected: true,
 		},
 		{
 			desc: "Update ok",
-			rks: StructType{
+			updateRks: StructType{
 				Fields: []StructField{
 					{FieldName: "myfield", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
 					{FieldName: "myfield2", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}}},
@@ -2249,23 +2253,40 @@ func TestIntegration_UpdateRowKeySchemaInTable(t *testing.T) {
 					Delimiter: []byte{'#'},
 				},
 			},
+			currentRks: nil,
 		},
 	}
 
 	for _, tc := range testCases {
-		err := adminClient.UpdateTableWithRowKeySchema(ctx, tableConf.TableID, tc.rks)
+		myTableName := myTableNameSpace.New()
+		tableConf := TableConf{
+			TableID: myTableName,
+			Families: map[string]GCPolicy{
+				"fam1": MaxVersionsPolicy(1),
+			},
+		}
+		if tc.currentRks != nil {
+			tableConf.RowKeySchema = tc.currentRks
+		}
+
+		if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+			t.Fatalf("Unexpected error trying to create table: %v", err)
+		}
+		defer adminClient.DeleteTable(ctx, tableConf.TableID)
+
+		err = adminClient.UpdateTableWithRowKeySchema(ctx, tableConf.TableID, tc.updateRks)
 		if tc.errorExpected && err == nil {
-			t.Errorf("Expecting error from test '%v', got nil", tc.desc)
+			t.Fatalf("Expecting error from test '%v', got nil", tc.desc)
 		}
 
 		if !tc.errorExpected && err != nil {
-			t.Errorf("Unexpected error from test '%v': %v", tc.desc, err)
+			t.Fatalf("Unexpected error from test '%v': %v", tc.desc, err)
 		}
 
 		// Get the table to check if the schema is updated
-		tbl, err := adminClient.getTable(ctx, tableConf.TableID, btapb.Table_SCHEMA_VIEW)
+		tbl, err := adminClient.TableInfo(ctx, tableConf.TableID)
 		if !tc.errorExpected && tbl.RowKeySchema == nil {
-			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.rks, tbl)
+			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.updateRks, tbl)
 		}
 
 		// Clear schema ok
@@ -3630,6 +3651,65 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 }
 
+func TestIntegration_NodeScalingFactor(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance update testing")
+	}
+	instanceToCreate += "5"
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 10 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	clusterID := instanceToCreate + "-cluster"
+	wantNodeScalingFactor := NodeScalingFactor2X
+
+	t.Log("creating an instance with node scaling factor")
+	conf := &InstanceWithClustersConfig{
+		InstanceID:  instanceToCreate,
+		DisplayName: "test instance",
+		Clusters: []ClusterConfig{
+			{
+				ClusterID:         clusterID,
+				NumNodes:          2,
+				NodeScalingFactor: wantNodeScalingFactor,
+				Zone:              instanceToCreateZone,
+			},
+		},
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+	err = retry(func() error { return iAdminClient.CreateInstanceWithClusters(ctx, conf) },
+		func() error { return iAdminClient.DeleteInstance(ctx, conf.InstanceID) })
+	if err != nil {
+		t.Fatalf("CreateInstanceWithClusters: %v", err)
+	}
+
+	cluster, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+
+	if gotNodeScalingFactor := cluster.NodeScalingFactor; gotNodeScalingFactor != wantNodeScalingFactor {
+		t.Fatalf("NodeScalingFactor: got: %v, want: %v", gotNodeScalingFactor, wantNodeScalingFactor)
+	}
+}
+
 func TestIntegration_InstanceUpdate(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -4947,7 +5027,7 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
-func TestIntegration_PrepareStatement(t *testing.T) {
+func TestIntegration_PrepareAndBindStatement(t *testing.T) {
 	ctx := context.Background()
 	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
@@ -4959,7 +5039,7 @@ func TestIntegration_PrepareStatement(t *testing.T) {
 		t.Skip("emulator doesn't support PrepareQuery")
 	}
 
-	if _, err = client.PrepareStatement(ctx,
+	ps, err := client.PrepareStatement(ctx,
 		"SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, "+
 			"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, "+
 			"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, "+
@@ -5001,8 +5081,31 @@ func TestIntegration_PrepareStatement(t *testing.T) {
 				ElemType: DateSQLType{},
 			},
 		},
-	); err != nil {
+	)
+	if err != nil {
 		t.Fatal("PrepareStatement: " + err.Error())
+	}
+
+	_, err = ps.Bind(map[string]any{
+		"bytesParam":        []byte("foo"),
+		"stringParam":       "stringVal",
+		"int64Param":        int64(1),
+		"float32Param":      float32(1.3),
+		"float64Param":      float64(1.4),
+		"boolParam":         true,
+		"tsParam":           time.Now(),
+		"dateParam":         civil.DateOf(time.Now()),
+		"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
+		"stringArrayParam":  []any{"foo", nil, "bar"},
+		"int64ArrayParam":   []any{int64(1), nil, int64(2)},
+		"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
+		"float64ArrayParam": []float64{1.4, 2.4, 3.4},
+		"boolArrayParam":    []any{true, nil, false},
+		"tsArrayParam":      []any{time.Now(), nil},
+		"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
+	})
+	if err != nil {
+		t.Fatal("Bind: " + err.Error())
 	}
 }
 

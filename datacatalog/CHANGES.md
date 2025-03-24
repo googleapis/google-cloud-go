@@ -1,5 +1,17 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.5...datacatalog/v1.25.0) (2025-03-19)
+
+
+### Features
+
+* **datacatalog:** Mark DataCatalog service deprecated, use Dataplex Catalog instead ([#11823](https://github.com/googleapis/google-cloud-go/issues/11823)) ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+
+
+### Documentation
+
+* **datacatalog:** Fix a few typos ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+
 ## [1.24.5](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.4...datacatalog/v1.24.5) (2025-03-13)
 
 
