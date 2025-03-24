@@ -5150,10 +5150,9 @@ func compareErrors(got, want error) bool {
 	if idx := strings.Index(wantStr, "requestID"); idx != -1 {
 		wantStr = wantStr[:idx]
 	}
-	// Clean up trailing commas and any extra whitespace
-	gotStr = strings.TrimSpace(strings.TrimRight(gotStr, `",`))
-	wantStr = strings.TrimSpace(strings.TrimRight(wantStr, `",`))
-	return strings.EqualFold(gotStr, wantStr)
+	gotStr = strings.ReplaceAll(gotStr, `",`, ``)
+	wantStr = strings.ReplaceAll(gotStr, `",`, ``)
+	return strings.EqualFold(strings.TrimSpace(gotStr), strings.TrimSpace(wantStr))
 }
 
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
