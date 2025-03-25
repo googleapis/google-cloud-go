@@ -1730,10 +1730,6 @@ func TestExecuteQuery(t *testing.T) {
 		},
 	})
 	aePcf, _ := apierror.FromError(stPcf.Err())
-	/*
-		1. should retry on failed precondition
-		2. should not retry on other condiitons
-	*/
 
 	for _, tc := range []struct {
 		desc                string
@@ -1753,8 +1749,8 @@ func TestExecuteQuery(t *testing.T) {
 				nil,
 			},
 			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
-				getExecuteQueryResponseWithBatchData(),   // Execute
-				getExecuteQueryResponseWithResumeToken(), // Execute
+				getExecuteQueryResponseWithBatchData(),
+				getExecuteQueryResponseWithResumeToken(),
 				{},
 			},
 			recvMsgErrs: []error{
@@ -1772,7 +1768,7 @@ func TestExecuteQuery(t *testing.T) {
 				nil,
 			},
 			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
-				getExecuteQueryResponseWithBatchData(), // Execute
+				getExecuteQueryResponseWithBatchData(),
 				{},
 			},
 			recvMsgErrs: []error{
@@ -1793,8 +1789,8 @@ func TestExecuteQuery(t *testing.T) {
 			},
 			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
 				{},
-				getExecuteQueryResponseWithBatchData(),   // Execute
-				getExecuteQueryResponseWithResumeToken(), // Execute
+				getExecuteQueryResponseWithBatchData(),
+				getExecuteQueryResponseWithResumeToken(),
 				{},
 			},
 			recvMsgBlockedTimes: []time.Duration{

@@ -205,9 +205,9 @@ var (
 			return &bigtableRetryer{
 				additionalRetryCondition: func(err error) bool {
 					apiErr, ok := apierror.FromError(err)
-					if ok && apiErr.Details().PreconditionFailure != nil {
+					if ok && apiErr != nil && apiErr.Details().PreconditionFailure != nil {
 						for _, violation := range apiErr.Details().PreconditionFailure.GetViolations() {
-							if violation.GetType() == queryExpiredViolationType {
+							if violation != nil && violation.GetType() == queryExpiredViolationType {
 								return true
 							}
 						}
@@ -582,7 +582,7 @@ type BoundStatement struct {
 	params map[string]*btpb.Value
 }
 
-// ResultRow represents a single row in the result set returned from an Execute query.
+// ResultRow represents a single row in the result set returned on executing a GoogleSQL query.
 type ResultRow struct {
 	values   []*btpb.Value
 	metadata *btpb.ResultSetMetadata
