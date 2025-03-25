@@ -364,6 +364,7 @@ type ClientConfig struct {
 }
 
 type openTelemetryConfig struct {
+	enabled                        bool
 	meterProvider                  metric.MeterProvider
 	attributeMap                   []attribute.KeyValue
 	attributeMapWithMultiplexed    []attribute.KeyValue

@@ -377,8 +377,7 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 	}
 
 	if conf.RowKeySchema != nil {
-		proto := conf.RowKeySchema.proto()
-		tbl.RowKeySchema = proto.GetStructType()
+		tbl.RowKeySchema = conf.RowKeySchema.proto().GetStructType()
 	}
 
 	if conf.Families != nil && conf.ColumnFamilies != nil {
@@ -632,6 +631,7 @@ type TableInfo struct {
 	DeletionProtection    DeletionProtection
 	ChangeStreamRetention ChangeStreamRetention
 	AutomatedBackupConfig TableAutomatedBackupConfig
+	RowKeySchema          *StructType
 }
 
 // FamilyInfo represents information about a column family.
@@ -702,6 +702,10 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 		default:
 			return nil, fmt.Errorf("error: Unknown type of automated backup configuration")
 		}
+	}
+	if res.RowKeySchema != nil {
+		structType := structProtoToType(res.RowKeySchema).(StructType)
+		ti.RowKeySchema = &structType
 	}
 
 	return ti, nil
@@ -2953,6 +2957,7 @@ func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceI
 	}
 	if conf.Query != "" {
 		updateMask.Paths = append(updateMask.Paths, "query")
+		lv.Query = conf.Query
 	}
 	req := &btapb.UpdateLogicalViewRequest{
 		LogicalView: lv,

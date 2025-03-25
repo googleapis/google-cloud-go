@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.77.0",
+    "version": "1.78.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,98 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DatasetService_AssembleData_sync",
+      "title": "aiplatform AssembleData Sample",
+      "description": "AssembleData assembles each row of a multimodal dataset and writes the result into a\nBigQuery table.",
+      "file": "DatasetClient/AssembleData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AssembleData",
+        "fullName": "google.cloud.aiplatform.v1beta1.DatasetClient.AssembleData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.AssembleDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AssembleDataOperation",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DatasetClient"
+        },
+        "method": {
+          "shortName": "AssembleData",
+          "fullName": "google.cloud.aiplatform.v1beta1.DatasetService.AssembleData",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DatasetService_AssessData_sync",
+      "title": "aiplatform AssessData Sample",
+      "description": "AssessData assesses the state or validity of the dataset with respect to a given use\ncase.",
+      "file": "DatasetClient/AssessData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AssessData",
+        "fullName": "google.cloud.aiplatform.v1beta1.DatasetClient.AssessData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.AssessDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AssessDataOperation",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DatasetClient"
+        },
+        "method": {
+          "shortName": "AssessData",
+          "fullName": "google.cloud.aiplatform.v1beta1.DatasetService.AssessData",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "aiplatform_v1beta1_generated_DatasetService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
@@ -702,7 +794,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_DatasetService_ListAnnotations_sync",
       "title": "aiplatform ListAnnotations Sample",
-      "description": "ListAnnotations lists Annotations belongs to a dataitem",
+      "description": "ListAnnotations lists Annotations belongs to a dataitem.",
       "file": "DatasetClient/ListAnnotations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18433,6 +18525,52 @@
         "method": {
           "shortName": "DeployPublisherModel",
           "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService.DeployPublisherModel",
+          "service": {
+            "shortName": "ModelGardenService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_ExportPublisherModel_sync",
+      "title": "aiplatform ExportPublisherModel Sample",
+      "description": "ExportPublisherModel exports a publisher model to a user provided Google Cloud Storage bucket.",
+      "file": "ModelGardenClient/ExportPublisherModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportPublisherModel",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.ExportPublisherModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ExportPublisherModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportPublisherModelOperation",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "ExportPublisherModel",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService.ExportPublisherModel",
           "service": {
             "shortName": "ModelGardenService",
             "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService"
