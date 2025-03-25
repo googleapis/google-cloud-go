@@ -21,14 +21,13 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -60,16 +59,20 @@ type PurgeUserEventsRequest struct {
 	//   - `userId`: Double quoted string. Specifying this will delete all events
 	//     associated with a user.
 	//
+	// Note: This API only supports purging a max range of 30 days.
+	//
 	// Examples:
 	//
 	//   - Deleting all events in a time range:
 	//     `eventTime > "2012-04-23T18:25:43.511Z"
 	//     eventTime < "2012-04-23T18:30:43.511Z"`
-	//   - Deleting specific eventType:
-	//     `eventType = "search"`
-	//   - Deleting all events for a specific visitor:
-	//     `userPseudoId = "visitor1024"`
-	//   - Deleting all events inside a DataStore:
+	//   - Deleting specific eventType in a time range:
+	//     `eventTime > "2012-04-23T18:25:43.511Z"
+	//     eventTime < "2012-04-23T18:30:43.511Z" eventType = "search"`
+	//   - Deleting all events for a specific visitor in a time range:
+	//     `eventTime > "2012-04-23T18:25:43.511Z"
+	//     eventTime < "2012-04-23T18:30:43.511Z" userPseudoId = "visitor1024"`
+	//   - Deleting the past 30 days of events inside a DataStore:
 	//     `*`
 	//
 	// The filtering fields are assumed to have an implicit AND.

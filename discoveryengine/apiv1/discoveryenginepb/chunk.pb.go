@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -58,7 +57,8 @@ type Chunk struct {
 	// Output only. Represents the relevance score based on similarity.
 	// Higher score indicates higher chunk relevance.
 	// The score is in range [-1.0, 1.0].
-	// Only populated on [SearchService.SearchResponse][].
+	// Only populated on
+	// [SearchResponse][google.cloud.discoveryengine.v1.SearchResponse].
 	RelevanceScore *float64 `protobuf:"fixed64,8,opt,name=relevance_score,json=relevanceScore,proto3,oneof" json:"relevance_score,omitempty"`
 	// Metadata of the document from the current chunk.
 	DocumentMetadata *Chunk_DocumentMetadata `protobuf:"bytes,5,opt,name=document_metadata,json=documentMetadata,proto3" json:"document_metadata,omitempty"`

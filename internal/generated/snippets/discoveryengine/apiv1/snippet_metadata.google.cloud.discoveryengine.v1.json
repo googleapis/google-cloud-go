@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.16.2",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -4498,6 +4498,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_CreateSitemap_sync",
+      "title": "discoveryengine CreateSitemap Sample",
+      "description": "CreateSitemap creates a [Sitemap][google.cloud.discoveryengine.v1.Sitemap].",
+      "file": "SiteSearchEngineClient/CreateSitemap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSitemap",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.CreateSitemap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateSitemapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSitemapOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "CreateSitemap",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.CreateSitemap",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_CreateTargetSite_sync",
       "title": "discoveryengine CreateTargetSite Sample",
       "description": "CreateTargetSite creates a [TargetSite][google.cloud.discoveryengine.v1.TargetSite].",
@@ -4539,6 +4585,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_DeleteSitemap_sync",
+      "title": "discoveryengine DeleteSitemap Sample",
+      "description": "DeleteSitemap deletes a [Sitemap][google.cloud.discoveryengine.v1.Sitemap].",
+      "file": "SiteSearchEngineClient/DeleteSitemap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSitemap",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.DeleteSitemap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteSitemapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSitemapOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "DeleteSitemap",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.DeleteSitemap",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -4723,6 +4815,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_FetchSitemaps_sync",
+      "title": "discoveryengine FetchSitemaps Sample",
+      "description": "FetchSitemaps fetch [Sitemap][google.cloud.discoveryengine.v1.Sitemap]s in a\n[DataStore][google.cloud.discoveryengine.v1.DataStore].",
+      "file": "SiteSearchEngineClient/FetchSitemaps/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchSitemaps",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.FetchSitemaps",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.FetchSitemapsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.FetchSitemapsResponse",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "FetchSitemaps",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.FetchSitemaps",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
