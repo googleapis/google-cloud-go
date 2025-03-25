@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "$VERSION",
+    "version": "1.78.0",
     "language": "GO",
     "apis": [
       {
