@@ -26,6 +26,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -33,6 +34,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -41,10 +43,12 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	"google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -631,6 +635,213 @@ type BoundStatement struct {
 type ResultRow struct {
 	values   []*btpb.Value
 	metadata *btpb.ResultSetMetadata
+}
+
+func (rr ResultRow) Data() (map[string]any, error) {
+	data := map[string]any{}
+	for i, col := range rr.metadata.GetProtoSchema().GetColumns() {
+		jsonBytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(col)
+		fmt.Printf("values: i: %+v, val: %+v\n", i, string(jsonBytes))
+
+		if col.GetType() == nil || col.GetType().GetKind() == nil {
+			data[col.Name] = nil
+			continue
+		}
+		var err error
+		data[col.Name], err = decodeValue(col.GetType(), rr.values[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return data, nil
+}
+
+// decodeValue converts a btpb.Value into a Go native type.
+//
+// Converts
+//   - btpb.Type_BytesType to []bytes
+//   - btpb.Type_StringType to string
+//   - btpb.Type_Int64Type to int64
+//   - btpb.Type_Float32Type to float32
+//   - btpb.Type_Float64Type to float64
+//   - btpb.Type_BoolType to bool
+//   - btpb.Type_TimestampType to *time.Time
+//   - btpb.Type_DateType to *date.Date
+//   - btpb.Type_StructType to struct
+//   - btpb.Type_ArrayType to slice
+//   - btpb.Type_MapType to map
+func decodeValue(colMetadataType *btpb.Type, colValue *btpb.Value) (any, error) {
+	switch colKind := colMetadataType.GetKind().(type) {
+	case *btpb.Type_BytesType:
+		return colValue.GetBytesValue(), nil
+	case *btpb.Type_StringType:
+		return colValue.GetStringValue(), nil
+	case *btpb.Type_Int64Type:
+		return colValue.GetIntValue(), nil
+	case *btpb.Type_Float32Type:
+		return float32(colValue.GetFloatValue()), nil
+	case *btpb.Type_Float64Type:
+		return colValue.GetFloatValue(), nil
+	case *btpb.Type_BoolType:
+		return colValue.GetBoolValue(), nil
+	case *btpb.Type_TimestampType:
+		tsVal := colValue.GetTimestampValue()
+		if tsVal == nil {
+			return nil, nil
+		}
+		timeVal := tsVal.AsTime()
+		return &timeVal, nil
+	case *btpb.Type_DateType:
+		date := colValue.GetDateValue()
+		if date == nil {
+			return nil, nil
+		}
+		civilDate := civil.Date{
+			Year:  int(date.GetYear()),
+			Month: time.Month(date.GetMonth()),
+			Day:   int(date.GetDay()),
+		}
+		return civilDate, nil
+	case *btpb.Type_StructType:
+		if colKind.StructType == nil || colValue == nil || colValue.GetArrayValue() == nil || colValue.GetArrayValue().GetValues() == nil {
+			return nil, nil
+		}
+		valArray := colValue.GetArrayValue().GetValues()
+
+		structVal := map[string]any{}
+		for i, f := range colKind.StructType.GetFields() {
+			var err error
+			structVal[f.GetFieldName()], err = decodeValue(f.GetType(), valArray[i])
+			if err != nil {
+				return nil, err
+			}
+		}
+		return structVal, nil
+	case *btpb.Type_MapType:
+		if colKind.MapType == nil || colKind.MapType.GetKeyType() == nil || colKind.MapType.GetValueType() == nil {
+			return nil, nil
+		}
+		mapVal, err := pbTypeToZeroValue(colMetadataType)
+		if err != nil {
+			return nil, err
+		}
+
+		// Get existing key from mapVal using reflect.MapKeys()
+		// Iterate over the keys and get the corresponding values
+		for _, key := range reflect.ValueOf(mapVal).MapKeys() {
+			// Delete the value associated with the key since pbTypeToZeroValue returns map with seed data
+			reflect.ValueOf(mapVal).SetMapIndex(key, reflect.Value{})
+		}
+
+		// When metadata is map, column value is array
+		// E.g. Map {"foo": "bar", "baz": "qux"} is returned as []{[]{"foo": "bar"}, []{"baz": "qux"}}
+		for _, val := range colValue.GetArrayValue().GetValues() {
+			kvPair := val.GetArrayValue().GetValues()
+			keyVal, err := decodeValue(colKind.MapType.GetKeyType(), kvPair[0])
+			if err != nil {
+				return nil, err
+			}
+			if reflect.TypeOf(keyVal).Kind() == reflect.Slice && reflect.TypeOf(keyVal).Elem().Kind() == reflect.Uint8 {
+				// If keyVal is []byte, set keyVal to string since Go does not allow []byte keys
+				keyVal = string(keyVal.([]byte))
+			}
+			valVal, err := decodeValue(colKind.MapType.GetValueType(), kvPair[1])
+			if err != nil {
+				return nil, err
+			}
+			reflect.ValueOf(mapVal).SetMapIndex(reflect.ValueOf(keyVal), reflect.ValueOf(valVal))
+		}
+		return mapVal, nil
+	case *btpb.Type_ArrayType:
+		if colKind.ArrayType == nil || colKind.ArrayType.GetElementType() == nil {
+			return nil, nil
+		}
+		elemType := colKind.ArrayType.GetElementType()
+		elemZeroVal, err := pbTypeToZeroValue(elemType)
+		if err != nil {
+			return nil, err
+		}
+
+		arr := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(elemZeroVal)), 0, 0).Interface()
+		for _, pbElemVal := range colValue.GetArrayValue().GetValues() {
+			val, err := decodeValue(elemType, pbElemVal)
+			if err != nil {
+				return nil, err
+			}
+			arr = reflect.Append(reflect.ValueOf(arr), reflect.ValueOf(val)).Interface()
+		}
+		return arr, nil
+	default:
+		return nil, errors.New("bigtable: unsupported type " + colMetadataType.String() + " for column " + colValue.String())
+	}
+}
+
+func pbTypeToZeroValue(pbType *btpb.Type) (any, error) {
+	switch colKind := pbType.GetKind().(type) {
+	case *btpb.Type_BytesType:
+		return []byte{}, nil
+	case *btpb.Type_StringType:
+		return "", nil
+	case *btpb.Type_Int64Type:
+		return int64(0), nil
+	case *btpb.Type_Float32Type:
+		return float32(0), nil
+	case *btpb.Type_Float64Type:
+		return float64(0), nil
+	case *btpb.Type_BoolType:
+		return false, nil
+	case *btpb.Type_TimestampType:
+		return &time.Time{}, nil
+	case *btpb.Type_DateType:
+		return &date.Date{}, nil
+	case *btpb.Type_StructType:
+		return map[string]any{}, nil
+	case *btpb.Type_ArrayType:
+		if colKind.ArrayType == nil || colKind.ArrayType.GetElementType() == nil {
+			return nil, nil
+		}
+		elemPbType := colKind.ArrayType.GetElementType()
+		elemZeroVal, err := pbTypeToZeroValue(elemPbType)
+		if err != nil {
+			return nil, err
+		}
+		return reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(elemZeroVal)), 0, 0).Interface(), nil
+	case *btpb.Type_MapType:
+		keyPbType := colKind.MapType.GetKeyType()
+		valPbType := colKind.MapType.GetValueType()
+
+		keyZeroValue, err := pbTypeToZeroValue(keyPbType)
+		if err != nil {
+			return nil, err
+		}
+		if reflect.TypeOf(keyZeroValue).Kind() == reflect.Slice && reflect.TypeOf(keyZeroValue).Elem().Kind() == reflect.Uint8 {
+			// If keyType is []byte, set keyType to string since Go does not allow []byte keys
+			keyZeroValue = ""
+		}
+		valZeroValue, err := pbTypeToZeroValue(valPbType)
+		if err != nil {
+			return nil, err
+		}
+
+		// Get the types of the key and value using reflect.TypeOf
+		keyType := reflect.TypeOf(keyZeroValue)
+		valType := reflect.TypeOf(valZeroValue)
+
+		// Create a map type
+		mapType := reflect.MapOf(keyType, valType)
+
+		// Create a new map value
+		newMap := reflect.MakeMap(mapType)
+
+		// The type of the map's value is resolved when elements are actually added to the map.
+		// Without this, when the calling function tries to determine returned map type, it would
+		// receive error 'unreadable could not resolve interface type'.
+		// So, add seed data to map
+		newMap.SetMapIndex(reflect.ValueOf(keyZeroValue), reflect.ValueOf(valZeroValue))
+		return newMap.Interface(), nil
+	default:
+		return nil, errors.New("bigtable: unsupported type " + pbType.String())
+	}
 }
 
 // ExecuteOption is an optional argument to Execute.
