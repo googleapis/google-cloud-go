@@ -1454,7 +1454,7 @@ func (s *server) PrepareQuery(context.Context, *btpb.PrepareQueryRequest) (*btpb
 	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support PrepareQuery")
 }
 
-func (s *server) ExecuteQuery(*btpb.ExecuteQueryRequest, btpb.Bigtable_ExecuteQueryServer) error {
+func (s *server) ExecuteQuery(req *btpb.ExecuteQueryRequest, stream btpb.Bigtable_ExecuteQueryServer) error {
 	return status.Errorf(codes.Unimplemented, "the emulator does not currently support ExecuteQuery")
 }
 

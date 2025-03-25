@@ -21,6 +21,8 @@ import (
 	"context"
 	"encoding/binary"
 	"errors"
+	"hash/crc32"
+	"io"
 	"reflect"
 	"strings"
 	"testing"
@@ -37,6 +39,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -1686,119 +1689,24 @@ func TestPreparedStatementBind(t *testing.T) {
 	}
 }
 
-// wrappedStream wraps around the embedded grpc.ServerStream, and intercepts the RecvMsg and
-// SendMsg method call.
-type wrappedStream struct {
-	execReqCount *int
-	grpc.ServerStream
-}
-
-func (w *wrappedStream) RecvMsg(m any) error {
-	_, isExecReq := m.(*btpb.ExecuteQueryRequest)
-	if !isExecReq {
-		return w.ServerStream.RecvMsg(m)
-	}
-	*w.execReqCount++
-
-	if *w.execReqCount == 0 {
-		st := status.New(codes.InvalidArgument, "invalid argument")
-		pcf := &errdetails.PreconditionFailure{
-			Violations: []*errdetails.PreconditionFailure_Violation{
-				// {
-				// 	Field:       "name",
-				// 	Description: "name cannot be empty",
-				// },
-			},
-		}
-		st, _ = st.WithDetails(pcf)
-		ae, _ := apierror.FromError(st.Err())
-		return ae
-
-	}
-	return nil
-}
-
-func (w *wrappedStream) SendMsg(m any) error {
-	return w.ServerStream.SendMsg(m)
-}
-
-func newWrappedStream(s grpc.ServerStream, execReqCount *int) grpc.ServerStream {
-	return &wrappedStream{
-		ServerStream: s,
-		execReqCount: execReqCount,
-	}
-}
-
-func newStreamServerInterceptor(execReqCount *int) func(srv any, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-	return func(srv any, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		err := handler(srv, newWrappedStream(ss, execReqCount))
-		if err != nil && !strings.Contains(err.Error(), emulatorUnsupported) {
-			return err
-		}
-		return nil
-	}
-}
-
-func newUnaryServerInterceptor(prepReqCount *int) func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-		_, isPrepReq := req.(*btpb.PrepareQueryRequest)
-		resp, err := handler(ctx, req)
-		if (err != nil && !strings.Contains(err.Error(), emulatorUnsupported)) || !isPrepReq {
-			return resp, err
-		}
-
-		*prepReqCount++
-		bytesType := &btpb.Type{
-			Kind: &btpb.Type_BytesType{
-				BytesType: &btpb.Type_Bytes{},
-			},
-		}
-		pqr := &btpb.PrepareQueryResponse{
-			PreparedQuery: []byte("foobar"),
-			ValidUntil:    timestamppb.New(time.Now().Add(10 * time.Second)),
-			Metadata: &btpb.ResultSetMetadata{
-				Schema: &btpb.ResultSetMetadata_ProtoSchema{
-					ProtoSchema: &btpb.ProtoSchema{
-						Columns: []*btpb.ColumnMetadata{
-							{
-								Name: "_key",
-								Type: bytesType,
-							},
-							{
-								Name: "address",
-								Type: &btpb.Type{
-									Kind: &btpb.Type_MapType{
-										MapType: &btpb.Type_Map{
-											KeyType:   bytesType,
-											ValueType: bytesType,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-		return pqr, nil
-	}
-}
-
 func TestExecuteQuery(t *testing.T) {
-	var execReqCount int
+	// start emulated server
 	var prepReqCount int
-	testEnv, gotErr := NewEmulatedEnv(IntegrationTestConfig{
-		ServerOptions: []grpc.ServerOption{
-			grpc.StreamInterceptor(newStreamServerInterceptor(&execReqCount)),
-			grpc.UnaryInterceptor(newUnaryServerInterceptor(&prepReqCount)),
-		},
-	})
+	var recvMsgCount int
+	var prepQueryResps []*btpb.PrepareQueryResponse
+	var prepQueryErrs []error
+	var recvMsgResps []*btpb.ExecuteQueryResponse_Results
+	var recvMsgBlockedTimes []time.Duration
+	var recvMsgErrs []error
+
+	testEnv, gotErr := NewEmulatedEnv(IntegrationTestConfig{})
 	if gotErr != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", gotErr)
 	}
-
 	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+		grpc.WithStreamInterceptor(newStreamClientInterceptor(&recvMsgCount, &recvMsgResps, &recvMsgBlockedTimes, &recvMsgErrs)),
+		grpc.WithUnaryInterceptor(newUnaryClientInterceptor(&prepReqCount, &prepQueryResps, &prepQueryErrs)),
 	)
 	if gotErr != nil {
 		t.Fatalf("grpc.Dial failed: %v", gotErr)
@@ -1807,30 +1715,328 @@ func TestExecuteQuery(t *testing.T) {
 	// Create client and table
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
 	defer cancel()
-	adminClient, gotErr := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
-	if gotErr != nil {
-		t.Fatalf("NewClient failed: %v", gotErr)
-	}
-	defer adminClient.Close()
-
 	client, gotErr := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if gotErr != nil {
 		t.Fatalf("NewClientWithConfig failed: %v", gotErr)
 	}
 	defer client.Close()
 
-	ps, err := client.PrepareStatement(ctx, "SELECT * FROM users;", nil)
-	if err != nil {
-		t.Fatalf("PrepareStatement: %v", err)
-	}
-	bs, err := ps.Bind(nil)
-	if err != nil {
-		t.Fatalf("Bind: %v", err)
-	}
-	err = bs.Execute(ctx, func(rr ResultRow) bool {
-		return true
+	stPcf, _ := status.New(codes.InvalidArgument, "invalid argument").WithDetails(&errdetails.PreconditionFailure{
+		Violations: []*errdetails.PreconditionFailure_Violation{
+			{
+				Type:        queryExpiredViolationType,
+				Description: "The prepared query has expired. Please re-issue the ExecuteQuery with a valid prepared query.",
+			},
+		},
 	})
-	if err != nil {
-		t.Fatalf("Execute: %v", err)
+	aePcf, _ := apierror.FromError(stPcf.Err())
+	/*
+		1. should retry on failed precondition
+		2. should not retry on other condiitons
+	*/
+
+	for _, tc := range []struct {
+		desc                string
+		prepQueryResps      []*btpb.PrepareQueryResponse
+		prepQueryErrs       []error
+		recvMsgResps        []*btpb.ExecuteQueryResponse_Results
+		recvMsgBlockedTimes []time.Duration
+		recvMsgErrs         []error
+		wantExecErr         error
+	}{
+		{
+			desc: "success",
+			prepQueryResps: []*btpb.PrepareQueryResponse{
+				getPrepareQueryResponse(), // PrepareStatement
+			},
+			prepQueryErrs: []error{
+				nil,
+			},
+			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				getExecuteQueryResponseWithBatchData(),   // Execute
+				getExecuteQueryResponseWithResumeToken(), // Execute
+				{},
+			},
+			recvMsgErrs: []error{
+				nil,
+				nil,
+				io.EOF,
+			},
+		},
+		{
+			desc: "server stream ended without ResumeToken",
+			prepQueryResps: []*btpb.PrepareQueryResponse{
+				getPrepareQueryResponse(), // PrepareStatement
+			},
+			prepQueryErrs: []error{
+				nil,
+			},
+			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				getExecuteQueryResponseWithBatchData(), // Execute
+				{},
+			},
+			recvMsgErrs: []error{
+				nil,
+				io.EOF,
+			},
+			wantExecErr: errors.New("bigtable: server stream ended without sending a resume token"),
+		},
+		{
+			desc: "retry on expired query failed precondition error",
+			prepQueryResps: []*btpb.PrepareQueryResponse{
+				getPrepareQueryResponse(), // PrepareStatement
+				getPrepareQueryResponse(), // Execute
+			},
+			prepQueryErrs: []error{
+				nil,
+				nil,
+			},
+			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				{},
+				getExecuteQueryResponseWithBatchData(),   // Execute
+				getExecuteQueryResponseWithResumeToken(), // Execute
+				{},
+			},
+			recvMsgBlockedTimes: []time.Duration{
+				testPreparedQueryTTL + 2*time.Second,
+				0,
+				0,
+				0,
+			},
+			recvMsgErrs: []error{
+				aePcf,
+				nil,
+				nil,
+				io.EOF,
+			},
+		},
+	} {
+		prepReqCount = 0
+		prepQueryResps = tc.prepQueryResps
+		prepQueryErrs = tc.prepQueryErrs
+		recvMsgCount = 0
+		recvMsgResps = tc.recvMsgResps
+		recvMsgErrs = tc.recvMsgErrs
+		recvMsgBlockedTimes = tc.recvMsgBlockedTimes
+
+		t.Run(tc.desc, func(t *testing.T) {
+			// Prepare query
+			ps, err := client.PrepareStatement(ctx, "SELECT * FROM users;", nil)
+			if err != nil {
+				t.Fatalf("PrepareStatement: %v", err)
+			}
+			bs, err := ps.Bind(nil)
+			if err != nil {
+				t.Fatalf("Bind: %v", err)
+			}
+
+			// Execute query
+			err = bs.Execute(ctx, func(rr ResultRow) bool {
+				return true
+			})
+
+			if prepReqCount != len(tc.prepQueryResps) {
+				t.Fatalf("PrepareQuery request count: got: %v, want: %v", prepReqCount, len(tc.prepQueryResps))
+			}
+			if recvMsgCount != len(tc.recvMsgResps) {
+				t.Fatalf("RecvMsg request count: got: %v, want: %v", recvMsgCount, len(tc.recvMsgResps))
+			}
+			if tc.wantExecErr != nil && err != nil && err.Error() != tc.wantExecErr.Error() {
+				t.Fatalf("Execute: err: got: %v, want: %v", err, tc.wantExecErr)
+			} else if (err != nil && tc.wantExecErr == nil) || (err == nil && tc.wantExecErr != nil) {
+				t.Fatalf("Execute: err got: %v, want: %v", err, tc.wantExecErr)
+			}
+		})
+	}
+}
+
+const testPreparedQueryTTL = 10 * time.Second
+
+func getPrepareQueryResponse() *btpb.PrepareQueryResponse {
+	bytesType := &btpb.Type{
+		Kind: &btpb.Type_BytesType{
+			BytesType: &btpb.Type_Bytes{},
+		},
+	}
+	return &btpb.PrepareQueryResponse{
+		PreparedQuery: []byte("foobar"),
+		ValidUntil:    timestamppb.New(time.Now().Add(testPreparedQueryTTL)),
+		Metadata: &btpb.ResultSetMetadata{
+			Schema: &btpb.ResultSetMetadata_ProtoSchema{
+				ProtoSchema: &btpb.ProtoSchema{
+					Columns: []*btpb.ColumnMetadata{
+						{
+							Name: "_key",
+							Type: bytesType,
+						},
+						{
+							Name: "address",
+							Type: &btpb.Type{
+								Kind: &btpb.Type_MapType{
+									MapType: &btpb.Type_Map{
+										KeyType:   bytesType,
+										ValueType: bytesType,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func getExecuteQueryResponseWithBatchData() *btpb.ExecuteQueryResponse_Results {
+	protoRows := &btpb.ProtoRows{
+		Values: []*btpb.Value{
+			{
+				Kind: &btpb.Value_BytesValue{
+					BytesValue: []byte("row-01"),
+				},
+			},
+			{
+				Kind: &btpb.Value_ArrayValue{
+					ArrayValue: &btpb.ArrayValue{
+						Values: []*btpb.Value{
+							{
+								Kind: &btpb.Value_ArrayValue{
+									ArrayValue: &btpb.ArrayValue{
+										Values: []*btpb.Value{
+											{
+												Kind: &btpb.Value_BytesValue{
+													BytesValue: []byte("city"),
+												},
+											},
+											{
+												Kind: &btpb.Value_BytesValue{
+													BytesValue: []byte("San Francisco"),
+												},
+											},
+										},
+									},
+								},
+							},
+							{
+								Kind: &btpb.Value_ArrayValue{
+									ArrayValue: &btpb.ArrayValue{
+										Values: []*btpb.Value{
+											{
+												Kind: &btpb.Value_BytesValue{
+													BytesValue: []byte("state"),
+												},
+											},
+											{
+												Kind: &btpb.Value_BytesValue{
+													BytesValue: []byte("CA"),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	marshalled, _ := proto.Marshal(protoRows)
+	checksum := crc32.Checksum(marshalled, crc32cTable)
+	return &btpb.ExecuteQueryResponse_Results{
+		Results: &btpb.PartialResultSet{
+			PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
+				ProtoRowsBatch: &btpb.ProtoRowsBatch{
+					BatchData: marshalled,
+				},
+			},
+			BatchChecksum: &checksum,
+			Reset_:        true,
+		},
+	}
+}
+
+func getExecuteQueryResponseWithResumeToken() *btpb.ExecuteQueryResponse_Results {
+	return &btpb.ExecuteQueryResponse_Results{
+		Results: &btpb.PartialResultSet{
+			ResumeToken: []byte("resume-token"),
+		},
+	}
+}
+
+// wrappedClientStream wraps around the embedded grpc.ClientStream, and intercepts the RecvMsg and
+// SendMsg method call.
+type wrappedClientStream struct {
+	recvMsgCount *int
+	respPtrs     *[]*btpb.ExecuteQueryResponse_Results
+	blockedTimes *[]time.Duration
+	errPtrs      *[]error
+	grpc.ClientStream
+}
+
+func (w *wrappedClientStream) RecvMsg(m any) error {
+	err := w.ClientStream.RecvMsg(m)
+	defer func() { *w.recvMsgCount++ }()
+	resp, ok := m.(*btpb.ExecuteQueryResponse)
+	if !ok {
+		return err
+	}
+
+	if *w.blockedTimes != nil {
+		sleeps := *w.blockedTimes
+		time.Sleep(sleeps[*w.recvMsgCount])
+	}
+	resps := *w.respPtrs
+	errs := *w.errPtrs
+	resp.Response = resps[*w.recvMsgCount]
+	return errs[*w.recvMsgCount]
+}
+
+func (w *wrappedClientStream) SendMsg(m any) error {
+	return w.ClientStream.SendMsg(m)
+}
+
+func newWrappedClientStream(s grpc.ClientStream, recvMsgCount *int, respPtrs *[]*btpb.ExecuteQueryResponse_Results, blockedTimes *[]time.Duration, errPtrs *[]error) grpc.ClientStream {
+	return &wrappedClientStream{
+		ClientStream: s,
+		recvMsgCount: recvMsgCount,
+		respPtrs:     respPtrs,
+		errPtrs:      errPtrs,
+		blockedTimes: blockedTimes,
+	}
+}
+
+func newStreamClientInterceptor(recvMsgCount *int, respPtrs *[]*btpb.ExecuteQueryResponse_Results, blockedTimes *[]time.Duration, errPtrs *[]error) func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		s, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return newWrappedClientStream(s, recvMsgCount, respPtrs, blockedTimes, errPtrs), nil
+	}
+}
+
+func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]*btpb.PrepareQueryResponse, errPtrs *[]error) func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		err := invoker(ctx, method, req, reply, cc, opts...)
+		defer func() { *prepReqCount++ }()
+		_, isPrepReq := req.(*btpb.PrepareQueryRequest)
+		if !isPrepReq || (err != nil && !strings.Contains(err.Error(), emulatorUnsupported)) {
+			return err
+		}
+
+		errs := *errPtrs
+		currErr := errs[*prepReqCount]
+		if currErr != nil {
+			return currErr
+		}
+
+		resps := *respPtrs
+		pqr, _ := reply.(*btpb.PrepareQueryResponse)
+		pqr.PreparedQuery = resps[*prepReqCount].PreparedQuery
+		pqr.ValidUntil = resps[*prepReqCount].ValidUntil
+		pqr.Metadata = resps[*prepReqCount].Metadata
+
+		return nil
 	}
 }

@@ -45,7 +45,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -547,6 +546,27 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 	}, nil
 }
 
+func (ps *PreparedStatement) refreshIfInvalid(ctx context.Context) error {
+	if ps.valid() {
+		return nil
+	}
+	ps.refreshMutex.Lock()
+	defer ps.refreshMutex.Unlock()
+
+	// Recheck whether validity changed while acquiring lock
+	if ps.valid() {
+		return nil
+	}
+
+	return ps.refresh(ctx)
+}
+
+func (ps *PreparedStatement) valid() bool {
+	nowTime := time.Now().UTC()
+	expireTime := ps.validUntil.AsTime()
+	return nowTime.Add(preparedQueryExpireEarlyDuration).Before(expireTime)
+}
+
 func (ps *PreparedStatement) refresh(ctx context.Context) error {
 	newPs, err := ps.c.prepareStatementWithMetadata(ctx, ps.query, ps.paramTypes, ps.opts...)
 	ps.metadata = newPs.metadata
@@ -604,7 +624,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 		defer cancel()
 
 		var err error
-		err = bs.refreshIfInvalid(ctx)
+		err = bs.ps.refreshIfInvalid(ctx)
 		if err != nil {
 			return err
 		}
@@ -636,8 +656,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err)
 			}
 
-			bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(eqResp)
-			fmt.Println("eqResp: " + string(bytes))
 			resp := eqResp.GetResponse()
 			results, ok := resp.(*btpb.ExecuteQueryResponse_Results)
 			if !ok {
@@ -661,7 +679,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			if partialResultSet.GetResumeToken() != nil &&
 				ongoingResultBatch.Len() != 0 &&
 				partialResultSet.BatchChecksum == nil {
-				return errors.New("bigtable: received resumeToken with buffered data and no checksum")
+				return errors.New("bigtable: received resume_token with buffered data and no batch_checksum")
 			}
 
 			// Validate checksum if exists
@@ -672,7 +690,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				// Validate checksum
 				currBatchChecksum := crc32.Checksum(ongoingResultBatch.Bytes(), crc32cTable)
 				if *partialResultSet.BatchChecksum != currBatchChecksum {
-					return errors.New("bigtable: batch checksum mismatch")
+					return errors.New("bigtable: batch_checksum mismatch")
 				}
 
 				// Parse the batch
@@ -680,8 +698,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				if err := proto.Unmarshal(ongoingResultBatch.Bytes(), protoRows); err != nil {
 					return err
 				}
-				bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(protoRows)
-				fmt.Println("protoRows: " + string(bytes))
 				valuesBuffer = append(valuesBuffer, protoRows.GetValues()...)
 
 				// Prepare to receive next batch of results
@@ -732,27 +748,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 		return err
 	}
 	return nil
-}
-
-func (bs *BoundStatement) refreshIfInvalid(ctx context.Context) error {
-	valid := bs.valid()
-	if valid {
-		return nil
-	}
-	bs.ps.refreshMutex.Lock()
-	defer bs.ps.refreshMutex.Unlock()
-
-	// Recheck whether validity changed while acquiring lock
-	valid = bs.valid()
-	if valid {
-		return nil
-	}
-
-	return bs.ps.refresh(ctx)
-}
-
-func (bs *BoundStatement) valid() bool {
-	return !time.Now().UTC().Add(preparedQueryExpireEarlyDuration).After(bs.ps.validUntil.AsTime())
 }
 
 func handleExecuteStreamEnd(stream btpb.Bigtable_ExecuteQueryClient, trailerMD *metadata.MD, valuesBuffer []*btpb.Value, err error) error {
