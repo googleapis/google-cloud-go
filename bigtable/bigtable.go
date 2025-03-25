@@ -203,28 +203,35 @@ var (
 				Multiplier: 1.2,
 			}
 			return &bigtableRetryer{
-				additionalRetryCondition: func(err error) bool {
-					apiErr, ok := apierror.FromError(err)
-					if ok && apiErr != nil && apiErr.Details().PreconditionFailure != nil {
-						for _, violation := range apiErr.Details().PreconditionFailure.GetViolations() {
-							if violation != nil && violation.GetType() == queryExpiredViolationType {
-								return true
-							}
-						}
-					}
-					return false
-				},
-				Retryer: gax.OnCodes(idempotentRetryCodes, backoff),
-				Backoff: backoff,
+				alternateRetryCondition: isQueryExpiredViolation,
+				Retryer:                 gax.OnCodes(idempotentRetryCodes, backoff),
+				Backoff:                 backoff,
 			}
 		}),
 	}
 )
 
+func isQueryExpiredViolation(err error) bool {
+	apiErr, ok := apierror.FromError(err)
+	if ok && apiErr != nil && apiErr.Details().PreconditionFailure != nil {
+		for _, violation := range apiErr.Details().PreconditionFailure.GetViolations() {
+			if violation != nil && violation.GetType() == queryExpiredViolationType {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // bigtableRetryer extends the generic gax Retryer, but also checks
 // error messages to check if operation can be retried
+//
+// Retry is made if :
+// - error code is one of the `idempotentRetryCodes` OR
+// - error code is internal and error message is one of the `retryableInternalErrMsgs` OR
+// - alternateRetryCondition returns true.
 type bigtableRetryer struct {
-	additionalRetryCondition func(error) bool
+	alternateRetryCondition func(error) bool
 	gax.Retryer
 	gax.Backoff
 }
@@ -240,7 +247,7 @@ func containsAny(str string, substrs []string) bool {
 
 func (r *bigtableRetryer) Retry(err error) (time.Duration, bool) {
 	if (status.Code(err) == codes.Internal && containsAny(err.Error(), retryableInternalErrMsgs)) ||
-		(r.additionalRetryCondition != nil && r.additionalRetryCondition(err)) {
+		(r.alternateRetryCondition != nil && r.alternateRetryCondition(err)) {
 		return r.Backoff.Pause(), true
 	}
 
@@ -547,24 +554,36 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 }
 
 func (ps *PreparedStatement) refreshIfInvalid(ctx context.Context) error {
-	if ps.valid() {
+	/*
+		| valid | validEarly | behaviour            |
+		|-------|------------|----------------------|
+		| true  |   true     | nil                 |
+		| false |   true     | impossible condition |
+		| true  |   false    | async refresh token  |
+		| false |   false    | sync refresh token   |
+	*/
+	valid, validEarly := ps.valid()
+	if validEarly {
+		// Token valid
 		return nil
 	}
-	ps.refreshMutex.Lock()
-	defer ps.refreshMutex.Unlock()
-
-	// Recheck whether validity changed while acquiring lock
-	if ps.valid() {
-		return nil
+	if !valid {
+		// Token already expired
+		return ps.refresh(ctx)
 	}
 
-	return ps.refresh(ctx)
+	// Token about to expire
+	// TODO(bhshkh): Acquire lock ? What happens when multiple Executes try to refresh in parallel
+	go ps.refresh(ctx)
+	return nil
 }
 
-func (ps *PreparedStatement) valid() bool {
+// valid returns true if the prepared query is valid, and validEarly returns true
+// if the prepared query is valid and has not reached the early expiration threshold.
+func (ps *PreparedStatement) valid() (valid bool, validEarly bool) {
 	nowTime := time.Now().UTC()
 	expireTime := ps.validUntil.AsTime()
-	return nowTime.Add(preparedQueryExpireEarlyDuration).Before(expireTime)
+	return nowTime.Before(expireTime), nowTime.Add(preparedQueryExpireEarlyDuration).Before(expireTime)
 }
 
 func (ps *PreparedStatement) refresh(ctx context.Context) error {
@@ -619,14 +638,45 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 	valuesBuffer := []*btpb.Value{}
 	var resumeToken []byte
 
+	receivedResumeToken := false
+	var prevError error
+
+	// Metadata could change on planned query refresh.
+	// E.g.
+	// 1. 'SELECT *' request with ps started at t1
+	// 2. A column family is added to the table
+	// 3. Some other request triggers refresh of ps at t2
+	// 4. If the metadata from the refreshed ps at t2 is used, metadata contains the new column family,
+	//    the responses do not (because the request used the plan from t1)`
+	//
+	// So, do not use latest metadata from `bs.ps`
+	var finalizedMetadata *btpb.ResultSetMetadata
 	err := gaxInvokeWithRecorder(ctx, mt, "ExecuteQuery", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 		defer cancel()
 
-		var err error
-		err = bs.ps.refreshIfInvalid(ctx)
-		if err != nil {
-			return err
+		if isQueryExpiredViolation(prevError) {
+			// Query could have other expiry conditions apart from time based expiry.
+			// So, it is possible that the query does not get refreshed in `refreshIfInvalid`
+			bs.ps.refreshMutex.Lock()
+			defer bs.ps.refreshMutex.Unlock()
+			err := bs.ps.refresh(ctx)
+			if err != nil {
+				prevError = err
+				return err
+			}
+		}
+
+		if !receivedResumeToken {
+			// Once we have a resume token we need the prepared query to never change
+			// The Bigtable servive will only send the query expired error for requests without a token
+			// (before sending any responses).
+			// We don't want the plan to change on a transient error once we've already received a token.
+			err := bs.ps.refreshIfInvalid(ctx)
+			if err != nil {
+				prevError = err
+				return err
+			}
 		}
 
 		req := &btpb.ExecuteQueryRequest{
@@ -637,6 +687,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
 		if err != nil {
+			prevError = err
 			return err
 		}
 
@@ -648,18 +699,19 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			proto.Reset(eqResp)
 			err := stream.RecvMsg(eqResp)
 			if err == io.EOF {
-				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err)
+				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err, &prevError)
 			}
 			if err != nil {
 				// Setup for next call
 				req.ResumeToken = resumeToken
-				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err)
+				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err, &prevError)
 			}
 
 			resp := eqResp.GetResponse()
 			results, ok := resp.(*btpb.ExecuteQueryResponse_Results)
 			if !ok {
-				return errors.New("bigtable: unexpected response type")
+				prevError = errors.New("bigtable: unexpected response type")
+				return prevError
 			}
 
 			partialResultSet := results.Results
@@ -673,15 +725,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				ongoingResultBatch.Write(batchData)
 			}
 
-			// If `resume_token` is non-empty and any data has been received since the
-			// last one, BatchChecksum is guaranteed to be non-empty. In other words, a batch will
-			// never cross a `resume_token` boundary. It is an error otherwise
-			if partialResultSet.GetResumeToken() != nil &&
-				ongoingResultBatch.Len() != 0 &&
-				partialResultSet.BatchChecksum == nil {
-				return errors.New("bigtable: received resume_token with buffered data and no batch_checksum")
-			}
-
 			// Validate checksum if exists
 			var protoRows *btpb.ProtoRows
 			if partialResultSet.BatchChecksum != nil {
@@ -690,12 +733,14 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				// Validate checksum
 				currBatchChecksum := crc32.Checksum(ongoingResultBatch.Bytes(), crc32cTable)
 				if *partialResultSet.BatchChecksum != currBatchChecksum {
-					return errors.New("bigtable: batch_checksum mismatch")
+					prevError = errors.New("bigtable: batch_checksum mismatch")
+					return prevError
 				}
 
 				// Parse the batch
 				protoRows = new(btpb.ProtoRows)
 				if err := proto.Unmarshal(ongoingResultBatch.Bytes(), protoRows); err != nil {
+					prevError = err
 					return err
 				}
 				valuesBuffer = append(valuesBuffer, protoRows.GetValues()...)
@@ -706,13 +751,29 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			if partialResultSet.GetResumeToken() != nil {
 				// Values can be yielded to the caller
 
+				// If `resume_token` is non-empty and any data has been received since the
+				// last one, BatchChecksum is guaranteed to be non-empty. In other words, a batch will
+				// never cross a `resume_token` boundary. It is an error otherwise
+				if ongoingResultBatch.Len() != 0 &&
+					partialResultSet.BatchChecksum == nil {
+					prevError = errors.New("bigtable: received resume_token with buffered data and no batch_checksum")
+					return prevError
+				}
+
+				if !receivedResumeToken {
+					// first ResumeToken received
+					finalizedMetadata = bs.ps.metadata
+					receivedResumeToken = true
+				}
+
 				// Save ResumeToken for subsequent requests
 				resumeToken = partialResultSet.GetResumeToken()
 
-				if bs.ps.metadata == nil || bs.ps.metadata.GetProtoSchema() == nil {
-					return errors.New("bigtable: metadata missing")
+				if finalizedMetadata == nil || finalizedMetadata.GetProtoSchema() == nil {
+					prevError = errors.New("bigtable: metadata missing")
+					return prevError
 				}
-				cols := bs.ps.metadata.GetProtoSchema().GetColumns()
+				cols := finalizedMetadata.GetProtoSchema().GetColumns()
 				numCols := len(cols)
 
 				// Parse rows
@@ -720,11 +781,16 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 					var completeRowValues []*btpb.Value
 
 					// Pop first 'numCols' values to create a row
+					if len(valuesBuffer) < numCols {
+						prevError = fmt.Errorf("bigtable: metadata and data mismatch: expected %d columns, but received %d values", numCols, len(valuesBuffer))
+						return prevError
+					}
+
 					completeRowValues, valuesBuffer = valuesBuffer[0:numCols], valuesBuffer[numCols:]
 
 					rr := ResultRow{
 						values:   completeRowValues,
-						metadata: bs.ps.metadata,
+						metadata: finalizedMetadata,
 					}
 					continueReading := f(rr)
 					if !continueReading {
@@ -733,7 +799,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 						for {
 							proto.Reset(eqResp)
 							if err := stream.RecvMsg(eqResp); err != nil {
-								handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err)
+								handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err, &prevError)
 								// The stream has ended. We don't return an error
 								// because the caller has intentionally interrupted the scan.
 								return nil
@@ -750,7 +816,8 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 	return nil
 }
 
-func handleExecuteStreamEnd(stream btpb.Bigtable_ExecuteQueryClient, trailerMD *metadata.MD, valuesBuffer []*btpb.Value, err error) error {
+func handleExecuteStreamEnd(stream btpb.Bigtable_ExecuteQueryClient, trailerMD *metadata.MD, valuesBuffer []*btpb.Value, err error, prevError *error) error {
+	*prevError = err
 	if err != nil && err != io.EOF {
 		return err
 	}

@@ -1712,7 +1712,7 @@ func TestExecuteQuery(t *testing.T) {
 		t.Fatalf("grpc.Dial failed: %v", gotErr)
 	}
 
-	// Create client and table
+	// Create client
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
 	defer cancel()
 	client, gotErr := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
@@ -1778,7 +1778,7 @@ func TestExecuteQuery(t *testing.T) {
 			wantExecErr: errors.New("bigtable: server stream ended without sending a resume token"),
 		},
 		{
-			desc: "retry on expired query failed precondition error",
+			desc: "retry on expired query FailedPrecondition error",
 			prepQueryResps: []*btpb.PrepareQueryResponse{
 				getPrepareQueryResponse(), // PrepareStatement
 				getPrepareQueryResponse(), // Execute
@@ -1793,11 +1793,80 @@ func TestExecuteQuery(t *testing.T) {
 				getExecuteQueryResponseWithResumeToken(),
 				{},
 			},
+			recvMsgErrs: []error{
+				aePcf,
+				nil,
+				nil,
+				io.EOF,
+			},
+		},
+		{
+			desc: "transient error after receiving first resume token should not refresh query",
+			prepQueryResps: []*btpb.PrepareQueryResponse{
+				getPrepareQueryResponse(), // PrepareStatement
+			},
+			prepQueryErrs: []error{
+				nil,
+			},
+			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				getExecuteQueryResponseWithBatchData(),
+				getExecuteQueryResponseWithResumeToken(),
+				{},
+				{},
+			},
+			recvMsgErrs: []error{
+				nil,
+				nil,
+				status.Error(codes.Unavailable, "transient error"),
+				io.EOF,
+			},
+		},
+		{
+			desc: "retry on time-based expired query",
+			prepQueryResps: []*btpb.PrepareQueryResponse{
+				getPrepareQueryResponse(), // PrepareStatement
+				getPrepareQueryResponse(), // From Execute, because expired query
+			},
+			prepQueryErrs: []error{
+				nil,
+				nil,
+			},
+			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				getExecuteQueryResponseWithBatchData(),
+				{},
+				getExecuteQueryResponseWithResumeToken(),
+				{},
+			},
 			recvMsgBlockedTimes: []time.Duration{
+				0,
 				testPreparedQueryTTL + 2*time.Second,
 				0,
 				0,
-				0,
+			},
+			recvMsgErrs: []error{
+				nil,
+				status.Error(codes.DeadlineExceeded, "context deadline exceeded"), // retryable
+				nil,
+				io.EOF,
+			},
+		},
+		{
+			desc: "retryable error from PrepareQuery should retry PrepareQuery and Execute",
+			prepQueryResps: []*btpb.PrepareQueryResponse{
+				getPrepareQueryResponse(), // PrepareStatement
+				{},                        // Execute
+				getPrepareQueryResponse(),
+			},
+			prepQueryErrs: []error{
+				nil,
+				status.Error(codes.DeadlineExceeded, "context deadline exceeded"), // retryable
+				nil,
+			},
+			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				{},
+				getExecuteQueryResponseWithBatchData(),
+				getExecuteQueryResponseWithResumeToken(),
+				{},
 			},
 			recvMsgErrs: []error{
 				aePcf,
@@ -1856,7 +1925,6 @@ func getPrepareQueryResponse() *btpb.PrepareQueryResponse {
 	}
 	return &btpb.PrepareQueryResponse{
 		PreparedQuery: []byte("foobar"),
-		ValidUntil:    timestamppb.New(time.Now().Add(testPreparedQueryTTL)),
 		Metadata: &btpb.ResultSetMetadata{
 			Schema: &btpb.ResultSetMetadata_ProtoSchema{
 				ProtoSchema: &btpb.ProtoSchema{
@@ -2030,9 +2098,8 @@ func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]*btpb.PrepareQuery
 		resps := *respPtrs
 		pqr, _ := reply.(*btpb.PrepareQueryResponse)
 		pqr.PreparedQuery = resps[*prepReqCount].PreparedQuery
-		pqr.ValidUntil = resps[*prepReqCount].ValidUntil
+		pqr.ValidUntil = timestamppb.New(time.Now().Add(testPreparedQueryTTL))
 		pqr.Metadata = resps[*prepReqCount].Metadata
-
 		return nil
 	}
 }
