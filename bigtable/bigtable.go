@@ -569,12 +569,27 @@ func (ps *PreparedStatement) refreshIfInvalid(ctx context.Context) error {
 	}
 	if !valid {
 		// Token already expired
+		ps.refreshMutex.Lock()
+		defer ps.refreshMutex.Unlock()
+		// Check if token became valid while acquiring lock
+		valid, _ = ps.valid()
+		if valid {
+			return nil
+		}
 		return ps.refresh(ctx)
 	}
 
 	// Token about to expire
-	// TODO(bhshkh): Acquire lock ? What happens when multiple Executes try to refresh in parallel
-	go ps.refresh(ctx)
+	go func() {
+		ps.refreshMutex.Lock()
+		defer ps.refreshMutex.Unlock()
+		// Check if token became valid while acquiring lock
+		valid, _ = ps.valid()
+		if valid {
+			return
+		}
+		ps.refresh(ctx)
+	}()
 	return nil
 }
 
