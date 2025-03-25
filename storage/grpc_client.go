@@ -105,6 +105,7 @@ func defaultGRPCOptions() []option.ClientOption {
 		// Only enable DirectPath when the emulator is not being targeted.
 		defaults = append(defaults,
 			internaloption.EnableDirectPath(true),
+			internaloption.AllowNonDefaultServiceAccount(true),
 			internaloption.EnableDirectPathXds())
 	}
 
@@ -2839,7 +2840,6 @@ func (s *gRPCResumableBidiWriteBufferSender) queryProgress(ctx context.Context) 
 }
 
 func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []byte, offset int64, flush, finishWrite bool) (obj *storagepb.Object, err error) {
-	reconnected := false
 	if s.stream == nil {
 		// Determine offset and reconnect
 		s.flushOffset, err = s.queryProgress(ctx)
@@ -2850,7 +2850,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 		if err != nil {
 			return
 		}
-		reconnected = true
+		s.forceFirstMessage = true
 	}
 
 	// clean up buf. We'll still write the message if a flush/finishWrite was
@@ -2868,7 +2868,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 	}
 
 	req := bidiWriteObjectRequest(buf, offset, flush, finishWrite)
-	if s.forceFirstMessage || reconnected {
+	if s.forceFirstMessage {
 		req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
 		s.forceFirstMessage = false
 	}
