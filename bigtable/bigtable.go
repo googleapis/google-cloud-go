@@ -648,6 +648,12 @@ func (bs *BoundStatement) Execute(ctx context.Context, f func(ResultRow) bool, o
 	return statusErr
 }
 
+// Used to store fields after the first ResumeToken has been received
+type finalizedStatement struct {
+	metadata      *btpb.ResultSetMetadata
+	preparedQuery []byte
+}
+
 func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, mt *builtinMetricsTracer) error {
 	var ongoingResultBatch bytes.Buffer
 	valuesBuffer := []*btpb.Value{}
@@ -665,7 +671,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 	//    the responses do not (because the request used the plan from t1)`
 	//
 	// So, do not use latest metadata from `bs.ps`
-	var finalizedMetadata *btpb.ResultSetMetadata
+	var fs *finalizedStatement
 	err := gaxInvokeWithRecorder(ctx, mt, "ExecuteQuery", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 		defer cancel()
@@ -694,10 +700,15 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			}
 		}
 
+		execPreparedQuery := bs.ps.preparedQuery
+		if fs != nil && fs.preparedQuery != nil {
+			execPreparedQuery = fs.preparedQuery
+		}
+
 		req := &btpb.ExecuteQueryRequest{
 			InstanceName:  bs.ps.c.fullInstanceName(),
 			AppProfileId:  bs.ps.c.appProfile,
-			PreparedQuery: bs.ps.preparedQuery,
+			PreparedQuery: execPreparedQuery,
 			Params:        bs.params,
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
@@ -777,18 +788,21 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 				if !receivedResumeToken {
 					// first ResumeToken received
-					finalizedMetadata = bs.ps.metadata
+					fs = &finalizedStatement{
+						metadata:      bs.ps.metadata,
+						preparedQuery: bs.ps.preparedQuery,
+					}
 					receivedResumeToken = true
 				}
 
 				// Save ResumeToken for subsequent requests
 				resumeToken = partialResultSet.GetResumeToken()
 
-				if finalizedMetadata == nil || finalizedMetadata.GetProtoSchema() == nil {
+				if fs.metadata == nil || fs.metadata.GetProtoSchema() == nil {
 					prevError = errors.New("bigtable: metadata missing")
 					return prevError
 				}
-				cols := finalizedMetadata.GetProtoSchema().GetColumns()
+				cols := fs.metadata.GetProtoSchema().GetColumns()
 				numCols := len(cols)
 
 				// Parse rows
@@ -805,7 +819,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 					rr := ResultRow{
 						values:   completeRowValues,
-						metadata: finalizedMetadata,
+						metadata: fs.metadata,
 					}
 					continueReading := f(rr)
 					if !continueReading {
