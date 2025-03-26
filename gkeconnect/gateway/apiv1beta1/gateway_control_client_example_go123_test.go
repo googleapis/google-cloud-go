@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package gateway_test
-
-import (
-	gateway "cloud.google.com/go/gkeconnect/gateway/apiv1beta1"
-)
