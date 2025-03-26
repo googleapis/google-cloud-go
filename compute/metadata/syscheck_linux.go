@@ -32,5 +32,5 @@ func systemInfoSuggestsGCE() bool {
 	}
 
 	name := strings.TrimSpace(string(b))
-	return name == "Google" || name == "Google Compute Engine"
+	return name == "Google" || name == "Google Compute Engine" || defaultSystemInfoSuggestsGCE
 }
