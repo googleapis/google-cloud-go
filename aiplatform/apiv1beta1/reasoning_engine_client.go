@@ -1100,6 +1100,9 @@ func (c *reasoningEngineRESTClient) DeleteReasoningEngine(ctx context.Context, r
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
