@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.18.0...shopping/v0.18.1) (2025-03-25)
+
+
+### Documentation
+
+* **shopping/css:** Added a clarifying note to the description of the parent field in the Account resource ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
 ## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.17.1...shopping/v0.18.0) (2025-03-19)
 
 

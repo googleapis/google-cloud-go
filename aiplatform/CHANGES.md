@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.78.0...aiplatform/v1.79.0) (2025-03-25)
+
+
+### Features
+
+* **aiplatform:** Add a ExportPublisherModel API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add AssessData and AssembleData RPCs to DatasetService ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add import result bq sink to the import files API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add import result gcs sink to the import files API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add model_config field for model selection preference ([57a62c0](https://github.com/googleapis/google-cloud-go/commit/57a62c05a11b71b4c505061eb4b9469186adeda5))
+* **aiplatform:** Enable force deletion in ReasoningEngine v1beta1 ([#11901](https://github.com/googleapis/google-cloud-go/issues/11901)) ([57a62c0](https://github.com/googleapis/google-cloud-go/commit/57a62c05a11b71b4c505061eb4b9469186adeda5))
+* **aiplatform:** Update multimodal evaluation (content_map_instance), rubric generation (rubric_based_instance, etc) and raw_output(raw_output, custom_output, etc) proto change in online eval API ([#11876](https://github.com/googleapis/google-cloud-go/issues/11876)) ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `autorater_config` in message `.google.cloud.aiplatform.v1beta1.EvaluateDatasetRequest` is changed ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** A comment for field `gcs_source` in message `.google.cloud.aiplatform.v1beta1.EvaluationDataset` is changed ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
 ## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.77.0...aiplatform/v1.78.0) (2025-03-19)
 
 

@@ -84,15 +84,25 @@ var (
 	myOtherTableNameSpace = uid.NewSpace("myothertable", &uid.Options{Short: true})
 )
 
+/*
+|             |              follows               |
+|    _key     |------------------------------------|
+|             | tjefferson | j§adams | gwashington |
+|-------------|------------|---------|-------------|
+| wmckinley   |      1     |         |             |
+| gwashington |            |    1    |             |
+| tjefferson  |            |    1    |     1       |
+| j§adams     |      1     |         |     1       |
+*/
 func populatePresidentsGraph(table *Table) error {
 	ctx := context.Background()
-	for row, ss := range presidentsSocialGraph {
+	for rowKey, ss := range presidentsSocialGraph {
 		mut := NewMutation()
 		for _, name := range ss {
 			mut.Set("follows", name, 1000, []byte("1"))
 		}
-		if err := table.Apply(ctx, row, mut); err != nil {
-			return fmt.Errorf("Mutating row %q: %v", row, err)
+		if err := table.Apply(ctx, rowKey, mut); err != nil {
+			return fmt.Errorf("Mutating row %q: %v", rowKey, err)
 		}
 	}
 	return nil
