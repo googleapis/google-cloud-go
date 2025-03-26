@@ -21,16 +21,13 @@ import (
 	"strings"
 )
 
-// defaultSystemInfoSuggestsGCE holds a default placeholder value for
-// the systemInfoSuggestsGCE check. It is exposed for testing purposes.
-var defaultSystemInfoSuggestsGCE = false
-
-func systemInfoSuggestsGCE() bool {
+// NOTE: systemInfoSuggestsGCE is assigned to a varible for test stubbing purposes.
+var systemInfoSuggestsGCE = func() bool {
 	b, err := os.ReadFile("/sys/class/dmi/id/product_name")
 	if err != nil {
-		return defaultSystemInfoSuggestsGCE
+		return false
 	}
 
 	name := strings.TrimSpace(string(b))
-	return name == "Google" || name == "Google Compute Engine" || defaultSystemInfoSuggestsGCE
+	return name == "Google" || name == "Google Compute Engine"
 }

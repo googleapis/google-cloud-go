@@ -388,6 +388,30 @@ func NewWithOptions(opts *Options) *Client {
 	return &Client{hc: client, logger: logger}
 }
 
+// NOTE: metadataRequestStrategy is assigned to a variable for test stubbing purposes.
+var metadataRequestStrategy = func(ctx context.Context, httpClient *http.Client, resc chan bool) {
+	req, _ := http.NewRequest("GET", "http://"+metadataIP, nil)
+	req.Header.Set("User-Agent", userAgent)
+	res, err := httpClient.Do(req.WithContext(ctx))
+	if err != nil {
+		resc <- false
+		return
+	}
+	defer res.Body.Close()
+	resc <- res.Header.Get("Metadata-Flavor") == "Google"
+}
+
+// NOTE: dnsRequestStrategy is assigned to a variable for test stubbing purposes.
+var dnsRequestStrategy = func(ctx context.Context, resc chan bool) {
+	resolver := &net.Resolver{}
+	addrs, err := resolver.LookupHost(ctx, "metadata.google.internal.")
+	if err != nil || len(addrs) == 0 {
+		resc <- false
+		return
+	}
+	resc <- strsContains(addrs, metadataIP)
+}
+
 // OnGCEWithContext reports whether this process is running on Google Compute Platforms.
 // NOTE: True returned from `OnGCEWithContext` does not guarantee that the metadata server
 // is accessible from this process and have all the metadata defined.
@@ -404,27 +428,8 @@ func (c *Client) OnGCEWithContext(ctx context.Context) bool {
 
 	// Try two strategies in parallel.
 	// See https://github.com/googleapis/google-cloud-go/issues/194
-	go func() {
-		req, _ := http.NewRequest("GET", "http://"+metadataIP, nil)
-		req.Header.Set("User-Agent", userAgent)
-		res, err := c.hc.Do(req.WithContext(ctx))
-		if err != nil {
-			resc <- false
-			return
-		}
-		defer res.Body.Close()
-		resc <- res.Header.Get("Metadata-Flavor") == "Google"
-	}()
-
-	go func() {
-		resolver := &net.Resolver{}
-		addrs, err := resolver.LookupHost(ctx, "metadata.google.internal.")
-		if err != nil || len(addrs) == 0 {
-			resc <- false
-			return
-		}
-		resc <- strsContains(addrs, metadataIP)
-	}()
+	go metadataRequestStrategy(ctx, c.hc, resc)
+	go dnsRequestStrategy(ctx, resc)
 
 	tryHarder := systemInfoSuggestsGCE()
 	if tryHarder {

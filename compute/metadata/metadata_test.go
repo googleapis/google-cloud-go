@@ -67,16 +67,28 @@ func TestOnGCE_Cancel(t *testing.T) {
 func TestOnGCE_CancelTryHarder(t *testing.T) {
 	// If system info suggests GCE, we allow extra time for the
 	// probe with higher latency (HTTP or DNS) to return. In this
-	// test, the DNS probe fails organically, but we spoof the
-	// system info suggestion so that it waits longer for the HTTP
-	// probe to return. However, that additional wait budget should
-	// still be controlled by the calling context.
+	// test, the system info suggest GCE, the DNS probe fails
+	// immediately, and the HTTP probe would succeed after 750ms.
+	// However, the user-provided context deadline is 500ms. GCE
+	// detection should fail, respecting the provided context.
 	//
 	// NOTE: This code could create a data race if tests are run
 	// in parallel.
-	defaultSystemInfoSuggestsGCE = true
+	origSystemInfoSuggestsGCE := systemInfoSuggestsGCE
+	origMetadataRequestStrategy := metadataRequestStrategy
+	origDNSRequestStrategy := dnsRequestStrategy
+	systemInfoSuggestsGCE = func() bool { return true }
+	metadataRequestStrategy = func(_ context.Context, _ *http.Client, resc chan bool) {
+		time.Sleep(750 * time.Millisecond)
+		resc <- true
+	}
+	dnsRequestStrategy = func(_ context.Context, resc chan bool) {
+		resc <- false
+	}
 	defer func() {
-		defaultSystemInfoSuggestsGCE = false
+		systemInfoSuggestsGCE = origSystemInfoSuggestsGCE
+		metadataRequestStrategy = origMetadataRequestStrategy
+		dnsRequestStrategy = origDNSRequestStrategy
 	}()
 
 	// Set deadline upper-limit to 500ms

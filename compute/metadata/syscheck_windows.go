@@ -22,20 +22,17 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-// defaultSystemInfoSuggestsGCE holds a default placeholder value for
-// the systemInfoSuggestsGCE check. It is exposed for testing purposes.
-var defaultSystemInfoSuggestsGCE = false
-
-func systemInfoSuggestsGCE() bool {
+// NOTE: systemInfoSuggestsGCE is assigned to a varible for test stubbing purposes.
+var systemInfoSuggestsGCE = func() bool {
 	k, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\HardwareConfig\Current`, registry.QUERY_VALUE)
 	if err != nil {
-		return defaultSystemInfoSuggestsGCE
+		return false
 	}
 	defer k.Close()
 
 	s, _, err := k.GetStringValue("SystemProductName")
 	if err != nil {
-		return defaultSystemInfoSuggestsGCE
+		return false
 	}
 	s = strings.TrimSpace(s)
 	return strings.HasPrefix(s, "Google")

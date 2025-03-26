@@ -16,15 +16,13 @@
 
 package metadata
 
-// defaultSystemInfoSuggestsGCE holds a default placeholder value for
-// the systemInfoSuggestsGCE check. It is exposed for testing purposes.
-var defaultSystemInfoSuggestsGCE = false
-
 // systemInfoSuggestsGCE reports whether the local system (without
 // doing network requests) suggests that we're running on GCE. If this
 // returns true, testOnGCE tries a bit harder to reach its metadata
 // server.
-func systemInfoSuggestsGCE() bool {
+//
+// NOTE: systemInfoSuggestsGCE is assigned to a varible for test stubbing purposes.
+var systemInfoSuggestsGCE = func() bool {
 	// We don't currently have checks for other GOOS
-	return defaultSystemInfoSuggestsGCE
+	return false
 }
