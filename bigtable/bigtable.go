@@ -503,7 +503,7 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		return nil, err
 	}
 
-	return &PreparedStatement{
+	ps := &PreparedStatement{
 		c:             c,
 		metadata:      res.Metadata,
 		preparedQuery: res.PreparedQuery,
@@ -511,7 +511,9 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		query:         query,
 		paramTypes:    paramTypes,
 		opts:          opts,
-	}, err
+	}
+	ps.setMetadataAndQuery(res)
+	return ps, err
 }
 
 // Bind binds a set of parameters to a prepared statement.
@@ -593,7 +595,7 @@ func (ps *PreparedStatement) refreshIfInvalid(ctx context.Context) error {
 	return nil
 }
 
-// valid returns true if the prepared query is valid, and validEarly returns true
+// valid is true if the prepared query is valid, and validEarly is true
 // if the prepared query is valid and has not reached the early expiration threshold.
 func (ps *PreparedStatement) valid() (valid bool, validEarly bool) {
 	nowTime := time.Now().UTC()
@@ -607,6 +609,15 @@ func (ps *PreparedStatement) refresh(ctx context.Context) error {
 	ps.preparedQuery = newPs.preparedQuery
 	ps.validUntil = newPs.validUntil
 	return err
+}
+
+func (ps *PreparedStatement) metadataAndQuery() (metadata *btpb.ResultSetMetadata, query []byte) {
+	return ps.metadata, ps.preparedQuery
+}
+
+func (ps *PreparedStatement) setMetadataAndQuery(res *btpb.PrepareQueryResponse) {
+	ps.metadata = res.Metadata
+	ps.preparedQuery = res.PreparedQuery
 }
 
 // BoundStatement is a statement that has been bound to a set of parameters.
@@ -654,9 +665,20 @@ type finalizedStatement struct {
 	preparedQuery []byte
 }
 
+func newFinalizedStatement(metadata *btpb.ResultSetMetadata, query []byte) *finalizedStatement {
+	return &finalizedStatement{
+		metadata:      metadata,
+		preparedQuery: query,
+	}
+}
+
 func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, mt *builtinMetricsTracer) error {
+	// buffer data constructed from the fields in PartialRows`
 	var ongoingResultBatch bytes.Buffer
+
+	// data buffered since the last non-empty `ResumeToken`
 	valuesBuffer := []*btpb.Value{}
+
 	var resumeToken []byte
 
 	receivedResumeToken := false
@@ -712,6 +734,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			Params:        bs.params,
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
+
 		if err != nil {
 			prevError = err
 			return err
@@ -742,6 +765,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 			partialResultSet := results.Results
 			if partialResultSet.GetReset_() {
+				valuesBuffer = []*btpb.Value{}
 				ongoingResultBatch.Reset()
 			}
 
@@ -788,10 +812,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 				if !receivedResumeToken {
 					// first ResumeToken received
-					fs = &finalizedStatement{
-						metadata:      bs.ps.metadata,
-						preparedQuery: bs.ps.preparedQuery,
-					}
+					fs = newFinalizedStatement(bs.ps.metadataAndQuery())
 					receivedResumeToken = true
 				}
 

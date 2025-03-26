@@ -1691,13 +1691,15 @@ func TestPreparedStatementBind(t *testing.T) {
 
 func TestExecuteQuery(t *testing.T) {
 	// start emulated server
-	var prepReqCount int
-	var recvMsgCount int
-	var prepQueryResps []*btpb.PrepareQueryResponse
-	var prepQueryErrs []error
-	var recvMsgResps []*btpb.ExecuteQueryResponse_Results
-	var recvMsgBlockedTimes []time.Duration
-	var recvMsgErrs []error
+	var gotPrepReqCount int
+	var mockPrepQueryResps []*btpb.PrepareQueryResponse
+	var mockPrepQueryErrs []error
+
+	var gotRecvMsgCount int
+	var mockRecvMsgResps []*btpb.ExecuteQueryResponse_Results
+	var mockRecvMsgBlockedTimes []time.Duration
+	var mockRecvMsgErrs []error
+	var gotSendMsgReqs []*btpb.ExecuteQueryRequest
 
 	testEnv, gotErr := NewEmulatedEnv(IntegrationTestConfig{})
 	if gotErr != nil {
@@ -1705,8 +1707,10 @@ func TestExecuteQuery(t *testing.T) {
 	}
 	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
-		grpc.WithStreamInterceptor(newStreamClientInterceptor(&recvMsgCount, &recvMsgResps, &recvMsgBlockedTimes, &recvMsgErrs)),
-		grpc.WithUnaryInterceptor(newUnaryClientInterceptor(&prepReqCount, &prepQueryResps, &prepQueryErrs)),
+		grpc.WithStreamInterceptor(
+			newStreamClientInterceptor(&gotRecvMsgCount, &gotSendMsgReqs, &mockRecvMsgResps, &mockRecvMsgBlockedTimes, &mockRecvMsgErrs)),
+		grpc.WithUnaryInterceptor(
+			newUnaryClientInterceptor(&gotPrepReqCount, &mockPrepQueryResps, &mockPrepQueryErrs)),
 	)
 	if gotErr != nil {
 		t.Fatalf("grpc.Dial failed: %v", gotErr)
@@ -1730,159 +1734,243 @@ func TestExecuteQuery(t *testing.T) {
 		},
 	})
 	aePcf, _ := apierror.FromError(stPcf.Err())
-
+	preparedQuery1 := "first mock prepared query"
+	preparedQuery2 := "second mock prepared query"
 	for _, tc := range []struct {
-		desc                string
-		prepQueryResps      []*btpb.PrepareQueryResponse
-		prepQueryErrs       []error
-		recvMsgResps        []*btpb.ExecuteQueryResponse_Results
-		recvMsgBlockedTimes []time.Duration
-		recvMsgErrs         []error
-		wantExecErr         error
+		desc                    string
+		mockPrepQueryResps      []*btpb.PrepareQueryResponse
+		mockPrepQueryErrs       []error
+		mockRecvMsgResps        []*btpb.ExecuteQueryResponse_Results
+		mockRecvMsgBlockedTimes []time.Duration
+		mockRecvMsgErrs         []error
+		wantExecReqPrepQuerys   [][]byte
+		wantResultRowValues     [][]*btpb.Value
+		wantExecErr             error
 	}{
 		{
 			desc: "success",
-			prepQueryResps: []*btpb.PrepareQueryResponse{
-				getPrepareQueryResponse(), // PrepareStatement
+			mockPrepQueryResps: []*btpb.PrepareQueryResponse{
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress, colFamInfo), // PrepareStatement
 			},
-			prepQueryErrs: []error{
+			mockPrepQueryErrs: []error{
 				nil,
 			},
-			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
-				getExecuteQueryResponseWithBatchData(),
-				getExecuteQueryResponseWithResumeToken(),
+			mockRecvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				mockExecuteQueryResponseWithPartialBatchDataFirstHalf(true, colFamAddress),
+				mockExecuteQueryResponseWithPartialBatchDataSecondHalf(false, colFamInfo),
+				mockExecuteQueryResponseWithResumeToken(),
 				{},
 			},
-			recvMsgErrs: []error{
+			mockRecvMsgErrs: []error{
+				nil,
 				nil,
 				nil,
 				io.EOF,
 			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+			},
+			wantResultRowValues: [][]*btpb.Value{mockProtoRowValues(colFamAddress, colFamInfo)},
 		},
 		{
 			desc: "server stream ended without ResumeToken",
-			prepQueryResps: []*btpb.PrepareQueryResponse{
-				getPrepareQueryResponse(), // PrepareStatement
+			mockPrepQueryResps: []*btpb.PrepareQueryResponse{
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress), // PrepareStatement
 			},
-			prepQueryErrs: []error{
+			mockPrepQueryErrs: []error{
 				nil,
 			},
-			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
-				getExecuteQueryResponseWithBatchData(),
+			mockRecvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				mockExecuteQueryResponseWithBatchData(true, colFamAddress),
 				{},
 			},
-			recvMsgErrs: []error{
+			mockRecvMsgErrs: []error{
 				nil,
 				io.EOF,
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
 			},
 			wantExecErr: errors.New("bigtable: server stream ended without sending a resume token"),
 		},
 		{
 			desc: "retry on expired query FailedPrecondition error",
-			prepQueryResps: []*btpb.PrepareQueryResponse{
-				getPrepareQueryResponse(), // PrepareStatement
-				getPrepareQueryResponse(), // Execute
+			mockPrepQueryResps: []*btpb.PrepareQueryResponse{
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress), // PrepareStatement
+				mockPrepareQueryResponse(preparedQuery2, colFamAddress), // Execute
 			},
-			prepQueryErrs: []error{
+			mockPrepQueryErrs: []error{
 				nil,
 				nil,
 			},
-			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+			mockRecvMsgResps: []*btpb.ExecuteQueryResponse_Results{
 				{},
-				getExecuteQueryResponseWithBatchData(),
-				getExecuteQueryResponseWithResumeToken(),
+				mockExecuteQueryResponseWithBatchData(true, colFamAddress),
+				mockExecuteQueryResponseWithResumeToken(),
 				{},
 			},
-			recvMsgErrs: []error{
+			mockRecvMsgErrs: []error{
 				aePcf,
 				nil,
 				nil,
 				io.EOF,
 			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+				[]byte(preparedQuery2),
+			},
+			wantResultRowValues: [][]*btpb.Value{mockProtoRowValues(colFamAddress)},
 		},
 		{
 			desc: "transient error after receiving first resume token should not refresh query",
-			prepQueryResps: []*btpb.PrepareQueryResponse{
-				getPrepareQueryResponse(), // PrepareStatement
+			mockPrepQueryResps: []*btpb.PrepareQueryResponse{
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress), // PrepareStatement
 			},
-			prepQueryErrs: []error{
+			mockPrepQueryErrs: []error{
 				nil,
 			},
-			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
-				getExecuteQueryResponseWithBatchData(),
-				getExecuteQueryResponseWithResumeToken(),
+			mockRecvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				mockExecuteQueryResponseWithBatchData(true, colFamAddress),
+				mockExecuteQueryResponseWithResumeToken(),
 				{},
 				{},
 			},
-			recvMsgErrs: []error{
+			mockRecvMsgErrs: []error{
 				nil,
 				nil,
 				status.Error(codes.Unavailable, "transient error"),
 				io.EOF,
 			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+				[]byte(preparedQuery1),
+			},
+			wantResultRowValues: [][]*btpb.Value{mockProtoRowValues(colFamAddress)},
 		},
 		{
 			desc: "retry on time-based expired query",
-			prepQueryResps: []*btpb.PrepareQueryResponse{
-				getPrepareQueryResponse(), // PrepareStatement
-				getPrepareQueryResponse(), // From Execute, because expired query
+			mockPrepQueryResps: []*btpb.PrepareQueryResponse{
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress), // PrepareStatement
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress), // From Execute, because expired query
 			},
-			prepQueryErrs: []error{
+			mockPrepQueryErrs: []error{
 				nil,
 				nil,
 			},
-			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
-				getExecuteQueryResponseWithBatchData(),
+			mockRecvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				mockExecuteQueryResponseWithBatchData(true, colFamAddress),
 				{},
-				getExecuteQueryResponseWithResumeToken(),
+				mockExecuteQueryResponseWithResumeToken(),
 				{},
 			},
-			recvMsgBlockedTimes: []time.Duration{
+			mockRecvMsgBlockedTimes: []time.Duration{
 				0,
 				testPreparedQueryTTL + 2*time.Second,
 				0,
 				0,
 			},
-			recvMsgErrs: []error{
+			mockRecvMsgErrs: []error{
 				nil,
 				status.Error(codes.DeadlineExceeded, "context deadline exceeded"), // retryable
 				nil,
 				io.EOF,
 			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+				[]byte(preparedQuery1),
+			},
+			wantResultRowValues: [][]*btpb.Value{mockProtoRowValues(colFamAddress)},
 		},
 		{
 			desc: "retryable error from PrepareQuery should retry PrepareQuery and Execute",
-			prepQueryResps: []*btpb.PrepareQueryResponse{
-				getPrepareQueryResponse(), // PrepareStatement
-				{},                        // Execute
-				getPrepareQueryResponse(),
+			mockPrepQueryResps: []*btpb.PrepareQueryResponse{
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress), // PrepareStatement
+				{}, // Execute
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress),
 			},
-			prepQueryErrs: []error{
+			mockPrepQueryErrs: []error{
 				nil,
 				status.Error(codes.DeadlineExceeded, "context deadline exceeded"), // retryable
 				nil,
 			},
-			recvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+			mockRecvMsgResps: []*btpb.ExecuteQueryResponse_Results{
 				{},
-				getExecuteQueryResponseWithBatchData(),
-				getExecuteQueryResponseWithResumeToken(),
+				mockExecuteQueryResponseWithBatchData(true, colFamAddress),
+				mockExecuteQueryResponseWithResumeToken(),
 				{},
 			},
-			recvMsgErrs: []error{
+			mockRecvMsgErrs: []error{
 				aePcf,
 				nil,
 				nil,
 				io.EOF,
 			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+				[]byte(preparedQuery1),
+			},
+			wantResultRowValues: [][]*btpb.Value{mockProtoRowValues(colFamAddress)},
+		},
+		{
+			/*
+				1. PrepareQuery
+				2. ExecuteQuery
+				3. RecvMsg - gets first batch of data with reset true
+				4. RecvMsg - gets second batch of data with reset false
+				5. RecvMsg - gets Unavailable error
+				6. ExecuteQuery
+				7. RecvMsg - gets query expired error
+				8. PrepareQuery - receives changed metadata
+				9. ExecuteQuery
+				10. RecvMsg - gets first batch of new data with reset true
+				11. RecvMsg - gets second batch with resume token
+				12. RecvMsg - gets EOF error
+			*/
+			desc: "batch should be discarded if metadata changed and reset true",
+			mockPrepQueryResps: []*btpb.PrepareQueryResponse{
+				mockPrepareQueryResponse(preparedQuery1, colFamAddress),             // Step 1
+				mockPrepareQueryResponse(preparedQuery2, colFamAddress, colFamInfo), // Step 8
+			},
+			mockPrepQueryErrs: []error{
+				nil, // Step 1
+				nil, // Step 8
+			},
+			mockRecvMsgResps: []*btpb.ExecuteQueryResponse_Results{
+				mockExecuteQueryResponseWithBatchData(true, colFamAddress),  // Step 3
+				mockExecuteQueryResponseWithBatchData(false, colFamAddress), // Step 4
+				{}, // Step 5
+				{}, // Step 7
+				mockExecuteQueryResponseWithBatchData(true, colFamAddress, colFamInfo), // Step 10
+				mockExecuteQueryResponseWithResumeToken(),                              // Step 11
+				{}, // Step 12
+			},
+			mockRecvMsgErrs: []error{
+				nil, // Step 3
+				nil, // Step 4
+				status.Error(codes.Unavailable, "mock unavailable error"), // retryable error Step 5
+				aePcf,  // retryable error Step 7
+				nil,    // Step 10
+				nil,    // Step 11
+				io.EOF, // Step 12
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1), // Step 2
+				[]byte(preparedQuery1), // Step 6
+				[]byte(preparedQuery2), // Step 9
+			},
+			wantResultRowValues: [][]*btpb.Value{mockProtoRowValues(colFamAddress, colFamInfo)},
 		},
 	} {
-		prepReqCount = 0
-		prepQueryResps = tc.prepQueryResps
-		prepQueryErrs = tc.prepQueryErrs
-		recvMsgCount = 0
-		recvMsgResps = tc.recvMsgResps
-		recvMsgErrs = tc.recvMsgErrs
-		recvMsgBlockedTimes = tc.recvMsgBlockedTimes
+		mockPrepQueryResps = tc.mockPrepQueryResps
+		mockPrepQueryErrs = tc.mockPrepQueryErrs
+		mockRecvMsgResps = tc.mockRecvMsgResps
+		mockRecvMsgErrs = tc.mockRecvMsgErrs
+		mockRecvMsgBlockedTimes = tc.mockRecvMsgBlockedTimes
+
+		// Reset vars for the test
+		gotPrepReqCount = 0
+		gotRecvMsgCount = 0
+		gotSendMsgReqs = []*btpb.ExecuteQueryRequest{}
 
 		t.Run(tc.desc, func(t *testing.T) {
 			// Prepare query
@@ -1896,20 +1984,42 @@ func TestExecuteQuery(t *testing.T) {
 			}
 
 			// Execute query
+
+			gotRowCount := 0
 			err = bs.Execute(ctx, func(rr ResultRow) bool {
+				vals := rr.values
+				if gotRowCount > len(tc.wantResultRowValues) ||
+					!cmp.Equal(vals, tc.wantResultRowValues[gotRowCount], cmpOptionsBtpbValue()...) {
+					t.Errorf("#%d ResultRow.values: got: %+v, want: %+v, diff: %+v", gotRowCount, vals, tc.wantResultRowValues[gotRowCount],
+						cmp.Diff(vals, tc.wantResultRowValues[gotRowCount], cmpOptionsBtpbValue()...))
+					return false
+				}
 				return true
 			})
 
-			if prepReqCount != len(tc.prepQueryResps) {
-				t.Fatalf("PrepareQuery request count: got: %v, want: %v", prepReqCount, len(tc.prepQueryResps))
-			}
-			if recvMsgCount != len(tc.recvMsgResps) {
-				t.Fatalf("RecvMsg request count: got: %v, want: %v", recvMsgCount, len(tc.recvMsgResps))
-			}
 			if tc.wantExecErr != nil && err != nil && err.Error() != tc.wantExecErr.Error() {
 				t.Fatalf("Execute: err: got: %v, want: %v", err, tc.wantExecErr)
 			} else if (err != nil && tc.wantExecErr == nil) || (err == nil && tc.wantExecErr != nil) {
 				t.Fatalf("Execute: err got: %v, want: %v", err, tc.wantExecErr)
+			}
+
+			if gotPrepReqCount != len(tc.mockPrepQueryResps) {
+				t.Fatalf("PrepareQuery request count: got: %v, want: %v", gotPrepReqCount, len(tc.mockPrepQueryResps))
+			}
+			if gotRecvMsgCount != len(tc.mockRecvMsgResps) {
+				t.Fatalf("RecvMsg request count: got: %v, want: %v", gotRecvMsgCount, len(tc.mockRecvMsgResps))
+			}
+
+			if len(tc.wantExecReqPrepQuerys) != len(gotSendMsgReqs) {
+				t.Fatalf("ExecuteQuery request count: got: %v, want: %v", len(gotSendMsgReqs), len(tc.wantExecReqPrepQuerys))
+			}
+
+			for i, wantPrepQueryInExecReq := range tc.wantExecReqPrepQuerys {
+				if string(gotSendMsgReqs[i].PreparedQuery) != string(wantPrepQueryInExecReq) {
+					t.Fatalf("%v: PreparedQuery in ExecuteQuery request: got: %v, want: %v",
+						i,
+						string(gotSendMsgReqs[i].PreparedQuery), string(wantPrepQueryInExecReq))
+				}
 			}
 		})
 	}
@@ -1917,93 +2027,138 @@ func TestExecuteQuery(t *testing.T) {
 
 const testPreparedQueryTTL = 10 * time.Second
 
-func getPrepareQueryResponse() *btpb.PrepareQueryResponse {
+func mockPrepareQueryResponse(preparedQuery string, colFams ...string) *btpb.PrepareQueryResponse {
 	bytesType := &btpb.Type{
 		Kind: &btpb.Type_BytesType{
 			BytesType: &btpb.Type_Bytes{},
 		},
 	}
+
+	columns := []*btpb.ColumnMetadata{
+		{
+			Name: "_key",
+			Type: bytesType,
+		},
+	}
+
+	for _, cf := range colFams {
+		columns = append(columns, &btpb.ColumnMetadata{
+			Name: cf,
+			Type: &btpb.Type{
+				Kind: &btpb.Type_MapType{
+					MapType: &btpb.Type_Map{
+						KeyType:   bytesType,
+						ValueType: bytesType,
+					},
+				},
+			},
+		})
+	}
 	return &btpb.PrepareQueryResponse{
-		PreparedQuery: []byte("foobar"),
+		PreparedQuery: []byte(preparedQuery),
 		Metadata: &btpb.ResultSetMetadata{
 			Schema: &btpb.ResultSetMetadata_ProtoSchema{
 				ProtoSchema: &btpb.ProtoSchema{
-					Columns: []*btpb.ColumnMetadata{
-						{
-							Name: "_key",
-							Type: bytesType,
-						},
-						{
-							Name: "address",
-							Type: &btpb.Type{
-								Kind: &btpb.Type_MapType{
-									MapType: &btpb.Type_Map{
-										KeyType:   bytesType,
-										ValueType: bytesType,
-									},
-								},
-							},
-						},
-					},
+					Columns: columns,
 				},
 			},
 		},
 	}
 }
 
-func getExecuteQueryResponseWithBatchData() *btpb.ExecuteQueryResponse_Results {
-	protoRows := &btpb.ProtoRows{
-		Values: []*btpb.Value{
-			{
-				Kind: &btpb.Value_BytesValue{
-					BytesValue: []byte("row-01"),
-				},
-			},
-			{
-				Kind: &btpb.Value_ArrayValue{
-					ArrayValue: &btpb.ArrayValue{
-						Values: []*btpb.Value{
-							{
-								Kind: &btpb.Value_ArrayValue{
-									ArrayValue: &btpb.ArrayValue{
-										Values: []*btpb.Value{
-											{
-												Kind: &btpb.Value_BytesValue{
-													BytesValue: []byte("city"),
-												},
-											},
-											{
-												Kind: &btpb.Value_BytesValue{
-													BytesValue: []byte("San Francisco"),
-												},
-											},
-										},
-									},
-								},
+const colFamAddress = "address"
+const colFamInfo = "info"
+
+var cfToValues = map[string][]*btpb.Value{
+	colFamAddress: {
+		{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{
+					Values: []*btpb.Value{
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("city"),
 							},
-							{
-								Kind: &btpb.Value_ArrayValue{
-									ArrayValue: &btpb.ArrayValue{
-										Values: []*btpb.Value{
-											{
-												Kind: &btpb.Value_BytesValue{
-													BytesValue: []byte("state"),
-												},
-											},
-											{
-												Kind: &btpb.Value_BytesValue{
-													BytesValue: []byte("CA"),
-												},
-											},
-										},
-									},
-								},
+						},
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("San Francisco"),
 							},
 						},
 					},
 				},
 			},
 		},
+		{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{
+					Values: []*btpb.Value{
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("state"),
+							},
+						},
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("CA"),
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	colFamInfo: {
+		{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{
+					Values: []*btpb.Value{
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("greeting"),
+							},
+						},
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("Hey there"),
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
+func mockProtoRowValues(colFams ...string) []*btpb.Value {
+	values := []*btpb.Value{
+		{
+			Kind: &btpb.Value_BytesValue{
+				BytesValue: []byte("row-01"),
+			},
+		},
+	}
+	values = append(values, mockProtoRowValuesWithoutKey(colFams...)...)
+	return values
+}
+
+func mockProtoRowValuesWithoutKey(colFams ...string) []*btpb.Value {
+	values := []*btpb.Value{}
+	for _, cf := range colFams {
+		values = append(values, &btpb.Value{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{
+					Values: cfToValues[cf],
+				},
+			},
+		})
+	}
+	return values
+}
+
+func mockExecuteQueryResponseWithBatchData(reset bool, colFams ...string) *btpb.ExecuteQueryResponse_Results {
+	protoRows := &btpb.ProtoRows{
+		Values: mockProtoRowValues(colFams...),
 	}
 	marshalled, _ := proto.Marshal(protoRows)
 	checksum := crc32.Checksum(marshalled, crc32cTable)
@@ -2015,12 +2170,50 @@ func getExecuteQueryResponseWithBatchData() *btpb.ExecuteQueryResponse_Results {
 				},
 			},
 			BatchChecksum: &checksum,
-			Reset_:        true,
+			Reset_:        reset,
 		},
 	}
 }
 
-func getExecuteQueryResponseWithResumeToken() *btpb.ExecuteQueryResponse_Results {
+func mockExecuteQueryResponseWithPartialBatchDataFirstHalf(reset bool, colFams ...string) *btpb.ExecuteQueryResponse_Results {
+	protoRows := &btpb.ProtoRows{
+		Values: mockProtoRowValues(colFams...),
+	}
+	marshalled, _ := proto.Marshal(protoRows)
+	checksum := crc32.Checksum(marshalled, crc32cTable)
+	return &btpb.ExecuteQueryResponse_Results{
+		Results: &btpb.PartialResultSet{
+			PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
+				ProtoRowsBatch: &btpb.ProtoRowsBatch{
+					BatchData: marshalled,
+				},
+			},
+			BatchChecksum: &checksum,
+			Reset_:        reset,
+		},
+	}
+}
+
+func mockExecuteQueryResponseWithPartialBatchDataSecondHalf(reset bool, colFams ...string) *btpb.ExecuteQueryResponse_Results {
+	protoRows := &btpb.ProtoRows{
+		Values: mockProtoRowValuesWithoutKey(colFams...),
+	}
+	marshalled, _ := proto.Marshal(protoRows)
+	checksum := crc32.Checksum(marshalled, crc32cTable)
+	return &btpb.ExecuteQueryResponse_Results{
+		Results: &btpb.PartialResultSet{
+			PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
+				ProtoRowsBatch: &btpb.ProtoRowsBatch{
+					BatchData: marshalled,
+				},
+			},
+			BatchChecksum: &checksum,
+			Reset_:        reset,
+		},
+	}
+}
+
+func mockExecuteQueryResponseWithResumeToken() *btpb.ExecuteQueryResponse_Results {
 	return &btpb.ExecuteQueryResponse_Results{
 		Results: &btpb.PartialResultSet{
 			ResumeToken: []byte("resume-token"),
@@ -2032,6 +2225,7 @@ func getExecuteQueryResponseWithResumeToken() *btpb.ExecuteQueryResponse_Results
 // SendMsg method call.
 type wrappedClientStream struct {
 	recvMsgCount *int
+	reqPtrs      *[]*btpb.ExecuteQueryRequest
 	respPtrs     *[]*btpb.ExecuteQueryResponse_Results
 	blockedTimes *[]time.Duration
 	errPtrs      *[]error
@@ -2039,8 +2233,8 @@ type wrappedClientStream struct {
 }
 
 func (w *wrappedClientStream) RecvMsg(m any) error {
-	err := w.ClientStream.RecvMsg(m)
 	defer func() { *w.recvMsgCount++ }()
+	err := w.ClientStream.RecvMsg(m)
 	resp, ok := m.(*btpb.ExecuteQueryResponse)
 	if !ok {
 		return err
@@ -2057,31 +2251,42 @@ func (w *wrappedClientStream) RecvMsg(m any) error {
 }
 
 func (w *wrappedClientStream) SendMsg(m any) error {
+	execReq, _ := m.(*btpb.ExecuteQueryRequest)
+	*w.reqPtrs = append(*w.reqPtrs, execReq)
 	return w.ClientStream.SendMsg(m)
 }
 
-func newWrappedClientStream(s grpc.ClientStream, recvMsgCount *int, respPtrs *[]*btpb.ExecuteQueryResponse_Results, blockedTimes *[]time.Duration, errPtrs *[]error) grpc.ClientStream {
+func newWrappedClientStream(s grpc.ClientStream, recvMsgCount *int,
+	reqPtrs *[]*btpb.ExecuteQueryRequest, respPtrs *[]*btpb.ExecuteQueryResponse_Results, blockedTimes *[]time.Duration,
+	errPtrs *[]error) grpc.ClientStream {
 	return &wrappedClientStream{
 		ClientStream: s,
 		recvMsgCount: recvMsgCount,
+		reqPtrs:      reqPtrs,
 		respPtrs:     respPtrs,
 		errPtrs:      errPtrs,
 		blockedTimes: blockedTimes,
 	}
 }
 
-func newStreamClientInterceptor(recvMsgCount *int, respPtrs *[]*btpb.ExecuteQueryResponse_Results, blockedTimes *[]time.Duration, errPtrs *[]error) func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+func newStreamClientInterceptor(recvMsgCount *int, reqPtrs *[]*btpb.ExecuteQueryRequest, respPtrs *[]*btpb.ExecuteQueryResponse_Results,
+	blockedTimes *[]time.Duration, errPtrs *[]error) func(
+	ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string,
+	streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string,
+		streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		s, err := streamer(ctx, desc, cc, method, opts...)
 		if err != nil {
 			return nil, err
 		}
-		return newWrappedClientStream(s, recvMsgCount, respPtrs, blockedTimes, errPtrs), nil
+		return newWrappedClientStream(s, recvMsgCount, reqPtrs, respPtrs, blockedTimes, errPtrs), nil
 	}
 }
 
-func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]*btpb.PrepareQueryResponse, errPtrs *[]error) func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]*btpb.PrepareQueryResponse, errPtrs *[]error) func(
+	ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	return func(ctx context.Context, method string, req, reply interface{},
+		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		err := invoker(ctx, method, req, reply, cc, opts...)
 		defer func() { *prepReqCount++ }()
 		_, isPrepReq := req.(*btpb.PrepareQueryRequest)
