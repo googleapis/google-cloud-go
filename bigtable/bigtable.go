@@ -667,7 +667,8 @@ type finalizedStatement struct {
 
 func newFinalizedStatement(metadata *btpb.ResultSetMetadata, query []byte) *finalizedStatement {
 	return &finalizedStatement{
-		metadata:      metadata,
+		// Make a deep copy. Even if preparedStatement is refreshed, this wouldn't change
+		metadata:      proto.Clone(metadata).(*btpb.ResultSetMetadata),
 		preparedQuery: query,
 	}
 }
@@ -722,15 +723,17 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			}
 		}
 
-		execPreparedQuery := bs.ps.preparedQuery
-		if fs != nil && fs.preparedQuery != nil {
-			execPreparedQuery = fs.preparedQuery
+		var fsInExec *finalizedStatement
+		if fs == nil {
+			fsInExec = newFinalizedStatement(bs.ps.metadataAndQuery())
+		} else {
+			fsInExec = fs
 		}
 
 		req := &btpb.ExecuteQueryRequest{
 			InstanceName:  bs.ps.c.fullInstanceName(),
 			AppProfileId:  bs.ps.c.appProfile,
-			PreparedQuery: execPreparedQuery,
+			PreparedQuery: fsInExec.preparedQuery,
 			Params:        bs.params,
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
@@ -812,7 +815,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 				if !receivedResumeToken {
 					// first ResumeToken received
-					fs = newFinalizedStatement(bs.ps.metadataAndQuery())
+					fs = fsInExec
 					receivedResumeToken = true
 				}
 
