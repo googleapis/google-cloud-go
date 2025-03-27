@@ -1911,7 +1911,7 @@ func TestExecuteQuery(t *testing.T) {
 				8. PrepareQuery - receives changed metadata
 				9. ExecuteQuery
 				10. RecvMsg - gets first batch of new data with reset true
-				11. RecvMsg - gets second batch with resume token
+				11. RecvMsg - gets resume token
 				12. RecvMsg - gets EOF error
 			*/
 			desc: "batch should be discarded if metadata changed and reset true",
@@ -1934,6 +1934,27 @@ func TestExecuteQuery(t *testing.T) {
 				[]byte(preparedQuery2), // Step 9
 			},
 			wantResultRowValues: [][]*btpb.Value{newProtoRowValuesWithKey(colFamAddress, colFamInfo)},
+		},
+		{
+			/*
+				1. PrepareQuery
+				2. ExecuteQuery
+				3. RecvMsg - gets resume token
+				4. RecvMsg - gets resume token
+				5. RecvMsg - gets EOF error
+			*/
+			desc: "multiple resume tokens with no data",
+			mockPrepQueryResps: []prepareQueryResp{
+				newPrepareQueryResp(preparedQuery1, colFamAddress),
+			},
+			mockRecvMsgResps: []recvMsgResp{
+				newExecQueryRespResumeToken(),
+				newExecQueryRespResumeToken(),
+				{err: io.EOF},
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+			},
 		},
 	} {
 		mockPrepQueryResps = tc.mockPrepQueryResps
