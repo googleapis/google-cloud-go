@@ -45,10 +45,13 @@ For applications running elsewhere, such as your local development environment,
 you can use the `gcloud auth application-default login` command from the
 [Google Cloud CLI](https://cloud.google.com/cli) to set user credentials in
 your local filesystem. Application Default Credentials will automatically detect
-these credentials. Alternately, you may need to provide an explicit path to your
-credentials. To authenticate using a [service
-account](https://cloud.google.com/docs/authentication#service-accounts) key file,
-either set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path
+these credentials. See [Set up ADC for a local development
+environment](https://cloud.google.com/docs/authentication/set-up-adc-local-dev-environment)
+for more information.
+
+Alternately, you may need to provide an explicit path to your credentials. To authenticate
+using a [service account](https://cloud.google.com/docs/authentication#service-accounts)
+key file, either set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path
 to your key file, or programmatically pass
 [`option.WithCredentialsFile`](https://pkg.go.dev/google.golang.org/api/option#WithCredentialsFile)
 to the `NewClient` function of the desired package. For example:
