@@ -5157,6 +5157,7 @@ func TestIntegration_Execute(t *testing.T) {
 				t.Fatal("Bind: " + err.Error())
 			}
 			if err = bs.Execute(ctx, func(rr ResultRow) bool {
+
 				data, err := rr.Data()
 				jsonOutput, err := json.MarshalIndent(data, "", "    ")
 				if err != nil {
@@ -5171,7 +5172,6 @@ func TestIntegration_Execute(t *testing.T) {
 				// 	}
 				// 	fmt.Printf("k: %v, v: %v\n", k, vTyped)
 				// }
-
 				return true
 			}); err != nil {
 				t.Fatal("Execute: " + err.Error())

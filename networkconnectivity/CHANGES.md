@@ -1,5 +1,17 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.16.3...networkconnectivity/v1.17.0) (2025-03-25)
+
+
+### Features
+
+* **networkconnectivity:** Add Network Connectivity Center APIs for PSC service automation ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+
+### Documentation
+
+* **networkconnectivity:** Update some documentation. ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
 ## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.16.2...networkconnectivity/v1.16.3) (2025-03-13)
 
 
