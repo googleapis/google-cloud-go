@@ -365,6 +365,18 @@ func (it *ScheduleIterator) All() iter.Seq2[*aiplatformpb.Schedule, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *SessionEventIterator) All() iter.Seq2[*aiplatformpb.SessionEvent, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionIterator) All() iter.Seq2[*aiplatformpb.Session, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *SpecialistPoolIterator) All() iter.Seq2[*aiplatformpb.SpecialistPool, error] {
 	return iterator.RangeAdapter(it.Next)
 }
