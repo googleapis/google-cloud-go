@@ -427,6 +427,11 @@ type PreparedStatement struct {
 	paramTypes map[string]SQLType
 	opts       []PrepareOption
 
+	data         *preparedQueryData
+	refreshMutex sync.Mutex
+}
+
+type preparedQueryData struct {
 	// Structure of rows in the response stream of `ExecuteQueryResponse` for the
 	// returned `prepared_query`.
 	metadata *btpb.ResultSetMetadata
@@ -437,8 +442,6 @@ type PreparedStatement struct {
 	// A token may become invalid early due to changes in the data being read, but
 	// it provides a guideline to refresh query plans asynchronously.
 	validUntil *timestamppb.Timestamp
-
-	refreshMutex sync.Mutex
 }
 
 // PrepareOption can be passed while preparing a query statement.
@@ -507,17 +510,17 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		return nil, err
 	}
 
-	ps := &PreparedStatement{
-		c:             c,
-		metadata:      res.Metadata,
-		preparedQuery: res.PreparedQuery,
-		validUntil:    res.ValidUntil,
-		query:         query,
-		paramTypes:    paramTypes,
-		opts:          opts,
-	}
-	ps.setMetadataAndQuery(res)
-	return ps, err
+	return &PreparedStatement{
+		c: c,
+		data: &preparedQueryData{
+			metadata:      res.Metadata,
+			preparedQuery: res.PreparedQuery,
+			validUntil:    res.ValidUntil,
+		},
+		query:      query,
+		paramTypes: paramTypes,
+		opts:       opts,
+	}, err
 }
 
 // Bind binds a set of parameters to a prepared statement.
@@ -603,25 +606,21 @@ func (ps *PreparedStatement) refreshIfInvalid(ctx context.Context) error {
 // if the prepared query is valid and has not reached the early expiration threshold.
 func (ps *PreparedStatement) valid() (valid bool, validEarly bool) {
 	nowTime := time.Now().UTC()
-	expireTime := ps.validUntil.AsTime()
+	expireTime := ps.data.validUntil.AsTime()
 	return nowTime.Before(expireTime), nowTime.Add(preparedQueryExpireEarlyDuration).Before(expireTime)
 }
 
 func (ps *PreparedStatement) refresh(ctx context.Context) error {
 	newPs, err := ps.c.prepareStatementWithMetadata(ctx, ps.query, ps.paramTypes, ps.opts...)
-	ps.metadata = newPs.metadata
-	ps.preparedQuery = newPs.preparedQuery
-	ps.validUntil = newPs.validUntil
+	if err != nil {
+		return err
+	}
+	ps.data = &preparedQueryData{
+		metadata:      newPs.data.metadata,
+		preparedQuery: newPs.data.preparedQuery,
+		validUntil:    newPs.data.validUntil,
+	}
 	return err
-}
-
-func (ps *PreparedStatement) metadataAndQuery() (metadata *btpb.ResultSetMetadata, query []byte) {
-	return ps.metadata, ps.preparedQuery
-}
-
-func (ps *PreparedStatement) setMetadataAndQuery(res *btpb.PrepareQueryResponse) {
-	ps.metadata = res.Metadata
-	ps.preparedQuery = res.PreparedQuery
 }
 
 // BoundStatement is a statement that has been bound to a set of parameters.
@@ -686,11 +685,13 @@ func decodeValue(colMetadataType *btpb.Type, colValue *btpb.Value) (any, error) 
 		return colValue.GetBoolValue(), nil
 	case *btpb.Type_TimestampType:
 		tsVal := colValue.GetTimestampValue()
+		var timePtr *time.Time
 		if tsVal == nil {
-			return nil, nil
+			return timePtr, nil
 		}
 		timeVal := tsVal.AsTime()
-		return &timeVal, nil
+		timePtr = &timeVal
+		return timePtr, nil
 	case *btpb.Type_DateType:
 		date := colValue.GetDateValue()
 		if date == nil {
@@ -870,18 +871,9 @@ func (bs *BoundStatement) Execute(ctx context.Context, f func(ResultRow) bool, o
 	return statusErr
 }
 
-// Used to store fields after the first ResumeToken has been received
-type finalizedStatement struct {
-	metadata      *btpb.ResultSetMetadata
-	preparedQuery []byte
-}
-
-func newFinalizedStatement(metadata *btpb.ResultSetMetadata, query []byte) *finalizedStatement {
-	return &finalizedStatement{
-		// Make a deep copy. Even if preparedStatement is refreshed, this wouldn't change
-		metadata:      proto.Clone(metadata).(*btpb.ResultSetMetadata),
-		preparedQuery: query,
-	}
+func newPreparedQueryData(ps *PreparedStatement) *preparedQueryData {
+	data := *ps.data
+	return &data
 }
 
 func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, mt *builtinMetricsTracer) error {
@@ -905,7 +897,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 	//    the responses do not (because the request used the plan from t1)`
 	//
 	// So, do not use latest metadata from `bs.ps`
-	var fs *finalizedStatement
+	var finalizedStmt *preparedQueryData
 	err := gaxInvokeWithRecorder(ctx, mt, "ExecuteQuery", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 		defer cancel()
@@ -934,17 +926,14 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			}
 		}
 
-		var fsInExec *finalizedStatement
-		if fs == nil {
-			fsInExec = newFinalizedStatement(bs.ps.metadataAndQuery())
-		} else {
-			fsInExec = fs
+		candFinalizedStmt := finalizedStmt
+		if candFinalizedStmt == nil {
+			candFinalizedStmt = newPreparedQueryData(bs.ps)
 		}
-
 		req := &btpb.ExecuteQueryRequest{
 			InstanceName:  bs.ps.c.fullInstanceName(),
 			AppProfileId:  bs.ps.c.appProfile,
-			PreparedQuery: fsInExec.preparedQuery,
+			PreparedQuery: candFinalizedStmt.preparedQuery,
 			Params:        bs.params,
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
@@ -1026,18 +1015,18 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 				if !receivedResumeToken {
 					// first ResumeToken received
-					fs = fsInExec
+					finalizedStmt = candFinalizedStmt
 					receivedResumeToken = true
 				}
 
 				// Save ResumeToken for subsequent requests
 				resumeToken = partialResultSet.GetResumeToken()
 
-				if fs.metadata == nil || fs.metadata.GetProtoSchema() == nil {
+				if finalizedStmt.metadata == nil || finalizedStmt.metadata.GetProtoSchema() == nil {
 					prevError = errors.New("bigtable: metadata missing")
 					return prevError
 				}
-				cols := fs.metadata.GetProtoSchema().GetColumns()
+				cols := finalizedStmt.metadata.GetProtoSchema().GetColumns()
 				numCols := len(cols)
 
 				// Parse rows
@@ -1054,7 +1043,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 					rr := ResultRow{
 						values:   completeRowValues,
-						metadata: fs.metadata,
+						metadata: finalizedStmt.metadata,
 					}
 					continueReading := f(rr)
 					if !continueReading {

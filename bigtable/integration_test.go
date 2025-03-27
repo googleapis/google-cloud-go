@@ -19,6 +19,7 @@ package bigtable
 import (
 	"context"
 	"encoding/binary"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -5156,6 +5157,21 @@ func TestIntegration_Execute(t *testing.T) {
 				t.Fatal("Bind: " + err.Error())
 			}
 			if err = bs.Execute(ctx, func(rr ResultRow) bool {
+				data, err := rr.Data()
+				jsonOutput, err := json.MarshalIndent(data, "", "    ")
+				if err != nil {
+					fmt.Printf("MarshalIndent: %+v", err)
+				}
+				fmt.Printf("data: %+v, err: %+v\n", string(jsonOutput), err)
+
+				// for k, v := range data {
+				// 	vTyped, ok := v.([]time.Time)
+				// 	if !ok {
+				// 		fmt.Printf("ok: %+v\n", ok)
+				// 	}
+				// 	fmt.Printf("k: %v, v: %v\n", k, vTyped)
+				// }
+
 				return true
 			}); err != nil {
 				t.Fatal("Execute: " + err.Error())
