@@ -832,7 +832,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 					// Pop first 'numCols' values to create a row
 					if len(valuesBuffer) < numCols {
-						prevError = fmt.Errorf("bigtable: metadata and data mismatch: expected %d columns, but received %d values", numCols, len(valuesBuffer))
+						prevError = fmt.Errorf("bigtable: metadata and data mismatch: %d columns in metadata but received %d values", numCols, len(valuesBuffer))
 						return prevError
 					}
 
