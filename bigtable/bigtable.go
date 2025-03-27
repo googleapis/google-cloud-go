@@ -659,12 +659,8 @@ func (bs *BoundStatement) Execute(ctx context.Context, f func(ResultRow) bool, o
 }
 
 func newPreparedQueryData(ps *PreparedStatement) *preparedQueryData {
-	return &preparedQueryData{
-		// Make a deep copy. Even if preparedStatement is refreshed, this wouldn't change
-		metadata:      proto.Clone(ps.data.metadata).(*btpb.ResultSetMetadata),
-		preparedQuery: ps.data.preparedQuery,
-		validUntil:    ps.data.validUntil,
-	}
+	data := *ps.data
+	return &data
 }
 
 func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, mt *builtinMetricsTracer) error {
