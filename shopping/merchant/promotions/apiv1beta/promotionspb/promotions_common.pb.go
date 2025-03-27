@@ -21,15 +21,14 @@
 package promotionspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	typepb "cloud.google.com/go/shopping/type/typepb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
