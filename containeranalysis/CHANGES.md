@@ -1,5 +1,12 @@
 # Changes
 
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.13.4...containeranalysis/v0.14.0) (2025-03-27)
+
+
+### Features
+
+* **containeranalysis:** Add new location-specific bindings ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+
 ## [0.13.4](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.13.3...containeranalysis/v0.13.4) (2025-03-13)
 
 

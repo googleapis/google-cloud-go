@@ -841,6 +841,210 @@
         }
       }
     },
+    "ExampleStoreService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ExampleStoreClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateExampleStore": {
+              "methods": [
+                "CreateExampleStore"
+              ]
+            },
+            "DeleteExampleStore": {
+              "methods": [
+                "DeleteExampleStore"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchExamples": {
+              "methods": [
+                "FetchExamples"
+              ]
+            },
+            "GetExampleStore": {
+              "methods": [
+                "GetExampleStore"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListExampleStores": {
+              "methods": [
+                "ListExampleStores"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveExamples": {
+              "methods": [
+                "RemoveExamples"
+              ]
+            },
+            "SearchExamples": {
+              "methods": [
+                "SearchExamples"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateExampleStore": {
+              "methods": [
+                "UpdateExampleStore"
+              ]
+            },
+            "UpsertExamples": {
+              "methods": [
+                "UpsertExamples"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ExampleStoreClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateExampleStore": {
+              "methods": [
+                "CreateExampleStore"
+              ]
+            },
+            "DeleteExampleStore": {
+              "methods": [
+                "DeleteExampleStore"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchExamples": {
+              "methods": [
+                "FetchExamples"
+              ]
+            },
+            "GetExampleStore": {
+              "methods": [
+                "GetExampleStore"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListExampleStores": {
+              "methods": [
+                "ListExampleStores"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveExamples": {
+              "methods": [
+                "RemoveExamples"
+              ]
+            },
+            "SearchExamples": {
+              "methods": [
+                "SearchExamples"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateExampleStore": {
+              "methods": [
+                "UpdateExampleStore"
+              ]
+            },
+            "UpsertExamples": {
+              "methods": [
+                "UpsertExamples"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ExtensionExecutionService": {
       "clients": {
         "grpc": {
