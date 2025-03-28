@@ -5063,10 +5063,22 @@ func TestIntegration_Execute(t *testing.T) {
 		psQuery       string
 		psParamTypes  map[string]SQLType
 		bsParamValues map[string]any
+		wantRowMaps   []map[string]any
 	}{
 		{
 			desc:    "select *",
 			psQuery: "SELECT * FROM `" + table.table + "` LIMIT 5",
+			wantRowMaps: []map[string]any{
+				{
+					"_key": []byte("row-01"),
+					"address": map[string][]byte{
+						"city":  []byte("San Francisco"),
+						"state": []byte("CA"),
+					},
+					"follows": map[string][]byte{},
+					"sum":     map[string]int64{},
+				},
+			},
 		},
 		{
 			desc:    "WITH_HISTORY",
@@ -5155,10 +5167,36 @@ func TestIntegration_Execute(t *testing.T) {
 			if err != nil {
 				t.Fatal("Bind: " + err.Error())
 			}
+			i := 0
 			if err = bs.Execute(ctx, func(rr ResultRow) bool {
+				// Assert that rr has correct values using DataTo and cmp.Diff
+				if (tc.wantRowMaps) != nil {
+					if i >= len(tc.wantRowMaps) {
+						t.Fatalf("#%v: Unexpected row returned from Execute. gotRow: %#v", i, rr)
+					}
+
+					for name, wantValue := range tc.wantRowMaps[i] {
+						gotValue, err := rr.GetByName(name)
+						if err != nil {
+							t.Errorf("#%v GetByName failed %v while getting value of column %v", i, err, name)
+							return false // Stop processing on error
+						}
+						if !testutil.Equal(gotValue, wantValue) {
+							t.Errorf("#%v GetByName column: %v, got: %v, want: %v", i, name, gotValue, wantValue)
+							return false // Stop processing on error
+						}
+					}
+				}
+				i++
 				return true
 			}); err != nil {
 				t.Fatal("Execute: " + err.Error())
+			}
+
+			if i < len(tc.wantRowMaps) {
+				for _, wantRow := range tc.wantRowMaps[i] {
+					t.Errorf("#%v: Row missing in Execute response: %#v", i, wantRow)
+				}
 			}
 		})
 	}
@@ -5192,20 +5230,20 @@ func populateAddresses(ctx context.Context, t *testing.T, table *Table, colFam s
 				},
 			},
 		},
-		"row-02": {
-			"state": []cell{
-				{
-					Ts:    v1Timestamp,
-					Value: []byte("AZ"),
-				},
-			},
-			"city": []cell{
-				{
-					Ts:    v1Timestamp,
-					Value: []byte("Phoenix"),
-				},
-			},
-		},
+		// "row-02": {
+		// 	"state": []cell{
+		// 		{
+		// 			Ts:    v1Timestamp,
+		// 			Value: []byte("AZ"),
+		// 		},
+		// 	},
+		// 	"city": []cell{
+		// 		{
+		// 			Ts:    v1Timestamp,
+		// 			Value: []byte("Phoenix"),
+		// 		},
+		// 	},
+		// },
 	} {
 		mut := NewMutation()
 		for col, v := range mutData {

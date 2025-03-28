@@ -20,7 +20,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strings"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -32,9 +31,9 @@ type ResultRow struct {
 	pbValues   []*btpb.Value
 	pbMetadata *btpb.ResultSetMetadata
 	// map from column name to list of indices {name -> [idx1, idx2, ...]}
-	colIndexMap map[string][]int
+	colIndexMap *map[string][]int
 
-	Metadata ResultRowMetadata
+	Metadata *ResultRowMetadata
 }
 
 // ColumnMetadata describes a single column in a ResultRowMetadata.
@@ -52,22 +51,12 @@ type ResultRowMetadata struct {
 	Columns []ColumnMetadata
 }
 
-func newResultRow(values []*btpb.Value, metadata *btpb.ResultSetMetadata) (*ResultRow, error) {
-	rrMetadata, err := newResultRowMetadata(metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	colIndexMap := make(map[string][]int)
-	for i, colInfo := range rrMetadata.Columns {
-		name := colInfo.Name
-		colIndexMap[name] = append(colIndexMap[name], i)
-	}
-
+func newResultRow(values []*btpb.Value, metadata *btpb.ResultSetMetadata, colIndexMap *map[string][]int, rrMetadata *ResultRowMetadata) (*ResultRow, error) {
 	return &ResultRow{
-		pbValues:   values,
-		pbMetadata: metadata,
-		Metadata:   *rrMetadata,
+		pbValues:    values,
+		pbMetadata:  metadata,
+		colIndexMap: colIndexMap,
+		Metadata:    rrMetadata,
 	}, nil
 }
 
@@ -75,6 +64,9 @@ func newResultRow(values []*btpb.Value, metadata *btpb.ResultSetMetadata) (*Resu
 // The order of columns matches the order of values returned by [ResultRow.Scan].
 func newResultRowMetadata(metadata *btpb.ResultSetMetadata) (*ResultRowMetadata, error) {
 	protoSchema := metadata.GetProtoSchema()
+	if protoSchema == nil {
+		return nil, fmt.Errorf("bigtable: unknown schema in metadata %T", metadata.Schema)
+	}
 	cols := protoSchema.GetColumns()
 	md := make([]ColumnMetadata, len(cols))
 	for i, colMeta := range cols {
@@ -120,7 +112,7 @@ func (rr *ResultRow) GetByIndex(index int) (any, error) {
 // Returns an error if no column with the specified name is found.
 // Column name matching is case-sensitive.
 func (rr *ResultRow) GetByName(name string) (any, error) {
-	indices, found := rr.colIndexMap[name]
+	indices, found := (*rr.colIndexMap)[name]
 	if !found || len(indices) == 0 {
 		return nil, fmt.Errorf("bigtable: column %q not found in result row", name)
 	}
@@ -136,7 +128,7 @@ func (rr *ResultRow) GetByName(name string) (any, error) {
 // Returns an error if any value conversion fails.
 // Column name matching is case-sensitive.
 func (rr *ResultRow) GetAllByName(name string) ([]any, error) {
-	indices, found := rr.colIndexMap[name]
+	indices, found := (*rr.colIndexMap)[name]
 	if !found || len(indices) == 0 {
 		return nil, nil
 	}
@@ -151,250 +143,6 @@ func (rr *ResultRow) GetAllByName(name string) ([]any, error) {
 	}
 
 	return results, nil
-}
-
-// Scan copies the columns in the current row into the values pointed at by dest.
-// The number of values in dest must equal the number of columns in the ResultRow.
-//
-// Scan converts columns to the following Go types where possible:
-//
-//   - string
-//   - []byte
-//   - int64 (and other integer types like int, int32, uint64 etc.)
-//   - float32, float64
-//   - bool
-//   - time.Time (for TIMESTAMP)
-//   - civil.Date (for DATE)
-//   - Slice types (e.g., []string, []int64) for ARRAY
-//   - Map types (e.g., map[string]any) for MAP or STRUCT
-//   - any (interface{})
-//   - Pointers to the above types
-//
-// It performs basic type conversions. For example,
-// an int64 column value can be scanned into an *int, and a []byte column
-// can be scanned into a *string. If a column value is NULL, Scan assigns
-// the zero value to the destination, unless the destination is a pointer,
-// interface, slice, or map, in which case it assigns nil.
-// An error is returned if a destination argument is not a pointer or if
-// a type conversion is not supported.
-func (rr *ResultRow) Scan(dest ...any) error {
-	cm := rr.Metadata.Columns
-	if len(dest) != len(rr.pbValues) {
-		return fmt.Errorf("bigtable: destination argument count mismatch: expected %d, got %d", len(rr.pbValues), len(dest))
-	}
-
-	for i, d := range dest {
-		if d == nil {
-			return fmt.Errorf("bigtable: destination argument %d is nil", i)
-		}
-		destPtr := reflect.ValueOf(d)
-		if destPtr.Kind() != reflect.Ptr {
-			return fmt.Errorf("bigtable: destination argument %d is not a pointer (got %T)", i, d)
-		}
-		if destPtr.IsNil() {
-			return fmt.Errorf("bigtable: destination argument %d is a nil pointer", i)
-		}
-
-		destVal := destPtr.Elem() // The value the pointer points to
-		if !destVal.CanSet() {
-			return fmt.Errorf("bigtable: destination argument %d cannot be set (unexported field)", i)
-		}
-
-		pbVal := rr.pbValues[i]
-		pbType, err := cm[i].SQLType.typeProto()
-		if err != nil {
-			return fmt.Errorf("bigtable: error converting column %d (%q): %w", i, cm[i].Name, err)
-		}
-
-		// Convert protobuf value to corresponding Go value
-		goVal, err := pbValueToGoValue(pbVal, pbType)
-		if err != nil {
-			return fmt.Errorf("bigtable: error converting column %d (%q): %w", i, cm[i].Name, err)
-		}
-
-		// Assign the Go value to the destination pointer, handling conversions
-		err = assignValue(destVal, goVal)
-		if err != nil {
-			return fmt.Errorf("bigtable: error assigning column %d (%q) (value type %T) to destination (type %s): %w", i, cm[i].Name, goVal, destVal.Type(), err)
-		}
-	}
-	return nil
-}
-
-const tagName = "bigtable" // Struct tag name
-
-// DataTo scans the current row's columns into the struct or map pointed to by dest.
-//
-// If dest is a pointer to a struct, DataTo matches column names to struct field names
-// or the names specified in the `bigtable:"..."` struct tag. Unexported fields or fields
-// tagged with `bigtable:"-"` are ignored. If multiple columns match a struct field and
-// the field is a slice type (excluding []byte), DataTo collects all matching values
-// into the slice; otherwise, it uses the value from the first matching column.
-//
-// If dest is a pointer to a map[string]any, DataTo populates the map with column names
-// as keys. If multiple columns have the same name, the map value will be a slice []any
-// containing all corresponding column values; otherwise, the value will be the single
-// column value. If the map is nil, it will be initialized.
-//
-// Basic type conversions are performed similar to Scan.
-// It returns an error if dest is not a non-nil pointer to a struct or map[string]any,
-// or if a type conversion fails.
-func (rr *ResultRow) DataTo(dest any) error {
-	if dest == nil {
-		return errors.New("bigtable: unmarshal destination cannot be nil")
-	}
-	v := reflect.ValueOf(dest)
-	if v.Kind() != reflect.Ptr || v.IsNil() {
-		return errors.New("bigtable: unmarshal destination must be a non-nil pointer")
-	}
-	v = v.Elem() // Get the value the pointer points to
-
-	isStruct := v.Kind() == reflect.Struct
-	isMap := v.Kind() == reflect.Map && v.Type().Key().Kind() == reflect.String && v.Type().Elem().Kind() == reflect.Interface
-
-	if !isStruct && !isMap {
-		return fmt.Errorf("bigtable: unmarshal destination must be a pointer to a struct or map[string]any (got pointer to %s)", v.Kind())
-	}
-	if isMap && v.IsNil() {
-		// Initialize map if it's nil
-		v.Set(reflect.MakeMap(v.Type()))
-	}
-
-	cm := rr.Metadata.Columns
-
-	//  Unmarshal into Struct
-	if isStruct {
-		t := v.Type()
-		processedFields := make(map[string]bool) // Handle potential duplicate tags/names mapping to same column
-
-		for i := 0; i < v.NumField(); i++ {
-			field := t.Field(i)
-			fieldV := v.Field(i)
-
-			// Skip unexported fields
-			if !fieldV.CanSet() {
-				continue
-			}
-
-			// Determine column name: tag or field name
-			colName := field.Name
-			tag := field.Tag.Get(tagName)
-			tagParts := strings.Split(tag, ",")
-			if len(tagParts) > 0 && tagParts[0] != "" {
-				colName = tagParts[0]
-			}
-			if colName == "-" { // Allow skipping fields via tag
-				continue
-			}
-			if processedFields[colName] { // Ensure we handle each column name only once per struct
-				continue
-			}
-
-			indices, found := rr.colIndexMap[colName]
-			if !found {
-				// Field in struct has no matching column in result set. Skip.
-				continue
-			}
-			processedFields[colName] = true // Mark as processed
-
-			// Handle assignment based on field type and number of matches
-			if field.Type.Kind() == reflect.Slice && field.Type.Elem().Kind() != reflect.Uint8 /* Don't treat []byte as multi-value */ {
-				// Target is a slice: collect all matching column values
-				elemType := field.Type.Elem()
-				newSlice := reflect.MakeSlice(field.Type, 0, len(indices))
-
-				for _, index := range indices {
-					pbVal := rr.pbValues[index]
-					pbType, err := cm[index].SQLType.typeProto() // Get proto type
-					if err != nil {
-						return fmt.Errorf("bigtable: error converting column %d (%q) for slice field %q: %w", index, colName, field.Name, err)
-					}
-
-					goVal, err := pbValueToGoValue(pbVal, pbType)
-					if err != nil {
-						return fmt.Errorf("bigtable: error converting column %d (%q) for slice field %q: %w", index, colName, field.Name, err)
-					}
-
-					// Create element of correct type and assign
-					elemVal := reflect.New(elemType).Elem()
-					errAssign := assignValue(elemVal, goVal)
-					if errAssign != nil {
-						return fmt.Errorf("bigtable: error assigning column %d (%q) (value type %T) to slice element (type %s) for field %q: %w", index, colName, goVal, elemType, field.Name, errAssign)
-					}
-					newSlice = reflect.Append(newSlice, elemVal)
-				}
-				fieldV.Set(newSlice)
-
-			} else {
-				// Target is not a slice: use the first matching column value
-				index := indices[0]
-				pbVal := rr.pbValues[index]
-				pbType, err := cm[index].SQLType.typeProto()
-				if err != nil {
-					return fmt.Errorf("bigtable: error converting column %d (%q) for field %q: %w", index, colName, field.Name, err)
-				}
-				goVal, err := pbValueToGoValue(pbVal, pbType)
-				if err != nil {
-					return fmt.Errorf("bigtable: error converting column %d (%q) for field %q: %w", index, colName, field.Name, err)
-				}
-
-				errAssign := assignValue(fieldV, goVal)
-				if errAssign != nil {
-					return fmt.Errorf("bigtable: error assigning column %d (%q) (value type %T) to field %q (type %s): %w", index, colName, goVal, field.Name, fieldV.Type(), errAssign)
-				}
-			}
-		}
-	}
-
-	// Unmarshal into Map[string]any
-	if isMap {
-		mapValueType := v.Type().Elem() // Should be reflect.Interface for map[string]any
-
-		for colName, indices := range rr.colIndexMap {
-			var finalGoVal any // This will be assigned to the map
-
-			if len(indices) == 1 {
-				// Single column match -> assign the single value
-				index := indices[0]
-				pbVal := rr.pbValues[index]
-				pbType, err := cm[index].SQLType.typeProto()
-				if err != nil {
-					return fmt.Errorf("bigtable: error converting column %d (%q) for map key %q: %w", index, colName, colName, err)
-				}
-				goVal, err := pbValueToGoValue(pbVal, pbType)
-				if err != nil {
-					return fmt.Errorf("bigtable: error converting column %d (%q) for map key %q: %w", index, colName, colName, err)
-				}
-				finalGoVal = goVal
-			} else {
-				// Multiple columns match -> create a slice []any
-				multiValueSlice := make([]any, len(indices))
-				for i, index := range indices {
-					pbVal := rr.pbValues[index]
-					pbType, err := cm[index].SQLType.typeProto()
-					if err != nil {
-						return fmt.Errorf("bigtable: error converting column %d (%q) for map key %q: %w", index, colName, colName, err)
-					}
-					goVal, err := pbValueToGoValue(pbVal, pbType)
-					if err != nil {
-						return fmt.Errorf("bigtable: error converting column %d (%q) for map key %q slice element %d: %w", index, colName, colName, i, err)
-					}
-					multiValueSlice[i] = goVal
-				}
-				finalGoVal = multiValueSlice // Assign the slice to the map value
-			}
-
-			// Assign finalGoVal to map[colName] using reflection
-			mapValue := reflect.New(mapValueType).Elem() // Create element of interface{} type
-			errAssign := assignValue(mapValue, finalGoVal)
-			if errAssign != nil {
-				return fmt.Errorf("bigtable: error assigning value (type %T) for map key %q: %w", finalGoVal, colName, errAssign)
-			}
-			v.SetMapIndex(reflect.ValueOf(colName), mapValue) // Set map["colName"] = finalGoVal
-		}
-	}
-
-	return nil
 }
 
 // pbTypeToSQLType converts a protobuf Type to its corresponding SQLType interface implementation.
@@ -655,6 +403,11 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 		}
 
 		keyGoType, _ := pbTypeToGoReflectType(keyPbType)
+		if keyGoType.Kind() == reflect.Slice && keyGoType.Elem().Kind() == reflect.Uint8 {
+			// If keyGoType is []byte, set keyGoType to string since Go does not allow []byte keys
+			keyGoType = reflect.TypeOf("")
+		}
+
 		valGoType, _ := pbTypeToGoReflectType(valPbType)
 		goMap := reflect.MakeMap(reflect.MapOf(keyGoType, valGoType))
 

@@ -45,7 +45,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -439,6 +438,27 @@ type preparedQueryData struct {
 	// A token may become invalid early due to changes in the data being read, but
 	// it provides a guideline to refresh query plans asynchronously.
 	validUntil *timestamppb.Timestamp
+
+	Metadata *ResultRowMetadata
+
+	// map from column name to list of indices {name -> [idx1, idx2, ...]}
+	colIndexMap *map[string][]int
+}
+
+func (pqd *preparedQueryData) initializeMetadataAndMap() error {
+	rrMetadata, err := newResultRowMetadata(pqd.metadata)
+	if err != nil {
+		return err
+	}
+	pqd.Metadata = rrMetadata
+
+	colIndexMap := make(map[string][]int)
+	for i, colInfo := range rrMetadata.Columns {
+		name := colInfo.Name
+		colIndexMap[name] = append(colIndexMap[name], i)
+	}
+	pqd.colIndexMap = &colIndexMap
+	return nil
 }
 
 // PrepareOption can be passed while preparing a query statement.
@@ -482,7 +502,7 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		if v == nil {
 			return nil, errors.New("bigtable: invalid SQLType: nil")
 		}
-		if v.isValidBindParamType() {
+		if v.isValidPrepareParamType() {
 			return nil, fmt.Errorf("bigtable: %T cannot be used as parameter type", v)
 		}
 		tpb, err := v.typeProto()
@@ -739,8 +759,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			proto.Reset(eqResp)
 			err := stream.RecvMsg(eqResp)
 
-			bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(eqResp)
-			fmt.Println("eqResp: " + string(bytes))
 			if err == io.EOF {
 				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err, &prevError)
 			}
@@ -807,6 +825,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				if !receivedResumeToken {
 					// first ResumeToken received
 					finalizedStmt = candFinalizedStmt
+					finalizedStmt.initializeMetadataAndMap()
 					receivedResumeToken = true
 				}
 
@@ -832,19 +851,11 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 					completeRowValues, valuesBuffer = valuesBuffer[0:numCols], valuesBuffer[numCols:]
 
-					rr, err := newResultRow(completeRowValues, finalizedStmt.metadata)
+					// Construct ResultRow
+					rr, err := newResultRow(completeRowValues, finalizedStmt.metadata, finalizedStmt.colIndexMap, finalizedStmt.Metadata)
 					if err != nil {
 						return err
 					}
-
-					bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(finalizedStmt.metadata)
-					fmt.Println("finalizedStmt.metadata:" + string(bytes))
-					fmt.Println("[")
-					for _, completeRowValue := range completeRowValues {
-						bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(completeRowValue)
-						fmt.Println(string(bytes) + ",")
-					}
-					fmt.Println("]")
 
 					continueReading := f(*rr)
 					if !continueReading {

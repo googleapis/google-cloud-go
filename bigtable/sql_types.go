@@ -41,7 +41,7 @@ type SQLType interface {
 
 	isValidArrayElemType() bool
 
-	isValidBindParamType() bool
+	isValidPrepareParamType() bool
 }
 
 // BytesSQLType represents a slice of bytes.
@@ -51,7 +51,7 @@ func (s BytesSQLType) isValidArrayElemType() bool {
 	return true
 }
 
-func (s BytesSQLType) isValidBindParamType() bool { return true }
+func (s BytesSQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type []byte or nil.
 func (s BytesSQLType) valueProto(value any) (*btpb.Value, error) {
@@ -92,7 +92,7 @@ func (s StringSQLType) isValidArrayElemType() bool {
 	return true
 }
 
-func (s StringSQLType) isValidBindParamType() bool { return true }
+func (s StringSQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type string or nil.
 func (s StringSQLType) valueProto(value any) (*btpb.Value, error) {
@@ -132,7 +132,7 @@ func (s Int64SQLType) isValidArrayElemType() bool {
 	return true
 }
 
-func (s Int64SQLType) isValidBindParamType() bool { return true }
+func (s Int64SQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type int64 or nil.
 func (s Int64SQLType) valueProto(value any) (*btpb.Value, error) {
@@ -174,7 +174,7 @@ func (s Float32SQLType) isValidArrayElemType() bool {
 	return true
 }
 
-func (s Float32SQLType) isValidBindParamType() bool { return true }
+func (s Float32SQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type float32 or nil.
 func (s Float32SQLType) valueProto(value any) (*btpb.Value, error) {
@@ -213,7 +213,7 @@ func (s Float64SQLType) isValidArrayElemType() bool {
 	return true
 }
 
-func (s Float64SQLType) isValidBindParamType() bool { return true }
+func (s Float64SQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type float64 or nil
 func (s Float64SQLType) valueProto(value any) (*btpb.Value, error) {
@@ -253,7 +253,7 @@ func (s BoolSQLType) isValidArrayElemType() bool {
 	return true
 }
 
-func (s BoolSQLType) isValidBindParamType() bool { return true }
+func (s BoolSQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type bool or nil
 func (s BoolSQLType) valueProto(value any) (*btpb.Value, error) {
@@ -293,7 +293,7 @@ func (s TimestampSQLType) isValidArrayElemType() bool {
 	return true
 }
 
-func (s TimestampSQLType) isValidBindParamType() bool { return true }
+func (s TimestampSQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type time.Time or nil
 func (s TimestampSQLType) valueProto(value any) (*btpb.Value, error) {
@@ -333,7 +333,7 @@ func (s DateSQLType) isValidArrayElemType() bool {
 	return true
 }
 
-func (s DateSQLType) isValidBindParamType() bool { return true }
+func (s DateSQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type civil.Date or nil
 func (s DateSQLType) valueProto(value any) (*btpb.Value, error) {
@@ -375,7 +375,7 @@ func (s ArraySQLType) isValidArrayElemType() bool {
 	return false
 }
 
-func (s ArraySQLType) isValidBindParamType() bool { return true }
+func (s ArraySQLType) isValidPrepareParamType() bool { return true }
 
 // valid value can be of type slice, array or nil
 func (s ArraySQLType) valueProto(value any) (*btpb.Value, error) {
@@ -447,7 +447,7 @@ type MapSQLType struct {
 
 func (s MapSQLType) isValidArrayElemType() bool { return true }
 
-func (s MapSQLType) isValidBindParamType() bool { return false }
+func (s MapSQLType) isValidPrepareParamType() bool { return false }
 
 func (s MapSQLType) typeProto() (*btpb.Type, error) {
 	if s.KeyType == nil || s.ValueType == nil {
@@ -473,67 +473,9 @@ func (s MapSQLType) typeProto() (*btpb.Type, error) {
 	}, nil
 }
 
-// valueProto converts a Go map (map[K]V) to its protobuf representation for query parameters.
+// Only used while binding parameters to prepared query and this is not a valid param type
 func (s MapSQLType) valueProto(value any) (*btpb.Value, error) {
-	pbType, err := s.typeProto() // Contains KeyType/ValueType info needed for validation
-	if err != nil {
-		return nil, err
-	}
-
-	if value == nil {
-		return &btpb.Value{Type: pbType}, nil
-	}
-
-	valReflectType := reflect.TypeOf(value)
-	if valReflectType.Kind() != reflect.Map {
-		return nil, &errTypeMismatch{value: value, psType: s}
-	}
-
-	// TODO: Runtime check if map key/value Go types are compatible with SQLTypes.
-	// This requires SQLType to expose its expected Go type, which adds complexity.
-	// Relying on the user providing the correct Go map type matching the MapSQLType definition.
-
-	valReflectValue := reflect.ValueOf(value)
-	mapIter := valReflectValue.MapRange()
-	pbMapEntries := make([]*btpb.Value, 0, valReflectValue.Len())
-
-	for mapIter.Next() {
-		key := mapIter.Key().Interface()
-		val := mapIter.Value().Interface()
-
-		keyPbVal, err := s.KeyType.valueProto(key)
-		if err != nil {
-			return nil, fmt.Errorf("error converting map key %v (type %T): %w", key, key, err)
-		}
-		keyPbVal.Type = nil // Nested values shouldn't have type
-
-		// Convert value using the specified ValueType's valueProto
-		valPbVal, err := s.ValueType.valueProto(val)
-		if err != nil {
-			return nil, fmt.Errorf("error converting map value for key %v (value type %T): %w", key, val, err)
-		}
-		valPbVal.Type = nil // Nested values shouldn't have type
-
-		// Map entry is represented as a 2-element array [key, value]
-		entryPbVal := &btpb.Value{
-			Kind: &btpb.Value_ArrayValue{
-				ArrayValue: &btpb.ArrayValue{
-					Values: []*btpb.Value{keyPbVal, valPbVal},
-				},
-			},
-			// Type: No type needed for nested map entry array itself.
-		}
-		pbMapEntries = append(pbMapEntries, entryPbVal)
-	}
-
-	return &btpb.Value{
-		Type: pbType,
-		Kind: &btpb.Value_ArrayValue{ // Map is stored as ArrayValue
-			ArrayValue: &btpb.ArrayValue{
-				Values: pbMapEntries,
-			},
-		},
-	}, nil
+	return nil, errors.New("bigtable: unimplemented")
 }
 
 // StructSQLType represents a struct with named fields for query parameters.
@@ -553,7 +495,7 @@ type StructSQLField struct {
 // isValidArrayElemType reports whether StructSQLType can be used as an element in an ArraySQLType.
 func (s StructSQLType) isValidArrayElemType() bool { return true } // Structs can be elements of arrays.
 
-func (s StructSQLType) isValidBindParamType() bool { return false }
+func (s StructSQLType) isValidPrepareParamType() bool { return false }
 
 // typeProto generates the protobuf Type message for a Struct.
 func (s StructSQLType) typeProto() (*btpb.Type, error) {
@@ -595,90 +537,9 @@ func (s StructSQLType) typeProto() (*btpb.Type, error) {
 	}, nil
 }
 
-// valueProto converts a Go struct or map[string]any to its protobuf representation for query parameters.
-// The underlying protobuf representation for a struct is an array of its field values,
-// in the order defined by StructSQLType.Fields.
+// Only used while binding parameters to prepared query and this is not a valid param type
 func (s StructSQLType) valueProto(value any) (*btpb.Value, error) {
-	pbType, err := s.typeProto() // Contains field name/type/order info
-	if err != nil {
-		return nil, err
-	}
-
-	if value == nil {
-		// Return protobuf NULL value with type information
-		return &btpb.Value{Type: pbType}, nil
-	}
-
-	valReflectValue := reflect.ValueOf(value)
-	valReflectType := valReflectValue.Type()
-
-	pbFieldValues := make([]*btpb.Value, len(s.Fields))
-
-	// Determine how to access field values: by struct field name or map key
-	var getValue func(fieldName string) (any, bool, error)
-
-	switch valReflectType.Kind() {
-	case reflect.Map:
-		if valReflectType.Key().Kind() != reflect.String {
-			return nil, fmt.Errorf("bigtable: expected map[string]any for StructSQLType parameter, got %v", valReflectType)
-		}
-		if valReflectValue.IsNil() { // Handle nil map as all fields missing.
-			getValue = func(fieldName string) (any, bool, error) { return nil, false, nil }
-		} else {
-			getValue = func(fieldName string) (any, bool, error) {
-				mapValue := valReflectValue.MapIndex(reflect.ValueOf(fieldName))
-				if !mapValue.IsValid() {
-					return nil, false, nil
-				}
-				return mapValue.Interface(), true, nil
-			}
-		}
-	case reflect.Struct:
-		getValue = func(fieldName string) (any, bool, error) {
-			StructSQLField := valReflectValue.FieldByName(fieldName)
-			if !StructSQLField.IsValid() {
-				return nil, false, nil // Not found
-			}
-			// TODO: Handle unexported fields
-			if !StructSQLField.CanInterface() {
-				return nil, false, fmt.Errorf("cannot access unexported struct field %q", fieldName)
-			}
-			return StructSQLField.Interface(), true, nil
-		}
-	default:
-		return nil, &errTypeMismatch{value: value, psType: s}
-	}
-
-	// Iterate through the defined fields IN ORDER and get/convert values
-	for i, fieldInfo := range s.Fields {
-		fieldValue, found, accessErr := getValue(fieldInfo.Name)
-		if accessErr != nil {
-			return nil, fmt.Errorf("error accessing field %q for StructSQLType parameter: %w", fieldInfo.Name, accessErr)
-		}
-
-		if !found {
-			// Field defined in StructSQLType is missing in the provided Go value.
-			// GoogleSQL requires all struct fields to be present. Error out.
-			return nil, fmt.Errorf("bigtable: struct field %q defined in StructSQLType not found in provided value (type %T)", fieldInfo.Name, value)
-		}
-
-		// Convert the Go field value using the specified SQLType for the field
-		fieldPbValue, err := fieldInfo.Type.valueProto(fieldValue)
-		if err != nil {
-			return nil, fmt.Errorf("error converting struct field %q (value type %T): %w", fieldInfo.Name, fieldValue, err)
-		}
-		fieldPbValue.Type = nil // Nested values shouldn't have type
-		pbFieldValues[i] = fieldPbValue
-	}
-
-	return &btpb.Value{
-		Type: pbType,
-		Kind: &btpb.Value_ArrayValue{ // Struct is stored as ArrayValue
-			ArrayValue: &btpb.ArrayValue{
-				Values: pbFieldValues,
-			},
-		},
-	}, nil
+	return nil, errors.New("bigtable: unimplemented")
 }
 
 // anySQLTypeToPbVal converts a Go value to a protobuf Value based on the provided SQLType.
