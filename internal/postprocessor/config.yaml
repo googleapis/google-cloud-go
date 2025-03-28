@@ -1115,6 +1115,9 @@ service-configs:
   - input-directory: google/iam/v2
     service-config: iam_v2.yaml
     import-path: cloud.google.com/go/iam/apiv2
+  - input-directory: google/iam/v3
+    service-config: iam_v3.yaml
+    import-path: cloud.google.com/go/iam/apiv3
   - input-directory: google/identity/accesscontextmanager/v1
     service-config: accesscontextmanager_v1.yaml
     import-path: cloud.google.com/go/accesscontextmanager/apiv1
