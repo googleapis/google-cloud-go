@@ -45,6 +45,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -481,6 +482,9 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		if v == nil {
 			return nil, errors.New("bigtable: invalid SQLType: nil")
 		}
+		if v.isValidBindParamType() {
+			return nil, fmt.Errorf("bigtable: %T cannot be used as parameter type", v)
+		}
 		tpb, err := v.typeProto()
 		if err != nil {
 			return nil, err
@@ -530,8 +534,17 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 	}
 
 	boundParams := map[string]*btpb.Value{}
+
+	// check that every parameter is bound
+	for paramName := range ps.paramTypes {
+		_, found := values[paramName]
+		if !found {
+			return &bs, fmt.Errorf("bigtable: parameter %q not bound in call to Bind", paramName)
+		}
+	}
+
+	// Validate that the parameter was specified during prepare
 	for paramName, paramVal := range values {
-		// Validate that the parameter was specified during prepare
 		psType, found := ps.paramTypes[paramName]
 		if !found {
 			return &bs, errors.New("bigtable: no parameter with name " + paramName + " in prepared statement")
@@ -544,14 +557,8 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 		}
 		boundParams[paramName] = pbVal
 	}
-	// check that every parameter is bound
-	for paramName := range ps.paramTypes {
-		_, found := boundParams[paramName]
-		if !found {
-			return &bs, errors.New("bigtable: parameter " + paramName + " not bound in prepared statement")
-		}
-	}
 
+	bs.params = boundParams
 	return &BoundStatement{
 		ps:     ps,
 		params: boundParams,
@@ -624,12 +631,6 @@ func (ps *PreparedStatement) refresh(ctx context.Context) error {
 type BoundStatement struct {
 	ps     *PreparedStatement
 	params map[string]*btpb.Value
-}
-
-// ResultRow represents a single row in the result set returned on executing a GoogleSQL query.
-type ResultRow struct {
-	values   []*btpb.Value
-	metadata *btpb.ResultSetMetadata
 }
 
 // ExecuteOption is an optional argument to Execute.
@@ -737,6 +738,9 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 		for {
 			proto.Reset(eqResp)
 			err := stream.RecvMsg(eqResp)
+
+			bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(eqResp)
+			fmt.Println("eqResp: " + string(bytes))
 			if err == io.EOF {
 				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err, &prevError)
 			}
@@ -828,11 +832,21 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 					completeRowValues, valuesBuffer = valuesBuffer[0:numCols], valuesBuffer[numCols:]
 
-					rr := ResultRow{
-						values:   completeRowValues,
-						metadata: finalizedStmt.metadata,
+					rr, err := newResultRow(completeRowValues, finalizedStmt.metadata)
+					if err != nil {
+						return err
 					}
-					continueReading := f(rr)
+
+					bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(finalizedStmt.metadata)
+					fmt.Println("finalizedStmt.metadata:" + string(bytes))
+					fmt.Println("[")
+					for _, completeRowValue := range completeRowValues {
+						bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(completeRowValue)
+						fmt.Println(string(bytes) + ",")
+					}
+					fmt.Println("]")
+
+					continueReading := f(*rr)
 					if !continueReading {
 						// Cancel and drain stream.
 						cancel()
