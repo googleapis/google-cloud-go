@@ -548,26 +548,20 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 // Allowed parameter value types are []byte, string, int64, float32, float64, bool,
 // time.Time, civil.Date, array, slice and nil
 func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error) {
-	bs := BoundStatement{
-		ps:     ps,
-		params: map[string]*btpb.Value{},
-	}
-
-	boundParams := map[string]*btpb.Value{}
-
 	// check that every parameter is bound
 	for paramName := range ps.paramTypes {
 		_, found := values[paramName]
 		if !found {
-			return &bs, fmt.Errorf("bigtable: parameter %q not bound in call to Bind", paramName)
+			return nil, fmt.Errorf("bigtable: parameter %q not bound in call to Bind", paramName)
 		}
 	}
 
+	boundParams := map[string]*btpb.Value{}
 	// Validate that the parameter was specified during prepare
 	for paramName, paramVal := range values {
 		psType, found := ps.paramTypes[paramName]
 		if !found {
-			return &bs, errors.New("bigtable: no parameter with name " + paramName + " in prepared statement")
+			return nil, errors.New("bigtable: no parameter with name " + paramName + " in prepared statement")
 		}
 
 		// Convert value specified by user to *btpb.Value
@@ -578,7 +572,6 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 		boundParams[paramName] = pbVal
 	}
 
-	bs.params = boundParams
 	return &BoundStatement{
 		ps:     ps,
 		params: boundParams,
@@ -758,7 +751,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 		for {
 			proto.Reset(eqResp)
 			err := stream.RecvMsg(eqResp)
-
 			if err == io.EOF {
 				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err, &prevError)
 			}
@@ -856,7 +848,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 					if err != nil {
 						return err
 					}
-
 					continueReading := f(*rr)
 					if !continueReading {
 						// Cancel and drain stream.

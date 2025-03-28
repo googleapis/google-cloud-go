@@ -86,8 +86,19 @@ func newResultRowMetadata(metadata *btpb.ResultSetMetadata) (*ResultRowMetadata,
 }
 
 // GetByIndex returns the value of the column at the specified index.
-// The returned value will be of the corresponding Go type (e.g., int64, string,
-// time.Time, []any, map[string]any).
+// The returned value will be of the following Go types where possible:
+//
+//   - string
+//   - []byte
+//   - int64 (and other integer types like int, int32, uint64 etc.)
+//   - float32, float64
+//   - bool
+//   - time.Time (for TIMESTAMP)
+//   - civil.Date (for DATE)
+//   - Slice types (e.g., []string, []int64) for ARRAY
+//   - Map types (e.g., map[string]any) for MAP or STRUCT
+//   - any (interface{})
+//   - Pointers to the above types
 func (rr *ResultRow) GetByIndex(index int) (any, error) {
 	if index < 0 || index >= len(rr.pbValues) {
 		return nil, fmt.Errorf("bigtable: index %d out of bounds for row with %d columns", index, len(rr.pbValues))
@@ -107,9 +118,22 @@ func (rr *ResultRow) GetByIndex(index int) (any, error) {
 	return goVal, nil
 }
 
-// GetByName returns the value of the first column found with the specified name.
-// The returned value will be of the corresponding Go type.
-// Returns an error if no column with the specified name is found.
+// GetByName returns the value of the column with the specified name.
+// The returned value will be of the following Go types where possible:
+//
+//   - string
+//   - []byte
+//   - int64 (and other integer types like int, int32, uint64 etc.)
+//   - float32, float64
+//   - bool
+//   - time.Time (for TIMESTAMP)
+//   - civil.Date (for DATE)
+//   - Slice types (e.g., []string, []int64) for ARRAY
+//   - Map types (e.g., map[string]any) for MAP or STRUCT
+//   - any (interface{})
+//   - Pointers to the above types
+//
+// Returns an error if no column or multiple columns with the specified name are found.
 // Column name matching is case-sensitive.
 func (rr *ResultRow) GetByName(name string) (any, error) {
 	indices, found := (*rr.colIndexMap)[name]
@@ -117,32 +141,11 @@ func (rr *ResultRow) GetByName(name string) (any, error) {
 		return nil, fmt.Errorf("bigtable: column %q not found in result row", name)
 	}
 
-	// Return the value at the first index found for this name
+	if len(indices) > 1 {
+		return nil, fmt.Errorf("bigtable: %d columns found with name %q", len(indices), name)
+	}
+
 	return rr.GetByIndex(indices[0])
-}
-
-// GetAllByName returns a slice containing the values of *all* columns matching the
-// specified name, in the order they appear in the result set.
-// If no columns match the name, it returns (nil, nil).
-// The values in the returned slice will be of their corresponding Go types.
-// Returns an error if any value conversion fails.
-// Column name matching is case-sensitive.
-func (rr *ResultRow) GetAllByName(name string) ([]any, error) {
-	indices, found := (*rr.colIndexMap)[name]
-	if !found || len(indices) == 0 {
-		return nil, nil
-	}
-
-	results := make([]any, len(indices))
-	for i, index := range indices {
-		val, err := rr.GetByIndex(index)
-		if err != nil {
-			return nil, fmt.Errorf("bigtable: error getting value for column %q at index %d: %w", name, index, err)
-		}
-		results[i] = val
-	}
-
-	return results, nil
 }
 
 // pbTypeToSQLType converts a protobuf Type to its corresponding SQLType interface implementation.
@@ -209,7 +212,7 @@ func pbTypeToSQLType(pbType *btpb.Type) (SQLType, error) {
 		}
 		return StructSQLType{Fields: structFields}, nil
 	default:
-		return nil, fmt.Errorf("unsupported protobuf type kind: %T", k)
+		return nil, fmt.Errorf("unrecognized response type kind: %T. You might need to upgrade your client", k)
 	}
 }
 
@@ -274,7 +277,7 @@ func pbTypeToGoReflectType(pbType *btpb.Type) (reflect.Type, error) {
 		// Represent struct results as map[string]any
 		return anyMapType, nil
 	default:
-		return nil, fmt.Errorf("unsupported protobuf type kind for Go type mapping: %T", k)
+		return nil, fmt.Errorf("unrecognized response type kind: %T. You might need to upgrade your client", k)
 	}
 }
 
@@ -482,7 +485,7 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 		return goStructMap, nil
 
 	default:
-		return nil, fmt.Errorf("unsupported protobuf type kind for Go value conversion: %T", k)
+		return nil, fmt.Errorf("unrecognized response type  kind: %T. You might need to upgrade your client", k)
 	}
 }
 

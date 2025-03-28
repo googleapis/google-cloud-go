@@ -5230,20 +5230,20 @@ func populateAddresses(ctx context.Context, t *testing.T, table *Table, colFam s
 				},
 			},
 		},
-		// "row-02": {
-		// 	"state": []cell{
-		// 		{
-		// 			Ts:    v1Timestamp,
-		// 			Value: []byte("AZ"),
-		// 		},
-		// 	},
-		// 	"city": []cell{
-		// 		{
-		// 			Ts:    v1Timestamp,
-		// 			Value: []byte("Phoenix"),
-		// 		},
-		// 	},
-		// },
+		"row-02": {
+			"state": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("AZ"),
+				},
+			},
+			"city": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("Phoenix"),
+				},
+			},
+		},
 	} {
 		mut := NewMutation()
 		for col, v := range mutData {
