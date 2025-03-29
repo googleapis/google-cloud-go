@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.80.0...aiplatform/v1.81.0) (2025-03-28)
+
+
+### Features
+
+* **aiplatform:** Add page spans in retrieved contexts from Vertex RAG Engine in aiplatform v1 ([#11917](https://github.com/googleapis/google-cloud-go/issues/11917)) ([28632c6](https://github.com/googleapis/google-cloud-go/commit/28632c6b7c8f0f9250c2dd6ab86d8cc19de84522))
+
 ## [1.80.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.79.0...aiplatform/v1.80.0) (2025-03-27)
 
 
