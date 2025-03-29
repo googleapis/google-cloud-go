@@ -1768,6 +1768,37 @@ func TestExecuteQuery(t *testing.T) {
 			/*
 				1. PrepareQuery
 				2. ExecuteQuery
+				3. RecvMsg - gets first half of a batch of data with reset true - half1
+				3. RecvMsg - receives Unavailable error
+				3. RecvMsg - gets first half of a batch of data with reset true - half2
+				4. RecvMsg - gets second half of a batch of data with reset false - half3
+				5. RecvMsg - gets resume token
+				6. RecvMsg - gets EOF
+
+				The resulting row should contain only half2 and half3
+			*/
+			desc: "success with single batch received across multiple responses with reset",
+			mockPrepQueryResps: []prepareQueryResp{
+				newPrepareQueryResp(preparedQuery1, colFamAddress, colFamInfo),
+			},
+			mockRecvMsgResps: []recvMsgResp{
+				newExecQueryRespPartialBatchFirstHalf(true /* reset */, nil /* sleep */, []string{colFamAddress}),
+				{err: status.Error(codes.Unavailable, "mock unavailable error")},
+				newExecQueryRespPartialBatchFirstHalf(true /* reset */, nil /* sleep */, []string{colFamAddressNew}),
+				newExecQueryRespPartialBatchSecondHalf(false /* reset */, nil /* sleep */, []string{colFamAddressNew}, []string{colFamInfo}),
+				newExecQueryRespResumeToken(),
+				{err: io.EOF},
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+				[]byte(preparedQuery1),
+			},
+			wantResultRowValues: [][]*btpb.Value{newProtoRowValuesWithKey(colFamAddressNew, colFamInfo)},
+		},
+		{
+			/*
+				1. PrepareQuery
+				2. ExecuteQuery
 				3. RecvMsg - gets a batch of data with reset true
 				4. RecvMsg - gets EOF
 			*/
@@ -2021,6 +2052,7 @@ func TestExecuteQuery(t *testing.T) {
 
 const testPreparedQueryTTL = 10 * time.Second
 const colFamAddress = "address"
+const colFamAddressNew = "address-new" // Used only for values and not metadata
 const colFamInfo = "info"
 
 var cfToValues = map[string][]*btpb.Value{
@@ -2055,6 +2087,44 @@ var cfToValues = map[string][]*btpb.Value{
 						{
 							Kind: &btpb.Value_BytesValue{
 								BytesValue: []byte("CA"),
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	colFamAddressNew: {
+		{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{
+					Values: []*btpb.Value{
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("city"),
+							},
+						},
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("Kirkland"),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{
+					Values: []*btpb.Value{
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("state"),
+							},
+						},
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("WA"),
 							},
 						},
 					},
