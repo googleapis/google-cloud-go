@@ -1979,7 +1979,7 @@ func TestExecuteQuery(t *testing.T) {
 
 			// Execute query
 			err = bs.Execute(ctx, func(rr ResultRow) bool {
-				vals := rr.values
+				vals := rr.pbValues
 
 				// Compare row values
 				if gotRowCount > len(tc.wantResultRowValues) ||
