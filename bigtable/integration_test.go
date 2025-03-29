@@ -44,6 +44,7 @@ import (
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	grpc "google.golang.org/grpc"
@@ -5055,34 +5056,109 @@ func TestIntegration_Execute(t *testing.T) {
 	}
 
 	// Add data to table
-	populateAddresses(ctx, t, table, colFam)
+	v1Timestamp := Time(time.Now().Add(-time.Minute))
+	v2Timestamp := Time(time.Now())
+	populateAddresses(ctx, t, table, colFam, v1Timestamp, v2Timestamp)
 
+	type wantCol struct {
+		name  string
+		value any
+	}
 	// Run test cases
 	for _, tc := range []struct {
 		desc          string
 		psQuery       string
 		psParamTypes  map[string]SQLType
 		bsParamValues map[string]any
-		wantRowMaps   []map[string]any
+		wantRows      [][]wantCol
 	}{
 		{
 			desc:    "select *",
-			psQuery: "SELECT * FROM `" + table.table + "` LIMIT 5",
-			wantRowMaps: []map[string]any{
+			psQuery: "SELECT * FROM `" + table.table + "` ORDER BY _key LIMIT 5",
+			wantRows: [][]wantCol{
 				{
-					"_key": []byte("row-01"),
-					"address": map[string][]byte{
-						"city":  []byte("San Francisco"),
-						"state": []byte("CA"),
+					{
+						name:  "_key",
+						value: []byte("row-01"),
 					},
-					"follows": map[string][]byte{},
-					"sum":     map[string]int64{},
+					{
+						name: "address",
+						value: map[string][]byte{
+							"city":  []byte("San Francisco"),
+							"state": []byte("CA"),
+						},
+					},
+					{
+						name:  "follows",
+						value: map[string][]byte{},
+					},
+					{
+						name:  "sum",
+						value: map[string]int64{},
+					},
+				},
+				{
+					{
+						name:  "_key",
+						value: []byte("row-02"),
+					},
+					{
+						name: "address",
+						value: map[string][]byte{
+							"city":  []byte("Phoenix"),
+							"state": []byte("AZ"),
+						},
+					},
+					{
+						name:  "follows",
+						value: map[string][]byte{},
+					},
+					{
+						name:  "sum",
+						value: map[string]int64{},
+					},
 				},
 			},
 		},
 		{
 			desc:    "WITH_HISTORY",
 			psQuery: "SELECT _key, " + colFam + "['state'] AS state FROM `" + table.table + "`(WITH_HISTORY=>TRUE) LIMIT 5",
+			wantRows: [][]wantCol{
+				{
+					{
+						name:  "_key",
+						value: []byte("row-01"),
+					},
+					{
+						name: "state",
+						value: []map[string]any{
+							{
+								"timestamp": v2Timestamp.Time(),
+								"value":     []byte("CA"),
+							},
+							{
+								"timestamp": v1Timestamp.Time(),
+								"value":     []byte("WA"),
+							},
+						},
+					},
+				},
+				{
+					{
+						name:  "_key",
+						value: []byte("row-02"),
+					},
+					{
+						name: "state",
+						value: []map[string]any{
+							{
+								"timestamp": v1Timestamp.Time(),
+								"value":     []byte("AZ"),
+							},
+						},
+					},
+				},
+			},
 		},
 		{
 			desc: "all types in result set",
@@ -5093,6 +5169,60 @@ func TestIntegration_Execute(t *testing.T) {
 				" as mapCol FROM `" +
 				table.table +
 				"` WHERE _key='row-01' LIMIT 1",
+			wantRows: [][]wantCol{
+				{
+					{
+						name:  "strCol",
+						value: "stringVal",
+					},
+					{
+						name:  "bytesCol",
+						value: []byte("foo"),
+					},
+					{
+						name:  "intCol",
+						value: int64(1),
+					},
+					{
+						name:  "f32Col",
+						value: float32(1.2),
+					},
+					{
+						name:  "f64Col",
+						value: float64(1.3),
+					},
+					{
+						name:  "boolCol",
+						value: true,
+					},
+					{
+						name:  "tsCol",
+						value: time.Unix(1, 0),
+					},
+					{
+						name:  "dateCol",
+						value: civil.Date{Year: 2024, Month: 06, Day: 01},
+					},
+					{
+						name: "structCol",
+						value: map[string]any{
+							"a": int64(1),
+							"b": "foo",
+						},
+					},
+					{
+						name:  "arrCol",
+						value: []int64{1, 2, 3},
+					},
+					{
+						name: "mapCol",
+						value: map[string][]byte{
+							"city":  []byte("San Francisco"),
+							"state": []byte("CA"),
+						},
+					},
+				},
+			},
 		},
 		{
 			desc: "all types in query parameters",
@@ -5147,13 +5277,81 @@ func TestIntegration_Execute(t *testing.T) {
 				"tsParam":           time.Now(),
 				"dateParam":         civil.DateOf(time.Now()),
 				"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
-				"stringArrayParam":  []any{"foo", nil, "bar"},
+				"stringArrayParam":  []string{"baz", "qux"},
 				"int64ArrayParam":   []any{int64(1), nil, int64(2)},
 				"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
 				"float64ArrayParam": []float64{1.4, 2.4, 3.4},
 				"boolArrayParam":    []any{true, nil, false},
 				"tsArrayParam":      []any{time.Now(), nil},
 				"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
+			},
+			wantRows: [][]wantCol{
+				{
+					{
+						name:  "bytesCol",
+						value: []byte("foo"),
+					},
+					{
+						name:  "strCol",
+						value: "stringVal",
+					},
+					{
+						name:  "int64Col",
+						value: int64(1),
+					},
+					{
+						name:  "float32Col",
+						value: float32(1.3),
+					},
+					{
+						name:  "float64Col",
+						value: float64(1.4),
+					},
+					{
+						name:  "boolCol",
+						value: true,
+					},
+					{
+						name:  "tsCol",
+						value: time.Now(),
+					},
+					{
+						name:  "dateCol",
+						value: civil.DateOf(time.Now()),
+					},
+					{
+						name:  "bytesArrayCol",
+						value: [][]byte{[]byte("foo"), nil, []byte("bar")},
+					},
+					{
+						name:  "stringArrayCol",
+						value: []string{"baz", "qux"},
+					},
+					{
+						name:  "int64ArrayCol",
+						value: []any{int64(1), nil, int64(2)},
+					},
+					{
+						name:  "float32ArrayCol",
+						value: []any{float32(1.3), nil, float32(2.3)},
+					},
+					{
+						name:  "float64ArrayCol",
+						value: []float64{1.4, 2.4, 3.4},
+					},
+					{
+						name:  "boolArrayCol",
+						value: []any{true, nil, false},
+					},
+					{
+						name:  "tsArrayCol",
+						value: []any{time.Now(), nil},
+					},
+					{
+						name:  "dateArrayCol",
+						value: "[]civil.Date{civil.DateOf(time.Now())}",
+					},
+				},
 			},
 		},
 	} {
@@ -5167,44 +5365,79 @@ func TestIntegration_Execute(t *testing.T) {
 			if err != nil {
 				t.Fatal("Bind: " + err.Error())
 			}
-			i := 0
+			gotRowCount := 0
 			if err = bs.Execute(ctx, func(rr ResultRow) bool {
 				// Assert that rr has correct values using DataTo and cmp.Diff
-				if (tc.wantRowMaps) != nil {
-					if i >= len(tc.wantRowMaps) {
-						t.Fatalf("#%v: Unexpected row returned from Execute. gotRow: %#v", i, rr)
+				if (tc.wantRows) != nil {
+					if gotRowCount >= len(tc.wantRows) {
+						t.Fatalf("#%v: Unexpected row returned from Execute. gotRow: %#v", gotRowCount, rr)
 					}
 
-					for name, wantValue := range tc.wantRowMaps[i] {
-						gotValue, err := rr.GetByName(name)
+					var wantColCount int
+					for wantColCount < len(tc.wantRows[gotRowCount]) {
+						wantCol := tc.wantRows[gotRowCount][wantColCount]
+						foundErr := false
+
+						wantColName := wantCol.name
+						wantColValue := wantCol.value
+						// Assert GetByName returns correct value
+						gotColValue, err := rr.GetByName(wantColName)
 						if err != nil {
-							t.Errorf("#%v GetByName failed %v while getting value of column %v", i, err, name)
+							t.Errorf("[Row:%v Column:%v] GetByName: %v", gotRowCount, wantColName, err)
+							foundErr = true
+						}
+						if !testutil.Equal(gotColValue, wantColValue, cmpopts.EquateApproxTime(time.Second)) {
+							t.Errorf("[Row:%v Column:%v] GetByName value mismatch: got: %#v, want: %#v, diff (-want +got):\n %+v",
+								gotRowCount, wantColName, gotColValue, wantColValue,
+								testutil.Diff(wantColValue, gotColValue, cmpopts.EquateApproxTime(time.Microsecond)))
+							foundErr = true
+						}
+
+						// Assert GetByIndex returns correct value
+						gotColValue, err = rr.GetByIndex(wantColCount)
+						if err != nil {
+							t.Errorf("[Row:%v Column:%v] GetByIndex: %v", gotRowCount, wantColCount, err)
+							foundErr = true
+						}
+						if !testutil.Equal(gotColValue, wantColValue, cmpopts.EquateApproxTime(time.Second)) {
+							t.Errorf("[Row:%v Column:%v] GetByIndex: got: %#v, want: %#v, diff (-want +got):\n %+v",
+								gotRowCount, wantColCount, gotColValue, wantColValue,
+								testutil.Diff(wantColValue, gotColValue, cmpopts.EquateApproxTime(time.Microsecond)))
+							foundErr = true
+						}
+						if foundErr {
 							return false // Stop processing on error
 						}
-						if !testutil.Equal(gotValue, wantValue) {
-							t.Errorf("#%v GetByName column: %v, got: %v, want: %v", i, name, gotValue, wantValue)
-							return false // Stop processing on error
+						wantColCount++
+					}
+					if len(rr.pbValues) != len(tc.wantRows[gotRowCount]) {
+						t.Errorf("[Row:%v] Number of columns: got: %v, want: %v", gotRowCount, len(rr.pbValues), len(tc.wantRows[gotRowCount]))
+						gotColCount := wantColCount
+						for gotColCount < len(rr.pbValues) {
+							t.Errorf("[Row:%v Column:%v]: Unexpected column with value: %v", gotRowCount, gotColCount, rr.pbValues[gotColCount])
+							gotColCount++
 						}
+						return false // Stop processing on error
 					}
 				}
-				i++
+				gotRowCount++
 				return true
 			}); err != nil {
 				t.Fatal("Execute: " + err.Error())
 			}
 
-			if i < len(tc.wantRowMaps) {
-				for _, wantRow := range tc.wantRowMaps[i] {
-					t.Errorf("#%v: Row missing in Execute response: %#v", i, wantRow)
+			if gotRowCount < len(tc.wantRows) {
+				wantRowNum := gotRowCount
+				for wantRowNum < len(tc.wantRows) {
+					t.Errorf("#%v: Row missing in Execute response: %#v", wantRowNum, tc.wantRows[gotRowCount])
+					wantRowNum++
 				}
 			}
 		})
 	}
 }
 
-func populateAddresses(ctx context.Context, t *testing.T, table *Table, colFam string) {
-	v1Timestamp := Time(time.Now().Add(-time.Minute))
-	v2Timestamp := Time(time.Now())
+func populateAddresses(ctx context.Context, t *testing.T, table *Table, colFam string, v1Timestamp, v2Timestamp Timestamp) {
 	type cell struct {
 		Ts    Timestamp
 		Value []byte

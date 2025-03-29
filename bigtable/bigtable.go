@@ -502,7 +502,7 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		if v == nil {
 			return nil, errors.New("bigtable: invalid SQLType: nil")
 		}
-		if v.isValidPrepareParamType() {
+		if !v.isValidPrepareParamType() {
 			return nil, fmt.Errorf("bigtable: %T cannot be used as parameter type", v)
 		}
 		tpb, err := v.typeProto()
@@ -738,7 +738,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			Params:        bs.params,
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
-
 		if err != nil {
 			prevError = err
 			return err

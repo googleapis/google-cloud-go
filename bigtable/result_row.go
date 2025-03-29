@@ -90,7 +90,7 @@ func newResultRowMetadata(metadata *btpb.ResultSetMetadata) (*ResultRowMetadata,
 //
 //   - string
 //   - []byte
-//   - int64 (and other integer types like int, int32, uint64 etc.)
+//   - int64
 //   - float32, float64
 //   - bool
 //   - time.Time (for TIMESTAMP)
@@ -99,6 +99,9 @@ func newResultRowMetadata(metadata *btpb.ResultSetMetadata) (*ResultRowMetadata,
 //   - Map types (e.g., map[string]any) for MAP or STRUCT
 //   - any (interface{})
 //   - Pointers to the above types
+//
+// When (WITH_HISTORY=>TRUE) is used in the query, the value of versioned column is []map[string]any{}
+// []{{"timestamp": <timestamp>, "value": <value> }, {"timestamp": <timestamp>, "value": <value> }}
 func (rr *ResultRow) GetByIndex(index int) (any, error) {
 	if index < 0 || index >= len(rr.pbValues) {
 		return nil, fmt.Errorf("bigtable: index %d out of bounds for row with %d columns", index, len(rr.pbValues))
@@ -123,7 +126,7 @@ func (rr *ResultRow) GetByIndex(index int) (any, error) {
 //
 //   - string
 //   - []byte
-//   - int64 (and other integer types like int, int32, uint64 etc.)
+//   - int64
 //   - float32, float64
 //   - bool
 //   - time.Time (for TIMESTAMP)
@@ -132,6 +135,9 @@ func (rr *ResultRow) GetByIndex(index int) (any, error) {
 //   - Map types (e.g., map[string]any) for MAP or STRUCT
 //   - any (interface{})
 //   - Pointers to the above types
+//
+// When (WITH_HISTORY=>TRUE) is used in the query, the value of versioned column is []map[string]any{}
+// []{{"timestamp": <timestamp>, "value": <value> }, {"timestamp": <timestamp>, "value": <value> }}
 //
 // Returns an error if no column or multiple columns with the specified name are found.
 // Column name matching is case-sensitive.
@@ -367,7 +373,10 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 			return nil, errors.New("array element type is nil")
 		}
 
-		if arrValProto.ArrayValue == nil || len(arrValProto.ArrayValue.Values) == 0 {
+		if arrValProto.ArrayValue == nil {
+			return nil, nil
+		}
+		if len(arrValProto.ArrayValue.Values) == 0 {
 			// Return empty slice of the correct Go type.
 			elemGoType, err := pbTypeToGoReflectType(elemPbType)
 			if err != nil {
@@ -506,7 +515,7 @@ func assignValue(dest reflect.Value, src any) error {
 			return nil
 		default:
 			// Cannot assign nil to non-nillable types like int, string, bool, struct.
-			return fmt.Errorf("cannot assign <nil> to destination of type %s", dest.Type())
+			return fmt.Errorf("cannot assign nil to destination of type %s", dest.Type())
 		}
 	}
 

@@ -70,6 +70,11 @@ func (s BytesSQLType) valueProto(value any) (*btpb.Value, error) {
 	if !ok {
 		return nil, &errTypeMismatch{value: value, psType: BytesSQLType{}}
 	}
+	if typedVal == nil {
+		return &btpb.Value{
+			Type: pbType,
+		}, nil
+	}
 	return &btpb.Value{
 		Type: pbType,
 		Kind: &btpb.Value_BytesValue{
