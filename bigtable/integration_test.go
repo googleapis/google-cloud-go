@@ -84,15 +84,25 @@ var (
 	myOtherTableNameSpace = uid.NewSpace("myothertable", &uid.Options{Short: true})
 )
 
+/*
+|             |              follows               |
+|    _key     |------------------------------------|
+|             | tjefferson | j§adams | gwashington |
+|-------------|------------|---------|-------------|
+| wmckinley   |      1     |         |             |
+| gwashington |            |    1    |             |
+| tjefferson  |            |    1    |     1       |
+| j§adams     |      1     |         |     1       |
+*/
 func populatePresidentsGraph(table *Table) error {
 	ctx := context.Background()
-	for row, ss := range presidentsSocialGraph {
+	for rowKey, ss := range presidentsSocialGraph {
 		mut := NewMutation()
 		for _, name := range ss {
 			mut.Set("follows", name, 1000, []byte("1"))
 		}
-		if err := table.Apply(ctx, row, mut); err != nil {
-			return fmt.Errorf("Mutating row %q: %v", row, err)
+		if err := table.Apply(ctx, rowKey, mut); err != nil {
+			return fmt.Errorf("Mutating row %q: %v", rowKey, err)
 		}
 	}
 	return nil
@@ -2073,7 +2083,7 @@ func TestIntegration_CreateTableWithRowKeySchema(t *testing.T) {
 	defer testEnv.Close()
 
 	if !testEnv.Config().UseProd {
-		t.Skip("emulator doesn't support Automated Backups")
+		t.Skip("emulator doesn't support row key schema")
 	}
 
 	timeout := 5 * time.Minute
@@ -2085,15 +2095,6 @@ func TestIntegration_CreateTableWithRowKeySchema(t *testing.T) {
 		t.Fatalf("NewAdminClient: %v", err)
 	}
 	defer adminClient.Close()
-
-	myTableName := myTableNameSpace.New()
-	tableConf := TableConf{
-		TableID: myTableName,
-		Families: map[string]GCPolicy{
-			"fam1": MaxVersionsPolicy(1),
-			"fam2": MaxVersionsPolicy(2),
-		},
-	}
 
 	testCases := []struct {
 		desc          string
@@ -2168,21 +2169,30 @@ func TestIntegration_CreateTableWithRowKeySchema(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		myTableName := myTableNameSpace.New()
+		tableConf := TableConf{
+			TableID: myTableName,
+			Families: map[string]GCPolicy{
+				"fam1": MaxVersionsPolicy(1),
+				"fam2": MaxVersionsPolicy(2),
+			},
+		}
+
 		tableConf.RowKeySchema = &tc.rks
 		err := adminClient.CreateTableFromConf(ctx, &tableConf)
 
 		if tc.errorExpected && err == nil {
-			t.Errorf("Want error from test: '%v', got nil", tc.desc)
+			t.Fatalf("Want error from test: '%v', got nil", tc.desc)
 		}
 
 		if !tc.errorExpected && err != nil {
-			t.Errorf("Unexpected error: %v", err)
+			t.Fatalf("Unexpected error: %v", err)
 		}
 
 		// get the table and see the new schema is updated
-		tbl, err := adminClient.getTable(ctx, tableConf.TableID, btapb.Table_SCHEMA_VIEW)
+		tbl, err := adminClient.TableInfo(ctx, tableConf.TableID)
 		if !tc.errorExpected && tbl.RowKeySchema == nil {
-			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.rks, tbl)
+			t.Errorf("Expecting row key schema %v to be created in table, got nil", tc.rks)
 		}
 
 		if tbl != nil {
@@ -2216,33 +2226,36 @@ func TestIntegration_UpdateRowKeySchemaInTable(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	myTableName := myTableNameSpace.New()
-	tableConf := TableConf{
-		TableID: myTableName,
-		Families: map[string]GCPolicy{
-			"fam1": MaxVersionsPolicy(1),
-		},
-	}
-
-	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
-		t.Fatalf("Unexpected error trying to create table: %v", err)
-	}
-
 	testCases := []struct {
 		desc          string
-		rks           StructType
+		updateRks     StructType
 		errorExpected bool
+		currentRks    *StructType
 	}{
-		{desc: "Update fail with conflicting family name",
-			rks: StructType{
+		{
+			desc: "Update fail with conflicting family name",
+			updateRks: StructType{
 				Fields:   []StructField{{FieldName: "fam1", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
 				Encoding: StructSingletonEncoding{},
+			},
+			errorExpected: true,
+			currentRks:    nil,
+		},
+		{
+			desc: "Update fail for table with existing row key schema",
+			updateRks: StructType{
+				Fields:   []StructField{{FieldName: "mycol", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+				Encoding: StructSingletonEncoding{},
+			},
+			currentRks: &StructType{
+				Fields:   []StructField{{FieldName: "myfirstcol", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}}},
+				Encoding: StructDelimitedBytesEncoding{Delimiter: []byte{'#'}},
 			},
 			errorExpected: true,
 		},
 		{
 			desc: "Update ok",
-			rks: StructType{
+			updateRks: StructType{
 				Fields: []StructField{
 					{FieldName: "myfield", FieldType: Int64Type{Encoding: BigEndianBytesEncoding{}}},
 					{FieldName: "myfield2", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}}},
@@ -2250,23 +2263,40 @@ func TestIntegration_UpdateRowKeySchemaInTable(t *testing.T) {
 					Delimiter: []byte{'#'},
 				},
 			},
+			currentRks: nil,
 		},
 	}
 
 	for _, tc := range testCases {
-		err := adminClient.UpdateTableWithRowKeySchema(ctx, tableConf.TableID, tc.rks)
+		myTableName := myTableNameSpace.New()
+		tableConf := TableConf{
+			TableID: myTableName,
+			Families: map[string]GCPolicy{
+				"fam1": MaxVersionsPolicy(1),
+			},
+		}
+		if tc.currentRks != nil {
+			tableConf.RowKeySchema = tc.currentRks
+		}
+
+		if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+			t.Fatalf("Unexpected error trying to create table: %v", err)
+		}
+		defer adminClient.DeleteTable(ctx, tableConf.TableID)
+
+		err = adminClient.UpdateTableWithRowKeySchema(ctx, tableConf.TableID, tc.updateRks)
 		if tc.errorExpected && err == nil {
-			t.Errorf("Expecting error from test '%v', got nil", tc.desc)
+			t.Fatalf("Expecting error from test '%v', got nil", tc.desc)
 		}
 
 		if !tc.errorExpected && err != nil {
-			t.Errorf("Unexpected error from test '%v': %v", tc.desc, err)
+			t.Fatalf("Unexpected error from test '%v': %v", tc.desc, err)
 		}
 
 		// Get the table to check if the schema is updated
-		tbl, err := adminClient.getTable(ctx, tableConf.TableID, btapb.Table_SCHEMA_VIEW)
+		tbl, err := adminClient.TableInfo(ctx, tableConf.TableID)
 		if !tc.errorExpected && tbl.RowKeySchema == nil {
-			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.rks, tbl)
+			t.Errorf("Expecting row key schema %v to be updated in table, got: %v", tc.updateRks, tbl)
 		}
 
 		// Clear schema ok
@@ -5007,85 +5037,192 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
-func TestIntegration_PrepareAndBindStatement(t *testing.T) {
+func TestIntegration_Execute(t *testing.T) {
+	// Set up table and clients
 	ctx := context.Background()
-	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, client, adminClient, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer cleanup()
-
+	t.Cleanup(func() { cleanup() })
 	if !testEnv.Config().UseProd {
 		t.Skip("emulator doesn't support PrepareQuery")
 	}
-
-	ps, err := client.PrepareStatement(ctx,
-		"SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, "+
-			"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, "+
-			"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, "+
-			"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, "+
-			"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, "+
-			"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, "+
-			"@dateArrayParam AS dateArrayCol",
-		map[string]SQLType{
-			"bytesParam":   BytesSQLType{},
-			"stringParam":  StringSQLType{},
-			"int64Param":   Int64SQLType{},
-			"float32Param": Float32SQLType{},
-			"float64Param": Float64SQLType{},
-			"boolParam":    BoolSQLType{},
-			"tsParam":      TimestampSQLType{},
-			"dateParam":    DateSQLType{},
-			"bytesArrayParam": ArraySQLType{
-				ElemType: BytesSQLType{},
-			},
-			"stringArrayParam": ArraySQLType{
-				ElemType: StringSQLType{},
-			},
-			"int64ArrayParam": ArraySQLType{
-				ElemType: Int64SQLType{},
-			},
-			"float32ArrayParam": ArraySQLType{
-				ElemType: Float32SQLType{},
-			},
-			"float64ArrayParam": ArraySQLType{
-				ElemType: Float64SQLType{},
-			},
-			"boolArrayParam": ArraySQLType{
-				ElemType: BoolSQLType{},
-			},
-			"tsArrayParam": ArraySQLType{
-				ElemType: TimestampSQLType{},
-			},
-			"dateArrayParam": ArraySQLType{
-				ElemType: DateSQLType{},
-			},
-		},
-	)
+	colFam := "address"
+	err = createColumnFamily(ctx, t, adminClient, table.table, colFam, map[codes.Code]bool{codes.Unavailable: true})
 	if err != nil {
-		t.Fatal("PrepareStatement: " + err.Error())
+		t.Fatal("createColumnFamily: " + err.Error())
 	}
 
-	_, err = ps.Bind(map[string]any{
-		"bytesParam":        []byte("foo"),
-		"stringParam":       "stringVal",
-		"int64Param":        int64(1),
-		"float32Param":      float32(1.3),
-		"float64Param":      float64(1.4),
-		"boolParam":         true,
-		"tsParam":           time.Now(),
-		"dateParam":         civil.DateOf(time.Now()),
-		"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
-		"stringArrayParam":  []any{"foo", nil, "bar"},
-		"int64ArrayParam":   []any{int64(1), nil, int64(2)},
-		"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
-		"float64ArrayParam": []float64{1.4, 2.4, 3.4},
-		"boolArrayParam":    []any{true, nil, false},
-		"tsArrayParam":      []any{time.Now(), nil},
-		"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
-	})
-	if err != nil {
-		t.Fatal("Bind: " + err.Error())
+	// Add data to table
+	populateAddresses(ctx, t, table, colFam)
+
+	// Run test cases
+	for _, tc := range []struct {
+		desc          string
+		psQuery       string
+		psParamTypes  map[string]SQLType
+		bsParamValues map[string]any
+	}{
+		{
+			desc:    "select *",
+			psQuery: "SELECT * FROM `" + table.table + "` LIMIT 5",
+		},
+		{
+			desc:    "WITH_HISTORY",
+			psQuery: "SELECT _key, " + colFam + "['state'] AS state FROM `" + table.table + "`(WITH_HISTORY=>TRUE) LIMIT 5",
+		},
+		{
+			desc: "all types in result set",
+			psQuery: "SELECT 'stringVal' AS strCol, b'foo' as bytesCol, 1 AS intCol, CAST(1.2 AS FLOAT32) as f32Col, " +
+				"CAST(1.3 AS FLOAT64) as f64Col, true as boolCol, TIMESTAMP_FROM_UNIX_MILLIS(1000) AS tsCol, " +
+				"DATE(2024, 06, 01) as dateCol, STRUCT(1 as a, \"foo\" as b) AS structCol, [1,2,3] AS arrCol, " +
+				colFam +
+				" as mapCol FROM `" +
+				table.table +
+				"` WHERE _key='row-01' LIMIT 1",
+		},
+		{
+			desc: "all types in query parameters",
+			psQuery: "SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, " +
+				"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, " +
+				"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, " +
+				"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, " +
+				"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, " +
+				"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, " +
+				"@dateArrayParam AS dateArrayCol",
+			psParamTypes: map[string]SQLType{
+				"bytesParam":   BytesSQLType{},
+				"stringParam":  StringSQLType{},
+				"int64Param":   Int64SQLType{},
+				"float32Param": Float32SQLType{},
+				"float64Param": Float64SQLType{},
+				"boolParam":    BoolSQLType{},
+				"tsParam":      TimestampSQLType{},
+				"dateParam":    DateSQLType{},
+				"bytesArrayParam": ArraySQLType{
+					ElemType: BytesSQLType{},
+				},
+				"stringArrayParam": ArraySQLType{
+					ElemType: StringSQLType{},
+				},
+				"int64ArrayParam": ArraySQLType{
+					ElemType: Int64SQLType{},
+				},
+				"float32ArrayParam": ArraySQLType{
+					ElemType: Float32SQLType{},
+				},
+				"float64ArrayParam": ArraySQLType{
+					ElemType: Float64SQLType{},
+				},
+				"boolArrayParam": ArraySQLType{
+					ElemType: BoolSQLType{},
+				},
+				"tsArrayParam": ArraySQLType{
+					ElemType: TimestampSQLType{},
+				},
+				"dateArrayParam": ArraySQLType{
+					ElemType: DateSQLType{},
+				},
+			},
+			bsParamValues: map[string]any{
+				"bytesParam":        []byte("foo"),
+				"stringParam":       "stringVal",
+				"int64Param":        int64(1),
+				"float32Param":      float32(1.3),
+				"float64Param":      float64(1.4),
+				"boolParam":         true,
+				"tsParam":           time.Now(),
+				"dateParam":         civil.DateOf(time.Now()),
+				"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
+				"stringArrayParam":  []any{"foo", nil, "bar"},
+				"int64ArrayParam":   []any{int64(1), nil, int64(2)},
+				"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
+				"float64ArrayParam": []float64{1.4, 2.4, 3.4},
+				"boolArrayParam":    []any{true, nil, false},
+				"tsArrayParam":      []any{time.Now(), nil},
+				"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			ps, err := client.PrepareStatement(ctx, tc.psQuery, tc.psParamTypes)
+			if err != nil {
+				t.Fatal("PrepareStatement: " + err.Error())
+			}
+
+			bs, err := ps.Bind(tc.bsParamValues)
+			if err != nil {
+				t.Fatal("Bind: " + err.Error())
+			}
+			if err = bs.Execute(ctx, func(rr ResultRow) bool {
+				return true
+			}); err != nil {
+				t.Fatal("Execute: " + err.Error())
+			}
+		})
+	}
+}
+
+func populateAddresses(ctx context.Context, t *testing.T, table *Table, colFam string) {
+	v1Timestamp := Time(time.Now().Add(-time.Minute))
+	v2Timestamp := Time(time.Now())
+	type cell struct {
+		Ts    Timestamp
+		Value []byte
+	}
+	muts := []*Mutation{}
+	rowKeys := []string{}
+	for rowKey, mutData := range map[string]map[string]any{
+		"row-01": {
+			"state": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("WA"),
+				},
+				{
+					Ts:    v2Timestamp,
+					Value: []byte("CA"),
+				},
+			},
+			"city": []cell{
+				{
+					Ts:    v2Timestamp,
+					Value: []byte("San Francisco"),
+				},
+			},
+		},
+		"row-02": {
+			"state": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("AZ"),
+				},
+			},
+			"city": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("Phoenix"),
+				},
+			},
+		},
+	} {
+		mut := NewMutation()
+		for col, v := range mutData {
+			cells, ok := v.([]cell)
+			if ok {
+				for _, cell := range cells {
+					mut.Set(colFam, col, cell.Ts, cell.Value)
+				}
+			}
+		}
+		muts = append(muts, mut)
+		rowKeys = append(rowKeys, rowKey)
+	}
+
+	rowErrs, err := table.ApplyBulk(ctx, rowKeys, muts)
+	if err != nil || rowErrs != nil {
+		t.Fatal("ApplyBulk: ", err)
 	}
 }
 

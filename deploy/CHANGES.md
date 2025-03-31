@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.26.4](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.3...deploy/v1.26.4) (2025-03-25)
+
+
+### Documentation
+
+* **deploy:** Fix typo in comments ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
 ## [1.26.3](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.2...deploy/v1.26.3) (2025-03-13)
 
 
