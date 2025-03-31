@@ -393,7 +393,7 @@ var (
 	ParquetBigLakeFileFormat BigLakeFileFormat = "PARQUET"
 )
 
-// Represents the table metadata format for Managed Tables for Apache Iceberg.
+// BigLakeTableFormat represents the table metadata format for Managed Tables for Apache Iceberg.
 type BigLakeTableFormat string
 
 var (
