@@ -124,19 +124,6 @@ func (s Struct) Len() int {
 	return len(s.fields)
 }
 
-// Field returns the name and value of the field at the specified zero-based index.
-// Returns an error if the index is out of bounds.
-func (s Struct) Field(index int) (name string, value any, err error) {
-	if index < 0 || index >= len(s.fields) {
-		err = fmt.Errorf("bigtable: index %d out of bounds for struct with %d fields", index, len(s.fields))
-		return
-	}
-	f := s.fields[index]
-	name = f.Name
-	value = f.Value
-	return
-}
-
 // GetByIndex returns the value of the field at the specified zero-based index
 // and stores it in the value pointed to by dest.
 //
@@ -197,18 +184,6 @@ func (s Struct) GetByName(name string, dest any) error {
 	return s.GetByIndex(indices[0], dest)
 }
 
-// Fields returns a slice containing the name and value for all fields in the struct.
-// Modifications to the returned slice or its elements do not affect the original Struct.
-func (s Struct) Fields() []structFieldWithValue {
-	if s.fields == nil {
-		return nil
-	}
-	// Return a copy to prevent external modification
-	fCopy := make([]structFieldWithValue, len(s.fields))
-	copy(fCopy, s.fields)
-	return fCopy
-}
-
 // GetByIndex returns the value of the column at the specified zero-based index and stores it
 // in the value pointed to by dest.
 //
@@ -240,7 +215,6 @@ func (s Struct) Fields() []structFieldWithValue {
 //
 // When (WITH_HISTORY=>TRUE) is used in the query, the value of versioned column is of the form []Struct
 // i.e. []{{"timestamp": <timestamp>, "value": <value> }, {"timestamp": <timestamp>, "value": <value> }}.
-// So, dest should be *[]Struct to retrieve such values
 //
 // BYTES Keys in MAPs: For SQL MAP columns where the key type is `BYTES` (e.g., MAP<BYTES, INT64>),
 // the Go map representation assigned to dest will use `string` keys. These string keys are the
@@ -409,7 +383,7 @@ var (
 	boolType    = reflect.TypeOf(false)
 	timeType    = reflect.TypeOf(time.Time{})
 	dateType    = reflect.TypeOf(civil.Date{})
-	anyMapType  = reflect.TypeOf(map[string]any{}) // Default for Struct/Map
+	structType  = reflect.TypeOf(Struct{})
 )
 
 // pbTypeToGoReflectTypeInternal determines the Go reflect.Type, returning pointers
@@ -465,7 +439,7 @@ func pbTypeToGoReflectTypeInternal(pbType *btpb.Type, pointerIfNullable bool) (r
 		baseType = reflect.MapOf(keyGoType, valGoType)
 	case *btpb.Type_StructType:
 		needsPointerWrapperForNull = false
-		baseType = anyMapType
+		baseType = structType
 	default:
 		return nil, fmt.Errorf("unrecognized response type kind: %T. You might need to upgrade your client", k)
 	}
@@ -494,7 +468,10 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 	if pbType == nil {
 		return nil, errors.New("internal error - pbType is nil during value conversion")
 	}
-	if pbVal == nil || pbVal.Kind == nil {
+	if pbVal == nil {
+		return nil, errors.New("internal error - pbVal is nil during value conversion")
+	}
+	if pbVal.Kind == nil {
 		// Represent SQL NULL as Go's nil interface value.
 		return nil, nil
 	}
@@ -629,6 +606,11 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 			}
 			pbKey := kvPairProto.ArrayValue.Values[0]
 			pbValue := kvPairProto.ArrayValue.Values[1]
+
+			// Recursively convert the protobuf key value (pbKey) based on its protobuf type (keyPbType).
+			// If keyPbType is BytesType, goKey will hold the resulting Go []byte slice.
+			// If keyPbType is StringType or Int64Type, goKey will hold the string or int64.
+			// For BYTES keys, the subsequent logic base64 encodes this []byte slice for use in the Go map.
 			goKey, errK := pbValueToGoValue(pbKey, keyPbType)
 			if errK != nil {
 				return nil, fmt.Errorf("error converting map key at entry index %d: %w", i, errK)

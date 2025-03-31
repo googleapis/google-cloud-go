@@ -5065,10 +5065,11 @@ func TestIntegration_Execute(t *testing.T) {
 	base64State := base64.StdEncoding.EncodeToString([]byte("state"))
 
 	// While writing, "timestamp": s"2025-03-31 03:26:33.489256 +0000 UTC"
-	// When reading back, "timestamp": s"2025-03-31 03:26:33.48 +0000 UTC"
-	ignoreMillisecondDiff := cmpopts.EquateApproxTime(time.Second)
+	// When reading back, "timestamp": s"2025-03-31 03:26:33.489 +0000 UTC"
+	ignoreMillisecondDiff := cmpopts.EquateApproxTime(time.Millisecond)
 	cmpOpts := []cmp.Option{ignoreMillisecondDiff, cmp.AllowUnexported(Struct{})}
 
+	tsParamValue := time.Now()
 	type col struct {
 		name     string
 		gotDest  any
@@ -5139,7 +5140,7 @@ func TestIntegration_Execute(t *testing.T) {
 			},
 		},
 		{
-			desc:    "WITH_HISTORY",
+			desc:    "WITH_HISTORY key and column",
 			psQuery: "SELECT _key, " + colFam + "['state'] AS state FROM `" + table.table + "`(WITH_HISTORY=>TRUE) LIMIT 5",
 			rows: [][]col{
 				{
@@ -5163,6 +5164,7 @@ func TestIntegration_Execute(t *testing.T) {
 										Value: []byte("CA"),
 									},
 								},
+								nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
 							},
 							{
 								fields: []structFieldWithValue{
@@ -5175,6 +5177,7 @@ func TestIntegration_Execute(t *testing.T) {
 										Value: []byte("WA"),
 									},
 								},
+								nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
 							},
 						},
 					},
@@ -5199,6 +5202,64 @@ func TestIntegration_Execute(t *testing.T) {
 										Name:  "value",
 										Value: []byte("AZ"),
 									},
+								},
+								nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc:    "WITH_HISTORY column family",
+			psQuery: "SELECT " + colFam + " FROM `" + table.table + "`(WITH_HISTORY=>TRUE) WHERE _key='row-01'",
+			rows: [][]col{
+				{
+					{
+						name:    "address",
+						gotDest: map[string][]Struct{},
+						wantDest: map[string][]Struct{
+							base64State: {
+								{
+									fields: []structFieldWithValue{
+										{
+											Name:  "timestamp",
+											Value: v2Timestamp.Time(),
+										},
+										{
+											Name:  "value",
+											Value: []byte("CA"),
+										},
+									},
+									nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+								},
+								{
+									fields: []structFieldWithValue{
+										{
+											Name:  "timestamp",
+											Value: v1Timestamp.Time(),
+										},
+										{
+											Name:  "value",
+											Value: []byte("WA"),
+										},
+									},
+									nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+								},
+							},
+							base64City: {
+								{
+									fields: []structFieldWithValue{
+										{
+											Name:  "timestamp",
+											Value: v2Timestamp.Time(),
+										},
+										{
+											Name:  "value",
+											Value: []byte("San Francisco"),
+										},
+									},
+									nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
 								},
 							},
 						},
@@ -5261,7 +5322,8 @@ func TestIntegration_Execute(t *testing.T) {
 						name:    "structCol",
 						gotDest: Struct{},
 						wantDest: Struct{
-							fields: []structFieldWithValue{{Name: "a", Value: int64(1)}, {Name: "b", Value: string("foo")}},
+							fields:      []structFieldWithValue{{Name: "a", Value: int64(1)}, {Name: "b", Value: string("foo")}},
+							nameToIndex: map[string][]int{"a": {0}, "b": {1}},
 						},
 					},
 					{
@@ -5330,16 +5392,16 @@ func TestIntegration_Execute(t *testing.T) {
 				"float32Param":      float32(1.3),
 				"float64Param":      float64(1.4),
 				"boolParam":         true,
-				"tsParam":           time.Now(),
-				"dateParam":         civil.DateOf(time.Now()),
+				"tsParam":           tsParamValue,
+				"dateParam":         civil.DateOf(tsParamValue),
 				"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
 				"stringArrayParam":  []string{"baz", "qux"},
 				"int64ArrayParam":   []any{int64(1), nil, int64(2)},
 				"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
 				"float64ArrayParam": []float64{1.4, 2.4, 3.4},
 				"boolArrayParam":    []any{true, nil, false},
-				"tsArrayParam":      []any{time.Now(), nil},
-				"dateArrayParam":    []civil.Date{civil.DateOf(time.Now()), civil.DateOf(time.Now().Add(24 * time.Hour))},
+				"tsArrayParam":      []any{tsParamValue, nil},
+				"dateArrayParam":    []civil.Date{civil.DateOf(tsParamValue), civil.DateOf(tsParamValue.Add(24 * time.Hour))},
 			},
 			rows: [][]col{
 				{
@@ -5376,12 +5438,12 @@ func TestIntegration_Execute(t *testing.T) {
 					{
 						name:     "tsCol",
 						gotDest:  time.Time{},
-						wantDest: time.Now(),
+						wantDest: tsParamValue,
 					},
 					{
 						name:     "dateCol",
 						gotDest:  civil.Date{},
-						wantDest: civil.DateOf(time.Now()),
+						wantDest: civil.DateOf(tsParamValue),
 					},
 					{
 						name:     "bytesArrayCol",
@@ -5416,12 +5478,12 @@ func TestIntegration_Execute(t *testing.T) {
 					{
 						name:     "tsArrayCol",
 						gotDest:  []any{},
-						wantDest: []any{time.Now(), nil},
+						wantDest: []any{tsParamValue, nil},
 					},
 					{
 						name:     "dateArrayCol",
-						gotDest:  []civil.Date{civil.DateOf(time.Now()), civil.DateOf(time.Now().Add(24 * time.Hour))},
-						wantDest: []civil.Date{civil.DateOf(time.Now()), civil.DateOf(time.Now().Add(24 * time.Hour))},
+						gotDest:  []civil.Date{civil.DateOf(tsParamValue), civil.DateOf(tsParamValue.Add(24 * time.Hour))},
+						wantDest: []civil.Date{civil.DateOf(tsParamValue), civil.DateOf(tsParamValue.Add(24 * time.Hour))},
 					},
 				},
 			},

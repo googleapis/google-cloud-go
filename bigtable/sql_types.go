@@ -505,21 +505,11 @@ func (s StructSQLType) isValidPrepareParamType() bool { return false }
 // typeProto generates the protobuf Type message for a Struct.
 func (s StructSQLType) typeProto() (*btpb.Type, error) {
 	pbFields := make([]*btpb.Type_Struct_Field, len(s.Fields))
-	seenNames := make(map[string]struct{})
-
-	if len(s.Fields) == 0 {
-		// Representing an empty struct. Is this valid in SQL? Assume yes for now.
-	}
 
 	for i, field := range s.Fields {
 		if field.Name == "" {
 			return nil, fmt.Errorf("bigtable: StructSQLType field at index %d must have a name", i)
 		}
-		if _, exists := seenNames[field.Name]; exists {
-			// GoogleSQL structs allow duplicate field names, but it's unusual for parameters. Error for now.
-			return nil, fmt.Errorf("bigtable: StructSQLType duplicate field name %q specified", field.Name)
-		}
-		seenNames[field.Name] = struct{}{}
 		if field.Type == nil {
 			return nil, fmt.Errorf("bigtable: StructSQLType field %q must have a non-nil type", field.Name)
 		}

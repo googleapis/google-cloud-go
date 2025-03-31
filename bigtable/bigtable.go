@@ -538,6 +538,9 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 // Allowed parameter value types are []byte, string, int64, float32, float64, bool,
 // time.Time, civil.Date, array, slice and nil
 func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error) {
+	if ps == nil {
+		return nil, errors.New("bigtable: nil prepared statement")
+	}
 	// check that every parameter is bound
 	for paramName := range ps.paramTypes {
 		_, found := values[paramName]
