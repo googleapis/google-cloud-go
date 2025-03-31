@@ -345,7 +345,7 @@ func TestResultRow_GetByIndex(t *testing.T) {
 		// Error Cases
 		{"int64 to int", 1, func() any { var v int; return &v }, nil, true}, // Conversion T->T
 		{"index negative", -1, func() any { var v any; return &v }, nil, true},
-		{"index too large", 13, func() any { var v any; return &v }, nil, true},
+		{"index too large", 20, func() any { var v any; return &v }, nil, true},
 		{"ErrNilDest", 0, func() any {
 			return nil
 		}, nil, true},
@@ -684,7 +684,7 @@ func TestStruct_GetByName(t *testing.T) {
 
 		// Error Cases
 		{"not found", "address", func() any { var v string; return &v }, nil, true},
-		{"empty name", "", func() any { var v int64; return &v }, int64(999), false},
+		{"empty name", "", func() any { var v int64; return &v }, nil, true},
 		{"case sensitive miss", "ID", func() any { var v any; return &v }, nil, true},
 		{"error duplicate name", "name", func() any { var v string; return &v }, nil, true}, // Error on duplicate
 		{"error nil destination", "id", func() any { return nil }, nil, true},

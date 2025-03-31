@@ -172,6 +172,9 @@ func (s Struct) GetByIndex(index int, dest any) error {
 // during assignment.
 // Returns an error if no/multiple field matches the name, dest is invalid, or assignment fails.
 func (s Struct) GetByName(name string, dest any) error {
+	if len(name) == 0 {
+		return errors.New("bigtable: field name cannot be empty. Use GetByIndex instead to retrieve unnamed fields")
+	}
 	indices, found := (s.nameToIndex)[name]
 	if !found || len(indices) == 0 {
 		return errors.New("bigtable: field " + name + " not found in struct")
