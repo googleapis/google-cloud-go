@@ -1,6 +1,17 @@
 # Changes
 
 
+## [1.80.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.79.0...aiplatform/v1.80.0) (2025-03-27)
+
+
+### Features
+
+* **aiplatform:** Add batch prediction assessments to multimodal dataset RPCs ([#11906](https://github.com/googleapis/google-cloud-go/issues/11906)) ([12465b5](https://github.com/googleapis/google-cloud-go/commit/12465b5f3f70d49b19ee5e24dae0f731a24b894d))
+* **aiplatform:** Add example, example_store, and example_store_service protos ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **aiplatform:** Add session.proto and session_service.proto ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **aiplatform:** Add support for Vertex AI Search engine ([#11912](https://github.com/googleapis/google-cloud-go/issues/11912)) ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **aiplatform:** Enable force deletion in ReasoningEngine ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
 ## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.78.0...aiplatform/v1.79.0) (2025-03-25)
 
 
