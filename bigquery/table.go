@@ -383,13 +383,13 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 	}
 }
 
-// Represents the file format for Managed Tables for Apache Iceberg.
+// BigLakeFileFormat represents the file format for Managed Tables for Apache Iceberg.
 type BigLakeFileFormat string
 
 var (
-	// Default value.
+	// UnspecifiedBigLakeFileFormat represents the default value.
 	UnspecifiedBigLakeFileFormat BigLakeFileFormat = "FILE_FORMAT_UNSPECIFIED"
-	// Apache Parquet Format.
+	// ParquetBigLakeFileFormat represents Apache Parquet Format.
 	ParquetBigLakeFileFormat BigLakeFileFormat = "PARQUET"
 )
 
@@ -397,9 +397,9 @@ var (
 type BigLakeTableFormat string
 
 var (
-	// Default value.
+	// UnspecifiedBigLakeTableFormat represents the default value.
 	UnspecifiedBigLakeTableFormat BigLakeTableFormat = "TABLE_FORMAT_UNSPECIFIED"
-	// Apache Iceberg Format.
+	// IcebergBigLakeTableFormat represent Apache Iceberg Format.
 	IcebergBigLakeTableFormat BigLakeTableFormat = "ICEBERG"
 )
 
