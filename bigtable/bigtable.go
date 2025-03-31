@@ -440,9 +440,6 @@ type preparedQueryData struct {
 	validUntil *timestamppb.Timestamp
 
 	Metadata *ResultRowMetadata
-
-	// map from column name to list of indices {name -> [idx1, idx2, ...]}
-	colIndexMap *map[string][]int
 }
 
 func (pqd *preparedQueryData) initializeMetadataAndMap() error {
@@ -451,13 +448,6 @@ func (pqd *preparedQueryData) initializeMetadataAndMap() error {
 		return err
 	}
 	pqd.Metadata = rrMetadata
-
-	colIndexMap := make(map[string][]int)
-	for i, colInfo := range rrMetadata.Columns {
-		name := colInfo.Name
-		colIndexMap[name] = append(colIndexMap[name], i)
-	}
-	pqd.colIndexMap = &colIndexMap
 	return nil
 }
 
@@ -557,8 +547,8 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 	}
 
 	boundParams := map[string]*btpb.Value{}
-	// Validate that the parameter was specified during prepare
 	for paramName, paramVal := range values {
+		// Validate that the parameter was specified during prepare
 		psType, found := ps.paramTypes[paramName]
 		if !found {
 			return nil, errors.New("bigtable: no parameter with name " + paramName + " in prepared statement")
@@ -843,7 +833,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 					completeRowValues, valuesBuffer = valuesBuffer[0:numCols], valuesBuffer[numCols:]
 
 					// Construct ResultRow
-					rr, err := newResultRow(completeRowValues, finalizedStmt.metadata, finalizedStmt.colIndexMap, finalizedStmt.Metadata)
+					rr, err := newResultRow(completeRowValues, finalizedStmt.metadata, finalizedStmt.Metadata)
 					if err != nil {
 						return err
 					}

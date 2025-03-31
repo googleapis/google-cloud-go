@@ -5060,9 +5060,13 @@ func TestIntegration_Execute(t *testing.T) {
 	v2Timestamp := Time(time.Now())
 	populateAddresses(ctx, t, table, colFam, v1Timestamp, v2Timestamp)
 
-	type wantCol struct {
-		name  string
-		value any
+	// While writing, "timestamp": s"2025-03-31 03:26:33.489256 +0000 UTC"
+	// When reading back, "timestamp": s"2025-03-31 03:26:33.48 +0000 UTC"
+	ignoreMillisecondDiff := cmpopts.EquateApproxTime(time.Second)
+	type col struct {
+		name     string
+		gotDest  any
+		wantDest any
 	}
 	// Run test cases
 	for _, tc := range []struct {
@@ -5070,52 +5074,60 @@ func TestIntegration_Execute(t *testing.T) {
 		psQuery       string
 		psParamTypes  map[string]SQLType
 		bsParamValues map[string]any
-		wantRows      [][]wantCol
+		rows          [][]col
 	}{
 		{
 			desc:    "select *",
 			psQuery: "SELECT * FROM `" + table.table + "` ORDER BY _key LIMIT 5",
-			wantRows: [][]wantCol{
+			rows: [][]col{
 				{
 					{
-						name:  "_key",
-						value: []byte("row-01"),
+						name:     "_key",
+						gotDest:  []byte{},
+						wantDest: []byte("row-01"),
 					},
 					{
-						name: "address",
-						value: map[string][]byte{
+						name:    "address",
+						gotDest: map[string][]byte{},
+						wantDest: map[string][]byte{
 							"city":  []byte("San Francisco"),
 							"state": []byte("CA"),
 						},
 					},
 					{
-						name:  "follows",
-						value: map[string][]byte{},
+						name:     "follows",
+						gotDest:  map[string][]byte{},
+						wantDest: map[string][]byte{},
 					},
 					{
-						name:  "sum",
-						value: map[string]int64{},
+						name:     "sum",
+						gotDest:  map[string]int64{},
+						wantDest: map[string]int64{},
 					},
 				},
 				{
 					{
-						name:  "_key",
-						value: []byte("row-02"),
+						name:     "_key",
+						gotDest:  []byte{},
+						wantDest: []byte("row-02"),
 					},
 					{
-						name: "address",
-						value: map[string][]byte{
+						name:    "address",
+						gotDest: map[string][]byte{},
+						wantDest: map[string][]byte{
 							"city":  []byte("Phoenix"),
 							"state": []byte("AZ"),
 						},
 					},
 					{
-						name:  "follows",
-						value: map[string][]byte{},
+						name:     "follows",
+						gotDest:  map[string][]byte{},
+						wantDest: map[string][]byte{},
 					},
 					{
-						name:  "sum",
-						value: map[string]int64{},
+						name:     "sum",
+						gotDest:  map[string]int64{},
+						wantDest: map[string]int64{},
 					},
 				},
 			},
@@ -5123,15 +5135,17 @@ func TestIntegration_Execute(t *testing.T) {
 		{
 			desc:    "WITH_HISTORY",
 			psQuery: "SELECT _key, " + colFam + "['state'] AS state FROM `" + table.table + "`(WITH_HISTORY=>TRUE) LIMIT 5",
-			wantRows: [][]wantCol{
+			rows: [][]col{
 				{
 					{
-						name:  "_key",
-						value: []byte("row-01"),
+						name:     "_key",
+						gotDest:  []byte{},
+						wantDest: []byte("row-01"),
 					},
 					{
-						name: "state",
-						value: []map[string]any{
+						name:    "state",
+						gotDest: []map[string]any{},
+						wantDest: []map[string]any{
 							{
 								"timestamp": v2Timestamp.Time(),
 								"value":     []byte("CA"),
@@ -5145,12 +5159,14 @@ func TestIntegration_Execute(t *testing.T) {
 				},
 				{
 					{
-						name:  "_key",
-						value: []byte("row-02"),
+						name:     "_key",
+						gotDest:  []byte{},
+						wantDest: []byte("row-02"),
 					},
 					{
-						name: "state",
-						value: []map[string]any{
+						name:    "state",
+						gotDest: []map[string]any{},
+						wantDest: []map[string]any{
 							{
 								"timestamp": v1Timestamp.Time(),
 								"value":     []byte("AZ"),
@@ -5169,54 +5185,65 @@ func TestIntegration_Execute(t *testing.T) {
 				" as mapCol FROM `" +
 				table.table +
 				"` WHERE _key='row-01' LIMIT 1",
-			wantRows: [][]wantCol{
+			rows: [][]col{
 				{
 					{
-						name:  "strCol",
-						value: "stringVal",
+						name:     "strCol",
+						gotDest:  "",
+						wantDest: "stringVal",
 					},
 					{
-						name:  "bytesCol",
-						value: []byte("foo"),
+						name:     "bytesCol",
+						gotDest:  []byte{},
+						wantDest: []byte("foo"),
 					},
 					{
-						name:  "intCol",
-						value: int64(1),
+						name:     "intCol",
+						gotDest:  int64(0),
+						wantDest: int64(1),
 					},
 					{
-						name:  "f32Col",
-						value: float32(1.2),
+						name:     "f32Col",
+						gotDest:  float32(0),
+						wantDest: float32(1.2),
 					},
 					{
-						name:  "f64Col",
-						value: float64(1.3),
+						name:     "f64Col",
+						gotDest:  float64(0),
+						wantDest: float64(1.3),
 					},
 					{
-						name:  "boolCol",
-						value: true,
+						name:     "boolCol",
+						gotDest:  false,
+						wantDest: true,
 					},
 					{
-						name:  "tsCol",
-						value: time.Unix(1, 0),
+						name:     "tsCol",
+						gotDest:  time.Time{},
+						wantDest: time.Unix(1, 0),
 					},
 					{
-						name:  "dateCol",
-						value: civil.Date{Year: 2024, Month: 06, Day: 01},
+						name:     "dateCol",
+						gotDest:  civil.Date{},
+						wantDest: civil.Date{Year: 2024, Month: 06, Day: 01},
 					},
 					{
-						name: "structCol",
-						value: map[string]any{
+						name:    "structCol",
+						gotDest: map[string]any{},
+						wantDest: map[string]any{
 							"a": int64(1),
 							"b": "foo",
 						},
 					},
 					{
-						name:  "arrCol",
-						value: []int64{1, 2, 3},
+						name:     "arrCol",
+						gotDest:  []int64{},
+						wantDest: []int64{1, 2, 3},
 					},
 					{
-						name: "mapCol",
-						value: map[string][]byte{
+						name:    "mapCol",
+						gotDest: map[string][]byte{},
+						wantDest: map[string][]byte{
 							"city":  []byte("San Francisco"),
 							"state": []byte("CA"),
 						},
@@ -5283,73 +5310,89 @@ func TestIntegration_Execute(t *testing.T) {
 				"float64ArrayParam": []float64{1.4, 2.4, 3.4},
 				"boolArrayParam":    []any{true, nil, false},
 				"tsArrayParam":      []any{time.Now(), nil},
-				"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
+				"dateArrayParam":    []civil.Date{civil.DateOf(time.Now()), civil.DateOf(time.Now().Add(24 * time.Hour))},
 			},
-			wantRows: [][]wantCol{
+			rows: [][]col{
 				{
 					{
-						name:  "bytesCol",
-						value: []byte("foo"),
+						name:     "bytesCol",
+						gotDest:  []byte{},
+						wantDest: []byte("foo"),
 					},
 					{
-						name:  "strCol",
-						value: "stringVal",
+						name:     "strCol",
+						gotDest:  "",
+						wantDest: "stringVal",
 					},
 					{
-						name:  "int64Col",
-						value: int64(1),
+						name:     "int64Col",
+						gotDest:  int64(0),
+						wantDest: int64(1),
 					},
 					{
-						name:  "float32Col",
-						value: float32(1.3),
+						name:     "float32Col",
+						gotDest:  float32(0),
+						wantDest: float32(1.3),
 					},
 					{
-						name:  "float64Col",
-						value: float64(1.4),
+						name:     "float64Col",
+						gotDest:  float64(0),
+						wantDest: float64(1.4),
 					},
 					{
-						name:  "boolCol",
-						value: true,
+						name:     "boolCol",
+						gotDest:  false,
+						wantDest: true,
 					},
 					{
-						name:  "tsCol",
-						value: time.Now(),
+						name:     "tsCol",
+						gotDest:  time.Time{},
+						wantDest: time.Now(),
 					},
 					{
-						name:  "dateCol",
-						value: civil.DateOf(time.Now()),
+						name:     "dateCol",
+						gotDest:  civil.Date{},
+						wantDest: civil.DateOf(time.Now()),
 					},
 					{
-						name:  "bytesArrayCol",
-						value: [][]byte{[]byte("foo"), nil, []byte("bar")},
+						name:     "bytesArrayCol",
+						gotDest:  [][]byte{},
+						wantDest: [][]byte{[]byte("foo"), nil, []byte("bar")},
 					},
 					{
-						name:  "stringArrayCol",
-						value: []string{"baz", "qux"},
+						name:     "stringArrayCol",
+						gotDest:  []string{},
+						wantDest: []string{"baz", "qux"},
 					},
 					{
-						name:  "int64ArrayCol",
-						value: []any{int64(1), nil, int64(2)},
+						name:     "int64ArrayCol",
+						gotDest:  []any{},
+						wantDest: []any{int64(1), nil, int64(2)},
 					},
 					{
-						name:  "float32ArrayCol",
-						value: []any{float32(1.3), nil, float32(2.3)},
+						name:     "float32ArrayCol",
+						gotDest:  []any{},
+						wantDest: []any{float32(1.3), nil, float32(2.3)},
 					},
 					{
-						name:  "float64ArrayCol",
-						value: []float64{1.4, 2.4, 3.4},
+						name:     "float64ArrayCol",
+						gotDest:  []float64{},
+						wantDest: []float64{1.4, 2.4, 3.4},
 					},
 					{
-						name:  "boolArrayCol",
-						value: []any{true, nil, false},
+						name:     "boolArrayCol",
+						gotDest:  []any{},
+						wantDest: []any{true, nil, false},
 					},
 					{
-						name:  "tsArrayCol",
-						value: []any{time.Now(), nil},
+						name:     "tsArrayCol",
+						gotDest:  []any{},
+						wantDest: []any{time.Now(), nil},
 					},
 					{
-						name:  "dateArrayCol",
-						value: "[]civil.Date{civil.DateOf(time.Now())}",
+						name:     "dateArrayCol",
+						gotDest:  []civil.Date{civil.DateOf(time.Now()), civil.DateOf(time.Now().Add(24 * time.Hour))},
+						wantDest: []civil.Date{civil.DateOf(time.Now()), civil.DateOf(time.Now().Add(24 * time.Hour))},
 					},
 				},
 			},
@@ -5365,58 +5408,80 @@ func TestIntegration_Execute(t *testing.T) {
 			if err != nil {
 				t.Fatal("Bind: " + err.Error())
 			}
+
 			gotRowCount := 0
 			if err = bs.Execute(ctx, func(rr ResultRow) bool {
-				// Assert that rr has correct values using DataTo and cmp.Diff
-				if (tc.wantRows) != nil {
-					if gotRowCount >= len(tc.wantRows) {
+				foundErr := false
+
+				// Assert that rr has correct values
+				if (tc.rows) != nil {
+					// more rows than expected
+					if gotRowCount >= len(tc.rows) {
 						t.Fatalf("#%v: Unexpected row returned from Execute. gotRow: %#v", gotRowCount, rr)
 					}
 
 					var wantColCount int
-					for wantColCount < len(tc.wantRows[gotRowCount]) {
-						wantCol := tc.wantRows[gotRowCount][wantColCount]
-						foundErr := false
+					for wantColCount < len(tc.rows[gotRowCount]) {
+						gotCurrCol := tc.rows[gotRowCount][wantColCount]
+						destType := reflect.TypeOf(gotCurrCol.gotDest)
 
-						wantColName := wantCol.name
-						wantColValue := wantCol.value
 						// Assert GetByName returns correct value
-						gotColValue, err := rr.GetByName(wantColName)
-						if err != nil {
-							t.Errorf("[Row:%v Column:%v] GetByName: %v", gotRowCount, wantColName, err)
+						gotDestPtrReflectValue := reflect.New(destType)
+						gotDestPtrInterface := gotDestPtrReflectValue.Interface()
+						errGet := rr.GetByName(gotCurrCol.name, gotDestPtrInterface)
+						if errGet != nil {
+							t.Errorf("Row #%d: GetByName(name='%s', dest type='%T') failed: %v", gotRowCount, gotCurrCol.name, gotDestPtrInterface, errGet)
 							foundErr = true
 						}
-						if !testutil.Equal(gotColValue, wantColValue, cmpopts.EquateApproxTime(time.Second)) {
-							t.Errorf("[Row:%v Column:%v] GetByName value mismatch: got: %#v, want: %#v, diff (-want +got):\n %+v",
-								gotRowCount, wantColName, gotColValue, wantColValue,
-								testutil.Diff(wantColValue, gotColValue, cmpopts.EquateApproxTime(time.Microsecond)))
+						gotDest := reflect.ValueOf(gotDestPtrInterface).Elem().Interface()
+
+						if diff := testutil.Diff(gotCurrCol.wantDest, gotDest, ignoreMillisecondDiff); diff != "" {
+							t.Errorf("[Row:%v Column:%v] GetByName: got: %#v, want: %#v, diff (-want +got):\n %+v",
+								gotRowCount, wantColCount, gotDest, gotCurrCol.wantDest, diff)
 							foundErr = true
 						}
 
 						// Assert GetByIndex returns correct value
-						gotColValue, err = rr.GetByIndex(wantColCount)
-						if err != nil {
-							t.Errorf("[Row:%v Column:%v] GetByIndex: %v", gotRowCount, wantColCount, err)
+						gotDestPtrReflectValue = reflect.New(destType)
+						gotDestPtrInterface = gotDestPtrReflectValue.Interface()
+						errGet = rr.GetByIndex(wantColCount, gotDestPtrInterface)
+						if errGet != nil {
+							t.Errorf("Row #%d: GetByIndex(index='%d', destType='%T') failed: %v", gotRowCount, wantColCount, gotDest, errGet)
 							foundErr = true
 						}
-						if !testutil.Equal(gotColValue, wantColValue, cmpopts.EquateApproxTime(time.Second)) {
+						gotDest = reflect.ValueOf(gotDestPtrInterface).Elem().Interface()
+						if diff := testutil.Diff(gotCurrCol.wantDest, gotDest, ignoreMillisecondDiff); diff != "" {
 							t.Errorf("[Row:%v Column:%v] GetByIndex: got: %#v, want: %#v, diff (-want +got):\n %+v",
-								gotRowCount, wantColCount, gotColValue, wantColValue,
-								testutil.Diff(wantColValue, gotColValue, cmpopts.EquateApproxTime(time.Microsecond)))
+								gotRowCount, wantColCount, gotDest, gotCurrCol.wantDest, diff)
 							foundErr = true
-						}
-						if foundErr {
-							return false // Stop processing on error
 						}
 						wantColCount++
 					}
-					if len(rr.pbValues) != len(tc.wantRows[gotRowCount]) {
-						t.Errorf("[Row:%v] Number of columns: got: %v, want: %v", gotRowCount, len(rr.pbValues), len(tc.wantRows[gotRowCount]))
-						gotColCount := wantColCount
-						for gotColCount < len(rr.pbValues) {
-							t.Errorf("[Row:%v Column:%v]: Unexpected column with value: %v", gotRowCount, gotColCount, rr.pbValues[gotColCount])
-							gotColCount++
+					if len(rr.pbValues) != len(tc.rows[gotRowCount]) {
+						t.Errorf("[Row:%v] Number of columns: got: %v, want: %v", gotRowCount, len(rr.pbValues), len(tc.rows[gotRowCount]))
+
+						// more columns than expected
+						if len(rr.pbValues) > len(tc.rows[gotRowCount]) {
+							i := len(tc.rows[gotRowCount])
+							for i < len(rr.pbValues) {
+								t.Errorf("[Row:%v Column:%v]: Unexpected column with value: %v", gotRowCount, i, rr.pbValues[i])
+								i++
+							}
+							foundErr = true
 						}
+
+						// lesser columns than expected
+						if len(rr.pbValues) < len(tc.rows[gotRowCount]) {
+							i := len(rr.pbValues)
+							for i < len(tc.rows[gotRowCount]) {
+								t.Errorf("[Row:%v Column:%v]: Missing column with value: %v", gotRowCount, i, tc.rows[gotRowCount][i])
+								i++
+							}
+							foundErr = true
+						}
+					}
+
+					if foundErr {
 						return false // Stop processing on error
 					}
 				}
@@ -5426,11 +5491,13 @@ func TestIntegration_Execute(t *testing.T) {
 				t.Fatal("Execute: " + err.Error())
 			}
 
-			if gotRowCount < len(tc.wantRows) {
-				wantRowNum := gotRowCount
-				for wantRowNum < len(tc.wantRows) {
-					t.Errorf("#%v: Row missing in Execute response: %#v", wantRowNum, tc.wantRows[gotRowCount])
-					wantRowNum++
+			// lesser rows than expected
+			if gotRowCount < len(tc.rows) {
+				t.Errorf("Number of rows: got: %v, want: %v", gotRowCount, len(tc.rows))
+				i := gotRowCount
+				for i < len(tc.rows) {
+					t.Errorf("#%v: Row missing in Execute response: %#v", i, tc.rows[gotRowCount])
+					i++
 				}
 			}
 		})

@@ -1573,7 +1573,9 @@ func TestAnySQLTypeToPbVal(t *testing.T) {
 					},
 				},
 				Kind: &btpb.Value_ArrayValue{
-					ArrayValue: &btpb.ArrayValue{},
+					ArrayValue: &btpb.ArrayValue{
+						Values: []*btpb.Value{},
+					},
 				},
 			},
 		},
@@ -1607,7 +1609,7 @@ func TestAnySQLTypeToPbVal(t *testing.T) {
 				return
 			}
 			if tt.wantErr {
-				if err != nil && err.Error() != tt.wantErrMsg {
+				if err != nil && !strings.Contains(err.Error(), tt.wantErrMsg) {
 					t.Errorf("error got: %v, want: %v", err, tt.wantErrMsg)
 				}
 				return
@@ -1662,14 +1664,14 @@ func TestPreparedStatementBind(t *testing.T) {
 			paramTypes: map[string]SQLType{"param1": StringSQLType{}, "param2": StringSQLType{}},
 			values:     map[string]any{"param1": "value1"},
 			wantErr:    true,
-			wantErrMsg: "bigtable: parameter param2 not bound in prepared statement",
+			wantErrMsg: "bigtable: parameter \"param2\" not bound in call to Bind",
 		},
 		{
 			testName:   "not bound error - all missing",
 			paramTypes: map[string]SQLType{"param1": StringSQLType{}, "param2": StringSQLType{}},
 			values:     nil,
 			wantErr:    true,
-			wantErrMsg: "not bound in prepared statement",
+			wantErrMsg: "not bound in call to Bind",
 		},
 	}
 	for _, tt := range tests {

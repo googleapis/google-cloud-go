@@ -578,5 +578,5 @@ func (e *errTypeMismatch) Error() string {
 		expectedTypeName = fmt.Sprintf("StructSQLType (with %d fields)", len(t.Fields))
 	}
 
-	return fmt.Sprintf("bigtable: parameter type mismatch: expected Go type compatible with %s, but got %T", expectedTypeName, e.value)
+	return fmt.Sprintf("parameter type mismatch: expected Go type compatible with %s, but got %T", expectedTypeName, e.value)
 }
