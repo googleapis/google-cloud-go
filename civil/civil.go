@@ -47,7 +47,10 @@ func DateOf(t time.Time) Date {
 func ParseDate(s string) (Date, error) {
 	t, err := time.Parse("2006-01-02", s)
 	if err != nil {
-		return Date{}, err
+		t, err = time.Parse("2006-1-2", s)
+		if err != nil {
+			return Date{}, err
+		}
 	}
 	return DateOf(t), nil
 }
