@@ -1754,8 +1754,8 @@ func TestExecuteQuery(t *testing.T) {
 				newPrepareQueryResp(preparedQuery1, colFamAddress, colFamInfo),
 			},
 			mockRecvMsgResps: []recvMsgResp{
-				newExecQueryRespPartialBatchFirstHalf(true /* reset */, nil /* sleep */, colFamAddress),
-				newExecQueryRespPartialBatchSecondHalf(false /* reset */, nil /* sleep */, colFamInfo),
+				newExecQueryRespPartialBatchFirstHalf(true /* reset */, nil /* sleep */, []string{colFamAddress}),
+				newExecQueryRespPartialBatchSecondHalf(false /* reset */, nil /* sleep */, []string{colFamAddress}, []string{colFamInfo}),
 				newExecQueryRespResumeToken(),
 				{err: io.EOF},
 			},
@@ -1763,6 +1763,37 @@ func TestExecuteQuery(t *testing.T) {
 				[]byte(preparedQuery1),
 			},
 			wantResultRowValues: [][]*btpb.Value{newProtoRowValuesWithKey(colFamAddress, colFamInfo)},
+		},
+		{
+			/*
+				1. PrepareQuery
+				2. ExecuteQuery
+				3. RecvMsg - gets first half of a batch of data with reset true - half1
+				3. RecvMsg - receives Unavailable error
+				3. RecvMsg - gets first half of a batch of data with reset true - half2
+				4. RecvMsg - gets second half of a batch of data with reset false - half3
+				5. RecvMsg - gets resume token
+				6. RecvMsg - gets EOF
+
+				The resulting row should contain only half2 and half3
+			*/
+			desc: "success with single batch received across multiple responses with reset",
+			mockPrepQueryResps: []prepareQueryResp{
+				newPrepareQueryResp(preparedQuery1, colFamAddress, colFamInfo),
+			},
+			mockRecvMsgResps: []recvMsgResp{
+				newExecQueryRespPartialBatchFirstHalf(true /* reset */, nil /* sleep */, []string{colFamAddress}),
+				{err: status.Error(codes.Unavailable, "mock unavailable error")},
+				newExecQueryRespPartialBatchFirstHalf(true /* reset */, nil /* sleep */, []string{colFamAddressNew}),
+				newExecQueryRespPartialBatchSecondHalf(false /* reset */, nil /* sleep */, []string{colFamAddressNew}, []string{colFamInfo}),
+				newExecQueryRespResumeToken(),
+				{err: io.EOF},
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+				[]byte(preparedQuery1),
+			},
+			wantResultRowValues: [][]*btpb.Value{newProtoRowValuesWithKey(colFamAddressNew, colFamInfo)},
 		},
 		{
 			/*
@@ -1776,7 +1807,7 @@ func TestExecuteQuery(t *testing.T) {
 				newPrepareQueryResp(preparedQuery1, colFamAddress),
 			},
 			mockRecvMsgResps: []recvMsgResp{
-				newExecQueryRespFullBatch(true, nil /* sleep */, colFamAddress),
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
 				{err: io.EOF},
 			},
 			wantExecReqPrepQuerys: [][]byte{
@@ -1802,7 +1833,7 @@ func TestExecuteQuery(t *testing.T) {
 			},
 			mockRecvMsgResps: []recvMsgResp{
 				{err: aePcf},
-				newExecQueryRespFullBatch(true, nil /* sleep */, colFamAddress),
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
 				newExecQueryRespResumeToken(),
 				{err: io.EOF},
 			},
@@ -1827,7 +1858,7 @@ func TestExecuteQuery(t *testing.T) {
 				newPrepareQueryResp(preparedQuery1, colFamAddress), // PrepareStatement
 			},
 			mockRecvMsgResps: []recvMsgResp{
-				newExecQueryRespFullBatch(true, nil /* sleep */, colFamAddress),
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
 				newExecQueryRespResumeToken(),
 				{err: status.Error(codes.Unavailable, "transient error")},
 				{err: io.EOF},
@@ -1855,7 +1886,7 @@ func TestExecuteQuery(t *testing.T) {
 				newPrepareQueryResp(preparedQuery1, colFamAddress), // From Execute, because expired query
 			},
 			mockRecvMsgResps: []recvMsgResp{
-				newExecQueryRespFullBatch(true, nil /* sleep */, colFamAddress),
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
 				{
 					sleep: ptr(testPreparedQueryTTL + 2*time.Second),
 					err:   status.Error(codes.DeadlineExceeded, "context deadline exceeded"), // retryable
@@ -1889,7 +1920,7 @@ func TestExecuteQuery(t *testing.T) {
 			},
 			mockRecvMsgResps: []recvMsgResp{
 				{err: aePcf},
-				newExecQueryRespFullBatch(true, nil /* sleep */, colFamAddress),
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
 				newExecQueryRespResumeToken(),
 				{err: io.EOF},
 			},
@@ -1920,13 +1951,13 @@ func TestExecuteQuery(t *testing.T) {
 				newPrepareQueryResp(preparedQuery2, colFamAddress, colFamInfo), // Step 8
 			},
 			mockRecvMsgResps: []recvMsgResp{
-				newExecQueryRespFullBatch(true, nil /* sleep */, colFamAddress),  // Step 3
-				newExecQueryRespFullBatch(false, nil /* sleep */, colFamAddress), // Step 4
-				{err: status.Error(codes.Unavailable, "mock unavailable error")}, // Step 5, retryable error
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),  // Step 3
+				newExecQueryRespFullBatch(false, nil /* sleep */, []string{colFamAddress}), // Step 4
+				{err: status.Error(codes.Unavailable, "mock unavailable error")},           // Step 5, retryable error
 				{err: aePcf}, // Step 7, retryable error
-				newExecQueryRespFullBatch(true, nil /* sleep */, colFamAddress, colFamInfo), // Step 10
-				newExecQueryRespResumeToken(),                                               // Step 11
-				{err: io.EOF},                                                               // Step 12
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress, colFamInfo}), // Step 10
+				newExecQueryRespResumeToken(), // Step 11
+				{err: io.EOF},                 // Step 12
 			},
 			wantExecReqPrepQuerys: [][]byte{
 				[]byte(preparedQuery1), // Step 2
@@ -2021,6 +2052,7 @@ func TestExecuteQuery(t *testing.T) {
 
 const testPreparedQueryTTL = 10 * time.Second
 const colFamAddress = "address"
+const colFamAddressNew = "address-new" // Used only for values and not metadata
 const colFamInfo = "info"
 
 var cfToValues = map[string][]*btpb.Value{
@@ -2055,6 +2087,44 @@ var cfToValues = map[string][]*btpb.Value{
 						{
 							Kind: &btpb.Value_BytesValue{
 								BytesValue: []byte("CA"),
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	colFamAddressNew: {
+		{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{
+					Values: []*btpb.Value{
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("city"),
+							},
+						},
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("Kirkland"),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{
+					Values: []*btpb.Value{
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("state"),
+							},
+						},
+						{
+							Kind: &btpb.Value_BytesValue{
+								BytesValue: []byte("WA"),
 							},
 						},
 					},
@@ -2134,9 +2204,14 @@ func newPrepareQueryResp(preparedQuery string, colFams ...string) prepareQueryRe
 	}
 }
 
-func newRecvMsgResp(reset bool, protoRows *btpb.ProtoRows, blockTime *time.Duration) recvMsgResp {
+func newRecvMsgResp(reset bool, protoRows, checksumProtoRows *btpb.ProtoRows, blockTime *time.Duration) recvMsgResp {
 	marshalled, _ := proto.Marshal(protoRows)
-	checksum := crc32.Checksum(marshalled, crc32cTable)
+
+	var checksum *uint32
+	if checksumProtoRows != nil {
+		marshalledCk, _ := proto.Marshal(checksumProtoRows)
+		checksum = ptr(crc32.Checksum(marshalledCk, crc32cTable))
+	}
 	return recvMsgResp{
 		results: &btpb.ExecuteQueryResponse_Results{
 			Results: &btpb.PartialResultSet{
@@ -2145,7 +2220,7 @@ func newRecvMsgResp(reset bool, protoRows *btpb.ProtoRows, blockTime *time.Durat
 						BatchData: marshalled,
 					},
 				},
-				BatchChecksum: &checksum,
+				BatchChecksum: checksum,
 				Reset_:        reset,
 			},
 		},
@@ -2163,25 +2238,28 @@ func newExecQueryRespResumeToken() recvMsgResp {
 	}
 }
 
-func newExecQueryRespFullBatch(reset bool, blockTime *time.Duration, colFams ...string) recvMsgResp {
+func newExecQueryRespFullBatch(reset bool, blockTime *time.Duration, colFams []string) recvMsgResp {
 	protoRows := &btpb.ProtoRows{
 		Values: newProtoRowValuesWithKey(colFams...),
 	}
-	return newRecvMsgResp(reset, protoRows, blockTime)
+	return newRecvMsgResp(reset, protoRows, protoRows, blockTime)
 }
 
-func newExecQueryRespPartialBatchFirstHalf(reset bool, blockTime *time.Duration, colFams ...string) recvMsgResp {
+func newExecQueryRespPartialBatchFirstHalf(reset bool, blockTime *time.Duration, colFams []string) recvMsgResp {
 	protoRows := &btpb.ProtoRows{
 		Values: newProtoRowValuesWithKey(colFams...),
 	}
-	return newRecvMsgResp(reset, protoRows, blockTime)
+	return newRecvMsgResp(reset, protoRows, nil, blockTime)
 }
 
-func newExecQueryRespPartialBatchSecondHalf(reset bool, blockTime *time.Duration, colFams ...string) recvMsgResp {
+func newExecQueryRespPartialBatchSecondHalf(reset bool, blockTime *time.Duration, colFamsFirstHalf, colFamsSecondHalf []string) recvMsgResp {
 	protoRows := &btpb.ProtoRows{
-		Values: newProtoRowValues(colFams...),
+		Values: newProtoRowValues(colFamsSecondHalf...),
 	}
-	return newRecvMsgResp(reset, protoRows, blockTime)
+	checksumProtoRows := &btpb.ProtoRows{
+		Values: append(newProtoRowValuesWithKey(colFamsFirstHalf...), newProtoRowValues(colFamsSecondHalf...)...),
+	}
+	return newRecvMsgResp(reset, protoRows, checksumProtoRows, blockTime)
 }
 
 func newProtoRowValuesWithKey(colFams ...string) []*btpb.Value {
