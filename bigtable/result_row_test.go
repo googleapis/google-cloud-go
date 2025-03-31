@@ -684,7 +684,7 @@ func TestStruct_GetByName(t *testing.T) {
 
 		// Error Cases
 		{"not found", "address", func() any { var v string; return &v }, nil, true},
-		{"empty name", "", func() any { var v int64; return &v }, int64(999), false}, // Cannot find unnamed by name
+		{"empty name", "", func() any { var v int64; return &v }, int64(999), false},
 		{"case sensitive miss", "ID", func() any { var v any; return &v }, nil, true},
 		{"error duplicate name", "name", func() any { var v string; return &v }, nil, true}, // Error on duplicate
 		{"error nil destination", "id", func() any { return nil }, nil, true},
