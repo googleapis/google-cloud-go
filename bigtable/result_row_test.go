@@ -96,6 +96,7 @@ var cmpSQLOpts = []cmp.Option{
 		BytesSQLType{}, StringSQLType{}, Int64SQLType{}, Float32SQLType{}, Float64SQLType{},
 		BoolSQLType{}, TimestampSQLType{}, DateSQLType{}, ArraySQLType{}, MapSQLType{},
 		StructSQLType{}, StructSQLField{}, ColumnMetadata{}, ResultRowMetadata{},
+		Struct{},
 	),
 }
 
@@ -187,10 +188,20 @@ func TestResultRow_GetByIndex(t *testing.T) {
 	testF32 := float32(1.5)
 	testF64 := float64(2.5)
 	testBool := true
-	testArr := []*string{ptr("a"), nil, ptr("b")}                     // Array with nil
-	testArrNoNil := []*string{ptr("x"), ptr("y")}                     // Array without nil
-	testMap := map[string]*int64{"one": ptr(int64(1)), "two": nil}    // Map with nil
-	testStruct := map[string]any{"name": "obj1", "count": int64(100)} // Struct -> map[string]any
+	testArr := []*string{ptr("a"), nil, ptr("b")}                  // Array with nil
+	testArrNoNil := []*string{ptr("x"), ptr("y")}                  // Array without nil
+	testMap := map[string]*int64{"one": ptr(int64(1)), "two": nil} // Map with nil
+	testStruct := Struct{
+		fields: []structFieldWithValue{{
+			Name:  "name",
+			Value: "obj1",
+		},
+			{
+				Name:  "count",
+				Value: int64(100),
+			},
+		},
+	} // SQL STRUCT -> bigtable.Struct
 
 	pbMeta := createMetadata(
 		colMeta("s", typeString),             // 0
@@ -241,7 +252,6 @@ func TestResultRow_GetByIndex(t *testing.T) {
 		// Valid Gets
 		{"string", 0, func() any { var v string; return &v }, testString, false},
 		{"int64", 1, func() any { var v int64; return &v }, testInt, false},
-		{"int64 to int", 1, func() any { var v int; return &v }, int(testInt), false}, // Conversion T->T
 		{"float32", 2, func() any { var v float32; return &v }, testF32, false},
 		{"float64", 3, func() any { var v float64; return &v }, testF64, false},
 		{"bool", 4, func() any { var v bool; return &v }, testBool, false},
@@ -254,11 +264,12 @@ func TestResultRow_GetByIndex(t *testing.T) {
 		{"array with no nils to pointer slice", 9, func() any { var v []*string; return &v }, testArrNoNil, false},    // []*T -> []*T
 		{"array with no nils to value slice", 9, func() any { var v []string; return &v }, []string{"x", "y"}, false}, // []*T -> []T
 		{"map with nil", 10, func() any { var v map[string]*int64; return &v }, testMap, false},                       // map[K]*V -> map[K]*V
-		{"struct into map", 11, func() any { var v map[string]any; return &v }, testStruct, false},                    // map[string]any -> map[string]any
+		{"struct into Struct", 11, func() any { var v Struct; return &v }, testStruct, false},                         // map[string]any -> map[string]any
 		{"null into int pointer", 12, func() any { var v *int64; return &v }, (*int64)(nil), false},                   // nil -> *T
 		{"null to any", 12, func() any { var v any; return &v }, (any)(nil), false},                                   // nil -> any
 
 		// Error Cases
+		{"int64 to int", 1, func() any { var v int; return &v }, nil, true}, // Conversion T->T
 		{"index negative", -1, func() any { var v any; return &v }, nil, true},
 		{"index too large", 13, func() any { var v any; return &v }, nil, true},
 		{"ErrNilDest", 0, func() any {
@@ -269,6 +280,7 @@ func TestResultRow_GetByIndex(t *testing.T) {
 		{"destination not a pointer", 0, func() any { var v int64; return v }, nil, true},
 		{"destination is nil pointer", 0, func() any { var v *int64; return v }, nil, true},
 		{"destination pointer to struct", 0, func() any { var v CustomStruct; return &v }, nil, true},
+		{"struct into map", 11, func() any { var v map[string]any; return &v }, nil, true}, // STRUCT -> map[string]any
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			destPtr := tc.destFn()
@@ -367,13 +379,21 @@ func TestAssignValue(t *testing.T) {
 		{"ptr int to int", int64Ptr10, func() any { var v int64; return &v }, false, int64(10)},
 		{"ptr int to ptr int", int64Ptr10, func() any { var v *int64; return &v }, false, int64Ptr10},
 
-		// Scalar Conversions
-		{"int64 to int", int64(10), func() any { var v int; return &v }, false, int(10)},
-		{"int to int64", int(10), func() any { var v int64; return &v }, false, int64(10)},
-		{"float64 to float32", float64(math.MaxFloat64), func() any { var v float32; return &v }, false, float32(math.Inf(0))},
-		{"float32 to float64", float32(1.5), func() any { var v float64; return &v }, false, float64(1.5)},
-		{"bytes to string", []byte("abc"), func() any { var v string; return &v }, false, "abc"},
-		{"string to bytes", "abc", func() any { var v []byte; return &v }, false, []byte("abc")},
+		// Scalar Conversions errors
+		{"int64 to int", int64(10), func() any { var v int; return &v }, true, int(10)},
+		{"int to int64", int(10), func() any { var v int64; return &v }, true, int64(10)},
+		{"float64 to float32", float64(math.MaxFloat64), func() any { var v float32; return &v }, true, float32(math.Inf(0))},
+		{"float32 to float64", float32(1.5), func() any { var v float64; return &v }, true, float64(1.5)},
+		{"bytes to string", []byte("abc"), func() any { var v string; return &v }, true, "abc"},
+		{"string to bytes", "abc", func() any { var v []byte; return &v }, true, []byte("abc")},
+
+		// scalar direct assignments
+		{"int64 to int64", int64(10), func() any { var v int64; return &v }, false, int64(10)},
+		{"int to int", int(10), func() any { var v int; return &v }, false, int(10)},
+		{"float64 to float64", float64(math.MaxFloat64), func() any { var v float64; return &v }, false, float64(math.MaxFloat64)},
+		{"float32 to float32", float32(1.5), func() any { var v float32; return &v }, false, float32(1.5)},
+		{"bytes to bytes", []byte("abc"), func() any { var v []byte; return &v }, false, []byte("abc")},
+		{"string to string", "abc", func() any { var v string; return &v }, false, "abc"},
 
 		//  slice Conversions
 		{"ptr int slice to int slice ok", []*int64{int64Ptr1, int64Ptr2}, func() any { var v []int64; return &v }, false, []int64{1, 2}},

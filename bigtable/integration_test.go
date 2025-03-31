@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/binary"
 	"flag"
 	"fmt"
@@ -5060,9 +5061,14 @@ func TestIntegration_Execute(t *testing.T) {
 	v2Timestamp := Time(time.Now())
 	populateAddresses(ctx, t, table, colFam, v1Timestamp, v2Timestamp)
 
+	base64City := base64.StdEncoding.EncodeToString([]byte("city"))
+	base64State := base64.StdEncoding.EncodeToString([]byte("state"))
+
 	// While writing, "timestamp": s"2025-03-31 03:26:33.489256 +0000 UTC"
 	// When reading back, "timestamp": s"2025-03-31 03:26:33.48 +0000 UTC"
 	ignoreMillisecondDiff := cmpopts.EquateApproxTime(time.Second)
+	cmpOpts := []cmp.Option{ignoreMillisecondDiff, cmp.AllowUnexported(Struct{})}
+
 	type col struct {
 		name     string
 		gotDest  any
@@ -5090,8 +5096,8 @@ func TestIntegration_Execute(t *testing.T) {
 						name:    "address",
 						gotDest: map[string][]byte{},
 						wantDest: map[string][]byte{
-							"city":  []byte("San Francisco"),
-							"state": []byte("CA"),
+							base64City:  []byte("San Francisco"),
+							base64State: []byte("CA"),
 						},
 					},
 					{
@@ -5115,8 +5121,8 @@ func TestIntegration_Execute(t *testing.T) {
 						name:    "address",
 						gotDest: map[string][]byte{},
 						wantDest: map[string][]byte{
-							"city":  []byte("Phoenix"),
-							"state": []byte("AZ"),
+							base64City:  []byte("Phoenix"),
+							base64State: []byte("AZ"),
 						},
 					},
 					{
@@ -5144,15 +5150,31 @@ func TestIntegration_Execute(t *testing.T) {
 					},
 					{
 						name:    "state",
-						gotDest: []map[string]any{},
-						wantDest: []map[string]any{
+						gotDest: []Struct{},
+						wantDest: []Struct{
 							{
-								"timestamp": v2Timestamp.Time(),
-								"value":     []byte("CA"),
+								fields: []structFieldWithValue{
+									{
+										Name:  "timestamp",
+										Value: v2Timestamp.Time(),
+									},
+									{
+										Name:  "value",
+										Value: []byte("CA"),
+									},
+								},
 							},
 							{
-								"timestamp": v1Timestamp.Time(),
-								"value":     []byte("WA"),
+								fields: []structFieldWithValue{
+									{
+										Name:  "timestamp",
+										Value: v1Timestamp.Time(),
+									},
+									{
+										Name:  "value",
+										Value: []byte("WA"),
+									},
+								},
 							},
 						},
 					},
@@ -5165,11 +5187,19 @@ func TestIntegration_Execute(t *testing.T) {
 					},
 					{
 						name:    "state",
-						gotDest: []map[string]any{},
-						wantDest: []map[string]any{
+						gotDest: []Struct{},
+						wantDest: []Struct{
 							{
-								"timestamp": v1Timestamp.Time(),
-								"value":     []byte("AZ"),
+								fields: []structFieldWithValue{
+									{
+										Name:  "timestamp",
+										Value: v1Timestamp.Time(),
+									},
+									{
+										Name:  "value",
+										Value: []byte("AZ"),
+									},
+								},
 							},
 						},
 					},
@@ -5229,10 +5259,9 @@ func TestIntegration_Execute(t *testing.T) {
 					},
 					{
 						name:    "structCol",
-						gotDest: map[string]any{},
-						wantDest: map[string]any{
-							"a": int64(1),
-							"b": "foo",
+						gotDest: Struct{},
+						wantDest: Struct{
+							fields: []structFieldWithValue{{Name: "a", Value: int64(1)}, {Name: "b", Value: string("foo")}},
 						},
 					},
 					{
@@ -5244,8 +5273,8 @@ func TestIntegration_Execute(t *testing.T) {
 						name:    "mapCol",
 						gotDest: map[string][]byte{},
 						wantDest: map[string][]byte{
-							"city":  []byte("San Francisco"),
-							"state": []byte("CA"),
+							base64City:  []byte("San Francisco"),
+							base64State: []byte("CA"),
 						},
 					},
 				},
@@ -5435,7 +5464,7 @@ func TestIntegration_Execute(t *testing.T) {
 						}
 						gotDest := reflect.ValueOf(gotDestPtrInterface).Elem().Interface()
 
-						if diff := testutil.Diff(gotCurrCol.wantDest, gotDest, ignoreMillisecondDiff); diff != "" {
+						if diff := testutil.Diff(gotCurrCol.wantDest, gotDest, cmpOpts...); diff != "" {
 							t.Errorf("[Row:%v Column:%v] GetByName: got: %#v, want: %#v, diff (-want +got):\n %+v",
 								gotRowCount, wantColCount, gotDest, gotCurrCol.wantDest, diff)
 							foundErr = true
@@ -5450,7 +5479,7 @@ func TestIntegration_Execute(t *testing.T) {
 							foundErr = true
 						}
 						gotDest = reflect.ValueOf(gotDestPtrInterface).Elem().Interface()
-						if diff := testutil.Diff(gotCurrCol.wantDest, gotDest, ignoreMillisecondDiff); diff != "" {
+						if diff := testutil.Diff(gotCurrCol.wantDest, gotDest, cmpOpts...); diff != "" {
 							t.Errorf("[Row:%v Column:%v] GetByIndex: got: %#v, want: %#v, diff (-want +got):\n %+v",
 								gotRowCount, wantColCount, gotDest, gotCurrCol.wantDest, diff)
 							foundErr = true

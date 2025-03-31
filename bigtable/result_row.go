@@ -17,6 +17,7 @@ limitations under the License.
 package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"reflect"
@@ -91,6 +92,123 @@ func newResultRowMetadata(metadata *btpb.ResultSetMetadata) (*ResultRowMetadata,
 	}, nil
 }
 
+// Struct represents a value read from a SQL STRUCT column.
+// It preserves the original order and names of the fields from the STRUCT definition,
+// correctly handling duplicate names and unnamed fields (where Name=="").
+// Use the provided methods (Field, Value, ValueByName, etc.) to access field data.
+type Struct struct {
+	// fields contains the ordered field data. Use methods for access.
+	// Unexported to prevent direct manipulation inconsistent with SQL STRUCT semantics.
+	fields      []structFieldWithValue
+	nameToIndex map[string][]int
+}
+
+// structFieldWithValue holds the name and converted Go value for a single field
+// within a Struct. Name can be empty for unnamed SQL STRUCT fields.
+type structFieldWithValue struct {
+	Name  string
+	Value any // Holds T, *T, []*T, map[K]*V, Struct, nil etc.
+}
+
+// newStruct creates a Struct instance.
+func newStruct(fields []structFieldWithValue) Struct {
+	nameIndexMap := map[string][]int{}
+	for i, f := range fields {
+		nameIndexMap[f.Name] = append(nameIndexMap[f.Name], i)
+	}
+	return Struct{fields: fields, nameToIndex: nameIndexMap}
+}
+
+// Len returns the number of fields in the Struct.
+func (s Struct) Len() int {
+	return len(s.fields)
+}
+
+// Field returns the name and value of the field at the specified zero-based index.
+// Returns an error if the index is out of bounds.
+func (s Struct) Field(index int) (name string, value any, err error) {
+	if index < 0 || index >= len(s.fields) {
+		err = fmt.Errorf("bigtable: index %d out of bounds for struct with %d fields", index, len(s.fields))
+		return
+	}
+	f := s.fields[index]
+	name = f.Name
+	value = f.Value
+	return
+}
+
+// GetByIndex returns the value of the field at the specified zero-based index
+// and stores it in the value pointed to by dest.
+//
+// The dest argument must be a non-nil pointer. See documentation for
+// [ResultRow.GetByIndex] for details on type conversions and NULL handling performed
+// during assignment.
+// Returns an error if the index is out of bounds, dest is invalid, or assignment fails.
+func (s Struct) GetByIndex(index int, dest any) error {
+	if index < 0 || index >= len(s.fields) {
+		return fmt.Errorf("bigtable: index %d out of bounds for struct with %d fields", index, len(s.fields))
+	}
+
+	// Validate destination pointer
+	if dest == nil {
+		return errors.New("bigtable: Struct.GetByIndex destination cannot be nil")
+	}
+	destPtr := reflect.ValueOf(dest)
+	if destPtr.Kind() != reflect.Ptr {
+		return fmt.Errorf("bigtable: Struct.GetByIndex destination is not a pointer (got %T)", dest)
+	}
+	if destPtr.IsNil() {
+		return errors.New("bigtable: Struct.GetByIndex destination is a nil pointer")
+	}
+	destVal := destPtr.Elem()
+	if !destVal.CanSet() {
+		return errors.New("bigtable: Struct.GetByIndex destination cannot be set")
+	}
+
+	// Get the already converted Go value from the struct's internal field
+	fieldValue := s.fields[index].Value // Value is T, *T, []*T, map, Struct, nil etc.
+
+	// Use assignValue to handle assignment and conversions (T<->*T, []*T<->[]T etc.)
+	err := assignValue(destVal, fieldValue)
+	if err != nil {
+		// Add context about the struct field being assigned
+		return fmt.Errorf("error assigning struct field %d (name %q, type %T) to destination (type %s): %w", index, s.fields[index].Name, fieldValue, destVal.Type(), err)
+	}
+	return nil
+}
+
+// GetByName returns the value of the field matching the specified name
+// (case-sensitive) and stores it in the value pointed to by dest.
+//
+// The dest argument must be a non-nil pointer. See documentation for
+// [ResultRow.GetByIndex] for details on type conversions and NULL handling performed
+// during assignment.
+// Returns an error if no/multiple field matches the name, dest is invalid, or assignment fails.
+func (s Struct) GetByName(name string, dest any) error {
+	indices, found := (s.nameToIndex)[name]
+	if !found || len(indices) == 0 {
+		return errors.New("bigtable: field " + name + " not found in struct")
+	}
+
+	if len(indices) > 1 {
+		return fmt.Errorf("bigtable: found %d fields with name %q, expected only one", len(indices), name)
+	}
+
+	return s.GetByIndex(indices[0], dest)
+}
+
+// Fields returns a slice containing the name and value for all fields in the struct.
+// Modifications to the returned slice or its elements do not affect the original Struct.
+func (s Struct) Fields() []structFieldWithValue {
+	if s.fields == nil {
+		return nil
+	}
+	// Return a copy to prevent external modification
+	fCopy := make([]structFieldWithValue, len(s.fields))
+	copy(fCopy, s.fields)
+	return fCopy
+}
+
 // GetByIndex returns the value of the column at the specified zero-based index and stores it
 // in the value pointed to by dest.
 //
@@ -104,7 +222,8 @@ func newResultRowMetadata(metadata *btpb.ResultSetMetadata) (*ResultRowMetadata,
 //   - time.Time (for TIMESTAMP)
 //   - civil.Date (for DATE)
 //   - Slice types (e.g., []string, []int64) for ARRAY
-//   - Map types (e.g., map[string]any) for MAP or STRUCT
+//   - Map types (e.g., map[string]any) for MAP
+//   - Struct for STRUCT
 //   - any (interface{})
 //   - Pointers to the above types
 //
@@ -119,9 +238,15 @@ func newResultRowMetadata(metadata *btpb.ResultSetMetadata) (*ResultRowMetadata,
 // For SQL STRUCT or MAP columns, dest should typically be a pointer to a map type
 // (e.g., *map[string]any, *map[string]*int64).
 //
-// When (WITH_HISTORY=>TRUE) is used in the query, the value of versioned column is of the form []map[string]any{}
+// When (WITH_HISTORY=>TRUE) is used in the query, the value of versioned column is of the form []Struct
 // i.e. []{{"timestamp": <timestamp>, "value": <value> }, {"timestamp": <timestamp>, "value": <value> }}.
-// So, dest should be *[]map[string]any{} to retrieve such values
+// So, dest should be *[]Struct to retrieve such values
+//
+// BYTES Keys in MAPs: For SQL MAP columns where the key type is `BYTES` (e.g., MAP<BYTES, INT64>),
+// the Go map representation assigned to dest will use `string` keys. These string keys are the
+// Base64 standard encoding of the original `BYTES` keys. This conversion is necessary due to
+// Go's map key restrictions. Callers interacting with these maps must Base64 encode their
+// `[]byte` keys when performing lookups.
 //
 // Returns an error if the index is out of bounds, dest is invalid (nil, not a pointer,
 // pointer to struct other than time.Time and civil.Date), or if a type conversion fails.
@@ -143,20 +268,31 @@ func (rr *ResultRow) GetByIndex(index int, dest any) error {
 		return errors.New("bigtable: destination is a nil pointer")
 	}
 	destVal := destPtr.Elem() // The value the pointer points to
-	destElemType := destVal.Type()
-	if destElemType.Kind() == reflect.Struct && destElemType != timeType && destElemType != dateType {
-		return errors.New("bigtable: destination cannot be a pointer to struct type " + destElemType.String())
-	}
 	if !destVal.CanSet() {
 		return errors.New("bigtable: destination cannot be set (perhaps pointer to unexported field)")
 	}
 
 	// Get protobuf value and type
 	colInfo := rr.Metadata.Columns[index]
-	if colInfo.SQLType == nil {
+	sqlType := colInfo.SQLType
+	if sqlType == nil {
 		return fmt.Errorf("bigtable: internal error - nil SQLType for column index %d", index)
 	}
-	pbType, err := colInfo.SQLType.typeProto()
+
+	if _, isSQLStruct := sqlType.(StructSQLType); isSQLStruct {
+		// Column is STRUCT. Check if destination is *bigtable.Struct or *any.
+		destElemType := destVal.Type()
+		if !(destElemType == reflect.TypeOf(Struct{}) || (destElemType.Kind() == reflect.Interface && destElemType.NumMethod() == 0)) {
+			return fmt.Errorf("bigtable: Get destination for STRUCT column %q must be *bigtable.Struct or *any (got pointer to %s)", colInfo.Name, destElemType)
+		}
+	} else if destVal.Kind() == reflect.Struct {
+		// For non-STRUCT columns, still disallow general struct pointers (allow time/date)
+		destElemType := destVal.Type()
+		if destElemType != timeType && destElemType != dateType {
+			return fmt.Errorf("bigtable: Get destination cannot be a pointer to struct type %s for non-STRUCT column %q", destElemType, colInfo.Name)
+		}
+	}
+	pbType, err := sqlType.typeProto()
 	if err != nil {
 		return fmt.Errorf("bigtable: internal error - failed to get protobuf type for column index %d: %w", index, err)
 	}
@@ -355,12 +491,12 @@ func pbTypeToGoReflectType(pbType *btpb.Type) (reflect.Type, error) {
 // Arrays -> []*T (e.g. []*int64), Maps -> map[K]*V, Structs -> map[string]any.
 // errors returned should be wrapped before returning to the end user.
 func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
+	if pbType == nil {
+		return nil, errors.New("internal error - pbType is nil during value conversion")
+	}
 	if pbVal == nil || pbVal.Kind == nil {
 		// Represent SQL NULL as Go's nil interface value.
 		return nil, nil
-	}
-	if pbType == nil {
-		return nil, errors.New("internal error - pbType is nil during value conversion")
 	}
 	switch k := pbType.Kind.(type) {
 	// Base types -> return T
@@ -472,14 +608,16 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 		if keyPbType == nil || valPbType == nil {
 			return nil, errors.New("map key or value type is nil")
 		}
+		// Determine Go map key type (use string for BYTES keys)
 		keyGoType, _ := pbTypeToGoReflectTypeInternal(keyPbType, false) // Key type T (Bytes, String, Int64)
-		if keyGoType.Kind() == reflect.Slice && keyGoType.Elem().Kind() == reflect.Uint8 {
-			// If keyGoType is []byte, set keyGoType to string since Go does not allow []byte keys
-			keyGoType = reflect.TypeOf("")
+		isBytesKey := keyGoType == bytesType
+		mapKeyGoType := keyGoType
+		if isBytesKey {
+			mapKeyGoType = stringType
 		}
 
-		valGoPtrType, _ := pbTypeToGoReflectTypeInternal(valPbType, true) // Value type *V (or V if map/slice/...)
-		goMap := reflect.MakeMap(reflect.MapOf(keyGoType, valGoPtrType))  // map[K]*V (or map[K]V)
+		valGoType, _ := pbTypeToGoReflectTypeInternal(valPbType, true)   // Value type *V (or V if map/slice/...)
+		goMap := reflect.MakeMap(reflect.MapOf(mapKeyGoType, valGoType)) // map[K]*V (or map[K]V)
 		if mapArrProto.ArrayValue == nil || len(mapArrProto.ArrayValue.Values) == 0 {
 			return goMap.Interface(), nil
 		} // Return empty map
@@ -500,15 +638,34 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 				return nil, fmt.Errorf("error converting map value at entry index %d: %w", i, errV)
 			}
 
-			keyReflect := reflect.New(keyGoType).Elem()
-			valReflect := reflect.New(valGoPtrType).Elem() // Dest for key is T, dest for val is *V (or V)
-			if errK := assignValue(keyReflect, goKey); errK != nil {
-				return nil, fmt.Errorf("error assigning map key at index %d: %w", i, errK)
+			var finalMapKey reflect.Value // This will hold string or int64
+			switch keyVal := goKey.(type) {
+			case []byte:
+				if !isBytesKey {
+					return nil, fmt.Errorf("internal error: got bytes key for non-bytes map type")
+				}
+				//  Base64 Encode the bytes key
+				// []byte is not comparable and thus, cannot be used as map key. It is not guaranteed to be valid utf-8.
+				// So, do not do string([]byte). Instead, base64 encode byte keys
+				finalMapKey = reflect.ValueOf(base64.StdEncoding.EncodeToString(keyVal))
+			case string:
+				if isBytesKey {
+					return nil, fmt.Errorf("internal error: got string key for bytes map type")
+				}
+				finalMapKey = reflect.ValueOf(keyVal)
+			case int64:
+				if isBytesKey {
+					return nil, fmt.Errorf("internal error: got int64 key for bytes map type")
+				}
+				finalMapKey = reflect.ValueOf(keyVal)
+			default:
+				return nil, fmt.Errorf("internal error: unsupported map key type %T resulted", goKey)
 			}
+			valReflect := reflect.New(valGoType).Elem() // Dest for key is T, dest for val is *V (or V)
 			if errV := assignValue(valReflect, goValue); errV != nil {
 				return nil, fmt.Errorf("error assigning map value at index %d: %w", i, errV)
 			}
-			goMap.SetMapIndex(keyReflect, valReflect)
+			goMap.SetMapIndex(finalMapKey, valReflect)
 		}
 		return goMap.Interface(), nil // Returns map[K]*V (or map[K]V) as any
 
@@ -529,7 +686,7 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 		}
 
 		// Represent struct as map[string]any
-		goStructMap := make(map[string]any, len(pbFields))
+		structFields := make([]structFieldWithValue, len(pbFields))
 		for i, pbFieldInfo := range pbFields {
 			fieldName := pbFieldInfo.GetFieldName()
 			fieldPbType := pbFieldInfo.GetType()
@@ -542,18 +699,22 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 			if err != nil {
 				return nil, fmt.Errorf("error converting struct field %q: %w", fieldName, err)
 			}
-			goStructMap[fieldName] = goFieldValue // Store as any in the map
+			structFields[i] = structFieldWithValue{
+				Name:  fieldName,
+				Value: goFieldValue, // Store the converted value directly
+			}
 		}
-		return goStructMap, nil
+		return newStruct(structFields), nil
 
 	default:
 		return nil, fmt.Errorf("unrecognized response type  kind: %T. You might need to upgrade your client", k)
 	}
 }
 
-// assignValue attempts to assign src Go value to dest reflect.Value, handling common conversions.
-// dest must be settable.
-// errors returned must be wrapped by caller.
+// assignValue attempts to assign src Go value to dest reflect.Value.
+// Handles direct assignment, pointer assignments (T <-> *T) for nullability,
+// and structural slice/map conversions (e.g., []*T -> []T, map[K]*V -> map[K]V).
+// dest must be settable. errors returned must be wrapped by caller.
 func assignValue(dest reflect.Value, src any) error {
 	if !dest.CanSet() {
 		return errors.New("destination is not settable")
@@ -568,7 +729,9 @@ func assignValue(dest reflect.Value, src any) error {
 			return nil
 		default:
 			// Cannot assign nil to non-nillable types like int, string, bool, struct.
-			return fmt.Errorf("cannot assign nil to destination of type %s", dest.Type())
+			return fmt.Errorf("bigtable: cannot assign SQL NULL to non-pointer Go type %s; "+
+				" use a pointer destination (e.g., *%s) or interface{} to handle NULL values", dest.Type(), dest.Type())
+
 		}
 	}
 
@@ -578,6 +741,15 @@ func assignValue(dest reflect.Value, src any) error {
 	if srcVal.Type().AssignableTo(dest.Type()) {
 		dest.Set(srcVal)
 		return nil
+	}
+
+	// Add check to prevent assigning Struct to map
+	if srcVal.IsValid() && srcVal.Type() == reflect.TypeOf(Struct{}) && dest.Kind() == reflect.Map {
+		return fmt.Errorf("cannot assign bigtable.Struct to destination map type %s", dest.Type())
+	}
+	// Add check to prevent assigning Struct to other struct types
+	if srcVal.IsValid() && srcVal.Type() == reflect.TypeOf(Struct{}) && dest.Kind() == reflect.Struct && dest.Type() != reflect.TypeOf(Struct{}) {
+		return fmt.Errorf("cannot assign bigtable.Struct to destination struct type %s", dest.Type())
 	}
 
 	// Pointer related assignments
@@ -777,24 +949,6 @@ func assignValue(dest reflect.Value, src any) error {
 			}
 			return nil
 		}
-	}
-
-	// Common numeric conversions (allow assigning int64 to int, float64 to float32 etc.)
-	if srcVal.CanConvert(dest.Type()) {
-		dest.Set(srcVal.Convert(dest.Type()))
-		return nil
-	}
-
-	// Special case: []byte <-> string
-	// If dest is string, and src is []byte
-	if dest.Kind() == reflect.String && srcVal.Kind() == reflect.Slice && srcVal.Type().Elem().Kind() == reflect.Uint8 {
-		dest.SetString(string(srcVal.Bytes()))
-		return nil
-	}
-	// If dest is []byte, and src is string
-	if dest.Kind() == reflect.Slice && dest.Type().Elem().Kind() == reflect.Uint8 && srcVal.Kind() == reflect.String {
-		dest.SetBytes([]byte(srcVal.String()))
-		return nil
 	}
 
 	return fmt.Errorf("unsupported type conversion or assignment from %s to %s", srcVal.Type(), dest.Type())

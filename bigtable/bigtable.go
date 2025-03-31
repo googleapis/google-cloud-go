@@ -45,6 +45,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -807,6 +808,8 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 					// first ResumeToken received
 					finalizedStmt = candFinalizedStmt
 					finalizedStmt.initializeMetadataAndMap()
+					bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(finalizedStmt.metadata)
+					fmt.Println("finalizedStmt.metadata: " + string(bytes))
 					receivedResumeToken = true
 				}
 
