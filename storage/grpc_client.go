@@ -1722,23 +1722,22 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	// on the gRPC client-stream as the buffer is filled.
 	go func() {
 		err := func() error {
-			// Unless the user told us the content type, we have to determine it from
-			// the first read.
-			var r io.Reader = pr
-			if params.attrs.ContentType == "" && !params.forceEmptyContentType {
-				r, params.attrs.ContentType = gax.DetermineContentType(r)
-			}
-
 			var gw *gRPCWriter
-			gw, err := newGRPCWriter(c, s, params, r, pw, params.setPipeWriter)
+			gw, err := newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
 			if err != nil {
 				return err
 			}
-
 			// Set Flush func for use by exported Writer.Flush.
 			setFlush(func() (int64, error) {
 				return gw.flush()
 			})
+
+			// Unless the user told us the content type, we have to determine it from
+			// the first read.
+			var r io.Reader = pr
+			if params.attrs.ContentType == "" && !params.forceEmptyContentType {
+				gw.reader, params.attrs.ContentType = gax.DetermineContentType(r)
+			}
 
 			// Loop until there is an error or the Object has been finalized.
 			for {

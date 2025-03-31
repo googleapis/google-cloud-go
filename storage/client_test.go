@@ -1235,6 +1235,94 @@ func TestWriterFlushAtCloseEmulated(t *testing.T) {
 	})
 }
 
+// Tests small flush (under 512 bytes) to verify that logic avoiding
+// content type sniffing works.
+func TestWriterSmallFlushEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		w.Append = true
+		w.ChunkSize = MiB
+		var gotOffsets []int64
+		w.ProgressFunc = func(offset int64) {
+			gotOffsets = append(gotOffsets, offset)
+		}
+		wantOffsets := []int64{10, 1010, 1010 + MiB, 1010 + 2*MiB, 3 * MiB}
+
+		// Test Flush at a 10 byte offset.
+		n, err := w.Write(randomBytes3MiB[:10])
+		if err != nil {
+			t.Fatalf("writing data: got %v; want ok", err)
+		}
+		if n != 10 {
+			t.Errorf("writing data: got %v bytes written, want %v", n, 10)
+		}
+		off, err := w.Flush()
+		if err != nil {
+			t.Fatalf("flush: got %v; want ok", err)
+		}
+		if off != 10 {
+			t.Errorf("flushing data: got %v bytes written, want %v", off, 10)
+		}
+		// Write another 1000 bytes and flush again.
+		n, err = w.Write(randomBytes3MiB[10:1010])
+		if err != nil {
+			t.Fatalf("writing data: got %v; want ok", err)
+		}
+		if n != 1000 {
+			t.Errorf("writing data: got %v bytes written, want %v", n, 1000)
+		}
+		off, err = w.Flush()
+		if err != nil {
+			t.Fatalf("flush: got %v; want ok", err)
+		}
+		if off != 1010 {
+			t.Errorf("flushing data: got %v bytes written, want %v", off, 1010)
+		}
+		// Write the rest of the object
+		_, err = w.Write(randomBytes3MiB[1010:])
+		if err != nil {
+			t.Fatalf("writing data: got %v; want ok", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+		// Check offsets
+		if !slices.Equal(gotOffsets, wantOffsets) {
+			t.Errorf("progress offsets: got %v, want %v", gotOffsets, wantOffsets)
+		}
+
+		// Download object and check data
+		r, err := veneerClient.Bucket(bucket).Object(objName).NewReader(ctx)
+		defer r.Close()
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := 3 * MiB
+		got, err := io.ReadAll(r)
+		if n := len(got); n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d (%v)", wantLen, n, err)
+		}
+		if diff := cmp.Diff(got, randomBytes3MiB); diff != "" {
+			t.Errorf("checking written content: got(-), want(+):\n%s", diff)
+		}
+		// Expect application/octet-stream as the content type.
+		if got, want := r.Attrs.ContentType, "application/octet-stream"; got != want {
+			t.Errorf("content type: got %v, want %v", got, want)
+		}
+	})
+}
+
 func TestListNotificationsEmulated(t *testing.T) {
 	transportClientTest(skipGRPC("notifications not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
