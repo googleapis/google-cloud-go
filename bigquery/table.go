@@ -157,7 +157,7 @@ type TableMetadata struct {
 	MaxStaleness *IntervalValue
 
 	// The tags associated with this table. Tag
-	// keys are globally unique. See additional information owwn tags
+	// keys are globally unique. See additional information on tags
 	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
 	// An object containing a list of "key": value pairs. The key is the
 	// namespaced friendly name of the tag key, e.g. "12345/environment"
@@ -383,15 +383,20 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 	}
 }
 
-// Supported
+// Represents the file format for Managed Tables for Apache Iceberg.
 type BigLakeFileFormat string
-type BigLakeTableFormat string
 
 var (
 	// Default value.
 	UnspecifiedBigLakeFileFormat BigLakeFileFormat = "FILE_FORMAT_UNSPECIFIED"
 	// Apache Parquet Format.
 	ParquetBigLakeFileFormat BigLakeFileFormat = "PARQUET"
+)
+
+// Represents the table metadata format for Managed Tables for Apache Iceberg.
+type BigLakeTableFormat string
+
+var (
 	// Default value.
 	UnspecifiedBigLakeTableFormat BigLakeTableFormat = "TABLE_FORMAT_UNSPECIFIED"
 	// Apache Iceberg Format.
