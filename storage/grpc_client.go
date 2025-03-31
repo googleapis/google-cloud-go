@@ -1736,7 +1736,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			// the first read.
 			var r io.Reader = pr
 			if params.attrs.ContentType == "" && !params.forceEmptyContentType {
-				gw.reader, params.attrs.ContentType = gax.DetermineContentType(r)
+				gw.reader, gw.spec.Resource.ContentType = gax.DetermineContentType(r)
 			}
 
 			// Loop until there is an error or the Object has been finalized.
