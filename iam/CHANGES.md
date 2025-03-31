@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/iam/v1.4.2...iam/v1.5.0) (2025-03-31)
+
+
+### Features
+
+* **iam:** New client(s) ([#11933](https://github.com/googleapis/google-cloud-go/issues/11933)) ([d5cb2e5](https://github.com/googleapis/google-cloud-go/commit/d5cb2e58334c6963cc46885f565fe3b19c52cb63))
+
 ## [1.4.2](https://github.com/googleapis/google-cloud-go/compare/iam/v1.4.1...iam/v1.4.2) (2025-03-13)
 
 
@@ -265,4 +272,3 @@
 
 This is the first tag to carve out iam as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
