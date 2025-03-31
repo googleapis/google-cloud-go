@@ -428,6 +428,29 @@ func TestAssignValue(t *testing.T) {
 	int64Ptr2 := ptr(int64(2))
 	int64Ptr3 := ptr(int64(3))
 	int64Ptr10 := ptr(int64(10))
+	testStructVal := newStruct([]structFieldWithValue{
+		{Name: "fieldA", Value: "abc"},
+		{Name: "fieldB", Value: ptr(int64(123))},
+		{Name: "fieldC", Value: nil},
+	})
+	field1Val := "hello nested"
+	field2Val := []map[string][]*int64{
+		{"map1key1": {int64Ptr1, nil, int64Ptr3}}, // Map with slice containing nil
+		nil, // nil map element
+		{},  // empty map element
+		{"map2key1": {int64Ptr2}},
+	}
+	field3Val := map[string]map[string]any{ // Actual Go type for MAP<STRING, MAP<STRING, ANY>>
+		"outerA": {"innerA1": "a string", "innerA2": int64Ptr10},
+		"outerB": nil,
+		"outerC": {},
+	}
+	sourceComplexStructVal := newStruct([]structFieldWithValue{
+		{Name: "field1", Value: field1Val},
+		{Name: "field2", Value: field2Val},
+		{Name: "field3", Value: field3Val},
+	})
+	expectedComplexStructVal := sourceComplexStructVal
 
 	for _, tt := range []struct {
 		name    string
@@ -486,7 +509,37 @@ func TestAssignValue(t *testing.T) {
 		{"map ptr val to map val ok", map[string]*int64{"a": int64Ptr1}, func() any { var v map[string]int64; return &v }, false, map[string]int64{"a": 1}},
 		{"map ptr val to map val fail nil", map[string]*int64{"a": nil}, func() any { var v map[string]int64; return &v }, true, nil},
 		{"map val to map ptr val", map[string]int64{"a": 1}, func() any { var v map[string]*int64; return &v }, false, map[string]*int64{"a": int64Ptr1}},
-		{"map to map stringany", map[string]*int64{"a": int64Ptr1, "b": nil}, func() any { var v map[string]any; return &v }, false, map[string]any{"a": int64Ptr1, "b": (*int64)(nil)}},
+		{"map to map string any", map[string]*int64{"a": int64Ptr1, "b": nil}, func() any { var v map[string]any; return &v }, false, map[string]any{"a": int64Ptr1, "b": (*int64)(nil)}},
+
+		// struct
+		{
+			name:    "struct to struct",
+			src:     testStructVal,
+			destFn:  func() any { var v Struct; return &v }, // Dest is *Struct
+			wantErr: false,
+			wantVal: testStructVal, // Should be directly assignable
+		},
+		{
+			name:    "success assign specific complex struct to struct",
+			src:     sourceComplexStructVal,
+			destFn:  func() any { var v Struct; return &v }, // Dest is *Struct
+			wantErr: false,
+			wantVal: expectedComplexStructVal, // Expect identical struct value
+		},
+		{
+			name:    "struct to any",
+			src:     testStructVal,
+			destFn:  func() any { var v any; return &v }, // Dest is *any
+			wantErr: false,
+			wantVal: testStructVal, // Interface will hold the Struct value
+		},
+		{
+			name:    "error struct to map",
+			src:     testStructVal,
+			destFn:  func() any { var v map[string]any; return &v }, // Dest is *map[string]any
+			wantErr: true,                                           // assignValue should prevent this
+			wantVal: nil,
+		},
 
 		// Unsupported
 		{"Unsupported string to Time", "nottime", func() any { var v time.Time; return &v }, true, time.Time{}},
