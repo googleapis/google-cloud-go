@@ -520,9 +520,20 @@ func TestAssignValue(t *testing.T) {
 			wantVal: testStructVal, // Should be directly assignable
 		},
 		{
-			name:    "success assign specific complex struct to struct",
-			src:     sourceComplexStructVal,
-			destFn:  func() any { var v Struct; return &v }, // Dest is *Struct
+			name: "success assign specific complex struct to struct gets fields overwritten",
+			src:  sourceComplexStructVal,
+			destFn: func() any {
+				field1Val := "hello nested"
+				field2Val := []map[string][]int64{} // int64 as compared to *int64 in src
+				field3Val := map[string]map[string][][][][][]*int64{}
+				destComplexStructVal := newStruct([]structFieldWithValue{
+					{Name: "field1", Value: field1Val},
+					{Name: "field2", Value: field2Val},
+					{Name: "field3", Value: field3Val},
+				})
+
+				return &destComplexStructVal
+			}, // Dest is *Struct
 			wantErr: false,
 			wantVal: expectedComplexStructVal, // Expect identical struct value
 		},
