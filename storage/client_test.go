@@ -1259,8 +1259,13 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 		}
 		wantOffsets := []int64{10, 1010, 1010 + MiB, 1010 + 2*MiB, 3 * MiB}
 
+		// Make content with fixed first 10 bytes which will yield
+		// application/octet-stream type when sniffed.
+		content := bytes.Clone(randomBytes3MiB)
+		copy(content, []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
+
 		// Test Flush at a 10 byte offset.
-		n, err := w.Write(randomBytes3MiB[:10])
+		n, err := w.Write(content[:10])
 		if err != nil {
 			t.Fatalf("writing data: got %v; want ok", err)
 		}
@@ -1275,7 +1280,7 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 			t.Errorf("flushing data: got %v bytes written, want %v", off, 10)
 		}
 		// Write another 1000 bytes and flush again.
-		n, err = w.Write(randomBytes3MiB[10:1010])
+		n, err = w.Write(content[10:1010])
 		if err != nil {
 			t.Fatalf("writing data: got %v; want ok", err)
 		}
@@ -1290,7 +1295,7 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 			t.Errorf("flushing data: got %v bytes written, want %v", off, 1010)
 		}
 		// Write the rest of the object
-		_, err = w.Write(randomBytes3MiB[1010:])
+		_, err = w.Write(content[1010:])
 		if err != nil {
 			t.Fatalf("writing data: got %v; want ok", err)
 		}
@@ -1313,7 +1318,7 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 		if n := len(got); n != wantLen {
 			t.Fatalf("expected to read %d bytes, but got %d (%v)", wantLen, n, err)
 		}
-		if diff := cmp.Diff(got, randomBytes3MiB); diff != "" {
+		if diff := cmp.Diff(got, content); diff != "" {
 			t.Errorf("checking written content: got(-), want(+):\n%s", diff)
 		}
 		// Expect application/octet-stream as the content type.
