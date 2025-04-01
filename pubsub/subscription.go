@@ -310,8 +310,12 @@ type BigQueryConfig struct {
 	Table string
 
 	// When true, use the topic's schema as the columns to write to in BigQuery,
-	// if it exists.
+	// if it exists. Cannot be enabled at the same time as UseTableSchema.
 	UseTopicSchema bool
+
+	// When true, use the table's schema as the columns to write to in BigQuery,
+	// if it exists. Cannot be enabled at the same time as UseTopicSchema.
+	UseTableSchema bool
 
 	// When true, write the subscription name, message_id, publish_time,
 	// attributes, and ordering_key to additional columns in the table. The
@@ -345,6 +349,7 @@ func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	pbCfg := &pb.BigQueryConfig{
 		Table:             bc.Table,
 		UseTopicSchema:    bc.UseTopicSchema,
+		UseTableSchema:    bc.UseTableSchema,
 		WriteMetadata:     bc.WriteMetadata,
 		DropUnknownFields: bc.DropUnknownFields,
 		State:             pb.BigQueryConfig_State(bc.State),
@@ -739,6 +744,7 @@ func protoToBQConfig(pbBQ *pb.BigQueryConfig) *BigQueryConfig {
 	bq := &BigQueryConfig{
 		Table:             pbBQ.GetTable(),
 		UseTopicSchema:    pbBQ.GetUseTopicSchema(),
+		UseTableSchema:    pbBQ.GetUseTableSchema(),
 		DropUnknownFields: pbBQ.GetDropUnknownFields(),
 		WriteMetadata:     pbBQ.GetWriteMetadata(),
 		State:             BigQueryConfigState(pbBQ.State),
