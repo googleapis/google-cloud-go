@@ -1737,7 +1737,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			// Unless the user told us the content type, we have to determine it from
 			// the first read.
 			if params.attrs.ContentType == "" && !params.forceEmptyContentType {
-				gw.reader, gw.spec.Resource.ContentType = gax.DetermineContentType(r)
+				gw.reader, gw.spec.Resource.ContentType = gax.DetermineContentType(gw.reader)
 			}
 
 			// Loop until there is an error or the Object has been finalized.
