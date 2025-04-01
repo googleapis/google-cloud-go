@@ -1,4 +1,4 @@
-module benchmarks
+module cloud.google.com/go/spanner/benchmarks
 
 go 1.23.0
 
