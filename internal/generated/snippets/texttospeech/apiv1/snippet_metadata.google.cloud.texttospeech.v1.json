@@ -152,7 +152,7 @@
     {
       "regionTag": "texttospeech_v1_generated_TextToSpeech_StreamingSynthesize_sync",
       "title": "texttospeech StreamingSynthesize Sample",
-      "description": "StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while\nsending text.\n\n\nThis method is not supported for the REST transport.",
+      "description": "StreamingSynthesize performs bidirectional streaming speech synthesis: receives audio while\nsending text.\n\n\nThis method is not supported for the REST transport.",
       "file": "Client/StreamingSynthesize/main.go",
       "language": "GO",
       "clientMethod": {
