@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.79.0",
+    "version": "1.80.0",
     "language": "GO",
     "apis": [
       {
@@ -3572,6 +3572,878 @@
         "client": {
           "shortName": "EvaluationClient",
           "fullName": "google.cloud.aiplatform.v1beta1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExampleStoreClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_CreateExampleStore_sync",
+      "title": "aiplatform CreateExampleStore Sample",
+      "description": "CreateExampleStore create an ExampleStore.",
+      "file": "ExampleStoreClient/CreateExampleStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExampleStore",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.CreateExampleStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateExampleStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateExampleStoreOperation",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "CreateExampleStore",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.CreateExampleStore",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_DeleteExampleStore_sync",
+      "title": "aiplatform DeleteExampleStore Sample",
+      "description": "DeleteExampleStore delete an ExampleStore.",
+      "file": "ExampleStoreClient/DeleteExampleStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExampleStore",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.DeleteExampleStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteExampleStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteExampleStoreOperation",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "DeleteExampleStore",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.DeleteExampleStore",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExampleStoreClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_FetchExamples_sync",
+      "title": "aiplatform FetchExamples Sample",
+      "description": "FetchExamples get Examples from the Example Store.",
+      "file": "ExampleStoreClient/FetchExamples/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchExamples",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.FetchExamples",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.FetchExamplesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExampleIterator",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "FetchExamples",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.FetchExamples",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_GetExampleStore_sync",
+      "title": "aiplatform GetExampleStore Sample",
+      "description": "GetExampleStore get an ExampleStore.",
+      "file": "ExampleStoreClient/GetExampleStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExampleStore",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.GetExampleStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetExampleStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.ExampleStore",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "GetExampleStore",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.GetExampleStore",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ExampleStoreClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ExampleStoreClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExampleStoreClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_ListExampleStores_sync",
+      "title": "aiplatform ListExampleStores Sample",
+      "description": "ListExampleStores list ExampleStores in a Location.",
+      "file": "ExampleStoreClient/ListExampleStores/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExampleStores",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.ListExampleStores",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListExampleStoresRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExampleStoreIterator",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "ListExampleStores",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.ListExampleStores",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ExampleStoreClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ExampleStoreClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_RemoveExamples_sync",
+      "title": "aiplatform RemoveExamples Sample",
+      "description": "RemoveExamples remove Examples from the Example Store.",
+      "file": "ExampleStoreClient/RemoveExamples/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveExamples",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.RemoveExamples",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RemoveExamplesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.RemoveExamplesResponse",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "RemoveExamples",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.RemoveExamples",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_SearchExamples_sync",
+      "title": "aiplatform SearchExamples Sample",
+      "description": "SearchExamples search for similar Examples for given selection criteria.",
+      "file": "ExampleStoreClient/SearchExamples/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchExamples",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.SearchExamples",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.SearchExamplesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.SearchExamplesResponse",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "SearchExamples",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.SearchExamples",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ExampleStoreClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ExampleStoreClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_UpdateExampleStore_sync",
+      "title": "aiplatform UpdateExampleStore Sample",
+      "description": "UpdateExampleStore update an ExampleStore.",
+      "file": "ExampleStoreClient/UpdateExampleStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExampleStore",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.UpdateExampleStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateExampleStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateExampleStoreOperation",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "UpdateExampleStore",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.UpdateExampleStore",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_UpsertExamples_sync",
+      "title": "aiplatform UpsertExamples Sample",
+      "description": "UpsertExamples create or update Examples in the Example Store.",
+      "file": "ExampleStoreClient/UpsertExamples/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpsertExamples",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.UpsertExamples",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpsertExamplesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.UpsertExamplesResponse",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
+        },
+        "method": {
+          "shortName": "UpsertExamples",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService.UpsertExamples",
+          "service": {
+            "shortName": "ExampleStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExampleStoreService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExampleStoreClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ExampleStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExampleStoreClient"
         },
         "method": {
           "shortName": "WaitOperation",
