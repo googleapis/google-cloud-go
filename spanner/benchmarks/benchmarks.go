@@ -84,7 +84,7 @@ var cloudTracingHosts = map[cloudEnvironment]string{
 type benchmarkingConfiguration struct {
 	warmUpTime            int8            // in minutes, default 7 minutes
 	executionTime         int8            // in minutes, default 30 minutes
-	waitBetweenRequests   int8            // in ms, 		 default 5 ms
+	waitBetweenRequests   int8            // in ms, default 5 ms
 	staleness             int8            // in seconds, default 15s
 	parsedTransactionType transactionType // default read
 	tracesEnabled         bool            // default false
@@ -268,7 +268,7 @@ func enableTracingWithCloudTraceExporter(projectID string, cloudTracingHost stri
 	tracerProvider := sdktrace.NewTracerProvider(
 		sdktrace.WithResource(res),
 		sdktrace.WithBatcher(exporter),
-		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.1)),
+		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.5)),
 	)
 
 	otel.SetTracerProvider(tracerProvider)
