@@ -81,7 +81,7 @@ var cloudTracingHosts = map[cloudEnvironment]string{
 	devel:      "staging-cloudtrace.sandbox.googleapis.com:443",
 }
 
-type BenchmarkingConfiguration struct {
+type benchmarkingConfiguration struct {
 	warmUpTime            int8            // in minutes, default 7 minutes
 	executionTime         int8            // in minutes, default 30 minutes
 	waitBetweenRequests   int8            // in ms, 		 default 5 ms
@@ -91,8 +91,8 @@ type BenchmarkingConfiguration struct {
 	disableNativeMetrics  bool            // default false
 }
 
-func GetDefaultBenchmarkingConfiguration() BenchmarkingConfiguration {
-	return BenchmarkingConfiguration{warmUpTime: 7, executionTime: 30, waitBetweenRequests: 5, staleness: 15, parsedTransactionType: read, tracesEnabled: false, disableNativeMetrics: false}
+func getDefaultBenchmarkingConfiguration() benchmarkingConfiguration {
+	return benchmarkingConfiguration{warmUpTime: 7, executionTime: 30, waitBetweenRequests: 5, staleness: 15, parsedTransactionType: read, tracesEnabled: false, disableNativeMetrics: false}
 }
 
 func main() {
@@ -116,7 +116,7 @@ func main() {
 		return
 	}
 
-	bc := GetDefaultBenchmarkingConfiguration()
+	bc := getDefaultBenchmarkingConfiguration()
 	if err := parseCommandLineArguments(os.Args, &bc); err != nil {
 		fmt.Println(err)
 		return
@@ -293,7 +293,7 @@ func setMonitoringHost(monitoringHost string) error {
 	return nil
 }
 
-func parseCommandLineArguments(args []string, bc *BenchmarkingConfiguration) error {
+func parseCommandLineArguments(args []string, bc *benchmarkingConfiguration) error {
 	if len(args)%2 == 0 {
 		return errors.New("some configuration is missing")
 	}
@@ -349,7 +349,7 @@ func parseCommandLineArguments(args []string, bc *BenchmarkingConfiguration) err
 			}
 			bc.disableNativeMetrics = disableNativeMetrics
 		default:
-			return errors.New(fmt.Sprintf("Invalid option %v", commandLineOption))
+			return fmt.Errorf("invalid option %v", commandLineOption)
 		}
 		index += 2
 	}
