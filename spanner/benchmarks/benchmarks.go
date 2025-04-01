@@ -84,7 +84,7 @@ var cloudTracingHosts = map[cloudEnvironment]string{
 type benchmarkingConfiguration struct {
 	warmUpTime            int8            // in minutes, default 7 minutes
 	executionTime         int8            // in minutes, default 30 minutes
-	waitBetweenRequests   int8            // in ms, default 5 ms
+	waitBetweenRequests   uint8           // in ms, default 5 ms
 	staleness             int8            // in seconds, default 15s
 	parsedTransactionType transactionType // default read
 	tracesEnabled         bool            // default false
@@ -171,7 +171,7 @@ func warmUp(ctx context.Context, client *spanner.Client, warmupTime int8, stalen
 	return nil
 }
 
-func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int8, staleness int8, waitBetweenRequests int8, transactionType transactionType) ([]int64, error) {
+func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int8, staleness int8, waitBetweenRequests uint8, transactionType transactionType) ([]int64, error) {
 	endTime := time.Now().Local().Add(time.Minute * time.Duration(executionTime))
 
 	go runTimer(endTime, "Remaining operation time")
@@ -323,7 +323,7 @@ func parseCommandLineArguments(args []string, bc *benchmarkingConfiguration) err
 			if err != nil {
 				return err
 			}
-			bc.waitBetweenRequests = int8(val)
+			bc.waitBetweenRequests = uint8(val)
 		case "st", "staleness":
 			val, err := strconv.ParseInt(commandLineValue, 10, 8)
 			if err != nil {
@@ -386,6 +386,9 @@ func generateUniqueID() int64 {
 	return rand.Int64N(totalRecords) + 1
 }
 
-func getRandomWaitTime(waitTime int8) time.Duration {
+func getRandomWaitTime(waitTime uint8) time.Duration {
+	if waitTime <= 0 {
+		return time.Duration(0)
+	}
 	return time.Duration(rand.Int64N(int64(2*waitTime-1)) + 1)
 }
