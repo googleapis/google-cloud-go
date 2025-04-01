@@ -1718,23 +1718,24 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}
 	s.retry.maxRetryDuration = retryDeadline
 
+	// Set Flush func for use by exported Writer.Flush.
+	var gw *gRPCWriter
+	setFlush(func() (int64, error) {
+		return gw.flush()
+	})
+
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
 	go func() {
 		err := func() error {
-			var gw *gRPCWriter
-			gw, err := newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
+			var err error
+			gw, err = newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
 			if err != nil {
 				return err
 			}
-			// Set Flush func for use by exported Writer.Flush.
-			setFlush(func() (int64, error) {
-				return gw.flush()
-			})
 
 			// Unless the user told us the content type, we have to determine it from
 			// the first read.
-			var r io.Reader = pr
 			if params.attrs.ContentType == "" && !params.forceEmptyContentType {
 				gw.reader, gw.spec.Resource.ContentType = gax.DetermineContentType(r)
 			}
