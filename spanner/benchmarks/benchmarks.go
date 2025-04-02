@@ -89,10 +89,12 @@ type benchmarkingConfiguration struct {
 	parsedTransactionType transactionType // default read
 	tracesEnabled         bool            // default false
 	disableNativeMetrics  bool            // default false
+	traceSamplingFraction float32         // default 0.5
+
 }
 
 func getDefaultBenchmarkingConfiguration() benchmarkingConfiguration {
-	return benchmarkingConfiguration{warmUpTime: 7, executionTime: 30, waitBetweenRequests: 5, staleness: 15, parsedTransactionType: read, tracesEnabled: false, disableNativeMetrics: false}
+	return benchmarkingConfiguration{warmUpTime: 7, executionTime: 30, waitBetweenRequests: 5, staleness: 15, parsedTransactionType: read, tracesEnabled: false, disableNativeMetrics: false, traceSamplingFraction: 0.5}
 }
 
 func main() {
@@ -124,7 +126,7 @@ func main() {
 
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/%v", project, instance, database)
 
-	fmt.Printf("Running benchmark on %v\nEnvironment: %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\nStaleness: %v secs\nTraces Enabled: %v\nDisable Native Metrics: %v\nTransaction Type: %v\n\n", db, environment, bc.warmUpTime, bc.executionTime, bc.waitBetweenRequests, bc.staleness, bc.tracesEnabled, bc.disableNativeMetrics, bc.parsedTransactionType)
+	fmt.Printf("\nRunning benchmark on %v\nEnvironment: %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\nStaleness: %v secs\nTraces Enabled: %v\nDisable Native Metrics: %v\nTrace Sampling Fraction: %v\nTransaction Type: %v\n\n", db, environment, bc.warmUpTime, bc.executionTime, bc.waitBetweenRequests, bc.staleness, bc.tracesEnabled, bc.disableNativeMetrics, bc.traceSamplingFraction, bc.parsedTransactionType)
 
 	if bc.tracesEnabled {
 		enableTracingWithCloudTraceExporter(project, cloudTracingHosts[environment])
@@ -348,6 +350,12 @@ func parseCommandLineArguments(args []string, bc *benchmarkingConfiguration) err
 				return err
 			}
 			bc.disableNativeMetrics = disableNativeMetrics
+		case "tsf", "traceSamplingFraction":
+			traceSamplingFraction, err := strconv.ParseFloat(commandLineValue, 32)
+			if err != nil {
+				return err
+			}
+			bc.traceSamplingFraction = float32(traceSamplingFraction)
 		default:
 			return fmt.Errorf("invalid option %v", commandLineOption)
 		}
