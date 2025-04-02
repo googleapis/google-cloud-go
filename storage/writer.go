@@ -107,17 +107,19 @@ type Writer struct {
 	// Append is a parameter to indicate whether the writer should use appendable
 	// object semantics for the new object generation. Appendable objects are
 	// visible on the first Write() call, and can be appended to until they are
-	// finalized. The object is finalized on a call to Close().
+	// finalized. If Writer.FinalizeOnClose is set to true, the object is finalized
+	// when Writer.Close() is called; otherwise, the object is left unfinalized
+	// and can be appended to later.
 	//
 	// Append is only supported for gRPC. This feature is in preview and is not
 	// yet available for general use.
 	Append bool
 
 	// FinalizeOnClose indicates whether the writer should finalize an object when
-	// closing the write stream. This only applies to writers where Append is
+	// closing the write stream. This only applies to Writers where Append is
 	// true, since append semantics allow a prefix of the object to be durable and
-	// readable. For other writers, the correct way to abandon an upload is to
-	// cancel its context.
+	// readable. By default, objects written with Append semantics will not be
+	// finalized, which means they can be appended to later.
 	//
 	// FinalizeOnClose is supported only on gRPC clients where [Writer.Append] is
 	// set to true. This feature is in preview and is not yet available for
