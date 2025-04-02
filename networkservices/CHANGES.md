@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.2.3...networkservices/v0.2.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **networkservices:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.2.2...networkservices/v0.2.3) (2025-01-02)
 
 

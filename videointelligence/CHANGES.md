@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.12.4...videointelligence/v1.12.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **videointelligence:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.12.4](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.12.3...videointelligence/v1.12.4) (2025-03-06)
 
 

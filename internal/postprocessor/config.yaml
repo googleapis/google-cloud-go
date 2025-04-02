@@ -93,6 +93,7 @@ modules:
   - memorystore
   - metastore
   - migrationcenter
+  - modelarmor
   - monitoring
   - netapp
   - networkconnectivity
@@ -1114,6 +1115,12 @@ service-configs:
   - input-directory: google/iam/v2
     service-config: iam_v2.yaml
     import-path: cloud.google.com/go/iam/apiv2
+  - input-directory: google/iam/v3
+    service-config: iam_v3.yaml
+    import-path: cloud.google.com/go/iam/apiv3
+  - input-directory: google/iam/v3beta
+    service-config: iam_v3beta.yaml
+    import-path: cloud.google.com/go/iam/apiv3beta
   - input-directory: google/identity/accesscontextmanager/v1
     service-config: accesscontextmanager_v1.yaml
     import-path: cloud.google.com/go/accesscontextmanager/apiv1
@@ -1147,6 +1154,9 @@ service-configs:
   - input-directory: google/maps/solar/v1
     service-config: solar_v1.yaml
     import-path: cloud.google.com/go/maps/solar/apiv1
+  - input-directory: google/cloud/modelarmor/v1
+    service-config: modelarmor_v1.yaml
+    import-path: cloud.google.com/go/modelarmor/apiv1
   - input-directory: google/monitoring/dashboard/v1
     service-config: monitoring.yaml
     import-path: cloud.google.com/go/monitoring/dashboard/apiv1
@@ -1162,6 +1172,9 @@ service-configs:
   - input-directory: google/pubsub/v1
     service-config: pubsub_v1.yaml
     import-path: cloud.google.com/go/pubsub/apiv1
+  - input-directory: google/spanner/adapter/v1
+    service-config: spanner.yaml
+    import-path: cloud.google.com/go/spanner/adapter/apiv1
   - input-directory: google/spanner/admin/database/v1
     service-config: spanner.yaml
     import-path: cloud.google.com/go/spanner/admin/database/apiv1

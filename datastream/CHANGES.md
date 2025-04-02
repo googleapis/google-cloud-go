@@ -1,6 +1,32 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.13.2...datastream/v1.14.0) (2025-03-27)
+
+
+### Features
+
+* **datastream:** A new field `blmt_config` is added to message `.google.cloud.datastream.v1.BigQueryDestinationConfig` ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new field `mysql_gtid_position` is added to message `.google.cloud.datastream.v1.CdcStrategy` ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new field `satisfies_pzi` is added to multiple messages. ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new field `satisfies_pzs` is added to multiple messages. ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new field `secret_manager_stored_password` is added to multiple messages ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new message `BlmtConfig` is added ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new message `MysqlGtidPosition` is added ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new messages related to `SalesforceProfile` are added ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
+
+### Documentation
+
+* **datastream:** Documentation improvements and changes for multiple fields ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.13.1...datastream/v1.13.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **datastream:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.13.0...datastream/v1.13.1) (2025-03-06)
 
 
