@@ -1723,16 +1723,18 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	setFlush(func() (int64, error) {
 		return gw.flush()
 	})
-	gw, newWriterErr := newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
+	gw, err := newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
+	if err != nil {
+		errorf(err)
+		pr.CloseWithError(err)
+		close(params.donec)
+		return nil, err
+	}
 
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
 	go func() {
 		err := func() error {
-			// Return error immediately if we got one from newGRPCWriter
-			if newWriterErr != nil {
-				return newWriterErr
-			}
 			// Unless the user told us the content type, we have to determine it from
 			// the first read.
 			if params.attrs.ContentType == "" && !params.forceEmptyContentType {
