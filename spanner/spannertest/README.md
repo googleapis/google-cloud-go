@@ -12,6 +12,19 @@ production Cloud Spanner. They are reasonable for building tools, or writing
 unit or integration tests. Full-scale performance testing or serious workloads
 should use the production Cloud Spanner instead.
 
+## Maintenance Status
+
+This package is currently in maintenance mode. While it is still available for use, it is not actively maintained by the core team. We welcome external contributions and will assist with code reviews for pull requests that improve the package.
+
+## Contributing
+
+We welcome contributions from the community! If you'd like to contribute:
+1. Fork the repository
+2. Create your feature branch
+3. Submit a pull request
+
+Our team will review your contributions and provide feedback to help improve the package.
+
 See [INTERNALS.md](INTERNALS.md) for an explanation of the implementation.
 
 Here's a list of features that are missing or incomplete. It is roughly ordered
