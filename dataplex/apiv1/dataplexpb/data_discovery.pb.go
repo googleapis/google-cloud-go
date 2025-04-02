@@ -21,12 +21,11 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -541,9 +540,7 @@ type DataDiscoveryResult_BigQueryPublishing struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The BigQuery dataset to publish to. It takes the form
-	// `projects/{project_id}/datasets/{dataset_id}`.
-	// If not set, the service creates a default publishing dataset.
+	// Output only. The BigQuery dataset the discovered tables are published to.
 	Dataset string `protobuf:"bytes,1,opt,name=dataset,proto3" json:"dataset,omitempty"`
 }
 

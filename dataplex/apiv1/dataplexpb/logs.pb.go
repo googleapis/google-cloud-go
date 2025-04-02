@@ -21,14 +21,13 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1294,6 +1293,59 @@ func (BusinessGlossaryEvent_EventType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dataplex_v1_logs_proto_rawDescGZIP(), []int{6, 0}
 }
 
+// Type of entry link log event.
+type EntryLinkEvent_EventType int32
+
+const (
+	// An unspecified event type.
+	EntryLinkEvent_EVENT_TYPE_UNSPECIFIED EntryLinkEvent_EventType = 0
+	// EntryLink create event.
+	EntryLinkEvent_ENTRY_LINK_CREATE EntryLinkEvent_EventType = 1
+	// EntryLink delete event.
+	EntryLinkEvent_ENTRY_LINK_DELETE EntryLinkEvent_EventType = 2
+)
+
+// Enum value maps for EntryLinkEvent_EventType.
+var (
+	EntryLinkEvent_EventType_name = map[int32]string{
+		0: "EVENT_TYPE_UNSPECIFIED",
+		1: "ENTRY_LINK_CREATE",
+		2: "ENTRY_LINK_DELETE",
+	}
+	EntryLinkEvent_EventType_value = map[string]int32{
+		"EVENT_TYPE_UNSPECIFIED": 0,
+		"ENTRY_LINK_CREATE":      1,
+		"ENTRY_LINK_DELETE":      2,
+	}
+)
+
+func (x EntryLinkEvent_EventType) Enum() *EntryLinkEvent_EventType {
+	p := new(EntryLinkEvent_EventType)
+	*p = x
+	return p
+}
+
+func (x EntryLinkEvent_EventType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EntryLinkEvent_EventType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dataplex_v1_logs_proto_enumTypes[20].Descriptor()
+}
+
+func (EntryLinkEvent_EventType) Type() protoreflect.EnumType {
+	return &file_google_cloud_dataplex_v1_logs_proto_enumTypes[20]
+}
+
+func (x EntryLinkEvent_EventType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EntryLinkEvent_EventType.Descriptor instead.
+func (EntryLinkEvent_EventType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_logs_proto_rawDescGZIP(), []int{7, 0}
+}
+
 // The payload associated with Discovery data processing.
 type DiscoveryEvent struct {
 	state         protoimpl.MessageState
@@ -2279,6 +2331,71 @@ func (x *BusinessGlossaryEvent) GetResource() string {
 	return ""
 }
 
+// Payload associated with Entry related log events.
+type EntryLinkEvent struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The log message.
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	// The type of the event.
+	EventType EntryLinkEvent_EventType `protobuf:"varint,2,opt,name=event_type,json=eventType,proto3,enum=google.cloud.dataplex.v1.EntryLinkEvent_EventType" json:"event_type,omitempty"`
+	// Name of the resource.
+	Resource string `protobuf:"bytes,3,opt,name=resource,proto3" json:"resource,omitempty"`
+}
+
+func (x *EntryLinkEvent) Reset() {
+	*x = EntryLinkEvent{}
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EntryLinkEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EntryLinkEvent) ProtoMessage() {}
+
+func (x *EntryLinkEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EntryLinkEvent.ProtoReflect.Descriptor instead.
+func (*EntryLinkEvent) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_logs_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *EntryLinkEvent) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *EntryLinkEvent) GetEventType() EntryLinkEvent_EventType {
+	if x != nil {
+		return x.EventType
+	}
+	return EntryLinkEvent_EVENT_TYPE_UNSPECIFIED
+}
+
+func (x *EntryLinkEvent) GetResource() string {
+	if x != nil {
+		return x.Resource
+	}
+	return ""
+}
+
 // Details about configuration events.
 type DiscoveryEvent_ConfigDetails struct {
 	state         protoimpl.MessageState
@@ -2294,7 +2411,7 @@ type DiscoveryEvent_ConfigDetails struct {
 
 func (x *DiscoveryEvent_ConfigDetails) Reset() {
 	*x = DiscoveryEvent_ConfigDetails{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[7]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2306,7 +2423,7 @@ func (x *DiscoveryEvent_ConfigDetails) String() string {
 func (*DiscoveryEvent_ConfigDetails) ProtoMessage() {}
 
 func (x *DiscoveryEvent_ConfigDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[7]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2344,7 +2461,7 @@ type DiscoveryEvent_EntityDetails struct {
 
 func (x *DiscoveryEvent_EntityDetails) Reset() {
 	*x = DiscoveryEvent_EntityDetails{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[8]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2356,7 +2473,7 @@ func (x *DiscoveryEvent_EntityDetails) String() string {
 func (*DiscoveryEvent_EntityDetails) ProtoMessage() {}
 
 func (x *DiscoveryEvent_EntityDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[8]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2400,7 +2517,7 @@ type DiscoveryEvent_TableDetails struct {
 
 func (x *DiscoveryEvent_TableDetails) Reset() {
 	*x = DiscoveryEvent_TableDetails{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[9]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2412,7 +2529,7 @@ func (x *DiscoveryEvent_TableDetails) String() string {
 func (*DiscoveryEvent_TableDetails) ProtoMessage() {}
 
 func (x *DiscoveryEvent_TableDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[9]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2463,7 +2580,7 @@ type DiscoveryEvent_PartitionDetails struct {
 
 func (x *DiscoveryEvent_PartitionDetails) Reset() {
 	*x = DiscoveryEvent_PartitionDetails{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[10]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2475,7 +2592,7 @@ func (x *DiscoveryEvent_PartitionDetails) String() string {
 func (*DiscoveryEvent_PartitionDetails) ProtoMessage() {}
 
 func (x *DiscoveryEvent_PartitionDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[10]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2534,7 +2651,7 @@ type DiscoveryEvent_ActionDetails struct {
 
 func (x *DiscoveryEvent_ActionDetails) Reset() {
 	*x = DiscoveryEvent_ActionDetails{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[11]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2546,7 +2663,7 @@ func (x *DiscoveryEvent_ActionDetails) String() string {
 func (*DiscoveryEvent_ActionDetails) ProtoMessage() {}
 
 func (x *DiscoveryEvent_ActionDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[11]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2598,7 +2715,7 @@ type SessionEvent_QueryDetail struct {
 
 func (x *SessionEvent_QueryDetail) Reset() {
 	*x = SessionEvent_QueryDetail{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[13]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2610,7 +2727,7 @@ func (x *SessionEvent_QueryDetail) String() string {
 func (*SessionEvent_QueryDetail) ProtoMessage() {}
 
 func (x *SessionEvent_QueryDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[13]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2684,7 +2801,7 @@ type GovernanceEvent_Entity struct {
 
 func (x *GovernanceEvent_Entity) Reset() {
 	*x = GovernanceEvent_Entity{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[14]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2696,7 +2813,7 @@ func (x *GovernanceEvent_Entity) String() string {
 func (*GovernanceEvent_Entity) ProtoMessage() {}
 
 func (x *GovernanceEvent_Entity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[14]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2738,7 +2855,7 @@ type DataScanEvent_DataProfileResult struct {
 
 func (x *DataScanEvent_DataProfileResult) Reset() {
 	*x = DataScanEvent_DataProfileResult{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[15]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2750,7 +2867,7 @@ func (x *DataScanEvent_DataProfileResult) String() string {
 func (*DataScanEvent_DataProfileResult) ProtoMessage() {}
 
 func (x *DataScanEvent_DataProfileResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[15]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2811,7 +2928,7 @@ type DataScanEvent_DataQualityResult struct {
 
 func (x *DataScanEvent_DataQualityResult) Reset() {
 	*x = DataScanEvent_DataQualityResult{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[16]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2823,7 +2940,7 @@ func (x *DataScanEvent_DataQualityResult) String() string {
 func (*DataScanEvent_DataQualityResult) ProtoMessage() {}
 
 func (x *DataScanEvent_DataQualityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[16]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2901,7 +3018,7 @@ type DataScanEvent_DataProfileAppliedConfigs struct {
 
 func (x *DataScanEvent_DataProfileAppliedConfigs) Reset() {
 	*x = DataScanEvent_DataProfileAppliedConfigs{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[17]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2913,7 +3030,7 @@ func (x *DataScanEvent_DataProfileAppliedConfigs) String() string {
 func (*DataScanEvent_DataProfileAppliedConfigs) ProtoMessage() {}
 
 func (x *DataScanEvent_DataProfileAppliedConfigs) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[17]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2967,7 +3084,7 @@ type DataScanEvent_DataQualityAppliedConfigs struct {
 
 func (x *DataScanEvent_DataQualityAppliedConfigs) Reset() {
 	*x = DataScanEvent_DataQualityAppliedConfigs{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[18]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2979,7 +3096,7 @@ func (x *DataScanEvent_DataQualityAppliedConfigs) String() string {
 func (*DataScanEvent_DataQualityAppliedConfigs) ProtoMessage() {}
 
 func (x *DataScanEvent_DataQualityAppliedConfigs) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[18]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3021,7 +3138,7 @@ type DataScanEvent_PostScanActionsResult struct {
 
 func (x *DataScanEvent_PostScanActionsResult) Reset() {
 	*x = DataScanEvent_PostScanActionsResult{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[19]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3033,7 +3150,7 @@ func (x *DataScanEvent_PostScanActionsResult) String() string {
 func (*DataScanEvent_PostScanActionsResult) ProtoMessage() {}
 
 func (x *DataScanEvent_PostScanActionsResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[19]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3070,7 +3187,7 @@ type DataScanEvent_PostScanActionsResult_BigQueryExportResult struct {
 
 func (x *DataScanEvent_PostScanActionsResult_BigQueryExportResult) Reset() {
 	*x = DataScanEvent_PostScanActionsResult_BigQueryExportResult{}
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[23]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3082,7 +3199,7 @@ func (x *DataScanEvent_PostScanActionsResult_BigQueryExportResult) String() stri
 func (*DataScanEvent_PostScanActionsResult_BigQueryExportResult) ProtoMessage() {}
 
 func (x *DataScanEvent_PostScanActionsResult_BigQueryExportResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[23]
+	mi := &file_google_cloud_dataplex_v1_logs_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3682,14 +3799,29 @@ var file_google_cloud_dataplex_v1_logs_proto_rawDesc = []byte{
 	0x43, 0x52, 0x45, 0x41, 0x54, 0x45, 0x10, 0x07, 0x12, 0x18, 0x0a, 0x14, 0x47, 0x4c, 0x4f, 0x53,
 	0x53, 0x41, 0x52, 0x59, 0x5f, 0x54, 0x45, 0x52, 0x4d, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45,
 	0x10, 0x08, 0x12, 0x18, 0x0a, 0x14, 0x47, 0x4c, 0x4f, 0x53, 0x53, 0x41, 0x52, 0x59, 0x5f, 0x54,
-	0x45, 0x52, 0x4d, 0x5f, 0x44, 0x45, 0x4c, 0x45, 0x54, 0x45, 0x10, 0x09, 0x42, 0x65, 0x0a, 0x1c,
-	0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x2e, 0x76, 0x31, 0x42, 0x09, 0x4c, 0x6f,
-	0x67, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64,
-	0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x64, 0x61,
-	0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x70, 0x62, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65,
-	0x78, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x45, 0x52, 0x4d, 0x5f, 0x44, 0x45, 0x4c, 0x45, 0x54, 0x45, 0x10, 0x09, 0x22, 0xf0, 0x01, 0x0a,
+	0x0e, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x4c, 0x69, 0x6e, 0x6b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12,
+	0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x51, 0x0a, 0x0a, 0x65, 0x76, 0x65,
+	0x6e, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x32, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x61, 0x74,
+	0x61, 0x70, 0x6c, 0x65, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x4c, 0x69,
+	0x6e, 0x6b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70,
+	0x65, 0x52, 0x09, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1a, 0x0a, 0x08,
+	0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
+	0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x22, 0x55, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1a, 0x0a, 0x16, 0x45, 0x56, 0x45, 0x4e, 0x54, 0x5f, 0x54,
+	0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10,
+	0x00, 0x12, 0x15, 0x0a, 0x11, 0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x4c, 0x49, 0x4e, 0x4b, 0x5f,
+	0x43, 0x52, 0x45, 0x41, 0x54, 0x45, 0x10, 0x01, 0x12, 0x15, 0x0a, 0x11, 0x45, 0x4e, 0x54, 0x52,
+	0x59, 0x5f, 0x4c, 0x49, 0x4e, 0x4b, 0x5f, 0x44, 0x45, 0x4c, 0x45, 0x54, 0x45, 0x10, 0x02, 0x42,
+	0x65, 0x0a, 0x1c, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x2e, 0x76, 0x31, 0x42,
+	0x09, 0x4c, 0x6f, 0x67, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x63, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67,
+	0x6f, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31,
+	0x2f, 0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x70, 0x62, 0x3b, 0x64, 0x61, 0x74, 0x61,
+	0x70, 0x6c, 0x65, 0x78, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3704,8 +3836,8 @@ func file_google_cloud_dataplex_v1_logs_proto_rawDescGZIP() []byte {
 	return file_google_cloud_dataplex_v1_logs_proto_rawDescData
 }
 
-var file_google_cloud_dataplex_v1_logs_proto_enumTypes = make([]protoimpl.EnumInfo, 20)
-var file_google_cloud_dataplex_v1_logs_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_google_cloud_dataplex_v1_logs_proto_enumTypes = make([]protoimpl.EnumInfo, 21)
+var file_google_cloud_dataplex_v1_logs_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_google_cloud_dataplex_v1_logs_proto_goTypes = []any{
 	(DiscoveryEvent_EventType)(0),          // 0: google.cloud.dataplex.v1.DiscoveryEvent.EventType
 	(DiscoveryEvent_EntityType)(0),         // 1: google.cloud.dataplex.v1.DiscoveryEvent.EntityType
@@ -3727,84 +3859,87 @@ var file_google_cloud_dataplex_v1_logs_proto_goTypes = []any{
 	(DataQualityScanRuleResult_EvaluationType)(0),                       // 17: google.cloud.dataplex.v1.DataQualityScanRuleResult.EvaluationType
 	(DataQualityScanRuleResult_Result)(0),                               // 18: google.cloud.dataplex.v1.DataQualityScanRuleResult.Result
 	(BusinessGlossaryEvent_EventType)(0),                                // 19: google.cloud.dataplex.v1.BusinessGlossaryEvent.EventType
-	(*DiscoveryEvent)(nil),                                              // 20: google.cloud.dataplex.v1.DiscoveryEvent
-	(*JobEvent)(nil),                                                    // 21: google.cloud.dataplex.v1.JobEvent
-	(*SessionEvent)(nil),                                                // 22: google.cloud.dataplex.v1.SessionEvent
-	(*GovernanceEvent)(nil),                                             // 23: google.cloud.dataplex.v1.GovernanceEvent
-	(*DataScanEvent)(nil),                                               // 24: google.cloud.dataplex.v1.DataScanEvent
-	(*DataQualityScanRuleResult)(nil),                                   // 25: google.cloud.dataplex.v1.DataQualityScanRuleResult
-	(*BusinessGlossaryEvent)(nil),                                       // 26: google.cloud.dataplex.v1.BusinessGlossaryEvent
-	(*DiscoveryEvent_ConfigDetails)(nil),                                // 27: google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails
-	(*DiscoveryEvent_EntityDetails)(nil),                                // 28: google.cloud.dataplex.v1.DiscoveryEvent.EntityDetails
-	(*DiscoveryEvent_TableDetails)(nil),                                 // 29: google.cloud.dataplex.v1.DiscoveryEvent.TableDetails
-	(*DiscoveryEvent_PartitionDetails)(nil),                             // 30: google.cloud.dataplex.v1.DiscoveryEvent.PartitionDetails
-	(*DiscoveryEvent_ActionDetails)(nil),                                // 31: google.cloud.dataplex.v1.DiscoveryEvent.ActionDetails
-	nil,                                                                 // 32: google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails.ParametersEntry
-	(*SessionEvent_QueryDetail)(nil),                                    // 33: google.cloud.dataplex.v1.SessionEvent.QueryDetail
-	(*GovernanceEvent_Entity)(nil),                                      // 34: google.cloud.dataplex.v1.GovernanceEvent.Entity
-	(*DataScanEvent_DataProfileResult)(nil),                             // 35: google.cloud.dataplex.v1.DataScanEvent.DataProfileResult
-	(*DataScanEvent_DataQualityResult)(nil),                             // 36: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult
-	(*DataScanEvent_DataProfileAppliedConfigs)(nil),                     // 37: google.cloud.dataplex.v1.DataScanEvent.DataProfileAppliedConfigs
-	(*DataScanEvent_DataQualityAppliedConfigs)(nil),                     // 38: google.cloud.dataplex.v1.DataScanEvent.DataQualityAppliedConfigs
-	(*DataScanEvent_PostScanActionsResult)(nil),                         // 39: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult
-	nil, // 40: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.DimensionPassedEntry
-	nil, // 41: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.DimensionScoreEntry
-	nil, // 42: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.ColumnScoreEntry
-	(*DataScanEvent_PostScanActionsResult_BigQueryExportResult)(nil), // 43: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult
-	(*timestamppb.Timestamp)(nil),                                    // 44: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                                      // 45: google.protobuf.Duration
+	(EntryLinkEvent_EventType)(0),                                       // 20: google.cloud.dataplex.v1.EntryLinkEvent.EventType
+	(*DiscoveryEvent)(nil),                                              // 21: google.cloud.dataplex.v1.DiscoveryEvent
+	(*JobEvent)(nil),                                                    // 22: google.cloud.dataplex.v1.JobEvent
+	(*SessionEvent)(nil),                                                // 23: google.cloud.dataplex.v1.SessionEvent
+	(*GovernanceEvent)(nil),                                             // 24: google.cloud.dataplex.v1.GovernanceEvent
+	(*DataScanEvent)(nil),                                               // 25: google.cloud.dataplex.v1.DataScanEvent
+	(*DataQualityScanRuleResult)(nil),                                   // 26: google.cloud.dataplex.v1.DataQualityScanRuleResult
+	(*BusinessGlossaryEvent)(nil),                                       // 27: google.cloud.dataplex.v1.BusinessGlossaryEvent
+	(*EntryLinkEvent)(nil),                                              // 28: google.cloud.dataplex.v1.EntryLinkEvent
+	(*DiscoveryEvent_ConfigDetails)(nil),                                // 29: google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails
+	(*DiscoveryEvent_EntityDetails)(nil),                                // 30: google.cloud.dataplex.v1.DiscoveryEvent.EntityDetails
+	(*DiscoveryEvent_TableDetails)(nil),                                 // 31: google.cloud.dataplex.v1.DiscoveryEvent.TableDetails
+	(*DiscoveryEvent_PartitionDetails)(nil),                             // 32: google.cloud.dataplex.v1.DiscoveryEvent.PartitionDetails
+	(*DiscoveryEvent_ActionDetails)(nil),                                // 33: google.cloud.dataplex.v1.DiscoveryEvent.ActionDetails
+	nil,                                                                 // 34: google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails.ParametersEntry
+	(*SessionEvent_QueryDetail)(nil),                                    // 35: google.cloud.dataplex.v1.SessionEvent.QueryDetail
+	(*GovernanceEvent_Entity)(nil),                                      // 36: google.cloud.dataplex.v1.GovernanceEvent.Entity
+	(*DataScanEvent_DataProfileResult)(nil),                             // 37: google.cloud.dataplex.v1.DataScanEvent.DataProfileResult
+	(*DataScanEvent_DataQualityResult)(nil),                             // 38: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult
+	(*DataScanEvent_DataProfileAppliedConfigs)(nil),                     // 39: google.cloud.dataplex.v1.DataScanEvent.DataProfileAppliedConfigs
+	(*DataScanEvent_DataQualityAppliedConfigs)(nil),                     // 40: google.cloud.dataplex.v1.DataScanEvent.DataQualityAppliedConfigs
+	(*DataScanEvent_PostScanActionsResult)(nil),                         // 41: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult
+	nil, // 42: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.DimensionPassedEntry
+	nil, // 43: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.DimensionScoreEntry
+	nil, // 44: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.ColumnScoreEntry
+	(*DataScanEvent_PostScanActionsResult_BigQueryExportResult)(nil), // 45: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult
+	(*timestamppb.Timestamp)(nil),                                    // 46: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                                      // 47: google.protobuf.Duration
 }
 var file_google_cloud_dataplex_v1_logs_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.dataplex.v1.DiscoveryEvent.type:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.EventType
-	27, // 1: google.cloud.dataplex.v1.DiscoveryEvent.config:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails
-	28, // 2: google.cloud.dataplex.v1.DiscoveryEvent.entity:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.EntityDetails
-	30, // 3: google.cloud.dataplex.v1.DiscoveryEvent.partition:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.PartitionDetails
-	31, // 4: google.cloud.dataplex.v1.DiscoveryEvent.action:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.ActionDetails
-	29, // 5: google.cloud.dataplex.v1.DiscoveryEvent.table:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.TableDetails
-	44, // 6: google.cloud.dataplex.v1.JobEvent.start_time:type_name -> google.protobuf.Timestamp
-	44, // 7: google.cloud.dataplex.v1.JobEvent.end_time:type_name -> google.protobuf.Timestamp
+	29, // 1: google.cloud.dataplex.v1.DiscoveryEvent.config:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails
+	30, // 2: google.cloud.dataplex.v1.DiscoveryEvent.entity:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.EntityDetails
+	32, // 3: google.cloud.dataplex.v1.DiscoveryEvent.partition:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.PartitionDetails
+	33, // 4: google.cloud.dataplex.v1.DiscoveryEvent.action:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.ActionDetails
+	31, // 5: google.cloud.dataplex.v1.DiscoveryEvent.table:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.TableDetails
+	46, // 6: google.cloud.dataplex.v1.JobEvent.start_time:type_name -> google.protobuf.Timestamp
+	46, // 7: google.cloud.dataplex.v1.JobEvent.end_time:type_name -> google.protobuf.Timestamp
 	4,  // 8: google.cloud.dataplex.v1.JobEvent.state:type_name -> google.cloud.dataplex.v1.JobEvent.State
 	3,  // 9: google.cloud.dataplex.v1.JobEvent.type:type_name -> google.cloud.dataplex.v1.JobEvent.Type
 	5,  // 10: google.cloud.dataplex.v1.JobEvent.service:type_name -> google.cloud.dataplex.v1.JobEvent.Service
 	6,  // 11: google.cloud.dataplex.v1.JobEvent.execution_trigger:type_name -> google.cloud.dataplex.v1.JobEvent.ExecutionTrigger
 	7,  // 12: google.cloud.dataplex.v1.SessionEvent.type:type_name -> google.cloud.dataplex.v1.SessionEvent.EventType
-	33, // 13: google.cloud.dataplex.v1.SessionEvent.query:type_name -> google.cloud.dataplex.v1.SessionEvent.QueryDetail
-	45, // 14: google.cloud.dataplex.v1.SessionEvent.unassigned_duration:type_name -> google.protobuf.Duration
+	35, // 13: google.cloud.dataplex.v1.SessionEvent.query:type_name -> google.cloud.dataplex.v1.SessionEvent.QueryDetail
+	47, // 14: google.cloud.dataplex.v1.SessionEvent.unassigned_duration:type_name -> google.protobuf.Duration
 	9,  // 15: google.cloud.dataplex.v1.GovernanceEvent.event_type:type_name -> google.cloud.dataplex.v1.GovernanceEvent.EventType
-	34, // 16: google.cloud.dataplex.v1.GovernanceEvent.entity:type_name -> google.cloud.dataplex.v1.GovernanceEvent.Entity
-	44, // 17: google.cloud.dataplex.v1.DataScanEvent.create_time:type_name -> google.protobuf.Timestamp
-	44, // 18: google.cloud.dataplex.v1.DataScanEvent.start_time:type_name -> google.protobuf.Timestamp
-	44, // 19: google.cloud.dataplex.v1.DataScanEvent.end_time:type_name -> google.protobuf.Timestamp
+	36, // 16: google.cloud.dataplex.v1.GovernanceEvent.entity:type_name -> google.cloud.dataplex.v1.GovernanceEvent.Entity
+	46, // 17: google.cloud.dataplex.v1.DataScanEvent.create_time:type_name -> google.protobuf.Timestamp
+	46, // 18: google.cloud.dataplex.v1.DataScanEvent.start_time:type_name -> google.protobuf.Timestamp
+	46, // 19: google.cloud.dataplex.v1.DataScanEvent.end_time:type_name -> google.protobuf.Timestamp
 	11, // 20: google.cloud.dataplex.v1.DataScanEvent.type:type_name -> google.cloud.dataplex.v1.DataScanEvent.ScanType
 	12, // 21: google.cloud.dataplex.v1.DataScanEvent.state:type_name -> google.cloud.dataplex.v1.DataScanEvent.State
 	13, // 22: google.cloud.dataplex.v1.DataScanEvent.trigger:type_name -> google.cloud.dataplex.v1.DataScanEvent.Trigger
 	14, // 23: google.cloud.dataplex.v1.DataScanEvent.scope:type_name -> google.cloud.dataplex.v1.DataScanEvent.Scope
-	35, // 24: google.cloud.dataplex.v1.DataScanEvent.data_profile:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataProfileResult
-	36, // 25: google.cloud.dataplex.v1.DataScanEvent.data_quality:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityResult
-	37, // 26: google.cloud.dataplex.v1.DataScanEvent.data_profile_configs:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataProfileAppliedConfigs
-	38, // 27: google.cloud.dataplex.v1.DataScanEvent.data_quality_configs:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityAppliedConfigs
-	39, // 28: google.cloud.dataplex.v1.DataScanEvent.post_scan_actions_result:type_name -> google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult
+	37, // 24: google.cloud.dataplex.v1.DataScanEvent.data_profile:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataProfileResult
+	38, // 25: google.cloud.dataplex.v1.DataScanEvent.data_quality:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityResult
+	39, // 26: google.cloud.dataplex.v1.DataScanEvent.data_profile_configs:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataProfileAppliedConfigs
+	40, // 27: google.cloud.dataplex.v1.DataScanEvent.data_quality_configs:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityAppliedConfigs
+	41, // 28: google.cloud.dataplex.v1.DataScanEvent.post_scan_actions_result:type_name -> google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult
 	16, // 29: google.cloud.dataplex.v1.DataQualityScanRuleResult.rule_type:type_name -> google.cloud.dataplex.v1.DataQualityScanRuleResult.RuleType
 	17, // 30: google.cloud.dataplex.v1.DataQualityScanRuleResult.evalution_type:type_name -> google.cloud.dataplex.v1.DataQualityScanRuleResult.EvaluationType
 	18, // 31: google.cloud.dataplex.v1.DataQualityScanRuleResult.result:type_name -> google.cloud.dataplex.v1.DataQualityScanRuleResult.Result
 	19, // 32: google.cloud.dataplex.v1.BusinessGlossaryEvent.event_type:type_name -> google.cloud.dataplex.v1.BusinessGlossaryEvent.EventType
-	32, // 33: google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails.parameters:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails.ParametersEntry
-	1,  // 34: google.cloud.dataplex.v1.DiscoveryEvent.EntityDetails.type:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.EntityType
-	2,  // 35: google.cloud.dataplex.v1.DiscoveryEvent.TableDetails.type:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.TableType
-	1,  // 36: google.cloud.dataplex.v1.DiscoveryEvent.PartitionDetails.type:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.EntityType
-	8,  // 37: google.cloud.dataplex.v1.SessionEvent.QueryDetail.engine:type_name -> google.cloud.dataplex.v1.SessionEvent.QueryDetail.Engine
-	45, // 38: google.cloud.dataplex.v1.SessionEvent.QueryDetail.duration:type_name -> google.protobuf.Duration
-	10, // 39: google.cloud.dataplex.v1.GovernanceEvent.Entity.entity_type:type_name -> google.cloud.dataplex.v1.GovernanceEvent.Entity.EntityType
-	40, // 40: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.dimension_passed:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.DimensionPassedEntry
-	41, // 41: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.dimension_score:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.DimensionScoreEntry
-	42, // 42: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.column_score:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.ColumnScoreEntry
-	43, // 43: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.bigquery_export_result:type_name -> google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult
-	15, // 44: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult.state:type_name -> google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult.State
-	45, // [45:45] is the sub-list for method output_type
-	45, // [45:45] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	20, // 33: google.cloud.dataplex.v1.EntryLinkEvent.event_type:type_name -> google.cloud.dataplex.v1.EntryLinkEvent.EventType
+	34, // 34: google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails.parameters:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.ConfigDetails.ParametersEntry
+	1,  // 35: google.cloud.dataplex.v1.DiscoveryEvent.EntityDetails.type:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.EntityType
+	2,  // 36: google.cloud.dataplex.v1.DiscoveryEvent.TableDetails.type:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.TableType
+	1,  // 37: google.cloud.dataplex.v1.DiscoveryEvent.PartitionDetails.type:type_name -> google.cloud.dataplex.v1.DiscoveryEvent.EntityType
+	8,  // 38: google.cloud.dataplex.v1.SessionEvent.QueryDetail.engine:type_name -> google.cloud.dataplex.v1.SessionEvent.QueryDetail.Engine
+	47, // 39: google.cloud.dataplex.v1.SessionEvent.QueryDetail.duration:type_name -> google.protobuf.Duration
+	10, // 40: google.cloud.dataplex.v1.GovernanceEvent.Entity.entity_type:type_name -> google.cloud.dataplex.v1.GovernanceEvent.Entity.EntityType
+	42, // 41: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.dimension_passed:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.DimensionPassedEntry
+	43, // 42: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.dimension_score:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.DimensionScoreEntry
+	44, // 43: google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.column_score:type_name -> google.cloud.dataplex.v1.DataScanEvent.DataQualityResult.ColumnScoreEntry
+	45, // 44: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.bigquery_export_result:type_name -> google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult
+	15, // 45: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult.state:type_name -> google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult.State
+	46, // [46:46] is the sub-list for method output_type
+	46, // [46:46] is the sub-list for method input_type
+	46, // [46:46] is the sub-list for extension type_name
+	46, // [46:46] is the sub-list for extension extendee
+	0,  // [0:46] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataplex_v1_logs_proto_init() }
@@ -3834,8 +3969,8 @@ func file_google_cloud_dataplex_v1_logs_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_dataplex_v1_logs_proto_rawDesc,
-			NumEnums:      20,
-			NumMessages:   24,
+			NumEnums:      21,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
