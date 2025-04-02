@@ -186,9 +186,8 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 // Do not call Flush concurrently with Write or Close. A single Writer is not
 // safe for unsynchronized use across threads.
 //
-// Note that calling Flush very early (after fewer than 512 bytes) will cause
-// automatic content type sniffing in the Writer to be disabled, since we will
-// not yet have enough data read to sniff the type.
+// Note that calling Flush very early (before 512 bytes) may interfere with
+// automatic content sniffing in the Writer.
 //
 // Flush is supported only on gRPC clients where [Writer.Append] is set
 // to true. This feature is in preview and is not yet available for general use.
