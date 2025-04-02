@@ -268,7 +268,7 @@ type openWriterParams struct {
 	append bool
 	// finalizeOnClose - Finalize the object when the storage.Writer is closed
 	// successfully.
-	// Required, and set to true by default in writer.go
+	// Optional.
 	finalizeOnClose bool
 
 	// Writer callbacks
