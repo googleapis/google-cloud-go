@@ -41,42 +41,49 @@ import (
 )
 
 func TestNewServerWithPort(t *testing.T) {
-	// Allocate an available port to use with NewServerWithPort and then close it so it's available.
-	// Note: There is no guarantee that the port does not become used between closing
-	// the listener and creating the new server with NewServerWithPort, but the chances are
-	// very small.
-	l, err := net.Listen("tcp", ":0")
-	if err != nil {
-		t.Fatal(err)
-	}
-	port := l.Addr().(*net.TCPAddr).Port
-	l.Close()
-
-	// Pass a non 0 port to demonstrate we can pass a hardcoded port for the server to listen on
+	port := getFreePort(t)
 	srv := NewServerWithPort(port)
+
+	conn, err := grpc.NewClient(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer srv.Close()
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
-	if err != nil {
-		t.Fatal(err)
+
+	t.Cleanup(func() {
+		conn.Close()
+		srv.Close()
+	})
+}
+
+func TestNewServerWithAddress(t *testing.T) {
+	hosts := []string{
+		"",
+		"0.0.0.0",
+		"127.0.0.1",
+		"localhost",
 	}
-	defer conn.Close()
+	for _, h := range hosts {
+		port := getFreePort(t)
+		address := fmt.Sprintf("%s:%d", h, port)
+		t.Run(fmt.Sprintf("Init new server succeed with address %s", address), func(t *testing.T) {
+			srv := NewServerWithAddress(address)
+
+			conn, err := grpc.NewClient(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			t.Cleanup(func() {
+				conn.Close()
+				srv.Close()
+			})
+		})
+	}
+
 }
 
 func TestNewServerWithCallback(t *testing.T) {
-	// Allocate an available port to use with NewServerWithPort and then close it so it's available.
-	// Note: There is no guarantee that the port does not become used between closing
-	// the listener and creating the new server with NewServerWithPort, but the chances are
-	// very small.
-	l, err := net.Listen("tcp", ":0")
-	if err != nil {
-		t.Fatal(err)
-	}
-	port := l.Addr().(*net.TCPAddr).Port
-	l.Close()
-
+	port := getFreePort(t)
 	additionalFake := struct {
 		iampb.UnimplementedIAMPolicyServer
 	}{}
@@ -90,20 +97,35 @@ func TestNewServerWithCallback(t *testing.T) {
 
 	// Pass a non 0 port to demonstrate we can pass a hardcoded port for the server to listen on
 	srv := NewServerWithCallback(port, callback)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer srv.Close()
 
 	conn, err := grpc.NewClient(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer conn.Close()
 
 	if !verifyCallback {
 		t.Fatal("callback was not invoked")
 	}
+
+	t.Cleanup(func() {
+		conn.Close()
+		srv.Close()
+	})
+}
+
+// getFreePort allocates an available port then close it so it's available.
+// Note: There is no guarantee that the port does not become used between closing
+// the listener and creating the new server with the invocation function, but
+// the chances are very small.
+func getFreePort(t *testing.T) int {
+	l, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	port := l.Addr().(*net.TCPAddr).Port
+	l.Close()
+
+	return port
 }
 
 func TestTopics(t *testing.T) {

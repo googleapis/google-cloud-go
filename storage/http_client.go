@@ -34,6 +34,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
+	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -857,6 +858,7 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 }
 
 func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
+	requestID := uuid.New()
 	u := &url.URL{
 		Scheme:  c.scheme,
 		Host:    c.xmlHost,
@@ -914,7 +916,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 			timer := time.After(stallTimeout)
 			select {
 			case <-timer:
-				log.Printf("stalled read-req (%p) cancelled after %fs", req, stallTimeout.Seconds())
+				log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
 				cancel()
 				<-done
 				if res != nil && res.Body != nil {
@@ -970,6 +972,9 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	setObj := params.setObj
 	progress := params.progress
 	attrs := params.attrs
+	params.setFlush(func() (int64, error) {
+		return 0, errors.New("Writer.Flush is only supported for gRPC-based clients")
+	})
 
 	mediaOpts := []googleapi.MediaOption{
 		googleapi.ChunkSize(params.chunkSize),

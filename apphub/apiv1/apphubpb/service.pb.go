@@ -99,15 +99,15 @@ func (Service_State) EnumDescriptor() ([]byte, []int) {
 }
 
 // Service is an App Hub data model that contains a discovered service, which
-// represents a network/api interface that exposes some functionality to clients
-// for consumption over the network.
+// represents a network or API interface that exposes some functionality to
+// clients for consumption over the network.
 type Service struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. The resource name of a Service. Format:
-	// "projects/{host-project-id}/locations/{location}/applications/{application-id}/services/{service-id}"
+	// `"projects/{host-project-id}/locations/{location}/applications/{application-id}/services/{service-id}"`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. User-defined name for the Service.
 	// Can have a maximum length of 63 characters.
@@ -249,8 +249,8 @@ type ServiceReference struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The underlying resource URI (For example, URI of Forwarding
-	// Rule, URL Map, and Backend Service).
+	// Output only. The underlying resource URI. For example, URI of Forwarding
+	// Rule, URL Map, and Backend Service.
 	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
 }
 
@@ -359,16 +359,16 @@ func (x *ServiceProperties) GetZone() string {
 	return ""
 }
 
-// DiscoveredService is a network/api interface that exposes some functionality
-// to clients for consumption over the network. A discovered service can be
-// registered to a App Hub service.
+// DiscoveredService is a network or API interface that exposes some
+// functionality to clients for consumption over the network. A discovered
+// service can be registered to a App Hub service.
 type DiscoveredService struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. The resource name of the discovered service. Format:
-	// "projects/{host-project-id}/locations/{location}/discoveredServices/{uuid}""
+	// `"projects/{host-project-id}/locations/{location}/discoveredServices/{uuid}"`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Reference to an underlying networking resource that can
 	// comprise a Service. These are immutable.

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/rapidmigrationassessment/apiv1",
-    "version": "1.1.4",
+    "version": "1.1.6",
     "language": "GO",
     "apis": [
       {
@@ -151,7 +151,7 @@
     {
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_DeleteCollector_sync",
       "title": "rapidmigrationassessment DeleteCollector Sample",
-      "description": "DeleteCollector deletes a single Collector - changes state of collector to \"Deleting\".\nBackground jobs does final deletion thorugh producer api.",
+      "description": "DeleteCollector deletes a single Collector - changes state of collector to \"Deleting\".\nBackground jobs does final deletion through producer API.",
       "file": "Client/DeleteCollector/main.go",
       "language": "GO",
       "clientMethod": {
