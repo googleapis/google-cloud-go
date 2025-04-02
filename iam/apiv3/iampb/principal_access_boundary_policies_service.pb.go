@@ -411,6 +411,7 @@ func (x *ListPrincipalAccessBoundaryPoliciesRequest) GetPageToken() string {
 	return ""
 }
 
+// Response message for ListPrincipalAccessBoundaryPolicies method.
 type ListPrincipalAccessBoundaryPoliciesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
