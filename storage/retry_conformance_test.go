@@ -663,7 +663,7 @@ var methods = map[string][]retryFunc{
 			}
 
 			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
-				return fmt.Errorf("content got(-),want(+):\n%v", d)
+				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(randomBytes3MiB))
 			}
 			return nil
 		},
