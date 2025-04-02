@@ -1172,6 +1172,9 @@ service-configs:
   - input-directory: google/pubsub/v1
     service-config: pubsub_v1.yaml
     import-path: cloud.google.com/go/pubsub/apiv1
+  - input-directory: google/spanner/adapter/v1
+    service-config: spanner.yaml
+    import-path: cloud.google.com/go/spanner/adapter/apiv1
   - input-directory: google/spanner/admin/database/v1
     service-config: spanner.yaml
     import-path: cloud.google.com/go/spanner/admin/database/apiv1
