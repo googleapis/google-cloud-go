@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.16.1",
+    "version": "1.17.0",
     "language": "GO",
     "apis": [
       {
@@ -4361,6 +4361,189 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_ServingConfigService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ServingConfigClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ServingConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ServingConfigService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ServingConfigClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ServingConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ServingConfigService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ServingConfigClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ServingConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ServingConfigService_UpdateServingConfig_sync",
+      "title": "discoveryengine UpdateServingConfig Sample",
+      "description": "UpdateServingConfig updates a ServingConfig.\n\nReturns a NOT_FOUND error if the ServingConfig does not exist.",
+      "file": "ServingConfigClient/UpdateServingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateServingConfig",
+        "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.UpdateServingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateServingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ServingConfig",
+        "client": {
+          "shortName": "ServingConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateServingConfig",
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigService.UpdateServingConfig",
+          "service": {
+            "shortName": "ServingConfigService",
+            "fullName": "google.cloud.discoveryengine.v1.ServingConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_BatchCreateTargetSites_sync",
       "title": "discoveryengine BatchCreateTargetSites Sample",
       "description": "BatchCreateTargetSites creates [TargetSite][google.cloud.discoveryengine.v1.TargetSite] in a\nbatch.",
@@ -4498,6 +4681,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_CreateSitemap_sync",
+      "title": "discoveryengine CreateSitemap Sample",
+      "description": "CreateSitemap creates a [Sitemap][google.cloud.discoveryengine.v1.Sitemap].",
+      "file": "SiteSearchEngineClient/CreateSitemap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSitemap",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.CreateSitemap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateSitemapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSitemapOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "CreateSitemap",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.CreateSitemap",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_CreateTargetSite_sync",
       "title": "discoveryengine CreateTargetSite Sample",
       "description": "CreateTargetSite creates a [TargetSite][google.cloud.discoveryengine.v1.TargetSite].",
@@ -4539,6 +4768,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_DeleteSitemap_sync",
+      "title": "discoveryengine DeleteSitemap Sample",
+      "description": "DeleteSitemap deletes a [Sitemap][google.cloud.discoveryengine.v1.Sitemap].",
+      "file": "SiteSearchEngineClient/DeleteSitemap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSitemap",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.DeleteSitemap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteSitemapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSitemapOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "DeleteSitemap",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.DeleteSitemap",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -4723,6 +4998,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_FetchSitemaps_sync",
+      "title": "discoveryengine FetchSitemaps Sample",
+      "description": "FetchSitemaps fetch [Sitemap][google.cloud.discoveryengine.v1.Sitemap]s in a\n[DataStore][google.cloud.discoveryengine.v1.DataStore].",
+      "file": "SiteSearchEngineClient/FetchSitemaps/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchSitemaps",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.FetchSitemaps",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.FetchSitemapsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.FetchSitemapsResponse",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "FetchSitemaps",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.FetchSitemaps",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

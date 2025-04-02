@@ -1,5 +1,20 @@
 # Changes
 
+## [1.15.4](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.3...eventarc/v1.15.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **eventarc:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.2...eventarc/v1.15.3) (2025-03-12)
+
+
+### Documentation
+
+* **eventarc/publishing:** Documentation improvements for the Publisher service ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **eventarc/publishing:** Minor documentation improvements ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+
 ## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.1...eventarc/v1.15.2) (2025-03-06)
 
 
