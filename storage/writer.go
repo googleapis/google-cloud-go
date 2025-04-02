@@ -346,7 +346,7 @@ func (w *Writer) validateWriteAttrs() error {
 	if w.ChunkSize < 0 {
 		return errors.New("storage: Writer.ChunkSize must be non-negative")
 	}
-	if !w.FinalizeOnClose && !w.Append {
+	if w.FinalizeOnClose && !w.Append {
 		return errors.New("storage: Writer.FinalizeOnClose may only be true if Writer.Append is true")
 	}
 	return nil
