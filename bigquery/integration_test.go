@@ -2603,8 +2603,7 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	ts := time.Date(2020, 1, 2, 15, 04, 05, 0, time.UTC)
-	cdt := civil.DateOf(ts)
+	ts := time.Date(2020, 10, 15, 15, 04, 05, 0, time.UTC)
 
 	testCases := []struct {
 		name       string
@@ -2675,40 +2674,6 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 					},
 					ParameterValue: &bq.QueryParameterValue{
 						Value: ts.Format(time.RFC3339),
-					},
-				},
-			},
-			[]Value{ts},
-			ts,
-		},
-		{
-			"Date with optional leading zero",
-			"SELECT @val",
-			[]*bq.QueryParameter{
-				{
-					Name: "val",
-					ParameterType: &bq.QueryParameterType{
-						Type: "DATE",
-					},
-					ParameterValue: &bq.QueryParameterValue{
-						Value: ts.Format("2006-1-2"),
-					},
-				},
-			},
-			[]Value{cdt},
-			cdt,
-		},
-		{
-			"Datetime with TZ",
-			"SELECT @val",
-			[]*bq.QueryParameter{
-				{
-					Name: "val",
-					ParameterType: &bq.QueryParameterType{
-						Type: "TIMESTAMP", // TODO: confirm if DATETIME or TIMESTAMP
-					},
-					ParameterValue: &bq.QueryParameterValue{
-						Value: ts.Format("2006-01-02 15:04:05 MST"),
 					},
 				},
 			},

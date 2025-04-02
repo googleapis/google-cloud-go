@@ -29,11 +29,10 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#timestamp_type.
+// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#timestamp-type.
 var (
-	timestampFormat  = "2006-01-02 15:04:05.999999-07:00"
-	dateTimeFormat   = "2006-01-02 15:04:05"
-	dateTimeTZFormat = "2006-01-02 15:04:05 MST"
+	timestampFormat = "2006-01-02 15:04:05.999999-07:00"
+	dateTimeFormat  = "2006-01-02 15:04:05"
 )
 
 var (
@@ -662,7 +661,7 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 		if isNullScalar(qval) {
 			return NullTimestamp{Valid: false}, nil
 		}
-		formats := []string{timestampFormat, time.RFC3339Nano, dateTimeFormat, dateTimeTZFormat}
+		formats := []string{timestampFormat, time.RFC3339Nano, dateTimeFormat}
 		var lastParseErr error
 		for _, format := range formats {
 			t, err := time.Parse(format, qval.Value)
