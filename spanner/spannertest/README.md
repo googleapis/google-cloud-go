@@ -1,20 +1,21 @@
-This directory contains `spannertest`, an in-memory fake Cloud Spanner. A sibling
-directory, `spansql`, contains types and parser for the Cloud Spanner SQL dialect.
+This directory contains `spannertest`, an in-memory fake Spanner. A sibling
+directory, `spansql`, contains types and parser for the Spanner SQL dialect.
 
-`spansql` is reusable for anything that interacts with Cloud Spanner on a
+`spansql` is reusable for anything that interacts with Spanner on a
 syntactic basis, such as tools for handling Spanner schema (DDL).
 
-`spannertest` builds on `spansql` for testing code that uses Cloud Spanner client
+`spannertest` builds on `spansql` for testing code that uses Spanner client
 libraries.
 
 Neither of these packages aims to be performant nor exact replicas of the
-production Cloud Spanner. They are reasonable for building tools, or writing
-unit or integration tests. Full-scale performance testing or serious workloads
-should use the production Cloud Spanner instead.
+production Spanner. They are reasonable for building tools, or writing
+unit or integration tests. Full-scale performance testing, end-to-end testing or serious workloads
+should use the production Spanner instance or the [Spanner Emulator](https://cloud.google.com/spanner/docs/emulator).
+
 
 ## Maintenance Status
 
-This package is currently in maintenance mode. While it is still available for use, it is not actively maintained by the core team. We welcome external contributions and will assist with code reviews for pull requests that improve the package.
+This package is currently in limited maintenance mode. While it is still available for use, it is not actively maintained by the core team. We welcome external contributions and will assist with code reviews for pull requests that improve the package.
 
 ## Contributing
 

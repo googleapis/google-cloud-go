@@ -1,18 +1,18 @@
 # spansql
 
-This package provides types and a parser for the Cloud Spanner SQL dialect. It is designed to be reusable for anything that interacts with Cloud Spanner on a syntactic basis, such as tools for handling Spanner schema (DDL).
+This package provides types and a parser for the Spanner SQL dialect. It is designed to be reusable for anything that interacts with Spanner on a syntactic basis, such as tools for handling Spanner schema (DDL).
 
 ## Maintenance Status
 
-This package is currently in maintenance mode. While it is still available for use, it is not actively maintained by the core team. We welcome external contributions and will assist with code reviews for pull requests that improve the package.
+This package is currently in limited maintenance mode. While it is still available for use, it is not actively maintained by the core team. We welcome external contributions and will assist with code reviews for pull requests that improve the package.
 
 ## Usage
 
 The package can be used for:
-- Parsing Cloud Spanner SQL statements
-- Building tools that interact with Cloud Spanner schemas
+- Parsing Spanner SQL statements
+- Building tools that interact with Spanner schemas
 - Handling DDL operations
-- Other syntactic operations related to Cloud Spanner
+- Other syntactic operations related to Spanner
 
 ## Contributing
 
@@ -25,4 +25,4 @@ Our team will review your contributions and provide feedback to help improve the
 
 ## Note
 
-This package is designed for syntactic operations and is not intended to be a complete implementation of Cloud Spanner's functionality. For production workloads, please use the official Cloud Spanner client libraries. 
+This package is designed for syntactic operations and is not intended to be a complete implementation of  Spanner's functionality. For full functional end-to-end testing, we recommend using either a Spanner instance or the [Spanner Emulator](https://cloud.google.com/spanner/docs/emulator).
