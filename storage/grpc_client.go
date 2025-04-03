@@ -2473,7 +2473,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.ObjectDataRanges = []*storagepb.ObjectRangeData{{ChecksummedData: &storagepb.ChecksummedData{}, ReadRange: &storagepb.ReadRange{}}}
 			bytesFieldLen, err := d.consumeVarint()
 			if err != nil {
-				return fmt.Errorf("consuming bytes: %v", err)
+				return fmt.Errorf("consuming bytes: %w", err)
 			}
 			var contentEndOff = d.off + bytesFieldLen
 			for d.off < contentEndOff {
@@ -2486,7 +2486,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 				case gotNum == checksummedDataField && gotTyp == protowire.BytesType:
 					checksummedDataFieldLen, err := d.consumeVarint()
 					if err != nil {
-						return fmt.Errorf("consuming bytes: %v", err)
+						return fmt.Errorf("consuming bytes: %w", err)
 					}
 					var checksummedDataEndOff = d.off + checksummedDataFieldLen
 					for d.off < checksummedDataEndOff {
@@ -2517,7 +2517,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 				case gotNum == readRangeField && gotTyp == protowire.BytesType:
 					buf, err := d.consumeBytesCopy()
 					if err != nil {
-						return fmt.Errorf("invalid ObjectDataRange.ReadRange: %v", err)
+						return fmt.Errorf("invalid ObjectDataRange.ReadRange: %w", err)
 					}
 
 					if err := proto.Unmarshal(buf, msg.ObjectDataRanges[0].ReadRange); err != nil {
@@ -2536,7 +2536,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.Metadata = &storagepb.Object{}
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return fmt.Errorf("invalid BidiReadObjectResponse.Metadata: %v", err)
+				return fmt.Errorf("invalid BidiReadObjectResponse.Metadata: %w", err)
 			}
 
 			if err := proto.Unmarshal(buf, msg.Metadata); err != nil {
@@ -2546,7 +2546,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.ReadHandle = &storagepb.BidiReadHandle{}
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return fmt.Errorf("invalid BidiReadObjectResponse.ReadHandle: %v", err)
+				return fmt.Errorf("invalid BidiReadObjectResponse.ReadHandle: %w", err)
 			}
 
 			if err := proto.Unmarshal(buf, msg.ReadHandle); err != nil {
