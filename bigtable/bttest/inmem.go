@@ -1450,6 +1450,14 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 	return err
 }
 
+func (s *server) PrepareQuery(context.Context, *btpb.PrepareQueryRequest) (*btpb.PrepareQueryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support PrepareQuery")
+}
+
+func (s *server) ExecuteQuery(*btpb.ExecuteQueryRequest, btpb.Bigtable_ExecuteQueryServer) error {
+	return status.Errorf(codes.Unimplemented, "the emulator does not currently support ExecuteQuery")
+}
+
 // needGC is invoked whenever the server needs gcloop running.
 func (s *server) needGC() {
 	s.mu.Lock()

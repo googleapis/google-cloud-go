@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.18.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.18.0...shopping/v0.18.1) (2025-03-25)
+
+
+### Documentation
+
+* **shopping/css:** Added a clarifying note to the description of the parent field in the Account resource ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.17.1...shopping/v0.18.0) (2025-03-19)
+
+
+### Features
+
+* **shopping/merchant/accounts:** Add AutomaticImprovements service ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/datasources:** Add a new destinations field ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/products:** Add an update method ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **shopping/merchant/datasources:** A comment for field `channel` in message `.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource` is changed ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/datasources:** A comment for field `promotion_data_source` in message `.google.shopping.merchant.datasources.v1beta.DataSource` is changed ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/products:** A comment for field `channel` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+* **shopping/merchant/products:** A comment for field `data_source` in message `.google.shopping.merchant.products.v1beta.InsertProductInputRequest` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+* **shopping/merchant/products:** A comment for message `ProductInput` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
 ## [0.17.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.17.0...shopping/v0.17.1) (2025-03-13)
 
 
