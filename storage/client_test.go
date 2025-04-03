@@ -1348,8 +1348,8 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		reader.Add(&res[2].buf, 0, 600, callback3)
 		reader.Add(&res[3].buf, 36, 999, callback4)
 
-		if err := reader.ValidateOpen(); err != nil {
-			t.Fatalf("expected valid reader, got reader.ValidateOpen: %v", err)
+		if err := reader.Error(); err != nil {
+			t.Fatalf("expected valid reader, got reader.Error: %v", err)
 		}
 
 		reader.Wait()
@@ -1366,8 +1366,8 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 			t.Errorf("Error while closing reader %v", err)
 		}
 
-		if err := reader.ValidateOpen(); !errors.Is(err, ErrStreamClosed) {
-			t.Fatalf("reader.ValidateOpen: expected %v, got %v", ErrStreamClosed, err)
+		if err := reader.Error(); err == nil {
+			t.Fatalf("reader.Error: expected a non-nil error, got %v", err)
 		}
 	})
 }

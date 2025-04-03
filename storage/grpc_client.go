@@ -74,8 +74,6 @@ const (
 	msgEntityNotSupported = "The gRPC API currently does not support ACL entities using project ID, use project numbers instead"
 )
 
-var ErrStreamClosed = errors.New("storage: stream is permanently closed")
-
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
 func defaultGRPCOptions() []option.ClientOption {
@@ -1501,11 +1499,11 @@ func (mrr *gRPCBidiReader) getHandle() []byte {
 	return mrr.readHandle
 }
 
-func (mrr *gRPCBidiReader) validateOpen() error {
+func (mrr *gRPCBidiReader) error() error {
 	mrr.mu.Lock()
 	defer mrr.mu.Unlock()
 	if mrr.done {
-		return ErrStreamClosed
+		return errors.New("storage: stream is permanently closed")
 	}
 	return nil
 }
