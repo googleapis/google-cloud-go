@@ -45,9 +45,9 @@ func getconfigFilePath() string {
 	envFilePath := util.GetConfigFilePathFromEnv()
 	if envFilePath != "" {
 		return envFilePath
-	} else {
-		return util.GetDefaultConfigFilePath()
 	}
+	return util.GetDefaultConfigFilePath()
+
 }
 
 // GetCertificatePath retrieves the certificate file path from the provided
