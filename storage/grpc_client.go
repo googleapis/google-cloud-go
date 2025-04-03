@@ -22,6 +22,7 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"sync"
@@ -1699,12 +1700,13 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	return r, nil
 }
 
-func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+const sniffBuffSize = 512
+
+func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*preemptiblePipeWriter, error) {
 	var offset int64
 	errorf := params.setError
 	setObj := params.setObj
 	setFlush := params.setFlush
-	pr, pw := io.Pipe()
 
 	s := callSettings(c.settings, opts...)
 
@@ -1717,27 +1719,100 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}
 	s.retry.maxRetryDuration = retryDeadline
 
+	// ------------------------
+
+	// Unless the user told us the content type, we have to determine it from
+	// the first read.
+	shouldSniffContentType := params.attrs.ContentType == "" && !params.forceEmptyContentType
+
+	var (
+		pr                *preemptiblePipeReader
+		pw                *preemptiblePipeWriter
+		gw                *gRPCWriter
+		err               error
+		flushBefore512    chan bool
+		recvfirst512Bytes chan []byte
+	)
+
+	if !shouldSniffContentType {
+		pr, pw, _ := newPipe()
+		// We can begin the writer as normal.
+		gw, err = newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
+		if err != nil {
+			return pw, err
+		}
+
+		// Set Flush func for use by exported Writer.Flush.
+		setFlush(func() (int64, error) {
+			return gw.flush()
+		})
+	} else {
+		recvfirst512Bytes = make(chan []byte)
+		var preemptRead chan struct{}
+
+		pr, pw, preemptRead = newSniffContentPipe(recvfirst512Bytes)
+
+		flushBefore512 = make(chan bool)
+
+		// Set a temporary flush for the first 512 bytes.
+		setFlush(func() (int64, error) {
+			if !params.append {
+				return 0, errors.New("Flush is supported only if Writer.Append is set to true")
+			}
+
+			preemptRead <- struct{}{}
+			<-flushBefore512
+
+			// Now flush. (this might need passing the gw back into this func from the goroutine?)
+			return gw.flush()
+		})
+	}
+
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
 	go func() {
 		err := func() error {
-			// Unless the user told us the content type, we have to determine it from
-			// the first read.
-			var r io.Reader = pr
-			if params.attrs.ContentType == "" && !params.forceEmptyContentType {
-				r, params.attrs.ContentType = gax.DetermineContentType(r)
-			}
 
-			var gw *gRPCWriter
-			gw, err := newGRPCWriter(c, s, params, r, pw, params.setPipeWriter)
-			if err != nil {
-				return err
-			}
+			if shouldSniffContentType {
+				select {
+				case b := <-recvfirst512Bytes:
+					params.attrs.ContentType = http.DetectContentType(b)
+					gw, err = newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
+					if err != nil {
+						return err
+					}
+					// Set regular flush function.
+					setFlush(func() (int64, error) {
+						return gw.flush()
+					})
+				case <-flushBefore512:
+					// Preempted by a flush.
+					// Begin the writer without the content type set.
+					gw, err = newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
+					if err != nil {
+						return err
+					}
+					// Set regular flush function.
+					setFlush(func() (int64, error) {
+						return gw.flush()
+					})
 
-			// Set Flush func for use by exported Writer.Flush.
-			setFlush(func() (int64, error) {
-				return gw.flush()
-			})
+					// Start an async function that waits for the first 512 bytes
+					// and sets the content type accordingly.
+					go func() {
+						select {
+						case b := <-recvfirst512Bytes:
+							detectedType := http.DetectContentType(b)
+							// c.UpdateObject(params.ctx)
+
+							// case small object
+						}
+
+					}()
+
+					// EOF case? (small object)
+				}
+			}
 
 			// Loop until there is an error or the Object has been finalized.
 			for {
@@ -2471,7 +2546,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.ObjectDataRanges = []*storagepb.ObjectRangeData{{ChecksummedData: &storagepb.ChecksummedData{}, ReadRange: &storagepb.ReadRange{}}}
 			bytesFieldLen, err := d.consumeVarint()
 			if err != nil {
-				return fmt.Errorf("consuming bytes: %v", err)
+				return fmt.Errorf("consuming bytes: %w", err)
 			}
 			var contentEndOff = d.off + bytesFieldLen
 			for d.off < contentEndOff {
@@ -2484,7 +2559,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 				case gotNum == checksummedDataField && gotTyp == protowire.BytesType:
 					checksummedDataFieldLen, err := d.consumeVarint()
 					if err != nil {
-						return fmt.Errorf("consuming bytes: %v", err)
+						return fmt.Errorf("consuming bytes: %w", err)
 					}
 					var checksummedDataEndOff = d.off + checksummedDataFieldLen
 					for d.off < checksummedDataEndOff {
@@ -2515,7 +2590,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 				case gotNum == readRangeField && gotTyp == protowire.BytesType:
 					buf, err := d.consumeBytesCopy()
 					if err != nil {
-						return fmt.Errorf("invalid ObjectDataRange.ReadRange: %v", err)
+						return fmt.Errorf("invalid ObjectDataRange.ReadRange: %w", err)
 					}
 
 					if err := proto.Unmarshal(buf, msg.ObjectDataRanges[0].ReadRange); err != nil {
@@ -2534,7 +2609,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.Metadata = &storagepb.Object{}
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return fmt.Errorf("invalid BidiReadObjectResponse.Metadata: %v", err)
+				return fmt.Errorf("invalid BidiReadObjectResponse.Metadata: %w", err)
 			}
 
 			if err := proto.Unmarshal(buf, msg.Metadata); err != nil {
@@ -2544,7 +2619,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.ReadHandle = &storagepb.BidiReadHandle{}
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return fmt.Errorf("invalid BidiReadObjectResponse.ReadHandle: %v", err)
+				return fmt.Errorf("invalid BidiReadObjectResponse.ReadHandle: %w", err)
 			}
 
 			if err := proto.Unmarshal(buf, msg.ReadHandle); err != nil {
@@ -2578,7 +2653,7 @@ func (r *gRPCReader) reopenStream() error {
 	return nil
 }
 
-func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pw *io.PipeWriter, setPipeWriter func(*io.PipeWriter)) (*gRPCWriter, error) {
+func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pw *preemptiblePipeWriter, setPipeWriter func(*preemptiblePipeWriter)) (*gRPCWriter, error) {
 	if params.attrs.Retention != nil {
 		// TO-DO: remove once ObjectRetention is available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
@@ -2638,8 +2713,8 @@ type gRPCWriter struct {
 	c             *grpcStorageClient
 	buf           []byte
 	reader        io.Reader
-	pw            *io.PipeWriter
-	setPipeWriter func(*io.PipeWriter) // used to set in parent storage.Writer
+	pw            *preemptiblePipeWriter
+	setPipeWriter func(*preemptiblePipeWriter) // used to set in parent storage.Writer
 
 	ctx context.Context
 
