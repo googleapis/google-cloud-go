@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/lineage/apiv1",
-    "version": "1.24.3",
+    "version": "1.25.0",
     "language": "GO",
     "apis": [
       {
