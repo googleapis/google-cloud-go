@@ -107,11 +107,11 @@ type ServiceProjectAttachment struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. The resource name of a ServiceProjectAttachment. Format:
-	// "projects/{host-project-id}/locations/global/serviceProjectAttachments/{service-project-id}."
+	// `"projects/{host-project-id}/locations/global/serviceProjectAttachments/{service-project-id}."`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. Immutable. Service project name in the format: "projects/abc" or
-	// "projects/123". As input, project name with either project id or number are
-	// accepted. As output, this field will contain project number.
+	// Required. Immutable. Service project name in the format: `"projects/abc"`
+	// or `"projects/123"`. As input, project name with either project id or
+	// number are accepted. As output, this field will contain project number.
 	ServiceProject string `protobuf:"bytes,2,opt,name=service_project,json=serviceProject,proto3" json:"service_project,omitempty"`
 	// Output only. Create time.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`

@@ -1,5 +1,18 @@
 # Changes
 
+## [1.48.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.48.0...pubsub/v1.48.1) (2025-04-01)
+
+
+### Bug Fixes
+
+* **pubsub/pstest:** Message ordering issue ([#11603](https://github.com/googleapis/google-cloud-go/issues/11603)) ([1d6ffc0](https://github.com/googleapis/google-cloud-go/commit/1d6ffc02cd211368eabbc8e4f02392952c603703))
+* **pubsub:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+
+### Documentation
+
+* **pubsub:** Update documentation for JavaScriptUDF to indicate that the `message_id` metadata field is optional instead of required ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+
 ## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.47.0...pubsub/v1.48.0) (2025-03-12)
 
 

@@ -10,8 +10,8 @@
 /bigquery/              @googleapis/api-bigquery @googleapis/yoshi-go-admins
 /datastore/             @googleapis/cloud-native-db-dpes @googleapis/api-firestore-partners @googleapis/yoshi-go-admins
 /firestore/             @googleapis/cloud-native-db-dpes @googleapis/api-firestore-partners @googleapis/yoshi-go-admins
-/pubsub/                @googleapis/api-pubsub @googleapis/yoshi-go-admins @shollyman
-/pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins @shollyman
+/pubsub/                @googleapis/api-pubsub @googleapis/yoshi-go-admins @shollyman @googleapis/cloud-native-db-dpes
+/pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins
 /spanner/               @googleapis/spanner-client-libraries-go @googleapis/yoshi-go-admins
 /storage/               @googleapis/gcs-sdk-team @googleapis/yoshi-go-admins
 /httpreplay/            @googleapis/gcs-sdk-team @googleapis/yoshi-go-admins

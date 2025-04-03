@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -36,9 +37,11 @@ type SQLType interface {
 	typeProto() (*btpb.Type, error)
 
 	// Used while binding parameters to prepared query
-	valueProto(value any, optElemType SQLType) (*btpb.Value, error)
+	valueProto(value any) (*btpb.Value, error)
 
 	isValidArrayElemType() bool
+
+	isValidPrepareParamType() bool
 }
 
 // BytesSQLType represents a slice of bytes.
@@ -48,8 +51,10 @@ func (s BytesSQLType) isValidArrayElemType() bool {
 	return true
 }
 
+func (s BytesSQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type []byte or nil.
-func (s BytesSQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
+func (s BytesSQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := BytesSQLType{}.typeProto()
 	if err != nil {
 		return nil, err
@@ -64,6 +69,11 @@ func (s BytesSQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
 	typedVal, ok := value.([]byte)
 	if !ok {
 		return nil, &errTypeMismatch{value: value, psType: BytesSQLType{}}
+	}
+	if typedVal == nil {
+		return &btpb.Value{
+			Type: pbType,
+		}, nil
 	}
 	return &btpb.Value{
 		Type: pbType,
@@ -87,8 +97,10 @@ func (s StringSQLType) isValidArrayElemType() bool {
 	return true
 }
 
+func (s StringSQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type string or nil.
-func (s StringSQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
+func (s StringSQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := StringSQLType{}.typeProto()
 	if err != nil {
 		return nil, err
@@ -125,8 +137,10 @@ func (s Int64SQLType) isValidArrayElemType() bool {
 	return true
 }
 
+func (s Int64SQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type int64 or nil.
-func (s Int64SQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
+func (s Int64SQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := Int64SQLType{}.typeProto()
 	if err != nil {
 		return nil, err
@@ -165,8 +179,10 @@ func (s Float32SQLType) isValidArrayElemType() bool {
 	return true
 }
 
+func (s Float32SQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type float32 or nil.
-func (s Float32SQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
+func (s Float32SQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := Float32SQLType{}.typeProto()
 	if err != nil {
 		return nil, err
@@ -202,8 +218,10 @@ func (s Float64SQLType) isValidArrayElemType() bool {
 	return true
 }
 
+func (s Float64SQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type float64 or nil
-func (s Float64SQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
+func (s Float64SQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := Float64SQLType{}.typeProto()
 	if err != nil {
 		return nil, err
@@ -240,8 +258,10 @@ func (s BoolSQLType) isValidArrayElemType() bool {
 	return true
 }
 
+func (s BoolSQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type bool or nil
-func (s BoolSQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
+func (s BoolSQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := BoolSQLType{}.typeProto()
 	if err != nil {
 		return nil, err
@@ -278,8 +298,10 @@ func (s TimestampSQLType) isValidArrayElemType() bool {
 	return true
 }
 
+func (s TimestampSQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type time.Time or nil
-func (s TimestampSQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
+func (s TimestampSQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := TimestampSQLType{}.typeProto()
 	if err != nil {
 		return nil, err
@@ -316,8 +338,10 @@ func (s DateSQLType) isValidArrayElemType() bool {
 	return true
 }
 
+func (s DateSQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type civil.Date or nil
-func (s DateSQLType) valueProto(value any, _ SQLType) (*btpb.Value, error) {
+func (s DateSQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := DateSQLType{}.typeProto()
 	if err != nil {
 		return nil, err
@@ -356,36 +380,35 @@ func (s ArraySQLType) isValidArrayElemType() bool {
 	return false
 }
 
+func (s ArraySQLType) isValidPrepareParamType() bool { return true }
+
 // valid value can be of type slice, array or nil
-func (s ArraySQLType) valueProto(value any, elemType SQLType) (*btpb.Value, error) {
-	pbType, err := ArraySQLType{ElemType: elemType}.typeProto()
+func (s ArraySQLType) valueProto(value any) (*btpb.Value, error) {
+	pbType, err := s.typeProto()
 	if err != nil {
 		return nil, err
 	}
 
 	if value == nil {
-		return &btpb.Value{
-			Type: pbType,
-		}, nil
+		return &btpb.Value{Type: pbType}, nil
 	}
 
 	// Use reflect to check if val is an array.
 	valType := reflect.TypeOf(value)
 	if valType.Kind() != reflect.Slice && valType.Kind() != reflect.Array {
-		return nil, &errTypeMismatch{value: value, psType: ArraySQLType{}}
+		return nil, &errTypeMismatch{value: value, psType: s}
 	}
 
 	valReflectValue := reflect.ValueOf(value)
-	var pbValues []*btpb.Value
-	// Convert each element to SQLType.
+	pbValues := make([]*btpb.Value, 0, valReflectValue.Len())
 	for i := 0; i < valReflectValue.Len(); i++ {
 		elem := valReflectValue.Index(i).Interface()
-		elemPbVal, err := anySQLTypeToPbVal(elem, elemType)
+		elemPbVal, err := s.ElemType.valueProto(elem)
 		if err != nil {
-			return nil, err
+			// Wrap error for context
+			return nil, fmt.Errorf("bigtable: error converting array element at index %d: %w", i, err)
 		}
-
-		// Type shouldn't be set in nested Values. It should only be at the top level
+		// Type shouldn't be set in nested Values. It should only be at the top level.
 		elemPbVal.Type = nil
 		pbValues = append(pbValues, elemPbVal)
 	}
@@ -399,6 +422,7 @@ func (s ArraySQLType) valueProto(value any, elemType SQLType) (*btpb.Value, erro
 		},
 	}, nil
 }
+
 func (s ArraySQLType) typeProto() (*btpb.Type, error) {
 	if s.ElemType == nil {
 		return nil, errors.New("bigtable: ArraySQLType must specify an explicit ElemType")
@@ -420,29 +444,107 @@ func (s ArraySQLType) typeProto() (*btpb.Type, error) {
 	}, nil
 }
 
-func anySQLTypeToPbVal(value any, sqlType SQLType) (*btpb.Value, error) {
-	switch t := sqlType.(type) {
-	case BytesSQLType:
-		return BytesSQLType{}.valueProto(value, nil)
-	case StringSQLType:
-		return StringSQLType{}.valueProto(value, nil)
-	case Int64SQLType:
-		return Int64SQLType{}.valueProto(value, nil)
-	case Float32SQLType:
-		return Float32SQLType{}.valueProto(value, nil)
-	case Float64SQLType:
-		return Float64SQLType{}.valueProto(value, nil)
-	case BoolSQLType:
-		return BoolSQLType{}.valueProto(value, nil)
-	case TimestampSQLType:
-		return TimestampSQLType{}.valueProto(value, nil)
-	case DateSQLType:
-		return DateSQLType{}.valueProto(value, nil)
-	case ArraySQLType:
-		return ArraySQLType{}.valueProto(value, t.ElemType)
-	default:
-		return nil, errors.New("bigtable: unsupported SQLType: " + reflect.TypeOf(t).String())
+// MapSQLType represents a map from a key type to a value type for query parameters.
+type MapSQLType struct {
+	KeyType   SQLType
+	ValueType SQLType
+}
+
+func (s MapSQLType) isValidArrayElemType() bool { return true }
+
+func (s MapSQLType) isValidPrepareParamType() bool { return false }
+
+func (s MapSQLType) typeProto() (*btpb.Type, error) {
+	if s.KeyType == nil || s.ValueType == nil {
+		return nil, errors.New("bigtable: MapSQLType must specify non-nil KeyType and ValueType")
 	}
+
+	keyTp, err := s.KeyType.typeProto()
+	if err != nil {
+		return nil, err
+	}
+	valueTp, err := s.ValueType.typeProto()
+	if err != nil {
+		return nil, err
+	}
+
+	return &btpb.Type{
+		Kind: &btpb.Type_MapType{
+			MapType: &btpb.Type_Map{
+				KeyType:   keyTp,
+				ValueType: valueTp,
+			},
+		},
+	}, nil
+}
+
+// Only used while binding parameters to prepared query and this is not a valid param type
+func (s MapSQLType) valueProto(value any) (*btpb.Value, error) {
+	return nil, errors.New("bigtable: unimplemented")
+}
+
+// StructSQLType represents a struct with named fields for query parameters.
+// Field order specified in `Fields` is significant for the protobuf representation.
+// Struct values in result rows are typically represented as map[string]any.
+type StructSQLType struct {
+	// Fields defines the ordered sequence of fields within the struct parameter.
+	Fields []StructSQLField
+}
+
+// StructSQLField defines a single named and typed field within a StructSQLType.
+type StructSQLField struct {
+	Name string
+	Type SQLType
+}
+
+// isValidArrayElemType reports whether StructSQLType can be used as an element in an ArraySQLType.
+func (s StructSQLType) isValidArrayElemType() bool { return true } // Structs can be elements of arrays.
+
+func (s StructSQLType) isValidPrepareParamType() bool { return false }
+
+// typeProto generates the protobuf Type message for a Struct.
+func (s StructSQLType) typeProto() (*btpb.Type, error) {
+	pbFields := make([]*btpb.Type_Struct_Field, len(s.Fields))
+
+	for i, field := range s.Fields {
+		if field.Name == "" {
+			return nil, fmt.Errorf("bigtable: StructSQLType field at index %d must have a name", i)
+		}
+		if field.Type == nil {
+			return nil, fmt.Errorf("bigtable: StructSQLType field %q must have a non-nil type", field.Name)
+		}
+		fieldTypeProto, err := field.Type.typeProto()
+		if err != nil {
+			return nil, fmt.Errorf("invalid type for struct field %q: %w", field.Name, err)
+		}
+		pbFields[i] = &btpb.Type_Struct_Field{
+			FieldName: field.Name,
+			Type:      fieldTypeProto,
+		}
+	}
+
+	return &btpb.Type{
+		Kind: &btpb.Type_StructType{
+			StructType: &btpb.Type_Struct{
+				Fields: pbFields,
+			},
+		},
+	}, nil
+}
+
+// Only used while binding parameters to prepared query and this is not a valid param type
+func (s StructSQLType) valueProto(value any) (*btpb.Value, error) {
+	return nil, errors.New("bigtable: unimplemented")
+}
+
+// anySQLTypeToPbVal converts a Go value to a protobuf Value based on the provided SQLType.
+func anySQLTypeToPbVal(value any, sqlType SQLType) (*btpb.Value, error) {
+	if sqlType == nil {
+		return nil, errors.New("bigtable: invalid SQLType: nil")
+	}
+	// Use the valueProto method directly from the SQLType instance.
+	// This automatically handles simple types, arrays, maps, and structs correctly.
+	return sqlType.valueProto(value)
 }
 
 type errTypeMismatch struct {
@@ -454,5 +556,17 @@ func (e *errTypeMismatch) Error() string {
 	if e == nil {
 		return ""
 	}
-	return "bigtable: Expected %v " + " to be of type " + reflect.TypeOf(e.psType).Name()
+	// Provide more specific type information if possible
+	expectedTypeName := reflect.TypeOf(e.psType).Name()
+	// Add details for composite types
+	switch t := e.psType.(type) {
+	case ArraySQLType:
+		expectedTypeName = fmt.Sprintf("ArraySQLType (elements: %T)", t.ElemType)
+	case MapSQLType:
+		expectedTypeName = fmt.Sprintf("MapSQLType (key: %T, value: %T)", t.KeyType, t.ValueType)
+	case StructSQLType:
+		expectedTypeName = fmt.Sprintf("StructSQLType (with %d fields)", len(t.Fields))
+	}
+
+	return fmt.Sprintf("parameter type mismatch: expected Go type compatible with %s, but got %T", expectedTypeName, e.value)
 }

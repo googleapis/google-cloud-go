@@ -681,9 +681,10 @@ type SearchRequest struct {
 	// This applies to each OneBox type individually.
 	// Default number is 10.
 	OneBoxPageSize int32 `protobuf:"varint,47,opt,name=one_box_page_size,json=oneBoxPageSize,proto3" json:"one_box_page_size,omitempty"`
-	// Specifications that define the specific [DataStore]s to be searched, along
-	// with configurations for those data stores. This is only considered for
-	// [Engine][google.cloud.discoveryengine.v1.Engine]s with multiple data
+	// Specifications that define the specific
+	// [DataStore][google.cloud.discoveryengine.v1.DataStore]s to be searched,
+	// along with configurations for those data stores. This is only considered
+	// for [Engine][google.cloud.discoveryengine.v1.Engine]s with multiple data
 	// stores. For engines with a single data store, the specs directly under
 	// [SearchRequest][google.cloud.discoveryengine.v1.SearchRequest] should be
 	// used.
@@ -1539,7 +1540,7 @@ type SearchRequest_BoostSpec struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Condition boost specifications. If a document matches multiple conditions
-	// in the specifictions, boost scores from these specifications are all
+	// in the specifications, boost scores from these specifications are all
 	// applied and combined in a non-linear way. Maximum number of
 	// specifications is 20.
 	ConditionBoostSpecs []*SearchRequest_BoostSpec_ConditionBoostSpec `protobuf:"bytes,1,rep,name=condition_boost_specs,json=conditionBoostSpecs,proto3" json:"condition_boost_specs,omitempty"`
