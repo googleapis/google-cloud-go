@@ -3170,6 +3170,80 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 	})
 }
 
+// Basic Writer test for appendable uploads with and without finalization.
+func TestIntegration_WriterAppend(t *testing.T) {
+	ctx := skipAllButBidi(context.Background(), "ZB test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(bucketName)
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			Location: "us-central1",
+			CustomPlacementConfig: &CustomPlacementConfig{
+				DataLocations: []string{"us-central1-a"},
+			},
+			StorageClass: "RAPID",
+			HierarchicalNamespace: &HierarchicalNamespace{
+				Enabled: true,
+			},
+			UniformBucketLevelAccess: UniformBucketLevelAccess{
+				Enabled: true,
+			},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		testCases := []struct {
+			name      string
+			finalize  bool
+			content   []byte
+			chunkSize int
+		}{
+			{
+				name:      "finalized_object",
+				finalize:  true,
+				content:   randomBytes9MiB,
+				chunkSize: 4 * MiB,
+			},
+			{
+				name:      "unfinalized_object",
+				finalize:  false,
+				content:   randomBytes9MiB,
+				chunkSize: 4 * MiB,
+			},
+		}
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				// Create writer and upload content.
+				obj := bkt.Object(tc.name + uidSpace.New())
+				defer h.mustDeleteObject(obj)
+				w := obj.Retryer(WithPolicy(RetryAlways)).If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = tc.finalize
+				w.ChunkSize = tc.chunkSize
+
+				h.mustWrite(w, tc.content)
+
+				// Download content again and validate.
+				gotBytes := h.mustRead(obj)
+				if !bytes.Equal(gotBytes, tc.content) {
+					t.Errorf("content mismatch: got %v bytes, want %v bytes", len(gotBytes), len(tc.content))
+				}
+
+				// Check Finalized attribute set as expected.
+				attrs := h.mustObjectAttrs(obj)
+				if tc.finalize && attrs.Finalized.IsZero() {
+					t.Errorf("got unfinalized object, want finalized")
+				}
+				if !tc.finalize && !attrs.Finalized.IsZero() {
+					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
+				}
+
+			})
+		}
+
+	})
+}
+
 func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
@@ -6996,6 +7070,13 @@ func skipHTTP(reason string) context.Context {
 // downloads.
 func skipExtraReadAPIs(ctx context.Context, reason string) context.Context {
 	ctx = context.WithValue(ctx, skipTransportTestKey("bidiReads"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+}
+
+// Skip all APIs except Bidi reads. Use for ZB tests.
+func skipAllButBidi(ctx context.Context, reason string) context.Context {
+	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 

@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"time"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
@@ -229,8 +230,15 @@ func (s *gRPCAppendBidiWriteBufferSender) receiveMessages(resps chan<- *storagep
 }
 
 func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offset int64, flush, finishWrite, sendFirstMessage bool) (obj *storagepb.Object, err error) {
+	var req *storagepb.BidiWriteObjectRequest
 	finalizeObject := finishWrite && s.finalizeOnClose
-	req := bidiWriteObjectRequest(buf, offset, flush, finalizeObject)
+	if finishWrite {
+		// Always flush when finishing the Write, even if not finalizing.
+		req = bidiWriteObjectRequest(buf, offset, true, finalizeObject)
+		log.Printf("last req flush: %v, finalize: %v", req.Flush, req.FinishWrite)
+	} else {
+		req = bidiWriteObjectRequest(buf, offset, flush, false)
+	}
 	if finalizeObject {
 		// appendable objects pass checksums on the finalize message only
 		req.ObjectChecksums = s.objectChecksums
