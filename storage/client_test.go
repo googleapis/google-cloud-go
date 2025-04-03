@@ -1459,6 +1459,11 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		reader.Add(&res[1].buf, 100, 1000, callback2)
 		reader.Add(&res[2].buf, 0, 600, callback3)
 		reader.Add(&res[3].buf, 36, 999, callback4)
+
+		if err := reader.Error(); err != nil {
+			t.Fatalf("expected valid reader, got reader.Error: %v", err)
+		}
+
 		reader.Wait()
 		for _, k := range res {
 			if !bytes.Equal(k.buf.Bytes(), content[k.offset:k.offset+k.limit]) {
@@ -1471,6 +1476,10 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		}
 		if err = reader.Close(); err != nil {
 			t.Errorf("Error while closing reader %v", err)
+		}
+
+		if err := reader.Error(); err == nil {
+			t.Fatalf("reader.Error: expected a non-nil error, got %v", err)
 		}
 	})
 }
