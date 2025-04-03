@@ -393,7 +393,7 @@ type multiRangeDownloader interface {
 	wait()
 	close() error
 	getHandle() []byte
-	state() bool
+	validateOpen() error
 }
 
 // Add adds a new range to MultiRangeDownloader.
@@ -445,8 +445,8 @@ func (mrd *MultiRangeDownloader) GetHandle() []byte {
 	return mrd.reader.getHandle()
 }
 
-// CurrentState returns the current state of the MultiRangeDownloader.
-// It returns true if the stream is still open and false if it is closed.
-func (mrd *MultiRangeDownloader) CurrentState() bool {
-	return mrd.reader.state()
+// ValidateOpen validates that the MultiRangeDownloader is open and can be used.
+// It returns an error if the stream is permanently closed.
+func (mrd *MultiRangeDownloader) ValidateOpen() error {
+	return mrd.reader.validateOpen()
 }
