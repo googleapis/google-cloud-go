@@ -1622,6 +1622,11 @@
                 "DeleteOperation"
               ]
             },
+            "FeatureViewDirectWrite": {
+              "methods": [
+                "FeatureViewDirectWrite"
+              ]
+            },
             "FetchFeatureValues": {
               "methods": [
                 "FetchFeatureValues"
@@ -1690,6 +1695,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "FeatureViewDirectWrite": {
+              "methods": [
+                "FeatureViewDirectWrite"
               ]
             },
             "FetchFeatureValues": {
