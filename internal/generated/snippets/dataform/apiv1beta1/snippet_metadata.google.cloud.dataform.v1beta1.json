@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataform/apiv1beta1",
-    "version": "$VERSION",
+    "version": "0.11.1",
     "language": "GO",
     "apis": [
       {
