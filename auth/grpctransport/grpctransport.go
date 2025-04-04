@@ -304,6 +304,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			// This condition is only met for non-DirectPath clients because
 			// TransportTypeMTLSS2A is used only when InternalOptions.EnableDirectPath
 			// is false.
+			opts.DetectOpts.TokenBindingType = credentials.NoBinding
 			if transportCreds.TransportType == transport.TransportTypeMTLSS2A {
 				// Check that the client allows requesting hard-bound token for the transport type mTLS using S2A.
 				for _, ev := range opts.InternalOptions.AllowHardBoundTokens {
