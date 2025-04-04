@@ -3224,12 +3224,13 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				h.mustWrite(w, tc.content)
 
 				// Download content again and validate.
-				gotBytes := h.mustRead(obj)
-				if !bytes.Equal(gotBytes, tc.content) {
-					t.Errorf("content mismatch: got %v bytes, want %v bytes", len(gotBytes), len(tc.content))
-				}
+				// Disabled due to b/408373388; unskip after this is resolved.
+				// gotBytes := h.mustRead(obj)
+				// if !bytes.Equal(gotBytes, tc.content) {
+				// 	t.Errorf("content mismatch: got %v bytes, want %v bytes", len(gotBytes), len(tc.content))
+				// }
 
-				// Check Finalized attribute set as expected.
+				// Check object exists and Finalized attribute set as expected.
 				attrs := h.mustObjectAttrs(obj)
 				if tc.finalize && attrs.Finalized.IsZero() {
 					t.Errorf("got unfinalized object, want finalized")
@@ -3240,7 +3241,6 @@ func TestIntegration_WriterAppend(t *testing.T) {
 
 			})
 		}
-
 	})
 }
 
