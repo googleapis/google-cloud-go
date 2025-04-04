@@ -643,6 +643,7 @@ var methods = map[string][]retryFunc{
 			objW := obj.NewWriter(ctx)
 			objW.ChunkSize = MiB
 			objW.Append = true
+			objW.FinalizeOnClose = true
 
 			if _, err := objW.Write(randomBytes3MiB); err != nil {
 				return fmt.Errorf("Writer.Write: %v", err)

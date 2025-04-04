@@ -1132,6 +1132,7 @@ func TestWriterFlushEmulated(t *testing.T) {
 		vc := &Client{tc: client}
 		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 		w.Append = true
+		w.FinalizeOnClose = true
 		w.ChunkSize = 3 * MiB
 		var gotOffsets []int64
 		w.ProgressFunc = func(offset int64) {
@@ -1251,6 +1252,7 @@ func TestWriterFlushAtCloseEmulated(t *testing.T) {
 		vc := &Client{tc: client}
 		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 		w.Append = true
+		w.FinalizeOnClose = true
 		w.ChunkSize = MiB
 		var gotOffsets []int64
 		w.ProgressFunc = func(offset int64) {
@@ -1331,6 +1333,7 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 				vc := &Client{tc: client}
 				w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 				w.Append = true
+				w.FinalizeOnClose = true
 				w.ChunkSize = MiB
 				var gotOffsets []int64
 				w.ProgressFunc = func(offset int64) {
