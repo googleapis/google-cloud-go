@@ -25,7 +25,7 @@ type MessageTransform struct {
 	// each must have a unique `function_name`.
 	Transform Transform
 
-	// 	If true, the transform is disabled and will not be applied to
+	// If true, the transform is disabled and will not be applied to
 	// messages. Defaults to `false`.
 	Disabled bool
 }
@@ -67,7 +67,8 @@ func protoToMessageTransforms(m []*pb.MessageTransform) []MessageTransform {
 	return transforms
 }
 
-// Transform
+// Transform represents the type of transforms that can be applied to messages.
+// Currently JavaScriptUDF is the only type that satisfies this.
 type Transform interface {
 	isTransform() bool
 }
