@@ -107,21 +107,26 @@ type Options struct {
 // CredentialSource stores the information necessary to retrieve the credentials for the STS exchange.
 type CredentialSource struct {
 	// File is the location for file sourced credentials.
-	// One field amongst File, URL, Executable, or EnvironmentID should be
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
 	// provided, depending on the kind of credential in question.
 	File string
 	// Url is the URL to call for URL sourced credentials.
-	// One field amongst File, URL, Executable, or EnvironmentID should be
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
 	// provided, depending on the kind of credential in question.
 	URL string
 	// Executable is the configuration object for executable sourced credentials.
-	// One field amongst File, URL, Executable, or EnvironmentID should be
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
 	// provided, depending on the kind of credential in question.
 	Executable *ExecutableConfig
 	// EnvironmentID is the EnvironmentID used for AWS sourced credentials.
 	// This should start with "AWS".
-	// One field amongst File, URL, Executable, or EnvironmentID should be provided, depending on the kind of credential in question.
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
+	// provided, depending on the kind of credential in question.
 	EnvironmentID string
+	// Certificate is the configuration object for certificate sourced credentials.
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
+	// provided, depending on the kind of credential in question.
+	Certificate *CertificateConfig
 
 	// Headers are the headers to attach to the request for URL sourced
 	// credentials.
@@ -165,6 +170,31 @@ type ExecutableConfig struct {
 	// OutputFile is the absolute path to the output file where the executable will cache the response.
 	// If specified the auth libraries will first check this location before running the executable. Optional.
 	OutputFile string
+}
+
+// CertificateConfig represents the options used to set up X.509-based workload
+// credentials. It specifies how to locate and use the client certificate,
+// private key, and optional trust chain for mTLS authentication.
+// [CredentialSource]
+type CertificateConfig struct {
+	// UseDefaultCertificateConfig, if true, attempts to load the default
+	// certificate configuration. It checks the GOOGLE_API_CERTIFICATE_CONFIG
+	// environment variable first, then a conventional default file location.
+	// Cannot be true if CertificateConfigLocation is set.
+	UseDefaultCertificateConfig bool `json:"use_default_certificate_config"`
+	// CertificateConfigLocation specifies the path to the client certificate
+	// and private key file. This is used when UseDefaultCertificateConfig is
+	// false or unset. Must be set if UseDefaultCertificateConfig is false.
+	CertificateConfigLocation string `json:"certificate_config_location"`
+	// TrustChainPath specifies the path to a PEM-formatted file containing
+	// the X.509 certificate trust chain. This file should contain any
+	// intermediate certificates required to complete the trust chain between
+	// the leaf certificate (used for mTLS) and the root certificate(s) in
+	// your workload identity pool's trust store. The leaf certificate and
+	// any certificates already present in the workload identity pool's trust
+	// store are optional in this file. Certificates should be ordered with the
+	// leaf certificate (or the certificate which signed the leaf) first.
+	TrustChainPath string `json:"trust_chain_path"`
 }
 
 // SubjectTokenProvider can be used to supply a subject token to exchange for a
@@ -277,6 +307,14 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 			iOpts.CredentialSource.Format = &credsfile.Format{
 				Type:                  csf.Type,
 				SubjectTokenFieldName: csf.SubjectTokenFieldName,
+			}
+		}
+		if cs.Certificate != nil {
+			csc := cs.Certificate
+			iOpts.CredentialSource.Certificate = &credsfile.CertificateConfig{
+				UseDefaultCertificateConfig: csc.UseDefaultCertificateConfig,
+				CertificateConfigLocation:   csc.CertificateConfigLocation,
+				TrustChainPath:              csc.TrustChainPath,
 			}
 		}
 	}
