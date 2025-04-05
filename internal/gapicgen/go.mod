@@ -5,8 +5,8 @@ go 1.23.0
 require (
 	github.com/go-git/go-git/v5 v5.14.0
 	github.com/google/go-github/v59 v59.0.0
-	golang.org/x/oauth2 v0.28.0
-	golang.org/x/sync v0.12.0
+	golang.org/x/oauth2 v0.29.0
+	golang.org/x/sync v0.13.0
 )
 
 require (

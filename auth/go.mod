@@ -10,8 +10,8 @@ require (
 	github.com/googleapis/gax-go/v2 v2.14.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.60.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0
-	golang.org/x/net v0.37.0
-	google.golang.org/grpc v1.71.0
+	golang.org/x/net v0.38.0
+	google.golang.org/grpc v1.71.1
 	google.golang.org/protobuf v1.36.6
 )
 
