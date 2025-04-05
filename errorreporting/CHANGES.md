@@ -1,5 +1,13 @@
 # Changes
 
+## [0.3.3](https://github.com/googleapis/google-cloud-go/compare/errorreporting/v0.3.2...errorreporting/v0.3.3) (2025-04-05)
+
+
+### Bug Fixes
+
+* **errorreporting:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+* **errorreporting:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/errorreporting/v0.3.1...errorreporting/v0.3.2) (2024-12-10)
 
 
