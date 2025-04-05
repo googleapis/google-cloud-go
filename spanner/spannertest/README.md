@@ -24,6 +24,7 @@ by ascending esotericism:
 - SELECT HAVING
 - more literal types
 - DEFAULT
+- THEN RETURN
 - expressions that return null for generated columns
 - generated columns referencing other generated columns
 - checking dependencies on a generated column before deleting a column
