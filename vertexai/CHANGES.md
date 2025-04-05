@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.4](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.3...vertexai/v0.13.4) (2025-04-05)
+
+
+### Bug Fixes
+
+* **vertexai:** Close cache client to avoid leaking gRPC goroutines ([#11856](https://github.com/googleapis/google-cloud-go/issues/11856)) ([d281c20](https://github.com/googleapis/google-cloud-go/commit/d281c20d5fbfdb52f4a474aee6e5268381305a22))
+* **vertexai:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [0.13.3](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.2...vertexai/v0.13.3) (2024-12-19)
 
 
