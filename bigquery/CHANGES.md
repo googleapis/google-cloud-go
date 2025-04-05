@@ -3,6 +3,14 @@
 
 
 
+## [1.68.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.67.0...bigquery/v1.68.0) (2025-04-05)
+
+
+### Features
+
+* **bigquery/analyticshub:** Support new feature Sharing Cloud Pubsub Streams via AH (GA) and Subscriber Email logging feature ([#11908](https://github.com/googleapis/google-cloud-go/issues/11908)) ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **bigquery:** Support managed iceberg tables ([#11931](https://github.com/googleapis/google-cloud-go/issues/11931)) ([35e0774](https://github.com/googleapis/google-cloud-go/commit/35e0774bf17166dbaa88eba286f40ad91d9aa68a))
+
 ## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.66.2...bigquery/v1.67.0) (2025-03-14)
 
 
