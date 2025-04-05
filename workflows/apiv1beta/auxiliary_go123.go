@@ -21,9 +21,23 @@ package workflows
 import (
 	"iter"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	workflowspb "cloud.google.com/go/workflows/apiv1beta/workflowspb"
 	"github.com/googleapis/gax-go/v2/iterator"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.

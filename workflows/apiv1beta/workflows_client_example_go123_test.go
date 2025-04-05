@@ -21,8 +21,10 @@ package workflows_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	workflows "cloud.google.com/go/workflows/apiv1beta"
 	workflowspb "cloud.google.com/go/workflows/apiv1beta/workflowspb"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 func ExampleClient_ListWorkflows_all() {
@@ -43,6 +45,58 @@ func ExampleClient_ListWorkflows_all() {
 		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1beta/workflowspb#ListWorkflowsRequest.
 	}
 	for resp, err := range c.ListWorkflows(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListLocations_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := workflows.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	for resp, err := range c.ListLocations(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListOperations_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := workflows.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
+	}
+	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
 			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
