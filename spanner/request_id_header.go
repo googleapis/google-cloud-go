@@ -26,6 +26,8 @@ import (
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -141,6 +143,13 @@ func (wr *requestIDHeaderInjector) interceptUnary(ctx context.Context, method st
 	_, reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
 	if foundRequestID {
 		ctx = metadata.AppendToOutgoingContext(ctx, xSpannerRequestIDHeader, string(reqID))
+
+		// Associate the requestId as an attribute on the span in the current context.
+		span := trace.SpanFromContext(ctx)
+		span.SetAttributes(attribute.KeyValue{
+			Key:   xSpannerRequestIDHeader,
+			Value: attribute.StringValue(string(reqID)),
+		})
 	}
 
 	err := invoker(ctx, method, req, reply, cc, opts...)
@@ -182,6 +191,13 @@ func (wr *requestIDHeaderInjector) interceptStream(ctx context.Context, desc *gr
 	_, reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
 	if foundRequestID {
 		ctx = metadata.AppendToOutgoingContext(ctx, xSpannerRequestIDHeader, string(reqID))
+
+		// Associate the requestId as an attribute on the span in the current context.
+		span := trace.SpanFromContext(ctx)
+		span.SetAttributes(attribute.KeyValue{
+			Key:   xSpannerRequestIDHeader,
+			Value: attribute.StringValue(string(reqID)),
+		})
 	}
 
 	cs, err := streamer(ctx, desc, cc, method, opts...)
