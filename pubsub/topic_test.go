@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/pstest"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -535,6 +536,53 @@ func TestUpdateTopic_SchemaSettings(t *testing.T) {
 	}
 	if config3.SchemaSettings != nil {
 		t.Errorf("got: %+v, want nil", config3.SchemaSettings)
+	}
+}
+
+func TestTopicMessageTransform(t *testing.T) {
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	id := "test-topic"
+	want := TopicConfig{
+		MessageTransforms: []MessageTransform{
+			{
+				Transform: JavaScriptUDF{
+					FunctionName: "some-function",
+					Code:         "some-code",
+				},
+				Disabled: false,
+			},
+		},
+	}
+
+	topic := mustCreateTopicWithConfig(t, c, id, &want)
+	got, err := topic.Config(context.Background())
+	if err != nil {
+		t.Fatalf("error getting topic config: %v", err)
+	}
+	if diff := cmp.Diff(got.MessageTransforms, want.MessageTransforms); diff != "" {
+		t.Errorf("topic config mismatch: -got, +want:\n%s", diff)
+	}
+
+	update := TopicConfigToUpdate{
+		MessageTransforms: []MessageTransform{
+			{
+				Transform: JavaScriptUDF{
+					FunctionName: "some-function-2",
+					Code:         "some-code-2",
+				},
+				Disabled: false,
+			},
+		},
+	}
+	got, err = topic.Update(context.Background(), update)
+	if err != nil {
+		t.Errorf("failed to update topic: %v", err)
+	}
+	if diff := cmp.Diff(got.MessageTransforms, update.MessageTransforms); diff != "" {
+		t.Errorf("topic config mismatch: -got, +want:\n%s", diff)
 	}
 }
 
