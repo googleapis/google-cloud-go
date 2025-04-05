@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/iam/v1.5.0...iam/v1.5.1) (2025-04-05)
+
+
+### Documentation
+
+* **iam:** Minor doc update for ListPrincipalAccessBoundaryPoliciesResponse ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+* **iam:** Minor doc update for ListPrincipalAccessBoundaryPoliciesResponse ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/iam/v1.4.2...iam/v1.5.0) (2025-03-31)
 
 
