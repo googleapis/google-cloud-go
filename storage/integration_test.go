@@ -44,6 +44,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -3172,15 +3173,23 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 
 // Basic Writer test for appendable uploads with and without finalization.
 func TestIntegration_WriterAppend(t *testing.T) {
+	t.Skip("b/402283880")
 	ctx := skipAllButBidi(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		h := testHelper{t}
 		bucketName := prefix + uidSpace.New()
 		bkt := client.Bucket(bucketName)
+
+		// Create a bucket in the same zone as the test VM.
+		zone, err := metadata.ZoneWithContext(ctx)
+		if err != nil {
+			t.Fatalf("could not determine VM zone: %v", err)
+		}
+		region := strings.Join(strings.Split(zone, "-")[:2], "-")
 		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
-			Location: "us-central1",
+			Location: region,
 			CustomPlacementConfig: &CustomPlacementConfig{
-				DataLocations: []string{"us-central1-a"},
+				DataLocations: []string{zone},
 			},
 			StorageClass: "RAPID",
 			HierarchicalNamespace: &HierarchicalNamespace{
