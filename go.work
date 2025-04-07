@@ -157,6 +157,7 @@ use (
 	./shell
 	./shopping
 	./spanner
+	./spanner/benchmarks
 	./spanner/test/opentelemetry/test
 	./speech
 	./storage

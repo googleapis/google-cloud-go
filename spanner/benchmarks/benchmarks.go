@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"math/rand/v2"
 	"os"
 	"slices"
@@ -25,6 +26,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
+	traceExporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
@@ -46,11 +52,11 @@ const (
 	tableName    = "EMPLOYEES"
 )
 
-type transactionType int8
+type transactionType string
 
 const (
-	query transactionType = iota
-	read
+	read  transactionType = "READ"
+	query                 = "QUERY"
 )
 
 type cloudEnvironment string
@@ -70,6 +76,27 @@ var monitoringHosts = map[cloudEnvironment]string{
 	devel:      "staging-monitoring.sandbox.googleapis.com:443",
 }
 
+var cloudTracingHosts = map[cloudEnvironment]string{
+	production: "cloudtrace.googleapis.com:443",
+	devel:      "staging-cloudtrace.sandbox.googleapis.com:443",
+}
+
+type benchmarkingConfiguration struct {
+	warmUpTime            int8            // in minutes, default 7 minutes
+	executionTime         int8            // in minutes, default 30 minutes
+	waitBetweenRequests   uint8           // in ms, default 5 ms
+	staleness             int8            // in seconds, default 15s
+	parsedTransactionType transactionType // default read
+	tracesEnabled         bool            // default false
+	disableNativeMetrics  bool            // default false
+	traceSamplingFraction float32         // default 0.5
+
+}
+
+func getDefaultBenchmarkingConfiguration() benchmarkingConfiguration {
+	return benchmarkingConfiguration{warmUpTime: 7, executionTime: 30, waitBetweenRequests: 5, staleness: 15, parsedTransactionType: read, tracesEnabled: false, disableNativeMetrics: false, traceSamplingFraction: 0.5}
+}
+
 func main() {
 	ctx := context.Background()
 
@@ -83,47 +110,41 @@ func main() {
 		return
 	}
 
-	if len(os.Args) < 6 {
-		fmt.Println("Please set warm up time, execution time, wait between requests and staleness in the command line arguments")
-		return
-	}
-
 	environment := parseCloudEnvironment(os.Getenv("SPANNER_CLIENT_BENCHMARK_CLOUD_ENVIRONMENT"))
 	host := spannerHosts[environment]
 	monitoringHost := monitoringHosts[environment]
-	err := setMonitoringHost(monitoringHost)
-	if err != nil {
+	if err := setMonitoringHost(monitoringHost); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	warmupTime, _ := strconv.ParseInt(os.Args[1], 10, 8)          // in minutes
-	executionTime, _ := strconv.ParseInt(os.Args[2], 10, 8)       // in minutes
-	waitBetweenRequests, _ := strconv.ParseInt(os.Args[3], 10, 8) // in milliseconds
-	staleness, _ := strconv.ParseInt(os.Args[4], 10, 8)           // in seconds
-	parsedTransactionType, err := parseTransactionType(os.Args[5])
-	if err != nil {
+	bc := getDefaultBenchmarkingConfiguration()
+	if err := parseCommandLineArguments(os.Args, &bc); err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/%v", project, instance, database)
 
-	fmt.Printf("Running benchmark on %v\nEnvironment: %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\nStaleness: %v\n", db, environment, warmupTime, executionTime, waitBetweenRequests, staleness)
+	fmt.Printf("\nRunning benchmark on %v\nEnvironment: %v\nWarm up time: %v mins\nExecution Time: %v mins\nWait Between Requests: %v ms\nStaleness: %v secs\nTraces Enabled: %v\nDisable Native Metrics: %v\nTrace Sampling Fraction: %v\nTransaction Type: %v\n\n", db, environment, bc.warmUpTime, bc.executionTime, bc.waitBetweenRequests, bc.staleness, bc.tracesEnabled, bc.disableNativeMetrics, bc.traceSamplingFraction, bc.parsedTransactionType)
 
-	client, err := spanner.NewClientWithConfig(ctx, db, spanner.ClientConfig{}, option.WithEndpoint(host))
+	if bc.tracesEnabled {
+		enableTracingWithCloudTraceExporter(project, cloudTracingHosts[environment])
+	}
+
+	client, err := spanner.NewClientWithConfig(ctx, db, spanner.ClientConfig{DisableNativeMetrics: bc.disableNativeMetrics}, option.WithEndpoint(host))
 	if err != nil {
 		return
 	}
 	defer client.Close()
 
-	err = warmUp(ctx, client, warmupTime, staleness, parsedTransactionType)
+	err = warmUp(ctx, client, bc.warmUpTime, bc.staleness, bc.parsedTransactionType)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	latencies, err := runBenchmark(ctx, client, executionTime, staleness, waitBetweenRequests, parsedTransactionType)
+	latencies, err := runBenchmark(ctx, client, bc.executionTime, bc.staleness, bc.waitBetweenRequests, bc.parsedTransactionType)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -135,7 +156,7 @@ func main() {
 		percentiles(0.95, latencies), percentiles(0.99, latencies))
 }
 
-func warmUp(ctx context.Context, client *spanner.Client, warmupTime int64, staleness int64, transactionType transactionType) error {
+func warmUp(ctx context.Context, client *spanner.Client, warmupTime int8, staleness int8, transactionType transactionType) error {
 	endTime := time.Now().Local().Add(time.Minute * time.Duration(warmupTime))
 
 	go runTimer(endTime, "Remaining warmup time")
@@ -152,7 +173,7 @@ func warmUp(ctx context.Context, client *spanner.Client, warmupTime int64, stale
 	return nil
 }
 
-func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int64, staleness int64, waitBetweenRequests int64, transactionType transactionType) ([]int64, error) {
+func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int8, staleness int8, waitBetweenRequests uint8, transactionType transactionType) ([]int64, error) {
 	endTime := time.Now().Local().Add(time.Minute * time.Duration(executionTime))
 
 	go runTimer(endTime, "Remaining operation time")
@@ -172,7 +193,7 @@ func runBenchmark(ctx context.Context, client *spanner.Client, executionTime int
 	return latencies, nil
 }
 
-func execute(ctx context.Context, transactionType transactionType, client *spanner.Client, staleness int64) (time.Duration, error) {
+func execute(ctx context.Context, transactionType transactionType, client *spanner.Client, staleness int8) (time.Duration, error) {
 	switch transactionType {
 	case query:
 		return executeQuery(ctx, client, staleness)
@@ -183,7 +204,7 @@ func execute(ctx context.Context, transactionType transactionType, client *spann
 	}
 }
 
-func executeQuery(ctx context.Context, client *spanner.Client, staleness int64) (time.Duration, error) {
+func executeQuery(ctx context.Context, client *spanner.Client, staleness int8) (time.Duration, error) {
 	start := time.Now()
 
 	iter := client.Single().WithTimestampBound(spanner.ExactStaleness(time.Second*time.Duration(staleness))).Query(ctx, spanner.Statement{SQL: selectQuery, Params: map[string]interface{}{
@@ -207,7 +228,7 @@ func executeQuery(ctx context.Context, client *spanner.Client, staleness int64) 
 	return time.Since(start), nil
 }
 
-func executeRead(ctx context.Context, client *spanner.Client, staleness int64) (time.Duration, error) {
+func executeRead(ctx context.Context, client *spanner.Client, staleness int8) (time.Duration, error) {
 	start := time.Now()
 
 	iter := client.Single().WithTimestampBound(spanner.ExactStaleness(time.Second*time.Duration(staleness))).Read(ctx, tableName, spanner.Key{generateUniqueID()}, []string{"ID"})
@@ -229,6 +250,32 @@ func executeRead(ctx context.Context, client *spanner.Client, staleness int64) (
 	return time.Since(start), nil
 }
 
+func enableTracingWithCloudTraceExporter(projectID string, cloudTracingHost string) {
+	res, err := resource.Merge(resource.Default(),
+		resource.NewWithAttributes(semconv.SchemaURL,
+			semconv.ServiceName("Go-Benchmarking"),
+			semconv.ServiceVersion("0.1.0"),
+		))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a new cloud trace exporter
+	exporter, err := traceExporter.New(traceExporter.WithProjectID(projectID), traceExporter.WithTraceClientOptions([]option.ClientOption{option.WithEndpoint(cloudTracingHost)}))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tracerProvider := sdktrace.NewTracerProvider(
+		sdktrace.WithResource(res),
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.5)),
+	)
+
+	otel.SetTracerProvider(tracerProvider)
+}
+
 func runTimer(endTime time.Time, text string) {
 	for {
 		var t time.Time
@@ -245,6 +292,76 @@ func setMonitoringHost(monitoringHost string) error {
 	if err := os.Setenv("SPANNER_MONITORING_HOST", monitoringHost); err != nil {
 		return err
 	}
+	return nil
+}
+
+func parseCommandLineArguments(args []string, bc *benchmarkingConfiguration) error {
+	if len(args)%2 == 0 {
+		return errors.New("some configuration is missing")
+	}
+
+	index := 1
+	for {
+		if index >= len(args) {
+			break
+		}
+		commandLineOption := args[index][1:]
+		commandLineValue := args[index+1]
+		switch commandLineOption {
+		case "wu", "warmUpTime":
+			val, err := strconv.ParseInt(commandLineValue, 10, 8)
+			if err != nil {
+				return err
+			}
+			bc.warmUpTime = int8(val)
+		case "et", "executionTime":
+			val, err := strconv.ParseInt(commandLineValue, 10, 8)
+			if err != nil {
+				return err
+			}
+			bc.executionTime = int8(val)
+		case "wbr", "waitBetweenRequests":
+			val, err := strconv.ParseInt(commandLineValue, 10, 8)
+			if err != nil {
+				return err
+			}
+			bc.waitBetweenRequests = uint8(val)
+		case "st", "staleness":
+			val, err := strconv.ParseInt(commandLineValue, 10, 8)
+			if err != nil {
+				return err
+			}
+			bc.staleness = int8(val)
+		case "transactionType":
+			parsedTransactionType, err := parseTransactionType(commandLineValue)
+			if err != nil {
+				return err
+			}
+			bc.parsedTransactionType = parsedTransactionType
+		case "te", "tracesEnabled":
+			tracesEnabled, err := strconv.ParseBool(commandLineValue)
+			if err != nil {
+				return err
+			}
+			bc.tracesEnabled = tracesEnabled
+		case "dnm", "disableNativeMetrics":
+			disableNativeMetrics, err := strconv.ParseBool(commandLineValue)
+			if err != nil {
+				return err
+			}
+			bc.disableNativeMetrics = disableNativeMetrics
+		case "tsf", "traceSamplingFraction":
+			traceSamplingFraction, err := strconv.ParseFloat(commandLineValue, 32)
+			if err != nil {
+				return err
+			}
+			bc.traceSamplingFraction = float32(traceSamplingFraction)
+		default:
+			return fmt.Errorf("invalid option %v", commandLineOption)
+		}
+		index += 2
+	}
+
 	return nil
 }
 
@@ -277,6 +394,9 @@ func generateUniqueID() int64 {
 	return rand.Int64N(totalRecords) + 1
 }
 
-func getRandomWaitTime(waitTime int64) time.Duration {
-	return time.Duration(rand.Int64N(2*waitTime-1) + 1)
+func getRandomWaitTime(waitTime uint8) time.Duration {
+	if waitTime <= 0 {
+		return time.Duration(0)
+	}
+	return time.Duration(rand.Int64N(int64(2*waitTime-1)) + 1)
 }
