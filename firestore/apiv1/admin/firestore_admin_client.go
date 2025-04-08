@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,6 +61,13 @@ type FirestoreAdminCallOptions struct {
 	ListDatabases        []gax.CallOption
 	UpdateDatabase       []gax.CallOption
 	DeleteDatabase       []gax.CallOption
+	CreateUserCreds      []gax.CallOption
+	GetUserCreds         []gax.CallOption
+	ListUserCreds        []gax.CallOption
+	EnableUserCreds      []gax.CallOption
+	DisableUserCreds     []gax.CallOption
+	ResetUserPassword    []gax.CallOption
+	DeleteUserCreds      []gax.CallOption
 	GetBackup            []gax.CallOption
 	ListBackups          []gax.CallOption
 	DeleteBackup         []gax.CallOption
@@ -178,15 +185,26 @@ func defaultFirestoreAdminCallOptions() *FirestoreAdminCallOptions {
 		BulkDeleteDocuments: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		CreateDatabase:       []gax.CallOption{},
-		GetDatabase:          []gax.CallOption{},
-		ListDatabases:        []gax.CallOption{},
-		UpdateDatabase:       []gax.CallOption{},
-		DeleteDatabase:       []gax.CallOption{},
-		GetBackup:            []gax.CallOption{},
-		ListBackups:          []gax.CallOption{},
-		DeleteBackup:         []gax.CallOption{},
-		RestoreDatabase:      []gax.CallOption{},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		GetDatabase:       []gax.CallOption{},
+		ListDatabases:     []gax.CallOption{},
+		UpdateDatabase:    []gax.CallOption{},
+		DeleteDatabase:    []gax.CallOption{},
+		CreateUserCreds:   []gax.CallOption{},
+		GetUserCreds:      []gax.CallOption{},
+		ListUserCreds:     []gax.CallOption{},
+		EnableUserCreds:   []gax.CallOption{},
+		DisableUserCreds:  []gax.CallOption{},
+		ResetUserPassword: []gax.CallOption{},
+		DeleteUserCreds:   []gax.CallOption{},
+		GetBackup:         []gax.CallOption{},
+		ListBackups:       []gax.CallOption{},
+		DeleteBackup:      []gax.CallOption{},
+		RestoreDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		CreateBackupSchedule: []gax.CallOption{},
 		GetBackupSchedule:    []gax.CallOption{},
 		ListBackupSchedules:  []gax.CallOption{},
@@ -281,15 +299,26 @@ func defaultFirestoreAdminRESTCallOptions() *FirestoreAdminCallOptions {
 		BulkDeleteDocuments: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		CreateDatabase:       []gax.CallOption{},
-		GetDatabase:          []gax.CallOption{},
-		ListDatabases:        []gax.CallOption{},
-		UpdateDatabase:       []gax.CallOption{},
-		DeleteDatabase:       []gax.CallOption{},
-		GetBackup:            []gax.CallOption{},
-		ListBackups:          []gax.CallOption{},
-		DeleteBackup:         []gax.CallOption{},
-		RestoreDatabase:      []gax.CallOption{},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		GetDatabase:       []gax.CallOption{},
+		ListDatabases:     []gax.CallOption{},
+		UpdateDatabase:    []gax.CallOption{},
+		DeleteDatabase:    []gax.CallOption{},
+		CreateUserCreds:   []gax.CallOption{},
+		GetUserCreds:      []gax.CallOption{},
+		ListUserCreds:     []gax.CallOption{},
+		EnableUserCreds:   []gax.CallOption{},
+		DisableUserCreds:  []gax.CallOption{},
+		ResetUserPassword: []gax.CallOption{},
+		DeleteUserCreds:   []gax.CallOption{},
+		GetBackup:         []gax.CallOption{},
+		ListBackups:       []gax.CallOption{},
+		DeleteBackup:      []gax.CallOption{},
+		RestoreDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		CreateBackupSchedule: []gax.CallOption{},
 		GetBackupSchedule:    []gax.CallOption{},
 		ListBackupSchedules:  []gax.CallOption{},
@@ -330,6 +359,13 @@ type internalFirestoreAdminClient interface {
 	UpdateDatabaseOperation(name string) *UpdateDatabaseOperation
 	DeleteDatabase(context.Context, *adminpb.DeleteDatabaseRequest, ...gax.CallOption) (*DeleteDatabaseOperation, error)
 	DeleteDatabaseOperation(name string) *DeleteDatabaseOperation
+	CreateUserCreds(context.Context, *adminpb.CreateUserCredsRequest, ...gax.CallOption) (*adminpb.UserCreds, error)
+	GetUserCreds(context.Context, *adminpb.GetUserCredsRequest, ...gax.CallOption) (*adminpb.UserCreds, error)
+	ListUserCreds(context.Context, *adminpb.ListUserCredsRequest, ...gax.CallOption) (*adminpb.ListUserCredsResponse, error)
+	EnableUserCreds(context.Context, *adminpb.EnableUserCredsRequest, ...gax.CallOption) (*adminpb.UserCreds, error)
+	DisableUserCreds(context.Context, *adminpb.DisableUserCredsRequest, ...gax.CallOption) (*adminpb.UserCreds, error)
+	ResetUserPassword(context.Context, *adminpb.ResetUserPasswordRequest, ...gax.CallOption) (*adminpb.UserCreds, error)
+	DeleteUserCreds(context.Context, *adminpb.DeleteUserCredsRequest, ...gax.CallOption) error
 	GetBackup(context.Context, *adminpb.GetBackupRequest, ...gax.CallOption) (*adminpb.Backup, error)
 	ListBackups(context.Context, *adminpb.ListBackupsRequest, ...gax.CallOption) (*adminpb.ListBackupsResponse, error)
 	DeleteBackup(context.Context, *adminpb.DeleteBackupRequest, ...gax.CallOption) error
@@ -581,6 +617,43 @@ func (c *FirestoreAdminClient) DeleteDatabase(ctx context.Context, req *adminpb.
 // The name must be that of a previously created DeleteDatabaseOperation, possibly from a different process.
 func (c *FirestoreAdminClient) DeleteDatabaseOperation(name string) *DeleteDatabaseOperation {
 	return c.internalClient.DeleteDatabaseOperation(name)
+}
+
+// CreateUserCreds create a user creds.
+func (c *FirestoreAdminClient) CreateUserCreds(ctx context.Context, req *adminpb.CreateUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	return c.internalClient.CreateUserCreds(ctx, req, opts...)
+}
+
+// GetUserCreds gets a user creds resource. Note that the returned resource does not
+// contain the secret value itself.
+func (c *FirestoreAdminClient) GetUserCreds(ctx context.Context, req *adminpb.GetUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	return c.internalClient.GetUserCreds(ctx, req, opts...)
+}
+
+// ListUserCreds list all user creds in the database. Note that the returned resource
+// does not contain the secret value itself.
+func (c *FirestoreAdminClient) ListUserCreds(ctx context.Context, req *adminpb.ListUserCredsRequest, opts ...gax.CallOption) (*adminpb.ListUserCredsResponse, error) {
+	return c.internalClient.ListUserCreds(ctx, req, opts...)
+}
+
+// EnableUserCreds enables a user creds. No-op if the user creds are already enabled.
+func (c *FirestoreAdminClient) EnableUserCreds(ctx context.Context, req *adminpb.EnableUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	return c.internalClient.EnableUserCreds(ctx, req, opts...)
+}
+
+// DisableUserCreds disables a user creds. No-op if the user creds are already disabled.
+func (c *FirestoreAdminClient) DisableUserCreds(ctx context.Context, req *adminpb.DisableUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	return c.internalClient.DisableUserCreds(ctx, req, opts...)
+}
+
+// ResetUserPassword resets the password of a user creds.
+func (c *FirestoreAdminClient) ResetUserPassword(ctx context.Context, req *adminpb.ResetUserPasswordRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	return c.internalClient.ResetUserPassword(ctx, req, opts...)
+}
+
+// DeleteUserCreds deletes a user creds.
+func (c *FirestoreAdminClient) DeleteUserCreds(ctx context.Context, req *adminpb.DeleteUserCredsRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteUserCreds(ctx, req, opts...)
 }
 
 // GetBackup gets information about a backup.
@@ -1249,6 +1322,128 @@ func (c *firestoreAdminGRPCClient) DeleteDatabase(ctx context.Context, req *admi
 	return &DeleteDatabaseOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *firestoreAdminGRPCClient) CreateUserCreds(ctx context.Context, req *adminpb.CreateUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateUserCreds[0:len((*c.CallOptions).CreateUserCreds):len((*c.CallOptions).CreateUserCreds)], opts...)
+	var resp *adminpb.UserCreds
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.CreateUserCreds, req, settings.GRPC, c.logger, "CreateUserCreds")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *firestoreAdminGRPCClient) GetUserCreds(ctx context.Context, req *adminpb.GetUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetUserCreds[0:len((*c.CallOptions).GetUserCreds):len((*c.CallOptions).GetUserCreds)], opts...)
+	var resp *adminpb.UserCreds
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.GetUserCreds, req, settings.GRPC, c.logger, "GetUserCreds")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *firestoreAdminGRPCClient) ListUserCreds(ctx context.Context, req *adminpb.ListUserCredsRequest, opts ...gax.CallOption) (*adminpb.ListUserCredsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListUserCreds[0:len((*c.CallOptions).ListUserCreds):len((*c.CallOptions).ListUserCreds)], opts...)
+	var resp *adminpb.ListUserCredsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.ListUserCreds, req, settings.GRPC, c.logger, "ListUserCreds")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *firestoreAdminGRPCClient) EnableUserCreds(ctx context.Context, req *adminpb.EnableUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EnableUserCreds[0:len((*c.CallOptions).EnableUserCreds):len((*c.CallOptions).EnableUserCreds)], opts...)
+	var resp *adminpb.UserCreds
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.EnableUserCreds, req, settings.GRPC, c.logger, "EnableUserCreds")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *firestoreAdminGRPCClient) DisableUserCreds(ctx context.Context, req *adminpb.DisableUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DisableUserCreds[0:len((*c.CallOptions).DisableUserCreds):len((*c.CallOptions).DisableUserCreds)], opts...)
+	var resp *adminpb.UserCreds
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.DisableUserCreds, req, settings.GRPC, c.logger, "DisableUserCreds")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *firestoreAdminGRPCClient) ResetUserPassword(ctx context.Context, req *adminpb.ResetUserPasswordRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ResetUserPassword[0:len((*c.CallOptions).ResetUserPassword):len((*c.CallOptions).ResetUserPassword)], opts...)
+	var resp *adminpb.UserCreds
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.ResetUserPassword, req, settings.GRPC, c.logger, "ResetUserPassword")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *firestoreAdminGRPCClient) DeleteUserCreds(ctx context.Context, req *adminpb.DeleteUserCredsRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteUserCreds[0:len((*c.CallOptions).DeleteUserCreds):len((*c.CallOptions).DeleteUserCreds)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.firestoreAdminClient.DeleteUserCreds, req, settings.GRPC, c.logger, "DeleteUserCreds")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *firestoreAdminGRPCClient) GetBackup(ctx context.Context, req *adminpb.GetBackupRequest, opts ...gax.CallOption) (*adminpb.Backup, error) {
@@ -2434,6 +2629,369 @@ func (c *firestoreAdminRESTClient) DeleteDatabase(ctx context.Context, req *admi
 	}, nil
 }
 
+// CreateUserCreds create a user creds.
+func (c *firestoreAdminRESTClient) CreateUserCreds(ctx context.Context, req *adminpb.CreateUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetUserCreds()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/userCreds", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("userCredsId", fmt.Sprintf("%v", req.GetUserCredsId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateUserCreds[0:len((*c.CallOptions).CreateUserCreds):len((*c.CallOptions).CreateUserCreds)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.UserCreds{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateUserCreds")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetUserCreds gets a user creds resource. Note that the returned resource does not
+// contain the secret value itself.
+func (c *firestoreAdminRESTClient) GetUserCreds(ctx context.Context, req *adminpb.GetUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetUserCreds[0:len((*c.CallOptions).GetUserCreds):len((*c.CallOptions).GetUserCreds)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.UserCreds{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUserCreds")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListUserCreds list all user creds in the database. Note that the returned resource
+// does not contain the secret value itself.
+func (c *firestoreAdminRESTClient) ListUserCreds(ctx context.Context, req *adminpb.ListUserCredsRequest, opts ...gax.CallOption) (*adminpb.ListUserCredsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/userCreds", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ListUserCreds[0:len((*c.CallOptions).ListUserCreds):len((*c.CallOptions).ListUserCreds)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ListUserCredsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUserCreds")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// EnableUserCreds enables a user creds. No-op if the user creds are already enabled.
+func (c *firestoreAdminRESTClient) EnableUserCreds(ctx context.Context, req *adminpb.EnableUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).EnableUserCreds[0:len((*c.CallOptions).EnableUserCreds):len((*c.CallOptions).EnableUserCreds)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.UserCreds{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnableUserCreds")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DisableUserCreds disables a user creds. No-op if the user creds are already disabled.
+func (c *firestoreAdminRESTClient) DisableUserCreds(ctx context.Context, req *adminpb.DisableUserCredsRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).DisableUserCreds[0:len((*c.CallOptions).DisableUserCreds):len((*c.CallOptions).DisableUserCreds)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.UserCreds{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DisableUserCreds")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ResetUserPassword resets the password of a user creds.
+func (c *firestoreAdminRESTClient) ResetUserPassword(ctx context.Context, req *adminpb.ResetUserPasswordRequest, opts ...gax.CallOption) (*adminpb.UserCreds, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:resetPassword", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ResetUserPassword[0:len((*c.CallOptions).ResetUserPassword):len((*c.CallOptions).ResetUserPassword)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.UserCreds{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetUserPassword")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteUserCreds deletes a user creds.
+func (c *firestoreAdminRESTClient) DeleteUserCreds(ctx context.Context, req *adminpb.DeleteUserCredsRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteUserCreds")
+		return err
+	}, opts...)
+}
+
 // GetBackup gets information about a backup.
 func (c *firestoreAdminRESTClient) GetBackup(ctx context.Context, req *adminpb.GetBackupRequest, opts ...gax.CallOption) (*adminpb.Backup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2494,6 +3052,9 @@ func (c *firestoreAdminRESTClient) ListBackups(ctx context.Context, req *adminpb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFilter() != "" {
+		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

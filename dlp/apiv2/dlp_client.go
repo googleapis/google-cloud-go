@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1160,6 +1160,9 @@ func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRe
 // When no InfoTypes or CustomInfoTypes are specified in this request, the
 // system will automatically choose what detectors to run. By default this may
 // be all types, but may change over time as detectors are updated.
+//
+// Only the first frame of each multiframe image is redacted. Metadata and
+// other frames are omitted in the response.
 func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest, opts ...gax.CallOption) (*dlppb.RedactImageResponse, error) {
 	return c.internalClient.RedactImage(ctx, req, opts...)
 }
@@ -1185,7 +1188,7 @@ func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyCon
 	return c.internalClient.ReidentifyContent(ctx, req, opts...)
 }
 
-// ListInfoTypes returns a list of the sensitive information types that DLP API
+// ListInfoTypes returns a list of the sensitive information types that the DLP API
 // supports. See
 // https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference (at https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference)
 // to learn more.
@@ -3067,6 +3070,9 @@ func (c *restClient) InspectContent(ctx context.Context, req *dlppb.InspectConte
 // When no InfoTypes or CustomInfoTypes are specified in this request, the
 // system will automatically choose what detectors to run. By default this may
 // be all types, but may change over time as detectors are updated.
+//
+// Only the first frame of each multiframe image is redacted. Metadata and
+// other frames are omitted in the response.
 func (c *restClient) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest, opts ...gax.CallOption) (*dlppb.RedactImageResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3245,7 +3251,7 @@ func (c *restClient) ReidentifyContent(ctx context.Context, req *dlppb.Reidentif
 	return resp, nil
 }
 
-// ListInfoTypes returns a list of the sensitive information types that DLP API
+// ListInfoTypes returns a list of the sensitive information types that the DLP API
 // supports. See
 // https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference (at https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference)
 // to learn more.

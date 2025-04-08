@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -415,6 +415,7 @@ type UpdateAttachedClusterRequest struct {
 	//   - `proxy_config.kubernetes_secret.name`.
 	//   - `proxy_config.kubernetes_secret.namespace`.
 	//   - `security_posture_config.vulnerability_mode`
+	//   - `monitoring_config.cloud_monitoring_config.enabled`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

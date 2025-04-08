@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import (
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -46,6 +48,7 @@ var newEvaluationClientHook clientHook
 // EvaluationCallOptions contains the retry settings for each method of EvaluationClient.
 type EvaluationCallOptions struct {
 	EvaluateInstances  []gax.CallOption
+	EvaluateDataset    []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -78,6 +81,7 @@ func defaultEvaluationCallOptions() *EvaluationCallOptions {
 		EvaluateInstances: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EvaluateDataset:    []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -96,6 +100,7 @@ func defaultEvaluationRESTCallOptions() *EvaluationCallOptions {
 		EvaluateInstances: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EvaluateDataset:    []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -115,6 +120,8 @@ type internalEvaluationClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	EvaluateInstances(context.Context, *aiplatformpb.EvaluateInstancesRequest, ...gax.CallOption) (*aiplatformpb.EvaluateInstancesResponse, error)
+	EvaluateDataset(context.Context, *aiplatformpb.EvaluateDatasetRequest, ...gax.CallOption) (*EvaluateDatasetOperation, error)
+	EvaluateDatasetOperation(name string) *EvaluateDatasetOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -137,6 +144,11 @@ type EvaluationClient struct {
 
 	// The call options for this service.
 	CallOptions *EvaluationCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -165,6 +177,17 @@ func (c *EvaluationClient) Connection() *grpc.ClientConn {
 // EvaluateInstances evaluates instances based on a given metric.
 func (c *EvaluationClient) EvaluateInstances(ctx context.Context, req *aiplatformpb.EvaluateInstancesRequest, opts ...gax.CallOption) (*aiplatformpb.EvaluateInstancesResponse, error) {
 	return c.internalClient.EvaluateInstances(ctx, req, opts...)
+}
+
+// EvaluateDataset evaluates a dataset based on a set of given metrics.
+func (c *EvaluationClient) EvaluateDataset(ctx context.Context, req *aiplatformpb.EvaluateDatasetRequest, opts ...gax.CallOption) (*EvaluateDatasetOperation, error) {
+	return c.internalClient.EvaluateDataset(ctx, req, opts...)
+}
+
+// EvaluateDatasetOperation returns a new EvaluateDatasetOperation from a given name.
+// The name must be that of a previously created EvaluateDatasetOperation, possibly from a different process.
+func (c *EvaluationClient) EvaluateDatasetOperation(name string) *EvaluateDatasetOperation {
+	return c.internalClient.EvaluateDatasetOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -241,6 +264,11 @@ type evaluationGRPCClient struct {
 	// The gRPC API client.
 	evaluationClient aiplatformpb.EvaluationServiceClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	iamPolicyClient iampb.IAMPolicyClient
@@ -286,6 +314,17 @@ func NewEvaluationClient(ctx context.Context, opts ...option.ClientOption) (*Eva
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -322,6 +361,11 @@ type evaluationRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
@@ -349,6 +393,16 @@ func NewEvaluationRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &EvaluationClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -406,6 +460,26 @@ func (c *evaluationGRPCClient) EvaluateInstances(ctx context.Context, req *aipla
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *evaluationGRPCClient) EvaluateDataset(ctx context.Context, req *aiplatformpb.EvaluateDatasetRequest, opts ...gax.CallOption) (*EvaluateDatasetOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EvaluateDataset[0:len((*c.CallOptions).EvaluateDataset):len((*c.CallOptions).EvaluateDataset)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.evaluationClient.EvaluateDataset, req, settings.GRPC, c.logger, "EvaluateDataset")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EvaluateDatasetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *evaluationGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -690,6 +764,65 @@ func (c *evaluationRESTClient) EvaluateInstances(ctx context.Context, req *aipla
 		return nil, e
 	}
 	return resp, nil
+}
+
+// EvaluateDataset evaluates a dataset based on a set of given metrics.
+func (c *evaluationRESTClient) EvaluateDataset(ctx context.Context, req *aiplatformpb.EvaluateDatasetRequest, opts ...gax.CallOption) (*EvaluateDatasetOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:evaluateDataset", req.GetLocation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EvaluateDataset")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &EvaluateDatasetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -1258,4 +1391,22 @@ func (c *evaluationRESTClient) WaitOperation(ctx context.Context, req *longrunni
 		return nil, e
 	}
 	return resp, nil
+}
+
+// EvaluateDatasetOperation returns a new EvaluateDatasetOperation from a given name.
+// The name must be that of a previously created EvaluateDatasetOperation, possibly from a different process.
+func (c *evaluationGRPCClient) EvaluateDatasetOperation(name string) *EvaluateDatasetOperation {
+	return &EvaluateDatasetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// EvaluateDatasetOperation returns a new EvaluateDatasetOperation from a given name.
+// The name must be that of a previously created EvaluateDatasetOperation, possibly from a different process.
+func (c *evaluationRESTClient) EvaluateDatasetOperation(name string) *EvaluateDatasetOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &EvaluateDatasetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }

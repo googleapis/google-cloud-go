@@ -1,5 +1,33 @@
 # Changes
 
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.18.1...networkmanagement/v1.18.2) (2025-03-19)
+
+
+### Documentation
+
+* **networkmanagement:** Update comments for Connectivity Test ([#11847](https://github.com/googleapis/google-cloud-go/issues/11847)) ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.18.0...networkmanagement/v1.18.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.17.1...networkmanagement/v1.18.0) (2025-01-15)
+
+
+### Features
+
+* **networkmanagement:** Expose the new v1 vpcflowlogs api proto ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.17.0...networkmanagement/v1.17.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.16.0...networkmanagement/v1.17.0) (2024-11-19)
 
 

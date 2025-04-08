@@ -1,6 +1,34 @@
 # Changes
 
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.3...documentai/v1.36.0) (2025-03-19)
+
+
+### Features
+
+* **documentai:** Added config options to enable LLM layout parsing ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
+## [1.35.3](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.2...documentai/v1.35.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.35.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.1...documentai/v1.35.2) (2025-02-12)
+
+
+### Documentation
+
+* **documentai:** Mark fields as unused ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
+## [1.35.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.0...documentai/v1.35.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.34.0...documentai/v1.35.0) (2024-10-23)
 
 

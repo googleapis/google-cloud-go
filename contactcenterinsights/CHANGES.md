@@ -1,5 +1,19 @@
 # Changes
 
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.17.1...contactcenterinsights/v1.17.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.17.0...contactcenterinsights/v1.17.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.16.0...contactcenterinsights/v1.17.0) (2024-12-18)
 
 

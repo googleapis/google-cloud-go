@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ type AlloyDBAdminCallOptions struct {
 	GetCluster                 []gax.CallOption
 	CreateCluster              []gax.CallOption
 	UpdateCluster              []gax.CallOption
+	ExportCluster              []gax.CallOption
 	UpgradeCluster             []gax.CallOption
 	DeleteCluster              []gax.CallOption
 	PromoteCluster             []gax.CallOption
@@ -135,6 +136,9 @@ func defaultAlloyDBAdminCallOptions() *AlloyDBAdminCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExportCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpgradeCluster: []gax.CallOption{
@@ -359,6 +363,9 @@ func defaultAlloyDBAdminRESTCallOptions() *AlloyDBAdminCallOptions {
 		UpdateCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ExportCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		UpgradeCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -552,6 +559,8 @@ type internalAlloyDBAdminClient interface {
 	CreateClusterOperation(name string) *CreateClusterOperation
 	UpdateCluster(context.Context, *alloydbpb.UpdateClusterRequest, ...gax.CallOption) (*UpdateClusterOperation, error)
 	UpdateClusterOperation(name string) *UpdateClusterOperation
+	ExportCluster(context.Context, *alloydbpb.ExportClusterRequest, ...gax.CallOption) (*ExportClusterOperation, error)
+	ExportClusterOperation(name string) *ExportClusterOperation
 	UpgradeCluster(context.Context, *alloydbpb.UpgradeClusterRequest, ...gax.CallOption) (*UpgradeClusterOperation, error)
 	UpgradeClusterOperation(name string) *UpgradeClusterOperation
 	DeleteCluster(context.Context, *alloydbpb.DeleteClusterRequest, ...gax.CallOption) (*DeleteClusterOperation, error)
@@ -678,6 +687,18 @@ func (c *AlloyDBAdminClient) UpdateCluster(ctx context.Context, req *alloydbpb.U
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *AlloyDBAdminClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return c.internalClient.UpdateClusterOperation(name)
+}
+
+// ExportCluster exports data from the cluster.
+// Imperative only.
+func (c *AlloyDBAdminClient) ExportCluster(ctx context.Context, req *alloydbpb.ExportClusterRequest, opts ...gax.CallOption) (*ExportClusterOperation, error) {
+	return c.internalClient.ExportCluster(ctx, req, opts...)
+}
+
+// ExportClusterOperation returns a new ExportClusterOperation from a given name.
+// The name must be that of a previously created ExportClusterOperation, possibly from a different process.
+func (c *AlloyDBAdminClient) ExportClusterOperation(name string) *ExportClusterOperation {
+	return c.internalClient.ExportClusterOperation(name)
 }
 
 // UpgradeCluster upgrades a single Cluster.
@@ -1283,6 +1304,26 @@ func (c *alloyDBAdminGRPCClient) UpdateCluster(ctx context.Context, req *alloydb
 		return nil, err
 	}
 	return &UpdateClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *alloyDBAdminGRPCClient) ExportCluster(ctx context.Context, req *alloydbpb.ExportClusterRequest, opts ...gax.CallOption) (*ExportClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportCluster[0:len((*c.CallOptions).ExportCluster):len((*c.CallOptions).ExportCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.alloyDBAdminClient.ExportCluster, req, settings.GRPC, c.logger, "ExportCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2446,6 +2487,66 @@ func (c *alloyDBAdminRESTClient) UpdateCluster(ctx context.Context, req *alloydb
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
 	return &UpdateClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportCluster exports data from the cluster.
+// Imperative only.
+func (c *alloyDBAdminRESTClient) ExportCluster(ctx context.Context, req *alloydbpb.ExportClusterRequest, opts ...gax.CallOption) (*ExportClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:export", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportCluster")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &ExportClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -4958,6 +5059,24 @@ func (c *alloyDBAdminGRPCClient) DeleteInstanceOperation(name string) *DeleteIns
 func (c *alloyDBAdminRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExportClusterOperation returns a new ExportClusterOperation from a given name.
+// The name must be that of a previously created ExportClusterOperation, possibly from a different process.
+func (c *alloyDBAdminGRPCClient) ExportClusterOperation(name string) *ExportClusterOperation {
+	return &ExportClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportClusterOperation returns a new ExportClusterOperation from a given name.
+// The name must be that of a previously created ExportClusterOperation, possibly from a different process.
+func (c *alloyDBAdminRESTClient) ExportClusterOperation(name string) *ExportClusterOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &ExportClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

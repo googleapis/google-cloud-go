@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -107,18 +107,23 @@ type internalPublisherClient interface {
 //
 // A partner is a third-party event provider that is integrated with Eventarc.
 //
-// A subscriber is a GCP customer interested in receiving events.
+// A subscriber is a Google Cloud customer interested in receiving events.
 //
 // Channel is a first-class Eventarc resource that is created and managed
-// by the subscriber in their GCP project. A Channel represents a subscriber’s
-// intent to receive events from an event provider. A Channel is associated with
-// exactly one event provider.
+// by the subscriber in their Google Cloud project. A Channel represents a
+// subscriber’s intent to receive events from an event provider. A Channel is
+// associated with exactly one event provider.
 //
 // ChannelConnection is a first-class Eventarc resource that
-// is created and managed by the partner in their GCP project. A
+// is created and managed by the partner in their Google Cloud project. A
 // ChannelConnection represents a connection between a partner and a
 // subscriber’s Channel. A ChannelConnection has a one-to-one mapping with a
 // Channel.
+//
+// Bus is a first-class Eventarc resource that is created and managed in a
+// Google Cloud project. A Bus provides a discoverable endpoint for events and
+// is a router that receives all events published by event providers and
+// delivers them to zero or more subscribers.
 //
 // Publisher allows an event provider to publish events to Eventarc.
 type PublisherClient struct {
@@ -199,18 +204,23 @@ type publisherGRPCClient struct {
 //
 // A partner is a third-party event provider that is integrated with Eventarc.
 //
-// A subscriber is a GCP customer interested in receiving events.
+// A subscriber is a Google Cloud customer interested in receiving events.
 //
 // Channel is a first-class Eventarc resource that is created and managed
-// by the subscriber in their GCP project. A Channel represents a subscriber’s
-// intent to receive events from an event provider. A Channel is associated with
-// exactly one event provider.
+// by the subscriber in their Google Cloud project. A Channel represents a
+// subscriber’s intent to receive events from an event provider. A Channel is
+// associated with exactly one event provider.
 //
 // ChannelConnection is a first-class Eventarc resource that
-// is created and managed by the partner in their GCP project. A
+// is created and managed by the partner in their Google Cloud project. A
 // ChannelConnection represents a connection between a partner and a
 // subscriber’s Channel. A ChannelConnection has a one-to-one mapping with a
 // Channel.
+//
+// Bus is a first-class Eventarc resource that is created and managed in a
+// Google Cloud project. A Bus provides a discoverable endpoint for events and
+// is a router that receives all events published by event providers and
+// delivers them to zero or more subscribers.
 //
 // Publisher allows an event provider to publish events to Eventarc.
 func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*PublisherClient, error) {
@@ -296,18 +306,23 @@ type publisherRESTClient struct {
 //
 // A partner is a third-party event provider that is integrated with Eventarc.
 //
-// A subscriber is a GCP customer interested in receiving events.
+// A subscriber is a Google Cloud customer interested in receiving events.
 //
 // Channel is a first-class Eventarc resource that is created and managed
-// by the subscriber in their GCP project. A Channel represents a subscriber’s
-// intent to receive events from an event provider. A Channel is associated with
-// exactly one event provider.
+// by the subscriber in their Google Cloud project. A Channel represents a
+// subscriber’s intent to receive events from an event provider. A Channel is
+// associated with exactly one event provider.
 //
 // ChannelConnection is a first-class Eventarc resource that
-// is created and managed by the partner in their GCP project. A
+// is created and managed by the partner in their Google Cloud project. A
 // ChannelConnection represents a connection between a partner and a
 // subscriber’s Channel. A ChannelConnection has a one-to-one mapping with a
 // Channel.
+//
+// Bus is a first-class Eventarc resource that is created and managed in a
+// Google Cloud project. A Bus provides a discoverable endpoint for events and
+// is a router that receives all events published by event providers and
+// delivers them to zero or more subscribers.
 //
 // Publisher allows an event provider to publish events to Eventarc.
 func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*PublisherClient, error) {

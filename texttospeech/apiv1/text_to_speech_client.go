@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -213,7 +213,7 @@ func (c *Client) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.Synth
 	return c.internalClient.SynthesizeSpeech(ctx, req, opts...)
 }
 
-// StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while
+// StreamingSynthesize performs bidirectional streaming speech synthesis: receives audio while
 // sending text.
 //
 // This method is not supported for the REST transport.
@@ -602,7 +602,7 @@ func (c *restClient) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.S
 	return resp, nil
 }
 
-// StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while
+// StreamingSynthesize performs bidirectional streaming speech synthesis: receives audio while
 // sending text.
 //
 // This method is not supported for the REST transport.

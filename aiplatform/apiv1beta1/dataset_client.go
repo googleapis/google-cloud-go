@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,6 +66,8 @@ type DatasetCallOptions struct {
 	DeleteSavedQuery      []gax.CallOption
 	GetAnnotationSpec     []gax.CallOption
 	ListAnnotations       []gax.CallOption
+	AssessData            []gax.CallOption
+	AssembleData          []gax.CallOption
 	GetLocation           []gax.CallOption
 	ListLocations         []gax.CallOption
 	GetIamPolicy          []gax.CallOption
@@ -134,6 +136,8 @@ func defaultDatasetCallOptions() *DatasetCallOptions {
 		ListAnnotations: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		AssessData:         []gax.CallOption{},
+		AssembleData:       []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -188,6 +192,8 @@ func defaultDatasetRESTCallOptions() *DatasetCallOptions {
 		ListAnnotations: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		AssessData:         []gax.CallOption{},
+		AssembleData:       []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -233,6 +239,10 @@ type internalDatasetClient interface {
 	DeleteSavedQueryOperation(name string) *DeleteSavedQueryOperation
 	GetAnnotationSpec(context.Context, *aiplatformpb.GetAnnotationSpecRequest, ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error)
 	ListAnnotations(context.Context, *aiplatformpb.ListAnnotationsRequest, ...gax.CallOption) *AnnotationIterator
+	AssessData(context.Context, *aiplatformpb.AssessDataRequest, ...gax.CallOption) (*AssessDataOperation, error)
+	AssessDataOperation(name string) *AssessDataOperation
+	AssembleData(context.Context, *aiplatformpb.AssembleDataRequest, ...gax.CallOption) (*AssembleDataOperation, error)
+	AssembleDataOperation(name string) *AssembleDataOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -423,9 +433,33 @@ func (c *DatasetClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb
 	return c.internalClient.GetAnnotationSpec(ctx, req, opts...)
 }
 
-// ListAnnotations lists Annotations belongs to a dataitem
+// ListAnnotations lists Annotations belongs to a dataitem.
 func (c *DatasetClient) ListAnnotations(ctx context.Context, req *aiplatformpb.ListAnnotationsRequest, opts ...gax.CallOption) *AnnotationIterator {
 	return c.internalClient.ListAnnotations(ctx, req, opts...)
+}
+
+// AssessData assesses the state or validity of the dataset with respect to a given use
+// case.
+func (c *DatasetClient) AssessData(ctx context.Context, req *aiplatformpb.AssessDataRequest, opts ...gax.CallOption) (*AssessDataOperation, error) {
+	return c.internalClient.AssessData(ctx, req, opts...)
+}
+
+// AssessDataOperation returns a new AssessDataOperation from a given name.
+// The name must be that of a previously created AssessDataOperation, possibly from a different process.
+func (c *DatasetClient) AssessDataOperation(name string) *AssessDataOperation {
+	return c.internalClient.AssessDataOperation(name)
+}
+
+// AssembleData assembles each row of a multimodal dataset and writes the result into a
+// BigQuery table.
+func (c *DatasetClient) AssembleData(ctx context.Context, req *aiplatformpb.AssembleDataRequest, opts ...gax.CallOption) (*AssembleDataOperation, error) {
+	return c.internalClient.AssembleData(ctx, req, opts...)
+}
+
+// AssembleDataOperation returns a new AssembleDataOperation from a given name.
+// The name must be that of a previously created AssembleDataOperation, possibly from a different process.
+func (c *DatasetClient) AssembleDataOperation(name string) *AssembleDataOperation {
+	return c.internalClient.AssembleDataOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -1206,6 +1240,46 @@ func (c *datasetGRPCClient) ListAnnotations(ctx context.Context, req *aiplatform
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *datasetGRPCClient) AssessData(ctx context.Context, req *aiplatformpb.AssessDataRequest, opts ...gax.CallOption) (*AssessDataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AssessData[0:len((*c.CallOptions).AssessData):len((*c.CallOptions).AssessData)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.datasetClient.AssessData, req, settings.GRPC, c.logger, "AssessData")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AssessDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *datasetGRPCClient) AssembleData(ctx context.Context, req *aiplatformpb.AssembleDataRequest, opts ...gax.CallOption) (*AssembleDataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AssembleData[0:len((*c.CallOptions).AssembleData):len((*c.CallOptions).AssembleData)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.datasetClient.AssembleData, req, settings.GRPC, c.logger, "AssembleData")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AssembleDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *datasetGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -2664,7 +2738,7 @@ func (c *datasetRESTClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 	return resp, nil
 }
 
-// ListAnnotations lists Annotations belongs to a dataitem
+// ListAnnotations lists Annotations belongs to a dataitem.
 func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatformpb.ListAnnotationsRequest, opts ...gax.CallOption) *AnnotationIterator {
 	it := &AnnotationIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListAnnotationsRequest)
@@ -2753,6 +2827,126 @@ func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatform
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// AssessData assesses the state or validity of the dataset with respect to a given use
+// case.
+func (c *datasetRESTClient) AssessData(ctx context.Context, req *aiplatformpb.AssessDataRequest, opts ...gax.CallOption) (*AssessDataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:assess", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AssessData")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &AssessDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// AssembleData assembles each row of a multimodal dataset and writes the result into a
+// BigQuery table.
+func (c *datasetRESTClient) AssembleData(ctx context.Context, req *aiplatformpb.AssembleDataRequest, opts ...gax.CallOption) (*AssembleDataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:assemble", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AssembleData")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &AssembleDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -3321,6 +3515,42 @@ func (c *datasetRESTClient) WaitOperation(ctx context.Context, req *longrunningp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// AssembleDataOperation returns a new AssembleDataOperation from a given name.
+// The name must be that of a previously created AssembleDataOperation, possibly from a different process.
+func (c *datasetGRPCClient) AssembleDataOperation(name string) *AssembleDataOperation {
+	return &AssembleDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// AssembleDataOperation returns a new AssembleDataOperation from a given name.
+// The name must be that of a previously created AssembleDataOperation, possibly from a different process.
+func (c *datasetRESTClient) AssembleDataOperation(name string) *AssembleDataOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &AssembleDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// AssessDataOperation returns a new AssessDataOperation from a given name.
+// The name must be that of a previously created AssessDataOperation, possibly from a different process.
+func (c *datasetGRPCClient) AssessDataOperation(name string) *AssessDataOperation {
+	return &AssessDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// AssessDataOperation returns a new AssessDataOperation from a given name.
+// The name must be that of a previously created AssessDataOperation, possibly from a different process.
+func (c *datasetRESTClient) AssessDataOperation(name string) *AssessDataOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &AssessDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateDatasetOperation returns a new CreateDatasetOperation from a given name.

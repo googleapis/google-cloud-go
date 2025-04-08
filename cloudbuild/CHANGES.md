@@ -1,5 +1,46 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.0...cloudbuild/v1.22.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.21.0...cloudbuild/v1.22.0) (2025-02-14)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Support for git proxy setup ([#11590](https://github.com/googleapis/google-cloud-go/issues/11590)) ([c6a6dc7](https://github.com/googleapis/google-cloud-go/commit/c6a6dc7c6e63740ec25fc1eb34990f4550a6a1f3))
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Updates to proto message comments ([c6a6dc7](https://github.com/googleapis/google-cloud-go/commit/c6a6dc7c6e63740ec25fc1eb34990f4550a6a1f3))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.20.0...cloudbuild/v1.21.0) (2025-02-12)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add option to enable fetching dependencies ([#11589](https://github.com/googleapis/google-cloud-go/issues/11589)) ([e99577b](https://github.com/googleapis/google-cloud-go/commit/e99577bf3b280c5e4affe5657c8d43823a976d3c))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.2...cloudbuild/v1.20.0) (2025-01-15)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add GoModule to Artifact and Results messages and new GO_MODULE_H1 hash type ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **cloudbuild/apiv1:** Add option to enable structured logging ([#11435](https://github.com/googleapis/google-cloud-go/issues/11435)) ([8c6ed3d](https://github.com/googleapis/google-cloud-go/commit/8c6ed3d3c9677ab1b6e1e5651995b9be1856c7ac))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.1...cloudbuild/v1.19.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.0...cloudbuild/v1.19.1) (2024-12-11)
 
 

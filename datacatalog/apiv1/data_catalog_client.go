@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1175,8 +1175,12 @@ type internalClient interface {
 // Client is a client for interacting with Google Cloud Data Catalog API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
+// Deprecated: Please use Dataplex Catalog instead.
+//
 // Data Catalog API service allows you to discover, understand, and manage
 // your data.
+//
+// Deprecated: DataCatalog may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -1228,6 +1232,8 @@ func (c *Client) Connection() *grpc.ClientConn {
 //
 // For more information, see [Data Catalog search syntax]
 // (https://cloud.google.com/data-catalog/docs/how-to/search-reference (at https://cloud.google.com/data-catalog/docs/how-to/search-reference)).
+//
+// Deprecated: SearchCatalog may be removed in a future version.
 func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCatalogRequest, opts ...gax.CallOption) *SearchCatalogResultIterator {
 	return c.internalClient.SearchCatalog(ctx, req, opts...)
 }
@@ -1261,11 +1267,15 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 // You must enable the Data Catalog API in the project identified by
 // the parent parameter. For more information, see Data Catalog resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: CreateEntryGroup may be removed in a future version.
 func (c *Client) CreateEntryGroup(ctx context.Context, req *datacatalogpb.CreateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	return c.internalClient.CreateEntryGroup(ctx, req, opts...)
 }
 
 // GetEntryGroup gets an entry group.
+//
+// Deprecated: GetEntryGroup may be removed in a future version.
 func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	return c.internalClient.GetEntryGroup(ctx, req, opts...)
 }
@@ -1276,6 +1286,8 @@ func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryG
 // the entry_group.name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: UpdateEntryGroup may be removed in a future version.
 func (c *Client) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.UpdateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	return c.internalClient.UpdateEntryGroup(ctx, req, opts...)
 }
@@ -1286,11 +1298,15 @@ func (c *Client) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.Update
 // identified by the name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: DeleteEntryGroup may be removed in a future version.
 func (c *Client) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.DeleteEntryGroupRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEntryGroup(ctx, req, opts...)
 }
 
 // ListEntryGroups lists entry groups.
+//
+// Deprecated: ListEntryGroups may be removed in a future version.
 func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEntryGroupsRequest, opts ...gax.CallOption) *EntryGroupIterator {
 	return c.internalClient.ListEntryGroups(ctx, req, opts...)
 }
@@ -1306,6 +1322,8 @@ func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEnt
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
 //
 // An entry group can have a maximum of 100,000 entries.
+//
+// Deprecated: CreateEntry may be removed in a future version.
 func (c *Client) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	return c.internalClient.CreateEntry(ctx, req, opts...)
 }
@@ -1316,6 +1334,8 @@ func (c *Client) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntry
 // the entry.name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: UpdateEntry may be removed in a future version.
 func (c *Client) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	return c.internalClient.UpdateEntry(ctx, req, opts...)
 }
@@ -1330,11 +1350,15 @@ func (c *Client) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntry
 // the name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: DeleteEntry may be removed in a future version.
 func (c *Client) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteEntryRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEntry(ctx, req, opts...)
 }
 
 // GetEntry gets an entry.
+//
+// Deprecated: GetEntry may be removed in a future version.
 func (c *Client) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	return c.internalClient.GetEntry(ctx, req, opts...)
 }
@@ -1342,6 +1366,8 @@ func (c *Client) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryReques
 // LookupEntry gets an entry by its target resource name.
 //
 // The resource name comes from the source Google Cloud Platform service.
+//
+// Deprecated: LookupEntry may be removed in a future version.
 func (c *Client) LookupEntry(ctx context.Context, req *datacatalogpb.LookupEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	return c.internalClient.LookupEntry(ctx, req, opts...)
 }
@@ -1351,6 +1377,8 @@ func (c *Client) LookupEntry(ctx context.Context, req *datacatalogpb.LookupEntry
 // Note: Currently, this method can list only custom entries.
 // To get a list of both custom and automatically created entries, use
 // SearchCatalog.
+//
+// Deprecated: ListEntries may be removed in a future version.
 func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	return c.internalClient.ListEntries(ctx, req, opts...)
 }
@@ -1360,6 +1388,8 @@ func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntries
 //
 // To call this method, you must have the datacatalog.entries.updateOverview
 // IAM permission on the corresponding project.
+//
+// Deprecated: ModifyEntryOverview may be removed in a future version.
 func (c *Client) ModifyEntryOverview(ctx context.Context, req *datacatalogpb.ModifyEntryOverviewRequest, opts ...gax.CallOption) (*datacatalogpb.EntryOverview, error) {
 	return c.internalClient.ModifyEntryOverview(ctx, req, opts...)
 }
@@ -1369,6 +1399,8 @@ func (c *Client) ModifyEntryOverview(ctx context.Context, req *datacatalogpb.Mod
 //
 // To call this method, you must have the datacatalog.entries.updateContacts
 // IAM permission on the corresponding project.
+//
+// Deprecated: ModifyEntryContacts may be removed in a future version.
 func (c *Client) ModifyEntryContacts(ctx context.Context, req *datacatalogpb.ModifyEntryContactsRequest, opts ...gax.CallOption) (*datacatalogpb.Contacts, error) {
 	return c.internalClient.ModifyEntryContacts(ctx, req, opts...)
 }
@@ -1379,11 +1411,15 @@ func (c *Client) ModifyEntryContacts(ctx context.Context, req *datacatalogpb.Mod
 // parent parameter.
 // For more information, see [Data Catalog resource project]
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)).
+//
+// Deprecated: CreateTagTemplate may be removed in a future version.
 func (c *Client) CreateTagTemplate(ctx context.Context, req *datacatalogpb.CreateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
 	return c.internalClient.CreateTagTemplate(ctx, req, opts...)
 }
 
 // GetTagTemplate gets a tag template.
+//
+// Deprecated: GetTagTemplate may be removed in a future version.
 func (c *Client) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
 	return c.internalClient.GetTagTemplate(ctx, req, opts...)
 }
@@ -1397,6 +1433,8 @@ func (c *Client) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetTagTe
 // the tag_template.name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: UpdateTagTemplate may be removed in a future version.
 func (c *Client) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.UpdateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
 	return c.internalClient.UpdateTagTemplate(ctx, req, opts...)
 }
@@ -1406,6 +1444,8 @@ func (c *Client) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.Updat
 // You must enable the Data Catalog API in the project identified by
 // the name parameter. For more information, see Data Catalog resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: DeleteTagTemplate may be removed in a future version.
 func (c *Client) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.DeleteTagTemplateRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTagTemplate(ctx, req, opts...)
 }
@@ -1415,6 +1455,8 @@ func (c *Client) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.Delet
 // You must enable the Data Catalog API in the project identified by
 // the parent parameter. For more information, see Data Catalog resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: CreateTagTemplateField may be removed in a future version.
 func (c *Client) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.CreateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	return c.internalClient.CreateTagTemplateField(ctx, req, opts...)
 }
@@ -1427,6 +1469,8 @@ func (c *Client) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.
 // identified by the name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: UpdateTagTemplateField may be removed in a future version.
 func (c *Client) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.UpdateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	return c.internalClient.UpdateTagTemplateField(ctx, req, opts...)
 }
@@ -1436,6 +1480,8 @@ func (c *Client) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.
 // You must enable the Data Catalog API in the project identified by the
 // name parameter. For more information, see [Data Catalog resource project]
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)).
+//
+// Deprecated: RenameTagTemplateField may be removed in a future version.
 func (c *Client) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	return c.internalClient.RenameTagTemplateField(ctx, req, opts...)
 }
@@ -1443,6 +1489,8 @@ func (c *Client) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.
 // RenameTagTemplateFieldEnumValue renames an enum value in a tag template.
 //
 // Within a single enum field, enum values must be unique.
+//
+// Deprecated: RenameTagTemplateFieldEnumValue may be removed in a future version.
 func (c *Client) RenameTagTemplateFieldEnumValue(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldEnumValueRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	return c.internalClient.RenameTagTemplateFieldEnumValue(ctx, req, opts...)
 }
@@ -1453,6 +1501,8 @@ func (c *Client) RenameTagTemplateFieldEnumValue(ctx context.Context, req *datac
 // You must enable the Data Catalog API in the project identified by
 // the name parameter. For more information, see Data Catalog resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: DeleteTagTemplateField may be removed in a future version.
 func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.DeleteTagTemplateFieldRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTagTemplateField(ctx, req, opts...)
 }
@@ -1470,16 +1520,22 @@ func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.
 // and the [tag template]
 // (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters))
 // used to create the tag must be in the same organization.
+//
+// Deprecated: CreateTag may be removed in a future version.
 func (c *Client) CreateTag(ctx context.Context, req *datacatalogpb.CreateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
 	return c.internalClient.CreateTag(ctx, req, opts...)
 }
 
 // UpdateTag updates an existing tag.
+//
+// Deprecated: UpdateTag may be removed in a future version.
 func (c *Client) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
 	return c.internalClient.UpdateTag(ctx, req, opts...)
 }
 
 // DeleteTag deletes a tag.
+//
+// Deprecated: DeleteTag may be removed in a future version.
 func (c *Client) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTagRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTag(ctx, req, opts...)
 }
@@ -1487,6 +1543,8 @@ func (c *Client) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTagRequ
 // ListTags lists tags assigned to an Entry.
 // The columns in the response are
 // lowercased.
+//
+// Deprecated: ListTags may be removed in a future version.
 func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
 	return c.internalClient.ListTags(ctx, req, opts...)
 }
@@ -1504,6 +1562,8 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 // [google.cloud.datacatalog.v1.ReconcileTagsMetadata] and
 // a [ReconcileTagsResponse]
 // [google.cloud.datacatalog.v1.ReconcileTagsResponse] message.
+//
+// Deprecated: ReconcileTags may be removed in a future version.
 func (c *Client) ReconcileTags(ctx context.Context, req *datacatalogpb.ReconcileTagsRequest, opts ...gax.CallOption) (*ReconcileTagsOperation, error) {
 	return c.internalClient.ReconcileTags(ctx, req, opts...)
 }
@@ -1516,12 +1576,16 @@ func (c *Client) ReconcileTagsOperation(name string) *ReconcileTagsOperation {
 
 // StarEntry marks an Entry as starred by
 // the current user. Starring information is private to each user.
+//
+// Deprecated: StarEntry may be removed in a future version.
 func (c *Client) StarEntry(ctx context.Context, req *datacatalogpb.StarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.StarEntryResponse, error) {
 	return c.internalClient.StarEntry(ctx, req, opts...)
 }
 
 // UnstarEntry marks an Entry as NOT starred by
 // the current user. Starring information is private to each user.
+//
+// Deprecated: UnstarEntry may be removed in a future version.
 func (c *Client) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.UnstarEntryResponse, error) {
 	return c.internalClient.UnstarEntry(ctx, req, opts...)
 }
@@ -1545,6 +1609,8 @@ func (c *Client) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntry
 //	templates.
 //
 //	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//
+// Deprecated: SetIamPolicy may be removed in a future version.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -1573,6 +1639,8 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 //	templates.
 //
 //	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//
+// Deprecated: GetIamPolicy may be removed in a future version.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -1592,6 +1660,8 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 // external Google Cloud Platform resources ingested into Data Catalog.
 //
 // No Google IAM permissions are required to call this method.
+//
+// Deprecated: TestIamPermissions may be removed in a future version.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
@@ -1614,6 +1684,8 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 // and an
 // ImportEntriesResponse
 // message.
+//
+// Deprecated: ImportEntries may be removed in a future version.
 func (c *Client) ImportEntries(ctx context.Context, req *datacatalogpb.ImportEntriesRequest, opts ...gax.CallOption) (*ImportEntriesOperation, error) {
 	return c.internalClient.ImportEntries(ctx, req, opts...)
 }
@@ -1626,6 +1698,8 @@ func (c *Client) ImportEntriesOperation(name string) *ImportEntriesOperation {
 
 // SetConfig sets the configuration related to the migration to Dataplex for an
 // organization or project.
+//
+// Deprecated: SetConfig may be removed in a future version.
 func (c *Client) SetConfig(ctx context.Context, req *datacatalogpb.SetConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
 	return c.internalClient.SetConfig(ctx, req, opts...)
 }
@@ -1633,6 +1707,8 @@ func (c *Client) SetConfig(ctx context.Context, req *datacatalogpb.SetConfigRequ
 // RetrieveConfig retrieves the configuration related to the migration from Data Catalog to
 // Dataplex for a specific organization, including all the projects under it
 // which have a separate configuration set.
+//
+// Deprecated: RetrieveConfig may be removed in a future version.
 func (c *Client) RetrieveConfig(ctx context.Context, req *datacatalogpb.RetrieveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.OrganizationConfig, error) {
 	return c.internalClient.RetrieveConfig(ctx, req, opts...)
 }
@@ -1642,6 +1718,8 @@ func (c *Client) RetrieveConfig(ctx context.Context, req *datacatalogpb.Retrieve
 // specific configuration set for the resource, the setting is checked
 // hierarchicahlly through the ancestors of the resource, starting from the
 // resource itself.
+//
+// Deprecated: RetrieveEffectiveConfig may be removed in a future version.
 func (c *Client) RetrieveEffectiveConfig(ctx context.Context, req *datacatalogpb.RetrieveEffectiveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
 	return c.internalClient.RetrieveEffectiveConfig(ctx, req, opts...)
 }
@@ -1695,8 +1773,12 @@ type gRPCClient struct {
 // NewClient creates a new data catalog client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
+// Deprecated: Please use Dataplex Catalog instead.
+//
 // Data Catalog API service allows you to discover, understand, and manage
 // your data.
+//
+// Deprecated: DataCatalog may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -1787,8 +1869,12 @@ type restClient struct {
 
 // NewRESTClient creates a new data catalog rest client.
 //
+// Deprecated: Please use Dataplex Catalog instead.
+//
 // Data Catalog API service allows you to discover, understand, and manage
 // your data.
+//
+// Deprecated: DataCatalog may be removed in a future version.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -2718,6 +2804,8 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 //
 // For more information, see [Data Catalog search syntax]
 // (https://cloud.google.com/data-catalog/docs/how-to/search-reference (at https://cloud.google.com/data-catalog/docs/how-to/search-reference)).
+//
+// Deprecated: SearchCatalog may be removed in a future version.
 func (c *restClient) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCatalogRequest, opts ...gax.CallOption) *SearchCatalogResultIterator {
 	it := &SearchCatalogResultIterator{}
 	req = proto.Clone(req).(*datacatalogpb.SearchCatalogRequest)
@@ -2819,6 +2907,8 @@ func (c *restClient) SearchCatalog(ctx context.Context, req *datacatalogpb.Searc
 // You must enable the Data Catalog API in the project identified by
 // the parent parameter. For more information, see Data Catalog resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: CreateEntryGroup may be removed in a future version.
 func (c *restClient) CreateEntryGroup(ctx context.Context, req *datacatalogpb.CreateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEntryGroup()
@@ -2876,6 +2966,8 @@ func (c *restClient) CreateEntryGroup(ctx context.Context, req *datacatalogpb.Cr
 }
 
 // GetEntryGroup gets an entry group.
+//
+// Deprecated: GetEntryGroup may be removed in a future version.
 func (c *restClient) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2937,6 +3029,8 @@ func (c *restClient) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEn
 // the entry_group.name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: UpdateEntryGroup may be removed in a future version.
 func (c *restClient) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.UpdateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEntryGroup()
@@ -3005,6 +3099,8 @@ func (c *restClient) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.Up
 // identified by the name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: DeleteEntryGroup may be removed in a future version.
 func (c *restClient) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.DeleteEntryGroupRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3042,6 +3138,8 @@ func (c *restClient) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.De
 }
 
 // ListEntryGroups lists entry groups.
+//
+// Deprecated: ListEntryGroups may be removed in a future version.
 func (c *restClient) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEntryGroupsRequest, opts ...gax.CallOption) *EntryGroupIterator {
 	it := &EntryGroupIterator{}
 	req = proto.Clone(req).(*datacatalogpb.ListEntryGroupsRequest)
@@ -3129,6 +3227,8 @@ func (c *restClient) ListEntryGroups(ctx context.Context, req *datacatalogpb.Lis
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
 //
 // An entry group can have a maximum of 100,000 entries.
+//
+// Deprecated: CreateEntry may be removed in a future version.
 func (c *restClient) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEntry()
@@ -3191,6 +3291,8 @@ func (c *restClient) CreateEntry(ctx context.Context, req *datacatalogpb.CreateE
 // the entry.name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: UpdateEntry may be removed in a future version.
 func (c *restClient) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEntry()
@@ -3263,6 +3365,8 @@ func (c *restClient) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateE
 // the name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: DeleteEntry may be removed in a future version.
 func (c *restClient) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteEntryRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3293,6 +3397,8 @@ func (c *restClient) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteE
 }
 
 // GetEntry gets an entry.
+//
+// Deprecated: GetEntry may be removed in a future version.
 func (c *restClient) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3340,6 +3446,8 @@ func (c *restClient) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryRe
 // LookupEntry gets an entry by its target resource name.
 //
 // The resource name comes from the source Google Cloud Platform service.
+//
+// Deprecated: LookupEntry may be removed in a future version.
 func (c *restClient) LookupEntry(ctx context.Context, req *datacatalogpb.LookupEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3405,6 +3513,8 @@ func (c *restClient) LookupEntry(ctx context.Context, req *datacatalogpb.LookupE
 // Note: Currently, this method can list only custom entries.
 // To get a list of both custom and automatically created entries, use
 // SearchCatalog.
+//
+// Deprecated: ListEntries may be removed in a future version.
 func (c *restClient) ListEntries(ctx context.Context, req *datacatalogpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	it := &EntryIterator{}
 	req = proto.Clone(req).(*datacatalogpb.ListEntriesRequest)
@@ -3493,6 +3603,8 @@ func (c *restClient) ListEntries(ctx context.Context, req *datacatalogpb.ListEnt
 //
 // To call this method, you must have the datacatalog.entries.updateOverview
 // IAM permission on the corresponding project.
+//
+// Deprecated: ModifyEntryOverview may be removed in a future version.
 func (c *restClient) ModifyEntryOverview(ctx context.Context, req *datacatalogpb.ModifyEntryOverviewRequest, opts ...gax.CallOption) (*datacatalogpb.EntryOverview, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3548,6 +3660,8 @@ func (c *restClient) ModifyEntryOverview(ctx context.Context, req *datacatalogpb
 //
 // To call this method, you must have the datacatalog.entries.updateContacts
 // IAM permission on the corresponding project.
+//
+// Deprecated: ModifyEntryContacts may be removed in a future version.
 func (c *restClient) ModifyEntryContacts(ctx context.Context, req *datacatalogpb.ModifyEntryContactsRequest, opts ...gax.CallOption) (*datacatalogpb.Contacts, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3604,6 +3718,8 @@ func (c *restClient) ModifyEntryContacts(ctx context.Context, req *datacatalogpb
 // parent parameter.
 // For more information, see [Data Catalog resource project]
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)).
+//
+// Deprecated: CreateTagTemplate may be removed in a future version.
 func (c *restClient) CreateTagTemplate(ctx context.Context, req *datacatalogpb.CreateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTagTemplate()
@@ -3661,6 +3777,8 @@ func (c *restClient) CreateTagTemplate(ctx context.Context, req *datacatalogpb.C
 }
 
 // GetTagTemplate gets a tag template.
+//
+// Deprecated: GetTagTemplate may be removed in a future version.
 func (c *restClient) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3714,6 +3832,8 @@ func (c *restClient) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetT
 // the tag_template.name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: UpdateTagTemplate may be removed in a future version.
 func (c *restClient) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.UpdateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTagTemplate()
@@ -3781,6 +3901,8 @@ func (c *restClient) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.U
 // You must enable the Data Catalog API in the project identified by
 // the name parameter. For more information, see Data Catalog resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: DeleteTagTemplate may be removed in a future version.
 func (c *restClient) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.DeleteTagTemplateRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3820,6 +3942,8 @@ func (c *restClient) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.D
 // You must enable the Data Catalog API in the project identified by
 // the parent parameter. For more information, see Data Catalog resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: CreateTagTemplateField may be removed in a future version.
 func (c *restClient) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.CreateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTagTemplateField()
@@ -3884,6 +4008,8 @@ func (c *restClient) CreateTagTemplateField(ctx context.Context, req *datacatalo
 // identified by the name parameter. For more information, see Data Catalog
 // resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: UpdateTagTemplateField may be removed in a future version.
 func (c *restClient) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.UpdateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTagTemplateField()
@@ -3951,6 +4077,8 @@ func (c *restClient) UpdateTagTemplateField(ctx context.Context, req *datacatalo
 // You must enable the Data Catalog API in the project identified by the
 // name parameter. For more information, see [Data Catalog resource project]
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)).
+//
+// Deprecated: RenameTagTemplateField may be removed in a future version.
 func (c *restClient) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4004,6 +4132,8 @@ func (c *restClient) RenameTagTemplateField(ctx context.Context, req *datacatalo
 // RenameTagTemplateFieldEnumValue renames an enum value in a tag template.
 //
 // Within a single enum field, enum values must be unique.
+//
+// Deprecated: RenameTagTemplateFieldEnumValue may be removed in a future version.
 func (c *restClient) RenameTagTemplateFieldEnumValue(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldEnumValueRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4060,6 +4190,8 @@ func (c *restClient) RenameTagTemplateFieldEnumValue(ctx context.Context, req *d
 // You must enable the Data Catalog API in the project identified by
 // the name parameter. For more information, see Data Catalog resource
 // project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project).
+//
+// Deprecated: DeleteTagTemplateField may be removed in a future version.
 func (c *restClient) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.DeleteTagTemplateFieldRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4107,6 +4239,8 @@ func (c *restClient) DeleteTagTemplateField(ctx context.Context, req *datacatalo
 // and the [tag template]
 // (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters))
 // used to create the tag must be in the same organization.
+//
+// Deprecated: CreateTag may be removed in a future version.
 func (c *restClient) CreateTag(ctx context.Context, req *datacatalogpb.CreateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTag()
@@ -4159,6 +4293,8 @@ func (c *restClient) CreateTag(ctx context.Context, req *datacatalogpb.CreateTag
 }
 
 // UpdateTag updates an existing tag.
+//
+// Deprecated: UpdateTag may be removed in a future version.
 func (c *restClient) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTag()
@@ -4222,6 +4358,8 @@ func (c *restClient) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTag
 }
 
 // DeleteTag deletes a tag.
+//
+// Deprecated: DeleteTag may be removed in a future version.
 func (c *restClient) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTagRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4254,6 +4392,8 @@ func (c *restClient) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTag
 // ListTags lists tags assigned to an Entry.
 // The columns in the response are
 // lowercased.
+//
+// Deprecated: ListTags may be removed in a future version.
 func (c *restClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
 	it := &TagIterator{}
 	req = proto.Clone(req).(*datacatalogpb.ListTagsRequest)
@@ -4343,6 +4483,8 @@ func (c *restClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRe
 // [google.cloud.datacatalog.v1.ReconcileTagsMetadata] and
 // a [ReconcileTagsResponse]
 // [google.cloud.datacatalog.v1.ReconcileTagsResponse] message.
+//
+// Deprecated: ReconcileTags may be removed in a future version.
 func (c *restClient) ReconcileTags(ctx context.Context, req *datacatalogpb.ReconcileTagsRequest, opts ...gax.CallOption) (*ReconcileTagsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4398,6 +4540,8 @@ func (c *restClient) ReconcileTags(ctx context.Context, req *datacatalogpb.Recon
 
 // StarEntry marks an Entry as starred by
 // the current user. Starring information is private to each user.
+//
+// Deprecated: StarEntry may be removed in a future version.
 func (c *restClient) StarEntry(ctx context.Context, req *datacatalogpb.StarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.StarEntryResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4450,6 +4594,8 @@ func (c *restClient) StarEntry(ctx context.Context, req *datacatalogpb.StarEntry
 
 // UnstarEntry marks an Entry as NOT starred by
 // the current user. Starring information is private to each user.
+//
+// Deprecated: UnstarEntry may be removed in a future version.
 func (c *restClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.UnstarEntryResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4519,6 +4665,8 @@ func (c *restClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarE
 //	templates.
 //
 //	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//
+// Deprecated: SetIamPolicy may be removed in a future version.
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4593,6 +4741,8 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 //	templates.
 //
 //	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//
+// Deprecated: GetIamPolicy may be removed in a future version.
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4658,6 +4808,8 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 // external Google Cloud Platform resources ingested into Data Catalog.
 //
 // No Google IAM permissions are required to call this method.
+//
+// Deprecated: TestIamPermissions may be removed in a future version.
 func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4726,6 +4878,8 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 // and an
 // ImportEntriesResponse
 // message.
+//
+// Deprecated: ImportEntries may be removed in a future version.
 func (c *restClient) ImportEntries(ctx context.Context, req *datacatalogpb.ImportEntriesRequest, opts ...gax.CallOption) (*ImportEntriesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4781,6 +4935,8 @@ func (c *restClient) ImportEntries(ctx context.Context, req *datacatalogpb.Impor
 
 // SetConfig sets the configuration related to the migration to Dataplex for an
 // organization or project.
+//
+// Deprecated: SetConfig may be removed in a future version.
 func (c *restClient) SetConfig(ctx context.Context, req *datacatalogpb.SetConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4834,6 +4990,8 @@ func (c *restClient) SetConfig(ctx context.Context, req *datacatalogpb.SetConfig
 // RetrieveConfig retrieves the configuration related to the migration from Data Catalog to
 // Dataplex for a specific organization, including all the projects under it
 // which have a separate configuration set.
+//
+// Deprecated: RetrieveConfig may be removed in a future version.
 func (c *restClient) RetrieveConfig(ctx context.Context, req *datacatalogpb.RetrieveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.OrganizationConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4883,6 +5041,8 @@ func (c *restClient) RetrieveConfig(ctx context.Context, req *datacatalogpb.Retr
 // specific configuration set for the resource, the setting is checked
 // hierarchicahlly through the ancestors of the resource, starting from the
 // resource itself.
+//
+// Deprecated: RetrieveEffectiveConfig may be removed in a future version.
 func (c *restClient) RetrieveEffectiveConfig(ctx context.Context, req *datacatalogpb.RetrieveEffectiveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

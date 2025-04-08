@@ -1,0 +1,520 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/modelarmor/apiv1",
+    "version": "0.1.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.modelarmor.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_CreateTemplate_sync",
+      "title": "modelarmor CreateTemplate Sample",
+      "description": "CreateTemplate creates a new Template in a given project and location.",
+      "file": "Client/CreateTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTemplate",
+        "fullName": "google.cloud.modelarmor.v1.Client.CreateTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.CreateTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*modelarmorpb.Template",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateTemplate",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.CreateTemplate",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_DeleteTemplate_sync",
+      "title": "modelarmor DeleteTemplate Sample",
+      "description": "DeleteTemplate deletes a single Template.",
+      "file": "Client/DeleteTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTemplate",
+        "fullName": "google.cloud.modelarmor.v1.Client.DeleteTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.DeleteTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteTemplate",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.DeleteTemplate",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_GetFloorSetting_sync",
+      "title": "modelarmor GetFloorSetting Sample",
+      "description": "GetFloorSetting gets details of a single floor setting of a project",
+      "file": "Client/GetFloorSetting/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFloorSetting",
+        "fullName": "google.cloud.modelarmor.v1.Client.GetFloorSetting",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.GetFloorSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*modelarmorpb.FloorSetting",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "GetFloorSetting",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.GetFloorSetting",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_GetLocation_sync",
+      "title": "modelarmor GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.modelarmor.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_GetTemplate_sync",
+      "title": "modelarmor GetTemplate Sample",
+      "description": "GetTemplate gets details of a single Template.",
+      "file": "Client/GetTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTemplate",
+        "fullName": "google.cloud.modelarmor.v1.Client.GetTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.GetTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*modelarmorpb.Template",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTemplate",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.GetTemplate",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_ListLocations_sync",
+      "title": "modelarmor ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.modelarmor.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_ListTemplates_sync",
+      "title": "modelarmor ListTemplates Sample",
+      "description": "ListTemplates lists Templates in a given project and location.",
+      "file": "Client/ListTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTemplates",
+        "fullName": "google.cloud.modelarmor.v1.Client.ListTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.ListTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TemplateIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTemplates",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.ListTemplates",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_SanitizeModelResponse_sync",
+      "title": "modelarmor SanitizeModelResponse Sample",
+      "description": "SanitizeModelResponse sanitizes Model Response.",
+      "file": "Client/SanitizeModelResponse/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SanitizeModelResponse",
+        "fullName": "google.cloud.modelarmor.v1.Client.SanitizeModelResponse",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.SanitizeModelResponseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*modelarmorpb.SanitizeModelResponseResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "SanitizeModelResponse",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.SanitizeModelResponse",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_SanitizeUserPrompt_sync",
+      "title": "modelarmor SanitizeUserPrompt Sample",
+      "description": "SanitizeUserPrompt sanitizes User Prompt.",
+      "file": "Client/SanitizeUserPrompt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SanitizeUserPrompt",
+        "fullName": "google.cloud.modelarmor.v1.Client.SanitizeUserPrompt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.SanitizeUserPromptRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*modelarmorpb.SanitizeUserPromptResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "SanitizeUserPrompt",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.SanitizeUserPrompt",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_UpdateFloorSetting_sync",
+      "title": "modelarmor UpdateFloorSetting Sample",
+      "description": "UpdateFloorSetting updates the parameters of a single floor setting of a project",
+      "file": "Client/UpdateFloorSetting/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFloorSetting",
+        "fullName": "google.cloud.modelarmor.v1.Client.UpdateFloorSetting",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.UpdateFloorSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*modelarmorpb.FloorSetting",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateFloorSetting",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.UpdateFloorSetting",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "modelarmor_v1_generated_ModelArmor_UpdateTemplate_sync",
+      "title": "modelarmor UpdateTemplate Sample",
+      "description": "UpdateTemplate updates the parameters of a single Template.",
+      "file": "Client/UpdateTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTemplate",
+        "fullName": "google.cloud.modelarmor.v1.Client.UpdateTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "modelarmorpb.UpdateTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*modelarmorpb.Template",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.modelarmor.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateTemplate",
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.UpdateTemplate",
+          "service": {
+            "shortName": "ModelArmor",
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

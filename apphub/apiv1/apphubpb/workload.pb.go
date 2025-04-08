@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ type Workload struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. The resource name of the Workload. Format:
-	// "projects/{host-project-id}/locations/{location}/applications/{application-id}/workloads/{workload-id}"
+	// `"projects/{host-project-id}/locations/{location}/applications/{application-id}/workloads/{workload-id}"`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. User-defined name for the Workload.
 	// Can have a maximum length of 63 characters.
@@ -298,13 +298,13 @@ type WorkloadProperties struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The service project identifier that the underlying cloud
-	// resource resides in. Empty for non cloud resources.
+	// resource resides in. Empty for non-cloud resources.
 	GcpProject string `protobuf:"bytes,1,opt,name=gcp_project,json=gcpProject,proto3" json:"gcp_project,omitempty"`
 	// Output only. The location that the underlying compute resource resides in
-	// (e.g us-west1).
+	// (for example, us-west1).
 	Location string `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
 	// Output only. The location that the underlying compute resource resides in
-	// if it is zonal (e.g us-west1-a).
+	// if it is zonal (for example, us-west1-a).
 	Zone string `protobuf:"bytes,3,opt,name=zone,proto3" json:"zone,omitempty"`
 }
 
@@ -369,7 +369,7 @@ type DiscoveredWorkload struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. The resource name of the discovered workload. Format:
-	// "projects/{host-project-id}/locations/{location}/discoveredWorkloads/{uuid}"
+	// `"projects/{host-project-id}/locations/{location}/discoveredWorkloads/{uuid}"`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Reference of an underlying compute resource represented by the
 	// Workload. These are immutable.

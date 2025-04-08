@@ -2,6 +2,39 @@
 
 
 
+## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.5...secretmanager/v1.14.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* **secretmanager:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.4...secretmanager/v1.14.5) (2025-02-12)
+
+
+### Bug Fixes
+
+* **secretmanager:** Upgrade Go gRPC Protobuf generation ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.3...secretmanager/v1.14.4) (2025-01-30)
+
+
+### Documentation
+
+* **secretmanager:** Fix link in Markdown comments ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `customer_managed_encryption` in message `.google.cloud.secretmanager.v1.Secret` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `customer_managed_encryption` in message `.google.cloud.secretmanager.v1.SecretVersion` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `name` in message `.google.cloud.secretmanager.v1.Topic` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `Replication` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `scheduled_destroy_time` in message `.google.cloud.secretmanager.v1.SecretVersion` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.2...secretmanager/v1.14.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **secretmanager:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.1...secretmanager/v1.14.2) (2024-10-23)
 
 

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,13 +49,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message to get Google Workspace Add-ons authorization information.
+// Request message to get Google Workspace add-ons authorization information.
 type GetAuthorizationRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the project for which to get the Google Workspace Add-ons
+	// Required. Name of the project for which to get the Google Workspace add-ons
 	// authorization information.
 	//
 	// Example: `projects/my_project/authorization`.
@@ -726,7 +726,7 @@ func (x *InstallStatus) GetInstalled() *wrapperspb.BoolValue {
 	return nil
 }
 
-// A Google Workspace Add-on deployment
+// A Google Workspace add-on deployment
 type Deployment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -738,7 +738,7 @@ type Deployment struct {
 	// The list of Google OAuth scopes for which to request consent from the end
 	// user before executing an add-on endpoint.
 	OauthScopes []string `protobuf:"bytes,2,rep,name=oauth_scopes,json=oauthScopes,proto3" json:"oauth_scopes,omitempty"`
-	// The Google Workspace Add-on configuration.
+	// The Google Workspace add-on configuration.
 	AddOns *AddOns `protobuf:"bytes,3,opt,name=add_ons,json=addOns,proto3" json:"add_ons,omitempty"`
 	// This value is computed by the server based on the version of the
 	// deployment in storage, and may be sent on update and delete requests to
@@ -804,13 +804,13 @@ func (x *Deployment) GetEtag() string {
 	return ""
 }
 
-// A Google Workspace Add-on configuration.
+// A Google Workspace add-on configuration.
 type AddOns struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Configuration that is common across all Google Workspace Add-ons.
+	// Configuration that is common across all Google Workspace add-ons.
 	Common *_type.CommonAddOnManifest `protobuf:"bytes,1,opt,name=common,proto3" json:"common,omitempty"`
 	// Gmail add-on configuration.
 	Gmail *gmail.GmailAddOnManifest `protobuf:"bytes,2,opt,name=gmail,proto3" json:"gmail,omitempty"`

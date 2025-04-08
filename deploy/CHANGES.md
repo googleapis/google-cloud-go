@@ -1,6 +1,34 @@
 # Changes
 
 
+## [1.26.4](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.3...deploy/v1.26.4) (2025-03-25)
+
+
+### Documentation
+
+* **deploy:** Fix typo in comments ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+## [1.26.3](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.2...deploy/v1.26.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **deploy:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.26.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.1...deploy/v1.26.2) (2025-02-12)
+
+
+### Documentation
+
+* **deploy:** Minor documentation improvements ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.0...deploy/v1.26.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **deploy:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.25.1...deploy/v1.26.0) (2024-12-04)
 
 

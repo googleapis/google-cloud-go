@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,6 +67,7 @@ type DatabaseAdminCallOptions struct {
 	ListDatabaseOperations []gax.CallOption
 	ListBackupOperations   []gax.CallOption
 	ListDatabaseRoles      []gax.CallOption
+	AddSplitPoints         []gax.CallOption
 	CreateBackupSchedule   []gax.CallOption
 	GetBackupSchedule      []gax.CallOption
 	UpdateBackupSchedule   []gax.CallOption
@@ -283,6 +284,19 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListDatabaseRoles: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AddSplitPoints: []gax.CallOption{
 			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -555,6 +569,18 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		AddSplitPoints: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		CreateBackupSchedule: []gax.CallOption{
 			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -653,6 +679,7 @@ type internalDatabaseAdminClient interface {
 	ListDatabaseOperations(context.Context, *databasepb.ListDatabaseOperationsRequest, ...gax.CallOption) *OperationIterator
 	ListBackupOperations(context.Context, *databasepb.ListBackupOperationsRequest, ...gax.CallOption) *OperationIterator
 	ListDatabaseRoles(context.Context, *databasepb.ListDatabaseRolesRequest, ...gax.CallOption) *DatabaseRoleIterator
+	AddSplitPoints(context.Context, *databasepb.AddSplitPointsRequest, ...gax.CallOption) (*databasepb.AddSplitPointsResponse, error)
 	CreateBackupSchedule(context.Context, *databasepb.CreateBackupScheduleRequest, ...gax.CallOption) (*databasepb.BackupSchedule, error)
 	GetBackupSchedule(context.Context, *databasepb.GetBackupScheduleRequest, ...gax.CallOption) (*databasepb.BackupSchedule, error)
 	UpdateBackupSchedule(context.Context, *databasepb.UpdateBackupScheduleRequest, ...gax.CallOption) (*databasepb.BackupSchedule, error)
@@ -989,6 +1016,11 @@ func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *dat
 // ListDatabaseRoles lists Cloud Spanner database roles.
 func (c *DatabaseAdminClient) ListDatabaseRoles(ctx context.Context, req *databasepb.ListDatabaseRolesRequest, opts ...gax.CallOption) *DatabaseRoleIterator {
 	return c.internalClient.ListDatabaseRoles(ctx, req, opts...)
+}
+
+// AddSplitPoints adds split points to specified tables, indexes of a database.
+func (c *DatabaseAdminClient) AddSplitPoints(ctx context.Context, req *databasepb.AddSplitPointsRequest, opts ...gax.CallOption) (*databasepb.AddSplitPointsResponse, error) {
+	return c.internalClient.AddSplitPoints(ctx, req, opts...)
 }
 
 // CreateBackupSchedule creates a new backup schedule.
@@ -1745,6 +1777,24 @@ func (c *databaseAdminGRPCClient) ListDatabaseRoles(ctx context.Context, req *da
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *databaseAdminGRPCClient) AddSplitPoints(ctx context.Context, req *databasepb.AddSplitPointsRequest, opts ...gax.CallOption) (*databasepb.AddSplitPointsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AddSplitPoints[0:len((*c.CallOptions).AddSplitPoints):len((*c.CallOptions).AddSplitPoints)], opts...)
+	var resp *databasepb.AddSplitPointsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.databaseAdminClient.AddSplitPoints, req, settings.GRPC, c.logger, "AddSplitPoints")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *databaseAdminGRPCClient) CreateBackupSchedule(ctx context.Context, req *databasepb.CreateBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
@@ -3316,6 +3366,62 @@ func (c *databaseAdminRESTClient) ListDatabaseRoles(ctx context.Context, req *da
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// AddSplitPoints adds split points to specified tables, indexes of a database.
+func (c *databaseAdminRESTClient) AddSplitPoints(ctx context.Context, req *databasepb.AddSplitPointsRequest, opts ...gax.CallOption) (*databasepb.AddSplitPointsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addSplitPoints", req.GetDatabase())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AddSplitPoints[0:len((*c.CallOptions).AddSplitPoints):len((*c.CallOptions).AddSplitPoints)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &databasepb.AddSplitPointsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddSplitPoints")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CreateBackupSchedule creates a new backup schedule.

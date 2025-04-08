@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ type ModelCallOptions struct {
 	GetModel                         []gax.CallOption
 	ListModels                       []gax.CallOption
 	ListModelVersions                []gax.CallOption
+	ListModelVersionCheckpoints      []gax.CallOption
 	UpdateModel                      []gax.CallOption
 	UpdateExplanationDataset         []gax.CallOption
 	DeleteModel                      []gax.CallOption
@@ -93,6 +94,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 		GetModel:                         []gax.CallOption{},
 		ListModels:                       []gax.CallOption{},
 		ListModelVersions:                []gax.CallOption{},
+		ListModelVersionCheckpoints:      []gax.CallOption{},
 		UpdateModel:                      []gax.CallOption{},
 		UpdateExplanationDataset:         []gax.CallOption{},
 		DeleteModel:                      []gax.CallOption{},
@@ -130,6 +132,7 @@ type internalModelClient interface {
 	GetModel(context.Context, *aiplatformpb.GetModelRequest, ...gax.CallOption) (*aiplatformpb.Model, error)
 	ListModels(context.Context, *aiplatformpb.ListModelsRequest, ...gax.CallOption) *ModelIterator
 	ListModelVersions(context.Context, *aiplatformpb.ListModelVersionsRequest, ...gax.CallOption) *ModelIterator
+	ListModelVersionCheckpoints(context.Context, *aiplatformpb.ListModelVersionCheckpointsRequest, ...gax.CallOption) *ModelVersionCheckpointIterator
 	UpdateModel(context.Context, *aiplatformpb.UpdateModelRequest, ...gax.CallOption) (*aiplatformpb.Model, error)
 	UpdateExplanationDataset(context.Context, *aiplatformpb.UpdateExplanationDatasetRequest, ...gax.CallOption) (*UpdateExplanationDatasetOperation, error)
 	UpdateExplanationDatasetOperation(name string) *UpdateExplanationDatasetOperation
@@ -225,6 +228,11 @@ func (c *ModelClient) ListModels(ctx context.Context, req *aiplatformpb.ListMode
 // ListModelVersions lists versions of the specified model.
 func (c *ModelClient) ListModelVersions(ctx context.Context, req *aiplatformpb.ListModelVersionsRequest, opts ...gax.CallOption) *ModelIterator {
 	return c.internalClient.ListModelVersions(ctx, req, opts...)
+}
+
+// ListModelVersionCheckpoints lists checkpoints of the specified model version.
+func (c *ModelClient) ListModelVersionCheckpoints(ctx context.Context, req *aiplatformpb.ListModelVersionCheckpointsRequest, opts ...gax.CallOption) *ModelVersionCheckpointIterator {
+	return c.internalClient.ListModelVersionCheckpoints(ctx, req, opts...)
 }
 
 // UpdateModel updates a Model.
@@ -624,6 +632,52 @@ func (c *modelGRPCClient) ListModelVersions(ctx context.Context, req *aiplatform
 
 		it.Response = resp
 		return resp.GetModels(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *modelGRPCClient) ListModelVersionCheckpoints(ctx context.Context, req *aiplatformpb.ListModelVersionCheckpointsRequest, opts ...gax.CallOption) *ModelVersionCheckpointIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListModelVersionCheckpoints[0:len((*c.CallOptions).ListModelVersionCheckpoints):len((*c.CallOptions).ListModelVersionCheckpoints)], opts...)
+	it := &ModelVersionCheckpointIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListModelVersionCheckpointsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.ModelVersionCheckpoint, string, error) {
+		resp := &aiplatformpb.ListModelVersionCheckpointsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.modelClient.ListModelVersionCheckpoints, req, settings.GRPC, c.logger, "ListModelVersionCheckpoints")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCheckpoints(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

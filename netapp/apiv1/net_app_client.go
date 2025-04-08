@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ type CallOptions struct {
 	GetStoragePool              []gax.CallOption
 	UpdateStoragePool           []gax.CallOption
 	DeleteStoragePool           []gax.CallOption
+	ValidateDirectoryService    []gax.CallOption
 	SwitchActiveReplicaZone     []gax.CallOption
 	ListVolumes                 []gax.CallOption
 	GetVolume                   []gax.CallOption
@@ -101,6 +102,11 @@ type CallOptions struct {
 	ListBackupPolicies          []gax.CallOption
 	UpdateBackupPolicy          []gax.CallOption
 	DeleteBackupPolicy          []gax.CallOption
+	ListQuotaRules              []gax.CallOption
+	GetQuotaRule                []gax.CallOption
+	CreateQuotaRule             []gax.CallOption
+	UpdateQuotaRule             []gax.CallOption
+	DeleteQuotaRule             []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -159,7 +165,8 @@ func defaultCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		SwitchActiveReplicaZone: []gax.CallOption{},
+		ValidateDirectoryService: []gax.CallOption{},
+		SwitchActiveReplicaZone:  []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -444,6 +451,11 @@ func defaultCallOptions() *CallOptions {
 		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListQuotaRules:  []gax.CallOption{},
+		GetQuotaRule:    []gax.CallOption{},
+		CreateQuotaRule: []gax.CallOption{},
+		UpdateQuotaRule: []gax.CallOption{},
+		DeleteQuotaRule: []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -486,7 +498,8 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		SwitchActiveReplicaZone: []gax.CallOption{},
+		ValidateDirectoryService: []gax.CallOption{},
+		SwitchActiveReplicaZone:  []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -755,6 +768,11 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListQuotaRules:  []gax.CallOption{},
+		GetQuotaRule:    []gax.CallOption{},
+		CreateQuotaRule: []gax.CallOption{},
+		UpdateQuotaRule: []gax.CallOption{},
+		DeleteQuotaRule: []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -777,6 +795,8 @@ type internalClient interface {
 	UpdateStoragePoolOperation(name string) *UpdateStoragePoolOperation
 	DeleteStoragePool(context.Context, *netapppb.DeleteStoragePoolRequest, ...gax.CallOption) (*DeleteStoragePoolOperation, error)
 	DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation
+	ValidateDirectoryService(context.Context, *netapppb.ValidateDirectoryServiceRequest, ...gax.CallOption) (*ValidateDirectoryServiceOperation, error)
+	ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation
 	SwitchActiveReplicaZone(context.Context, *netapppb.SwitchActiveReplicaZoneRequest, ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error)
 	SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation
 	ListVolumes(context.Context, *netapppb.ListVolumesRequest, ...gax.CallOption) *VolumeIterator
@@ -858,6 +878,14 @@ type internalClient interface {
 	UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation
 	DeleteBackupPolicy(context.Context, *netapppb.DeleteBackupPolicyRequest, ...gax.CallOption) (*DeleteBackupPolicyOperation, error)
 	DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation
+	ListQuotaRules(context.Context, *netapppb.ListQuotaRulesRequest, ...gax.CallOption) *QuotaRuleIterator
+	GetQuotaRule(context.Context, *netapppb.GetQuotaRuleRequest, ...gax.CallOption) (*netapppb.QuotaRule, error)
+	CreateQuotaRule(context.Context, *netapppb.CreateQuotaRuleRequest, ...gax.CallOption) (*CreateQuotaRuleOperation, error)
+	CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation
+	UpdateQuotaRule(context.Context, *netapppb.UpdateQuotaRuleRequest, ...gax.CallOption) (*UpdateQuotaRuleOperation, error)
+	UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation
+	DeleteQuotaRule(context.Context, *netapppb.DeleteQuotaRuleRequest, ...gax.CallOption) (*DeleteQuotaRuleOperation, error)
+	DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -947,6 +975,18 @@ func (c *Client) DeleteStoragePool(ctx context.Context, req *netapppb.DeleteStor
 // The name must be that of a previously created DeleteStoragePoolOperation, possibly from a different process.
 func (c *Client) DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation {
 	return c.internalClient.DeleteStoragePoolOperation(name)
+}
+
+// ValidateDirectoryService validateDirectoryService does a connectivity check for a directory service
+// policy attached to the storage pool.
+func (c *Client) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	return c.internalClient.ValidateDirectoryService(ctx, req, opts...)
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *Client) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	return c.internalClient.ValidateDirectoryServiceOperation(name)
 }
 
 // SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional
@@ -1396,6 +1436,49 @@ func (c *Client) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOpe
 	return c.internalClient.DeleteBackupPolicyOperation(name)
 }
 
+// ListQuotaRules returns list of all quota rules in a location.
+func (c *Client) ListQuotaRules(ctx context.Context, req *netapppb.ListQuotaRulesRequest, opts ...gax.CallOption) *QuotaRuleIterator {
+	return c.internalClient.ListQuotaRules(ctx, req, opts...)
+}
+
+// GetQuotaRule returns details of the specified quota rule.
+func (c *Client) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRuleRequest, opts ...gax.CallOption) (*netapppb.QuotaRule, error) {
+	return c.internalClient.GetQuotaRule(ctx, req, opts...)
+}
+
+// CreateQuotaRule creates a new quota rule.
+func (c *Client) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQuotaRuleRequest, opts ...gax.CallOption) (*CreateQuotaRuleOperation, error) {
+	return c.internalClient.CreateQuotaRule(ctx, req, opts...)
+}
+
+// CreateQuotaRuleOperation returns a new CreateQuotaRuleOperation from a given name.
+// The name must be that of a previously created CreateQuotaRuleOperation, possibly from a different process.
+func (c *Client) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation {
+	return c.internalClient.CreateQuotaRuleOperation(name)
+}
+
+// UpdateQuotaRule updates a quota rule.
+func (c *Client) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQuotaRuleRequest, opts ...gax.CallOption) (*UpdateQuotaRuleOperation, error) {
+	return c.internalClient.UpdateQuotaRule(ctx, req, opts...)
+}
+
+// UpdateQuotaRuleOperation returns a new UpdateQuotaRuleOperation from a given name.
+// The name must be that of a previously created UpdateQuotaRuleOperation, possibly from a different process.
+func (c *Client) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation {
+	return c.internalClient.UpdateQuotaRuleOperation(name)
+}
+
+// DeleteQuotaRule deletes a quota rule.
+func (c *Client) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQuotaRuleRequest, opts ...gax.CallOption) (*DeleteQuotaRuleOperation, error) {
+	return c.internalClient.DeleteQuotaRule(ctx, req, opts...)
+}
+
+// DeleteQuotaRuleOperation returns a new DeleteQuotaRuleOperation from a given name.
+// The name must be that of a previously created DeleteQuotaRuleOperation, possibly from a different process.
+func (c *Client) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
+	return c.internalClient.DeleteQuotaRuleOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -1736,6 +1819,26 @@ func (c *gRPCClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 		return nil, err
 	}
 	return &DeleteStoragePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ValidateDirectoryService[0:len((*c.CallOptions).ValidateDirectoryService):len((*c.CallOptions).ValidateDirectoryService)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ValidateDirectoryService, req, settings.GRPC, c.logger, "ValidateDirectoryService")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ValidateDirectoryServiceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2910,6 +3013,130 @@ func (c *gRPCClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 	}, nil
 }
 
+func (c *gRPCClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuotaRulesRequest, opts ...gax.CallOption) *QuotaRuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListQuotaRules[0:len((*c.CallOptions).ListQuotaRules):len((*c.CallOptions).ListQuotaRules)], opts...)
+	it := &QuotaRuleIterator{}
+	req = proto.Clone(req).(*netapppb.ListQuotaRulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.QuotaRule, string, error) {
+		resp := &netapppb.ListQuotaRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListQuotaRules, req, settings.GRPC, c.logger, "ListQuotaRules")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetQuotaRules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRuleRequest, opts ...gax.CallOption) (*netapppb.QuotaRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetQuotaRule[0:len((*c.CallOptions).GetQuotaRule):len((*c.CallOptions).GetQuotaRule)], opts...)
+	var resp *netapppb.QuotaRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetQuotaRule, req, settings.GRPC, c.logger, "GetQuotaRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQuotaRuleRequest, opts ...gax.CallOption) (*CreateQuotaRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateQuotaRule[0:len((*c.CallOptions).CreateQuotaRule):len((*c.CallOptions).CreateQuotaRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateQuotaRule, req, settings.GRPC, c.logger, "CreateQuotaRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQuotaRuleRequest, opts ...gax.CallOption) (*UpdateQuotaRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "quota_rule.name", url.QueryEscape(req.GetQuotaRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateQuotaRule[0:len((*c.CallOptions).UpdateQuotaRule):len((*c.CallOptions).UpdateQuotaRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateQuotaRule, req, settings.GRPC, c.logger, "UpdateQuotaRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQuotaRuleRequest, opts ...gax.CallOption) (*DeleteQuotaRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteQuotaRule[0:len((*c.CallOptions).DeleteQuotaRule):len((*c.CallOptions).DeleteQuotaRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteQuotaRule, req, settings.GRPC, c.logger, "DeleteQuotaRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3376,6 +3603,66 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteStoragePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ValidateDirectoryService validateDirectoryService does a connectivity check for a directory service
+// policy attached to the storage pool.
+func (c *restClient) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:validateDirectoryService", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ValidateDirectoryService")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ValidateDirectoryServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -6442,6 +6729,321 @@ func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 	}, nil
 }
 
+// ListQuotaRules returns list of all quota rules in a location.
+func (c *restClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuotaRulesRequest, opts ...gax.CallOption) *QuotaRuleIterator {
+	it := &QuotaRuleIterator{}
+	req = proto.Clone(req).(*netapppb.ListQuotaRulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.QuotaRule, string, error) {
+		resp := &netapppb.ListQuotaRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/quotaRules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListQuotaRules")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetQuotaRules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetQuotaRule returns details of the specified quota rule.
+func (c *restClient) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRuleRequest, opts ...gax.CallOption) (*netapppb.QuotaRule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetQuotaRule[0:len((*c.CallOptions).GetQuotaRule):len((*c.CallOptions).GetQuotaRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.QuotaRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetQuotaRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateQuotaRule creates a new quota rule.
+func (c *restClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQuotaRuleRequest, opts ...gax.CallOption) (*CreateQuotaRuleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQuotaRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/quotaRules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("quotaRuleId", fmt.Sprintf("%v", req.GetQuotaRuleId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateQuotaRule")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateQuotaRule updates a quota rule.
+func (c *restClient) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQuotaRuleRequest, opts ...gax.CallOption) (*UpdateQuotaRuleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQuotaRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQuotaRule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "quota_rule.name", url.QueryEscape(req.GetQuotaRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateQuotaRule")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteQuotaRule deletes a quota rule.
+func (c *restClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQuotaRuleRequest, opts ...gax.CallOption) (*DeleteQuotaRuleOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteQuotaRule")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -6870,6 +7472,24 @@ func (c *restClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOpera
 	}
 }
 
+// CreateQuotaRuleOperation returns a new CreateQuotaRuleOperation from a given name.
+// The name must be that of a previously created CreateQuotaRuleOperation, possibly from a different process.
+func (c *gRPCClient) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation {
+	return &CreateQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateQuotaRuleOperation returns a new CreateQuotaRuleOperation from a given name.
+// The name must be that of a previously created CreateQuotaRuleOperation, possibly from a different process.
+func (c *restClient) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateReplicationOperation returns a new CreateReplicationOperation from a given name.
 // The name must be that of a previously created CreateReplicationOperation, possibly from a different process.
 func (c *gRPCClient) CreateReplicationOperation(name string) *CreateReplicationOperation {
@@ -7027,6 +7647,24 @@ func (c *gRPCClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOpera
 func (c *restClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteKmsConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteQuotaRuleOperation returns a new DeleteQuotaRuleOperation from a given name.
+// The name must be that of a previously created DeleteQuotaRuleOperation, possibly from a different process.
+func (c *gRPCClient) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
+	return &DeleteQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteQuotaRuleOperation returns a new DeleteQuotaRuleOperation from a given name.
+// The name must be that of a previously created DeleteQuotaRuleOperation, possibly from a different process.
+func (c *restClient) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteQuotaRuleOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -7338,6 +7976,24 @@ func (c *restClient) UpdateKmsConfigOperation(name string) *UpdateKmsConfigOpera
 	}
 }
 
+// UpdateQuotaRuleOperation returns a new UpdateQuotaRuleOperation from a given name.
+// The name must be that of a previously created UpdateQuotaRuleOperation, possibly from a different process.
+func (c *gRPCClient) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation {
+	return &UpdateQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateQuotaRuleOperation returns a new UpdateQuotaRuleOperation from a given name.
+// The name must be that of a previously created UpdateQuotaRuleOperation, possibly from a different process.
+func (c *restClient) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // UpdateReplicationOperation returns a new UpdateReplicationOperation from a given name.
 // The name must be that of a previously created UpdateReplicationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateReplicationOperation(name string) *UpdateReplicationOperation {
@@ -7405,6 +8061,24 @@ func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVolumeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *gRPCClient) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	return &ValidateDirectoryServiceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *restClient) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ValidateDirectoryServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

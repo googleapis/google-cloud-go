@@ -2,6 +2,56 @@
 
 
 
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.0...maps/v1.20.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **maps:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.19.0...maps/v1.20.0) (2025-03-12)
+
+
+### Features
+
+* **maps/places:** Add postal_address and time_zone to Place ([b323f88](https://github.com/googleapis/google-cloud-go/commit/b323f888e349168b4e30a9edb4630dfb6060ed4d))
+
+
+### Documentation
+
+* **maps/places:** Change comments in some fields in Places API ([#11798](https://github.com/googleapis/google-cloud-go/issues/11798)) ([b323f88](https://github.com/googleapis/google-cloud-go/commit/b323f888e349168b4e30a9edb4630dfb6060ed4d))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.18.0...maps/v1.19.0) (2025-02-26)
+
+
+### Features
+
+* **maps/places:** Add NACS EVCS connector type support ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.17.1...maps/v1.18.0) (2025-01-30)
+
+
+### Features
+
+* **maps/places:** Add more fuel type enum values ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+
+
+### Bug Fixes
+
+* **maps/places:** Add oauth scopes to Places proto ([#11518](https://github.com/googleapis/google-cloud-go/issues/11518)) ([afbe132](https://github.com/googleapis/google-cloud-go/commit/afbe1326ff6d25034eb232129019b2e2687df7d0))
+
+
+### Documentation
+
+* **maps/places:** A comment for enum value `LPG` in enum `FuelType` is changed to be clearer. ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.17.0...maps/v1.17.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **maps:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.16.0...maps/v1.17.0) (2024-12-11)
 
 

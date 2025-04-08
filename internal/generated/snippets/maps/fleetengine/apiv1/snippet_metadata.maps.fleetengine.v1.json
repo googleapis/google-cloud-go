@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/fleetengine/apiv1",
-    "version": "1.17.0",
+    "version": "1.20.1",
     "language": "GO",
     "apis": [
       {
@@ -53,6 +53,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_TripService_DeleteTrip_sync",
+      "title": "fleetengine DeleteTrip Sample",
+      "description": "DeleteTrip deletes a single Trip.\n\nReturns FAILED_PRECONDITION if the Trip is active and assigned to a\nvehicle.",
+      "file": "TripClient/DeleteTrip/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTrip",
+        "fullName": "maps.fleetengine.v1.TripClient.DeleteTrip",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.DeleteTripRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TripClient",
+          "fullName": "maps.fleetengine.v1.TripClient"
+        },
+        "method": {
+          "shortName": "DeleteTrip",
+          "fullName": "maps.fleetengine.v1.TripService.DeleteTrip",
+          "service": {
+            "shortName": "TripService",
+            "fullName": "maps.fleetengine.v1.TripService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -282,6 +327,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_VehicleService_DeleteVehicle_sync",
+      "title": "fleetengine DeleteVehicle Sample",
+      "description": "DeleteVehicle deletes a Vehicle from the Fleet Engine.\n\nReturns FAILED_PRECONDITION if the Vehicle has active Trips.\nassigned to it.",
+      "file": "VehicleClient/DeleteVehicle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteVehicle",
+        "fullName": "maps.fleetengine.v1.VehicleClient.DeleteVehicle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.DeleteVehicleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VehicleClient",
+          "fullName": "maps.fleetengine.v1.VehicleClient"
+        },
+        "method": {
+          "shortName": "DeleteVehicle",
+          "fullName": "maps.fleetengine.v1.VehicleService.DeleteVehicle",
+          "service": {
+            "shortName": "VehicleService",
+            "fullName": "maps.fleetengine.v1.VehicleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]

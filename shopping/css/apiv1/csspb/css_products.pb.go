@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ func (x *GetCssProductRequest) GetName() string {
 	return ""
 }
 
-// The processed CSS Product(a.k.a Aggregate Offer internally).
+// The processed CSS Product.
 type CssProduct struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

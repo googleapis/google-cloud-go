@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ func (FeatureViewDataFormat) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_feature_online_store_service_proto_rawDescGZIP(), []int{0}
 }
 
-// Datapoints for which Operator is true relative to the query’s Value
+// Datapoints for which Operator is true relative to the query's Value
 // field will be allowlisted.
 type NearestNeighborQuery_NumericFilter_Operator int32
 
@@ -1004,11 +1004,11 @@ func (x *NearestNeighborQuery_StringFilter) GetDenyTokens() []string {
 // Numeric filter is used to search a subset of the entities by using boolean
 // rules on numeric columns.
 // For example:
-// Database Point 0: {name: “a” value_int: 42} {name: “b” value_float: 1.0}
-// Database Point 1:  {name: “a” value_int: 10} {name: “b” value_float: 2.0}
-// Database Point 2: {name: “a” value_int: -1} {name: “b” value_float: 3.0}
-// Query: {name: “a” value_int: 12 operator: LESS}    // Matches Point 1, 2
-// {name: “b” value_float: 2.0 operator: EQUAL} // Matches Point 1
+// Database Point 0: {name: "a" value_int: 42} {name: "b" value_float: 1.0}
+// Database Point 1:  {name: "a" value_int: 10} {name: "b" value_float: 2.0}
+// Database Point 2: {name: "a" value_int: -1} {name: "b" value_float: 3.0}
+// Query: {name: "a" value_int: 12 operator: LESS}    // Matches Point 1, 2
+// {name: "b" value_float: 2.0 operator: EQUAL} // Matches Point 1
 type NearestNeighborQuery_NumericFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

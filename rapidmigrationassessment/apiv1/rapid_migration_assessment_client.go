@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -339,7 +339,7 @@ func (c *Client) UpdateCollectorOperation(name string) *UpdateCollectorOperation
 }
 
 // DeleteCollector deletes a single Collector - changes state of collector to “Deleting”.
-// Background jobs does final deletion thorugh producer api.
+// Background jobs does final deletion through producer API.
 func (c *Client) DeleteCollector(ctx context.Context, req *rapidmigrationassessmentpb.DeleteCollectorRequest, opts ...gax.CallOption) (*DeleteCollectorOperation, error) {
 	return c.internalClient.DeleteCollector(ctx, req, opts...)
 }
@@ -1364,7 +1364,7 @@ func (c *restClient) UpdateCollector(ctx context.Context, req *rapidmigrationass
 }
 
 // DeleteCollector deletes a single Collector - changes state of collector to “Deleting”.
-// Background jobs does final deletion thorugh producer api.
+// Background jobs does final deletion through producer API.
 func (c *restClient) DeleteCollector(ctx context.Context, req *rapidmigrationassessmentpb.DeleteCollectorRequest, opts ...gax.CallOption) (*DeleteCollectorOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

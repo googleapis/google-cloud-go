@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ type FeatureOnlineStoreCallOptions struct {
 	FetchFeatureValues          []gax.CallOption
 	StreamingFetchFeatureValues []gax.CallOption
 	SearchNearestEntities       []gax.CallOption
+	FeatureViewDirectWrite      []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	GetIamPolicy                []gax.CallOption
@@ -80,6 +81,7 @@ func defaultFeatureOnlineStoreCallOptions() *FeatureOnlineStoreCallOptions {
 		FetchFeatureValues:          []gax.CallOption{},
 		StreamingFetchFeatureValues: []gax.CallOption{},
 		SearchNearestEntities:       []gax.CallOption{},
+		FeatureViewDirectWrite:      []gax.CallOption{},
 		GetLocation:                 []gax.CallOption{},
 		ListLocations:               []gax.CallOption{},
 		GetIamPolicy:                []gax.CallOption{},
@@ -98,6 +100,7 @@ func defaultFeatureOnlineStoreRESTCallOptions() *FeatureOnlineStoreCallOptions {
 		FetchFeatureValues:          []gax.CallOption{},
 		StreamingFetchFeatureValues: []gax.CallOption{},
 		SearchNearestEntities:       []gax.CallOption{},
+		FeatureViewDirectWrite:      []gax.CallOption{},
 		GetLocation:                 []gax.CallOption{},
 		ListLocations:               []gax.CallOption{},
 		GetIamPolicy:                []gax.CallOption{},
@@ -119,6 +122,7 @@ type internalFeatureOnlineStoreClient interface {
 	FetchFeatureValues(context.Context, *aiplatformpb.FetchFeatureValuesRequest, ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error)
 	StreamingFetchFeatureValues(context.Context, ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error)
 	SearchNearestEntities(context.Context, *aiplatformpb.SearchNearestEntitiesRequest, ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error)
+	FeatureViewDirectWrite(context.Context, ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -185,6 +189,15 @@ func (c *FeatureOnlineStoreClient) StreamingFetchFeatureValues(ctx context.Conte
 // indexable, returns Invalid argument response.
 func (c *FeatureOnlineStoreClient) SearchNearestEntities(ctx context.Context, req *aiplatformpb.SearchNearestEntitiesRequest, opts ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error) {
 	return c.internalClient.SearchNearestEntities(ctx, req, opts...)
+}
+
+// FeatureViewDirectWrite bidirectional streaming RPC to directly write to feature values in a
+// feature view. Requests may not have a one-to-one mapping to responses and
+// responses may be returned out-of-order to reduce latency.
+//
+// This method is not supported for the REST transport.
+func (c *FeatureOnlineStoreClient) FeatureViewDirectWrite(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error) {
+	return c.internalClient.FeatureViewDirectWrite(ctx, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -455,6 +468,23 @@ func (c *featureOnlineStoreGRPCClient) SearchNearestEntities(ctx context.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.featureOnlineStoreClient.SearchNearestEntities, req, settings.GRPC, c.logger, "SearchNearestEntities")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureOnlineStoreGRPCClient) FeatureViewDirectWrite(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient
+	opts = append((*c.CallOptions).FeatureViewDirectWrite[0:len((*c.CallOptions).FeatureViewDirectWrite):len((*c.CallOptions).FeatureViewDirectWrite)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "FeatureViewDirectWrite")
+		resp, err = c.featureOnlineStoreClient.FeatureViewDirectWrite(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "FeatureViewDirectWrite")
 		return err
 	}, opts...)
 	if err != nil {
@@ -812,6 +842,15 @@ func (c *featureOnlineStoreRESTClient) SearchNearestEntities(ctx context.Context
 		return nil, e
 	}
 	return resp, nil
+}
+
+// FeatureViewDirectWrite bidirectional streaming RPC to directly write to feature values in a
+// feature view. Requests may not have a one-to-one mapping to responses and
+// responses may be returned out-of-order to reduce latency.
+//
+// This method is not supported for the REST transport.
+func (c *featureOnlineStoreRESTClient) FeatureViewDirectWrite(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error) {
+	return nil, errors.New("FeatureViewDirectWrite not yet supported for REST clients")
 }
 
 // GetLocation gets information about a location.

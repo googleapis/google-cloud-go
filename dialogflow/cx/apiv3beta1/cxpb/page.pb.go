@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ type Page struct {
 	// They route the conversation to another page in the same flow, or another
 	// flow.
 	//
-	// When we are in a certain page, the TransitionRoutes are evalauted in the
+	// When we are in a certain page, the TransitionRoutes are evaluated in the
 	// following order:
 	//
 	//   - TransitionRoutes defined in the page with intent specified.

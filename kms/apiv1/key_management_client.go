@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -2560,6 +2560,9 @@ func (c *keyManagementRESTClient) GetPublicKey(ctx context.Context, req *kmspb.G
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPublicKeyFormat() != 0 {
+		params.Add("publicKeyFormat", fmt.Sprintf("%v", req.GetPublicKeyFormat()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

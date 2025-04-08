@@ -40,6 +40,11 @@
                 "CreateKmsConfig"
               ]
             },
+            "CreateQuotaRule": {
+              "methods": [
+                "CreateQuotaRule"
+              ]
+            },
             "CreateReplication": {
               "methods": [
                 "CreateReplication"
@@ -88,6 +93,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteQuotaRule": {
+              "methods": [
+                "DeleteQuotaRule"
               ]
             },
             "DeleteReplication": {
@@ -155,6 +165,11 @@
                 "GetOperation"
               ]
             },
+            "GetQuotaRule": {
+              "methods": [
+                "GetQuotaRule"
+              ]
+            },
             "GetReplication": {
               "methods": [
                 "GetReplication"
@@ -208,6 +223,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListQuotaRules": {
+              "methods": [
+                "ListQuotaRules"
               ]
             },
             "ListReplications": {
@@ -285,6 +305,11 @@
                 "UpdateKmsConfig"
               ]
             },
+            "UpdateQuotaRule": {
+              "methods": [
+                "UpdateQuotaRule"
+              ]
+            },
             "UpdateReplication": {
               "methods": [
                 "UpdateReplication"
@@ -303,6 +328,11 @@
             "UpdateVolume": {
               "methods": [
                 "UpdateVolume"
+              ]
+            },
+            "ValidateDirectoryService": {
+              "methods": [
+                "ValidateDirectoryService"
               ]
             },
             "VerifyKmsConfig": {
@@ -345,6 +375,11 @@
                 "CreateKmsConfig"
               ]
             },
+            "CreateQuotaRule": {
+              "methods": [
+                "CreateQuotaRule"
+              ]
+            },
             "CreateReplication": {
               "methods": [
                 "CreateReplication"
@@ -393,6 +428,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteQuotaRule": {
+              "methods": [
+                "DeleteQuotaRule"
               ]
             },
             "DeleteReplication": {
@@ -460,6 +500,11 @@
                 "GetOperation"
               ]
             },
+            "GetQuotaRule": {
+              "methods": [
+                "GetQuotaRule"
+              ]
+            },
             "GetReplication": {
               "methods": [
                 "GetReplication"
@@ -513,6 +558,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListQuotaRules": {
+              "methods": [
+                "ListQuotaRules"
               ]
             },
             "ListReplications": {
@@ -590,6 +640,11 @@
                 "UpdateKmsConfig"
               ]
             },
+            "UpdateQuotaRule": {
+              "methods": [
+                "UpdateQuotaRule"
+              ]
+            },
             "UpdateReplication": {
               "methods": [
                 "UpdateReplication"
@@ -608,6 +663,11 @@
             "UpdateVolume": {
               "methods": [
                 "UpdateVolume"
+              ]
+            },
+            "ValidateDirectoryService": {
+              "methods": [
+                "ValidateDirectoryService"
               ]
             },
             "VerifyKmsConfig": {

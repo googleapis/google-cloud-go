@@ -24,7 +24,6 @@ import (
 	"log"
 	"math"
 	"math/rand"
-	"os"
 	"runtime/debug"
 	"strings"
 	"sync"
@@ -507,6 +506,14 @@ type SessionPoolConfig struct {
 	// Defaults to false.
 	TrackSessionHandles bool
 
+	enableMultiplexSession bool
+
+	// enableMultiplexedSessionForRW is a flag to enable multiplexed session for read/write transactions
+	enableMultiplexedSessionForRW bool
+
+	// enableMultiplexedSessionForPartitionedOps is a flag to enable multiplexed session for partitioned DML and read/query operations
+	enableMultiplexedSessionForPartitionedOps bool
+
 	// healthCheckSampleInterval is how often the health checker samples live
 	// session (for use in maintaining session pool size).
 	//
@@ -699,10 +706,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.MultiplexSessionCheckInterval == 0 {
 		config.MultiplexSessionCheckInterval = 10 * time.Minute
 	}
-	isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"))
-	if isMultiplexed != "" && isMultiplexed != "true" && isMultiplexed != "false" {
-		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
-	}
+
 	pool := &sessionPool{
 		sc:                       sc,
 		valid:                    true,
@@ -713,7 +717,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		mw:                       newMaintenanceWindow(config.MaxOpened),
 		rand:                     rand.New(rand.NewSource(time.Now().UnixNano())),
 		otConfig:                 sc.otConfig,
-		enableMultiplexSession:   isMultiplexed == "true",
+		enableMultiplexSession:   config.enableMultiplexSession,
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -807,6 +811,30 @@ func (p *sessionPool) getRatioOfSessionsInUseLocked() float64 {
 		return 0
 	}
 	return float64(p.numInUse) / float64(maxSessions)
+}
+
+func (p *sessionPool) isMultiplexedSessionForRWEnabled() bool {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.enableMultiplexedSessionForRW
+}
+
+func (p *sessionPool) isMultiplexedSessionForPartitionedOpsEnabled() bool {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.enableMultiplexedSessionForPartitionedOps
+}
+
+func (p *sessionPool) disableMultiplexedSessionForRW() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.enableMultiplexedSessionForRW = false
+}
+
+func (p *sessionPool) disableMultiplexedSessionForPartitionedOps() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.enableMultiplexedSessionForPartitionedOps = false
 }
 
 // gets sessions which are unexpectedly long-running.
@@ -1075,11 +1103,11 @@ func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
 		return sh
 	}
 	if p.TrackSessionHandles || p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose || p.ActionOnInactiveTransaction == Close {
-		p.mu.Lock()
-		sh.trackedSessionHandle = p.trackedSessionHandles.PushBack(sh)
 		if p.TrackSessionHandles {
 			sh.stack = debug.Stack()
 		}
+		p.mu.Lock()
+		sh.trackedSessionHandle = p.trackedSessionHandles.PushBack(sh)
 		p.mu.Unlock()
 	}
 	return sh
@@ -1944,15 +1972,34 @@ func isSessionNotFoundError(err error) bool {
 	return strings.Contains(err.Error(), "Session not found")
 }
 
-// isUnimplementedError returns true if the gRPC error code is Unimplemented.
 func isUnimplementedError(err error) bool {
 	if err == nil {
 		return false
 	}
-	if ErrCode(err) == codes.Unimplemented {
-		return true
+	return ErrCode(err) == codes.Unimplemented
+}
+
+// isUnimplementedErrorForMultiplexedRW returns true if the gRPC error code is Unimplemented and related to use of multiplexed session with ReadWrite txn.
+func isUnimplementedErrorForMultiplexedRW(err error) bool {
+	if err == nil {
+		return false
 	}
-	return false
+	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Transaction type read_write not supported with multiplexed sessions")
+}
+
+// isUnimplementedErrorForMultiplexedPartitionedDML returns true if the gRPC error code is Unimplemented and related to use of multiplexed session with partitioned ops.
+func isUnimplementedErrorForMultiplexedPartitionedDML(err error) bool {
+	if err == nil {
+		return false
+	}
+	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Transaction type partitioned_dml not supported with multiplexed sessions")
+}
+
+func isUnimplementedErrorForMultiplexedPartitionReads(err error) bool {
+	if err == nil {
+		return false
+	}
+	return strings.Contains(err.Error(), "Partitioned operations are not supported with multiplexed sessions")
 }
 
 func isFailedInlineBeginTransaction(err error) bool {

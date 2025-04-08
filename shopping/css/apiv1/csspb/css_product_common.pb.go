@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -104,21 +104,21 @@ type Attributes struct {
 	// Allows advertisers to override the item URL when the product is shown
 	// within the context of Product Ads.
 	CppAdsRedirect *string `protobuf:"bytes,42,opt,name=cpp_ads_redirect,json=cppAdsRedirect,proto3,oneof" json:"cpp_ads_redirect,omitempty"`
-	// Low Price of the aggregate offer.
+	// Low Price of the CSS Product.
 	LowPrice *typepb.Price `protobuf:"bytes,3,opt,name=low_price,json=lowPrice,proto3" json:"low_price,omitempty"`
-	// High Price of the aggregate offer.
+	// High Price of the CSS Product.
 	HighPrice *typepb.Price `protobuf:"bytes,4,opt,name=high_price,json=highPrice,proto3" json:"high_price,omitempty"`
-	// The number of aggregate offers.
+	// The number of CSS Products.
 	NumberOfOffers *int64 `protobuf:"varint,5,opt,name=number_of_offers,json=numberOfOffers,proto3,oneof" json:"number_of_offers,omitempty"`
 	// Condition of the headline offer.
 	HeadlineOfferCondition *string `protobuf:"bytes,6,opt,name=headline_offer_condition,json=headlineOfferCondition,proto3,oneof" json:"headline_offer_condition,omitempty"`
-	// Headline Price of the aggregate offer.
+	// Headline Price of the CSS Product.
 	HeadlineOfferPrice *typepb.Price `protobuf:"bytes,7,opt,name=headline_offer_price,json=headlineOfferPrice,proto3" json:"headline_offer_price,omitempty"`
 	// Link to the headline offer.
 	HeadlineOfferLink *string `protobuf:"bytes,8,opt,name=headline_offer_link,json=headlineOfferLink,proto3,oneof" json:"headline_offer_link,omitempty"`
 	// Mobile Link to the headline offer.
 	HeadlineOfferMobileLink *string `protobuf:"bytes,9,opt,name=headline_offer_mobile_link,json=headlineOfferMobileLink,proto3,oneof" json:"headline_offer_mobile_link,omitempty"`
-	// Headline Price of the aggregate offer.
+	// Headline Price of the CSS Product.
 	HeadlineOfferShippingPrice *typepb.Price `protobuf:"bytes,41,opt,name=headline_offer_shipping_price,json=headlineOfferShippingPrice,proto3" json:"headline_offer_shipping_price,omitempty"`
 	// Title of the item.
 	Title *string `protobuf:"bytes,10,opt,name=title,proto3,oneof" json:"title,omitempty"`
@@ -1099,13 +1099,13 @@ type CssProductStatus_DestinationStatus struct {
 
 	// The name of the destination
 	Destination string `protobuf:"bytes,1,opt,name=destination,proto3" json:"destination,omitempty"`
-	// List of country codes (ISO 3166-1 alpha-2) where the aggregate offer is
+	// List of country codes (ISO 3166-1 alpha-2) where the CSS Product is
 	// approved.
 	ApprovedCountries []string `protobuf:"bytes,2,rep,name=approved_countries,json=approvedCountries,proto3" json:"approved_countries,omitempty"`
-	// List of country codes (ISO 3166-1 alpha-2) where the aggregate offer is
+	// List of country codes (ISO 3166-1 alpha-2) where the CSS Product is
 	// pending approval.
 	PendingCountries []string `protobuf:"bytes,3,rep,name=pending_countries,json=pendingCountries,proto3" json:"pending_countries,omitempty"`
-	// List of country codes (ISO 3166-1 alpha-2) where the aggregate offer is
+	// List of country codes (ISO 3166-1 alpha-2) where the CSS Product is
 	// disapproved.
 	DisapprovedCountries []string `protobuf:"bytes,4,rep,name=disapproved_countries,json=disapprovedCountries,proto3" json:"disapproved_countries,omitempty"`
 }
@@ -1176,7 +1176,7 @@ type CssProductStatus_ItemLevelIssue struct {
 
 	// The error code of the issue.
 	Code string `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
-	// How this issue affects serving of the aggregate offer.
+	// How this issue affects serving of the CSS Product.
 	Servability string `protobuf:"bytes,2,opt,name=servability,proto3" json:"servability,omitempty"`
 	// Whether the issue can be resolved by the merchant.
 	Resolution string `protobuf:"bytes,3,opt,name=resolution,proto3" json:"resolution,omitempty"`
@@ -1191,7 +1191,7 @@ type CssProductStatus_ItemLevelIssue struct {
 	// The URL of a web page to help with resolving this issue.
 	Documentation string `protobuf:"bytes,8,opt,name=documentation,proto3" json:"documentation,omitempty"`
 	// List of country codes (ISO 3166-1 alpha-2) where issue applies to the
-	// aggregate offer.
+	// CSS Product.
 	ApplicableCountries []string `protobuf:"bytes,9,rep,name=applicable_countries,json=applicableCountries,proto3" json:"applicable_countries,omitempty"`
 }
 

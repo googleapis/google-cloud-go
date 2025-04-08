@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -181,17 +181,17 @@ func (c *PolicyBasedRoutingClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListPolicyBasedRoutes lists PolicyBasedRoutes in a given project and location.
+// ListPolicyBasedRoutes lists policy-based routes in a given project and location.
 func (c *PolicyBasedRoutingClient) ListPolicyBasedRoutes(ctx context.Context, req *networkconnectivitypb.ListPolicyBasedRoutesRequest, opts ...gax.CallOption) *PolicyBasedRouteIterator {
 	return c.internalClient.ListPolicyBasedRoutes(ctx, req, opts...)
 }
 
-// GetPolicyBasedRoute gets details of a single PolicyBasedRoute.
+// GetPolicyBasedRoute gets details of a single policy-based route.
 func (c *PolicyBasedRoutingClient) GetPolicyBasedRoute(ctx context.Context, req *networkconnectivitypb.GetPolicyBasedRouteRequest, opts ...gax.CallOption) (*networkconnectivitypb.PolicyBasedRoute, error) {
 	return c.internalClient.GetPolicyBasedRoute(ctx, req, opts...)
 }
 
-// CreatePolicyBasedRoute creates a new PolicyBasedRoute in a given project and location.
+// CreatePolicyBasedRoute creates a new policy-based route in a given project and location.
 func (c *PolicyBasedRoutingClient) CreatePolicyBasedRoute(ctx context.Context, req *networkconnectivitypb.CreatePolicyBasedRouteRequest, opts ...gax.CallOption) (*CreatePolicyBasedRouteOperation, error) {
 	return c.internalClient.CreatePolicyBasedRoute(ctx, req, opts...)
 }
@@ -202,7 +202,7 @@ func (c *PolicyBasedRoutingClient) CreatePolicyBasedRouteOperation(name string) 
 	return c.internalClient.CreatePolicyBasedRouteOperation(name)
 }
 
-// DeletePolicyBasedRoute deletes a single PolicyBasedRoute.
+// DeletePolicyBasedRoute deletes a single policy-based route.
 func (c *PolicyBasedRoutingClient) DeletePolicyBasedRoute(ctx context.Context, req *networkconnectivitypb.DeletePolicyBasedRouteRequest, opts ...gax.CallOption) (*DeletePolicyBasedRouteOperation, error) {
 	return c.internalClient.DeletePolicyBasedRoute(ctx, req, opts...)
 }

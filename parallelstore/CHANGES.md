@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.10.0...parallelstore/v0.10.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.2...parallelstore/v0.10.0) (2025-02-14)
+
+
+### Features
+
+* **parallelstore:** Adding `deployment_type` field ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+* **parallelstore:** Deprecating `daos_version` field ([#11598](https://github.com/googleapis/google-cloud-go/issues/11598)) ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+
+
+### Documentation
+
+* **parallelstore:** Updated `directory_stripe_level` in message `.google.cloud.parallelstore.v1.Instance` to reflect that the field is now immutable ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+* **parallelstore:** Updated documentation for field `daos_version` in message `.google.cloud.parallelstore.v1.Instance` to reflect that the field is deprecated. ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+* **parallelstore:** Updated field `file_stripe_level` in message `.google.cloud.parallelstore.v1.Instance` to reflected that message is now immutable ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+
+## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.1...parallelstore/v0.9.2) (2025-01-08)
+
+
+### Documentation
+
+* **parallelstore:** Fix links in documentation ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.0...parallelstore/v0.9.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.ExportDataMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.ImportDataMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.OperationMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.8.0...parallelstore/v0.9.0) (2024-12-11)
 
 

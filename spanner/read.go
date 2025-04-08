@@ -68,6 +68,7 @@ func stream(
 		func(err error) error {
 			return err
 		},
+		nil,
 		setTimestamp,
 		release,
 		gsc,
@@ -85,6 +86,7 @@ func streamWithReplaceSessionFunc(
 	replaceSession func(ctx context.Context) error,
 	setTransactionID func(transactionID),
 	updateTxState func(err error) error,
+	updatePrecommitToken func(token *sppb.MultiplexedSessionPrecommitToken),
 	setTimestamp func(time.Time),
 	release func(error),
 	gsc *grpcSpannerClient,
@@ -92,14 +94,15 @@ func streamWithReplaceSessionFunc(
 	ctx, cancel := context.WithCancel(ctx)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
-		meterTracerFactory: meterTracerFactory,
-		streamd:            newResumableStreamDecoder(ctx, logger, rpc, replaceSession, gsc),
-		rowd:               &partialResultSetDecoder{},
-		setTransactionID:   setTransactionID,
-		updateTxState:      updateTxState,
-		setTimestamp:       setTimestamp,
-		release:            release,
-		cancel:             cancel,
+		meterTracerFactory:   meterTracerFactory,
+		streamd:              newResumableStreamDecoder(ctx, logger, rpc, replaceSession, gsc),
+		rowd:                 &partialResultSetDecoder{},
+		setTransactionID:     setTransactionID,
+		updatePrecommitToken: updatePrecommitToken,
+		updateTxState:        updateTxState,
+		setTimestamp:         setTimestamp,
+		release:              release,
+		cancel:               cancel,
 	}
 }
 
@@ -130,18 +133,19 @@ type RowIterator struct {
 	// RowIterator.Next() returned an error that is not equal to iterator.Done.
 	Metadata *sppb.ResultSetMetadata
 
-	ctx                context.Context
-	meterTracerFactory *builtinMetricsTracerFactory
-	streamd            *resumableStreamDecoder
-	rowd               *partialResultSetDecoder
-	setTransactionID   func(transactionID)
-	updateTxState      func(err error) error
-	setTimestamp       func(time.Time)
-	release            func(error)
-	cancel             func()
-	err                error
-	rows               []*Row
-	sawStats           bool
+	ctx                  context.Context
+	meterTracerFactory   *builtinMetricsTracerFactory
+	streamd              *resumableStreamDecoder
+	rowd                 *partialResultSetDecoder
+	setTransactionID     func(transactionID)
+	updateTxState        func(err error) error
+	updatePrecommitToken func(token *sppb.MultiplexedSessionPrecommitToken)
+	setTimestamp         func(time.Time)
+	release              func(error)
+	cancel               func()
+	err                  error
+	rows                 []*Row
+	sawStats             bool
 }
 
 // this is for safety from future changes to RowIterator making sure that it implements rowIterator interface.
@@ -191,6 +195,9 @@ func (r *RowIterator) Next() (*Row, error) {
 				return nil, r.err
 			}
 			r.setTransactionID = nil
+		}
+		if r.updatePrecommitToken != nil {
+			r.updatePrecommitToken(prs.GetPrecommitToken())
 		}
 		if prs.Stats != nil {
 			r.sawStats = true

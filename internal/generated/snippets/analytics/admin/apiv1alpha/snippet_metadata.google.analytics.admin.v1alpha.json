@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.25.2",
+    "version": "0.27.1",
     "language": "GO",
     "apis": [
       {
@@ -1390,7 +1390,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateProperty_sync",
       "title": "analyticsadmin CreateProperty Sample",
-      "description": "CreateProperty creates an \"GA4\" property with the specified location and attributes.",
+      "description": "CreateProperty creates a Google Analytics property with the specified location and\nattributes.",
       "file": "AnalyticsAdminClient/CreateProperty/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2476,7 +2476,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteProperty_sync",
       "title": "analyticsadmin DeleteProperty Sample",
-      "description": "DeleteProperty marks target Property as soft-deleted (ie: \"trashed\") and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, AccessBindings)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772\n\nReturns an error if the target is not found, or is not a GA4 Property.",
+      "description": "DeleteProperty marks target Property as soft-deleted (ie: \"trashed\") and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, AccessBindings)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772\n\nReturns an error if the target is not found.",
       "file": "AnalyticsAdminClient/DeleteProperty/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3898,7 +3898,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetMeasurementProtocolSecret_sync",
       "title": "analyticsadmin GetMeasurementProtocolSecret Sample",
-      "description": "GetMeasurementProtocolSecret lookup for a single \"GA4\" MeasurementProtocolSecret.",
+      "description": "GetMeasurementProtocolSecret lookup for a single MeasurementProtocolSecret.",
       "file": "AnalyticsAdminClient/GetMeasurementProtocolSecret/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3944,7 +3944,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetProperty_sync",
       "title": "analyticsadmin GetProperty Sample",
-      "description": "GetProperty lookup for a single \"GA4\" Property.",
+      "description": "GetProperty lookup for a single GA Property.",
       "file": "AnalyticsAdminClient/GetProperty/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4266,7 +4266,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccounts_sync",
       "title": "analyticsadmin ListAccounts Sample",
-      "description": "ListAccounts returns all accounts accessible by the caller.\n\nNote that these accounts might not currently have GA4 properties.\nSoft-deleted (ie: \"trashed\") accounts are excluded by default.\nReturns an empty list if no relevant accounts are found.",
+      "description": "ListAccounts returns all accounts accessible by the caller.\n\nNote that these accounts might not currently have GA properties.\nSoft-deleted (ie: \"trashed\") accounts are excluded by default.\nReturns an empty list if no relevant accounts are found.",
       "file": "AnalyticsAdminClient/ListAccounts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5186,7 +5186,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListProperties_sync",
       "title": "analyticsadmin ListProperties Sample",
-      "description": "ListProperties returns child Properties under the specified parent Account.\n\nOnly \"GA4\" properties will be returned.\nProperties will be excluded if the caller does not have access.\nSoft-deleted (ie: \"trashed\") properties are excluded by default.\nReturns an empty list if no relevant properties are found.",
+      "description": "ListProperties returns child Properties under the specified parent Account.\n\nProperties will be excluded if the caller does not have access.\nSoft-deleted (ie: \"trashed\") properties are excluded by default.\nReturns an empty list if no relevant properties are found.",
       "file": "AnalyticsAdminClient/ListProperties/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5553,7 +5553,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_RunAccessReport_sync",
       "title": "analyticsadmin RunAccessReport Sample",
-      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. Reports may be\nrequested for any property, but dimensions that aren't related to quota can\nonly be requested on Google Analytics 360 properties. This method is only\navailable to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
+      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. Reports may be\nrequested for any property, but dimensions that aren't related to quota can\nonly be requested on Google Analytics 360 properties. This method is only\navailable to Administrators.\n\nThese data access records include GA UI Reporting, GA UI Explorations,\nGA Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).\n\nTo give your feedback on this API, complete the [Google Analytics Access\nReports\nfeedback](https: //docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)\nform.",
       "file": "AnalyticsAdminClient/RunAccessReport/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5599,7 +5599,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_SearchChangeHistoryEvents_sync",
       "title": "analyticsadmin SearchChangeHistoryEvents Sample",
-      "description": "SearchChangeHistoryEvents searches through all changes to an account or its children given the\nspecified set of filters.",
+      "description": "SearchChangeHistoryEvents searches through all changes to an account or its children given the\nspecified set of filters.\n\nOnly returns the subset of changes supported by the API. The UI may return\nadditional changes.",
       "file": "AnalyticsAdminClient/SearchChangeHistoryEvents/main.go",
       "language": "GO",
       "clientMethod": {

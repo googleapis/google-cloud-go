@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -295,7 +295,7 @@ func (c *EnvironmentsClient) PollAirflowCommand(ctx context.Context, req *servic
 // runs a single Composer component.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-2..-airflow-..* and newer.
 func (c *EnvironmentsClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
 	return c.internalClient.ListWorkloads(ctx, req, opts...)
 }
@@ -316,7 +316,7 @@ func (c *EnvironmentsClient) CheckUpgradeOperation(name string) *CheckUpgradeOpe
 // CreateUserWorkloadsSecret creates a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) CreateUserWorkloadsSecret(ctx context.Context, req *servicepb.CreateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	return c.internalClient.CreateUserWorkloadsSecret(ctx, req, opts...)
 }
@@ -325,7 +325,7 @@ func (c *EnvironmentsClient) CreateUserWorkloadsSecret(ctx context.Context, req 
 // Values of the “data” field in the response are cleared.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) GetUserWorkloadsSecret(ctx context.Context, req *servicepb.GetUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	return c.internalClient.GetUserWorkloadsSecret(ctx, req, opts...)
 }
@@ -333,7 +333,7 @@ func (c *EnvironmentsClient) GetUserWorkloadsSecret(ctx context.Context, req *se
 // ListUserWorkloadsSecrets lists user workloads Secrets.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) ListUserWorkloadsSecrets(ctx context.Context, req *servicepb.ListUserWorkloadsSecretsRequest, opts ...gax.CallOption) *UserWorkloadsSecretIterator {
 	return c.internalClient.ListUserWorkloadsSecrets(ctx, req, opts...)
 }
@@ -341,7 +341,7 @@ func (c *EnvironmentsClient) ListUserWorkloadsSecrets(ctx context.Context, req *
 // UpdateUserWorkloadsSecret updates a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) UpdateUserWorkloadsSecret(ctx context.Context, req *servicepb.UpdateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	return c.internalClient.UpdateUserWorkloadsSecret(ctx, req, opts...)
 }
@@ -349,7 +349,7 @@ func (c *EnvironmentsClient) UpdateUserWorkloadsSecret(ctx context.Context, req 
 // DeleteUserWorkloadsSecret deletes a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) DeleteUserWorkloadsSecret(ctx context.Context, req *servicepb.DeleteUserWorkloadsSecretRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteUserWorkloadsSecret(ctx, req, opts...)
 }
@@ -357,7 +357,7 @@ func (c *EnvironmentsClient) DeleteUserWorkloadsSecret(ctx context.Context, req 
 // CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) CreateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.CreateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	return c.internalClient.CreateUserWorkloadsConfigMap(ctx, req, opts...)
 }
@@ -365,7 +365,7 @@ func (c *EnvironmentsClient) CreateUserWorkloadsConfigMap(ctx context.Context, r
 // GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) GetUserWorkloadsConfigMap(ctx context.Context, req *servicepb.GetUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	return c.internalClient.GetUserWorkloadsConfigMap(ctx, req, opts...)
 }
@@ -373,7 +373,7 @@ func (c *EnvironmentsClient) GetUserWorkloadsConfigMap(ctx context.Context, req 
 // ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) ListUserWorkloadsConfigMaps(ctx context.Context, req *servicepb.ListUserWorkloadsConfigMapsRequest, opts ...gax.CallOption) *UserWorkloadsConfigMapIterator {
 	return c.internalClient.ListUserWorkloadsConfigMaps(ctx, req, opts...)
 }
@@ -381,7 +381,7 @@ func (c *EnvironmentsClient) ListUserWorkloadsConfigMaps(ctx context.Context, re
 // UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) UpdateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.UpdateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	return c.internalClient.UpdateUserWorkloadsConfigMap(ctx, req, opts...)
 }
@@ -389,7 +389,7 @@ func (c *EnvironmentsClient) UpdateUserWorkloadsConfigMap(ctx context.Context, r
 // DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) DeleteUserWorkloadsConfigMap(ctx context.Context, req *servicepb.DeleteUserWorkloadsConfigMapRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteUserWorkloadsConfigMap(ctx, req, opts...)
 }
@@ -1748,7 +1748,7 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 // runs a single Composer component.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-2..-airflow-..* and newer.
 func (c *environmentsRESTClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
 	it := &ListWorkloadsResponse_ComposerWorkloadIterator{}
 	req = proto.Clone(req).(*servicepb.ListWorkloadsRequest)
@@ -1893,7 +1893,7 @@ func (c *environmentsRESTClient) CheckUpgrade(ctx context.Context, req *servicep
 // CreateUserWorkloadsSecret creates a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, req *servicepb.CreateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetUserWorkloadsSecret()
@@ -1954,7 +1954,7 @@ func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, 
 // Values of the “data” field in the response are cleared.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req *servicepb.GetUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2007,7 +2007,7 @@ func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req
 // ListUserWorkloadsSecrets lists user workloads Secrets.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) ListUserWorkloadsSecrets(ctx context.Context, req *servicepb.ListUserWorkloadsSecretsRequest, opts ...gax.CallOption) *UserWorkloadsSecretIterator {
 	it := &UserWorkloadsSecretIterator{}
 	req = proto.Clone(req).(*servicepb.ListUserWorkloadsSecretsRequest)
@@ -2088,7 +2088,7 @@ func (c *environmentsRESTClient) ListUserWorkloadsSecrets(ctx context.Context, r
 // UpdateUserWorkloadsSecret updates a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) UpdateUserWorkloadsSecret(ctx context.Context, req *servicepb.UpdateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetUserWorkloadsSecret()
@@ -2148,7 +2148,7 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsSecret(ctx context.Context, 
 // DeleteUserWorkloadsSecret deletes a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) DeleteUserWorkloadsSecret(ctx context.Context, req *servicepb.DeleteUserWorkloadsSecretRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2186,7 +2186,7 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsSecret(ctx context.Context, 
 // CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.CreateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetUserWorkloadsConfigMap()
@@ -2246,7 +2246,7 @@ func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 // GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, req *servicepb.GetUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2299,7 +2299,7 @@ func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 // ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) ListUserWorkloadsConfigMaps(ctx context.Context, req *servicepb.ListUserWorkloadsConfigMapsRequest, opts ...gax.CallOption) *UserWorkloadsConfigMapIterator {
 	it := &UserWorkloadsConfigMapIterator{}
 	req = proto.Clone(req).(*servicepb.ListUserWorkloadsConfigMapsRequest)
@@ -2380,7 +2380,7 @@ func (c *environmentsRESTClient) ListUserWorkloadsConfigMaps(ctx context.Context
 // UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) UpdateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.UpdateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetUserWorkloadsConfigMap()
@@ -2440,7 +2440,7 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsConfigMap(ctx context.Contex
 // DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) DeleteUserWorkloadsConfigMap(ctx context.Context, req *servicepb.DeleteUserWorkloadsConfigMapRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

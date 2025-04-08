@@ -331,6 +331,10 @@ type builtinMetricsTracer struct {
 	currOp opTracer
 }
 
+func (b *builtinMetricsTracer) setMethod(m string) {
+	b.method = "Bigtable." + m
+}
+
 // opTracer is used to record metrics for the entire operation, including retries.
 // Operation is a logical unit that represents a single method invocation on client.
 // The method might require multiple attempts/rpcs and backoff logic to complete

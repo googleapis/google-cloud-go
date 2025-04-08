@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -789,8 +789,8 @@ func (c *Client) SubscribeListing(ctx context.Context, req *analyticshubpb.Subsc
 	return c.internalClient.SubscribeListing(ctx, req, opts...)
 }
 
-// SubscribeDataExchange creates a Subscription to a Data Exchange. This is a long-running operation
-// as it will create one or more linked datasets.
+// SubscribeDataExchange creates a Subscription to a Data Clean Room. This is a long-running
+// operation as it will create one or more linked datasets.
 func (c *Client) SubscribeDataExchange(ctx context.Context, req *analyticshubpb.SubscribeDataExchangeRequest, opts ...gax.CallOption) (*SubscribeDataExchangeOperation, error) {
 	return c.internalClient.SubscribeDataExchange(ctx, req, opts...)
 }
@@ -2266,8 +2266,8 @@ func (c *restClient) SubscribeListing(ctx context.Context, req *analyticshubpb.S
 	return resp, nil
 }
 
-// SubscribeDataExchange creates a Subscription to a Data Exchange. This is a long-running operation
-// as it will create one or more linked datasets.
+// SubscribeDataExchange creates a Subscription to a Data Clean Room. This is a long-running
+// operation as it will create one or more linked datasets.
 func (c *restClient) SubscribeDataExchange(ctx context.Context, req *analyticshubpb.SubscribeDataExchangeRequest, opts ...gax.CallOption) (*SubscribeDataExchangeOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -133,8 +133,8 @@ type ListChildAccountsRequest struct {
 	FullName *string `protobuf:"bytes,3,opt,name=full_name,json=fullName,proto3,oneof" json:"full_name,omitempty"`
 	// Optional. The maximum number of accounts to return. The service may return
 	// fewer than this value. If unspecified, at most 50 accounts will be
-	// returned. The maximum value is 1000; values above 1000 will be coerced to
-	// 1000.
+	// returned. The maximum value is 100; values above 100 will be coerced to
+	// 100.
 	PageSize int32 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous `ListChildAccounts` call.
 	// Provide this to retrieve the subsequent page.
@@ -412,6 +412,9 @@ type Account struct {
 	// The CSS/MC account's parent resource. CSS group for CSS domains; CSS
 	// domain for MC accounts. Returned only if the user has access to the
 	// parent account.
+	// Note: For MC sub-accounts, this is also the CSS domain that is the parent
+	// resource of the MCA account, since we are effectively flattening the
+	// hierarchy."
 	Parent *string `protobuf:"bytes,5,opt,name=parent,proto3,oneof" json:"parent,omitempty"`
 	// Manually created label IDs assigned to the CSS/MC account by a CSS parent
 	// account.

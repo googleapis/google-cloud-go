@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.11.0...dataform/v0.11.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **dataform:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.10.3...dataform/v0.11.0) (2025-03-06)
+
+
+### Features
+
+* **dataform:** Added new field `internal_metadata` to all resources to export all the metadata information that is used internally to serve the resource ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Moving existing field `bigquery_action` to oneof in message `.google.cloud.dataform.v1beta1.WorkflowInvocationAction` to allow adding more actions types such as `notebook_action` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Returning `commit_sha` in the response of method `CommitRepositoryChanges` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+
+### Bug Fixes
+
+* **dataform:** An existing field `bigquery_action` is moved in to oneof in message `.google.cloud.dataform.v1beta1.WorkflowInvocationAction` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Remove v1alpha2 client ([#11761](https://github.com/googleapis/google-cloud-go/issues/11761)) ([c85bdd9](https://github.com/googleapis/google-cloud-go/commit/c85bdd9162c75afe426fb8b034179f0e48d00eb3)), refs [#11760](https://github.com/googleapis/google-cloud-go/issues/11760)
+* **dataform:** Response type of method `CancelWorkflowInvocation` is changed from `.google.protobuf.Empty` to `.google.cloud.dataform.v1beta1.CancelWorkflowInvocationResponse` in service `Dataform` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Response type of method `CommitRepositoryChanges` is changed from `.google.protobuf.Empty` to `.google.cloud.dataform.v1beta1.CommitRepositoryChangesResponse` in service `Dataform` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Response type of method `CommitWorkspaceChanges` is changed from `.google.protobuf.Empty` to `.google.cloud.dataform.v1beta1.CommitWorkspaceChangesResponse` in service `Dataform` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Response type of method `PullGitCommits` is changed from `.google.protobuf.Empty` to `.google.cloud.dataform.v1beta1.PullGitCommitsResponse` in service `Dataform` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Response type of method `PushGitCommits` is changed from `.google.protobuf.Empty` to `.google.cloud.dataform.v1beta1.PushGitCommitsResponse` in service `Dataform` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Response type of method `RemoveDirectory` is changed from `.google.protobuf.Empty` to `.google.cloud.dataform.v1beta1.RemoveDirectoryResponse` in service `Dataform` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Response type of method `RemoveFileRequest` is changed from `.google.protobuf.Empty` to `.google.cloud.dataform.v1beta1.RemoveFileResponse` in service `Dataform` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Response type of method `ResetWorkspaceChanges` is changed from `.google.protobuf.Empty` to `.google.cloud.dataform.v1beta1.ResetWorkspaceChangesResponse` in service `Dataform` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+
+### Documentation
+
+* **dataform:** Adds known limitations on several methods such as `UpdateRepository`, `UpdateReleaseConfig` and `UpdateWorkflowConfig` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Explained the effect of field `page_token` on the pagination in several messages ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **dataform:** Several comments reformatted ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+## [0.10.3](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.10.2...dataform/v0.10.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **dataform:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.10.2](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.10.1...dataform/v0.10.2) (2024-10-23)
 
 

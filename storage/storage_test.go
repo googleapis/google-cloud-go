@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -540,7 +539,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				GoogleAccessID: "access_id",
 				PrivateKey:     pk,
 			},
-			errMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -548,7 +547,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				PrivateKey:     pk,
 				Method:         "getMethod", // wrong method name
 			},
-			errMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -563,7 +562,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				GoogleAccessID: "access_id",
 				SignBytes:      func(b []byte) ([]byte, error) { return b, nil },
 			},
-			errMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -611,7 +610,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				Expires:        expires,
 				Scheme:         SigningSchemeV4,
 			},
-			errMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -697,7 +696,7 @@ func TestPathEncodeV4(t *testing.T) {
 }
 
 func dummyKey(kind string) []byte {
-	slurp, err := ioutil.ReadFile(fmt.Sprintf("./internal/test/dummy_%s", kind))
+	slurp, err := os.ReadFile(fmt.Sprintf("./internal/test/dummy_%s", kind))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -793,7 +792,7 @@ func TestCondition(t *testing.T) {
 	t.Parallel()
 	gotReq := make(chan *http.Request, 1)
 	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		gotReq <- r
 		w.WriteHeader(200)
 	})
@@ -962,7 +961,7 @@ func TestConditionErrors(t *testing.T) {
 	}
 }
 
-func expectedAttempts(value int) *int {
+func intPointer(value int) *int {
 	return &value
 }
 
@@ -995,12 +994,12 @@ func TestObjectRetryer(t *testing.T) {
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				}),
-				maxAttempts: expectedAttempts(5),
+				},
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
 			},
@@ -1014,9 +1013,9 @@ func TestObjectRetryer(t *testing.T) {
 					}))
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Multiplier: 3,
-				})},
+				}},
 		},
 		{
 			name: "set policy only",
@@ -1033,7 +1032,7 @@ func TestObjectRetryer(t *testing.T) {
 				return o.Retryer(WithMaxAttempts(11))
 			},
 			want: &retryConfig{
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 			},
 		},
 		{
@@ -1092,12 +1091,12 @@ func TestClientSetRetry(t *testing.T) {
 				WithErrorFunc(func(err error) bool { return false }),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				}),
-				maxAttempts: expectedAttempts(5),
+				},
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
 			},
@@ -1110,9 +1109,9 @@ func TestClientSetRetry(t *testing.T) {
 				}),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Multiplier: 3,
-				})},
+				}},
 		},
 		{
 			name: "set policy only",
@@ -1129,7 +1128,7 @@ func TestClientSetRetry(t *testing.T) {
 				WithMaxAttempts(7),
 			},
 			want: &retryConfig{
-				maxAttempts: expectedAttempts(7),
+				maxAttempts: intPointer(7),
 			},
 		},
 		{
@@ -1190,7 +1189,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 			},
 		},
@@ -1207,13 +1206,13 @@ func TestRetryer(t *testing.T) {
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial:    time.Minute,
 					Max:        time.Hour,
 					Multiplier: 6,
-				}),
+				},
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 				policy:      RetryAlways,
 			},
 		},
@@ -1230,13 +1229,13 @@ func TestRetryer(t *testing.T) {
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial:    time.Minute,
 					Max:        time.Hour,
 					Multiplier: 6,
-				}),
+				},
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(7),
+				maxAttempts: intPointer(7),
 				policy:      RetryAlways,
 			},
 		},
@@ -1252,7 +1251,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
 			},
 		},
@@ -1268,7 +1267,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 				shouldRetry: ShouldRetry,
 			},
 		},
@@ -1292,12 +1291,12 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryAlways,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
-				}),
+				},
 			},
 		},
 		{
@@ -1316,10 +1315,10 @@ func TestRetryer(t *testing.T) {
 				}),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
-				}),
+				},
 			},
 		},
 		{
@@ -1337,12 +1336,12 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Second,
-				}),
+				},
 			},
 		},
 		{
@@ -1358,9 +1357,9 @@ func TestRetryer(t *testing.T) {
 				}),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Multiplier: 4,
-				}),
+				},
 			},
 		},
 	}
@@ -1441,7 +1440,7 @@ func TestObjectCompose(t *testing.T) {
 	gotURL := make(chan string, 1)
 	gotBody := make(chan []byte, 1)
 	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body)
+		body, _ := io.ReadAll(r.Body)
 		gotURL <- r.URL.String()
 		gotBody <- body
 		w.Write([]byte("{}"))
@@ -1640,7 +1639,7 @@ func TestObjectCompose(t *testing.T) {
 func TestEmptyObjectIterator(t *testing.T) {
 	t.Parallel()
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
 	})
 	defer close()
@@ -1661,7 +1660,7 @@ func TestEmptyObjectIterator(t *testing.T) {
 func TestEmptyBucketIterator(t *testing.T) {
 	t.Parallel()
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
 	})
 	defer close()
@@ -1698,7 +1697,7 @@ func TestUserProject(t *testing.T) {
 	ctx := context.Background()
 	gotURL := make(chan *url.URL, 1)
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		gotURL <- r.URL
 		if strings.Contains(r.URL.String(), "/rewriteTo/") {
 			res := &raw.RewriteResponse{Done: true}
@@ -1805,6 +1804,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				RetentionExpirationTime: "2019-03-31T19:33:36Z",
 				Size:                    1 << 20,
 				TimeCreated:             "2019-03-31T19:32:10Z",
+				TimeFinalized:           "2019-03-31T19:32:10Z",
 				TimeDeleted:             "2019-03-31T19:33:39Z",
 				TemporaryHold:           true,
 				ComponentCount:          2,
@@ -1812,6 +1812,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
 				Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+				Finalized:               time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
 				CustomTime:              time.Date(2020, 8, 25, 19, 33, 36, 0, time.UTC),
@@ -1843,6 +1844,7 @@ func TestObjectAttrsToRawObject(t *testing.T) {
 	in := &ObjectAttrs{
 		Bucket:                  "Test",
 		Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+		Finalized:               time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 		ContentLanguage:         "en-us",
 		ContentType:             "video/mpeg",
 		Deleted:                 time.Date(2019, 3, 31, 19, 33, 39, 0, time.UTC),
@@ -1893,6 +1895,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 				RetentionExpireTime: timestamppb.New(now),
 				Size:                1 << 20,
 				CreateTime:          timestamppb.New(now),
+				FinalizeTime:        timestamppb.New(now),
 				DeleteTime:          timestamppb.New(now),
 				TemporaryHold:       true,
 				ComponentCount:      2,
@@ -1900,6 +1903,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
 				Created:                 now,
+				Finalized:               now,
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
 				CustomTime:              now,
@@ -1940,11 +1944,13 @@ func TestObjectAttrsToProtoObject(t *testing.T) {
 		RetentionExpireTime: timestamppb.New(now),
 		Size:                1 << 20,
 		CreateTime:          timestamppb.New(now),
+		FinalizeTime:        timestamppb.New(now),
 		DeleteTime:          timestamppb.New(now),
 		TemporaryHold:       true,
 	}
 	in := &ObjectAttrs{
 		Created:                 now,
+		Finalized:               now,
 		ContentLanguage:         "en-us",
 		ContentType:             "video/mpeg",
 		CustomTime:              now,
@@ -2195,7 +2201,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 
 	hClient, closeServer := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		done := make(chan bool, 1)
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
 		go func() {
 			gotHost <- r.Host
@@ -2301,7 +2307,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 								return err
 							}
 
-							_, err = io.Copy(ioutil.Discard, rc)
+							_, err = io.Copy(io.Discard, rc)
 							if err != nil {
 								return err
 							}

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1070,7 +1070,7 @@ func (x *AudienceEventTrigger) GetLogCondition() AudienceEventTrigger_LogConditi
 	return AudienceEventTrigger_LOG_CONDITION_UNSPECIFIED
 }
 
-// A resource message representing a GA4 Audience.
+// A resource message representing an Audience.
 type Audience struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

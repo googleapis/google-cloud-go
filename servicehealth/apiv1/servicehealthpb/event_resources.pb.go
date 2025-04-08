@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1451,7 +1451,7 @@ func (x *Asset) GetAssetType() string {
 	return ""
 }
 
-// Message for requesting list of events.
+// Requests list of events.
 type ListEventsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1563,7 +1563,7 @@ func (x *ListEventsRequest) GetView() EventView {
 	return EventView_EVENT_VIEW_UNSPECIFIED
 }
 
-// Message for response to listing events.
+// Response to request for listing events.
 type ListEventsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1632,7 +1632,7 @@ func (x *ListEventsResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Message for getting an event.
+// Gets information about a specific event.
 type GetEventRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1685,7 +1685,7 @@ func (x *GetEventRequest) GetName() string {
 	return ""
 }
 
-// Message for requesting list of organization events.
+// Requests list of events that affect an organization.
 type ListOrganizationEventsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1802,7 +1802,7 @@ func (x *ListOrganizationEventsRequest) GetView() OrganizationEventView {
 	return OrganizationEventView_ORGANIZATION_EVENT_VIEW_UNSPECIFIED
 }
 
-// Message for response to listing organization events.
+// Response to request for listing organization events.
 type ListOrganizationEventsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1871,7 +1871,7 @@ func (x *ListOrganizationEventsResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Message for getting an organization event.
+// Gets information about a specific event affecting an organization.
 type GetOrganizationEventRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1926,7 +1926,7 @@ func (x *GetOrganizationEventRequest) GetName() string {
 	return ""
 }
 
-// Message for requesting list of organization impacts.
+// Requests list of projects under an organization affected by an event.
 type ListOrganizationImpactsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2035,7 +2035,8 @@ func (x *ListOrganizationImpactsRequest) GetFilter() string {
 	return ""
 }
 
-// Message for response to listing organization impacts.
+// Response to request for listing projects under an organization affected by an
+// event.
 type ListOrganizationImpactsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2106,7 +2107,7 @@ func (x *ListOrganizationImpactsResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Message for getting an organization impact.
+// Gets information about an event that affects a project under an organization.
 type GetOrganizationImpactRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

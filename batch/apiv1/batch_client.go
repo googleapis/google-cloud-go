@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ type CallOptions struct {
 	CreateJob       []gax.CallOption
 	GetJob          []gax.CallOption
 	DeleteJob       []gax.CallOption
+	CancelJob       []gax.CallOption
 	ListJobs        []gax.CallOption
 	GetTask         []gax.CallOption
 	ListTasks       []gax.CallOption
@@ -94,6 +95,9 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelJob: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListJobs: []gax.CallOption{
@@ -160,6 +164,9 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteJob: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CancelJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListJobs: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -211,6 +218,8 @@ type internalClient interface {
 	GetJob(context.Context, *batchpb.GetJobRequest, ...gax.CallOption) (*batchpb.Job, error)
 	DeleteJob(context.Context, *batchpb.DeleteJobRequest, ...gax.CallOption) (*DeleteJobOperation, error)
 	DeleteJobOperation(name string) *DeleteJobOperation
+	CancelJob(context.Context, *batchpb.CancelJobRequest, ...gax.CallOption) (*CancelJobOperation, error)
+	CancelJobOperation(name string) *CancelJobOperation
 	ListJobs(context.Context, *batchpb.ListJobsRequest, ...gax.CallOption) *JobIterator
 	GetTask(context.Context, *batchpb.GetTaskRequest, ...gax.CallOption) (*batchpb.Task, error)
 	ListTasks(context.Context, *batchpb.ListTasksRequest, ...gax.CallOption) *TaskIterator
@@ -283,6 +292,17 @@ func (c *Client) DeleteJob(ctx context.Context, req *batchpb.DeleteJobRequest, o
 // The name must be that of a previously created DeleteJobOperation, possibly from a different process.
 func (c *Client) DeleteJobOperation(name string) *DeleteJobOperation {
 	return c.internalClient.DeleteJobOperation(name)
+}
+
+// CancelJob cancel a Job.
+func (c *Client) CancelJob(ctx context.Context, req *batchpb.CancelJobRequest, opts ...gax.CallOption) (*CancelJobOperation, error) {
+	return c.internalClient.CancelJob(ctx, req, opts...)
+}
+
+// CancelJobOperation returns a new CancelJobOperation from a given name.
+// The name must be that of a previously created CancelJobOperation, possibly from a different process.
+func (c *Client) CancelJobOperation(name string) *CancelJobOperation {
+	return c.internalClient.CancelJobOperation(name)
 }
 
 // ListJobs list all Jobs for a project within a region.
@@ -576,6 +596,26 @@ func (c *gRPCClient) DeleteJob(ctx context.Context, req *batchpb.DeleteJobReques
 		return nil, err
 	}
 	return &DeleteJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CancelJob(ctx context.Context, req *batchpb.CancelJobRequest, opts ...gax.CallOption) (*CancelJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelJob[0:len((*c.CallOptions).CancelJob):len((*c.CallOptions).CancelJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CancelJob, req, settings.GRPC, c.logger, "CancelJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CancelJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1013,6 +1053,65 @@ func (c *restClient) DeleteJob(ctx context.Context, req *batchpb.DeleteJobReques
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CancelJob cancel a Job.
+func (c *restClient) CancelJob(ctx context.Context, req *batchpb.CancelJobRequest, opts ...gax.CallOption) (*CancelJobOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelJob")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CancelJobOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -1569,6 +1668,24 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CancelJobOperation returns a new CancelJobOperation from a given name.
+// The name must be that of a previously created CancelJobOperation, possibly from a different process.
+func (c *gRPCClient) CancelJobOperation(name string) *CancelJobOperation {
+	return &CancelJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CancelJobOperation returns a new CancelJobOperation from a given name.
+// The name must be that of a previously created CancelJobOperation, possibly from a different process.
+func (c *restClient) CancelJobOperation(name string) *CancelJobOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CancelJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // DeleteJobOperation returns a new DeleteJobOperation from a given name.

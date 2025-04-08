@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,6 +56,8 @@ type EndpointCallOptions struct {
 	DeployModel               []gax.CallOption
 	UndeployModel             []gax.CallOption
 	MutateDeployedModel       []gax.CallOption
+	SetPublisherModelConfig   []gax.CallOption
+	FetchPublisherModelConfig []gax.CallOption
 	GetLocation               []gax.CallOption
 	ListLocations             []gax.CallOption
 	GetIamPolicy              []gax.CallOption
@@ -107,17 +109,19 @@ func defaultEndpointCallOptions() *EndpointCallOptions {
 		UndeployModel: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
-		MutateDeployedModel: []gax.CallOption{},
-		GetLocation:         []gax.CallOption{},
-		ListLocations:       []gax.CallOption{},
-		GetIamPolicy:        []gax.CallOption{},
-		SetIamPolicy:        []gax.CallOption{},
-		TestIamPermissions:  []gax.CallOption{},
-		CancelOperation:     []gax.CallOption{},
-		DeleteOperation:     []gax.CallOption{},
-		GetOperation:        []gax.CallOption{},
-		ListOperations:      []gax.CallOption{},
-		WaitOperation:       []gax.CallOption{},
+		MutateDeployedModel:       []gax.CallOption{},
+		SetPublisherModelConfig:   []gax.CallOption{},
+		FetchPublisherModelConfig: []gax.CallOption{},
+		GetLocation:               []gax.CallOption{},
+		ListLocations:             []gax.CallOption{},
+		GetIamPolicy:              []gax.CallOption{},
+		SetIamPolicy:              []gax.CallOption{},
+		TestIamPermissions:        []gax.CallOption{},
+		CancelOperation:           []gax.CallOption{},
+		DeleteOperation:           []gax.CallOption{},
+		GetOperation:              []gax.CallOption{},
+		ListOperations:            []gax.CallOption{},
+		WaitOperation:             []gax.CallOption{},
 	}
 }
 
@@ -145,17 +149,19 @@ func defaultEndpointRESTCallOptions() *EndpointCallOptions {
 		UndeployModel: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
-		MutateDeployedModel: []gax.CallOption{},
-		GetLocation:         []gax.CallOption{},
-		ListLocations:       []gax.CallOption{},
-		GetIamPolicy:        []gax.CallOption{},
-		SetIamPolicy:        []gax.CallOption{},
-		TestIamPermissions:  []gax.CallOption{},
-		CancelOperation:     []gax.CallOption{},
-		DeleteOperation:     []gax.CallOption{},
-		GetOperation:        []gax.CallOption{},
-		ListOperations:      []gax.CallOption{},
-		WaitOperation:       []gax.CallOption{},
+		MutateDeployedModel:       []gax.CallOption{},
+		SetPublisherModelConfig:   []gax.CallOption{},
+		FetchPublisherModelConfig: []gax.CallOption{},
+		GetLocation:               []gax.CallOption{},
+		ListLocations:             []gax.CallOption{},
+		GetIamPolicy:              []gax.CallOption{},
+		SetIamPolicy:              []gax.CallOption{},
+		TestIamPermissions:        []gax.CallOption{},
+		CancelOperation:           []gax.CallOption{},
+		DeleteOperation:           []gax.CallOption{},
+		GetOperation:              []gax.CallOption{},
+		ListOperations:            []gax.CallOption{},
+		WaitOperation:             []gax.CallOption{},
 	}
 }
 
@@ -179,6 +185,9 @@ type internalEndpointClient interface {
 	UndeployModelOperation(name string) *UndeployModelOperation
 	MutateDeployedModel(context.Context, *aiplatformpb.MutateDeployedModelRequest, ...gax.CallOption) (*MutateDeployedModelOperation, error)
 	MutateDeployedModelOperation(name string) *MutateDeployedModelOperation
+	SetPublisherModelConfig(context.Context, *aiplatformpb.SetPublisherModelConfigRequest, ...gax.CallOption) (*SetPublisherModelConfigOperation, error)
+	SetPublisherModelConfigOperation(name string) *SetPublisherModelConfigOperation
+	FetchPublisherModelConfig(context.Context, *aiplatformpb.FetchPublisherModelConfigRequest, ...gax.CallOption) (*aiplatformpb.PublisherModelConfig, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -314,6 +323,23 @@ func (c *EndpointClient) MutateDeployedModel(ctx context.Context, req *aiplatfor
 // The name must be that of a previously created MutateDeployedModelOperation, possibly from a different process.
 func (c *EndpointClient) MutateDeployedModelOperation(name string) *MutateDeployedModelOperation {
 	return c.internalClient.MutateDeployedModelOperation(name)
+}
+
+// SetPublisherModelConfig sets (creates or updates) configs of publisher models. For example, sets
+// the request/response logging config.
+func (c *EndpointClient) SetPublisherModelConfig(ctx context.Context, req *aiplatformpb.SetPublisherModelConfigRequest, opts ...gax.CallOption) (*SetPublisherModelConfigOperation, error) {
+	return c.internalClient.SetPublisherModelConfig(ctx, req, opts...)
+}
+
+// SetPublisherModelConfigOperation returns a new SetPublisherModelConfigOperation from a given name.
+// The name must be that of a previously created SetPublisherModelConfigOperation, possibly from a different process.
+func (c *EndpointClient) SetPublisherModelConfigOperation(name string) *SetPublisherModelConfigOperation {
+	return c.internalClient.SetPublisherModelConfigOperation(name)
+}
+
+// FetchPublisherModelConfig fetches the configs of publisher models.
+func (c *EndpointClient) FetchPublisherModelConfig(ctx context.Context, req *aiplatformpb.FetchPublisherModelConfigRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelConfig, error) {
+	return c.internalClient.FetchPublisherModelConfig(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -770,6 +796,44 @@ func (c *endpointGRPCClient) MutateDeployedModel(ctx context.Context, req *aipla
 	return &MutateDeployedModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *endpointGRPCClient) SetPublisherModelConfig(ctx context.Context, req *aiplatformpb.SetPublisherModelConfigRequest, opts ...gax.CallOption) (*SetPublisherModelConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetPublisherModelConfig[0:len((*c.CallOptions).SetPublisherModelConfig):len((*c.CallOptions).SetPublisherModelConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.endpointClient.SetPublisherModelConfig, req, settings.GRPC, c.logger, "SetPublisherModelConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SetPublisherModelConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *endpointGRPCClient) FetchPublisherModelConfig(ctx context.Context, req *aiplatformpb.FetchPublisherModelConfigRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchPublisherModelConfig[0:len((*c.CallOptions).FetchPublisherModelConfig):len((*c.CallOptions).FetchPublisherModelConfig)], opts...)
+	var resp *aiplatformpb.PublisherModelConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.endpointClient.FetchPublisherModelConfig, req, settings.GRPC, c.logger, "FetchPublisherModelConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *endpointGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1558,6 +1622,116 @@ func (c *endpointRESTClient) MutateDeployedModel(ctx context.Context, req *aipla
 	}, nil
 }
 
+// SetPublisherModelConfig sets (creates or updates) configs of publisher models. For example, sets
+// the request/response logging config.
+func (c *endpointRESTClient) SetPublisherModelConfig(ctx context.Context, req *aiplatformpb.SetPublisherModelConfigRequest, opts ...gax.CallOption) (*SetPublisherModelConfigOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setPublisherModelConfig", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetPublisherModelConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &SetPublisherModelConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// FetchPublisherModelConfig fetches the configs of publisher models.
+func (c *endpointRESTClient) FetchPublisherModelConfig(ctx context.Context, req *aiplatformpb.FetchPublisherModelConfigRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:fetchPublisherModelConfig", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).FetchPublisherModelConfig[0:len((*c.CallOptions).FetchPublisherModelConfig):len((*c.CallOptions).FetchPublisherModelConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.PublisherModelConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchPublisherModelConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *endpointRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2193,6 +2367,24 @@ func (c *endpointGRPCClient) MutateDeployedModelOperation(name string) *MutateDe
 func (c *endpointRESTClient) MutateDeployedModelOperation(name string) *MutateDeployedModelOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &MutateDeployedModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// SetPublisherModelConfigOperation returns a new SetPublisherModelConfigOperation from a given name.
+// The name must be that of a previously created SetPublisherModelConfigOperation, possibly from a different process.
+func (c *endpointGRPCClient) SetPublisherModelConfigOperation(name string) *SetPublisherModelConfigOperation {
+	return &SetPublisherModelConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SetPublisherModelConfigOperation returns a new SetPublisherModelConfigOperation from a given name.
+// The name must be that of a previously created SetPublisherModelConfigOperation, possibly from a different process.
+func (c *endpointRESTClient) SetPublisherModelConfigOperation(name string) *SetPublisherModelConfigOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &SetPublisherModelConfigOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,6 +57,8 @@ type HubCallOptions struct {
 	UpdateSpoke        []gax.CallOption
 	RejectHubSpoke     []gax.CallOption
 	AcceptHubSpoke     []gax.CallOption
+	AcceptSpokeUpdate  []gax.CallOption
+	RejectSpokeUpdate  []gax.CallOption
 	DeleteSpoke        []gax.CallOption
 	GetRouteTable      []gax.CallOption
 	GetRoute           []gax.CallOption
@@ -204,6 +206,30 @@ func defaultHubCallOptions() *HubCallOptions {
 				})
 			}),
 		},
+		AcceptSpokeUpdate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RejectSpokeUpdate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteSpoke: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -328,6 +354,10 @@ type internalHubClient interface {
 	RejectHubSpokeOperation(name string) *RejectHubSpokeOperation
 	AcceptHubSpoke(context.Context, *networkconnectivitypb.AcceptHubSpokeRequest, ...gax.CallOption) (*AcceptHubSpokeOperation, error)
 	AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperation
+	AcceptSpokeUpdate(context.Context, *networkconnectivitypb.AcceptSpokeUpdateRequest, ...gax.CallOption) (*AcceptSpokeUpdateOperation, error)
+	AcceptSpokeUpdateOperation(name string) *AcceptSpokeUpdateOperation
+	RejectSpokeUpdate(context.Context, *networkconnectivitypb.RejectSpokeUpdateRequest, ...gax.CallOption) (*RejectSpokeUpdateOperation, error)
+	RejectSpokeUpdateOperation(name string) *RejectSpokeUpdateOperation
 	DeleteSpoke(context.Context, *networkconnectivitypb.DeleteSpokeRequest, ...gax.CallOption) (*DeleteSpokeOperation, error)
 	DeleteSpokeOperation(name string) *DeleteSpokeOperation
 	GetRouteTable(context.Context, *networkconnectivitypb.GetRouteTableRequest, ...gax.CallOption) (*networkconnectivitypb.RouteTable, error)
@@ -505,6 +535,28 @@ func (c *HubClient) AcceptHubSpoke(ctx context.Context, req *networkconnectivity
 // The name must be that of a previously created AcceptHubSpokeOperation, possibly from a different process.
 func (c *HubClient) AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperation {
 	return c.internalClient.AcceptHubSpokeOperation(name)
+}
+
+// AcceptSpokeUpdate accepts a proposal to update a Network Connectivity Center spoke in a hub.
+func (c *HubClient) AcceptSpokeUpdate(ctx context.Context, req *networkconnectivitypb.AcceptSpokeUpdateRequest, opts ...gax.CallOption) (*AcceptSpokeUpdateOperation, error) {
+	return c.internalClient.AcceptSpokeUpdate(ctx, req, opts...)
+}
+
+// AcceptSpokeUpdateOperation returns a new AcceptSpokeUpdateOperation from a given name.
+// The name must be that of a previously created AcceptSpokeUpdateOperation, possibly from a different process.
+func (c *HubClient) AcceptSpokeUpdateOperation(name string) *AcceptSpokeUpdateOperation {
+	return c.internalClient.AcceptSpokeUpdateOperation(name)
+}
+
+// RejectSpokeUpdate rejects a proposal to update a Network Connectivity Center spoke in a hub.
+func (c *HubClient) RejectSpokeUpdate(ctx context.Context, req *networkconnectivitypb.RejectSpokeUpdateRequest, opts ...gax.CallOption) (*RejectSpokeUpdateOperation, error) {
+	return c.internalClient.RejectSpokeUpdate(ctx, req, opts...)
+}
+
+// RejectSpokeUpdateOperation returns a new RejectSpokeUpdateOperation from a given name.
+// The name must be that of a previously created RejectSpokeUpdateOperation, possibly from a different process.
+func (c *HubClient) RejectSpokeUpdateOperation(name string) *RejectSpokeUpdateOperation {
+	return c.internalClient.RejectSpokeUpdateOperation(name)
 }
 
 // DeleteSpoke deletes a Network Connectivity Center spoke.
@@ -1079,6 +1131,46 @@ func (c *hubGRPCClient) AcceptHubSpoke(ctx context.Context, req *networkconnecti
 	}, nil
 }
 
+func (c *hubGRPCClient) AcceptSpokeUpdate(ctx context.Context, req *networkconnectivitypb.AcceptSpokeUpdateRequest, opts ...gax.CallOption) (*AcceptSpokeUpdateOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AcceptSpokeUpdate[0:len((*c.CallOptions).AcceptSpokeUpdate):len((*c.CallOptions).AcceptSpokeUpdate)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.hubClient.AcceptSpokeUpdate, req, settings.GRPC, c.logger, "AcceptSpokeUpdate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AcceptSpokeUpdateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *hubGRPCClient) RejectSpokeUpdate(ctx context.Context, req *networkconnectivitypb.RejectSpokeUpdateRequest, opts ...gax.CallOption) (*RejectSpokeUpdateOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RejectSpokeUpdate[0:len((*c.CallOptions).RejectSpokeUpdate):len((*c.CallOptions).RejectSpokeUpdate)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.hubClient.RejectSpokeUpdate, req, settings.GRPC, c.logger, "RejectSpokeUpdate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RejectSpokeUpdateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1529,6 +1621,14 @@ func (c *hubGRPCClient) AcceptHubSpokeOperation(name string) *AcceptHubSpokeOper
 	}
 }
 
+// AcceptSpokeUpdateOperation returns a new AcceptSpokeUpdateOperation from a given name.
+// The name must be that of a previously created AcceptSpokeUpdateOperation, possibly from a different process.
+func (c *hubGRPCClient) AcceptSpokeUpdateOperation(name string) *AcceptSpokeUpdateOperation {
+	return &AcceptSpokeUpdateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
 // CreateHubOperation returns a new CreateHubOperation from a given name.
 // The name must be that of a previously created CreateHubOperation, possibly from a different process.
 func (c *hubGRPCClient) CreateHubOperation(name string) *CreateHubOperation {
@@ -1565,6 +1665,14 @@ func (c *hubGRPCClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation 
 // The name must be that of a previously created RejectHubSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) RejectHubSpokeOperation(name string) *RejectHubSpokeOperation {
 	return &RejectHubSpokeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RejectSpokeUpdateOperation returns a new RejectSpokeUpdateOperation from a given name.
+// The name must be that of a previously created RejectSpokeUpdateOperation, possibly from a different process.
+func (c *hubGRPCClient) RejectSpokeUpdateOperation(name string) *RejectSpokeUpdateOperation {
+	return &RejectSpokeUpdateOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

@@ -435,7 +435,7 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	}
 
 	var opts *pb.ReadOptions
-	if !c.readSettings.readTime.IsZero() {
+	if c.readSettings.readTimeExists() {
 		opts = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
 				// Timestamp cannot be less than microseconds accuracy. See #6938
@@ -470,7 +470,7 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	var opts *pb.ReadOptions
-	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
+	if c.readSettings.readTimeExists() {
 		opts = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
 				// Timestamp cannot be less than microseconds accuracy. See #6938
@@ -873,6 +873,10 @@ type ReadOption interface {
 
 type readSettings struct {
 	readTime time.Time
+}
+
+func (rs *readSettings) readTimeExists() bool {
+	return rs != nil && !rs.readTime.IsZero()
 }
 
 // WithReadOptions specifies constraints for accessing documents from the database,

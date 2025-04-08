@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,6 +81,12 @@ func (it *BackendServicesScopedListPairIterator) All() iter.Seq2[BackendServices
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *BgpRouteIterator) All() iter.Seq2[*computepb.BgpRoute, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *CommitmentIterator) All() iter.Seq2[*computepb.Commitment, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -130,6 +136,12 @@ func (it *ExternalVpnGatewayIterator) All() iter.Seq2[*computepb.ExternalVpnGate
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *FirewallIterator) All() iter.Seq2[*computepb.Firewall, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirewallPoliciesScopedListPairIterator) All() iter.Seq2[FirewallPoliciesScopedListPair, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -502,6 +514,12 @@ func (it *ResourcePolicyIterator) All() iter.Seq2[*computepb.ResourcePolicy, err
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *RouteIterator) All() iter.Seq2[*computepb.Route, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RoutePolicyIterator) All() iter.Seq2[*computepb.RoutePolicy, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

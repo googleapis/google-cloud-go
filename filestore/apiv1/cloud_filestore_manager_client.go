@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,6 +64,7 @@ type CloudFilestoreManagerCallOptions struct {
 	CreateBackup    []gax.CallOption
 	DeleteBackup    []gax.CallOption
 	UpdateBackup    []gax.CallOption
+	PromoteReplica  []gax.CallOption
 	GetLocation     []gax.CallOption
 	ListLocations   []gax.CallOption
 	CancelOperation []gax.CallOption
@@ -164,6 +165,7 @@ func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions
 		UpdateBackup: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		PromoteReplica:  []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -246,6 +248,7 @@ func defaultCloudFilestoreManagerRESTCallOptions() *CloudFilestoreManagerCallOpt
 		UpdateBackup: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		PromoteReplica:  []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -288,6 +291,8 @@ type internalCloudFilestoreManagerClient interface {
 	DeleteBackupOperation(name string) *DeleteBackupOperation
 	UpdateBackup(context.Context, *filestorepb.UpdateBackupRequest, ...gax.CallOption) (*UpdateBackupOperation, error)
 	UpdateBackupOperation(name string) *UpdateBackupOperation
+	PromoteReplica(context.Context, *filestorepb.PromoteReplicaRequest, ...gax.CallOption) (*PromoteReplicaOperation, error)
+	PromoteReplicaOperation(name string) *PromoteReplicaOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -519,6 +524,17 @@ func (c *CloudFilestoreManagerClient) UpdateBackup(ctx context.Context, req *fil
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *CloudFilestoreManagerClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	return c.internalClient.UpdateBackupOperation(name)
+}
+
+// PromoteReplica promote the standby instance (replica).
+func (c *CloudFilestoreManagerClient) PromoteReplica(ctx context.Context, req *filestorepb.PromoteReplicaRequest, opts ...gax.CallOption) (*PromoteReplicaOperation, error) {
+	return c.internalClient.PromoteReplica(ctx, req, opts...)
+}
+
+// PromoteReplicaOperation returns a new PromoteReplicaOperation from a given name.
+// The name must be that of a previously created PromoteReplicaOperation, possibly from a different process.
+func (c *CloudFilestoreManagerClient) PromoteReplicaOperation(name string) *PromoteReplicaOperation {
+	return c.internalClient.PromoteReplicaOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -1201,6 +1217,26 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateBackup(ctx context.Context, req 
 	}, nil
 }
 
+func (c *cloudFilestoreManagerGRPCClient) PromoteReplica(ctx context.Context, req *filestorepb.PromoteReplicaRequest, opts ...gax.CallOption) (*PromoteReplicaOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PromoteReplica[0:len((*c.CallOptions).PromoteReplica):len((*c.CallOptions).PromoteReplica)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudFilestoreManagerClient.PromoteReplica, req, settings.GRPC, c.logger, "PromoteReplica")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PromoteReplicaOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *cloudFilestoreManagerGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1837,6 +1873,9 @@ func (c *cloudFilestoreManagerRESTClient) ListSnapshots(ctx context.Context, req
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -2433,6 +2472,65 @@ func (c *cloudFilestoreManagerRESTClient) UpdateBackup(ctx context.Context, req 
 	}, nil
 }
 
+// PromoteReplica promote the standby instance (replica).
+func (c *cloudFilestoreManagerRESTClient) PromoteReplica(ctx context.Context, req *filestorepb.PromoteReplicaRequest, opts ...gax.CallOption) (*PromoteReplicaOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:promoteReplica", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PromoteReplica")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &PromoteReplicaOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *cloudFilestoreManagerRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2874,6 +2972,24 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteSnapshotOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSnapshotOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// PromoteReplicaOperation returns a new PromoteReplicaOperation from a given name.
+// The name must be that of a previously created PromoteReplicaOperation, possibly from a different process.
+func (c *cloudFilestoreManagerGRPCClient) PromoteReplicaOperation(name string) *PromoteReplicaOperation {
+	return &PromoteReplicaOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// PromoteReplicaOperation returns a new PromoteReplicaOperation from a given name.
+// The name must be that of a previously created PromoteReplicaOperation, possibly from a different process.
+func (c *cloudFilestoreManagerRESTClient) PromoteReplicaOperation(name string) *PromoteReplicaOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &PromoteReplicaOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
