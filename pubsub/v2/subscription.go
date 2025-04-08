@@ -102,24 +102,24 @@ type ReceiveSettings struct {
 	// duration less than 0.
 	MaxExtension time.Duration
 
-	// MaxDurationPerLeaseExtension is the maximum duration by which to extend the ack
+	// MaxDurationPerAckExtension is the maximum duration by which to extend the ack
 	// deadline at a time. The ack deadline will continue to be extended by up
-	// to this duration until MaxExtension is reached. Setting MaxDurationPerLeaseExtension
+	// to this duration until MaxExtension is reached. Setting MaxDurationPerAckExtension
 	// bounds the maximum amount of time before a message redelivery in the
 	// event the subscriber fails to extend the deadline.
 	//
-	// MaxDurationPerLeaseExtension must be between 10s and 600s (inclusive). This configuration
+	// MaxDurationPerAckExtension must be between 10s and 600s (inclusive). This configuration
 	// can be disabled by specifying a duration less than (or equal to) 0.
-	MaxDurationPerLeaseExtension time.Duration
+	MaxDurationPerAckExtension time.Duration
 
-	// MinDurationPerLeaseExtension is the the min duration for a single lease extension attempt.
+	// MinDurationPerAckExtension is the the min duration for a single lease extension attempt.
 	// By default the 99th percentile of ack latency is used to determine lease extension
 	// periods but this value can be set to minimize the number of extraneous RPCs sent.
 	//
-	// MinDurationPerLeaseExtension must be between 10s and 600s (inclusive). This configuration
+	// MinDurationPerAckExtension must be between 10s and 600s (inclusive). This configuration
 	// can be disabled by specifying a duration less than (or equal to) 0.
 	// Disabled by default but set to 60 seconds if the subscription has exactly-once delivery enabled.
-	MinDurationPerLeaseExtension time.Duration
+	MinDurationPerAckExtension time.Duration
 
 	// MaxOutstandingMessages is the maximum number of unprocessed messages
 	// (unacknowledged but not yet expired). If MaxOutstandingMessages is 0, it
@@ -150,12 +150,12 @@ type ReceiveSettings struct {
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
-	MaxExtension:                 60 * time.Minute,
-	MaxDurationPerLeaseExtension: 0,
-	MinDurationPerLeaseExtension: 0,
-	MaxOutstandingMessages:       1000,
-	MaxOutstandingBytes:          1e9, // 1G
-	NumGoroutines:                1,
+	MaxExtension:               60 * time.Minute,
+	MaxDurationPerAckExtension: 0,
+	MinDurationPerAckExtension: 0,
+	MaxOutstandingMessages:     1000,
+	MaxOutstandingBytes:        1e9, // 1G
+	NumGoroutines:              1,
 }
 
 var errReceiveInProgress = errors.New("pubsub: Receive already in progress for this subscription")
@@ -213,13 +213,13 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		// If MaxExtension is negative, disable automatic extension.
 		maxExt = 0
 	}
-	maxExtPeriod := s.ReceiveSettings.MaxDurationPerLeaseExtension
+	maxExtPeriod := s.ReceiveSettings.MaxDurationPerAckExtension
 	if maxExtPeriod < 0 {
-		maxExtPeriod = DefaultReceiveSettings.MaxDurationPerLeaseExtension
+		maxExtPeriod = DefaultReceiveSettings.MaxDurationPerAckExtension
 	}
-	minExtPeriod := s.ReceiveSettings.MinDurationPerLeaseExtension
+	minExtPeriod := s.ReceiveSettings.MinDurationPerAckExtension
 	if minExtPeriod < 0 {
-		minExtPeriod = DefaultReceiveSettings.MinDurationPerLeaseExtension
+		minExtPeriod = DefaultReceiveSettings.MinDurationPerAckExtension
 	}
 
 	var numGoroutines int
