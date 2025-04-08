@@ -998,7 +998,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 
 	/*
 		statement:
-			{ create_database | create_table | create_index | create_search_index | alter_table | drop_table | rename_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
+			{ create_database | create_table | create_index | create_search_index | alter_table | drop_table | rename_table | drop_index | drop_search_index | create_change_stream | alter_change_stream | drop_change_stream }
 	*/
 
 	// TODO: support create_database
@@ -1026,6 +1026,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		// These statements are simple.
 		// DROP TABLE [ IF EXISTS ] table_name
 		// DROP INDEX [ IF EXISTS ] index_name
+		// DROP SEARCH INDEX [ IF EXISTS ] index_name
 		// DROP VIEW view_name
 		// DROP ROLE role_name
 		// DROP CHANGE STREAM change_stream_name
@@ -1057,6 +1058,19 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropIndex{Name: name, IfExists: ifExists, Position: pos}, nil
+		case tok.caseEqual("SEARCH"):
+			if err := p.expect("INDEX"); err != nil {
+				return nil, err
+			}
+			var ifExists bool
+			if p.eat("IF", "EXISTS") {
+				ifExists = true
+			}
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			return &DropSearchIndex{Name: name, IfExists: ifExists, Position: pos}, nil
 		case tok.caseEqual("VIEW"):
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
@@ -1118,6 +1132,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		return as, err
 	} else if p.sniff("ALTER", "INDEX") {
 		ai, err := p.parseAlterIndex()
+		return ai, err
+	} else if p.sniff("ALTER", "SEARCH", "INDEX") {
+		ai, err := p.parseAlterSearchIndex()
 		return ai, err
 	} else if p.sniff("CREATE", "SEQUENCE") {
 		cs, err := p.parseCreateSequence()
@@ -3054,6 +3071,55 @@ func (p *parser) parseAlterIndex() (*AlterIndex, *parseError) {
 	}
 
 	a := &AlterIndex{Name: iname, Position: pos}
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	switch {
+	case tok.caseEqual("ADD"):
+		if err := p.expect("STORED", "COLUMN"); err != nil {
+			return nil, err
+		}
+		cname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = AddStoredColumn{Name: cname}
+		return a, nil
+	case tok.caseEqual("DROP"):
+		if err := p.expect("STORED", "COLUMN"); err != nil {
+			return nil, err
+		}
+		cname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = DropStoredColumn{Name: cname}
+		return a, nil
+	}
+
+	return nil, p.errorf("got %q, expected ADD or DROP", tok.value)
+}
+
+func (p *parser) parseAlterSearchIndex() (*AlterSearchIndex, *parseError) {
+	debugf("parseAlterSearchIndex: %v", p)
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	if err := p.expect("SEARCH"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("INDEX"); err != nil {
+		return nil, err
+	}
+	iname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	a := &AlterSearchIndex{Name: iname, Position: pos}
 	tok := p.next()
 	if tok.err != nil {
 		return nil, tok.err
