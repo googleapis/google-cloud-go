@@ -3107,10 +3107,10 @@ func (p *parser) parseAlterSearchIndex() (*AlterSearchIndex, *parseError) {
 	if err := p.expect("ALTER"); err != nil {
 		return nil, err
 	}
+	pos := p.Pos()
 	if err := p.expect("SEARCH"); err != nil {
 		return nil, err
 	}
-	pos := p.Pos()
 	if err := p.expect("INDEX"); err != nil {
 		return nil, err
 	}
