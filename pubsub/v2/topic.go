@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"runtime"
 	"strings"
 	"sync"
@@ -371,7 +372,6 @@ func (t *Publisher) initBundler() {
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
 		b := t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
 		fcs.MaxOutstandingBytes = b
-		t.scheduler.BufferedByteLimit = b
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
@@ -382,6 +382,10 @@ func (t *Publisher) initBundler() {
 	// Calculate the max limit of a single bundle. 5 comes from the number of bytes
 	// needed to be reserved for encoding the PubsubMessage repeated field.
 	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name) - 5
+
+	// The max size of publish messages in a system should be handled by the flow controller,
+	// not the scheduler or bundler. Disable this by setting to MaxInt.
+	t.scheduler.BufferedByteLimit = math.MaxInt
 }
 
 // ErrPublishingPaused is a custom error indicating that the publish paused for the specified ordering key.
