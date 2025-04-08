@@ -1,5 +1,12 @@
 # Changes
 
+## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.48.1...pubsub/v1.49.0) (2025-04-07)
+
+
+### Features
+
+* **pubsub:** Support message transforms ([#11957](https://github.com/googleapis/google-cloud-go/issues/11957)) ([84bf25b](https://github.com/googleapis/google-cloud-go/commit/84bf25ba1c0e01b2f19167d4d3c914c56f87b924))
+
 ## [1.48.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.48.0...pubsub/v1.48.1) (2025-04-01)
 
 
