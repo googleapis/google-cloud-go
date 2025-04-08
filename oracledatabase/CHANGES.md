@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.3.0...oracledatabase/v0.3.1) (2025-03-25)
+
+
+### Documentation
+
+* **oracledatabase:** The network and cidr fields of AutonomousDatabase are now marked optional ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.2.1...oracledatabase/v0.3.0) (2025-03-19)
 
 

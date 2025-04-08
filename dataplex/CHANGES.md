@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.23.1...dataplex/v1.24.0) (2025-03-27)
+
+
+### Features
+
+* **dataplex:** Add support for REST transport ([#11903](https://github.com/googleapis/google-cloud-go/issues/11903)) ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+
 ## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.23.0...dataplex/v1.23.1) (2025-03-13)
 
 

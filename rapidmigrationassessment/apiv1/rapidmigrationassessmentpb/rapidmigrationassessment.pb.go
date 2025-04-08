@@ -1338,7 +1338,7 @@ type RapidMigrationAssessmentClient interface {
 	// Updates the parameters of a single Collector.
 	UpdateCollector(ctx context.Context, in *UpdateCollectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Collector - changes state of collector to "Deleting".
-	// Background jobs does final deletion thorugh producer api.
+	// Background jobs does final deletion through producer API.
 	DeleteCollector(ctx context.Context, in *DeleteCollectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resumes the given collector.
 	ResumeCollector(ctx context.Context, in *ResumeCollectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -1462,7 +1462,7 @@ type RapidMigrationAssessmentServer interface {
 	// Updates the parameters of a single Collector.
 	UpdateCollector(context.Context, *UpdateCollectorRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Collector - changes state of collector to "Deleting".
-	// Background jobs does final deletion thorugh producer api.
+	// Background jobs does final deletion through producer API.
 	DeleteCollector(context.Context, *DeleteCollectorRequest) (*longrunningpb.Operation, error)
 	// Resumes the given collector.
 	ResumeCollector(context.Context, *ResumeCollectorRequest) (*longrunningpb.Operation, error)
