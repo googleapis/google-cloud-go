@@ -1828,7 +1828,7 @@ type LookupEntryRequest_SqlResource struct {
 	// * `datacatalog.entry.{PROJECT_ID}.{LOCATION_ID}.{ENTRY_GROUP_ID}.{ENTRY_ID}`
 	//
 	// Identifiers (`*_ID`) should comply with the
-	// [Lexical structure in Standard SQL]
+	// [Lexical structure in GoogleSQL]
 	// (https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical).
 	SqlResource string `protobuf:"bytes,3,opt,name=sql_resource,json=sqlResource,proto3,oneof"`
 }
