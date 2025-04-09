@@ -74,7 +74,11 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 }
 
 func TestSpanAnnotatedWithXGoogSpannerRequestID_unary(t *testing.T) {
-	testSpanAnnotatedWithXGoogSpannerRequestID(t, "cloud.google.com/go/spanner.BatchCreateSessions")
+	targetSpanName := "cloud.google.com/go/spanner.BatchCreateSessions"
+	if isMultiplexEnabled {
+		targetSpanName = "cloud.google.com/go/spanner.CreateSession"
+	}
+	testSpanAnnotatedWithXGoogSpannerRequestID(t, targetSpanName)
 }
 
 func TestSpanAnnotatedWithXGoogSpannerRequestID_streaming(t *testing.T) {
