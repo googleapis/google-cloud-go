@@ -1500,6 +1500,15 @@ func (mrr *gRPCBidiReader) getHandle() []byte {
 	return mrr.readHandle
 }
 
+func (mrr *gRPCBidiReader) error() error {
+	mrr.mu.Lock()
+	defer mrr.mu.Unlock()
+	if mrr.done {
+		return errors.New("storage: stream is permanently closed")
+	}
+	return nil
+}
+
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
 	// If bidi reads was not selected, use the legacy read object API.
 	if !c.config.grpcBidiReads {
@@ -1718,27 +1727,28 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}
 	s.retry.maxRetryDuration = retryDeadline
 
+	// Set Flush func for use by exported Writer.Flush.
+	var gw *gRPCWriter
+	setFlush(func() (int64, error) {
+		return gw.flush()
+	})
+	gw, err := newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
+	if err != nil {
+		errorf(err)
+		pr.CloseWithError(err)
+		close(params.donec)
+		return nil, err
+	}
+
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
 	go func() {
 		err := func() error {
 			// Unless the user told us the content type, we have to determine it from
 			// the first read.
-			var r io.Reader = pr
 			if params.attrs.ContentType == "" && !params.forceEmptyContentType {
-				r, params.attrs.ContentType = gax.DetermineContentType(r)
+				gw.reader, gw.spec.Resource.ContentType = gax.DetermineContentType(gw.reader)
 			}
-
-			var gw *gRPCWriter
-			gw, err := newGRPCWriter(c, s, params, r, pw, params.setPipeWriter)
-			if err != nil {
-				return err
-			}
-
-			// Set Flush func for use by exported Writer.Flush.
-			setFlush(func() (int64, error) {
-				return gw.flush()
-			})
 
 			// Loop until there is an error or the Object has been finalized.
 			for {
@@ -1927,7 +1937,7 @@ type gRPCBidiReader struct {
 	receiverRetry    chan bool
 	mu               sync.Mutex          // protects all vars in gRPCBidiReader from concurrent access
 	mp               map[int64]rangeSpec // always use the mutex when accessing the map
-	done             bool                // always use the mutex when accessing this variable
+	done             bool                // always use the mutex when accessing this variable, indicates whether stream is closed or not.
 	activeTask       int64               // always use the mutex when accessing this variable
 	objectSize       int64               // always use the mutex when accessing this variable
 	retrier          func(error, string)
@@ -2472,7 +2482,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.ObjectDataRanges = []*storagepb.ObjectRangeData{{ChecksummedData: &storagepb.ChecksummedData{}, ReadRange: &storagepb.ReadRange{}}}
 			bytesFieldLen, err := d.consumeVarint()
 			if err != nil {
-				return fmt.Errorf("consuming bytes: %v", err)
+				return fmt.Errorf("consuming bytes: %w", err)
 			}
 			var contentEndOff = d.off + bytesFieldLen
 			for d.off < contentEndOff {
@@ -2485,7 +2495,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 				case gotNum == checksummedDataField && gotTyp == protowire.BytesType:
 					checksummedDataFieldLen, err := d.consumeVarint()
 					if err != nil {
-						return fmt.Errorf("consuming bytes: %v", err)
+						return fmt.Errorf("consuming bytes: %w", err)
 					}
 					var checksummedDataEndOff = d.off + checksummedDataFieldLen
 					for d.off < checksummedDataEndOff {
@@ -2516,7 +2526,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 				case gotNum == readRangeField && gotTyp == protowire.BytesType:
 					buf, err := d.consumeBytesCopy()
 					if err != nil {
-						return fmt.Errorf("invalid ObjectDataRange.ReadRange: %v", err)
+						return fmt.Errorf("invalid ObjectDataRange.ReadRange: %w", err)
 					}
 
 					if err := proto.Unmarshal(buf, msg.ObjectDataRanges[0].ReadRange); err != nil {
@@ -2535,7 +2545,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.Metadata = &storagepb.Object{}
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return fmt.Errorf("invalid BidiReadObjectResponse.Metadata: %v", err)
+				return fmt.Errorf("invalid BidiReadObjectResponse.Metadata: %w", err)
 			}
 
 			if err := proto.Unmarshal(buf, msg.Metadata); err != nil {
@@ -2545,7 +2555,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			msg.ReadHandle = &storagepb.BidiReadHandle{}
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return fmt.Errorf("invalid BidiReadObjectResponse.ReadHandle: %v", err)
+				return fmt.Errorf("invalid BidiReadObjectResponse.ReadHandle: %w", err)
 			}
 
 			if err := proto.Unmarshal(buf, msg.ReadHandle); err != nil {
@@ -2628,6 +2638,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		forceOneShot:          params.chunkSize <= 0,
 		forceEmptyContentType: params.forceEmptyContentType,
 		append:                params.append,
+		finalizeOnClose:       params.finalizeOnClose,
 		setPipeWriter:         setPipeWriter,
 		flushComplete:         make(chan int64),
 	}, nil
@@ -2656,6 +2667,7 @@ type gRPCWriter struct {
 	forceOneShot          bool
 	forceEmptyContentType bool
 	append                bool
+	finalizeOnClose       bool
 
 	streamSender    gRPCBidiWriteBufferSender
 	flushInProgress bool       // true when the pipe is being recreated for a flush.

@@ -607,6 +607,10 @@ type SubscriptionConfig struct {
 	// receive messages. This field is set only in responses from the server;
 	// it is ignored if it is set in any requests.
 	State SubscriptionState
+
+	// MessageTransforms are the transforms to be applied to messages before they are delivered
+	// to subscribers. Transforms are applied in the order specified.
+	MessageTransforms []MessageTransform
 }
 
 // String returns the globally unique printable name of the subscription config.
@@ -665,6 +669,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		RetryPolicy:               pbRetryPolicy,
 		Detached:                  cfg.Detached,
 		EnableExactlyOnceDelivery: cfg.EnableExactlyOnceDelivery,
+		MessageTransforms:         messageTransformsToProto(cfg.MessageTransforms),
 	}
 }
 
@@ -695,6 +700,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
 		EnableExactlyOnceDelivery:     pbSub.EnableExactlyOnceDelivery,
 		State:                         SubscriptionState(pbSub.State),
+		MessageTransforms:             protoToMessageTransforms(pbSub.MessageTransforms),
 	}
 	if pc := protoToPushConfig(pbSub.PushConfig); pc != nil {
 		subC.PushConfig = *pc
@@ -1063,6 +1069,9 @@ type SubscriptionConfigToUpdate struct {
 
 	// If set, EnableExactlyOnce is changed.
 	EnableExactlyOnceDelivery optional.Bool
+
+	// If non-nil, the entire list of message transforms is replaced with the following.
+	MessageTransforms []MessageTransform
 }
 
 // Update changes an existing subscription according to the fields set in cfg.
@@ -1130,6 +1139,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.EnableExactlyOnceDelivery != nil {
 		psub.EnableExactlyOnceDelivery = optional.ToBool(cfg.EnableExactlyOnceDelivery)
 		paths = append(paths, "enable_exactly_once_delivery")
+	}
+	if cfg.MessageTransforms != nil {
+		psub.MessageTransforms = messageTransformsToProto(cfg.MessageTransforms)
+		paths = append(paths, "message_transforms")
 	}
 	return &pb.UpdateSubscriptionRequest{
 		Subscription: psub,

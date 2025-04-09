@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.80.0",
+    "version": "1.81.0",
     "language": "GO",
     "apis": [
       {
@@ -2398,6 +2398,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_EndpointService_FetchPublisherModelConfig_sync",
+      "title": "aiplatform FetchPublisherModelConfig Sample",
+      "description": "FetchPublisherModelConfig fetches the configs of publisher models.",
+      "file": "EndpointClient/FetchPublisherModelConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchPublisherModelConfig",
+        "fullName": "google.cloud.aiplatform.v1beta1.EndpointClient.FetchPublisherModelConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.FetchPublisherModelConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.PublisherModelConfig",
+        "client": {
+          "shortName": "EndpointClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.EndpointClient"
+        },
+        "method": {
+          "shortName": "FetchPublisherModelConfig",
+          "fullName": "google.cloud.aiplatform.v1beta1.EndpointService.FetchPublisherModelConfig",
+          "service": {
+            "shortName": "EndpointService",
+            "fullName": "google.cloud.aiplatform.v1beta1.EndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_EndpointService_GetEndpoint_sync",
       "title": "aiplatform GetEndpoint Sample",
       "description": "GetEndpoint gets an Endpoint.",
@@ -2807,6 +2853,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_EndpointService_SetPublisherModelConfig_sync",
+      "title": "aiplatform SetPublisherModelConfig Sample",
+      "description": "SetPublisherModelConfig sets (creates or updates) configs of publisher models. For example, sets\nthe request/response logging config.",
+      "file": "EndpointClient/SetPublisherModelConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetPublisherModelConfig",
+        "fullName": "google.cloud.aiplatform.v1beta1.EndpointClient.SetPublisherModelConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.SetPublisherModelConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SetPublisherModelConfigOperation",
+        "client": {
+          "shortName": "EndpointClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.EndpointClient"
+        },
+        "method": {
+          "shortName": "SetPublisherModelConfig",
+          "fullName": "google.cloud.aiplatform.v1beta1.EndpointService.SetPublisherModelConfig",
+          "service": {
+            "shortName": "EndpointService",
+            "fullName": "google.cloud.aiplatform.v1beta1.EndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -6843,6 +6935,48 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureOnlineStoreService_FeatureViewDirectWrite_sync",
+      "title": "aiplatform FeatureViewDirectWrite Sample",
+      "description": "FeatureViewDirectWrite bidirectional streaming RPC to directly write to feature values in a\nfeature view. Requests may not have a one-to-one mapping to responses and\nresponses may be returned out-of-order to reduce latency.\n\n\nThis method is not supported for the REST transport.",
+      "file": "FeatureOnlineStoreClient/FeatureViewDirectWrite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FeatureViewDirectWrite",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreClient.FeatureViewDirectWrite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient",
+        "client": {
+          "shortName": "FeatureOnlineStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreClient"
+        },
+        "method": {
+          "shortName": "FeatureViewDirectWrite",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.FeatureViewDirectWrite",
+          "service": {
+            "shortName": "FeatureOnlineStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]

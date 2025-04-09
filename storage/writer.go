@@ -107,11 +107,24 @@ type Writer struct {
 	// Append is a parameter to indicate whether the writer should use appendable
 	// object semantics for the new object generation. Appendable objects are
 	// visible on the first Write() call, and can be appended to until they are
-	// finalized. The object is finalized on a call to Close().
+	// finalized. If Writer.FinalizeOnClose is set to true, the object is finalized
+	// when Writer.Close() is called; otherwise, the object is left unfinalized
+	// and can be appended to later.
 	//
 	// Append is only supported for gRPC. This feature is in preview and is not
 	// yet available for general use.
 	Append bool
+
+	// FinalizeOnClose indicates whether the writer should finalize an object when
+	// closing the write stream. This only applies to Writers where Append is
+	// true, since append semantics allow a prefix of the object to be durable and
+	// readable. By default, objects written with Append semantics will not be
+	// finalized, which means they can be appended to later.
+	//
+	// FinalizeOnClose is supported only on gRPC clients where [Writer.Append] is
+	// set to true. This feature is in preview and is not yet available for
+	// general use.
+	FinalizeOnClose bool
 
 	// ProgressFunc can be used to monitor the progress of a large write
 	// operation. If ProgressFunc is not nil and writing requires multiple
@@ -186,6 +199,9 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 // Do not call Flush concurrently with Write or Close. A single Writer is not
 // safe for unsynchronized use across threads.
 //
+// Note that calling Flush very early (before 512 bytes) may interfere with
+// automatic content sniffing in the Writer.
+//
 // Flush is supported only on gRPC clients where [Writer.Append] is set
 // to true. This feature is in preview and is not yet available for general use.
 func (w *Writer) Flush() (int64, error) {
@@ -258,6 +274,7 @@ func (w *Writer) openWriter() (err error) {
 		encryptionKey:         w.o.encryptionKey,
 		sendCRC32C:            w.SendCRC32C,
 		append:                w.Append,
+		finalizeOnClose:       w.FinalizeOnClose,
 		donec:                 w.donec,
 		setError:              w.error,
 		progress:              w.progress,
@@ -328,6 +345,9 @@ func (w *Writer) validateWriteAttrs() error {
 	}
 	if w.ChunkSize < 0 {
 		return errors.New("storage: Writer.ChunkSize must be non-negative")
+	}
+	if w.FinalizeOnClose && !w.Append {
+		return errors.New("storage: Writer.FinalizeOnClose may only be true if Writer.Append is true")
 	}
 	return nil
 }
