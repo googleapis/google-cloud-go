@@ -118,7 +118,7 @@ func testSpanAnnotatedWithXGoogSpannerRequestID(t *testing.T, targetSpanName str
 		t.Fatal("No spans were exported")
 	}
 
-	// Find the unary span "/BatchCreateSession".
+	// Find the target span
 	var targetSpan tracetest.SpanStub
 	found := false
 	for _, span := range spans {
