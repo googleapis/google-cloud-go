@@ -7,20 +7,20 @@ require (
 	cloud.google.com/go/compute/metadata v0.6.0
 	cloud.google.com/go/storage v1.51.0
 	github.com/golang/mock v1.7.0-rc.1
-	github.com/google/pprof v0.0.0-20250317173921-a4b03ec1a45e
+	github.com/google/pprof v0.0.0-20250403155104-27863c87afa6
 	github.com/googleapis/gax-go/v2 v2.14.1
-	golang.org/x/oauth2 v0.28.0
-	google.golang.org/api v0.227.0
+	golang.org/x/oauth2 v0.29.0
+	google.golang.org/api v0.228.0
 	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313205543-e70fdf4c4cb4
-	google.golang.org/grpc v1.71.0
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250407143221-ac9807e6c755
+	google.golang.org/grpc v1.71.1
 	google.golang.org/protobuf v1.36.6
 )
 
 require (
 	cel.dev/expr v0.19.2 // indirect
 	cloud.google.com/go/auth v0.15.0 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/iam v1.4.1 // indirect
 	cloud.google.com/go/monitoring v1.24.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.25.0 // indirect

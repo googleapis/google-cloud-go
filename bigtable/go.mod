@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	cloud.google.com/go v0.120.0
-	cloud.google.com/go/iam v1.4.2
+	cloud.google.com/go/iam v1.5.0
 	cloud.google.com/go/longrunning v0.6.6
 	cloud.google.com/go/monitoring v1.24.1
 	github.com/google/btree v1.1.3
@@ -16,11 +16,11 @@ require (
 	go.opentelemetry.io/otel/metric v1.35.0
 	go.opentelemetry.io/otel/sdk v1.35.0
 	go.opentelemetry.io/otel/sdk/metric v1.35.0
-	google.golang.org/api v0.227.0
+	google.golang.org/api v0.228.0
 	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb
-	google.golang.org/genproto/googleapis/api v0.0.0-20250313205543-e70fdf4c4cb4
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313205543-e70fdf4c4cb4
-	google.golang.org/grpc v1.71.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20250407143221-ac9807e6c755
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250407143221-ac9807e6c755
+	google.golang.org/grpc v1.71.1
 	google.golang.org/protobuf v1.36.6
 	rsc.io/binaryregexp v0.2.0
 )
@@ -28,7 +28,7 @@ require (
 require (
 	cel.dev/expr v0.19.2 // indirect
 	cloud.google.com/go/auth v0.15.0 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20250121191232-2f005788dc42 // indirect
