@@ -341,24 +341,28 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 type gRPCBidiReader struct {
-	ctx              context.Context
-	stream           storagepb.Storage_BidiReadObjectClient
-	cancel           context.CancelFunc
-	settings         *settings
-	readHandle       ReadHandle
-	readIDGenerator  *readIDGenerator
-	reopen           func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
-	readSpec         *storagepb.BidiReadObjectSpec
-	rangesToRead     chan []mrdRange
-	objectSize       int64 // always use the mutex when accessing this variable
-	closeReceiver    chan bool
-	closeSender      chan bool
-	senderRetry      chan bool
-	receiverRetry    chan bool
-	mu               sync.Mutex         // protects all vars in gRPCBidiReader from concurrent access
+	ctx             context.Context
+	stream          storagepb.Storage_BidiReadObjectClient
+	cancel          context.CancelFunc
+	settings        *settings
+	readHandle      ReadHandle
+	readIDGenerator *readIDGenerator
+	reopen          func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
+	readSpec        *storagepb.BidiReadObjectSpec
+	objectSize      int64 // always use the mutex when accessing this variable
+	closeReceiver   chan bool
+	closeSender     chan bool
+	senderRetry     chan bool
+	receiverRetry   chan bool
+	// rangesToRead are ranges that have not yet been sent or have been sent but
+	// must be retried.
+	rangesToRead chan []mrdRange
+	// activeRanges are ranges that are currently being sent or are waiting for
+	// a response from GCS.
 	activeRanges     map[int64]mrdRange // always use the mutex when accessing the map
 	numActiveRanges  int64              // always use the mutex when accessing this variable
 	done             bool               // always use the mutex when accessing this variable, indicates whether stream is closed or not.
+	mu               sync.Mutex         // protects all vars in gRPCBidiReader from concurrent access
 	retrier          func(error, string)
 	streamRecreation bool // This helps us identify if stream recreation is in progress or not. If stream recreation gets called from two goroutine then this will stop second one.
 }
