@@ -175,7 +175,7 @@ type ExecutableConfig struct {
 // CertificateConfig represents the options used to set up X.509-based workload
 // credentials. It specifies how to locate and use the client certificate,
 // private key, and optional trust chain for mTLS authentication.
-// [CredentialSource]
+// This configuration is used within the [CredentialSource] struct.
 type CertificateConfig struct {
 	// UseDefaultCertificateConfig, if true, attempts to load the default
 	// certificate configuration. It checks the GOOGLE_API_CERTIFICATE_CONFIG
@@ -183,8 +183,8 @@ type CertificateConfig struct {
 	// Cannot be true if CertificateConfigLocation is set.
 	UseDefaultCertificateConfig bool `json:"use_default_certificate_config"`
 	// CertificateConfigLocation specifies the path to the client certificate
-	// and private key file. This is used when UseDefaultCertificateConfig is
-	// false or unset. Must be set if UseDefaultCertificateConfig is false.
+	// and private key file. Must be set if UseDefaultCertificateConfig is
+	// false or unset.
 	CertificateConfigLocation string `json:"certificate_config_location"`
 	// TrustChainPath specifies the path to a PEM-formatted file containing
 	// the X.509 certificate trust chain. This file should contain any
