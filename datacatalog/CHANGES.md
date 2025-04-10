@@ -1,5 +1,12 @@
 # Changes
 
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.0...datacatalog/v1.25.1) (2025-04-10)
+
+
+### Documentation
+
+* **datacatalog:** A comment for field `sql_resource` in message `.google.cloud.datacatalog.v1.LookupEntryRequest` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.5...datacatalog/v1.25.0) (2025-03-19)
 
 
