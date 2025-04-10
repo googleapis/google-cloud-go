@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.24.0...dataplex/v1.25.0) (2025-04-10)
+
+
+### Features
+
+* **dataplex:** Add Data Discovery result statistics ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+* **dataplex:** Add EntryLinkEvent for logs ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.23.1...dataplex/v1.24.0) (2025-03-27)
 
 
