@@ -1241,6 +1241,48 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 	}
 }
 
+// NewWriterFromAppendableObject opens a new Writer to an object which has been
+// partially flushed to GCS, but not finalized. It returns the Writer as well
+// as the current end offset of the object. All bytes written will be appended
+// continuing from the offset.
+//
+// Generation must be set on the ObjectHandle or an error will be returned.
+//
+// Writer attributes such as ChunkSize or ChunkRetryDuration can be set on the
+// returned writer. However, Writer.ObjectAttrs will be ignored since object
+// metadata cannot be updated when appending to an existing object.
+// Writer.Append will be true and cannot be modified.
+//
+// It is the caller's responsibility to call Close when writing is complete to
+// close the stream.
+// Calling Close or Flush is necessary to sync any data in the pipe to GCS.
+//
+// Appending to an object across multiple threads or clients is unsafe. Only
+// one Writer should be open at a time for a particular object.
+//
+// NewWriterFromAppendableObject is supported only for gRPC clients and only for
+// objects which were created append semantics and not finalized.
+// This feature is in preview and is not yet available for general use.
+func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context) (*Writer, int64, error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Writer")
+	if o.gen == 0 {
+		return nil, 0, errors.New("storage: ObjectHandle.Generation must be set to use NewWriterFromAppendableObject")
+	}
+	w := &Writer{
+		ctx:         ctx,
+		o:           o,
+		donec:       make(chan struct{}),
+		ObjectAttrs: ObjectAttrs{Name: o.object},
+		ChunkSize:   googleapi.DefaultUploadChunkSize,
+		Append:      true,
+	}
+	err := w.openWriter()
+	if err != nil {
+		return nil, 0, err
+	}
+	return w, w.takeoverOffset, nil
+}
+
 func (o *ObjectHandle) validate() error {
 	if o.bucket == "" {
 		return errors.New("storage: bucket name is empty")
