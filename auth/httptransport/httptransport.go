@@ -245,3 +245,15 @@ func SetAuthHeader(token *auth.Token, req *http.Request) {
 	}
 	req.Header.Set("Authorization", typ+" "+token.Value)
 }
+
+// setTrustBoundaryHeader adds the "x-allowed-locations" header to the HTTP request if the token contains trust boundary data.
+// If the token's TrustBoundaryData is nil, empty, or indicates a no-op (no restrictions),
+// this function does nothing.
+// The "x-allowed-locations" header contains the encoded representation of the allowed locations
+// where the token can be used, as specified in the TrustBoundaryData.
+func setTrustBoundaryHeader(token *auth.Token, req *http.Request) {
+	if token.TrustBoundaryData.IsNoOpOrEmpty() {
+		return
+	}
+	req.Header.Set("x-allowed-locations", token.TrustBoundaryData.EncodedLocations())
+}
