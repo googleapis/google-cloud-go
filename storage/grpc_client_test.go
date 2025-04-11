@@ -16,18 +16,26 @@ package storage
 
 import (
 	"bytes"
+	"context"
 	"crypto/md5"
 	"fmt"
 	"hash/crc32"
+	"io"
 	"math/rand"
+	"net"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/mem"
+	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/test/bufconn"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/protoadapt"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -331,6 +339,97 @@ func TestErrorExtension(t *testing.T) {
 			if diff := cmp.Diff(bidiError, reqDetails, protocmp.Transform()); diff != "" {
 				t.Errorf("cmp.Diff got(-),want(+):\n%s", diff)
 			}
+		}
+	}
+}
+func BenchmarkGRPCWrite(t *testing.B) {
+	// Set up a gRPC connection on a bufcon listener.
+	lis := bufconn.Listen(1024 * 1024)
+	s := grpc.NewServer()
+	storagepb.RegisterStorageServer(s, &serverStub{})
+	go func() { _ = s.Serve(lis) }()
+	t.Cleanup(func() { s.Stop() })
+
+	// Create a client connection to the server
+	ctx := context.Background()
+	conn, err := grpc.NewClient("bufnet",
+		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
+			return lis.Dial()
+		}),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithResolvers(&staticResolver{addr: lis.Addr()}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := conn.Close(); err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	client, err := NewGRPCClient(ctx, option.WithGRPCConn(conn), WithDisabledClientMetrics())
+	if err != nil {
+		t.Fatal(err)
+	}
+	data := []byte("Example data")
+	t.ReportAllocs()
+	for t.Loop() {
+		// Test writing
+		w := client.Bucket("123").Object("123").NewWriter(ctx)
+		w.ChunkSize = len(data)
+
+		n, err := w.Write(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if n != len(data) {
+			t.Errorf("Write() = %d, want %d", n, len(data))
+		}
+		if err := w.Close(); err != nil && err != io.EOF {
+			t.Fatal(err)
+		}
+	}
+}
+
+type staticResolver struct {
+	addr net.Addr
+}
+
+func (s staticResolver) Scheme() string {
+	return ""
+}
+
+func (s staticResolver) Build(_ resolver.Target, cc resolver.ClientConn, _ resolver.BuildOptions) (resolver.Resolver, error) {
+	if err := cc.UpdateState(resolver.State{
+		Addresses: []resolver.Address{{Addr: s.addr.String()}},
+	}); err != nil {
+		return nil, err
+	}
+	return staticResolver{}, nil
+}
+
+func (s staticResolver) ResolveNow(_ resolver.ResolveNowOptions) {}
+
+func (s staticResolver) Close() {}
+
+// serverStub implements the StorageServer interface for testing
+type serverStub struct {
+	storagepb.UnimplementedStorageServer
+}
+
+func (*serverStub) StartResumableWrite(context.Context, *storagepb.StartResumableWriteRequest) (*storagepb.StartResumableWriteResponse, error) {
+	return &storagepb.StartResumableWriteResponse{UploadId: "123"}, nil
+}
+
+func (f *serverStub) BidiWriteObject(server storagepb.Storage_BidiWriteObjectServer) error {
+	for {
+		msg, err := server.Recv()
+		if err != nil {
+			return err
+		}
+		if msg.FinishWrite {
+			return nil
 		}
 	}
 }
