@@ -44,7 +44,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"
-	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 const (
@@ -1819,6 +1819,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		err = checkCanceled(err)
 		errorf(err)
 		pr.CloseWithError(err)
+		putBytes(gw.buf)
 		close(params.donec)
 	}()
 
@@ -2626,7 +2627,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 	}
 
 	return &gRPCWriter{
-		buf:                   make([]byte, size),
+		buf:                   getBytes(size),
 		c:                     c,
 		ctx:                   params.ctx,
 		reader:                r,
@@ -3033,4 +3034,28 @@ func checkCanceled(err error) error {
 	}
 
 	return err
+}
+
+const pooledBufSize = 256 * 1024
+
+// bytesPool is a sync.Pool that holds a pool of byte slices.
+var bytesPool = sync.Pool{
+	New: func() any {
+		return make([]byte, pooledBufSize)
+	},
+}
+
+// getBytes returns a byte slice from the pool.
+func getBytes(size int) []byte {
+	if size <= pooledBufSize {
+		return bytesPool.Get().([]byte)
+	}
+	return make([]byte, size)
+}
+
+// putBytes returns a byte slice to the pool.
+func putBytes(b []byte) {
+	if len(b) <= pooledBufSize {
+		bytesPool.Put(b)
+	}
 }
