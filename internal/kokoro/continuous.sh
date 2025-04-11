@@ -117,7 +117,7 @@ runDirectoryTests() {
     # internal tools only expected to work with latest go version
     return
   fi
-  GOWORK=off go test -race -v -run Domains "${1:-./...}" 2>&1 |
+  GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
     tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
@@ -147,7 +147,7 @@ testAllModules() {
     pushd "$(dirname "$i")" >/dev/null
     runDirectoryTests
     # Run integration tests against an emulator.
-    # runEmulatorTests
+    runEmulatorTests
     popd >/dev/null
   done
 }
@@ -213,11 +213,11 @@ else
   testAllModules
 fi
 
-# if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
-#   chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
-#   $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
-#     -repo=googleapis/google-cloud-go \
-#     -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
-# fi
+if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
+  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
+  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
+    -repo=googleapis/google-cloud-go \
+    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
+fi
 
 exit $exit_code

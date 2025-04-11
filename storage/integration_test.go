@@ -66,7 +66,6 @@ import (
 	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/googleapi"
-	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
@@ -6524,9 +6523,7 @@ func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 }
 
 func TestIntegration_UniverseDomains(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("gRPC not supported"), "no reads in test")
-
-	//t.Setenv("GOOGLE_API_GO_EXPERIMENTAL_DISABLE_NEW_AUTH_LIB", "true")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
 	universeDomain := os.Getenv(testUniverseDomain)
 	if universeDomain == "" {
@@ -6543,15 +6540,6 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	location := os.Getenv(testUniverseLocation)
 	if location == "" {
 		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
-	}
-
-	credBytes, err := os.ReadFile(credFile)
-	if err != nil {
-		log.Fatalf("error reading key file: %v", err)
-	}
-	tokenSource, err := google.JWTAccessTokenSourceWithScope(credBytes, iamcredentials.CloudPlatformScope, ScopeFullControl)
-	if err != nil {
-		log.Fatalf("JWTAccessTokenSourceWithScope: %v", err)
 	}
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
@@ -6571,11 +6559,7 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 		if !bytes.Equal(got, contents) {
 			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
 		}
-	},
-		option.WithUniverseDomain(universeDomain),
-		option.WithCredentialsFile(credFile))
-	// option.WithTokenSource(tokenSource))
-	_ = tokenSource
+	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(credFile))
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
