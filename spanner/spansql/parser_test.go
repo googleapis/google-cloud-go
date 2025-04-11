@@ -2316,6 +2316,71 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE TABLE TableTokens (
+				Name STRING(MAX) NOT NULL,
+				Name_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name)) HIDDEN,
+				Value INT64 NOT NULL,
+				Value_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value)) HIDDEN,
+			) PRIMARY KEY (Name);
+
+			CREATE SEARCH INDEX TableTokensSearch
+			ON TableTokens(Name_Tokens, Value_Tokens);
+			
+			ALTER SEARCH INDEX TableTokensSearch ADD STORED COLUMN Value_Tokens;
+			ALTER SEARCH INDEX TableTokensSearch DROP STORED COLUMN Value_Tokens;
+			DROP SEARCH INDEX IF EXISTS TableTokensSearch;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name: "TableTokens",
+						Columns: []ColumnDef{
+							{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+							{
+								Name: "Name_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name")}},
+								Hidden:    true,
+								Position:  line(3),
+							},
+							{Name: "Value", Type: Type{Base: Int64}, NotNull: true, Position: line(4)},
+							{
+								Name: "Value_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{ID("Value")}},
+								Hidden:    true,
+								Position:  line(5),
+							},
+						},
+						PrimaryKey: []KeyPart{{Column: "Name"}},
+						Position:   line(1),
+					},
+					&CreateSearchIndex{
+						Name:  "TableTokensSearch",
+						Table: "TableTokens",
+						Columns: []KeyPart{
+							{Column: "Name_Tokens"},
+							{Column: "Value_Tokens"},
+						},
+						Position: line(8),
+					},
+					&AlterSearchIndex{
+						Name:       "TableTokensSearch",
+						Alteration: AddStoredColumn{Name: "Value_Tokens"},
+						Position:   line(11),
+					},
+					&AlterSearchIndex{
+						Name:       "TableTokensSearch",
+						Alteration: DropStoredColumn{Name: "Value_Tokens"},
+						Position:   line(12),
+					},
+					&DropSearchIndex{
+						Name:     "TableTokensSearch",
+						IfExists: true,
+						Position: line(13),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
