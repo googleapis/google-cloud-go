@@ -64,11 +64,15 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
+	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
+	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/api/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -6234,13 +6238,8 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	ctx := context.Background()
-	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", testScopes)
-	if err != nil {
-		t.Fatalf("unable to find test credentials: %v", err)
-	}
-
-	multiTransportTest(skipGRPC("creds capture logic must be implemented for gRPC constructor"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+	ctx := skipGRPC("creds capture logic must be implemented for gRPC constructor")
+	tFunc := func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		// We can use any client to create the object
 		obj := "testBucketSignedURL"
 		contents := []byte("test")
@@ -6260,7 +6259,17 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 		if err := verifySignedURL(url, nil, contents); err != nil {
 			t.Fatalf("problem with the signed URL: %v", err)
 		}
-	}, option.WithAuthCredentials(creds))
+	}
+	creds, err := findLegacyOAuth2TestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", testScopes)
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+	multiTransportTest(ctx, t, tFunc, option.WithCredentials(creds))
+	newAuthCreds, err := findNewAuthTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", testScopes)
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+	multiTransportTest(ctx, t, tFunc, option.WithAuthCredentials(newAuthCreds))
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
@@ -6314,16 +6323,8 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	// By default we are authed with a token source, so don't have the context to
-	// read some of the fields from the keyfile.
-	// Here we explictly send the key to the client.
-	creds, err := findTestCredentials(context.Background(), "GCLOUD_TESTS_GOLANG_KEY", testScopes)
-	if err != nil {
-		t.Fatalf("unable to find test credentials: %v", err)
-	}
-
 	ctx := skipExtraReadAPIs(skipGRPC("creds capture logic must be implemented for gRPC constructor"), "test is not testing the read behaviour")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithCredentials *Client) {
+	tFunc := func(t *testing.T, ctx context.Context, bucket, _ string, clientWithCredentials *Client) {
 		h := testHelper{t}
 
 		statusCodeToRespond := 200
@@ -6362,7 +6363,17 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 				}
 			})
 		}
-	}, option.WithAuthCredentials(creds))
+	}
+	creds, err := findLegacyOAuth2TestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", testScopes)
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+	multiTransportTest(ctx, t, tFunc, option.WithCredentials(creds))
+	newAuthCreds, err := findNewAuthTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", testScopes)
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+	multiTransportTest(ctx, t, tFunc, option.WithAuthCredentials(newAuthCreds))
 
 }
 
@@ -6635,7 +6646,19 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 		})
 }
 
-func findTestCredentials(ctx context.Context, envVar string, scopes []string) (*auth.Credentials, error) {
+func findLegacyOAuth2TestCredentials(ctx context.Context, envVar string, scopes []string) (*google.Credentials, error) {
+	key := os.Getenv(envVar)
+	var opts []option.ClientOption
+	if len(scopes) > 0 {
+		opts = append(opts, option.WithScopes(scopes...))
+	}
+	if key != "" {
+		opts = append(opts, option.WithCredentialsFile(key))
+	}
+	return transport.Creds(ctx, opts...)
+}
+
+func findNewAuthTestCredentials(ctx context.Context, envVar string, scopes []string) (*auth.Credentials, error) {
 	return credentials.DetectDefault(&credentials.DetectOptions{
 		CredentialsFile: os.Getenv(envVar),
 		Scopes:          scopes,
