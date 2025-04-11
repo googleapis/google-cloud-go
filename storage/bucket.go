@@ -199,7 +199,7 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 		newopts.GoogleAccessID = id
 	}
 	if newopts.SignBytes == nil && len(newopts.PrivateKey) == 0 {
-		if j := b.c.credsJSON(); len(j) > 0 {
+		if j, ok := b.c.credsJSON(); ok {
 			var sa struct {
 				PrivateKey string `json:"private_key"`
 			}
@@ -247,7 +247,7 @@ func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolic
 		newopts.GoogleAccessID = id
 	}
 	if newopts.SignBytes == nil && newopts.SignRawBytes == nil && len(newopts.PrivateKey) == 0 {
-		if j := b.c.credsJSON(); len(j) > 0 {
+		if j, ok := b.c.credsJSON(); ok {
 			var sa struct {
 				PrivateKey string `json:"private_key"`
 			}
@@ -269,7 +269,7 @@ func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolic
 func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 	returnErr := errors.New("no credentials found on client and not on GCE (Google Compute Engine)")
 
-	if j := b.c.credsJSON(); len(j) > 0 {
+	if j, ok := b.c.credsJSON(); ok {
 		var sa struct {
 			ClientEmail        string `json:"client_email"`
 			SAImpersonationURL string `json:"service_account_impersonation_url"`
@@ -322,7 +322,7 @@ func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, 
 		opts := []option.ClientOption{option.WithHTTPClient(b.c.hc)}
 
 		if b.c.creds != nil {
-			universeDomain, err := b.c.creds.GetUniverseDomain()
+			universeDomain, err := b.c.creds.UniverseDomain(ctx)
 			if err != nil {
 				return nil, err
 			}

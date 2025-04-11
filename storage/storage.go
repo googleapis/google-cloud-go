@@ -127,8 +127,8 @@ type Client struct {
 	tc storageClient
 }
 
-// credsJSON returns the raw JSON of the Client's creds, or an empty slice
-// if no credentials JSON is available.
+// credsJSON returns the raw JSON of the Client's creds and true, or an empty slice
+// and false if no credentials JSON is available.
 func (c Client) credsJSON() ([]byte, bool) {
 	if c.creds != nil && len(c.creds.JSON()) > 0 {
 		return c.creds.JSON(), true
