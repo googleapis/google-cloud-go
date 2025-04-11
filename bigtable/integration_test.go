@@ -4634,7 +4634,6 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 }
 
 func TestIntegration_DataMaterializedView(t *testing.T) {
-	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -4752,7 +4751,6 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 }
 
 func TestIntegration_AdminLogicalView(t *testing.T) {
-	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -4865,7 +4863,6 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 }
 
 func TestIntegration_AdminMaterializedView(t *testing.T) {
-	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
