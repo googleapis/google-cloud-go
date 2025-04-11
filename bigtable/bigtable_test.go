@@ -1723,7 +1723,7 @@ func TestExecuteQuery(t *testing.T) {
 	}
 	defer client.Close()
 
-	stPcf, _ := status.New(codes.InvalidArgument, "invalid argument").WithDetails(&errdetails.PreconditionFailure{
+	stPcf, _ := status.New(codes.FailedPrecondition, "invalid argument").WithDetails(&errdetails.PreconditionFailure{
 		Violations: []*errdetails.PreconditionFailure_Violation{
 			{
 				Type:        queryExpiredViolationType,
