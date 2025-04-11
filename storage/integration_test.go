@@ -6490,6 +6490,7 @@ func TestIntegration_OTelTracing(t *testing.T) {
 		}
 	})
 }
+
 // openTelemetryTestExporter is a test utility exporter. It should be created
 // with NewopenTelemetryTestExporter.
 type openTelemetryTestExporter struct {
@@ -6570,8 +6571,11 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 		if !bytes.Equal(got, contents) {
 			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
 		}
-
-	}, option.WithUniverseDomain(universeDomain), option.WithTokenSource(tokenSource))
+	},
+		option.WithUniverseDomain(universeDomain),
+		option.WithCredentialsFile(credFile))
+	// option.WithTokenSource(tokenSource))
+	_ = tokenSource
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
