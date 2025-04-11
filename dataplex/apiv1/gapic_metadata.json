@@ -339,6 +339,130 @@
         }
       }
     },
+    "CmekService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CmekClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEncryptionConfig": {
+              "methods": [
+                "CreateEncryptionConfig"
+              ]
+            },
+            "DeleteEncryptionConfig": {
+              "methods": [
+                "DeleteEncryptionConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetEncryptionConfig": {
+              "methods": [
+                "GetEncryptionConfig"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEncryptionConfigs": {
+              "methods": [
+                "ListEncryptionConfigs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateEncryptionConfig": {
+              "methods": [
+                "UpdateEncryptionConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CmekClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEncryptionConfig": {
+              "methods": [
+                "CreateEncryptionConfig"
+              ]
+            },
+            "DeleteEncryptionConfig": {
+              "methods": [
+                "DeleteEncryptionConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetEncryptionConfig": {
+              "methods": [
+                "GetEncryptionConfig"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEncryptionConfigs": {
+              "methods": [
+                "ListEncryptionConfigs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateEncryptionConfig": {
+              "methods": [
+                "UpdateEncryptionConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ContentService": {
       "clients": {
         "grpc": {
