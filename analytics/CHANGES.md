@@ -1,5 +1,43 @@
 # Changes
 
+## [0.27.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.27.0...analytics/v0.27.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **analytics:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.27.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.26.0...analytics/v0.27.0) (2025-03-12)
+
+
+### Features
+
+* **analytics/admin:** Added support for KeyEvents AdminAPI ChangeHistory ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+## [0.26.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.3...analytics/v0.26.0) (2025-01-30)
+
+
+### Features
+
+* **analytics/admin:** Add `user_data_retention` field to `DataRetentionSettings` and mark as `REQUIRED` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Bug Fixes
+
+* **analytics/admin:** Mark `event_data_retention` field in `DataRetentionSettings` as `REQUIRED` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Documentation
+
+* **analytics/admin:** Replace "GA4" with "Google Analytics" or "GA" in all comments ([#11516](https://github.com/googleapis/google-cloud-go/issues/11516)) ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+## [0.25.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.2...analytics/v0.25.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **analytics:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.25.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.1...analytics/v0.25.2) (2024-10-23)
 
 

@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/go
 {
-	"name": "Go 1.21.0",
+	"name": "Go 1.23.0",
 	"build": {
 		"dockerfile": "Dockerfile"
 	},

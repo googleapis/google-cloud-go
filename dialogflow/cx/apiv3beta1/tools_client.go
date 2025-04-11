@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -48,17 +47,22 @@ var newToolsClientHook clientHook
 
 // ToolsCallOptions contains the retry settings for each method of ToolsClient.
 type ToolsCallOptions struct {
-	CreateTool      []gax.CallOption
-	ListTools       []gax.CallOption
-	ExportTools     []gax.CallOption
-	GetTool         []gax.CallOption
-	UpdateTool      []gax.CallOption
-	DeleteTool      []gax.CallOption
-	GetLocation     []gax.CallOption
-	ListLocations   []gax.CallOption
-	CancelOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	CreateTool         []gax.CallOption
+	ListTools          []gax.CallOption
+	ExportTools        []gax.CallOption
+	GetTool            []gax.CallOption
+	UpdateTool         []gax.CallOption
+	DeleteTool         []gax.CallOption
+	ListToolVersions   []gax.CallOption
+	CreateToolVersion  []gax.CallOption
+	GetToolVersion     []gax.CallOption
+	DeleteToolVersion  []gax.CallOption
+	RestoreToolVersion []gax.CallOption
+	GetLocation        []gax.CallOption
+	ListLocations      []gax.CallOption
+	CancelOperation    []gax.CallOption
+	GetOperation       []gax.CallOption
+	ListOperations     []gax.CallOption
 }
 
 func defaultToolsGRPCClientOptions() []option.ClientOption {
@@ -150,6 +154,66 @@ func defaultToolsCallOptions() *ToolsCallOptions {
 				})
 			}),
 		},
+		ListToolVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateToolVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetToolVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteToolVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RestoreToolVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -226,6 +290,61 @@ func defaultToolsRESTCallOptions() *ToolsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListToolVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateToolVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetToolVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteToolVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		RestoreToolVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -246,6 +365,11 @@ type internalToolsClient interface {
 	GetTool(context.Context, *cxpb.GetToolRequest, ...gax.CallOption) (*cxpb.Tool, error)
 	UpdateTool(context.Context, *cxpb.UpdateToolRequest, ...gax.CallOption) (*cxpb.Tool, error)
 	DeleteTool(context.Context, *cxpb.DeleteToolRequest, ...gax.CallOption) error
+	ListToolVersions(context.Context, *cxpb.ListToolVersionsRequest, ...gax.CallOption) *ToolVersionIterator
+	CreateToolVersion(context.Context, *cxpb.CreateToolVersionRequest, ...gax.CallOption) (*cxpb.ToolVersion, error)
+	GetToolVersion(context.Context, *cxpb.GetToolVersionRequest, ...gax.CallOption) (*cxpb.ToolVersion, error)
+	DeleteToolVersion(context.Context, *cxpb.DeleteToolVersionRequest, ...gax.CallOption) error
+	RestoreToolVersion(context.Context, *cxpb.RestoreToolVersionRequest, ...gax.CallOption) (*cxpb.RestoreToolVersionResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -331,6 +455,36 @@ func (c *ToolsClient) DeleteTool(ctx context.Context, req *cxpb.DeleteToolReques
 	return c.internalClient.DeleteTool(ctx, req, opts...)
 }
 
+// ListToolVersions list versions of the specified
+// Tool.
+func (c *ToolsClient) ListToolVersions(ctx context.Context, req *cxpb.ListToolVersionsRequest, opts ...gax.CallOption) *ToolVersionIterator {
+	return c.internalClient.ListToolVersions(ctx, req, opts...)
+}
+
+// CreateToolVersion creates a version for the specified
+// Tool.
+func (c *ToolsClient) CreateToolVersion(ctx context.Context, req *cxpb.CreateToolVersionRequest, opts ...gax.CallOption) (*cxpb.ToolVersion, error) {
+	return c.internalClient.CreateToolVersion(ctx, req, opts...)
+}
+
+// GetToolVersion retrieves the specified version of the
+// Tool.
+func (c *ToolsClient) GetToolVersion(ctx context.Context, req *cxpb.GetToolVersionRequest, opts ...gax.CallOption) (*cxpb.ToolVersion, error) {
+	return c.internalClient.GetToolVersion(ctx, req, opts...)
+}
+
+// DeleteToolVersion deletes the specified version of the
+// Tool.
+func (c *ToolsClient) DeleteToolVersion(ctx context.Context, req *cxpb.DeleteToolVersionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteToolVersion(ctx, req, opts...)
+}
+
+// RestoreToolVersion retrieves the specified version of the Tool and stores it as the
+// current tool draft, returning the tool with resources updated.
+func (c *ToolsClient) RestoreToolVersion(ctx context.Context, req *cxpb.RestoreToolVersionRequest, opts ...gax.CallOption) (*cxpb.RestoreToolVersionResponse, error) {
+	return c.internalClient.RestoreToolVersion(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *ToolsClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -380,6 +534,8 @@ type toolsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewToolsClient creates a new tools client based on gRPC.
@@ -406,6 +562,7 @@ func NewToolsClient(ctx context.Context, opts ...option.ClientOption) (*ToolsCli
 		connPool:         connPool,
 		toolsClient:      cxpb.NewToolsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -470,6 +627,8 @@ type toolsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ToolsClient
 	CallOptions **ToolsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewToolsRESTClient creates a new tools rest client.
@@ -487,6 +646,7 @@ func NewToolsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Tool
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -549,7 +709,7 @@ func (c *toolsGRPCClient) CreateTool(ctx context.Context, req *cxpb.CreateToolRe
 	var resp *cxpb.Tool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.toolsClient.CreateTool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.toolsClient.CreateTool, req, settings.GRPC, c.logger, "CreateTool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -578,7 +738,7 @@ func (c *toolsGRPCClient) ListTools(ctx context.Context, req *cxpb.ListToolsRequ
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.toolsClient.ListTools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.toolsClient.ListTools, req, settings.GRPC, c.logger, "ListTools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -613,7 +773,7 @@ func (c *toolsGRPCClient) ExportTools(ctx context.Context, req *cxpb.ExportTools
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.toolsClient.ExportTools(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.toolsClient.ExportTools, req, settings.GRPC, c.logger, "ExportTools")
 		return err
 	}, opts...)
 	if err != nil {
@@ -633,7 +793,7 @@ func (c *toolsGRPCClient) GetTool(ctx context.Context, req *cxpb.GetToolRequest,
 	var resp *cxpb.Tool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.toolsClient.GetTool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.toolsClient.GetTool, req, settings.GRPC, c.logger, "GetTool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -651,7 +811,7 @@ func (c *toolsGRPCClient) UpdateTool(ctx context.Context, req *cxpb.UpdateToolRe
 	var resp *cxpb.Tool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.toolsClient.UpdateTool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.toolsClient.UpdateTool, req, settings.GRPC, c.logger, "UpdateTool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -668,10 +828,124 @@ func (c *toolsGRPCClient) DeleteTool(ctx context.Context, req *cxpb.DeleteToolRe
 	opts = append((*c.CallOptions).DeleteTool[0:len((*c.CallOptions).DeleteTool):len((*c.CallOptions).DeleteTool)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.toolsClient.DeleteTool(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.toolsClient.DeleteTool, req, settings.GRPC, c.logger, "DeleteTool")
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *toolsGRPCClient) ListToolVersions(ctx context.Context, req *cxpb.ListToolVersionsRequest, opts ...gax.CallOption) *ToolVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListToolVersions[0:len((*c.CallOptions).ListToolVersions):len((*c.CallOptions).ListToolVersions)], opts...)
+	it := &ToolVersionIterator{}
+	req = proto.Clone(req).(*cxpb.ListToolVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.ToolVersion, string, error) {
+		resp := &cxpb.ListToolVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.toolsClient.ListToolVersions, req, settings.GRPC, c.logger, "ListToolVersions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetToolVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *toolsGRPCClient) CreateToolVersion(ctx context.Context, req *cxpb.CreateToolVersionRequest, opts ...gax.CallOption) (*cxpb.ToolVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateToolVersion[0:len((*c.CallOptions).CreateToolVersion):len((*c.CallOptions).CreateToolVersion)], opts...)
+	var resp *cxpb.ToolVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.toolsClient.CreateToolVersion, req, settings.GRPC, c.logger, "CreateToolVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *toolsGRPCClient) GetToolVersion(ctx context.Context, req *cxpb.GetToolVersionRequest, opts ...gax.CallOption) (*cxpb.ToolVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetToolVersion[0:len((*c.CallOptions).GetToolVersion):len((*c.CallOptions).GetToolVersion)], opts...)
+	var resp *cxpb.ToolVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.toolsClient.GetToolVersion, req, settings.GRPC, c.logger, "GetToolVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *toolsGRPCClient) DeleteToolVersion(ctx context.Context, req *cxpb.DeleteToolVersionRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteToolVersion[0:len((*c.CallOptions).DeleteToolVersion):len((*c.CallOptions).DeleteToolVersion)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.toolsClient.DeleteToolVersion, req, settings.GRPC, c.logger, "DeleteToolVersion")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *toolsGRPCClient) RestoreToolVersion(ctx context.Context, req *cxpb.RestoreToolVersionRequest, opts ...gax.CallOption) (*cxpb.RestoreToolVersionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestoreToolVersion[0:len((*c.CallOptions).RestoreToolVersion):len((*c.CallOptions).RestoreToolVersion)], opts...)
+	var resp *cxpb.RestoreToolVersionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.toolsClient.RestoreToolVersion, req, settings.GRPC, c.logger, "RestoreToolVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *toolsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -683,7 +957,7 @@ func (c *toolsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -712,7 +986,7 @@ func (c *toolsGRPCClient) ListLocations(ctx context.Context, req *locationpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -746,7 +1020,7 @@ func (c *toolsGRPCClient) CancelOperation(ctx context.Context, req *longrunningp
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -761,7 +1035,7 @@ func (c *toolsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -790,7 +1064,7 @@ func (c *toolsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -857,17 +1131,7 @@ func (c *toolsRESTClient) CreateTool(ctx context.Context, req *cxpb.CreateToolRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTool")
 		if err != nil {
 			return err
 		}
@@ -930,21 +1194,10 @@ func (c *toolsRESTClient) ListTools(ctx context.Context, req *cxpb.ListToolsRequ
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTools")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1012,21 +1265,10 @@ func (c *toolsRESTClient) ExportTools(ctx context.Context, req *cxpb.ExportTools
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportTools")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1077,17 +1319,7 @@ func (c *toolsRESTClient) GetTool(ctx context.Context, req *cxpb.GetToolRequest,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTool")
 		if err != nil {
 			return err
 		}
@@ -1151,17 +1383,7 @@ func (c *toolsRESTClient) UpdateTool(ctx context.Context, req *cxpb.UpdateToolRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTool")
 		if err != nil {
 			return err
 		}
@@ -1211,16 +1433,293 @@ func (c *toolsRESTClient) DeleteTool(ctx context.Context, req *cxpb.DeleteToolRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTool")
+		return err
+	}, opts...)
+}
+
+// ListToolVersions list versions of the specified
+// Tool.
+func (c *toolsRESTClient) ListToolVersions(ctx context.Context, req *cxpb.ListToolVersionsRequest, opts ...gax.CallOption) *ToolVersionIterator {
+	it := &ToolVersionIterator{}
+	req = proto.Clone(req).(*cxpb.ListToolVersionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.ToolVersion, string, error) {
+		resp := &cxpb.ListToolVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/versions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListToolVersions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetToolVersions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateToolVersion creates a version for the specified
+// Tool.
+func (c *toolsRESTClient) CreateToolVersion(ctx context.Context, req *cxpb.CreateToolVersionRequest, opts ...gax.CallOption) (*cxpb.ToolVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetToolVersion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/versions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateToolVersion[0:len((*c.CallOptions).CreateToolVersion):len((*c.CallOptions).CreateToolVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cxpb.ToolVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateToolVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetToolVersion retrieves the specified version of the
+// Tool.
+func (c *toolsRESTClient) GetToolVersion(ctx context.Context, req *cxpb.GetToolVersionRequest, opts ...gax.CallOption) (*cxpb.ToolVersion, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetToolVersion[0:len((*c.CallOptions).GetToolVersion):len((*c.CallOptions).GetToolVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cxpb.ToolVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetToolVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteToolVersion deletes the specified version of the
+// Tool.
+func (c *toolsRESTClient) DeleteToolVersion(ctx context.Context, req *cxpb.DeleteToolVersionRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteToolVersion")
+		return err
+	}, opts...)
+}
+
+// RestoreToolVersion retrieves the specified version of the Tool and stores it as the
+// current tool draft, returning the tool with resources updated.
+func (c *toolsRESTClient) RestoreToolVersion(ctx context.Context, req *cxpb.RestoreToolVersionRequest, opts ...gax.CallOption) (*cxpb.RestoreToolVersionResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:restore", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RestoreToolVersion[0:len((*c.CallOptions).RestoreToolVersion):len((*c.CallOptions).RestoreToolVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cxpb.RestoreToolVersionResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestoreToolVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.
@@ -1256,17 +1755,7 @@ func (c *toolsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1331,21 +1820,10 @@ func (c *toolsRESTClient) ListLocations(ctx context.Context, req *locationpb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1405,15 +1883,8 @@ func (c *toolsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1450,17 +1921,7 @@ func (c *toolsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1525,21 +1986,10 @@ func (c *toolsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

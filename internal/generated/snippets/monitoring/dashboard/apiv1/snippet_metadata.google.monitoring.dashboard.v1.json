@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/monitoring/dashboard/apiv1",
-    "version": "1.22.0",
+    "version": "1.24.1",
     "language": "GO",
     "apis": [
       {

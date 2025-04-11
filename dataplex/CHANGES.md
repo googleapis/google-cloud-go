@@ -1,6 +1,62 @@
 # Changes
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.23.1...dataplex/v1.24.0) (2025-03-27)
+
+
+### Features
+
+* **dataplex:** Add support for REST transport ([#11903](https://github.com/googleapis/google-cloud-go/issues/11903)) ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.23.0...dataplex/v1.23.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **dataplex:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.22.0...dataplex/v1.23.0) (2025-03-12)
+
+
+### Features
+
+* **dataplex:** Add custom BigQuery dataset location support in Auto Discovery ([484978a](https://github.com/googleapis/google-cloud-go/commit/484978aa8ad4213172e7ffefcfd939071b90ee14))
+* **dataplex:** DataTaxonomyService is now deprecated ([484978a](https://github.com/googleapis/google-cloud-go/commit/484978aa8ad4213172e7ffefcfd939071b90ee14))
+
+
+### Documentation
+
+* **dataplex:** Update the Dataplex Catalog proto to remove the info about schema changes ([484978a](https://github.com/googleapis/google-cloud-go/commit/484978aa8ad4213172e7ffefcfd939071b90ee14))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.21.0...dataplex/v1.22.0) (2025-02-12)
+
+
+### Features
+
+* **dataplex:** Added value `NONE` to  the `SyncMode` enum ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
+
+### Documentation
+
+* **dataplex:** Modified various comments ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.20.0...dataplex/v1.21.0) (2025-01-02)
+
+
+### Features
+
+* **dataplex:** A new field `force` is added to message `.google.cloud.dataplex.v1.DeleteDataScanRequest` ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+
+### Bug Fixes
+
+* **dataplex:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **dataplex:** Miscellaneous doc updates ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.19.2...dataplex/v1.20.0) (2024-11-19)
 
 

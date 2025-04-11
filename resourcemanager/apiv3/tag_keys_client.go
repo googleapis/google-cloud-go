@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -354,6 +353,8 @@ type tagKeysGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTagKeysClient creates a new tag keys client based on gRPC.
@@ -380,6 +381,7 @@ func NewTagKeysClient(ctx context.Context, opts ...option.ClientOption) (*TagKey
 		connPool:         connPool,
 		tagKeysClient:    resourcemanagerpb.NewTagKeysClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -443,6 +445,8 @@ type tagKeysRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TagKeysClient
 	CallOptions **TagKeysCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTagKeysRESTClient creates a new tag keys rest client.
@@ -460,6 +464,7 @@ func NewTagKeysRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ta
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -530,7 +535,7 @@ func (c *tagKeysGRPCClient) ListTagKeys(ctx context.Context, req *resourcemanage
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tagKeysClient.ListTagKeys(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tagKeysClient.ListTagKeys, req, settings.GRPC, c.logger, "ListTagKeys")
 			return err
 		}, opts...)
 		if err != nil {
@@ -565,7 +570,7 @@ func (c *tagKeysGRPCClient) GetTagKey(ctx context.Context, req *resourcemanagerp
 	var resp *resourcemanagerpb.TagKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagKeysClient.GetTagKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagKeysClient.GetTagKey, req, settings.GRPC, c.logger, "GetTagKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -580,7 +585,7 @@ func (c *tagKeysGRPCClient) GetNamespacedTagKey(ctx context.Context, req *resour
 	var resp *resourcemanagerpb.TagKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagKeysClient.GetNamespacedTagKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagKeysClient.GetNamespacedTagKey, req, settings.GRPC, c.logger, "GetNamespacedTagKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -595,7 +600,7 @@ func (c *tagKeysGRPCClient) CreateTagKey(ctx context.Context, req *resourcemanag
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagKeysClient.CreateTagKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagKeysClient.CreateTagKey, req, settings.GRPC, c.logger, "CreateTagKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -615,7 +620,7 @@ func (c *tagKeysGRPCClient) UpdateTagKey(ctx context.Context, req *resourcemanag
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagKeysClient.UpdateTagKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagKeysClient.UpdateTagKey, req, settings.GRPC, c.logger, "UpdateTagKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -635,7 +640,7 @@ func (c *tagKeysGRPCClient) DeleteTagKey(ctx context.Context, req *resourcemanag
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagKeysClient.DeleteTagKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagKeysClient.DeleteTagKey, req, settings.GRPC, c.logger, "DeleteTagKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -655,7 +660,7 @@ func (c *tagKeysGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagKeysClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagKeysClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -673,7 +678,7 @@ func (c *tagKeysGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagKeysClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagKeysClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -691,7 +696,7 @@ func (c *tagKeysGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagKeysClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagKeysClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -709,7 +714,7 @@ func (c *tagKeysGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -764,21 +769,10 @@ func (c *tagKeysRESTClient) ListTagKeys(ctx context.Context, req *resourcemanage
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTagKeys")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -842,17 +836,7 @@ func (c *tagKeysRESTClient) GetTagKey(ctx context.Context, req *resourcemanagerp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTagKey")
 		if err != nil {
 			return err
 		}
@@ -902,17 +886,7 @@ func (c *tagKeysRESTClient) GetNamespacedTagKey(ctx context.Context, req *resour
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNamespacedTagKey")
 		if err != nil {
 			return err
 		}
@@ -971,21 +945,10 @@ func (c *tagKeysRESTClient) CreateTagKey(ctx context.Context, req *resourcemanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTagKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1052,21 +1015,10 @@ func (c *tagKeysRESTClient) UpdateTagKey(ctx context.Context, req *resourcemanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTagKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1123,21 +1075,10 @@ func (c *tagKeysRESTClient) DeleteTagKey(ctx context.Context, req *resourcemanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTagKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1199,17 +1140,7 @@ func (c *tagKeysRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1269,17 +1200,7 @@ func (c *tagKeysRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1339,17 +1260,7 @@ func (c *tagKeysRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1399,17 +1310,7 @@ func (c *tagKeysRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

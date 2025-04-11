@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -144,6 +143,8 @@ type shippingSettingsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewShippingSettingsClient creates a new shipping settings service client based on gRPC.
@@ -171,6 +172,7 @@ func NewShippingSettingsClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		shippingSettingsClient: accountspb.NewShippingSettingsServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -217,6 +219,8 @@ type shippingSettingsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ShippingSettingsClient
 	CallOptions **ShippingSettingsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewShippingSettingsRESTClient creates a new shipping settings service rest client.
@@ -235,6 +239,7 @@ func NewShippingSettingsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -287,7 +292,7 @@ func (c *shippingSettingsGRPCClient) GetShippingSettings(ctx context.Context, re
 	var resp *accountspb.ShippingSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.shippingSettingsClient.GetShippingSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.shippingSettingsClient.GetShippingSettings, req, settings.GRPC, c.logger, "GetShippingSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -305,7 +310,7 @@ func (c *shippingSettingsGRPCClient) InsertShippingSettings(ctx context.Context,
 	var resp *accountspb.ShippingSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.shippingSettingsClient.InsertShippingSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.shippingSettingsClient.InsertShippingSettings, req, settings.GRPC, c.logger, "InsertShippingSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -347,17 +352,7 @@ func (c *shippingSettingsRESTClient) GetShippingSettings(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetShippingSettings")
 		if err != nil {
 			return err
 		}
@@ -415,17 +410,7 @@ func (c *shippingSettingsRESTClient) InsertShippingSettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertShippingSettings")
 		if err != nil {
 			return err
 		}

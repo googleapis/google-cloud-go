@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/policytroubleshooter/iam/apiv3",
-    "version": "1.10.10",
+    "version": "1.11.5",
     "language": "GO",
     "apis": [
       {

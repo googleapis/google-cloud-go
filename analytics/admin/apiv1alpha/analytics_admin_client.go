@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	adminpb "cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -3751,7 +3750,7 @@ type internalAnalyticsAdminClient interface {
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 type AnalyticsAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAnalyticsAdminClient
@@ -3790,7 +3789,7 @@ func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetA
 
 // ListAccounts returns all accounts accessible by the caller.
 //
-// Note that these accounts might not currently have GA4 properties.
+// Note that these accounts might not currently have GA properties.
 // Soft-deleted (ie: “trashed”) accounts are excluded by default.
 // Returns an empty list if no relevant accounts are found.
 func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
@@ -3827,14 +3826,13 @@ func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *ad
 	return c.internalClient.ListAccountSummaries(ctx, req, opts...)
 }
 
-// GetProperty lookup for a single “GA4” Property.
+// GetProperty lookup for a single GA Property.
 func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.GetProperty(ctx, req, opts...)
 }
 
 // ListProperties returns child Properties under the specified parent Account.
 //
-// Only “GA4” properties will be returned.
 // Properties will be excluded if the caller does not have access.
 // Soft-deleted (ie: “trashed”) properties are excluded by default.
 // Returns an empty list if no relevant properties are found.
@@ -3842,7 +3840,8 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 	return c.internalClient.ListProperties(ctx, req, opts...)
 }
 
-// CreateProperty creates an “GA4” property with the specified location and attributes.
+// CreateProperty creates a Google Analytics property with the specified location and
+// attributes.
 func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.CreateProperty(ctx, req, opts...)
 }
@@ -3857,7 +3856,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not a GA4 Property.
+// Returns an error if the target is not found.
 func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.DeleteProperty(ctx, req, opts...)
 }
@@ -3917,7 +3916,7 @@ func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *
 	return c.internalClient.GetDataSharingSettings(ctx, req, opts...)
 }
 
-// GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.
+// GetMeasurementProtocolSecret lookup for a single MeasurementProtocolSecret.
 func (c *AnalyticsAdminClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
 	return c.internalClient.GetMeasurementProtocolSecret(ctx, req, opts...)
 }
@@ -3980,6 +3979,9 @@ func (c *AnalyticsAdminClient) ListSKAdNetworkConversionValueSchemas(ctx context
 
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
+//
+// Only returns the subset of changes supported by the API. The UI may return
+// additional changes.
 func (c *AnalyticsAdminClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	return c.internalClient.SearchChangeHistoryEvents(ctx, req, opts...)
 }
@@ -4288,12 +4290,17 @@ func (c *AnalyticsAdminClient) UpdateAttributionSettings(ctx context.Context, re
 // only be requested on Google Analytics 360 properties. This method is only
 // available to Administrators.
 //
-// These data access records include GA4 UI Reporting, GA4 UI Explorations,
-// GA4 Data API, and other products like Firebase & Admob that can retrieve
+// These data access records include GA UI Reporting, GA UI Explorations,
+// GA Data API, and other products like Firebase & Admob that can retrieve
 // data from Google Analytics through a linkage. These records don’t include
 // property configuration changes like adding a stream or changing a
 // property’s time zone. For configuration change history, see
 // searchChangeHistoryEvents (at https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+//
+// To give your feedback on this API, complete the Google Analytics Access
+// Reports
+// feedback (at https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+// form.
 func (c *AnalyticsAdminClient) RunAccessReport(ctx context.Context, req *adminpb.RunAccessReportRequest, opts ...gax.CallOption) (*adminpb.RunAccessReportResponse, error) {
 	return c.internalClient.RunAccessReport(ctx, req, opts...)
 }
@@ -4666,12 +4673,14 @@ type analyticsAdminGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAnalyticsAdminClient creates a new analytics admin service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := defaultAnalyticsAdminGRPCClientOptions()
 	if newAnalyticsAdminClientHook != nil {
@@ -4692,6 +4701,7 @@ func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		analyticsAdminClient: adminpb.NewAnalyticsAdminServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -4738,11 +4748,13 @@ type analyticsAdminRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AnalyticsAdminClient
 	CallOptions **AnalyticsAdminCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAnalyticsAdminRESTClient creates a new analytics admin service rest client.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := append(defaultAnalyticsAdminRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -4755,6 +4767,7 @@ func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -4807,7 +4820,7 @@ func (c *analyticsAdminGRPCClient) GetAccount(ctx context.Context, req *adminpb.
 	var resp *adminpb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetAccount, req, settings.GRPC, c.logger, "GetAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4833,7 +4846,7 @@ func (c *analyticsAdminGRPCClient) ListAccounts(ctx context.Context, req *adminp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListAccounts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListAccounts, req, settings.GRPC, c.logger, "ListAccounts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4867,7 +4880,7 @@ func (c *analyticsAdminGRPCClient) DeleteAccount(ctx context.Context, req *admin
 	opts = append((*c.CallOptions).DeleteAccount[0:len((*c.CallOptions).DeleteAccount):len((*c.CallOptions).DeleteAccount)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteAccount(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteAccount, req, settings.GRPC, c.logger, "DeleteAccount")
 		return err
 	}, opts...)
 	return err
@@ -4882,7 +4895,7 @@ func (c *analyticsAdminGRPCClient) UpdateAccount(ctx context.Context, req *admin
 	var resp *adminpb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateAccount, req, settings.GRPC, c.logger, "UpdateAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4897,7 +4910,7 @@ func (c *analyticsAdminGRPCClient) ProvisionAccountTicket(ctx context.Context, r
 	var resp *adminpb.ProvisionAccountTicketResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.ProvisionAccountTicket(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.ProvisionAccountTicket, req, settings.GRPC, c.logger, "ProvisionAccountTicket")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4923,7 +4936,7 @@ func (c *analyticsAdminGRPCClient) ListAccountSummaries(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListAccountSummaries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListAccountSummaries, req, settings.GRPC, c.logger, "ListAccountSummaries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4958,7 +4971,7 @@ func (c *analyticsAdminGRPCClient) GetProperty(ctx context.Context, req *adminpb
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetProperty(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetProperty, req, settings.GRPC, c.logger, "GetProperty")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4984,7 +4997,7 @@ func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *admi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListProperties(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListProperties, req, settings.GRPC, c.logger, "ListProperties")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5016,7 +5029,7 @@ func (c *analyticsAdminGRPCClient) CreateProperty(ctx context.Context, req *admi
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateProperty(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateProperty, req, settings.GRPC, c.logger, "CreateProperty")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5034,7 +5047,7 @@ func (c *analyticsAdminGRPCClient) DeleteProperty(ctx context.Context, req *admi
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.DeleteProperty(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.DeleteProperty, req, settings.GRPC, c.logger, "DeleteProperty")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5052,7 +5065,7 @@ func (c *analyticsAdminGRPCClient) UpdateProperty(ctx context.Context, req *admi
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateProperty(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateProperty, req, settings.GRPC, c.logger, "UpdateProperty")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5070,7 +5083,7 @@ func (c *analyticsAdminGRPCClient) CreateFirebaseLink(ctx context.Context, req *
 	var resp *adminpb.FirebaseLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateFirebaseLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateFirebaseLink, req, settings.GRPC, c.logger, "CreateFirebaseLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5087,7 +5100,7 @@ func (c *analyticsAdminGRPCClient) DeleteFirebaseLink(ctx context.Context, req *
 	opts = append((*c.CallOptions).DeleteFirebaseLink[0:len((*c.CallOptions).DeleteFirebaseLink):len((*c.CallOptions).DeleteFirebaseLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteFirebaseLink(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteFirebaseLink, req, settings.GRPC, c.logger, "DeleteFirebaseLink")
 		return err
 	}, opts...)
 	return err
@@ -5113,7 +5126,7 @@ func (c *analyticsAdminGRPCClient) ListFirebaseLinks(ctx context.Context, req *a
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListFirebaseLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListFirebaseLinks, req, settings.GRPC, c.logger, "ListFirebaseLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5148,7 +5161,7 @@ func (c *analyticsAdminGRPCClient) GetGlobalSiteTag(ctx context.Context, req *ad
 	var resp *adminpb.GlobalSiteTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetGlobalSiteTag(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetGlobalSiteTag, req, settings.GRPC, c.logger, "GetGlobalSiteTag")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5166,7 +5179,7 @@ func (c *analyticsAdminGRPCClient) CreateGoogleAdsLink(ctx context.Context, req 
 	var resp *adminpb.GoogleAdsLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateGoogleAdsLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateGoogleAdsLink, req, settings.GRPC, c.logger, "CreateGoogleAdsLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5184,7 +5197,7 @@ func (c *analyticsAdminGRPCClient) UpdateGoogleAdsLink(ctx context.Context, req 
 	var resp *adminpb.GoogleAdsLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateGoogleAdsLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateGoogleAdsLink, req, settings.GRPC, c.logger, "UpdateGoogleAdsLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5201,7 +5214,7 @@ func (c *analyticsAdminGRPCClient) DeleteGoogleAdsLink(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteGoogleAdsLink[0:len((*c.CallOptions).DeleteGoogleAdsLink):len((*c.CallOptions).DeleteGoogleAdsLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteGoogleAdsLink(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteGoogleAdsLink, req, settings.GRPC, c.logger, "DeleteGoogleAdsLink")
 		return err
 	}, opts...)
 	return err
@@ -5227,7 +5240,7 @@ func (c *analyticsAdminGRPCClient) ListGoogleAdsLinks(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListGoogleAdsLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListGoogleAdsLinks, req, settings.GRPC, c.logger, "ListGoogleAdsLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5262,7 +5275,7 @@ func (c *analyticsAdminGRPCClient) GetDataSharingSettings(ctx context.Context, r
 	var resp *adminpb.DataSharingSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetDataSharingSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetDataSharingSettings, req, settings.GRPC, c.logger, "GetDataSharingSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5280,7 +5293,7 @@ func (c *analyticsAdminGRPCClient) GetMeasurementProtocolSecret(ctx context.Cont
 	var resp *adminpb.MeasurementProtocolSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetMeasurementProtocolSecret, req, settings.GRPC, c.logger, "GetMeasurementProtocolSecret")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5309,7 +5322,7 @@ func (c *analyticsAdminGRPCClient) ListMeasurementProtocolSecrets(ctx context.Co
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListMeasurementProtocolSecrets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListMeasurementProtocolSecrets, req, settings.GRPC, c.logger, "ListMeasurementProtocolSecrets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5344,7 +5357,7 @@ func (c *analyticsAdminGRPCClient) CreateMeasurementProtocolSecret(ctx context.C
 	var resp *adminpb.MeasurementProtocolSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateMeasurementProtocolSecret, req, settings.GRPC, c.logger, "CreateMeasurementProtocolSecret")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5361,7 +5374,7 @@ func (c *analyticsAdminGRPCClient) DeleteMeasurementProtocolSecret(ctx context.C
 	opts = append((*c.CallOptions).DeleteMeasurementProtocolSecret[0:len((*c.CallOptions).DeleteMeasurementProtocolSecret):len((*c.CallOptions).DeleteMeasurementProtocolSecret)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteMeasurementProtocolSecret, req, settings.GRPC, c.logger, "DeleteMeasurementProtocolSecret")
 		return err
 	}, opts...)
 	return err
@@ -5376,7 +5389,7 @@ func (c *analyticsAdminGRPCClient) UpdateMeasurementProtocolSecret(ctx context.C
 	var resp *adminpb.MeasurementProtocolSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateMeasurementProtocolSecret, req, settings.GRPC, c.logger, "UpdateMeasurementProtocolSecret")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5394,7 +5407,7 @@ func (c *analyticsAdminGRPCClient) AcknowledgeUserDataCollection(ctx context.Con
 	var resp *adminpb.AcknowledgeUserDataCollectionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.AcknowledgeUserDataCollection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.AcknowledgeUserDataCollection, req, settings.GRPC, c.logger, "AcknowledgeUserDataCollection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5412,7 +5425,7 @@ func (c *analyticsAdminGRPCClient) GetSKAdNetworkConversionValueSchema(ctx conte
 	var resp *adminpb.SKAdNetworkConversionValueSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetSKAdNetworkConversionValueSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetSKAdNetworkConversionValueSchema, req, settings.GRPC, c.logger, "GetSKAdNetworkConversionValueSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5430,7 +5443,7 @@ func (c *analyticsAdminGRPCClient) CreateSKAdNetworkConversionValueSchema(ctx co
 	var resp *adminpb.SKAdNetworkConversionValueSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateSKAdNetworkConversionValueSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateSKAdNetworkConversionValueSchema, req, settings.GRPC, c.logger, "CreateSKAdNetworkConversionValueSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5447,7 +5460,7 @@ func (c *analyticsAdminGRPCClient) DeleteSKAdNetworkConversionValueSchema(ctx co
 	opts = append((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema):len((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteSKAdNetworkConversionValueSchema(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteSKAdNetworkConversionValueSchema, req, settings.GRPC, c.logger, "DeleteSKAdNetworkConversionValueSchema")
 		return err
 	}, opts...)
 	return err
@@ -5462,7 +5475,7 @@ func (c *analyticsAdminGRPCClient) UpdateSKAdNetworkConversionValueSchema(ctx co
 	var resp *adminpb.SKAdNetworkConversionValueSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateSKAdNetworkConversionValueSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateSKAdNetworkConversionValueSchema, req, settings.GRPC, c.logger, "UpdateSKAdNetworkConversionValueSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5491,7 +5504,7 @@ func (c *analyticsAdminGRPCClient) ListSKAdNetworkConversionValueSchemas(ctx con
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListSKAdNetworkConversionValueSchemas(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListSKAdNetworkConversionValueSchemas, req, settings.GRPC, c.logger, "ListSKAdNetworkConversionValueSchemas")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5537,7 +5550,7 @@ func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.SearchChangeHistoryEvents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.SearchChangeHistoryEvents, req, settings.GRPC, c.logger, "SearchChangeHistoryEvents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5572,7 +5585,7 @@ func (c *analyticsAdminGRPCClient) GetGoogleSignalsSettings(ctx context.Context,
 	var resp *adminpb.GoogleSignalsSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetGoogleSignalsSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetGoogleSignalsSettings, req, settings.GRPC, c.logger, "GetGoogleSignalsSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5590,7 +5603,7 @@ func (c *analyticsAdminGRPCClient) UpdateGoogleSignalsSettings(ctx context.Conte
 	var resp *adminpb.GoogleSignalsSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateGoogleSignalsSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateGoogleSignalsSettings, req, settings.GRPC, c.logger, "UpdateGoogleSignalsSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5608,7 +5621,7 @@ func (c *analyticsAdminGRPCClient) CreateConversionEvent(ctx context.Context, re
 	var resp *adminpb.ConversionEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateConversionEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateConversionEvent, req, settings.GRPC, c.logger, "CreateConversionEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5626,7 +5639,7 @@ func (c *analyticsAdminGRPCClient) UpdateConversionEvent(ctx context.Context, re
 	var resp *adminpb.ConversionEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateConversionEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateConversionEvent, req, settings.GRPC, c.logger, "UpdateConversionEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5644,7 +5657,7 @@ func (c *analyticsAdminGRPCClient) GetConversionEvent(ctx context.Context, req *
 	var resp *adminpb.ConversionEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetConversionEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetConversionEvent, req, settings.GRPC, c.logger, "GetConversionEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5661,7 +5674,7 @@ func (c *analyticsAdminGRPCClient) DeleteConversionEvent(ctx context.Context, re
 	opts = append((*c.CallOptions).DeleteConversionEvent[0:len((*c.CallOptions).DeleteConversionEvent):len((*c.CallOptions).DeleteConversionEvent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteConversionEvent(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteConversionEvent, req, settings.GRPC, c.logger, "DeleteConversionEvent")
 		return err
 	}, opts...)
 	return err
@@ -5687,7 +5700,7 @@ func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListConversionEvents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListConversionEvents, req, settings.GRPC, c.logger, "ListConversionEvents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5722,7 +5735,7 @@ func (c *analyticsAdminGRPCClient) CreateKeyEvent(ctx context.Context, req *admi
 	var resp *adminpb.KeyEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateKeyEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateKeyEvent, req, settings.GRPC, c.logger, "CreateKeyEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5740,7 +5753,7 @@ func (c *analyticsAdminGRPCClient) UpdateKeyEvent(ctx context.Context, req *admi
 	var resp *adminpb.KeyEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateKeyEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateKeyEvent, req, settings.GRPC, c.logger, "UpdateKeyEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5758,7 +5771,7 @@ func (c *analyticsAdminGRPCClient) GetKeyEvent(ctx context.Context, req *adminpb
 	var resp *adminpb.KeyEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetKeyEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetKeyEvent, req, settings.GRPC, c.logger, "GetKeyEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5775,7 +5788,7 @@ func (c *analyticsAdminGRPCClient) DeleteKeyEvent(ctx context.Context, req *admi
 	opts = append((*c.CallOptions).DeleteKeyEvent[0:len((*c.CallOptions).DeleteKeyEvent):len((*c.CallOptions).DeleteKeyEvent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteKeyEvent(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteKeyEvent, req, settings.GRPC, c.logger, "DeleteKeyEvent")
 		return err
 	}, opts...)
 	return err
@@ -5801,7 +5814,7 @@ func (c *analyticsAdminGRPCClient) ListKeyEvents(ctx context.Context, req *admin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListKeyEvents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListKeyEvents, req, settings.GRPC, c.logger, "ListKeyEvents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5836,7 +5849,7 @@ func (c *analyticsAdminGRPCClient) GetDisplayVideo360AdvertiserLink(ctx context.
 	var resp *adminpb.DisplayVideo360AdvertiserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetDisplayVideo360AdvertiserLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetDisplayVideo360AdvertiserLink, req, settings.GRPC, c.logger, "GetDisplayVideo360AdvertiserLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5865,7 +5878,7 @@ func (c *analyticsAdminGRPCClient) ListDisplayVideo360AdvertiserLinks(ctx contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListDisplayVideo360AdvertiserLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListDisplayVideo360AdvertiserLinks, req, settings.GRPC, c.logger, "ListDisplayVideo360AdvertiserLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -5900,7 +5913,7 @@ func (c *analyticsAdminGRPCClient) CreateDisplayVideo360AdvertiserLink(ctx conte
 	var resp *adminpb.DisplayVideo360AdvertiserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateDisplayVideo360AdvertiserLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateDisplayVideo360AdvertiserLink, req, settings.GRPC, c.logger, "CreateDisplayVideo360AdvertiserLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5917,7 +5930,7 @@ func (c *analyticsAdminGRPCClient) DeleteDisplayVideo360AdvertiserLink(ctx conte
 	opts = append((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink):len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteDisplayVideo360AdvertiserLink(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteDisplayVideo360AdvertiserLink, req, settings.GRPC, c.logger, "DeleteDisplayVideo360AdvertiserLink")
 		return err
 	}, opts...)
 	return err
@@ -5932,7 +5945,7 @@ func (c *analyticsAdminGRPCClient) UpdateDisplayVideo360AdvertiserLink(ctx conte
 	var resp *adminpb.DisplayVideo360AdvertiserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateDisplayVideo360AdvertiserLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateDisplayVideo360AdvertiserLink, req, settings.GRPC, c.logger, "UpdateDisplayVideo360AdvertiserLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5950,7 +5963,7 @@ func (c *analyticsAdminGRPCClient) GetDisplayVideo360AdvertiserLinkProposal(ctx 
 	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetDisplayVideo360AdvertiserLinkProposal, req, settings.GRPC, c.logger, "GetDisplayVideo360AdvertiserLinkProposal")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5979,7 +5992,7 @@ func (c *analyticsAdminGRPCClient) ListDisplayVideo360AdvertiserLinkProposals(ct
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListDisplayVideo360AdvertiserLinkProposals(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListDisplayVideo360AdvertiserLinkProposals, req, settings.GRPC, c.logger, "ListDisplayVideo360AdvertiserLinkProposals")
 			return err
 		}, opts...)
 		if err != nil {
@@ -6014,7 +6027,7 @@ func (c *analyticsAdminGRPCClient) CreateDisplayVideo360AdvertiserLinkProposal(c
 	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateDisplayVideo360AdvertiserLinkProposal, req, settings.GRPC, c.logger, "CreateDisplayVideo360AdvertiserLinkProposal")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6031,7 +6044,7 @@ func (c *analyticsAdminGRPCClient) DeleteDisplayVideo360AdvertiserLinkProposal(c
 	opts = append((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteDisplayVideo360AdvertiserLinkProposal, req, settings.GRPC, c.logger, "DeleteDisplayVideo360AdvertiserLinkProposal")
 		return err
 	}, opts...)
 	return err
@@ -6046,7 +6059,7 @@ func (c *analyticsAdminGRPCClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 	var resp *adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.ApproveDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.ApproveDisplayVideo360AdvertiserLinkProposal, req, settings.GRPC, c.logger, "ApproveDisplayVideo360AdvertiserLinkProposal")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6064,7 +6077,7 @@ func (c *analyticsAdminGRPCClient) CancelDisplayVideo360AdvertiserLinkProposal(c
 	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CancelDisplayVideo360AdvertiserLinkProposal, req, settings.GRPC, c.logger, "CancelDisplayVideo360AdvertiserLinkProposal")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6082,7 +6095,7 @@ func (c *analyticsAdminGRPCClient) CreateCustomDimension(ctx context.Context, re
 	var resp *adminpb.CustomDimension
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateCustomDimension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateCustomDimension, req, settings.GRPC, c.logger, "CreateCustomDimension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6100,7 +6113,7 @@ func (c *analyticsAdminGRPCClient) UpdateCustomDimension(ctx context.Context, re
 	var resp *adminpb.CustomDimension
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateCustomDimension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateCustomDimension, req, settings.GRPC, c.logger, "UpdateCustomDimension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6129,7 +6142,7 @@ func (c *analyticsAdminGRPCClient) ListCustomDimensions(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListCustomDimensions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListCustomDimensions, req, settings.GRPC, c.logger, "ListCustomDimensions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -6163,7 +6176,7 @@ func (c *analyticsAdminGRPCClient) ArchiveCustomDimension(ctx context.Context, r
 	opts = append((*c.CallOptions).ArchiveCustomDimension[0:len((*c.CallOptions).ArchiveCustomDimension):len((*c.CallOptions).ArchiveCustomDimension)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.ArchiveCustomDimension(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.ArchiveCustomDimension, req, settings.GRPC, c.logger, "ArchiveCustomDimension")
 		return err
 	}, opts...)
 	return err
@@ -6178,7 +6191,7 @@ func (c *analyticsAdminGRPCClient) GetCustomDimension(ctx context.Context, req *
 	var resp *adminpb.CustomDimension
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetCustomDimension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetCustomDimension, req, settings.GRPC, c.logger, "GetCustomDimension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6196,7 +6209,7 @@ func (c *analyticsAdminGRPCClient) CreateCustomMetric(ctx context.Context, req *
 	var resp *adminpb.CustomMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateCustomMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateCustomMetric, req, settings.GRPC, c.logger, "CreateCustomMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6214,7 +6227,7 @@ func (c *analyticsAdminGRPCClient) UpdateCustomMetric(ctx context.Context, req *
 	var resp *adminpb.CustomMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateCustomMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateCustomMetric, req, settings.GRPC, c.logger, "UpdateCustomMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6243,7 +6256,7 @@ func (c *analyticsAdminGRPCClient) ListCustomMetrics(ctx context.Context, req *a
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListCustomMetrics(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListCustomMetrics, req, settings.GRPC, c.logger, "ListCustomMetrics")
 			return err
 		}, opts...)
 		if err != nil {
@@ -6277,7 +6290,7 @@ func (c *analyticsAdminGRPCClient) ArchiveCustomMetric(ctx context.Context, req 
 	opts = append((*c.CallOptions).ArchiveCustomMetric[0:len((*c.CallOptions).ArchiveCustomMetric):len((*c.CallOptions).ArchiveCustomMetric)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.ArchiveCustomMetric(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.ArchiveCustomMetric, req, settings.GRPC, c.logger, "ArchiveCustomMetric")
 		return err
 	}, opts...)
 	return err
@@ -6292,7 +6305,7 @@ func (c *analyticsAdminGRPCClient) GetCustomMetric(ctx context.Context, req *adm
 	var resp *adminpb.CustomMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetCustomMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetCustomMetric, req, settings.GRPC, c.logger, "GetCustomMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6310,7 +6323,7 @@ func (c *analyticsAdminGRPCClient) GetDataRetentionSettings(ctx context.Context,
 	var resp *adminpb.DataRetentionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetDataRetentionSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetDataRetentionSettings, req, settings.GRPC, c.logger, "GetDataRetentionSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6328,7 +6341,7 @@ func (c *analyticsAdminGRPCClient) UpdateDataRetentionSettings(ctx context.Conte
 	var resp *adminpb.DataRetentionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateDataRetentionSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateDataRetentionSettings, req, settings.GRPC, c.logger, "UpdateDataRetentionSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6346,7 +6359,7 @@ func (c *analyticsAdminGRPCClient) CreateDataStream(ctx context.Context, req *ad
 	var resp *adminpb.DataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateDataStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateDataStream, req, settings.GRPC, c.logger, "CreateDataStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6363,7 +6376,7 @@ func (c *analyticsAdminGRPCClient) DeleteDataStream(ctx context.Context, req *ad
 	opts = append((*c.CallOptions).DeleteDataStream[0:len((*c.CallOptions).DeleteDataStream):len((*c.CallOptions).DeleteDataStream)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteDataStream(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteDataStream, req, settings.GRPC, c.logger, "DeleteDataStream")
 		return err
 	}, opts...)
 	return err
@@ -6378,7 +6391,7 @@ func (c *analyticsAdminGRPCClient) UpdateDataStream(ctx context.Context, req *ad
 	var resp *adminpb.DataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateDataStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateDataStream, req, settings.GRPC, c.logger, "UpdateDataStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6407,7 +6420,7 @@ func (c *analyticsAdminGRPCClient) ListDataStreams(ctx context.Context, req *adm
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListDataStreams(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListDataStreams, req, settings.GRPC, c.logger, "ListDataStreams")
 			return err
 		}, opts...)
 		if err != nil {
@@ -6442,7 +6455,7 @@ func (c *analyticsAdminGRPCClient) GetDataStream(ctx context.Context, req *admin
 	var resp *adminpb.DataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetDataStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetDataStream, req, settings.GRPC, c.logger, "GetDataStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6460,7 +6473,7 @@ func (c *analyticsAdminGRPCClient) GetAudience(ctx context.Context, req *adminpb
 	var resp *adminpb.Audience
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetAudience(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetAudience, req, settings.GRPC, c.logger, "GetAudience")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6489,7 +6502,7 @@ func (c *analyticsAdminGRPCClient) ListAudiences(ctx context.Context, req *admin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListAudiences(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListAudiences, req, settings.GRPC, c.logger, "ListAudiences")
 			return err
 		}, opts...)
 		if err != nil {
@@ -6524,7 +6537,7 @@ func (c *analyticsAdminGRPCClient) CreateAudience(ctx context.Context, req *admi
 	var resp *adminpb.Audience
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateAudience(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateAudience, req, settings.GRPC, c.logger, "CreateAudience")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6542,7 +6555,7 @@ func (c *analyticsAdminGRPCClient) UpdateAudience(ctx context.Context, req *admi
 	var resp *adminpb.Audience
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateAudience(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateAudience, req, settings.GRPC, c.logger, "UpdateAudience")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6559,7 +6572,7 @@ func (c *analyticsAdminGRPCClient) ArchiveAudience(ctx context.Context, req *adm
 	opts = append((*c.CallOptions).ArchiveAudience[0:len((*c.CallOptions).ArchiveAudience):len((*c.CallOptions).ArchiveAudience)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.ArchiveAudience(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.ArchiveAudience, req, settings.GRPC, c.logger, "ArchiveAudience")
 		return err
 	}, opts...)
 	return err
@@ -6574,7 +6587,7 @@ func (c *analyticsAdminGRPCClient) GetSearchAds360Link(ctx context.Context, req 
 	var resp *adminpb.SearchAds360Link
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetSearchAds360Link(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetSearchAds360Link, req, settings.GRPC, c.logger, "GetSearchAds360Link")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6603,7 +6616,7 @@ func (c *analyticsAdminGRPCClient) ListSearchAds360Links(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListSearchAds360Links(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListSearchAds360Links, req, settings.GRPC, c.logger, "ListSearchAds360Links")
 			return err
 		}, opts...)
 		if err != nil {
@@ -6638,7 +6651,7 @@ func (c *analyticsAdminGRPCClient) CreateSearchAds360Link(ctx context.Context, r
 	var resp *adminpb.SearchAds360Link
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateSearchAds360Link(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateSearchAds360Link, req, settings.GRPC, c.logger, "CreateSearchAds360Link")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6655,7 +6668,7 @@ func (c *analyticsAdminGRPCClient) DeleteSearchAds360Link(ctx context.Context, r
 	opts = append((*c.CallOptions).DeleteSearchAds360Link[0:len((*c.CallOptions).DeleteSearchAds360Link):len((*c.CallOptions).DeleteSearchAds360Link)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteSearchAds360Link(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteSearchAds360Link, req, settings.GRPC, c.logger, "DeleteSearchAds360Link")
 		return err
 	}, opts...)
 	return err
@@ -6670,7 +6683,7 @@ func (c *analyticsAdminGRPCClient) UpdateSearchAds360Link(ctx context.Context, r
 	var resp *adminpb.SearchAds360Link
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateSearchAds360Link(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateSearchAds360Link, req, settings.GRPC, c.logger, "UpdateSearchAds360Link")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6688,7 +6701,7 @@ func (c *analyticsAdminGRPCClient) GetAttributionSettings(ctx context.Context, r
 	var resp *adminpb.AttributionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetAttributionSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetAttributionSettings, req, settings.GRPC, c.logger, "GetAttributionSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6706,7 +6719,7 @@ func (c *analyticsAdminGRPCClient) UpdateAttributionSettings(ctx context.Context
 	var resp *adminpb.AttributionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateAttributionSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateAttributionSettings, req, settings.GRPC, c.logger, "UpdateAttributionSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6724,7 +6737,7 @@ func (c *analyticsAdminGRPCClient) RunAccessReport(ctx context.Context, req *adm
 	var resp *adminpb.RunAccessReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.RunAccessReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.RunAccessReport, req, settings.GRPC, c.logger, "RunAccessReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6742,7 +6755,7 @@ func (c *analyticsAdminGRPCClient) CreateAccessBinding(ctx context.Context, req 
 	var resp *adminpb.AccessBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateAccessBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateAccessBinding, req, settings.GRPC, c.logger, "CreateAccessBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6760,7 +6773,7 @@ func (c *analyticsAdminGRPCClient) GetAccessBinding(ctx context.Context, req *ad
 	var resp *adminpb.AccessBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetAccessBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetAccessBinding, req, settings.GRPC, c.logger, "GetAccessBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6778,7 +6791,7 @@ func (c *analyticsAdminGRPCClient) UpdateAccessBinding(ctx context.Context, req 
 	var resp *adminpb.AccessBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateAccessBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateAccessBinding, req, settings.GRPC, c.logger, "UpdateAccessBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6795,7 +6808,7 @@ func (c *analyticsAdminGRPCClient) DeleteAccessBinding(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteAccessBinding[0:len((*c.CallOptions).DeleteAccessBinding):len((*c.CallOptions).DeleteAccessBinding)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteAccessBinding(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteAccessBinding, req, settings.GRPC, c.logger, "DeleteAccessBinding")
 		return err
 	}, opts...)
 	return err
@@ -6821,7 +6834,7 @@ func (c *analyticsAdminGRPCClient) ListAccessBindings(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListAccessBindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListAccessBindings, req, settings.GRPC, c.logger, "ListAccessBindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -6856,7 +6869,7 @@ func (c *analyticsAdminGRPCClient) BatchCreateAccessBindings(ctx context.Context
 	var resp *adminpb.BatchCreateAccessBindingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.BatchCreateAccessBindings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.BatchCreateAccessBindings, req, settings.GRPC, c.logger, "BatchCreateAccessBindings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6874,7 +6887,7 @@ func (c *analyticsAdminGRPCClient) BatchGetAccessBindings(ctx context.Context, r
 	var resp *adminpb.BatchGetAccessBindingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.BatchGetAccessBindings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.BatchGetAccessBindings, req, settings.GRPC, c.logger, "BatchGetAccessBindings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6892,7 +6905,7 @@ func (c *analyticsAdminGRPCClient) BatchUpdateAccessBindings(ctx context.Context
 	var resp *adminpb.BatchUpdateAccessBindingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.BatchUpdateAccessBindings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.BatchUpdateAccessBindings, req, settings.GRPC, c.logger, "BatchUpdateAccessBindings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6909,7 +6922,7 @@ func (c *analyticsAdminGRPCClient) BatchDeleteAccessBindings(ctx context.Context
 	opts = append((*c.CallOptions).BatchDeleteAccessBindings[0:len((*c.CallOptions).BatchDeleteAccessBindings):len((*c.CallOptions).BatchDeleteAccessBindings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.BatchDeleteAccessBindings(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.BatchDeleteAccessBindings, req, settings.GRPC, c.logger, "BatchDeleteAccessBindings")
 		return err
 	}, opts...)
 	return err
@@ -6924,7 +6937,7 @@ func (c *analyticsAdminGRPCClient) GetExpandedDataSet(ctx context.Context, req *
 	var resp *adminpb.ExpandedDataSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetExpandedDataSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetExpandedDataSet, req, settings.GRPC, c.logger, "GetExpandedDataSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6953,7 +6966,7 @@ func (c *analyticsAdminGRPCClient) ListExpandedDataSets(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListExpandedDataSets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListExpandedDataSets, req, settings.GRPC, c.logger, "ListExpandedDataSets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -6988,7 +7001,7 @@ func (c *analyticsAdminGRPCClient) CreateExpandedDataSet(ctx context.Context, re
 	var resp *adminpb.ExpandedDataSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateExpandedDataSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateExpandedDataSet, req, settings.GRPC, c.logger, "CreateExpandedDataSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7006,7 +7019,7 @@ func (c *analyticsAdminGRPCClient) UpdateExpandedDataSet(ctx context.Context, re
 	var resp *adminpb.ExpandedDataSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateExpandedDataSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateExpandedDataSet, req, settings.GRPC, c.logger, "UpdateExpandedDataSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7023,7 +7036,7 @@ func (c *analyticsAdminGRPCClient) DeleteExpandedDataSet(ctx context.Context, re
 	opts = append((*c.CallOptions).DeleteExpandedDataSet[0:len((*c.CallOptions).DeleteExpandedDataSet):len((*c.CallOptions).DeleteExpandedDataSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteExpandedDataSet(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteExpandedDataSet, req, settings.GRPC, c.logger, "DeleteExpandedDataSet")
 		return err
 	}, opts...)
 	return err
@@ -7038,7 +7051,7 @@ func (c *analyticsAdminGRPCClient) GetChannelGroup(ctx context.Context, req *adm
 	var resp *adminpb.ChannelGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetChannelGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetChannelGroup, req, settings.GRPC, c.logger, "GetChannelGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7067,7 +7080,7 @@ func (c *analyticsAdminGRPCClient) ListChannelGroups(ctx context.Context, req *a
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListChannelGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListChannelGroups, req, settings.GRPC, c.logger, "ListChannelGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -7102,7 +7115,7 @@ func (c *analyticsAdminGRPCClient) CreateChannelGroup(ctx context.Context, req *
 	var resp *adminpb.ChannelGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateChannelGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateChannelGroup, req, settings.GRPC, c.logger, "CreateChannelGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7120,7 +7133,7 @@ func (c *analyticsAdminGRPCClient) UpdateChannelGroup(ctx context.Context, req *
 	var resp *adminpb.ChannelGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateChannelGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateChannelGroup, req, settings.GRPC, c.logger, "UpdateChannelGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7137,7 +7150,7 @@ func (c *analyticsAdminGRPCClient) DeleteChannelGroup(ctx context.Context, req *
 	opts = append((*c.CallOptions).DeleteChannelGroup[0:len((*c.CallOptions).DeleteChannelGroup):len((*c.CallOptions).DeleteChannelGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteChannelGroup(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteChannelGroup, req, settings.GRPC, c.logger, "DeleteChannelGroup")
 		return err
 	}, opts...)
 	return err
@@ -7149,7 +7162,7 @@ func (c *analyticsAdminGRPCClient) SetAutomatedGa4ConfigurationOptOut(ctx contex
 	var resp *adminpb.SetAutomatedGa4ConfigurationOptOutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.SetAutomatedGa4ConfigurationOptOut(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.SetAutomatedGa4ConfigurationOptOut, req, settings.GRPC, c.logger, "SetAutomatedGa4ConfigurationOptOut")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7164,7 +7177,7 @@ func (c *analyticsAdminGRPCClient) FetchAutomatedGa4ConfigurationOptOut(ctx cont
 	var resp *adminpb.FetchAutomatedGa4ConfigurationOptOutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.FetchAutomatedGa4ConfigurationOptOut(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.FetchAutomatedGa4ConfigurationOptOut, req, settings.GRPC, c.logger, "FetchAutomatedGa4ConfigurationOptOut")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7182,7 +7195,7 @@ func (c *analyticsAdminGRPCClient) CreateBigQueryLink(ctx context.Context, req *
 	var resp *adminpb.BigQueryLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateBigQueryLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateBigQueryLink, req, settings.GRPC, c.logger, "CreateBigQueryLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7200,7 +7213,7 @@ func (c *analyticsAdminGRPCClient) GetBigQueryLink(ctx context.Context, req *adm
 	var resp *adminpb.BigQueryLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetBigQueryLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetBigQueryLink, req, settings.GRPC, c.logger, "GetBigQueryLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7229,7 +7242,7 @@ func (c *analyticsAdminGRPCClient) ListBigQueryLinks(ctx context.Context, req *a
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListBigQueryLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListBigQueryLinks, req, settings.GRPC, c.logger, "ListBigQueryLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -7263,7 +7276,7 @@ func (c *analyticsAdminGRPCClient) DeleteBigQueryLink(ctx context.Context, req *
 	opts = append((*c.CallOptions).DeleteBigQueryLink[0:len((*c.CallOptions).DeleteBigQueryLink):len((*c.CallOptions).DeleteBigQueryLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteBigQueryLink(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteBigQueryLink, req, settings.GRPC, c.logger, "DeleteBigQueryLink")
 		return err
 	}, opts...)
 	return err
@@ -7278,7 +7291,7 @@ func (c *analyticsAdminGRPCClient) UpdateBigQueryLink(ctx context.Context, req *
 	var resp *adminpb.BigQueryLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateBigQueryLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateBigQueryLink, req, settings.GRPC, c.logger, "UpdateBigQueryLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7296,7 +7309,7 @@ func (c *analyticsAdminGRPCClient) GetEnhancedMeasurementSettings(ctx context.Co
 	var resp *adminpb.EnhancedMeasurementSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetEnhancedMeasurementSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetEnhancedMeasurementSettings, req, settings.GRPC, c.logger, "GetEnhancedMeasurementSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7314,7 +7327,7 @@ func (c *analyticsAdminGRPCClient) UpdateEnhancedMeasurementSettings(ctx context
 	var resp *adminpb.EnhancedMeasurementSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateEnhancedMeasurementSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateEnhancedMeasurementSettings, req, settings.GRPC, c.logger, "UpdateEnhancedMeasurementSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7329,7 +7342,7 @@ func (c *analyticsAdminGRPCClient) CreateConnectedSiteTag(ctx context.Context, r
 	var resp *adminpb.CreateConnectedSiteTagResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateConnectedSiteTag(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateConnectedSiteTag, req, settings.GRPC, c.logger, "CreateConnectedSiteTag")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7343,7 +7356,7 @@ func (c *analyticsAdminGRPCClient) DeleteConnectedSiteTag(ctx context.Context, r
 	opts = append((*c.CallOptions).DeleteConnectedSiteTag[0:len((*c.CallOptions).DeleteConnectedSiteTag):len((*c.CallOptions).DeleteConnectedSiteTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteConnectedSiteTag(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteConnectedSiteTag, req, settings.GRPC, c.logger, "DeleteConnectedSiteTag")
 		return err
 	}, opts...)
 	return err
@@ -7355,7 +7368,7 @@ func (c *analyticsAdminGRPCClient) ListConnectedSiteTags(ctx context.Context, re
 	var resp *adminpb.ListConnectedSiteTagsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.ListConnectedSiteTags(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.ListConnectedSiteTags, req, settings.GRPC, c.logger, "ListConnectedSiteTags")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7370,7 +7383,7 @@ func (c *analyticsAdminGRPCClient) FetchConnectedGa4Property(ctx context.Context
 	var resp *adminpb.FetchConnectedGa4PropertyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.FetchConnectedGa4Property(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.FetchConnectedGa4Property, req, settings.GRPC, c.logger, "FetchConnectedGa4Property")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7388,7 +7401,7 @@ func (c *analyticsAdminGRPCClient) GetAdSenseLink(ctx context.Context, req *admi
 	var resp *adminpb.AdSenseLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetAdSenseLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetAdSenseLink, req, settings.GRPC, c.logger, "GetAdSenseLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7406,7 +7419,7 @@ func (c *analyticsAdminGRPCClient) CreateAdSenseLink(ctx context.Context, req *a
 	var resp *adminpb.AdSenseLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateAdSenseLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateAdSenseLink, req, settings.GRPC, c.logger, "CreateAdSenseLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7423,7 +7436,7 @@ func (c *analyticsAdminGRPCClient) DeleteAdSenseLink(ctx context.Context, req *a
 	opts = append((*c.CallOptions).DeleteAdSenseLink[0:len((*c.CallOptions).DeleteAdSenseLink):len((*c.CallOptions).DeleteAdSenseLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteAdSenseLink(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteAdSenseLink, req, settings.GRPC, c.logger, "DeleteAdSenseLink")
 		return err
 	}, opts...)
 	return err
@@ -7449,7 +7462,7 @@ func (c *analyticsAdminGRPCClient) ListAdSenseLinks(ctx context.Context, req *ad
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListAdSenseLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListAdSenseLinks, req, settings.GRPC, c.logger, "ListAdSenseLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -7484,7 +7497,7 @@ func (c *analyticsAdminGRPCClient) GetEventCreateRule(ctx context.Context, req *
 	var resp *adminpb.EventCreateRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetEventCreateRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetEventCreateRule, req, settings.GRPC, c.logger, "GetEventCreateRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7513,7 +7526,7 @@ func (c *analyticsAdminGRPCClient) ListEventCreateRules(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListEventCreateRules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListEventCreateRules, req, settings.GRPC, c.logger, "ListEventCreateRules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -7548,7 +7561,7 @@ func (c *analyticsAdminGRPCClient) CreateEventCreateRule(ctx context.Context, re
 	var resp *adminpb.EventCreateRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateEventCreateRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateEventCreateRule, req, settings.GRPC, c.logger, "CreateEventCreateRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7566,7 +7579,7 @@ func (c *analyticsAdminGRPCClient) UpdateEventCreateRule(ctx context.Context, re
 	var resp *adminpb.EventCreateRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateEventCreateRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateEventCreateRule, req, settings.GRPC, c.logger, "UpdateEventCreateRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7583,7 +7596,7 @@ func (c *analyticsAdminGRPCClient) DeleteEventCreateRule(ctx context.Context, re
 	opts = append((*c.CallOptions).DeleteEventCreateRule[0:len((*c.CallOptions).DeleteEventCreateRule):len((*c.CallOptions).DeleteEventCreateRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteEventCreateRule(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteEventCreateRule, req, settings.GRPC, c.logger, "DeleteEventCreateRule")
 		return err
 	}, opts...)
 	return err
@@ -7598,7 +7611,7 @@ func (c *analyticsAdminGRPCClient) GetEventEditRule(ctx context.Context, req *ad
 	var resp *adminpb.EventEditRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetEventEditRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetEventEditRule, req, settings.GRPC, c.logger, "GetEventEditRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7627,7 +7640,7 @@ func (c *analyticsAdminGRPCClient) ListEventEditRules(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListEventEditRules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListEventEditRules, req, settings.GRPC, c.logger, "ListEventEditRules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -7662,7 +7675,7 @@ func (c *analyticsAdminGRPCClient) CreateEventEditRule(ctx context.Context, req 
 	var resp *adminpb.EventEditRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateEventEditRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateEventEditRule, req, settings.GRPC, c.logger, "CreateEventEditRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7680,7 +7693,7 @@ func (c *analyticsAdminGRPCClient) UpdateEventEditRule(ctx context.Context, req 
 	var resp *adminpb.EventEditRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateEventEditRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateEventEditRule, req, settings.GRPC, c.logger, "UpdateEventEditRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7697,7 +7710,7 @@ func (c *analyticsAdminGRPCClient) DeleteEventEditRule(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteEventEditRule[0:len((*c.CallOptions).DeleteEventEditRule):len((*c.CallOptions).DeleteEventEditRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteEventEditRule(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteEventEditRule, req, settings.GRPC, c.logger, "DeleteEventEditRule")
 		return err
 	}, opts...)
 	return err
@@ -7711,7 +7724,7 @@ func (c *analyticsAdminGRPCClient) ReorderEventEditRules(ctx context.Context, re
 	opts = append((*c.CallOptions).ReorderEventEditRules[0:len((*c.CallOptions).ReorderEventEditRules):len((*c.CallOptions).ReorderEventEditRules)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.ReorderEventEditRules(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.ReorderEventEditRules, req, settings.GRPC, c.logger, "ReorderEventEditRules")
 		return err
 	}, opts...)
 	return err
@@ -7726,7 +7739,7 @@ func (c *analyticsAdminGRPCClient) UpdateDataRedactionSettings(ctx context.Conte
 	var resp *adminpb.DataRedactionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateDataRedactionSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateDataRedactionSettings, req, settings.GRPC, c.logger, "UpdateDataRedactionSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7744,7 +7757,7 @@ func (c *analyticsAdminGRPCClient) GetDataRedactionSettings(ctx context.Context,
 	var resp *adminpb.DataRedactionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetDataRedactionSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetDataRedactionSettings, req, settings.GRPC, c.logger, "GetDataRedactionSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7762,7 +7775,7 @@ func (c *analyticsAdminGRPCClient) GetCalculatedMetric(ctx context.Context, req 
 	var resp *adminpb.CalculatedMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetCalculatedMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetCalculatedMetric, req, settings.GRPC, c.logger, "GetCalculatedMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7780,7 +7793,7 @@ func (c *analyticsAdminGRPCClient) CreateCalculatedMetric(ctx context.Context, r
 	var resp *adminpb.CalculatedMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateCalculatedMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateCalculatedMetric, req, settings.GRPC, c.logger, "CreateCalculatedMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7809,7 +7822,7 @@ func (c *analyticsAdminGRPCClient) ListCalculatedMetrics(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListCalculatedMetrics(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListCalculatedMetrics, req, settings.GRPC, c.logger, "ListCalculatedMetrics")
 			return err
 		}, opts...)
 		if err != nil {
@@ -7844,7 +7857,7 @@ func (c *analyticsAdminGRPCClient) UpdateCalculatedMetric(ctx context.Context, r
 	var resp *adminpb.CalculatedMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateCalculatedMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateCalculatedMetric, req, settings.GRPC, c.logger, "UpdateCalculatedMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7861,7 +7874,7 @@ func (c *analyticsAdminGRPCClient) DeleteCalculatedMetric(ctx context.Context, r
 	opts = append((*c.CallOptions).DeleteCalculatedMetric[0:len((*c.CallOptions).DeleteCalculatedMetric):len((*c.CallOptions).DeleteCalculatedMetric)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteCalculatedMetric(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteCalculatedMetric, req, settings.GRPC, c.logger, "DeleteCalculatedMetric")
 		return err
 	}, opts...)
 	return err
@@ -7873,7 +7886,7 @@ func (c *analyticsAdminGRPCClient) CreateRollupProperty(ctx context.Context, req
 	var resp *adminpb.CreateRollupPropertyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateRollupProperty(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateRollupProperty, req, settings.GRPC, c.logger, "CreateRollupProperty")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7891,7 +7904,7 @@ func (c *analyticsAdminGRPCClient) GetRollupPropertySourceLink(ctx context.Conte
 	var resp *adminpb.RollupPropertySourceLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetRollupPropertySourceLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetRollupPropertySourceLink, req, settings.GRPC, c.logger, "GetRollupPropertySourceLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7920,7 +7933,7 @@ func (c *analyticsAdminGRPCClient) ListRollupPropertySourceLinks(ctx context.Con
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListRollupPropertySourceLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListRollupPropertySourceLinks, req, settings.GRPC, c.logger, "ListRollupPropertySourceLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -7955,7 +7968,7 @@ func (c *analyticsAdminGRPCClient) CreateRollupPropertySourceLink(ctx context.Co
 	var resp *adminpb.RollupPropertySourceLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateRollupPropertySourceLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateRollupPropertySourceLink, req, settings.GRPC, c.logger, "CreateRollupPropertySourceLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7972,7 +7985,7 @@ func (c *analyticsAdminGRPCClient) DeleteRollupPropertySourceLink(ctx context.Co
 	opts = append((*c.CallOptions).DeleteRollupPropertySourceLink[0:len((*c.CallOptions).DeleteRollupPropertySourceLink):len((*c.CallOptions).DeleteRollupPropertySourceLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteRollupPropertySourceLink(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteRollupPropertySourceLink, req, settings.GRPC, c.logger, "DeleteRollupPropertySourceLink")
 		return err
 	}, opts...)
 	return err
@@ -7984,7 +7997,7 @@ func (c *analyticsAdminGRPCClient) ProvisionSubproperty(ctx context.Context, req
 	var resp *adminpb.ProvisionSubpropertyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.ProvisionSubproperty(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.ProvisionSubproperty, req, settings.GRPC, c.logger, "ProvisionSubproperty")
 		return err
 	}, opts...)
 	if err != nil {
@@ -8002,7 +8015,7 @@ func (c *analyticsAdminGRPCClient) CreateSubpropertyEventFilter(ctx context.Cont
 	var resp *adminpb.SubpropertyEventFilter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateSubpropertyEventFilter, req, settings.GRPC, c.logger, "CreateSubpropertyEventFilter")
 		return err
 	}, opts...)
 	if err != nil {
@@ -8020,7 +8033,7 @@ func (c *analyticsAdminGRPCClient) GetSubpropertyEventFilter(ctx context.Context
 	var resp *adminpb.SubpropertyEventFilter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.GetSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetSubpropertyEventFilter, req, settings.GRPC, c.logger, "GetSubpropertyEventFilter")
 		return err
 	}, opts...)
 	if err != nil {
@@ -8049,7 +8062,7 @@ func (c *analyticsAdminGRPCClient) ListSubpropertyEventFilters(ctx context.Conte
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsAdminClient.ListSubpropertyEventFilters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListSubpropertyEventFilters, req, settings.GRPC, c.logger, "ListSubpropertyEventFilters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -8084,7 +8097,7 @@ func (c *analyticsAdminGRPCClient) UpdateSubpropertyEventFilter(ctx context.Cont
 	var resp *adminpb.SubpropertyEventFilter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.UpdateSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateSubpropertyEventFilter, req, settings.GRPC, c.logger, "UpdateSubpropertyEventFilter")
 		return err
 	}, opts...)
 	if err != nil {
@@ -8101,7 +8114,7 @@ func (c *analyticsAdminGRPCClient) DeleteSubpropertyEventFilter(ctx context.Cont
 	opts = append((*c.CallOptions).DeleteSubpropertyEventFilter[0:len((*c.CallOptions).DeleteSubpropertyEventFilter):len((*c.CallOptions).DeleteSubpropertyEventFilter)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsAdminClient.DeleteSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteSubpropertyEventFilter, req, settings.GRPC, c.logger, "DeleteSubpropertyEventFilter")
 		return err
 	}, opts...)
 	return err
@@ -8140,17 +8153,7 @@ func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccount")
 		if err != nil {
 			return err
 		}
@@ -8169,7 +8172,7 @@ func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.
 
 // ListAccounts returns all accounts accessible by the caller.
 //
-// Note that these accounts might not currently have GA4 properties.
+// Note that these accounts might not currently have GA properties.
 // Soft-deleted (ie: “trashed”) accounts are excluded by default.
 // Returns an empty list if no relevant accounts are found.
 func (c *analyticsAdminRESTClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
@@ -8219,21 +8222,10 @@ func (c *analyticsAdminRESTClient) ListAccounts(ctx context.Context, req *adminp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccounts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8303,15 +8295,8 @@ func (c *analyticsAdminRESTClient) DeleteAccount(ctx context.Context, req *admin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAccount")
+		return err
 	}, opts...)
 }
 
@@ -8362,17 +8347,7 @@ func (c *analyticsAdminRESTClient) UpdateAccount(ctx context.Context, req *admin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAccount")
 		if err != nil {
 			return err
 		}
@@ -8425,17 +8400,7 @@ func (c *analyticsAdminRESTClient) ProvisionAccountTicket(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ProvisionAccountTicket")
 		if err != nil {
 			return err
 		}
@@ -8497,21 +8462,10 @@ func (c *analyticsAdminRESTClient) ListAccountSummaries(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccountSummaries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8541,7 +8495,7 @@ func (c *analyticsAdminRESTClient) ListAccountSummaries(ctx context.Context, req
 	return it
 }
 
-// GetProperty lookup for a single “GA4” Property.
+// GetProperty lookup for a single GA Property.
 func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -8574,17 +8528,7 @@ func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProperty")
 		if err != nil {
 			return err
 		}
@@ -8603,7 +8547,6 @@ func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb
 
 // ListProperties returns child Properties under the specified parent Account.
 //
-// Only “GA4” properties will be returned.
 // Properties will be excluded if the caller does not have access.
 // Soft-deleted (ie: “trashed”) properties are excluded by default.
 // Returns an empty list if no relevant properties are found.
@@ -8655,21 +8598,10 @@ func (c *analyticsAdminRESTClient) ListProperties(ctx context.Context, req *admi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProperties")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8699,7 +8631,8 @@ func (c *analyticsAdminRESTClient) ListProperties(ctx context.Context, req *admi
 	return it
 }
 
-// CreateProperty creates an “GA4” property with the specified location and attributes.
+// CreateProperty creates a Google Analytics property with the specified location and
+// attributes.
 func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProperty()
@@ -8736,17 +8669,7 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProperty")
 		if err != nil {
 			return err
 		}
@@ -8773,7 +8696,7 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not a GA4 Property.
+// Returns an error if the target is not found.
 func (c *analyticsAdminRESTClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -8806,17 +8729,7 @@ func (c *analyticsAdminRESTClient) DeleteProperty(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProperty")
 		if err != nil {
 			return err
 		}
@@ -8880,17 +8793,7 @@ func (c *analyticsAdminRESTClient) UpdateProperty(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProperty")
 		if err != nil {
 			return err
 		}
@@ -8949,17 +8852,7 @@ func (c *analyticsAdminRESTClient) CreateFirebaseLink(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFirebaseLink")
 		if err != nil {
 			return err
 		}
@@ -9006,15 +8899,8 @@ func (c *analyticsAdminRESTClient) DeleteFirebaseLink(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFirebaseLink")
+		return err
 	}, opts...)
 }
 
@@ -9064,21 +8950,10 @@ func (c *analyticsAdminRESTClient) ListFirebaseLinks(ctx context.Context, req *a
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFirebaseLinks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -9142,17 +9017,7 @@ func (c *analyticsAdminRESTClient) GetGlobalSiteTag(ctx context.Context, req *ad
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGlobalSiteTag")
 		if err != nil {
 			return err
 		}
@@ -9209,17 +9074,7 @@ func (c *analyticsAdminRESTClient) CreateGoogleAdsLink(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGoogleAdsLink")
 		if err != nil {
 			return err
 		}
@@ -9283,17 +9138,7 @@ func (c *analyticsAdminRESTClient) UpdateGoogleAdsLink(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGoogleAdsLink")
 		if err != nil {
 			return err
 		}
@@ -9340,15 +9185,8 @@ func (c *analyticsAdminRESTClient) DeleteGoogleAdsLink(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGoogleAdsLink")
+		return err
 	}, opts...)
 }
 
@@ -9397,21 +9235,10 @@ func (c *analyticsAdminRESTClient) ListGoogleAdsLinks(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoogleAdsLinks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -9475,17 +9302,7 @@ func (c *analyticsAdminRESTClient) GetDataSharingSettings(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataSharingSettings")
 		if err != nil {
 			return err
 		}
@@ -9502,7 +9319,7 @@ func (c *analyticsAdminRESTClient) GetDataSharingSettings(ctx context.Context, r
 	return resp, nil
 }
 
-// GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.
+// GetMeasurementProtocolSecret lookup for a single MeasurementProtocolSecret.
 func (c *analyticsAdminRESTClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9535,17 +9352,7 @@ func (c *analyticsAdminRESTClient) GetMeasurementProtocolSecret(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMeasurementProtocolSecret")
 		if err != nil {
 			return err
 		}
@@ -9608,21 +9415,10 @@ func (c *analyticsAdminRESTClient) ListMeasurementProtocolSecrets(ctx context.Co
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMeasurementProtocolSecrets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -9692,17 +9488,7 @@ func (c *analyticsAdminRESTClient) CreateMeasurementProtocolSecret(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMeasurementProtocolSecret")
 		if err != nil {
 			return err
 		}
@@ -9749,15 +9535,8 @@ func (c *analyticsAdminRESTClient) DeleteMeasurementProtocolSecret(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMeasurementProtocolSecret")
+		return err
 	}, opts...)
 }
 
@@ -9808,17 +9587,7 @@ func (c *analyticsAdminRESTClient) UpdateMeasurementProtocolSecret(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMeasurementProtocolSecret")
 		if err != nil {
 			return err
 		}
@@ -9878,17 +9647,7 @@ func (c *analyticsAdminRESTClient) AcknowledgeUserDataCollection(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AcknowledgeUserDataCollection")
 		if err != nil {
 			return err
 		}
@@ -9938,17 +9697,7 @@ func (c *analyticsAdminRESTClient) GetSKAdNetworkConversionValueSchema(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSKAdNetworkConversionValueSchema")
 		if err != nil {
 			return err
 		}
@@ -10005,17 +9754,7 @@ func (c *analyticsAdminRESTClient) CreateSKAdNetworkConversionValueSchema(ctx co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSKAdNetworkConversionValueSchema")
 		if err != nil {
 			return err
 		}
@@ -10062,15 +9801,8 @@ func (c *analyticsAdminRESTClient) DeleteSKAdNetworkConversionValueSchema(ctx co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSKAdNetworkConversionValueSchema")
+		return err
 	}, opts...)
 }
 
@@ -10121,17 +9853,7 @@ func (c *analyticsAdminRESTClient) UpdateSKAdNetworkConversionValueSchema(ctx co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSKAdNetworkConversionValueSchema")
 		if err != nil {
 			return err
 		}
@@ -10194,21 +9916,10 @@ func (c *analyticsAdminRESTClient) ListSKAdNetworkConversionValueSchemas(ctx con
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSKAdNetworkConversionValueSchemas")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -10240,6 +9951,9 @@ func (c *analyticsAdminRESTClient) ListSKAdNetworkConversionValueSchemas(ctx con
 
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
+//
+// Only returns the subset of changes supported by the API. The UI may return
+// additional changes.
 func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	it := &ChangeHistoryEventIterator{}
 	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
@@ -10284,21 +9998,10 @@ func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchChangeHistoryEvents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -10361,17 +10064,7 @@ func (c *analyticsAdminRESTClient) GetGoogleSignalsSettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoogleSignalsSettings")
 		if err != nil {
 			return err
 		}
@@ -10435,17 +10128,7 @@ func (c *analyticsAdminRESTClient) UpdateGoogleSignalsSettings(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGoogleSignalsSettings")
 		if err != nil {
 			return err
 		}
@@ -10505,17 +10188,7 @@ func (c *analyticsAdminRESTClient) CreateConversionEvent(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConversionEvent")
 		if err != nil {
 			return err
 		}
@@ -10582,17 +10255,7 @@ func (c *analyticsAdminRESTClient) UpdateConversionEvent(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConversionEvent")
 		if err != nil {
 			return err
 		}
@@ -10645,17 +10308,7 @@ func (c *analyticsAdminRESTClient) GetConversionEvent(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConversionEvent")
 		if err != nil {
 			return err
 		}
@@ -10705,15 +10358,8 @@ func (c *analyticsAdminRESTClient) DeleteConversionEvent(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConversionEvent")
+		return err
 	}, opts...)
 }
 
@@ -10767,21 +10413,10 @@ func (c *analyticsAdminRESTClient) ListConversionEvents(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConversionEvents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -10851,17 +10486,7 @@ func (c *analyticsAdminRESTClient) CreateKeyEvent(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateKeyEvent")
 		if err != nil {
 			return err
 		}
@@ -10925,17 +10550,7 @@ func (c *analyticsAdminRESTClient) UpdateKeyEvent(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKeyEvent")
 		if err != nil {
 			return err
 		}
@@ -10985,17 +10600,7 @@ func (c *analyticsAdminRESTClient) GetKeyEvent(ctx context.Context, req *adminpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetKeyEvent")
 		if err != nil {
 			return err
 		}
@@ -11042,15 +10647,8 @@ func (c *analyticsAdminRESTClient) DeleteKeyEvent(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteKeyEvent")
+		return err
 	}, opts...)
 }
 
@@ -11100,21 +10698,10 @@ func (c *analyticsAdminRESTClient) ListKeyEvents(ctx context.Context, req *admin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListKeyEvents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -11177,17 +10764,7 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLink(ctx context.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDisplayVideo360AdvertiserLink")
 		if err != nil {
 			return err
 		}
@@ -11249,21 +10826,10 @@ func (c *analyticsAdminRESTClient) ListDisplayVideo360AdvertiserLinks(ctx contex
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDisplayVideo360AdvertiserLinks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -11337,17 +10903,7 @@ func (c *analyticsAdminRESTClient) CreateDisplayVideo360AdvertiserLink(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDisplayVideo360AdvertiserLink")
 		if err != nil {
 			return err
 		}
@@ -11394,15 +10950,8 @@ func (c *analyticsAdminRESTClient) DeleteDisplayVideo360AdvertiserLink(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDisplayVideo360AdvertiserLink")
+		return err
 	}, opts...)
 }
 
@@ -11453,17 +11002,7 @@ func (c *analyticsAdminRESTClient) UpdateDisplayVideo360AdvertiserLink(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDisplayVideo360AdvertiserLink")
 		if err != nil {
 			return err
 		}
@@ -11513,17 +11052,7 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLinkProposal(ctx 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDisplayVideo360AdvertiserLinkProposal")
 		if err != nil {
 			return err
 		}
@@ -11585,21 +11114,10 @@ func (c *analyticsAdminRESTClient) ListDisplayVideo360AdvertiserLinkProposals(ct
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDisplayVideo360AdvertiserLinkProposals")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -11669,17 +11187,7 @@ func (c *analyticsAdminRESTClient) CreateDisplayVideo360AdvertiserLinkProposal(c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDisplayVideo360AdvertiserLinkProposal")
 		if err != nil {
 			return err
 		}
@@ -11727,15 +11235,8 @@ func (c *analyticsAdminRESTClient) DeleteDisplayVideo360AdvertiserLinkProposal(c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDisplayVideo360AdvertiserLinkProposal")
+		return err
 	}, opts...)
 }
 
@@ -11780,17 +11281,7 @@ func (c *analyticsAdminRESTClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ApproveDisplayVideo360AdvertiserLinkProposal")
 		if err != nil {
 			return err
 		}
@@ -11852,17 +11343,7 @@ func (c *analyticsAdminRESTClient) CancelDisplayVideo360AdvertiserLinkProposal(c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelDisplayVideo360AdvertiserLinkProposal")
 		if err != nil {
 			return err
 		}
@@ -11919,17 +11400,7 @@ func (c *analyticsAdminRESTClient) CreateCustomDimension(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomDimension")
 		if err != nil {
 			return err
 		}
@@ -11993,17 +11464,7 @@ func (c *analyticsAdminRESTClient) UpdateCustomDimension(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomDimension")
 		if err != nil {
 			return err
 		}
@@ -12065,21 +11526,10 @@ func (c *analyticsAdminRESTClient) ListCustomDimensions(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomDimensions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -12145,15 +11595,8 @@ func (c *analyticsAdminRESTClient) ArchiveCustomDimension(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ArchiveCustomDimension")
+		return err
 	}, opts...)
 }
 
@@ -12190,17 +11633,7 @@ func (c *analyticsAdminRESTClient) GetCustomDimension(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomDimension")
 		if err != nil {
 			return err
 		}
@@ -12257,17 +11690,7 @@ func (c *analyticsAdminRESTClient) CreateCustomMetric(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomMetric")
 		if err != nil {
 			return err
 		}
@@ -12331,17 +11754,7 @@ func (c *analyticsAdminRESTClient) UpdateCustomMetric(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomMetric")
 		if err != nil {
 			return err
 		}
@@ -12403,21 +11816,10 @@ func (c *analyticsAdminRESTClient) ListCustomMetrics(ctx context.Context, req *a
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomMetrics")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -12483,15 +11885,8 @@ func (c *analyticsAdminRESTClient) ArchiveCustomMetric(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ArchiveCustomMetric")
+		return err
 	}, opts...)
 }
 
@@ -12528,17 +11923,7 @@ func (c *analyticsAdminRESTClient) GetCustomMetric(ctx context.Context, req *adm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomMetric")
 		if err != nil {
 			return err
 		}
@@ -12588,17 +11973,7 @@ func (c *analyticsAdminRESTClient) GetDataRetentionSettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataRetentionSettings")
 		if err != nil {
 			return err
 		}
@@ -12662,17 +12037,7 @@ func (c *analyticsAdminRESTClient) UpdateDataRetentionSettings(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataRetentionSettings")
 		if err != nil {
 			return err
 		}
@@ -12729,17 +12094,7 @@ func (c *analyticsAdminRESTClient) CreateDataStream(ctx context.Context, req *ad
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataStream")
 		if err != nil {
 			return err
 		}
@@ -12786,15 +12141,8 @@ func (c *analyticsAdminRESTClient) DeleteDataStream(ctx context.Context, req *ad
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataStream")
+		return err
 	}, opts...)
 }
 
@@ -12845,17 +12193,7 @@ func (c *analyticsAdminRESTClient) UpdateDataStream(ctx context.Context, req *ad
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataStream")
 		if err != nil {
 			return err
 		}
@@ -12917,21 +12255,10 @@ func (c *analyticsAdminRESTClient) ListDataStreams(ctx context.Context, req *adm
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataStreams")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -12994,17 +12321,7 @@ func (c *analyticsAdminRESTClient) GetDataStream(ctx context.Context, req *admin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataStream")
 		if err != nil {
 			return err
 		}
@@ -13056,17 +12373,7 @@ func (c *analyticsAdminRESTClient) GetAudience(ctx context.Context, req *adminpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAudience")
 		if err != nil {
 			return err
 		}
@@ -13130,21 +12437,10 @@ func (c *analyticsAdminRESTClient) ListAudiences(ctx context.Context, req *admin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAudiences")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -13214,17 +12510,7 @@ func (c *analyticsAdminRESTClient) CreateAudience(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAudience")
 		if err != nil {
 			return err
 		}
@@ -13288,17 +12574,7 @@ func (c *analyticsAdminRESTClient) UpdateAudience(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAudience")
 		if err != nil {
 			return err
 		}
@@ -13351,15 +12627,8 @@ func (c *analyticsAdminRESTClient) ArchiveAudience(ctx context.Context, req *adm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ArchiveAudience")
+		return err
 	}, opts...)
 }
 
@@ -13396,17 +12665,7 @@ func (c *analyticsAdminRESTClient) GetSearchAds360Link(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSearchAds360Link")
 		if err != nil {
 			return err
 		}
@@ -13468,21 +12727,10 @@ func (c *analyticsAdminRESTClient) ListSearchAds360Links(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSearchAds360Links")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -13552,17 +12800,7 @@ func (c *analyticsAdminRESTClient) CreateSearchAds360Link(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSearchAds360Link")
 		if err != nil {
 			return err
 		}
@@ -13609,15 +12847,8 @@ func (c *analyticsAdminRESTClient) DeleteSearchAds360Link(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSearchAds360Link")
+		return err
 	}, opts...)
 }
 
@@ -13668,17 +12899,7 @@ func (c *analyticsAdminRESTClient) UpdateSearchAds360Link(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSearchAds360Link")
 		if err != nil {
 			return err
 		}
@@ -13728,17 +12949,7 @@ func (c *analyticsAdminRESTClient) GetAttributionSettings(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAttributionSettings")
 		if err != nil {
 			return err
 		}
@@ -13802,17 +13013,7 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAttributionSettings")
 		if err != nil {
 			return err
 		}
@@ -13838,12 +13039,17 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 // only be requested on Google Analytics 360 properties. This method is only
 // available to Administrators.
 //
-// These data access records include GA4 UI Reporting, GA4 UI Explorations,
-// GA4 Data API, and other products like Firebase & Admob that can retrieve
+// These data access records include GA UI Reporting, GA UI Explorations,
+// GA Data API, and other products like Firebase & Admob that can retrieve
 // data from Google Analytics through a linkage. These records don’t include
 // property configuration changes like adding a stream or changing a
 // property’s time zone. For configuration change history, see
 // searchChangeHistoryEvents (at https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+//
+// To give your feedback on this API, complete the Google Analytics Access
+// Reports
+// feedback (at https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+// form.
 func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adminpb.RunAccessReportRequest, opts ...gax.CallOption) (*adminpb.RunAccessReportResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -13882,17 +13088,7 @@ func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RunAccessReport")
 		if err != nil {
 			return err
 		}
@@ -13949,17 +13145,7 @@ func (c *analyticsAdminRESTClient) CreateAccessBinding(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAccessBinding")
 		if err != nil {
 			return err
 		}
@@ -14009,17 +13195,7 @@ func (c *analyticsAdminRESTClient) GetAccessBinding(ctx context.Context, req *ad
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccessBinding")
 		if err != nil {
 			return err
 		}
@@ -14076,17 +13252,7 @@ func (c *analyticsAdminRESTClient) UpdateAccessBinding(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAccessBinding")
 		if err != nil {
 			return err
 		}
@@ -14133,15 +13299,8 @@ func (c *analyticsAdminRESTClient) DeleteAccessBinding(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAccessBinding")
+		return err
 	}, opts...)
 }
 
@@ -14190,21 +13349,10 @@ func (c *analyticsAdminRESTClient) ListAccessBindings(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccessBindings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -14277,17 +13425,7 @@ func (c *analyticsAdminRESTClient) BatchCreateAccessBindings(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateAccessBindings")
 		if err != nil {
 			return err
 		}
@@ -14342,17 +13480,7 @@ func (c *analyticsAdminRESTClient) BatchGetAccessBindings(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchGetAccessBindings")
 		if err != nil {
 			return err
 		}
@@ -14409,17 +13537,7 @@ func (c *analyticsAdminRESTClient) BatchUpdateAccessBindings(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdateAccessBindings")
 		if err != nil {
 			return err
 		}
@@ -14472,15 +13590,8 @@ func (c *analyticsAdminRESTClient) BatchDeleteAccessBindings(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteAccessBindings")
+		return err
 	}, opts...)
 }
 
@@ -14517,17 +13628,7 @@ func (c *analyticsAdminRESTClient) GetExpandedDataSet(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExpandedDataSet")
 		if err != nil {
 			return err
 		}
@@ -14589,21 +13690,10 @@ func (c *analyticsAdminRESTClient) ListExpandedDataSets(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExpandedDataSets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -14673,17 +13763,7 @@ func (c *analyticsAdminRESTClient) CreateExpandedDataSet(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateExpandedDataSet")
 		if err != nil {
 			return err
 		}
@@ -14747,17 +13827,7 @@ func (c *analyticsAdminRESTClient) UpdateExpandedDataSet(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateExpandedDataSet")
 		if err != nil {
 			return err
 		}
@@ -14804,15 +13874,8 @@ func (c *analyticsAdminRESTClient) DeleteExpandedDataSet(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteExpandedDataSet")
+		return err
 	}, opts...)
 }
 
@@ -14849,17 +13912,7 @@ func (c *analyticsAdminRESTClient) GetChannelGroup(ctx context.Context, req *adm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChannelGroup")
 		if err != nil {
 			return err
 		}
@@ -14921,21 +13974,10 @@ func (c *analyticsAdminRESTClient) ListChannelGroups(ctx context.Context, req *a
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChannelGroups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -15005,17 +14047,7 @@ func (c *analyticsAdminRESTClient) CreateChannelGroup(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateChannelGroup")
 		if err != nil {
 			return err
 		}
@@ -15079,17 +14111,7 @@ func (c *analyticsAdminRESTClient) UpdateChannelGroup(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateChannelGroup")
 		if err != nil {
 			return err
 		}
@@ -15136,15 +14158,8 @@ func (c *analyticsAdminRESTClient) DeleteChannelGroup(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteChannelGroup")
+		return err
 	}, opts...)
 }
 
@@ -15186,17 +14201,7 @@ func (c *analyticsAdminRESTClient) SetAutomatedGa4ConfigurationOptOut(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetAutomatedGa4ConfigurationOptOut")
 		if err != nil {
 			return err
 		}
@@ -15251,17 +14256,7 @@ func (c *analyticsAdminRESTClient) FetchAutomatedGa4ConfigurationOptOut(ctx cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchAutomatedGa4ConfigurationOptOut")
 		if err != nil {
 			return err
 		}
@@ -15318,17 +14313,7 @@ func (c *analyticsAdminRESTClient) CreateBigQueryLink(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBigQueryLink")
 		if err != nil {
 			return err
 		}
@@ -15378,17 +14363,7 @@ func (c *analyticsAdminRESTClient) GetBigQueryLink(ctx context.Context, req *adm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBigQueryLink")
 		if err != nil {
 			return err
 		}
@@ -15450,21 +14425,10 @@ func (c *analyticsAdminRESTClient) ListBigQueryLinks(ctx context.Context, req *a
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBigQueryLinks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -15524,15 +14488,8 @@ func (c *analyticsAdminRESTClient) DeleteBigQueryLink(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBigQueryLink")
+		return err
 	}, opts...)
 }
 
@@ -15583,17 +14540,7 @@ func (c *analyticsAdminRESTClient) UpdateBigQueryLink(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBigQueryLink")
 		if err != nil {
 			return err
 		}
@@ -15645,17 +14592,7 @@ func (c *analyticsAdminRESTClient) GetEnhancedMeasurementSettings(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEnhancedMeasurementSettings")
 		if err != nil {
 			return err
 		}
@@ -15721,17 +14658,7 @@ func (c *analyticsAdminRESTClient) UpdateEnhancedMeasurementSettings(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEnhancedMeasurementSettings")
 		if err != nil {
 			return err
 		}
@@ -15786,17 +14713,7 @@ func (c *analyticsAdminRESTClient) CreateConnectedSiteTag(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConnectedSiteTag")
 		if err != nil {
 			return err
 		}
@@ -15847,15 +14764,8 @@ func (c *analyticsAdminRESTClient) DeleteConnectedSiteTag(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteConnectedSiteTag")
+		return err
 	}, opts...)
 }
 
@@ -15897,17 +14807,7 @@ func (c *analyticsAdminRESTClient) ListConnectedSiteTags(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ListConnectedSiteTags")
 		if err != nil {
 			return err
 		}
@@ -15956,17 +14856,7 @@ func (c *analyticsAdminRESTClient) FetchConnectedGa4Property(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchConnectedGa4Property")
 		if err != nil {
 			return err
 		}
@@ -16016,17 +14906,7 @@ func (c *analyticsAdminRESTClient) GetAdSenseLink(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAdSenseLink")
 		if err != nil {
 			return err
 		}
@@ -16083,17 +14963,7 @@ func (c *analyticsAdminRESTClient) CreateAdSenseLink(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAdSenseLink")
 		if err != nil {
 			return err
 		}
@@ -16140,15 +15010,8 @@ func (c *analyticsAdminRESTClient) DeleteAdSenseLink(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAdSenseLink")
+		return err
 	}, opts...)
 }
 
@@ -16197,21 +15060,10 @@ func (c *analyticsAdminRESTClient) ListAdSenseLinks(ctx context.Context, req *ad
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAdSenseLinks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -16274,17 +15126,7 @@ func (c *analyticsAdminRESTClient) GetEventCreateRule(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEventCreateRule")
 		if err != nil {
 			return err
 		}
@@ -16346,21 +15188,10 @@ func (c *analyticsAdminRESTClient) ListEventCreateRules(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEventCreateRules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -16430,17 +15261,7 @@ func (c *analyticsAdminRESTClient) CreateEventCreateRule(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEventCreateRule")
 		if err != nil {
 			return err
 		}
@@ -16504,17 +15325,7 @@ func (c *analyticsAdminRESTClient) UpdateEventCreateRule(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEventCreateRule")
 		if err != nil {
 			return err
 		}
@@ -16561,15 +15372,8 @@ func (c *analyticsAdminRESTClient) DeleteEventCreateRule(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEventCreateRule")
+		return err
 	}, opts...)
 }
 
@@ -16606,17 +15410,7 @@ func (c *analyticsAdminRESTClient) GetEventEditRule(ctx context.Context, req *ad
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEventEditRule")
 		if err != nil {
 			return err
 		}
@@ -16678,21 +15472,10 @@ func (c *analyticsAdminRESTClient) ListEventEditRules(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEventEditRules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -16762,17 +15545,7 @@ func (c *analyticsAdminRESTClient) CreateEventEditRule(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEventEditRule")
 		if err != nil {
 			return err
 		}
@@ -16836,17 +15609,7 @@ func (c *analyticsAdminRESTClient) UpdateEventEditRule(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEventEditRule")
 		if err != nil {
 			return err
 		}
@@ -16893,15 +15656,8 @@ func (c *analyticsAdminRESTClient) DeleteEventEditRule(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEventEditRule")
+		return err
 	}, opts...)
 }
 
@@ -16941,15 +15697,8 @@ func (c *analyticsAdminRESTClient) ReorderEventEditRules(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReorderEventEditRules")
+		return err
 	}, opts...)
 }
 
@@ -17000,17 +15749,7 @@ func (c *analyticsAdminRESTClient) UpdateDataRedactionSettings(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataRedactionSettings")
 		if err != nil {
 			return err
 		}
@@ -17060,17 +15799,7 @@ func (c *analyticsAdminRESTClient) GetDataRedactionSettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataRedactionSettings")
 		if err != nil {
 			return err
 		}
@@ -17120,17 +15849,7 @@ func (c *analyticsAdminRESTClient) GetCalculatedMetric(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCalculatedMetric")
 		if err != nil {
 			return err
 		}
@@ -17188,17 +15907,7 @@ func (c *analyticsAdminRESTClient) CreateCalculatedMetric(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCalculatedMetric")
 		if err != nil {
 			return err
 		}
@@ -17260,21 +15969,10 @@ func (c *analyticsAdminRESTClient) ListCalculatedMetrics(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCalculatedMetrics")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -17351,17 +16049,7 @@ func (c *analyticsAdminRESTClient) UpdateCalculatedMetric(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCalculatedMetric")
 		if err != nil {
 			return err
 		}
@@ -17408,15 +16096,8 @@ func (c *analyticsAdminRESTClient) DeleteCalculatedMetric(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCalculatedMetric")
+		return err
 	}, opts...)
 }
 
@@ -17456,17 +16137,7 @@ func (c *analyticsAdminRESTClient) CreateRollupProperty(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRollupProperty")
 		if err != nil {
 			return err
 		}
@@ -17518,17 +16189,7 @@ func (c *analyticsAdminRESTClient) GetRollupPropertySourceLink(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRollupPropertySourceLink")
 		if err != nil {
 			return err
 		}
@@ -17592,21 +16253,10 @@ func (c *analyticsAdminRESTClient) ListRollupPropertySourceLinks(ctx context.Con
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRollupPropertySourceLinks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -17678,17 +16328,7 @@ func (c *analyticsAdminRESTClient) CreateRollupPropertySourceLink(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRollupPropertySourceLink")
 		if err != nil {
 			return err
 		}
@@ -17737,15 +16377,8 @@ func (c *analyticsAdminRESTClient) DeleteRollupPropertySourceLink(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRollupPropertySourceLink")
+		return err
 	}, opts...)
 }
 
@@ -17786,17 +16419,7 @@ func (c *analyticsAdminRESTClient) ProvisionSubproperty(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ProvisionSubproperty")
 		if err != nil {
 			return err
 		}
@@ -17853,17 +16476,7 @@ func (c *analyticsAdminRESTClient) CreateSubpropertyEventFilter(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSubpropertyEventFilter")
 		if err != nil {
 			return err
 		}
@@ -17913,17 +16526,7 @@ func (c *analyticsAdminRESTClient) GetSubpropertyEventFilter(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSubpropertyEventFilter")
 		if err != nil {
 			return err
 		}
@@ -17985,21 +16588,10 @@ func (c *analyticsAdminRESTClient) ListSubpropertyEventFilters(ctx context.Conte
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSubpropertyEventFilters")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -18076,17 +16668,7 @@ func (c *analyticsAdminRESTClient) UpdateSubpropertyEventFilter(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSubpropertyEventFilter")
 		if err != nil {
 			return err
 		}
@@ -18133,14 +16715,7 @@ func (c *analyticsAdminRESTClient) DeleteSubpropertyEventFilter(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSubpropertyEventFilter")
+		return err
 	}, opts...)
 }

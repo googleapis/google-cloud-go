@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/spanner/adapter/apiv1",
+    "version": "1.79.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.spanner.adapter.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "spanner_v1_generated_Adapter_CreateSession_sync",
+      "title": "spanner CreateSession Sample",
+      "description": "CreateSession creates a new session to be used for requests made by the adapter.\nA session identifies a specific incarnation of a database resource and is\nmeant to be reused across many `AdaptMessage` calls.",
+      "file": "Client/CreateSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSession",
+        "fullName": "google.spanner.adapter.v1.Client.CreateSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adapterpb.CreateSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adapterpb.Session",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.spanner.adapter.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateSession",
+          "fullName": "google.spanner.adapter.v1.Adapter.CreateSession",
+          "service": {
+            "shortName": "Adapter",
+            "fullName": "google.spanner.adapter.v1.Adapter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

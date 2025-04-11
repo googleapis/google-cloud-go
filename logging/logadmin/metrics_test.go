@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	ltest "cloud.google.com/go/logging/internal/testing"
 	"google.golang.org/api/iterator"
 )
 
@@ -55,26 +56,32 @@ func TestCreateDeleteMetric(t *testing.T) {
 		Description: "DESC",
 		Filter:      "FILTER",
 	}
+
 	if err := client.CreateMetric(ctx, metric); err != nil {
 		t.Fatal(err)
 	}
 	defer client.DeleteMetric(ctx, metric.ID)
 
-	got, err := client.Metric(ctx, metric.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	var got *Metric
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.Metric(ctx, metric.ID)
+		return err
+	})
 	if want := metric; !testutil.Equal(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
 
-	if err := client.DeleteMetric(ctx, metric.ID); err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		return client.DeleteMetric(ctx, metric.ID)
+	})
 
-	if _, err := client.Metric(ctx, metric.ID); err == nil {
-		t.Fatal("got no error, expected one")
-	}
+	// client.Metric should give an error. Test if this is the case, but retry on
+	// retryable errors.
+	ltest.RetryAndExpectError(t, func(r *testutil.R) error {
+		_, err := client.Metric(ctx, metric.ID)
+		return err
+	})
 }
 
 func TestUpdateMetric(t *testing.T) {
@@ -86,27 +93,31 @@ func TestUpdateMetric(t *testing.T) {
 	}
 
 	// Updating a non-existent metric creates a new one.
-	if err := client.UpdateMetric(ctx, metric); err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		return client.UpdateMetric(ctx, metric)
+	})
 	defer client.DeleteMetric(ctx, metric.ID)
-	got, err := client.Metric(ctx, metric.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+
+	var got *Metric
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.Metric(ctx, metric.ID)
+		return err
+	})
 	if want := metric; !testutil.Equal(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
 
 	// Updating an existing metric changes it.
 	metric.Description = "CHANGED"
-	if err := client.UpdateMetric(ctx, metric); err != nil {
-		t.Fatal(err)
-	}
-	got, err = client.Metric(ctx, metric.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		return client.UpdateMetric(ctx, metric)
+	})
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.Metric(ctx, metric.ID)
+		return err
+	})
 	if want := metric; !testutil.Equal(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
@@ -127,22 +138,15 @@ func TestListMetrics(t *testing.T) {
 		want[m.ID] = m
 	}
 	for _, m := range metrics {
-		if err := client.CreateMetric(ctx, m); err != nil {
-			t.Fatalf("Create(%q): %v", m.ID, err)
-		}
+		ltest.Retry(t, func(r *testutil.R) error {
+			return client.CreateMetric(ctx, m)
+		})
 		defer client.DeleteMetric(ctx, m.ID)
 	}
 
 	got := map[string]*Metric{}
 	it := client.Metrics(ctx)
-	for {
-		m, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
+	for m, done := ltest.RetryIteratorNext(t, it); !done; m, done = ltest.RetryIteratorNext(t, it) {
 		// If tests run simultaneously, we may have more metrics than we
 		// created. So only check for our own.
 		if _, ok := want[m.ID]; ok {

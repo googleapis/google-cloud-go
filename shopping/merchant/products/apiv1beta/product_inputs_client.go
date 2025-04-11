@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	productspb "cloud.google.com/go/shopping/merchant/products/apiv1beta/productspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -43,6 +42,7 @@ var newProductInputsClientHook clientHook
 // ProductInputsCallOptions contains the retry settings for each method of ProductInputsClient.
 type ProductInputsCallOptions struct {
 	InsertProductInput []gax.CallOption
+	UpdateProductInput []gax.CallOption
 	DeleteProductInput []gax.CallOption
 }
 
@@ -64,6 +64,18 @@ func defaultProductInputsGRPCClientOptions() []option.ClientOption {
 func defaultProductInputsCallOptions() *ProductInputsCallOptions {
 	return &ProductInputsCallOptions{
 		InsertProductInput: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateProductInput: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -103,6 +115,17 @@ func defaultProductInputsRESTCallOptions() *ProductInputsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateProductInput: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		DeleteProductInput: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -123,6 +146,7 @@ type internalProductInputsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	InsertProductInput(context.Context, *productspb.InsertProductInputRequest, ...gax.CallOption) (*productspb.ProductInput, error)
+	UpdateProductInput(context.Context, *productspb.UpdateProductInputRequest, ...gax.CallOption) (*productspb.ProductInput, error)
 	DeleteProductInput(context.Context, *productspb.DeleteProductInputRequest, ...gax.CallOption) error
 }
 
@@ -172,6 +196,14 @@ func (c *ProductInputsClient) InsertProductInput(ctx context.Context, req *produ
 	return c.internalClient.InsertProductInput(ctx, req, opts...)
 }
 
+// UpdateProductInput updates the existing product input in your Merchant Center account.
+//
+// After inserting, updating, or deleting a product input, it may take several
+// minutes before the processed product can be retrieved.
+func (c *ProductInputsClient) UpdateProductInput(ctx context.Context, req *productspb.UpdateProductInputRequest, opts ...gax.CallOption) (*productspb.ProductInput, error) {
+	return c.internalClient.UpdateProductInput(ctx, req, opts...)
+}
+
 // DeleteProductInput deletes a product input from your Merchant Center account.
 //
 // After inserting, updating, or deleting a product input, it may take several
@@ -195,6 +227,8 @@ type productInputsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProductInputsClient creates a new product inputs service client based on gRPC.
@@ -222,6 +256,7 @@ func NewProductInputsClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		productInputsClient: productspb.NewProductInputsServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -268,6 +303,8 @@ type productInputsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ProductInputsClient
 	CallOptions **ProductInputsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewProductInputsRESTClient creates a new product inputs service rest client.
@@ -286,6 +323,7 @@ func NewProductInputsRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -338,7 +376,25 @@ func (c *productInputsGRPCClient) InsertProductInput(ctx context.Context, req *p
 	var resp *productspb.ProductInput
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productInputsClient.InsertProductInput(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productInputsClient.InsertProductInput, req, settings.GRPC, c.logger, "InsertProductInput")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *productInputsGRPCClient) UpdateProductInput(ctx context.Context, req *productspb.UpdateProductInputRequest, opts ...gax.CallOption) (*productspb.ProductInput, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product_input.name", url.QueryEscape(req.GetProductInput().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateProductInput[0:len((*c.CallOptions).UpdateProductInput):len((*c.CallOptions).UpdateProductInput)], opts...)
+	var resp *productspb.ProductInput
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.productInputsClient.UpdateProductInput, req, settings.GRPC, c.logger, "UpdateProductInput")
 		return err
 	}, opts...)
 	if err != nil {
@@ -355,7 +411,7 @@ func (c *productInputsGRPCClient) DeleteProductInput(ctx context.Context, req *p
 	opts = append((*c.CallOptions).DeleteProductInput[0:len((*c.CallOptions).DeleteProductInput):len((*c.CallOptions).DeleteProductInput)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.productInputsClient.DeleteProductInput(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.productInputsClient.DeleteProductInput, req, settings.GRPC, c.logger, "DeleteProductInput")
 		return err
 	}, opts...)
 	return err
@@ -407,17 +463,75 @@ func (c *productInputsRESTClient) InsertProductInput(ctx context.Context, req *p
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertProductInput")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateProductInput updates the existing product input in your Merchant Center account.
+//
+// After inserting, updating, or deleting a product input, it may take several
+// minutes before the processed product can be retrieved.
+func (c *productInputsRESTClient) UpdateProductInput(ctx context.Context, req *productspb.UpdateProductInputRequest, opts ...gax.CallOption) (*productspb.ProductInput, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetProductInput()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/products/v1beta/%v", req.GetProductInput().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("dataSource", fmt.Sprintf("%v", req.GetDataSource()))
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product_input.name", url.QueryEscape(req.GetProductInput().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateProductInput[0:len((*c.CallOptions).UpdateProductInput):len((*c.CallOptions).UpdateProductInput)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &productspb.ProductInput{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProductInput")
 		if err != nil {
 			return err
 		}
@@ -468,14 +582,7 @@ func (c *productInputsRESTClient) DeleteProductInput(ctx context.Context, req *p
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProductInput")
+		return err
 	}, opts...)
 }

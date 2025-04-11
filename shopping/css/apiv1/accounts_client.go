@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -202,6 +201,8 @@ type accountsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAccountsClient creates a new accounts service client based on gRPC.
@@ -228,6 +229,7 @@ func NewAccountsClient(ctx context.Context, opts ...option.ClientOption) (*Accou
 		connPool:       connPool,
 		accountsClient: csspb.NewAccountsServiceClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -274,6 +276,8 @@ type accountsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AccountsClient
 	CallOptions **AccountsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAccountsRESTClient creates a new accounts service rest client.
@@ -291,6 +295,7 @@ func NewAccountsRESTClient(ctx context.Context, opts ...option.ClientOption) (*A
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -354,7 +359,7 @@ func (c *accountsGRPCClient) ListChildAccounts(ctx context.Context, req *csspb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.accountsClient.ListChildAccounts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.accountsClient.ListChildAccounts, req, settings.GRPC, c.logger, "ListChildAccounts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -389,7 +394,7 @@ func (c *accountsGRPCClient) GetAccount(ctx context.Context, req *csspb.GetAccou
 	var resp *csspb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountsClient.GetAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountsClient.GetAccount, req, settings.GRPC, c.logger, "GetAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -407,7 +412,7 @@ func (c *accountsGRPCClient) UpdateLabels(ctx context.Context, req *csspb.Update
 	var resp *csspb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountsClient.UpdateLabels(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountsClient.UpdateLabels, req, settings.GRPC, c.logger, "UpdateLabels")
 		return err
 	}, opts...)
 	if err != nil {
@@ -468,21 +473,10 @@ func (c *accountsRESTClient) ListChildAccounts(ctx context.Context, req *csspb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChildAccounts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -548,17 +542,7 @@ func (c *accountsRESTClient) GetAccount(ctx context.Context, req *csspb.GetAccou
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccount")
 		if err != nil {
 			return err
 		}
@@ -614,17 +598,7 @@ func (c *accountsRESTClient) UpdateLabels(ctx context.Context, req *csspb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateLabels")
 		if err != nil {
 			return err
 		}

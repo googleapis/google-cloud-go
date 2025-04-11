@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ func ExampleCloudDeployClient_ListAutomationRuns_all() {
 	}
 	for resp, err := range c.ListAutomationRuns(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -72,7 +72,7 @@ func ExampleCloudDeployClient_ListAutomations_all() {
 	}
 	for resp, err := range c.ListAutomations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -98,7 +98,7 @@ func ExampleCloudDeployClient_ListCustomTargetTypes_all() {
 	}
 	for resp, err := range c.ListCustomTargetTypes(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -124,7 +124,7 @@ func ExampleCloudDeployClient_ListDeliveryPipelines_all() {
 	}
 	for resp, err := range c.ListDeliveryPipelines(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -150,7 +150,7 @@ func ExampleCloudDeployClient_ListDeployPolicies_all() {
 	}
 	for resp, err := range c.ListDeployPolicies(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -176,7 +176,7 @@ func ExampleCloudDeployClient_ListJobRuns_all() {
 	}
 	for resp, err := range c.ListJobRuns(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -202,7 +202,7 @@ func ExampleCloudDeployClient_ListReleases_all() {
 	}
 	for resp, err := range c.ListReleases(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -228,7 +228,7 @@ func ExampleCloudDeployClient_ListRollouts_all() {
 	}
 	for resp, err := range c.ListRollouts(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -254,7 +254,7 @@ func ExampleCloudDeployClient_ListTargets_all() {
 	}
 	for resp, err := range c.ListTargets(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -280,7 +280,7 @@ func ExampleCloudDeployClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -306,7 +306,7 @@ func ExampleCloudDeployClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

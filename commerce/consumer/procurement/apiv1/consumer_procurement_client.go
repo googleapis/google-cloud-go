@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -286,6 +285,8 @@ type consumerProcurementGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewConsumerProcurementClient creates a new consumer procurement service client based on gRPC.
@@ -319,6 +320,7 @@ func NewConsumerProcurementClient(ctx context.Context, opts ...option.ClientOpti
 		connPool:                  connPool,
 		consumerProcurementClient: procurementpb.NewConsumerProcurementServiceClient(connPool),
 		CallOptions:               &client.CallOptions,
+		logger:                    internaloption.GetLogger(opts),
 		operationsClient:          longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -382,6 +384,8 @@ type consumerProcurementRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ConsumerProcurementClient
 	CallOptions **ConsumerProcurementCallOptions
+
+	logger *slog.Logger
 }
 
 // NewConsumerProcurementRESTClient creates a new consumer procurement service rest client.
@@ -406,6 +410,7 @@ func NewConsumerProcurementRESTClient(ctx context.Context, opts ...option.Client
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -468,7 +473,7 @@ func (c *consumerProcurementGRPCClient) PlaceOrder(ctx context.Context, req *pro
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.consumerProcurementClient.PlaceOrder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.consumerProcurementClient.PlaceOrder, req, settings.GRPC, c.logger, "PlaceOrder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -488,7 +493,7 @@ func (c *consumerProcurementGRPCClient) GetOrder(ctx context.Context, req *procu
 	var resp *procurementpb.Order
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.consumerProcurementClient.GetOrder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.consumerProcurementClient.GetOrder, req, settings.GRPC, c.logger, "GetOrder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -517,7 +522,7 @@ func (c *consumerProcurementGRPCClient) ListOrders(ctx context.Context, req *pro
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.consumerProcurementClient.ListOrders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.consumerProcurementClient.ListOrders, req, settings.GRPC, c.logger, "ListOrders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -552,7 +557,7 @@ func (c *consumerProcurementGRPCClient) ModifyOrder(ctx context.Context, req *pr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.consumerProcurementClient.ModifyOrder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.consumerProcurementClient.ModifyOrder, req, settings.GRPC, c.logger, "ModifyOrder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -572,7 +577,7 @@ func (c *consumerProcurementGRPCClient) CancelOrder(ctx context.Context, req *pr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.consumerProcurementClient.CancelOrder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.consumerProcurementClient.CancelOrder, req, settings.GRPC, c.logger, "CancelOrder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -592,7 +597,7 @@ func (c *consumerProcurementGRPCClient) GetOperation(ctx context.Context, req *l
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -648,21 +653,10 @@ func (c *consumerProcurementRESTClient) PlaceOrder(ctx context.Context, req *pro
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PlaceOrder")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -714,17 +708,7 @@ func (c *consumerProcurementRESTClient) GetOrder(ctx context.Context, req *procu
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOrder")
 		if err != nil {
 			return err
 		}
@@ -791,21 +775,10 @@ func (c *consumerProcurementRESTClient) ListOrders(ctx context.Context, req *pro
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOrders")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -874,21 +847,10 @@ func (c *consumerProcurementRESTClient) ModifyOrder(ctx context.Context, req *pr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ModifyOrder")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -946,21 +908,10 @@ func (c *consumerProcurementRESTClient) CancelOrder(ctx context.Context, req *pr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOrder")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1011,17 +962,7 @@ func (c *consumerProcurementRESTClient) GetOperation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

@@ -1,5 +1,26 @@
 # Changes
 
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.16.2...artifactregistry/v1.16.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.16.1...artifactregistry/v1.16.2) (2025-03-06)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.16.0...artifactregistry/v1.16.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.15.2...artifactregistry/v1.16.0) (2024-11-06)
 
 

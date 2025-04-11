@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package products
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	productspb "cloud.google.com/go/shopping/merchant/products/apiv1beta/productspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -131,7 +130,6 @@ type internalClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service to use Product resource.
-// This service works for products with online channel only.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -172,8 +170,8 @@ func (c *Client) GetProduct(ctx context.Context, req *productspb.GetProductReque
 }
 
 // ListProducts lists the processed products in your Merchant Center account. The response
-// might contain fewer items than specified by pageSize. Rely on pageToken to
-// determine if there are more items to be requested.
+// might contain fewer items than specified by pageSize. Rely on pageToken
+// to determine if there are more items to be requested.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the updated processed product can be retrieved.
@@ -196,13 +194,14 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new products service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service to use Product resource.
-// This service works for products with online channel only.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -223,6 +222,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      productspb.NewProductsServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -269,12 +269,13 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new products service rest client.
 //
 // Service to use Product resource.
-// This service works for products with online channel only.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -287,6 +288,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -339,7 +341,7 @@ func (c *gRPCClient) GetProduct(ctx context.Context, req *productspb.GetProductR
 	var resp *productspb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetProduct(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetProduct, req, settings.GRPC, c.logger, "GetProduct")
 		return err
 	}, opts...)
 	if err != nil {
@@ -368,7 +370,7 @@ func (c *gRPCClient) ListProducts(ctx context.Context, req *productspb.ListProdu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListProducts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListProducts, req, settings.GRPC, c.logger, "ListProducts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -430,17 +432,7 @@ func (c *restClient) GetProduct(ctx context.Context, req *productspb.GetProductR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProduct")
 		if err != nil {
 			return err
 		}
@@ -458,8 +450,8 @@ func (c *restClient) GetProduct(ctx context.Context, req *productspb.GetProductR
 }
 
 // ListProducts lists the processed products in your Merchant Center account. The response
-// might contain fewer items than specified by pageSize. Rely on pageToken to
-// determine if there are more items to be requested.
+// might contain fewer items than specified by pageSize. Rely on pageToken
+// to determine if there are more items to be requested.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the updated processed product can be retrieved.
@@ -507,21 +499,10 @@ func (c *restClient) ListProducts(ctx context.Context, req *productspb.ListProdu
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProducts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

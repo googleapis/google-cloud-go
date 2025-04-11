@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package migration
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -213,6 +214,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new migration service client based on gRPC.
@@ -239,6 +242,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      migrationpb.NewMigrationServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -281,7 +285,7 @@ func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 	var resp *migrationpb.MigrationWorkflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMigrationWorkflow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMigrationWorkflow, req, settings.GRPC, c.logger, "CreateMigrationWorkflow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -299,7 +303,7 @@ func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 	var resp *migrationpb.MigrationWorkflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMigrationWorkflow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMigrationWorkflow, req, settings.GRPC, c.logger, "GetMigrationWorkflow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -328,7 +332,7 @@ func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMigrationWorkflows(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMigrationWorkflows, req, settings.GRPC, c.logger, "ListMigrationWorkflows")
 			return err
 		}, opts...)
 		if err != nil {
@@ -362,7 +366,7 @@ func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 	opts = append((*c.CallOptions).DeleteMigrationWorkflow[0:len((*c.CallOptions).DeleteMigrationWorkflow):len((*c.CallOptions).DeleteMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteMigrationWorkflow(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteMigrationWorkflow, req, settings.GRPC, c.logger, "DeleteMigrationWorkflow")
 		return err
 	}, opts...)
 	return err
@@ -376,7 +380,7 @@ func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 	opts = append((*c.CallOptions).StartMigrationWorkflow[0:len((*c.CallOptions).StartMigrationWorkflow):len((*c.CallOptions).StartMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.StartMigrationWorkflow(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.StartMigrationWorkflow, req, settings.GRPC, c.logger, "StartMigrationWorkflow")
 		return err
 	}, opts...)
 	return err
@@ -391,7 +395,7 @@ func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 	var resp *migrationpb.MigrationSubtask
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMigrationSubtask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMigrationSubtask, req, settings.GRPC, c.logger, "GetMigrationSubtask")
 		return err
 	}, opts...)
 	if err != nil {
@@ -420,7 +424,7 @@ func (c *gRPCClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMigrationSubtasks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMigrationSubtasks, req, settings.GRPC, c.logger, "ListMigrationSubtasks")
 			return err
 		}, opts...)
 		if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -613,6 +614,8 @@ type jobGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewJobClient creates a new job service client based on gRPC.
@@ -639,6 +642,7 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		connPool:         connPool,
 		jobClient:        aiplatformpb.NewJobServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -695,7 +699,7 @@ func (c *jobGRPCClient) CreateCustomJob(ctx context.Context, req *aiplatformpb.C
 	var resp *aiplatformpb.CustomJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateCustomJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateCustomJob, req, settings.GRPC, c.logger, "CreateCustomJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -713,7 +717,7 @@ func (c *jobGRPCClient) GetCustomJob(ctx context.Context, req *aiplatformpb.GetC
 	var resp *aiplatformpb.CustomJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetCustomJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetCustomJob, req, settings.GRPC, c.logger, "GetCustomJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -742,7 +746,7 @@ func (c *jobGRPCClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListCustomJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListCustomJobs, req, settings.GRPC, c.logger, "ListCustomJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -777,7 +781,7 @@ func (c *jobGRPCClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteCustomJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteCustomJob, req, settings.GRPC, c.logger, "DeleteCustomJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -796,7 +800,7 @@ func (c *jobGRPCClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.C
 	opts = append((*c.CallOptions).CancelCustomJob[0:len((*c.CallOptions).CancelCustomJob):len((*c.CallOptions).CancelCustomJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelCustomJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelCustomJob, req, settings.GRPC, c.logger, "CancelCustomJob")
 		return err
 	}, opts...)
 	return err
@@ -811,7 +815,7 @@ func (c *jobGRPCClient) CreateDataLabelingJob(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.DataLabelingJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateDataLabelingJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateDataLabelingJob, req, settings.GRPC, c.logger, "CreateDataLabelingJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -829,7 +833,7 @@ func (c *jobGRPCClient) GetDataLabelingJob(ctx context.Context, req *aiplatformp
 	var resp *aiplatformpb.DataLabelingJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetDataLabelingJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetDataLabelingJob, req, settings.GRPC, c.logger, "GetDataLabelingJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -858,7 +862,7 @@ func (c *jobGRPCClient) ListDataLabelingJobs(ctx context.Context, req *aiplatfor
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListDataLabelingJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListDataLabelingJobs, req, settings.GRPC, c.logger, "ListDataLabelingJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -893,7 +897,7 @@ func (c *jobGRPCClient) DeleteDataLabelingJob(ctx context.Context, req *aiplatfo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteDataLabelingJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteDataLabelingJob, req, settings.GRPC, c.logger, "DeleteDataLabelingJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -912,7 +916,7 @@ func (c *jobGRPCClient) CancelDataLabelingJob(ctx context.Context, req *aiplatfo
 	opts = append((*c.CallOptions).CancelDataLabelingJob[0:len((*c.CallOptions).CancelDataLabelingJob):len((*c.CallOptions).CancelDataLabelingJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelDataLabelingJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelDataLabelingJob, req, settings.GRPC, c.logger, "CancelDataLabelingJob")
 		return err
 	}, opts...)
 	return err
@@ -927,7 +931,7 @@ func (c *jobGRPCClient) CreateHyperparameterTuningJob(ctx context.Context, req *
 	var resp *aiplatformpb.HyperparameterTuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateHyperparameterTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateHyperparameterTuningJob, req, settings.GRPC, c.logger, "CreateHyperparameterTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -945,7 +949,7 @@ func (c *jobGRPCClient) GetHyperparameterTuningJob(ctx context.Context, req *aip
 	var resp *aiplatformpb.HyperparameterTuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetHyperparameterTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetHyperparameterTuningJob, req, settings.GRPC, c.logger, "GetHyperparameterTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -974,7 +978,7 @@ func (c *jobGRPCClient) ListHyperparameterTuningJobs(ctx context.Context, req *a
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListHyperparameterTuningJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListHyperparameterTuningJobs, req, settings.GRPC, c.logger, "ListHyperparameterTuningJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1009,7 +1013,7 @@ func (c *jobGRPCClient) DeleteHyperparameterTuningJob(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteHyperparameterTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteHyperparameterTuningJob, req, settings.GRPC, c.logger, "DeleteHyperparameterTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1028,7 +1032,7 @@ func (c *jobGRPCClient) CancelHyperparameterTuningJob(ctx context.Context, req *
 	opts = append((*c.CallOptions).CancelHyperparameterTuningJob[0:len((*c.CallOptions).CancelHyperparameterTuningJob):len((*c.CallOptions).CancelHyperparameterTuningJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelHyperparameterTuningJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelHyperparameterTuningJob, req, settings.GRPC, c.logger, "CancelHyperparameterTuningJob")
 		return err
 	}, opts...)
 	return err
@@ -1043,7 +1047,7 @@ func (c *jobGRPCClient) CreateNasJob(ctx context.Context, req *aiplatformpb.Crea
 	var resp *aiplatformpb.NasJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateNasJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateNasJob, req, settings.GRPC, c.logger, "CreateNasJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1061,7 +1065,7 @@ func (c *jobGRPCClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJ
 	var resp *aiplatformpb.NasJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetNasJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetNasJob, req, settings.GRPC, c.logger, "GetNasJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1090,7 +1094,7 @@ func (c *jobGRPCClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListN
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListNasJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListNasJobs, req, settings.GRPC, c.logger, "ListNasJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1125,7 +1129,7 @@ func (c *jobGRPCClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.Dele
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteNasJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteNasJob, req, settings.GRPC, c.logger, "DeleteNasJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1144,7 +1148,7 @@ func (c *jobGRPCClient) CancelNasJob(ctx context.Context, req *aiplatformpb.Canc
 	opts = append((*c.CallOptions).CancelNasJob[0:len((*c.CallOptions).CancelNasJob):len((*c.CallOptions).CancelNasJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelNasJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelNasJob, req, settings.GRPC, c.logger, "CancelNasJob")
 		return err
 	}, opts...)
 	return err
@@ -1159,7 +1163,7 @@ func (c *jobGRPCClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb
 	var resp *aiplatformpb.NasTrialDetail
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetNasTrialDetail(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetNasTrialDetail, req, settings.GRPC, c.logger, "GetNasTrialDetail")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1188,7 +1192,7 @@ func (c *jobGRPCClient) ListNasTrialDetails(ctx context.Context, req *aiplatform
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListNasTrialDetails(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListNasTrialDetails, req, settings.GRPC, c.logger, "ListNasTrialDetails")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1223,7 +1227,7 @@ func (c *jobGRPCClient) CreateBatchPredictionJob(ctx context.Context, req *aipla
 	var resp *aiplatformpb.BatchPredictionJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateBatchPredictionJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateBatchPredictionJob, req, settings.GRPC, c.logger, "CreateBatchPredictionJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1241,7 +1245,7 @@ func (c *jobGRPCClient) GetBatchPredictionJob(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.BatchPredictionJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetBatchPredictionJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetBatchPredictionJob, req, settings.GRPC, c.logger, "GetBatchPredictionJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1270,7 +1274,7 @@ func (c *jobGRPCClient) ListBatchPredictionJobs(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListBatchPredictionJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListBatchPredictionJobs, req, settings.GRPC, c.logger, "ListBatchPredictionJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1305,7 +1309,7 @@ func (c *jobGRPCClient) DeleteBatchPredictionJob(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteBatchPredictionJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteBatchPredictionJob, req, settings.GRPC, c.logger, "DeleteBatchPredictionJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1324,7 +1328,7 @@ func (c *jobGRPCClient) CancelBatchPredictionJob(ctx context.Context, req *aipla
 	opts = append((*c.CallOptions).CancelBatchPredictionJob[0:len((*c.CallOptions).CancelBatchPredictionJob):len((*c.CallOptions).CancelBatchPredictionJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelBatchPredictionJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelBatchPredictionJob, req, settings.GRPC, c.logger, "CancelBatchPredictionJob")
 		return err
 	}, opts...)
 	return err
@@ -1339,7 +1343,7 @@ func (c *jobGRPCClient) CreateModelDeploymentMonitoringJob(ctx context.Context, 
 	var resp *aiplatformpb.ModelDeploymentMonitoringJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "CreateModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1368,7 +1372,7 @@ func (c *jobGRPCClient) SearchModelDeploymentMonitoringStatsAnomalies(ctx contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.SearchModelDeploymentMonitoringStatsAnomalies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.SearchModelDeploymentMonitoringStatsAnomalies, req, settings.GRPC, c.logger, "SearchModelDeploymentMonitoringStatsAnomalies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1403,7 +1407,7 @@ func (c *jobGRPCClient) GetModelDeploymentMonitoringJob(ctx context.Context, req
 	var resp *aiplatformpb.ModelDeploymentMonitoringJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "GetModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1432,7 +1436,7 @@ func (c *jobGRPCClient) ListModelDeploymentMonitoringJobs(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListModelDeploymentMonitoringJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListModelDeploymentMonitoringJobs, req, settings.GRPC, c.logger, "ListModelDeploymentMonitoringJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1467,7 +1471,7 @@ func (c *jobGRPCClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.UpdateModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.UpdateModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "UpdateModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1487,7 +1491,7 @@ func (c *jobGRPCClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "DeleteModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1506,7 +1510,7 @@ func (c *jobGRPCClient) PauseModelDeploymentMonitoringJob(ctx context.Context, r
 	opts = append((*c.CallOptions).PauseModelDeploymentMonitoringJob[0:len((*c.CallOptions).PauseModelDeploymentMonitoringJob):len((*c.CallOptions).PauseModelDeploymentMonitoringJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.PauseModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.PauseModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "PauseModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	return err
@@ -1520,7 +1524,7 @@ func (c *jobGRPCClient) ResumeModelDeploymentMonitoringJob(ctx context.Context, 
 	opts = append((*c.CallOptions).ResumeModelDeploymentMonitoringJob[0:len((*c.CallOptions).ResumeModelDeploymentMonitoringJob):len((*c.CallOptions).ResumeModelDeploymentMonitoringJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.ResumeModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.ResumeModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "ResumeModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	return err
@@ -1535,7 +1539,7 @@ func (c *jobGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1564,7 +1568,7 @@ func (c *jobGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1599,7 +1603,7 @@ func (c *jobGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1617,7 +1621,7 @@ func (c *jobGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1635,7 +1639,7 @@ func (c *jobGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1652,7 +1656,7 @@ func (c *jobGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1666,7 +1670,7 @@ func (c *jobGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1681,7 +1685,7 @@ func (c *jobGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1710,7 +1714,7 @@ func (c *jobGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1745,7 +1749,7 @@ func (c *jobGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.Wa
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

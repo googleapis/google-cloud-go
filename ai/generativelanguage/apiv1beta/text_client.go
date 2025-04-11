@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -273,6 +272,8 @@ type textGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTextClient creates a new text service client based on gRPC.
@@ -302,6 +303,7 @@ func NewTextClient(ctx context.Context, opts ...option.ClientOption) (*TextClien
 		connPool:         connPool,
 		textClient:       generativelanguagepb.NewTextServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -349,6 +351,8 @@ type textRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TextClient
 	CallOptions **TextCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTextRESTClient creates a new text service rest client.
@@ -369,6 +373,7 @@ func NewTextRESTClient(ctx context.Context, opts ...option.ClientOption) (*TextC
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -421,7 +426,7 @@ func (c *textGRPCClient) GenerateText(ctx context.Context, req *generativelangua
 	var resp *generativelanguagepb.GenerateTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.textClient.GenerateText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.textClient.GenerateText, req, settings.GRPC, c.logger, "GenerateText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -439,7 +444,7 @@ func (c *textGRPCClient) EmbedText(ctx context.Context, req *generativelanguagep
 	var resp *generativelanguagepb.EmbedTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.textClient.EmbedText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.textClient.EmbedText, req, settings.GRPC, c.logger, "EmbedText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -457,7 +462,7 @@ func (c *textGRPCClient) BatchEmbedText(ctx context.Context, req *generativelang
 	var resp *generativelanguagepb.BatchEmbedTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.textClient.BatchEmbedText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.textClient.BatchEmbedText, req, settings.GRPC, c.logger, "BatchEmbedText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -475,7 +480,7 @@ func (c *textGRPCClient) CountTextTokens(ctx context.Context, req *generativelan
 	var resp *generativelanguagepb.CountTextTokensResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.textClient.CountTextTokens(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.textClient.CountTextTokens, req, settings.GRPC, c.logger, "CountTextTokens")
 		return err
 	}, opts...)
 	if err != nil {
@@ -493,7 +498,7 @@ func (c *textGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -522,7 +527,7 @@ func (c *textGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -587,17 +592,7 @@ func (c *textRESTClient) GenerateText(ctx context.Context, req *generativelangua
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateText")
 		if err != nil {
 			return err
 		}
@@ -653,17 +648,7 @@ func (c *textRESTClient) EmbedText(ctx context.Context, req *generativelanguagep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EmbedText")
 		if err != nil {
 			return err
 		}
@@ -720,17 +705,7 @@ func (c *textRESTClient) BatchEmbedText(ctx context.Context, req *generativelang
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchEmbedText")
 		if err != nil {
 			return err
 		}
@@ -786,17 +761,7 @@ func (c *textRESTClient) CountTextTokens(ctx context.Context, req *generativelan
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CountTextTokens")
 		if err != nil {
 			return err
 		}
@@ -846,17 +811,7 @@ func (c *textRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -921,21 +876,10 @@ func (c *textRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

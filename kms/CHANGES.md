@@ -1,6 +1,42 @@
 # Changes
 
 
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.21.0...kms/v1.21.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **kms:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.5...kms/v1.21.0) (2025-02-20)
+
+
+### Features
+
+* **kms:** Add a PublicKeyFormat enum to allow specifying the format the public is going to be exported in ([c08d347](https://github.com/googleapis/google-cloud-go/commit/c08d34776d398a79f6962a26e8e2c75bc4958e2b))
+* **kms:** Support PQC asymmetric signing algorithms ML_DSA_65 and SLH_DSA_SHA2_128s ([c08d347](https://github.com/googleapis/google-cloud-go/commit/c08d34776d398a79f6962a26e8e2c75bc4958e2b))
+
+## [1.20.5](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.4...kms/v1.20.5) (2025-01-08)
+
+
+### Documentation
+
+* **kms:** Modify enum comment ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.3...kms/v1.20.4) (2025-01-02)
+
+
+### Bug Fixes
+
+* **kms:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.2...kms/v1.20.3) (2024-12-18)
+
+
+### Documentation
+
+* **kms:** Code documentation improvements ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
 ## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.1...kms/v1.20.2) (2024-12-04)
 
 

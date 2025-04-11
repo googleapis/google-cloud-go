@@ -1,5 +1,26 @@
 # Changes
 
+## [1.42.3](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.2...container/v1.42.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **container:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.42.2](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.1...container/v1.42.2) (2025-01-30)
+
+
+### Documentation
+
+* **container:** Broken (or ambiguous) markdown link ([#11507](https://github.com/googleapis/google-cloud-go/issues/11507)) ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+
+## [1.42.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.0...container/v1.42.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **container:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.41.0...container/v1.42.0) (2024-11-14)
 
 

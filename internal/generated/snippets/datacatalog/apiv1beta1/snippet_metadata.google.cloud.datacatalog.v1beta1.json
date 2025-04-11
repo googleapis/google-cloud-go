@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/apiv1beta1",
-    "version": "1.24.0",
+    "version": "1.25.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntry_sync",
       "title": "datacatalog CreateEntry Sample",
-      "description": "CreateEntry creates an entry. Only entries of 'FILESET' type or user-specified type can\nbe created.\n\nUsers should enable the Data Catalog API in the project identified by\nthe `parent` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\nA maximum of 100,000 entries may be created per entry group.",
+      "description": "CreateEntry creates an entry. Only entries of 'FILESET' type or user-specified type can\nbe created.\n\nUsers should enable the Data Catalog API in the project identified by\nthe `parent` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\nA maximum of 100,000 entries may be created per entry group.\n\n\nDeprecated: CreateEntry may be removed in a future version.",
       "file": "Client/CreateEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntryGroup_sync",
       "title": "datacatalog CreateEntryGroup Sample",
-      "description": "CreateEntryGroup a maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nUsers should enable the Data Catalog API in the project identified by\nthe `parent` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "CreateEntryGroup a maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nUsers should enable the Data Catalog API in the project identified by\nthe `parent` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: CreateEntryGroup may be removed in a future version.",
       "file": "Client/CreateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTag_sync",
       "title": "datacatalog CreateTag Sample",
-      "description": "CreateTag creates a tag on an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nNote: The project identified by the `parent` parameter for the\n[tag](https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.entryGroups.entries.tags/create#path-parameters)\nand the\n[tag\ntemplate](https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.tagTemplates/create#path-parameters)\nused to create the tag must be from the same organization.",
+      "description": "CreateTag creates a tag on an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nNote: The project identified by the `parent` parameter for the\n[tag](https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.entryGroups.entries.tags/create#path-parameters)\nand the\n[tag\ntemplate](https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.tagTemplates/create#path-parameters)\nused to create the tag must be from the same organization.\n\n\nDeprecated: CreateTag may be removed in a future version.",
       "file": "Client/CreateTag/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplate_sync",
       "title": "datacatalog CreateTagTemplate Sample",
-      "description": "CreateTagTemplate creates a tag template. The user should enable the Data Catalog API in\nthe project identified by the `parent` parameter (see [Data Catalog\nResource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
+      "description": "CreateTagTemplate creates a tag template. The user should enable the Data Catalog API in\nthe project identified by the `parent` parameter (see [Data Catalog\nResource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).\n\n\nDeprecated: CreateTagTemplate may be removed in a future version.",
       "file": "Client/CreateTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplateField_sync",
       "title": "datacatalog CreateTagTemplateField Sample",
-      "description": "CreateTagTemplateField creates a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `parent` parameter (see\n[Data Catalog Resource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
+      "description": "CreateTagTemplateField creates a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `parent` parameter (see\n[Data Catalog Resource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).\n\n\nDeprecated: CreateTagTemplateField may be removed in a future version.",
       "file": "Client/CreateTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntry_sync",
       "title": "datacatalog DeleteEntry Sample",
-      "description": "DeleteEntry deletes an existing entry. Only entries created through\n[CreateEntry][google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntry]\nmethod can be deleted.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "DeleteEntry deletes an existing entry. Only entries created through\n[CreateEntry][google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntry]\nmethod can be deleted.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: DeleteEntry may be removed in a future version.",
       "file": "Client/DeleteEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -289,7 +289,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntryGroup_sync",
       "title": "datacatalog DeleteEntryGroup Sample",
-      "description": "DeleteEntryGroup deletes an EntryGroup. Only entry groups that do not contain entries can be\ndeleted. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "DeleteEntryGroup deletes an EntryGroup. Only entry groups that do not contain entries can be\ndeleted. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: DeleteEntryGroup may be removed in a future version.",
       "file": "Client/DeleteEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -334,7 +334,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTag_sync",
       "title": "datacatalog DeleteTag Sample",
-      "description": "DeleteTag deletes a tag.",
+      "description": "DeleteTag deletes a tag.\n\n\nDeprecated: DeleteTag may be removed in a future version.",
       "file": "Client/DeleteTag/main.go",
       "language": "GO",
       "clientMethod": {
@@ -379,7 +379,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplate_sync",
       "title": "datacatalog DeleteTagTemplate Sample",
-      "description": "DeleteTagTemplate deletes a tag template and all tags using the template.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "DeleteTagTemplate deletes a tag template and all tags using the template.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: DeleteTagTemplate may be removed in a future version.",
       "file": "Client/DeleteTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -424,7 +424,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplateField_sync",
       "title": "datacatalog DeleteTagTemplateField Sample",
-      "description": "DeleteTagTemplateField deletes a field in a tag template and all uses of that field.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "DeleteTagTemplateField deletes a field in a tag template and all uses of that field.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: DeleteTagTemplateField may be removed in a future version.",
       "file": "Client/DeleteTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -469,7 +469,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetEntry_sync",
       "title": "datacatalog GetEntry Sample",
-      "description": "GetEntry gets an entry.",
+      "description": "GetEntry gets an entry.\n\n\nDeprecated: GetEntry may be removed in a future version.",
       "file": "Client/GetEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -515,7 +515,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetEntryGroup_sync",
       "title": "datacatalog GetEntryGroup Sample",
-      "description": "GetEntryGroup gets an EntryGroup.",
+      "description": "GetEntryGroup gets an EntryGroup.\n\n\nDeprecated: GetEntryGroup may be removed in a future version.",
       "file": "Client/GetEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -561,7 +561,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetIamPolicy_sync",
       "title": "datacatalog GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a resource. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n- `datacatalog.tagTemplates.getIamPolicy` to get policies on tag\ntemplates.\n- `datacatalog.entries.getIamPolicy` to get policies on entries.\n- `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.",
+      "description": "GetIamPolicy gets the access control policy for a resource. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n- `datacatalog.tagTemplates.getIamPolicy` to get policies on tag\ntemplates.\n- `datacatalog.entries.getIamPolicy` to get policies on entries.\n- `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.\n\n\nDeprecated: GetIamPolicy may be removed in a future version.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -607,7 +607,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetTagTemplate_sync",
       "title": "datacatalog GetTagTemplate Sample",
-      "description": "GetTagTemplate gets a tag template.",
+      "description": "GetTagTemplate gets a tag template.\n\n\nDeprecated: GetTagTemplate may be removed in a future version.",
       "file": "Client/GetTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -653,7 +653,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListEntries_sync",
       "title": "datacatalog ListEntries Sample",
-      "description": "ListEntries lists entries.",
+      "description": "ListEntries lists entries.\n\n\nDeprecated: ListEntries may be removed in a future version.",
       "file": "Client/ListEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -699,7 +699,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListEntryGroups_sync",
       "title": "datacatalog ListEntryGroups Sample",
-      "description": "ListEntryGroups lists entry groups.",
+      "description": "ListEntryGroups lists entry groups.\n\n\nDeprecated: ListEntryGroups may be removed in a future version.",
       "file": "Client/ListEntryGroups/main.go",
       "language": "GO",
       "clientMethod": {
@@ -745,7 +745,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListTags_sync",
       "title": "datacatalog ListTags Sample",
-      "description": "ListTags lists tags assigned to an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nThe [columns][google.cloud.datacatalog.v1beta1.Tag.column] in the response\nare lowercased.",
+      "description": "ListTags lists tags assigned to an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nThe [columns][google.cloud.datacatalog.v1beta1.Tag.column] in the response\nare lowercased.\n\n\nDeprecated: ListTags may be removed in a future version.",
       "file": "Client/ListTags/main.go",
       "language": "GO",
       "clientMethod": {
@@ -791,7 +791,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_LookupEntry_sync",
       "title": "datacatalog LookupEntry Sample",
-      "description": "LookupEntry get an entry by target resource name. This method allows clients to use\nthe resource name from the source Google Cloud Platform service to get the\nData Catalog Entry.",
+      "description": "LookupEntry get an entry by target resource name. This method allows clients to use\nthe resource name from the source Google Cloud Platform service to get the\nData Catalog Entry.\n\n\nDeprecated: LookupEntry may be removed in a future version.",
       "file": "Client/LookupEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -837,7 +837,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateField_sync",
       "title": "datacatalog RenameTagTemplateField Sample",
-      "description": "RenameTagTemplateField renames a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `name` parameter (see [Data Catalog\nResource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
+      "description": "RenameTagTemplateField renames a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `name` parameter (see [Data Catalog\nResource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).\n\n\nDeprecated: RenameTagTemplateField may be removed in a future version.",
       "file": "Client/RenameTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -883,7 +883,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateFieldEnumValue_sync",
       "title": "datacatalog RenameTagTemplateFieldEnumValue Sample",
-      "description": "RenameTagTemplateFieldEnumValue renames an enum value in a tag template. The enum values have to be unique\nwithin one enum field. Thus, an enum value cannot be renamed with a name\nused in any other enum value within the same enum field.",
+      "description": "RenameTagTemplateFieldEnumValue renames an enum value in a tag template. The enum values have to be unique\nwithin one enum field. Thus, an enum value cannot be renamed with a name\nused in any other enum value within the same enum field.\n\n\nDeprecated: RenameTagTemplateFieldEnumValue may be removed in a future version.",
       "file": "Client/RenameTagTemplateFieldEnumValue/main.go",
       "language": "GO",
       "clientMethod": {
@@ -929,7 +929,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SearchCatalog_sync",
       "title": "datacatalog SearchCatalog Sample",
-      "description": "SearchCatalog searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https: //cloud.google.com/apis/design/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequently call `Get` methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee [Data Catalog Search\nSyntax](https: //cloud.google.com/data-catalog/docs/how-to/search-reference)\nfor more information.",
+      "description": "SearchCatalog searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https: //cloud.google.com/apis/design/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequently call `Get` methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee [Data Catalog Search\nSyntax](https: //cloud.google.com/data-catalog/docs/how-to/search-reference)\nfor more information.\n\n\nDeprecated: SearchCatalog may be removed in a future version.",
       "file": "Client/SearchCatalog/main.go",
       "language": "GO",
       "clientMethod": {
@@ -975,7 +975,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SetIamPolicy_sync",
       "title": "datacatalog SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n- `datacatalog.tagTemplates.setIamPolicy` to set policies on tag\ntemplates.\n- `datacatalog.entries.setIamPolicy` to set policies on entries.\n- `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.",
+      "description": "SetIamPolicy sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n- `datacatalog.tagTemplates.setIamPolicy` to set policies on tag\ntemplates.\n- `datacatalog.entries.setIamPolicy` to set policies on entries.\n- `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.\n\n\nDeprecated: SetIamPolicy may be removed in a future version.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1021,7 +1021,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_TestIamPermissions_sync",
       "title": "datacatalog TestIamPermissions Sample",
-      "description": "TestIamPermissions returns the caller's permissions on a resource.\nIf the resource does not exist, an empty set of permissions is returned\n(We don't return a `NOT_FOUND` error).\n\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nA caller is not required to have Google IAM permission to make this\nrequest.",
+      "description": "TestIamPermissions returns the caller's permissions on a resource.\nIf the resource does not exist, an empty set of permissions is returned\n(We don't return a `NOT_FOUND` error).\n\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nA caller is not required to have Google IAM permission to make this\nrequest.\n\n\nDeprecated: TestIamPermissions may be removed in a future version.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1067,7 +1067,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntry_sync",
       "title": "datacatalog UpdateEntry Sample",
-      "description": "UpdateEntry updates an existing entry.\nUsers should enable the Data Catalog API in the project identified by\nthe `entry.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "UpdateEntry updates an existing entry.\nUsers should enable the Data Catalog API in the project identified by\nthe `entry.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateEntry may be removed in a future version.",
       "file": "Client/UpdateEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1113,7 +1113,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntryGroup_sync",
       "title": "datacatalog UpdateEntryGroup Sample",
-      "description": "UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the\nproject identified by the `entry_group.name` parameter (see [Data Catalog\nResource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the\nproject identified by the `entry_group.name` parameter (see [Data Catalog\nResource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateEntryGroup may be removed in a future version.",
       "file": "Client/UpdateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1159,7 +1159,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTag_sync",
       "title": "datacatalog UpdateTag Sample",
-      "description": "UpdateTag updates an existing tag.",
+      "description": "UpdateTag updates an existing tag.\n\n\nDeprecated: UpdateTag may be removed in a future version.",
       "file": "Client/UpdateTag/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1205,7 +1205,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplate_sync",
       "title": "datacatalog UpdateTagTemplate Sample",
-      "description": "UpdateTagTemplate updates a tag template. This method cannot be used to update the fields of\na template. The tag template fields are represented as separate resources\nand should be updated using their own create/update/delete methods.\nUsers should enable the Data Catalog API in the project identified by\nthe `tag_template.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "UpdateTagTemplate updates a tag template. This method cannot be used to update the fields of\na template. The tag template fields are represented as separate resources\nand should be updated using their own create/update/delete methods.\nUsers should enable the Data Catalog API in the project identified by\nthe `tag_template.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateTagTemplate may be removed in a future version.",
       "file": "Client/UpdateTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1251,7 +1251,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplateField_sync",
       "title": "datacatalog UpdateTagTemplateField Sample",
-      "description": "UpdateTagTemplateField updates a field in a tag template. This method cannot be used to update the\nfield type. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
+      "description": "UpdateTagTemplateField updates a field in a tag template. This method cannot be used to update the\nfield type. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateTagTemplateField may be removed in a future version.",
       "file": "Client/UpdateTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {

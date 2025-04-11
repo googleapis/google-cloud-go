@@ -103,6 +103,14 @@ try3 go mod download
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
+  if [[ $PWD == *"/aliasshim" ]]; then
+    # aliasshim: build constraints exclude all Go files
+    return
+  fi
+  if [[ $PWD == *"bigquery/benchmarks" ]]; then
+    # bigquery/benchmarks: build constraints exclude all Go files
+    return
+  fi
   if { [[ $PWD == *"/internal/"* ]] ||
     [[ $PWD == *"/third_party/"* ]]; } &&
     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
@@ -165,7 +173,7 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR.
   SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' || true)
 
-  if [ -z $SIGNIFICANT_CHANGES ]; then
+  if [[ -z $SIGNIFICANT_CHANGES ]]; then
     echo "No changes detected, skipping tests"
     exit 0
   fi
