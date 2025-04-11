@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	securitycentermanagementpb "cloud.google.com/go/securitycentermanagement/apiv1/securitycentermanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -694,6 +693,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new security center management client based on gRPC.
@@ -720,6 +721,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:        connPool,
 		client:          securitycentermanagementpb.NewSecurityCenterManagementClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -767,6 +769,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new security center management rest client.
@@ -784,6 +788,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -847,7 +852,7 @@ func (c *gRPCClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx conte
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListEffectiveSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListEffectiveSecurityHealthAnalyticsCustomModules, req, settings.GRPC, c.logger, "ListEffectiveSecurityHealthAnalyticsCustomModules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -882,7 +887,7 @@ func (c *gRPCClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context
 	var resp *securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetEffectiveSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetEffectiveSecurityHealthAnalyticsCustomModule, req, settings.GRPC, c.logger, "GetEffectiveSecurityHealthAnalyticsCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -911,7 +916,7 @@ func (c *gRPCClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSecurityHealthAnalyticsCustomModules, req, settings.GRPC, c.logger, "ListSecurityHealthAnalyticsCustomModules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -957,7 +962,7 @@ func (c *gRPCClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDescendantSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDescendantSecurityHealthAnalyticsCustomModules, req, settings.GRPC, c.logger, "ListDescendantSecurityHealthAnalyticsCustomModules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -992,7 +997,7 @@ func (c *gRPCClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context,
 	var resp *securitycentermanagementpb.SecurityHealthAnalyticsCustomModule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSecurityHealthAnalyticsCustomModule, req, settings.GRPC, c.logger, "GetSecurityHealthAnalyticsCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1010,7 +1015,7 @@ func (c *gRPCClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	var resp *securitycentermanagementpb.SecurityHealthAnalyticsCustomModule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSecurityHealthAnalyticsCustomModule, req, settings.GRPC, c.logger, "CreateSecurityHealthAnalyticsCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1028,7 +1033,7 @@ func (c *gRPCClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	var resp *securitycentermanagementpb.SecurityHealthAnalyticsCustomModule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSecurityHealthAnalyticsCustomModule, req, settings.GRPC, c.logger, "UpdateSecurityHealthAnalyticsCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1045,7 +1050,7 @@ func (c *gRPCClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	opts = append((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSecurityHealthAnalyticsCustomModule, req, settings.GRPC, c.logger, "DeleteSecurityHealthAnalyticsCustomModule")
 		return err
 	}, opts...)
 	return err
@@ -1060,7 +1065,7 @@ func (c *gRPCClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Con
 	var resp *securitycentermanagementpb.SimulateSecurityHealthAnalyticsCustomModuleResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SimulateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SimulateSecurityHealthAnalyticsCustomModule, req, settings.GRPC, c.logger, "SimulateSecurityHealthAnalyticsCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1089,7 +1094,7 @@ func (c *gRPCClient) ListEffectiveEventThreatDetectionCustomModules(ctx context.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListEffectiveEventThreatDetectionCustomModules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListEffectiveEventThreatDetectionCustomModules, req, settings.GRPC, c.logger, "ListEffectiveEventThreatDetectionCustomModules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1124,7 +1129,7 @@ func (c *gRPCClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Co
 	var resp *securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetEffectiveEventThreatDetectionCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetEffectiveEventThreatDetectionCustomModule, req, settings.GRPC, c.logger, "GetEffectiveEventThreatDetectionCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1153,7 +1158,7 @@ func (c *gRPCClient) ListEventThreatDetectionCustomModules(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListEventThreatDetectionCustomModules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListEventThreatDetectionCustomModules, req, settings.GRPC, c.logger, "ListEventThreatDetectionCustomModules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1199,7 +1204,7 @@ func (c *gRPCClient) ListDescendantEventThreatDetectionCustomModules(ctx context
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDescendantEventThreatDetectionCustomModules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDescendantEventThreatDetectionCustomModules, req, settings.GRPC, c.logger, "ListDescendantEventThreatDetectionCustomModules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1234,7 +1239,7 @@ func (c *gRPCClient) GetEventThreatDetectionCustomModule(ctx context.Context, re
 	var resp *securitycentermanagementpb.EventThreatDetectionCustomModule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetEventThreatDetectionCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetEventThreatDetectionCustomModule, req, settings.GRPC, c.logger, "GetEventThreatDetectionCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1252,7 +1257,7 @@ func (c *gRPCClient) CreateEventThreatDetectionCustomModule(ctx context.Context,
 	var resp *securitycentermanagementpb.EventThreatDetectionCustomModule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateEventThreatDetectionCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateEventThreatDetectionCustomModule, req, settings.GRPC, c.logger, "CreateEventThreatDetectionCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1270,7 +1275,7 @@ func (c *gRPCClient) UpdateEventThreatDetectionCustomModule(ctx context.Context,
 	var resp *securitycentermanagementpb.EventThreatDetectionCustomModule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateEventThreatDetectionCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateEventThreatDetectionCustomModule, req, settings.GRPC, c.logger, "UpdateEventThreatDetectionCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1287,7 +1292,7 @@ func (c *gRPCClient) DeleteEventThreatDetectionCustomModule(ctx context.Context,
 	opts = append((*c.CallOptions).DeleteEventThreatDetectionCustomModule[0:len((*c.CallOptions).DeleteEventThreatDetectionCustomModule):len((*c.CallOptions).DeleteEventThreatDetectionCustomModule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteEventThreatDetectionCustomModule(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteEventThreatDetectionCustomModule, req, settings.GRPC, c.logger, "DeleteEventThreatDetectionCustomModule")
 		return err
 	}, opts...)
 	return err
@@ -1302,7 +1307,7 @@ func (c *gRPCClient) ValidateEventThreatDetectionCustomModule(ctx context.Contex
 	var resp *securitycentermanagementpb.ValidateEventThreatDetectionCustomModuleResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ValidateEventThreatDetectionCustomModule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ValidateEventThreatDetectionCustomModule, req, settings.GRPC, c.logger, "ValidateEventThreatDetectionCustomModule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1320,7 +1325,7 @@ func (c *gRPCClient) GetSecurityCenterService(ctx context.Context, req *security
 	var resp *securitycentermanagementpb.SecurityCenterService
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSecurityCenterService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSecurityCenterService, req, settings.GRPC, c.logger, "GetSecurityCenterService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1349,7 +1354,7 @@ func (c *gRPCClient) ListSecurityCenterServices(ctx context.Context, req *securi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSecurityCenterServices(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSecurityCenterServices, req, settings.GRPC, c.logger, "ListSecurityCenterServices")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1384,7 +1389,7 @@ func (c *gRPCClient) UpdateSecurityCenterService(ctx context.Context, req *secur
 	var resp *securitycentermanagementpb.SecurityCenterService
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSecurityCenterService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSecurityCenterService, req, settings.GRPC, c.logger, "UpdateSecurityCenterService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1402,7 +1407,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1431,7 +1436,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1506,21 +1511,10 @@ func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx conte
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEffectiveSecurityHealthAnalyticsCustomModules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1584,17 +1578,7 @@ func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEffectiveSecurityHealthAnalyticsCustomModule")
 		if err != nil {
 			return err
 		}
@@ -1660,21 +1644,10 @@ func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Contex
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSecurityHealthAnalyticsCustomModules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1752,21 +1725,10 @@ func (c *restClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx cont
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDescendantSecurityHealthAnalyticsCustomModules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1830,17 +1792,7 @@ func (c *restClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSecurityHealthAnalyticsCustomModule")
 		if err != nil {
 			return err
 		}
@@ -1905,17 +1857,7 @@ func (c *restClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSecurityHealthAnalyticsCustomModule")
 		if err != nil {
 			return err
 		}
@@ -1988,17 +1930,7 @@ func (c *restClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSecurityHealthAnalyticsCustomModule")
 		if err != nil {
 			return err
 		}
@@ -2051,15 +1983,8 @@ func (c *restClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSecurityHealthAnalyticsCustomModule")
+		return err
 	}, opts...)
 }
 
@@ -2104,17 +2029,7 @@ func (c *restClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SimulateSecurityHealthAnalyticsCustomModule")
 		if err != nil {
 			return err
 		}
@@ -2178,21 +2093,10 @@ func (c *restClient) ListEffectiveEventThreatDetectionCustomModules(ctx context.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEffectiveEventThreatDetectionCustomModules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2266,17 +2170,7 @@ func (c *restClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEffectiveEventThreatDetectionCustomModule")
 		if err != nil {
 			return err
 		}
@@ -2340,21 +2234,10 @@ func (c *restClient) ListEventThreatDetectionCustomModules(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEventThreatDetectionCustomModules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2430,21 +2313,10 @@ func (c *restClient) ListDescendantEventThreatDetectionCustomModules(ctx context
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDescendantEventThreatDetectionCustomModules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2507,17 +2379,7 @@ func (c *restClient) GetEventThreatDetectionCustomModule(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEventThreatDetectionCustomModule")
 		if err != nil {
 			return err
 		}
@@ -2580,17 +2442,7 @@ func (c *restClient) CreateEventThreatDetectionCustomModule(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEventThreatDetectionCustomModule")
 		if err != nil {
 			return err
 		}
@@ -2662,17 +2514,7 @@ func (c *restClient) UpdateEventThreatDetectionCustomModule(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEventThreatDetectionCustomModule")
 		if err != nil {
 			return err
 		}
@@ -2724,15 +2566,8 @@ func (c *restClient) DeleteEventThreatDetectionCustomModule(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEventThreatDetectionCustomModule")
+		return err
 	}, opts...)
 }
 
@@ -2775,17 +2610,7 @@ func (c *restClient) ValidateEventThreatDetectionCustomModule(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ValidateEventThreatDetectionCustomModule")
 		if err != nil {
 			return err
 		}
@@ -2838,17 +2663,7 @@ func (c *restClient) GetSecurityCenterService(ctx context.Context, req *security
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSecurityCenterService")
 		if err != nil {
 			return err
 		}
@@ -2914,21 +2729,10 @@ func (c *restClient) ListSecurityCenterServices(ctx context.Context, req *securi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSecurityCenterServices")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3008,17 +2812,7 @@ func (c *restClient) UpdateSecurityCenterService(ctx context.Context, req *secur
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSecurityCenterService")
 		if err != nil {
 			return err
 		}
@@ -3068,17 +2862,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -3143,21 +2927,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

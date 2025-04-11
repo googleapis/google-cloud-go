@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2",
-    "version": "1.61.0",
+    "version": "1.68.1",
     "language": "GO",
     "apis": [
       {
@@ -2673,7 +2673,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationProfiles_CreateConversationProfile_sync",
       "title": "dialogflow CreateConversationProfile Sample",
-      "description": "CreateConversationProfile creates a conversation profile in the specified project.\n\n[ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]\naren't populated in the response. You can retrieve them via\n[GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]\nAPI.",
+      "description": "CreateConversationProfile creates a conversation profile in the specified project.\n\n[ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]\nand\n[ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]\naren't populated in the response. You can retrieve them via\n[GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]\nAPI.",
       "file": "ConversationProfilesClient/CreateConversationProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3086,7 +3086,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationProfiles_UpdateConversationProfile_sync",
       "title": "dialogflow UpdateConversationProfile Sample",
-      "description": "UpdateConversationProfile updates the specified conversation profile.\n\n[ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]\naren't populated in the response. You can retrieve them via\n[GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]\nAPI.",
+      "description": "UpdateConversationProfile updates the specified conversation profile.\n\n[ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]\nand\n[ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]\naren't populated in the response. You can retrieve them via\n[GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]\nAPI.",
       "file": "ConversationProfilesClient/UpdateConversationProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3359,6 +3359,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v2_generated_Conversations_GenerateSuggestions_sync",
+      "title": "dialogflow GenerateSuggestions Sample",
+      "description": "GenerateSuggestions generates all the suggestions using generators configured in the\nconversation profile. A generator is used only if its trigger event is\nmatched.",
+      "file": "ConversationsClient/GenerateSuggestions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateSuggestions",
+        "fullName": "google.cloud.dialogflow.v2.ConversationsClient.GenerateSuggestions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.GenerateSuggestionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.GenerateSuggestionsResponse",
+        "client": {
+          "shortName": "ConversationsClient",
+          "fullName": "google.cloud.dialogflow.v2.ConversationsClient"
+        },
+        "method": {
+          "shortName": "GenerateSuggestions",
+          "fullName": "google.cloud.dialogflow.v2.Conversations.GenerateSuggestions",
+          "service": {
+            "shortName": "Conversations",
+            "fullName": "google.cloud.dialogflow.v2.Conversations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v2_generated_Conversations_GetConversation_sync",
       "title": "dialogflow GetConversation Sample",
       "description": "GetConversation retrieves the specific conversation.",
@@ -3484,6 +3530,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2_generated_Conversations_IngestContextReferences_sync",
+      "title": "dialogflow IngestContextReferences Sample",
+      "description": "IngestContextReferences data ingestion API.\nIngests context references for an existing conversation.",
+      "file": "ConversationsClient/IngestContextReferences/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "IngestContextReferences",
+        "fullName": "google.cloud.dialogflow.v2.ConversationsClient.IngestContextReferences",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.IngestContextReferencesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.IngestContextReferencesResponse",
+        "client": {
+          "shortName": "ConversationsClient",
+          "fullName": "google.cloud.dialogflow.v2.ConversationsClient"
+        },
+        "method": {
+          "shortName": "IngestContextReferences",
+          "fullName": "google.cloud.dialogflow.v2.Conversations.IngestContextReferences",
+          "service": {
+            "shortName": "Conversations",
+            "fullName": "google.cloud.dialogflow.v2.Conversations"
           }
         }
       },

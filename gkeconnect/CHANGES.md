@@ -1,5 +1,26 @@
 # Changes
 
+## [0.12.3](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.12.2...gkeconnect/v0.12.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **gkeconnect:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.12.2](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.12.1...gkeconnect/v0.12.2) (2025-03-06)
+
+
+### Bug Fixes
+
+* **gkeconnect:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.12.0...gkeconnect/v0.12.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **gkeconnect:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.11.2...gkeconnect/v0.12.0) (2024-11-14)
 
 

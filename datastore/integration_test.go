@@ -435,6 +435,52 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 	_ = client.Delete(ctx, k)
 }
 
+func TestIntegration_RunWithReadTime(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	client := newTestClient(ctx, t)
+	defer cancel()
+	defer client.Close()
+
+	type RT struct {
+		TimeCreated time.Time
+	}
+
+	rt1 := RT{time.Now()}
+	k := NameKey("RT", "ReadTime", nil)
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := tx.Put(k, &rt1); err != nil {
+		t.Fatalf("Transaction.Put: %v\n", err)
+	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Transaction.Commit: %v\n", err)
+	}
+
+	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
+		got := RT{}
+		tm := ReadTime(time.Now())
+
+		client.WithReadOptions(tm)
+
+		// If the Entity isn't available at the requested read time, we get
+		// a "datastore: no such entity" error. The ReadTime is otherwise not
+		// exposed in anyway in the response.
+		err = client.Get(ctx, k, &got)
+		client.Run(ctx, NewQuery("RT"))
+		if err != nil {
+			r.Errorf("client.Get: %v", err)
+		}
+	})
+
+	// Cleanup
+	_ = client.Delete(ctx, k)
+}
+
 func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
@@ -1225,6 +1271,8 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
+	beforeCreate := time.Now().Truncate(time.Millisecond)
+
 	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
@@ -1255,12 +1303,13 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}()
 
 	testCases := []struct {
-		desc            string
-		aggQuery        *AggregationQuery
-		transactionOpts []TransactionOption
-		wantFailure     bool
-		wantErrMsg      string
-		wantAggResult   AggregationResult
+		desc              string
+		aggQuery          *AggregationQuery
+		transactionOpts   []TransactionOption
+		clientReadOptions []ReadOption
+		wantFailure       bool
+		wantErrMsg        string
+		wantAggResult     AggregationResult
 	}{
 
 		{
@@ -1276,6 +1325,26 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
 				NewAggregationQuery().
 				WithCount("count"),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+			},
+		},
+		{
+			desc: "Count success before create with client read time",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
+				NewAggregationQuery().
+				WithCount("count"),
+			clientReadOptions: []ReadOption{ReadTime(beforeCreate)},
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+			},
+		},
+		{
+			desc: "Count success after create with client read time",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
+				NewAggregationQuery().
+				WithCount("count"),
+			clientReadOptions: []ReadOption{ReadTime(time.Now().Truncate(time.Millisecond))},
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
 			},
@@ -1352,8 +1421,16 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testClient := client
+		if testCase.clientReadOptions != nil {
+			clientWithReadTime := newTestClient(ctx, t)
+			clientWithReadTime.WithReadOptions(testCase.clientReadOptions...)
+			defer clientWithReadTime.Close()
+
+			testClient = clientWithReadTime
+		}
 		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
-			gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
+			gotAggResult, gotErr := testClient.RunAggregationQuery(ctx, testCase.aggQuery)
 			gotFailure := gotErr != nil
 
 			if gotFailure != testCase.wantFailure ||

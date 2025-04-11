@@ -17,10 +17,10 @@ package storage_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -272,7 +272,7 @@ func ExampleObjectIterator_Next() {
 }
 
 func ExampleSignedURL() {
-	pkey, err := ioutil.ReadFile("my-private-key.pem")
+	pkey, err := os.ReadFile("my-private-key.pem")
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -350,7 +350,7 @@ func ExampleObjectHandle_NewReader() {
 	if err != nil {
 		// TODO: handle error.
 	}
-	slurp, err := ioutil.ReadAll(rc)
+	slurp, err := io.ReadAll(rc)
 	rc.Close()
 	if err != nil {
 		// TODO: handle error.
@@ -371,7 +371,7 @@ func ExampleObjectHandle_NewRangeReader() {
 	}
 	defer rc.Close()
 
-	slurp, err := ioutil.ReadAll(rc)
+	slurp, err := io.ReadAll(rc)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -391,7 +391,7 @@ func ExampleObjectHandle_NewRangeReader_lastNBytes() {
 	}
 	defer rc.Close()
 
-	slurp, err := ioutil.ReadAll(rc)
+	slurp, err := io.ReadAll(rc)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -411,7 +411,7 @@ func ExampleObjectHandle_NewRangeReader_untilEnd() {
 	}
 	defer rc.Close()
 
-	slurp, err := ioutil.ReadAll(rc)
+	slurp, err := io.ReadAll(rc)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -878,7 +878,7 @@ func ExampleBucketHandle_exists() {
 	}
 
 	attrs, err := client.Bucket("my-bucket").Attrs(ctx)
-	if err == storage.ErrBucketNotExist {
+	if errors.Is(err, storage.ErrBucketNotExist) {
 		fmt.Println("The bucket does not exist")
 		return
 	}
@@ -896,7 +896,7 @@ func ExampleObjectHandle_exists() {
 	}
 
 	attrs, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
-	if err == storage.ErrObjectNotExist {
+	if errors.Is(err, storage.ErrObjectNotExist) {
 		fmt.Println("The object does not exist")
 		return
 	}

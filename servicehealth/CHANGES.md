@@ -1,6 +1,32 @@
 # Changelog
 
 
+## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.2.1...servicehealth/v1.2.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **servicehealth:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.2.0...servicehealth/v1.2.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **servicehealth:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **servicehealth:** Update documentation for various messages ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.1.3...servicehealth/v1.2.0) (2024-12-04)
+
+
+### Features
+
+* **servicehealth:** A new field `id` is added to message `.google.cloud.servicehealth.v1.Product` ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.1.2...servicehealth/v1.1.3) (2024-11-14)
 
 

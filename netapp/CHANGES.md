@@ -1,6 +1,56 @@
 # Changelog
 
 
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.0...netapp/v1.7.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **netapp:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.6.0...netapp/v1.7.0) (2025-02-05)
+
+
+### Features
+
+* **netapp:** Add ipAddress field to MountOption ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+* **netapp:** Add support for Quota Rule apis ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.1...netapp/v1.6.0) (2025-01-08)
+
+
+### Features
+
+* **netapp:** Add ValidateDirectoryService API for testing AD connection of a storage pool ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+
+### Documentation
+
+* **netapp:** Removed the format for `replication` in message `google.cloud.netapp.v1.HybridReplicationParameters` ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.0...netapp/v1.5.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **netapp:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.4.1...netapp/v1.5.0) (2024-12-04)
+
+
+### Features
+
+* **netapp:** Add EstablishPeering API for Onprem Migration ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Add new Active Directory state for AD Diagnostics support ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Add Sync API for Replications ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Enable creation of Onprem Migration in CreateVolume ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Enable creation of Onprem Migration in CreateVolume ([#11172](https://github.com/googleapis/google-cloud-go/issues/11172)) ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+
+
+### Documentation
+
+* **netapp:** Docs now do not allow underscore in IDs of various Resources ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.4.0...netapp/v1.4.1) (2024-10-23)
 
 

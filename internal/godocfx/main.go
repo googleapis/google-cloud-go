@@ -40,7 +40,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -67,6 +66,10 @@ func main() {
 		log.Fatalf("%s missing required argument: module path/prefix", os.Args[0])
 	}
 
+	tSaver := &dsTimeSaver{projectID: *projectID}
+	var lastSeen time.Time
+
+	ctx := context.Background()
 	modNames := flag.Args()
 	var mods []indexEntry
 	if *newMods {
@@ -74,9 +77,14 @@ func main() {
 			log.Fatal("Must set -project when using -new-modules")
 		}
 		var err error
-		mods, err = newModules(context.Background(), indexClient{}, &dsTimeSaver{projectID: *projectID}, modNames)
+		lastSeen, err = tSaver.get(ctx)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Failed to get latest timestamp: %v", err)
+		}
+		ic := indexClient{indexURL: "https://index.golang.org/index"}
+		mods, lastSeen, err = ic.get(ctx, modNames, lastSeen)
+		if err != nil {
+			log.Fatalf("Failed to get from index: %v", err)
 		}
 	} else {
 		for _, mod := range modNames {
@@ -108,9 +116,15 @@ func main() {
 	namer := &friendlyAPINamer{
 		metaURL: "https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json",
 	}
-	optionalExtraFiles := []string{}
-	if ok := processMods(mods, *outDir, namer, optionalExtraFiles, *print); !ok {
+	if ok := processMods(mods, *outDir, namer, nil, *print); !ok {
 		os.Exit(1)
+	}
+
+	// Only save the latest timestamp if we successfully processed all modules.
+	if *newMods {
+		if err := tSaver.put(ctx, lastSeen); err != nil {
+			log.Fatalf("Failed to save latest timestamp: %v", err)
+		}
 	}
 }
 
@@ -121,19 +135,19 @@ func runCmd(dir, name string, args ...string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("Start: %v", err)
+		return fmt.Errorf("cmd.Start: %v", err)
 	}
 	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("Wait: %s", err)
+		return fmt.Errorf("cmd.Wait: %s", err)
 	}
 	return nil
 }
 
 func processMods(mods []indexEntry, outDir string, namer *friendlyAPINamer, optionalExtraFiles []string, print bool) bool {
 	// Create a temp module so we can get the exact version asked for.
-	workingDir, err := ioutil.TempDir("", "godocfx-*")
+	workingDir, err := os.MkdirTemp("", "godocfx-*")
 	if err != nil {
-		log.Fatalf("ioutil.TempDir: %v", err)
+		log.Fatalf("os.MkdirTemp: %v", err)
 	}
 	// Use a fake module that doesn't start with cloud.google.com/go.
 	runCmd(workingDir, "go", "mod", "init", "cloud.google.com/lets-build-some-docs")
@@ -171,8 +185,26 @@ func process(mod indexEntry, workingDir, outDir string, namer *friendlyAPINamer,
 		return fmt.Errorf("go mod tidy error: %v", err)
 	}
 	// Don't do /... because it fails on submodules.
-	if err := runCmd(workingDir, "go", "get", "-d", "-t", mod.Path+"@"+mod.Version); err != nil {
-		return fmt.Errorf("go get %s@%s: %v", mod.Path, mod.Version, err)
+	module := mod.Path + "@" + mod.Version
+	if err := runCmd(workingDir, "go", "get", "-t", module); err != nil {
+		// Retry to work around https://github.com/googleapis/google-cloud-go/issues/11542.
+		// First, add an explicit dependency on the Envoy module, then try getting the
+		// module to document.
+		// This can be removed in the future if you create a new, empty module and can
+		// successfully run `go get -t cloud.google.com/go/biquery@v1.66.2`.
+		// Alternatively, we could check stderr for the "ambiguous import" error, but this seems
+		// simpler.
+		log.Printf("go get -t %s failed: %v", module, err)
+		log.Printf("Adding hack to depend on envoy and retrying")
+
+		if err := runCmd(workingDir, "go", "get", "github.com/envoyproxy/go-control-plane/envoy"); err != nil {
+			return fmt.Errorf("go get github.com/envoyproxy/go-control-plane/envoy failed: %v", err)
+		}
+
+		log.Printf("Trying again with %s", module)
+		if err := runCmd(workingDir, "go", "get", "-t", module); err != nil {
+			return fmt.Errorf("go get -t %s@%s failed again: %v", mod.Path, mod.Version, err)
+		}
 	}
 
 	log.Println("Starting to parse")

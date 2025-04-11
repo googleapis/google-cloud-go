@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	publishingpb "cloud.google.com/go/eventarc/publishing/apiv1/publishingpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -108,18 +107,23 @@ type internalPublisherClient interface {
 //
 // A partner is a third-party event provider that is integrated with Eventarc.
 //
-// A subscriber is a GCP customer interested in receiving events.
+// A subscriber is a Google Cloud customer interested in receiving events.
 //
 // Channel is a first-class Eventarc resource that is created and managed
-// by the subscriber in their GCP project. A Channel represents a subscriber’s
-// intent to receive events from an event provider. A Channel is associated with
-// exactly one event provider.
+// by the subscriber in their Google Cloud project. A Channel represents a
+// subscriber’s intent to receive events from an event provider. A Channel is
+// associated with exactly one event provider.
 //
 // ChannelConnection is a first-class Eventarc resource that
-// is created and managed by the partner in their GCP project. A
+// is created and managed by the partner in their Google Cloud project. A
 // ChannelConnection represents a connection between a partner and a
 // subscriber’s Channel. A ChannelConnection has a one-to-one mapping with a
 // Channel.
+//
+// Bus is a first-class Eventarc resource that is created and managed in a
+// Google Cloud project. A Bus provides a discoverable endpoint for events and
+// is a router that receives all events published by event providers and
+// delivers them to zero or more subscribers.
 //
 // Publisher allows an event provider to publish events to Eventarc.
 type PublisherClient struct {
@@ -183,6 +187,8 @@ type publisherGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPublisherClient creates a new publisher client based on gRPC.
@@ -198,18 +204,23 @@ type publisherGRPCClient struct {
 //
 // A partner is a third-party event provider that is integrated with Eventarc.
 //
-// A subscriber is a GCP customer interested in receiving events.
+// A subscriber is a Google Cloud customer interested in receiving events.
 //
 // Channel is a first-class Eventarc resource that is created and managed
-// by the subscriber in their GCP project. A Channel represents a subscriber’s
-// intent to receive events from an event provider. A Channel is associated with
-// exactly one event provider.
+// by the subscriber in their Google Cloud project. A Channel represents a
+// subscriber’s intent to receive events from an event provider. A Channel is
+// associated with exactly one event provider.
 //
 // ChannelConnection is a first-class Eventarc resource that
-// is created and managed by the partner in their GCP project. A
+// is created and managed by the partner in their Google Cloud project. A
 // ChannelConnection represents a connection between a partner and a
 // subscriber’s Channel. A ChannelConnection has a one-to-one mapping with a
 // Channel.
+//
+// Bus is a first-class Eventarc resource that is created and managed in a
+// Google Cloud project. A Bus provides a discoverable endpoint for events and
+// is a router that receives all events published by event providers and
+// delivers them to zero or more subscribers.
 //
 // Publisher allows an event provider to publish events to Eventarc.
 func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*PublisherClient, error) {
@@ -232,6 +243,7 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		connPool:        connPool,
 		publisherClient: publishingpb.NewPublisherClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -278,6 +290,8 @@ type publisherRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PublisherClient
 	CallOptions **PublisherCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPublisherRESTClient creates a new publisher rest client.
@@ -292,18 +306,23 @@ type publisherRESTClient struct {
 //
 // A partner is a third-party event provider that is integrated with Eventarc.
 //
-// A subscriber is a GCP customer interested in receiving events.
+// A subscriber is a Google Cloud customer interested in receiving events.
 //
 // Channel is a first-class Eventarc resource that is created and managed
-// by the subscriber in their GCP project. A Channel represents a subscriber’s
-// intent to receive events from an event provider. A Channel is associated with
-// exactly one event provider.
+// by the subscriber in their Google Cloud project. A Channel represents a
+// subscriber’s intent to receive events from an event provider. A Channel is
+// associated with exactly one event provider.
 //
 // ChannelConnection is a first-class Eventarc resource that
-// is created and managed by the partner in their GCP project. A
+// is created and managed by the partner in their Google Cloud project. A
 // ChannelConnection represents a connection between a partner and a
 // subscriber’s Channel. A ChannelConnection has a one-to-one mapping with a
 // Channel.
+//
+// Bus is a first-class Eventarc resource that is created and managed in a
+// Google Cloud project. A Bus provides a discoverable endpoint for events and
+// is a router that receives all events published by event providers and
+// delivers them to zero or more subscribers.
 //
 // Publisher allows an event provider to publish events to Eventarc.
 func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*PublisherClient, error) {
@@ -318,6 +337,7 @@ func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -370,7 +390,7 @@ func (c *publisherGRPCClient) PublishChannelConnectionEvents(ctx context.Context
 	var resp *publishingpb.PublishChannelConnectionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.PublishChannelConnectionEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.PublishChannelConnectionEvents, req, settings.GRPC, c.logger, "PublishChannelConnectionEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -388,7 +408,7 @@ func (c *publisherGRPCClient) PublishEvents(ctx context.Context, req *publishing
 	var resp *publishingpb.PublishEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.PublishEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.PublishEvents, req, settings.GRPC, c.logger, "PublishEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -406,7 +426,7 @@ func (c *publisherGRPCClient) Publish(ctx context.Context, req *publishingpb.Pub
 	var resp *publishingpb.PublishResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.Publish(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.Publish, req, settings.GRPC, c.logger, "Publish")
 		return err
 	}, opts...)
 	if err != nil {
@@ -454,17 +474,7 @@ func (c *publisherRESTClient) PublishChannelConnectionEvents(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PublishChannelConnectionEvents")
 		if err != nil {
 			return err
 		}
@@ -520,17 +530,7 @@ func (c *publisherRESTClient) PublishEvents(ctx context.Context, req *publishing
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PublishEvents")
 		if err != nil {
 			return err
 		}
@@ -586,17 +586,7 @@ func (c *publisherRESTClient) Publish(ctx context.Context, req *publishingpb.Pub
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Publish")
 		if err != nil {
 			return err
 		}

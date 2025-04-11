@@ -1,5 +1,75 @@
 # Changelog
 
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.12.0...chat/v0.12.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **chat:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.11.0...chat/v0.12.0) (2025-03-12)
+
+
+### Features
+
+* **chat:** Addition of space notification setting Chat API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.1...chat/v0.11.0) (2025-02-20)
+
+
+### Features
+
+* **chat:** Add DeletionType.SPACE_MEMBER. This is returned when a message sent by an app is deleted by a human in a space ([#11600](https://github.com/googleapis/google-cloud-go/issues/11600)) ([c08d347](https://github.com/googleapis/google-cloud-go/commit/c08d34776d398a79f6962a26e8e2c75bc4958e2b))
+
+## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.0...chat/v0.10.1) (2025-02-12)
+
+
+### Documentation
+
+* **chat:** Update Google chat app command documentation ([#11581](https://github.com/googleapis/google-cloud-go/issues/11581)) ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.9.1...chat/v0.10.0) (2025-01-30)
+
+
+### Features
+
+* **chat:** A new field `custom_emoji_metadata` is added to message `.google.chat.v1.Annotation` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **chat:** A new message `CustomEmojiMetadata` is added ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **chat:** A new value `CUSTOM_EMOJI` is added to enum `AnnotationType` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Documentation
+
+* **chat:** A comment for field `custom_emoji` in message `.google.chat.v1.Emoji` is changed ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **chat:** A comment for method `CreateReaction` in service `ChatService` is changed ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **chat:** A comment for method `DeleteReaction` in service `ChatService` is changed ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.9.0...chat/v0.9.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **chat:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.8.0...chat/v0.9.0) (2024-12-11)
+
+
+### Features
+
+* **chat:** Add missing field annotations in space.proto, message.proto, reaction.proto, space_event.proto, membership.proto, attachment.proto ([#11246](https://github.com/googleapis/google-cloud-go/issues/11246)) ([ca8d4c3](https://github.com/googleapis/google-cloud-go/commit/ca8d4c36476b2834fca7500368a3f09bea12bd08))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.7.1...chat/v0.8.0) (2024-12-04)
+
+
+### Features
+
+* **chat:** Chat Apps can now retrieve the import mode expire time information to know when to complete the import mode properly ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
+
+### Documentation
+
+* **chat:** Update reference documentation to include import_mode_expire_time field ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
 ## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.7.0...chat/v0.7.1) (2024-10-23)
 
 

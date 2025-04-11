@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -555,6 +556,8 @@ type metadataGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetadataClient creates a new metadata service client based on gRPC.
@@ -581,6 +584,7 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 		connPool:         connPool,
 		metadataClient:   aiplatformpb.NewMetadataServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -637,7 +641,7 @@ func (c *metadataGRPCClient) CreateMetadataStore(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateMetadataStore, req, settings.GRPC, c.logger, "CreateMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -657,7 +661,7 @@ func (c *metadataGRPCClient) GetMetadataStore(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.MetadataStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetMetadataStore, req, settings.GRPC, c.logger, "GetMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -686,7 +690,7 @@ func (c *metadataGRPCClient) ListMetadataStores(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListMetadataStores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListMetadataStores, req, settings.GRPC, c.logger, "ListMetadataStores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -721,7 +725,7 @@ func (c *metadataGRPCClient) DeleteMetadataStore(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteMetadataStore, req, settings.GRPC, c.logger, "DeleteMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -741,7 +745,7 @@ func (c *metadataGRPCClient) CreateArtifact(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateArtifact, req, settings.GRPC, c.logger, "CreateArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -759,7 +763,7 @@ func (c *metadataGRPCClient) GetArtifact(ctx context.Context, req *aiplatformpb.
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetArtifact, req, settings.GRPC, c.logger, "GetArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -788,7 +792,7 @@ func (c *metadataGRPCClient) ListArtifacts(ctx context.Context, req *aiplatformp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListArtifacts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListArtifacts, req, settings.GRPC, c.logger, "ListArtifacts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -823,7 +827,7 @@ func (c *metadataGRPCClient) UpdateArtifact(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateArtifact, req, settings.GRPC, c.logger, "UpdateArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -841,7 +845,7 @@ func (c *metadataGRPCClient) DeleteArtifact(ctx context.Context, req *aiplatform
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteArtifact, req, settings.GRPC, c.logger, "DeleteArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -861,7 +865,7 @@ func (c *metadataGRPCClient) PurgeArtifacts(ctx context.Context, req *aiplatform
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeArtifacts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeArtifacts, req, settings.GRPC, c.logger, "PurgeArtifacts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -881,7 +885,7 @@ func (c *metadataGRPCClient) CreateContext(ctx context.Context, req *aiplatformp
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateContext, req, settings.GRPC, c.logger, "CreateContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -899,7 +903,7 @@ func (c *metadataGRPCClient) GetContext(ctx context.Context, req *aiplatformpb.G
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetContext, req, settings.GRPC, c.logger, "GetContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -928,7 +932,7 @@ func (c *metadataGRPCClient) ListContexts(ctx context.Context, req *aiplatformpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListContexts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListContexts, req, settings.GRPC, c.logger, "ListContexts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -963,7 +967,7 @@ func (c *metadataGRPCClient) UpdateContext(ctx context.Context, req *aiplatformp
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateContext, req, settings.GRPC, c.logger, "UpdateContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -981,7 +985,7 @@ func (c *metadataGRPCClient) DeleteContext(ctx context.Context, req *aiplatformp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteContext, req, settings.GRPC, c.logger, "DeleteContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1001,7 +1005,7 @@ func (c *metadataGRPCClient) PurgeContexts(ctx context.Context, req *aiplatformp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeContexts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeContexts, req, settings.GRPC, c.logger, "PurgeContexts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1021,7 +1025,7 @@ func (c *metadataGRPCClient) AddContextArtifactsAndExecutions(ctx context.Contex
 	var resp *aiplatformpb.AddContextArtifactsAndExecutionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddContextArtifactsAndExecutions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddContextArtifactsAndExecutions, req, settings.GRPC, c.logger, "AddContextArtifactsAndExecutions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1039,7 +1043,7 @@ func (c *metadataGRPCClient) AddContextChildren(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.AddContextChildrenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddContextChildren(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddContextChildren, req, settings.GRPC, c.logger, "AddContextChildren")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1057,7 +1061,7 @@ func (c *metadataGRPCClient) RemoveContextChildren(ctx context.Context, req *aip
 	var resp *aiplatformpb.RemoveContextChildrenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.RemoveContextChildren(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.RemoveContextChildren, req, settings.GRPC, c.logger, "RemoveContextChildren")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1075,7 +1079,7 @@ func (c *metadataGRPCClient) QueryContextLineageSubgraph(ctx context.Context, re
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryContextLineageSubgraph(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryContextLineageSubgraph, req, settings.GRPC, c.logger, "QueryContextLineageSubgraph")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1093,7 +1097,7 @@ func (c *metadataGRPCClient) CreateExecution(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateExecution, req, settings.GRPC, c.logger, "CreateExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1111,7 +1115,7 @@ func (c *metadataGRPCClient) GetExecution(ctx context.Context, req *aiplatformpb
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetExecution, req, settings.GRPC, c.logger, "GetExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1140,7 +1144,7 @@ func (c *metadataGRPCClient) ListExecutions(ctx context.Context, req *aiplatform
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListExecutions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListExecutions, req, settings.GRPC, c.logger, "ListExecutions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1175,7 +1179,7 @@ func (c *metadataGRPCClient) UpdateExecution(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateExecution, req, settings.GRPC, c.logger, "UpdateExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1193,7 +1197,7 @@ func (c *metadataGRPCClient) DeleteExecution(ctx context.Context, req *aiplatfor
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteExecution, req, settings.GRPC, c.logger, "DeleteExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1213,7 +1217,7 @@ func (c *metadataGRPCClient) PurgeExecutions(ctx context.Context, req *aiplatfor
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeExecutions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeExecutions, req, settings.GRPC, c.logger, "PurgeExecutions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1233,7 +1237,7 @@ func (c *metadataGRPCClient) AddExecutionEvents(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.AddExecutionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddExecutionEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddExecutionEvents, req, settings.GRPC, c.logger, "AddExecutionEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1251,7 +1255,7 @@ func (c *metadataGRPCClient) QueryExecutionInputsAndOutputs(ctx context.Context,
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryExecutionInputsAndOutputs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryExecutionInputsAndOutputs, req, settings.GRPC, c.logger, "QueryExecutionInputsAndOutputs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1269,7 +1273,7 @@ func (c *metadataGRPCClient) CreateMetadataSchema(ctx context.Context, req *aipl
 	var resp *aiplatformpb.MetadataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateMetadataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateMetadataSchema, req, settings.GRPC, c.logger, "CreateMetadataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1287,7 +1291,7 @@ func (c *metadataGRPCClient) GetMetadataSchema(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.MetadataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetMetadataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetMetadataSchema, req, settings.GRPC, c.logger, "GetMetadataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1316,7 +1320,7 @@ func (c *metadataGRPCClient) ListMetadataSchemas(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListMetadataSchemas(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListMetadataSchemas, req, settings.GRPC, c.logger, "ListMetadataSchemas")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1351,7 +1355,7 @@ func (c *metadataGRPCClient) QueryArtifactLineageSubgraph(ctx context.Context, r
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryArtifactLineageSubgraph(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryArtifactLineageSubgraph, req, settings.GRPC, c.logger, "QueryArtifactLineageSubgraph")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1369,7 +1373,7 @@ func (c *metadataGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1398,7 +1402,7 @@ func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1433,7 +1437,7 @@ func (c *metadataGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1451,7 +1455,7 @@ func (c *metadataGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1469,7 +1473,7 @@ func (c *metadataGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1486,7 +1490,7 @@ func (c *metadataGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1500,7 +1504,7 @@ func (c *metadataGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1515,7 +1519,7 @@ func (c *metadataGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1544,7 +1548,7 @@ func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1579,7 +1583,7 @@ func (c *metadataGRPCClient) WaitOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

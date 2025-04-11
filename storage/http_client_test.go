@@ -94,3 +94,34 @@ func TestSetHeadersFromContext(t *testing.T) {
 		})
 	}
 }
+
+func TestAppendableWriteUnsupported(t *testing.T) {
+	ctx := context.Background()
+	c, err := newHTTPStorageClient(ctx)
+	if err != nil {
+		t.Fatalf("failed to create HTTP client: %v", err)
+	}
+
+	bucket := "a-bucket"
+	object := "an-object"
+	attrs := ObjectAttrs{
+		Bucket:     bucket,
+		Name:       object,
+		Generation: defaultGen,
+	}
+
+	params := &openWriterParams{
+		attrs:    &attrs,
+		bucket:   bucket,
+		append:   true,
+		ctx:      ctx,
+		donec:    make(chan struct{}),
+		setError: func(_ error) {},        // no-op
+		progress: func(_ int64) {},        // no-op
+		setObj:   func(_ *ObjectAttrs) {}, // no-op
+	}
+	_, err = c.OpenWriter(params)
+	if err == nil {
+		t.Errorf("OpenWriter: got ok; want error")
+	}
+}

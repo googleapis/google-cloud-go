@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.3.3...vmwareengine/v1.3.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.3.2...vmwareengine/v1.3.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.3.1...vmwareengine/v1.3.2) (2024-10-23)
 
 

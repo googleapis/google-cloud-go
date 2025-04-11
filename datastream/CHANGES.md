@@ -1,6 +1,65 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.13.2...datastream/v1.14.0) (2025-03-27)
+
+
+### Features
+
+* **datastream:** A new field `blmt_config` is added to message `.google.cloud.datastream.v1.BigQueryDestinationConfig` ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new field `mysql_gtid_position` is added to message `.google.cloud.datastream.v1.CdcStrategy` ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new field `satisfies_pzi` is added to multiple messages. ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new field `satisfies_pzs` is added to multiple messages. ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new field `secret_manager_stored_password` is added to multiple messages ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new message `BlmtConfig` is added ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new message `MysqlGtidPosition` is added ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **datastream:** A new messages related to `SalesforceProfile` are added ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
+
+### Documentation
+
+* **datastream:** Documentation improvements and changes for multiple fields ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.13.1...datastream/v1.13.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **datastream:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.13.0...datastream/v1.13.1) (2025-03-06)
+
+
+### Bug Fixes
+
+* **datastream:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.12.1...datastream/v1.13.0) (2025-01-30)
+
+
+### Features
+
+* **datastream:** A new field `ssl_config` is added to message `.google.cloud.datastream.v1.PostgresqlProfile` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A new message `PostgresqlSslConfig` is added ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+
+
+### Documentation
+
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.ConnectionProfile` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.PrivateConnection` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.Route` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.Stream` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.StreamObject` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `password` in message `.google.cloud.datastream.v1.OracleAsmConfig` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for message `OracleAsmConfig` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.12.0...datastream/v1.12.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **datastream:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.11.2...datastream/v1.12.0) (2024-11-21)
 
 

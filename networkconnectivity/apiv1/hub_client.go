@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package networkconnectivity
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -49,12 +50,15 @@ type HubCallOptions struct {
 	UpdateHub          []gax.CallOption
 	DeleteHub          []gax.CallOption
 	ListHubSpokes      []gax.CallOption
+	QueryHubStatus     []gax.CallOption
 	ListSpokes         []gax.CallOption
 	GetSpoke           []gax.CallOption
 	CreateSpoke        []gax.CallOption
 	UpdateSpoke        []gax.CallOption
 	RejectHubSpoke     []gax.CallOption
 	AcceptHubSpoke     []gax.CallOption
+	AcceptSpokeUpdate  []gax.CallOption
+	RejectSpokeUpdate  []gax.CallOption
 	DeleteSpoke        []gax.CallOption
 	GetRouteTable      []gax.CallOption
 	GetRoute           []gax.CallOption
@@ -62,6 +66,7 @@ type HubCallOptions struct {
 	ListRouteTables    []gax.CallOption
 	GetGroup           []gax.CallOption
 	ListGroups         []gax.CallOption
+	UpdateGroup        []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -135,6 +140,18 @@ func defaultHubCallOptions() *HubCallOptions {
 				})
 			}),
 		},
+		QueryHubStatus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListSpokes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -178,6 +195,30 @@ func defaultHubCallOptions() *HubCallOptions {
 			}),
 		},
 		AcceptHubSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AcceptSpokeUpdate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RejectSpokeUpdate: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -264,6 +305,18 @@ func defaultHubCallOptions() *HubCallOptions {
 				})
 			}),
 		},
+		UpdateGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -290,6 +343,7 @@ type internalHubClient interface {
 	DeleteHub(context.Context, *networkconnectivitypb.DeleteHubRequest, ...gax.CallOption) (*DeleteHubOperation, error)
 	DeleteHubOperation(name string) *DeleteHubOperation
 	ListHubSpokes(context.Context, *networkconnectivitypb.ListHubSpokesRequest, ...gax.CallOption) *SpokeIterator
+	QueryHubStatus(context.Context, *networkconnectivitypb.QueryHubStatusRequest, ...gax.CallOption) *HubStatusEntryIterator
 	ListSpokes(context.Context, *networkconnectivitypb.ListSpokesRequest, ...gax.CallOption) *SpokeIterator
 	GetSpoke(context.Context, *networkconnectivitypb.GetSpokeRequest, ...gax.CallOption) (*networkconnectivitypb.Spoke, error)
 	CreateSpoke(context.Context, *networkconnectivitypb.CreateSpokeRequest, ...gax.CallOption) (*CreateSpokeOperation, error)
@@ -300,6 +354,10 @@ type internalHubClient interface {
 	RejectHubSpokeOperation(name string) *RejectHubSpokeOperation
 	AcceptHubSpoke(context.Context, *networkconnectivitypb.AcceptHubSpokeRequest, ...gax.CallOption) (*AcceptHubSpokeOperation, error)
 	AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperation
+	AcceptSpokeUpdate(context.Context, *networkconnectivitypb.AcceptSpokeUpdateRequest, ...gax.CallOption) (*AcceptSpokeUpdateOperation, error)
+	AcceptSpokeUpdateOperation(name string) *AcceptSpokeUpdateOperation
+	RejectSpokeUpdate(context.Context, *networkconnectivitypb.RejectSpokeUpdateRequest, ...gax.CallOption) (*RejectSpokeUpdateOperation, error)
+	RejectSpokeUpdateOperation(name string) *RejectSpokeUpdateOperation
 	DeleteSpoke(context.Context, *networkconnectivitypb.DeleteSpokeRequest, ...gax.CallOption) (*DeleteSpokeOperation, error)
 	DeleteSpokeOperation(name string) *DeleteSpokeOperation
 	GetRouteTable(context.Context, *networkconnectivitypb.GetRouteTableRequest, ...gax.CallOption) (*networkconnectivitypb.RouteTable, error)
@@ -308,6 +366,8 @@ type internalHubClient interface {
 	ListRouteTables(context.Context, *networkconnectivitypb.ListRouteTablesRequest, ...gax.CallOption) *RouteTableIterator
 	GetGroup(context.Context, *networkconnectivitypb.GetGroupRequest, ...gax.CallOption) (*networkconnectivitypb.Group, error)
 	ListGroups(context.Context, *networkconnectivitypb.ListGroupsRequest, ...gax.CallOption) *GroupIterator
+	UpdateGroup(context.Context, *networkconnectivitypb.UpdateGroupRequest, ...gax.CallOption) (*UpdateGroupOperation, error)
+	UpdateGroupOperation(name string) *UpdateGroupOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -412,6 +472,12 @@ func (c *HubClient) ListHubSpokes(ctx context.Context, req *networkconnectivityp
 	return c.internalClient.ListHubSpokes(ctx, req, opts...)
 }
 
+// QueryHubStatus query the Private Service Connect propagation status of a Network
+// Connectivity Center hub.
+func (c *HubClient) QueryHubStatus(ctx context.Context, req *networkconnectivitypb.QueryHubStatusRequest, opts ...gax.CallOption) *HubStatusEntryIterator {
+	return c.internalClient.QueryHubStatus(ctx, req, opts...)
+}
+
 // ListSpokes lists the Network Connectivity Center spokes in a specified project and
 // location.
 func (c *HubClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
@@ -471,6 +537,28 @@ func (c *HubClient) AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperatio
 	return c.internalClient.AcceptHubSpokeOperation(name)
 }
 
+// AcceptSpokeUpdate accepts a proposal to update a Network Connectivity Center spoke in a hub.
+func (c *HubClient) AcceptSpokeUpdate(ctx context.Context, req *networkconnectivitypb.AcceptSpokeUpdateRequest, opts ...gax.CallOption) (*AcceptSpokeUpdateOperation, error) {
+	return c.internalClient.AcceptSpokeUpdate(ctx, req, opts...)
+}
+
+// AcceptSpokeUpdateOperation returns a new AcceptSpokeUpdateOperation from a given name.
+// The name must be that of a previously created AcceptSpokeUpdateOperation, possibly from a different process.
+func (c *HubClient) AcceptSpokeUpdateOperation(name string) *AcceptSpokeUpdateOperation {
+	return c.internalClient.AcceptSpokeUpdateOperation(name)
+}
+
+// RejectSpokeUpdate rejects a proposal to update a Network Connectivity Center spoke in a hub.
+func (c *HubClient) RejectSpokeUpdate(ctx context.Context, req *networkconnectivitypb.RejectSpokeUpdateRequest, opts ...gax.CallOption) (*RejectSpokeUpdateOperation, error) {
+	return c.internalClient.RejectSpokeUpdate(ctx, req, opts...)
+}
+
+// RejectSpokeUpdateOperation returns a new RejectSpokeUpdateOperation from a given name.
+// The name must be that of a previously created RejectSpokeUpdateOperation, possibly from a different process.
+func (c *HubClient) RejectSpokeUpdateOperation(name string) *RejectSpokeUpdateOperation {
+	return c.internalClient.RejectSpokeUpdateOperation(name)
+}
+
 // DeleteSpoke deletes a Network Connectivity Center spoke.
 func (c *HubClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
 	return c.internalClient.DeleteSpoke(ctx, req, opts...)
@@ -492,12 +580,12 @@ func (c *HubClient) GetRoute(ctx context.Context, req *networkconnectivitypb.Get
 	return c.internalClient.GetRoute(ctx, req, opts...)
 }
 
-// ListRoutes lists routes in a given project.
+// ListRoutes lists routes in a given route table.
 func (c *HubClient) ListRoutes(ctx context.Context, req *networkconnectivitypb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
 	return c.internalClient.ListRoutes(ctx, req, opts...)
 }
 
-// ListRouteTables lists route tables in a given project.
+// ListRouteTables lists route tables in a given hub.
 func (c *HubClient) ListRouteTables(ctx context.Context, req *networkconnectivitypb.ListRouteTablesRequest, opts ...gax.CallOption) *RouteTableIterator {
 	return c.internalClient.ListRouteTables(ctx, req, opts...)
 }
@@ -510,6 +598,17 @@ func (c *HubClient) GetGroup(ctx context.Context, req *networkconnectivitypb.Get
 // ListGroups lists groups in a given hub.
 func (c *HubClient) ListGroups(ctx context.Context, req *networkconnectivitypb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
 	return c.internalClient.ListGroups(ctx, req, opts...)
+}
+
+// UpdateGroup updates the parameters of a Network Connectivity Center group.
+func (c *HubClient) UpdateGroup(ctx context.Context, req *networkconnectivitypb.UpdateGroupRequest, opts ...gax.CallOption) (*UpdateGroupOperation, error) {
+	return c.internalClient.UpdateGroup(ctx, req, opts...)
+}
+
+// UpdateGroupOperation returns a new UpdateGroupOperation from a given name.
+// The name must be that of a previously created UpdateGroupOperation, possibly from a different process.
+func (c *HubClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
+	return c.internalClient.UpdateGroupOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -594,6 +693,8 @@ type hubGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewHubClient creates a new hub service client based on gRPC.
@@ -622,6 +723,7 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 		connPool:         connPool,
 		hubClient:        networkconnectivitypb.NewHubServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -689,7 +791,7 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListHubs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListHubs, req, settings.GRPC, c.logger, "ListHubs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -724,7 +826,7 @@ func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 	var resp *networkconnectivitypb.Hub
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetHub, req, settings.GRPC, c.logger, "GetHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -742,7 +844,7 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.CreateHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.CreateHub, req, settings.GRPC, c.logger, "CreateHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -762,7 +864,7 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateHub, req, settings.GRPC, c.logger, "UpdateHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -782,7 +884,7 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.DeleteHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.DeleteHub, req, settings.GRPC, c.logger, "DeleteHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -813,7 +915,7 @@ func (c *hubGRPCClient) ListHubSpokes(ctx context.Context, req *networkconnectiv
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListHubSpokes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListHubSpokes, req, settings.GRPC, c.logger, "ListHubSpokes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -822,6 +924,52 @@ func (c *hubGRPCClient) ListHubSpokes(ctx context.Context, req *networkconnectiv
 
 		it.Response = resp
 		return resp.GetSpokes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *hubGRPCClient) QueryHubStatus(ctx context.Context, req *networkconnectivitypb.QueryHubStatusRequest, opts ...gax.CallOption) *HubStatusEntryIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).QueryHubStatus[0:len((*c.CallOptions).QueryHubStatus):len((*c.CallOptions).QueryHubStatus)], opts...)
+	it := &HubStatusEntryIterator{}
+	req = proto.Clone(req).(*networkconnectivitypb.QueryHubStatusRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.HubStatusEntry, string, error) {
+		resp := &networkconnectivitypb.QueryHubStatusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.hubClient.QueryHubStatus, req, settings.GRPC, c.logger, "QueryHubStatus")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetHubStatusEntries(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -859,7 +1007,7 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListSpokes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListSpokes, req, settings.GRPC, c.logger, "ListSpokes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -894,7 +1042,7 @@ func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 	var resp *networkconnectivitypb.Spoke
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetSpoke, req, settings.GRPC, c.logger, "GetSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -912,7 +1060,7 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.CreateSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.CreateSpoke, req, settings.GRPC, c.logger, "CreateSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -932,7 +1080,7 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateSpoke, req, settings.GRPC, c.logger, "UpdateSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -952,7 +1100,7 @@ func (c *hubGRPCClient) RejectHubSpoke(ctx context.Context, req *networkconnecti
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.RejectHubSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.RejectHubSpoke, req, settings.GRPC, c.logger, "RejectHubSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -972,13 +1120,53 @@ func (c *hubGRPCClient) AcceptHubSpoke(ctx context.Context, req *networkconnecti
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.AcceptHubSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.AcceptHubSpoke, req, settings.GRPC, c.logger, "AcceptHubSpoke")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &AcceptHubSpokeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *hubGRPCClient) AcceptSpokeUpdate(ctx context.Context, req *networkconnectivitypb.AcceptSpokeUpdateRequest, opts ...gax.CallOption) (*AcceptSpokeUpdateOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AcceptSpokeUpdate[0:len((*c.CallOptions).AcceptSpokeUpdate):len((*c.CallOptions).AcceptSpokeUpdate)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.hubClient.AcceptSpokeUpdate, req, settings.GRPC, c.logger, "AcceptSpokeUpdate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AcceptSpokeUpdateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *hubGRPCClient) RejectSpokeUpdate(ctx context.Context, req *networkconnectivitypb.RejectSpokeUpdateRequest, opts ...gax.CallOption) (*RejectSpokeUpdateOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RejectSpokeUpdate[0:len((*c.CallOptions).RejectSpokeUpdate):len((*c.CallOptions).RejectSpokeUpdate)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.hubClient.RejectSpokeUpdate, req, settings.GRPC, c.logger, "RejectSpokeUpdate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RejectSpokeUpdateOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -992,7 +1180,7 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.DeleteSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.DeleteSpoke, req, settings.GRPC, c.logger, "DeleteSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1012,7 +1200,7 @@ func (c *hubGRPCClient) GetRouteTable(ctx context.Context, req *networkconnectiv
 	var resp *networkconnectivitypb.RouteTable
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetRouteTable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetRouteTable, req, settings.GRPC, c.logger, "GetRouteTable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1030,7 +1218,7 @@ func (c *hubGRPCClient) GetRoute(ctx context.Context, req *networkconnectivitypb
 	var resp *networkconnectivitypb.Route
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetRoute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetRoute, req, settings.GRPC, c.logger, "GetRoute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1059,7 +1247,7 @@ func (c *hubGRPCClient) ListRoutes(ctx context.Context, req *networkconnectivity
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListRoutes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListRoutes, req, settings.GRPC, c.logger, "ListRoutes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1105,7 +1293,7 @@ func (c *hubGRPCClient) ListRouteTables(ctx context.Context, req *networkconnect
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListRouteTables(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListRouteTables, req, settings.GRPC, c.logger, "ListRouteTables")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1140,7 +1328,7 @@ func (c *hubGRPCClient) GetGroup(ctx context.Context, req *networkconnectivitypb
 	var resp *networkconnectivitypb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetGroup, req, settings.GRPC, c.logger, "GetGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1169,7 +1357,7 @@ func (c *hubGRPCClient) ListGroups(ctx context.Context, req *networkconnectivity
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListGroups, req, settings.GRPC, c.logger, "ListGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1195,6 +1383,26 @@ func (c *hubGRPCClient) ListGroups(ctx context.Context, req *networkconnectivity
 	return it
 }
 
+func (c *hubGRPCClient) UpdateGroup(ctx context.Context, req *networkconnectivitypb.UpdateGroupRequest, opts ...gax.CallOption) (*UpdateGroupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateGroup[0:len((*c.CallOptions).UpdateGroup):len((*c.CallOptions).UpdateGroup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.hubClient.UpdateGroup, req, settings.GRPC, c.logger, "UpdateGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateGroupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *hubGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1204,7 +1412,7 @@ func (c *hubGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1233,7 +1441,7 @@ func (c *hubGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1268,7 +1476,7 @@ func (c *hubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1286,7 +1494,7 @@ func (c *hubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1304,7 +1512,7 @@ func (c *hubGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1321,7 +1529,7 @@ func (c *hubGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1335,7 +1543,7 @@ func (c *hubGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1350,7 +1558,7 @@ func (c *hubGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1379,7 +1587,7 @@ func (c *hubGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1409,6 +1617,14 @@ func (c *hubGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 // The name must be that of a previously created AcceptHubSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperation {
 	return &AcceptHubSpokeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// AcceptSpokeUpdateOperation returns a new AcceptSpokeUpdateOperation from a given name.
+// The name must be that of a previously created AcceptSpokeUpdateOperation, possibly from a different process.
+func (c *hubGRPCClient) AcceptSpokeUpdateOperation(name string) *AcceptSpokeUpdateOperation {
+	return &AcceptSpokeUpdateOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
@@ -1449,6 +1665,22 @@ func (c *hubGRPCClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation 
 // The name must be that of a previously created RejectHubSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) RejectHubSpokeOperation(name string) *RejectHubSpokeOperation {
 	return &RejectHubSpokeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RejectSpokeUpdateOperation returns a new RejectSpokeUpdateOperation from a given name.
+// The name must be that of a previously created RejectSpokeUpdateOperation, possibly from a different process.
+func (c *hubGRPCClient) RejectSpokeUpdateOperation(name string) *RejectSpokeUpdateOperation {
+	return &RejectSpokeUpdateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateGroupOperation returns a new UpdateGroupOperation from a given name.
+// The name must be that of a previously created UpdateGroupOperation, possibly from a different process.
+func (c *hubGRPCClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
+	return &UpdateGroupOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

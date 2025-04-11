@@ -1,5 +1,29 @@
 # Changes
 
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.17.1...contactcenterinsights/v1.17.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.17.0...contactcenterinsights/v1.17.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.16.0...contactcenterinsights/v1.17.0) (2024-12-18)
+
+
+### Features
+
+* **contactcenterinsights:** A new field `agent_type` is added to message `.google.cloud.contactcenterinsights.v1.Conversation` ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+* **contactcenterinsights:** A new resource pattern value `projects/{project}/locations/{location}/authorizedViewSets/{authorized_view_set}/authorizedViews/{authorized_view}/conversations/{conversation}/analyses/{analysis}` added to the resource definition `contactcenterinsights.googleapis.com/Analysis` ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+* **contactcenterinsights:** A new resource pattern value `projects/{project}/locations/{location}/authorizedViewSets/{authorized_view_set}/authorizedViews/{authorized_view}/conversations/{conversation}/feedbackLabels/{feedback_label}` added to the resource definition `contactcenterinsights.googleapis.com/FeedbackLabel` ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+* **contactcenterinsights:** A new resource pattern value `projects/{project}/locations/{location}/authorizedViewSets/{authorized_view_set}/authorizedViews/{authorized_view}/conversations/{conversation}` added to the resource definition `contactcenterinsights.googleapis.com/Conversation` ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.15.1...contactcenterinsights/v1.16.0) (2024-11-19)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataform/apiv1beta1",
-    "version": "0.10.2",
+    "version": "0.11.1",
     "language": "GO",
     "apis": [
       {
@@ -34,6 +34,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "*dataformpb.CancelWorkflowInvocationResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -51,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -79,6 +80,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "*dataformpb.CommitRepositoryChangesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -96,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -124,6 +126,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "*dataformpb.CommitWorkspaceChangesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -141,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -954,6 +957,52 @@
         "method": {
           "shortName": "GetCompilationResult",
           "fullName": "google.cloud.dataform.v1beta1.Dataform.GetCompilationResult",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_GetConfig_sync",
+      "title": "dataform GetConfig Sample",
+      "description": "GetConfig get default config for a given project and location.",
+      "file": "Client/GetConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConfig",
+        "fullName": "google.cloud.dataform.v1beta1.Client.GetConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.GetConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataformpb.Config",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetConfig",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.GetConfig",
           "service": {
             "shortName": "Dataform",
             "fullName": "google.cloud.dataform.v1beta1.Dataform"
@@ -1820,6 +1869,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "*dataformpb.PullGitCommitsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -1837,7 +1887,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1865,6 +1915,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "*dataformpb.PushGitCommitsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -1882,7 +1933,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2186,6 +2237,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "*dataformpb.RemoveDirectoryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -2203,7 +2255,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2231,6 +2283,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "*dataformpb.RemoveFileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -2248,7 +2301,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2276,6 +2329,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "*dataformpb.ResetWorkspaceChangesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -2293,7 +2347,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_SearchFiles_sync",
+      "title": "dataform SearchFiles Sample",
+      "description": "SearchFiles finds the contents of a given Workspace directory by filter.",
+      "file": "Client/SearchFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchFiles",
+        "fullName": "google.cloud.dataform.v1beta1.Client.SearchFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.SearchFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SearchResultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchFiles",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.SearchFiles",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2391,9 +2491,55 @@
       ]
     },
     {
+      "regionTag": "dataform_v1beta1_generated_Dataform_UpdateConfig_sync",
+      "title": "dataform UpdateConfig Sample",
+      "description": "UpdateConfig update default config for a given project and location.\n\n**Note: ** This method does not fully implement\n[AIP-134](https: //google.aip.dev/134); in particular: \n- The wildcard entry (**\\***) is treated as a bad request\n- When the **field_mask** is omitted, instead of only updating the set\nfields, the request is treated as a full update on all modifiable fields",
+      "file": "Client/UpdateConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConfig",
+        "fullName": "google.cloud.dataform.v1beta1.Client.UpdateConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.UpdateConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataformpb.Config",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "UpdateConfig",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.UpdateConfig",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataform_v1beta1_generated_Dataform_UpdateReleaseConfig_sync",
       "title": "dataform UpdateReleaseConfig Sample",
-      "description": "UpdateReleaseConfig updates a single ReleaseConfig.",
+      "description": "UpdateReleaseConfig updates a single ReleaseConfig.\n\n**Note: ** This method does not fully implement\n[AIP-134](https: //google.aip.dev/134); in particular: \n- The wildcard entry (**\\***) is treated as a bad request\n- When the **field_mask** is omitted, instead of only updating the set\nfields, the request is treated as a full update on all modifiable fields",
       "file": "Client/UpdateReleaseConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2439,7 +2585,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_UpdateRepository_sync",
       "title": "dataform UpdateRepository Sample",
-      "description": "UpdateRepository updates a single Repository.",
+      "description": "UpdateRepository updates a single Repository.\n\n**Note: ** This method does not fully implement\n[AIP-134](https: //google.aip.dev/134); in particular: \n- The wildcard entry (**\\***) is treated as a bad request\n- When the **field_mask** is omitted, instead of only updating the set\nfields, the request is treated as a full update on all modifiable fields",
       "file": "Client/UpdateRepository/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2485,7 +2631,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_UpdateWorkflowConfig_sync",
       "title": "dataform UpdateWorkflowConfig Sample",
-      "description": "UpdateWorkflowConfig updates a single WorkflowConfig.",
+      "description": "UpdateWorkflowConfig updates a single WorkflowConfig.\n\n**Note: ** This method does not fully implement\n[AIP-134](https: //google.aip.dev/134); in particular: \n- The wildcard entry (**\\***) is treated as a bad request\n- When the **field_mask** is omitted, instead of only updating the set\nfields, the request is treated as a full update on all modifiable fields",
       "file": "Client/UpdateWorkflowConfig/main.go",
       "language": "GO",
       "clientMethod": {

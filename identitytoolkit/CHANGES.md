@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/identitytoolkit/v0.2.3...identitytoolkit/v0.2.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **identitytoolkit:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/identitytoolkit/v0.2.2...identitytoolkit/v0.2.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **identitytoolkit:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/identitytoolkit/v0.2.1...identitytoolkit/v0.2.2) (2024-10-23)
 
 

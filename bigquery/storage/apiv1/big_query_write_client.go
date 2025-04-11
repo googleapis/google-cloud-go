@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -291,6 +292,8 @@ type bigQueryWriteGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBigQueryWriteClient creates a new big query write client based on gRPC.
@@ -322,6 +325,7 @@ func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		bigQueryWriteClient: storagepb.NewBigQueryWriteClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -364,7 +368,7 @@ func (c *bigQueryWriteGRPCClient) CreateWriteStream(ctx context.Context, req *st
 	var resp *storagepb.WriteStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.CreateWriteStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.CreateWriteStream, req, settings.GRPC, c.logger, "CreateWriteStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -379,7 +383,9 @@ func (c *bigQueryWriteGRPCClient) AppendRows(ctx context.Context, opts ...gax.Ca
 	opts = append((*c.CallOptions).AppendRows[0:len((*c.CallOptions).AppendRows):len((*c.CallOptions).AppendRows)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "AppendRows")
 		resp, err = c.bigQueryWriteClient.AppendRows(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "AppendRows")
 		return err
 	}, opts...)
 	if err != nil {
@@ -397,7 +403,7 @@ func (c *bigQueryWriteGRPCClient) GetWriteStream(ctx context.Context, req *stora
 	var resp *storagepb.WriteStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.GetWriteStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.GetWriteStream, req, settings.GRPC, c.logger, "GetWriteStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -415,7 +421,7 @@ func (c *bigQueryWriteGRPCClient) FinalizeWriteStream(ctx context.Context, req *
 	var resp *storagepb.FinalizeWriteStreamResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.FinalizeWriteStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.FinalizeWriteStream, req, settings.GRPC, c.logger, "FinalizeWriteStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -433,7 +439,7 @@ func (c *bigQueryWriteGRPCClient) BatchCommitWriteStreams(ctx context.Context, r
 	var resp *storagepb.BatchCommitWriteStreamsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.BatchCommitWriteStreams(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.BatchCommitWriteStreams, req, settings.GRPC, c.logger, "BatchCommitWriteStreams")
 		return err
 	}, opts...)
 	if err != nil {
@@ -451,7 +457,7 @@ func (c *bigQueryWriteGRPCClient) FlushRows(ctx context.Context, req *storagepb.
 	var resp *storagepb.FlushRowsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.FlushRows(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.FlushRows, req, settings.GRPC, c.logger, "FlushRows")
 		return err
 	}, opts...)
 	if err != nil {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/netapp/apiv1",
-    "version": "1.4.1",
+    "version": "1.7.1",
     "language": "GO",
     "apis": [
       {
@@ -271,6 +271,52 @@
         "method": {
           "shortName": "CreateKmsConfig",
           "fullName": "google.cloud.netapp.v1.NetApp.CreateKmsConfig",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateQuotaRule_sync",
+      "title": "netapp CreateQuotaRule Sample",
+      "description": "CreateQuotaRule creates a new quota rule.",
+      "file": "Client/CreateQuotaRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateQuotaRule",
+        "fullName": "google.cloud.netapp.v1.Client.CreateQuotaRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateQuotaRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateQuotaRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateQuotaRule",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateQuotaRule",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"
@@ -741,6 +787,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteQuotaRule_sync",
+      "title": "netapp DeleteQuotaRule Sample",
+      "description": "DeleteQuotaRule deletes a quota rule.",
+      "file": "Client/DeleteQuotaRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteQuotaRule",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteQuotaRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteQuotaRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteQuotaRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteQuotaRule",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteQuotaRule",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -1344,6 +1436,52 @@
       ]
     },
     {
+      "regionTag": "netapp_v1_generated_NetApp_GetQuotaRule_sync",
+      "title": "netapp GetQuotaRule Sample",
+      "description": "GetQuotaRule returns details of the specified quota rule.",
+      "file": "Client/GetQuotaRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetQuotaRule",
+        "fullName": "google.cloud.netapp.v1.Client.GetQuotaRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetQuotaRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.QuotaRule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetQuotaRule",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetQuotaRule",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "netapp_v1_generated_NetApp_GetReplication_sync",
       "title": "netapp GetReplication Sample",
       "description": "GetReplication describe a replication for a volume.",
@@ -1837,6 +1975,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListQuotaRules_sync",
+      "title": "netapp ListQuotaRules Sample",
+      "description": "ListQuotaRules returns list of all quota rules in a location.",
+      "file": "Client/ListQuotaRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListQuotaRules",
+        "fullName": "google.cloud.netapp.v1.Client.ListQuotaRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListQuotaRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QuotaRuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListQuotaRules",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListQuotaRules",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
           }
         }
       },
@@ -2540,6 +2724,52 @@
       ]
     },
     {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateQuotaRule_sync",
+      "title": "netapp UpdateQuotaRule Sample",
+      "description": "UpdateQuotaRule updates a quota rule.",
+      "file": "Client/UpdateQuotaRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateQuotaRule",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateQuotaRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateQuotaRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateQuotaRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateQuotaRule",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateQuotaRule",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "netapp_v1_generated_NetApp_UpdateReplication_sync",
       "title": "netapp UpdateReplication Sample",
       "description": "UpdateReplication updates the settings of a specific replication.",
@@ -2719,6 +2949,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ValidateDirectoryService_sync",
+      "title": "netapp ValidateDirectoryService Sample",
+      "description": "ValidateDirectoryService validateDirectoryService does a connectivity check for a directory service\npolicy attached to the storage pool.",
+      "file": "Client/ValidateDirectoryService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateDirectoryService",
+        "fullName": "google.cloud.netapp.v1.Client.ValidateDirectoryService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ValidateDirectoryServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ValidateDirectoryServiceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ValidateDirectoryService",
+          "fullName": "google.cloud.netapp.v1.NetApp.ValidateDirectoryService",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]

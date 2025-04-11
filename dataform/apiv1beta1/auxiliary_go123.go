@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,6 +65,12 @@ func (it *ReleaseConfigIterator) All() iter.Seq2[*dataformpb.ReleaseConfig, erro
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *RepositoryIterator) All() iter.Seq2[*dataformpb.Repository, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchResultIterator) All() iter.Seq2[*dataformpb.SearchResult, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

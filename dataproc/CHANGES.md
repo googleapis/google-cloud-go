@@ -1,5 +1,26 @@
 # Changes
 
+## [2.11.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.11.0...dataproc/v2.11.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **dataproc:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [2.11.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.10.1...dataproc/v2.11.0) (2025-02-26)
+
+
+### Features
+
+* **dataproc:** Added support for the AuthenticationConfig field to Dataproc serverless workload configurations, allowing specification of the user workload identity as either the end user or a service account ([#11637](https://github.com/googleapis/google-cloud-go/issues/11637)) ([9eb1a58](https://github.com/googleapis/google-cloud-go/commit/9eb1a5899b748b091f4b6606011d6c443caa3b7b))
+
+## [2.10.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.10.0...dataproc/v2.10.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **dataproc:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [2.10.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.9.0...dataproc/v2.10.0) (2024-10-23)
 
 

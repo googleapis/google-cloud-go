@@ -2,6 +2,60 @@
 
 
 
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.3.0...backupdr/v1.3.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **backupdr:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.2.2...backupdr/v1.3.0) (2025-01-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **backupdr:** Update field behavior of `resource_type` field in message `BackupPlanAssociation` to `REQUIRED`
+
+### Features
+
+* **backupdr:** `ignore_backup_plan_references` added to the DeleteBackupVaultRequest ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** Add enum to Backup Vault Access Restriction field ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** Add InitializeServiceAPI ([#11419](https://github.com/googleapis/google-cloud-go/issues/11419)) ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** Update field behavior of `networks` field in message `ManagementServer` to `OPTIONAL` ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+
+
+### Bug Fixes
+
+* **backupdr:** Update field behavior of `resource_type` field in message `BackupPlanAssociation` to `REQUIRED` ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+
+
+### Documentation
+
+* **backupdr:** A comment for enum value `ACCESS_RESTRICTION_UNSPECIFIED` in enum `AccessRestriction` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `access_restriction` in message `.google.cloud.backupdr.v1.BackupVault` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `backup_retention_days` in message `.google.cloud.backupdr.v1.BackupRule` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `data_source` in message `.google.cloud.backupdr.v1.BackupPlanAssociation` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `last_backup_error` in message `.google.cloud.backupdr.v1.RuleConfigInfo` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `networks` in message `.google.cloud.backupdr.v1.ManagementServer` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `requested_cancellation` in message `.google.cloud.backupdr.v1.OperationMetadata` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `resource_type` in message `.google.cloud.backupdr.v1.BackupPlan` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `resource_type` in message `.google.cloud.backupdr.v1.BackupPlanAssociation` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `rule_id` in message `.google.cloud.backupdr.v1.RuleConfigInfo` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **backupdr:** A comment for field `uid` in message `.google.cloud.backupdr.v1.BackupVault` is changed ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+
+
+### Miscellaneous Chores
+
+* **backupdr:** Release 1.3.0 ([#11451](https://github.com/googleapis/google-cloud-go/issues/11451)) ([fdead5e](https://github.com/googleapis/google-cloud-go/commit/fdead5e886cc51503a536113431a32d28224c7ac))
+
+## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.2.1...backupdr/v1.2.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **backupdr:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.2.0...backupdr/v1.2.1) (2024-10-23)
 
 

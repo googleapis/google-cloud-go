@@ -1,6 +1,39 @@
 # Changelog
 
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.9.0...confidentialcomputing/v1.9.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.8.1...confidentialcomputing/v1.9.0) (2025-02-26)
+
+
+### Features
+
+* **confidentialcomputing:** A new field `attester` is added to message `.google.cloud.confidentialcomputing.v1.VerifyAttestationRequest` ([#11619](https://github.com/googleapis/google-cloud-go/issues/11619)) ([1898dff](https://github.com/googleapis/google-cloud-go/commit/1898dff85269cdc696a2d37440d8df854a9b1afa))
+
+
+### Documentation
+
+* **confidentialcomputing:** Fixed a typo in `VerifyAttestationRequest` comment ([1898dff](https://github.com/googleapis/google-cloud-go/commit/1898dff85269cdc696a2d37440d8df854a9b1afa))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.8.0...confidentialcomputing/v1.8.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.7.2...confidentialcomputing/v1.8.0) (2024-12-04)
+
+
+### Features
+
+* **confidentialcomputing:** Add a token_type options proto to allow for customization of specific token types. Added the first token type option to hold principal tag token options ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.7.1...confidentialcomputing/v1.7.2) (2024-10-23)
 
 

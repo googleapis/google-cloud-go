@@ -1,0 +1,611 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/parametermanager/apiv1",
+    "version": "0.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.parametermanager.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_CreateParameter_sync",
+      "title": "parametermanager CreateParameter Sample",
+      "description": "CreateParameter creates a new Parameter in a given project and location.",
+      "file": "Client/CreateParameter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateParameter",
+        "fullName": "google.cloud.parametermanager.v1.Client.CreateParameter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.CreateParameterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*parametermanagerpb.Parameter",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateParameter",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.CreateParameter",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_CreateParameterVersion_sync",
+      "title": "parametermanager CreateParameterVersion Sample",
+      "description": "CreateParameterVersion creates a new ParameterVersion in a given project, location, and parameter.",
+      "file": "Client/CreateParameterVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateParameterVersion",
+        "fullName": "google.cloud.parametermanager.v1.Client.CreateParameterVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.CreateParameterVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*parametermanagerpb.ParameterVersion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateParameterVersion",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.CreateParameterVersion",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_DeleteParameter_sync",
+      "title": "parametermanager DeleteParameter Sample",
+      "description": "DeleteParameter deletes a single Parameter.",
+      "file": "Client/DeleteParameter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteParameter",
+        "fullName": "google.cloud.parametermanager.v1.Client.DeleteParameter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.DeleteParameterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteParameter",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.DeleteParameter",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_DeleteParameterVersion_sync",
+      "title": "parametermanager DeleteParameterVersion Sample",
+      "description": "DeleteParameterVersion deletes a single ParameterVersion.",
+      "file": "Client/DeleteParameterVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteParameterVersion",
+        "fullName": "google.cloud.parametermanager.v1.Client.DeleteParameterVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.DeleteParameterVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteParameterVersion",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.DeleteParameterVersion",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_GetLocation_sync",
+      "title": "parametermanager GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.parametermanager.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_GetParameter_sync",
+      "title": "parametermanager GetParameter Sample",
+      "description": "GetParameter gets details of a single Parameter.",
+      "file": "Client/GetParameter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetParameter",
+        "fullName": "google.cloud.parametermanager.v1.Client.GetParameter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.GetParameterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*parametermanagerpb.Parameter",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetParameter",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.GetParameter",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_GetParameterVersion_sync",
+      "title": "parametermanager GetParameterVersion Sample",
+      "description": "GetParameterVersion gets details of a single ParameterVersion.",
+      "file": "Client/GetParameterVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetParameterVersion",
+        "fullName": "google.cloud.parametermanager.v1.Client.GetParameterVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.GetParameterVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*parametermanagerpb.ParameterVersion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetParameterVersion",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.GetParameterVersion",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_ListLocations_sync",
+      "title": "parametermanager ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.parametermanager.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_ListParameterVersions_sync",
+      "title": "parametermanager ListParameterVersions Sample",
+      "description": "ListParameterVersions lists ParameterVersions in a given project, location, and parameter.",
+      "file": "Client/ListParameterVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListParameterVersions",
+        "fullName": "google.cloud.parametermanager.v1.Client.ListParameterVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.ListParameterVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ParameterVersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListParameterVersions",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.ListParameterVersions",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_ListParameters_sync",
+      "title": "parametermanager ListParameters Sample",
+      "description": "ListParameters lists Parameters in a given project and location.",
+      "file": "Client/ListParameters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListParameters",
+        "fullName": "google.cloud.parametermanager.v1.Client.ListParameters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.ListParametersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ParameterIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListParameters",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.ListParameters",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_RenderParameterVersion_sync",
+      "title": "parametermanager RenderParameterVersion Sample",
+      "description": "RenderParameterVersion gets rendered version of a ParameterVersion.",
+      "file": "Client/RenderParameterVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenderParameterVersion",
+        "fullName": "google.cloud.parametermanager.v1.Client.RenderParameterVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.RenderParameterVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*parametermanagerpb.RenderParameterVersionResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "RenderParameterVersion",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.RenderParameterVersion",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_UpdateParameter_sync",
+      "title": "parametermanager UpdateParameter Sample",
+      "description": "UpdateParameter updates a single Parameter.",
+      "file": "Client/UpdateParameter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateParameter",
+        "fullName": "google.cloud.parametermanager.v1.Client.UpdateParameter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.UpdateParameterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*parametermanagerpb.Parameter",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateParameter",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.UpdateParameter",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parametermanager_v1_generated_ParameterManager_UpdateParameterVersion_sync",
+      "title": "parametermanager UpdateParameterVersion Sample",
+      "description": "UpdateParameterVersion updates a single ParameterVersion.",
+      "file": "Client/UpdateParameterVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateParameterVersion",
+        "fullName": "google.cloud.parametermanager.v1.Client.UpdateParameterVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parametermanagerpb.UpdateParameterVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*parametermanagerpb.ParameterVersion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parametermanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateParameterVersion",
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.UpdateParameterVersion",
+          "service": {
+            "shortName": "ParameterManager",
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

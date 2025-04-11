@@ -2,6 +2,20 @@
 
 
 
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.3.1...securesourcemanager/v1.3.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.3.0...securesourcemanager/v1.3.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.2.1...securesourcemanager/v1.3.0) (2024-10-23)
 
 
