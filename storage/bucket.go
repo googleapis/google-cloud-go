@@ -517,6 +517,8 @@ type BucketAttrs struct {
 
 	// OwnerEntity contains entity information in the form "project-owner-projectId".
 	OwnerEntity string
+
+	IpFilter *raw.BucketIpFilter
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -868,6 +870,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		SoftDeletePolicy:         toSoftDeletePolicyFromRaw(b.SoftDeletePolicy),
 		HierarchicalNamespace:    toHierarchicalNamespaceFromRaw(b.HierarchicalNamespace),
 		OwnerEntity:              ownerEntityFromRaw(b.Owner),
+		IpFilter:                 b.IpFilter,
 	}, nil
 }
 
@@ -962,6 +965,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Autoclass:             b.Autoclass.toRawAutoclass(),
 		SoftDeletePolicy:      b.SoftDeletePolicy.toRawSoftDeletePolicy(),
 		HierarchicalNamespace: b.HierarchicalNamespace.toRawHierarchicalNamespace(),
+		IpFilter:              b.IpFilter,
 	}
 }
 
@@ -1243,6 +1247,8 @@ type BucketAttrsToUpdate struct {
 	// Library users should use ACLHandle methods directly.
 	defaultObjectACL []ACLRule
 
+	IpFilter *raw.BucketIpFilter
+
 	setLabels    map[string]string
 	deleteLabels map[string]bool
 }
@@ -1362,6 +1368,9 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 		} else {
 			rb.SoftDeletePolicy = ua.SoftDeletePolicy.toRawSoftDeletePolicy()
 		}
+	}
+	if ua.IpFilter != nil {
+		rb.IpFilter = ua.IpFilter
 	}
 	if ua.PredefinedACL != "" {
 		// Clear ACL or the call will fail.
@@ -2242,6 +2251,13 @@ func ownerEntityFromProto(p *storagepb.Owner) string {
 	}
 	return p.GetEntity()
 }
+
+// func ipFiltersFromRaw(r *raw.BucketIpFilter) string {
+// 	if r == nil {
+// 		return ""
+// 	}
+// 	return r.IpFilter
+// }
 
 // Objects returns an iterator over the objects in the bucket that match the
 // Query q. If q is nil, no filtering is done. Objects will be iterated over
