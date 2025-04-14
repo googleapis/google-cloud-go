@@ -426,6 +426,8 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 			if t.proto.IngestionDataSourceSettings != nil {
 				t.proto.State = pb.Topic_ACTIVE
 			}
+		case "message_transforms":
+			t.proto.MessageTransforms = req.GetTopic().GetMessageTransforms()
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -747,7 +749,8 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			for _, st := range sub.streams {
 				st.enableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
 			}
-
+		case "message_transforms":
+			sub.proto.MessageTransforms = req.GetSubscription().GetMessageTransforms()
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}

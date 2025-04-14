@@ -438,6 +438,17 @@ type preparedQueryData struct {
 	// A token may become invalid early due to changes in the data being read, but
 	// it provides a guideline to refresh query plans asynchronously.
 	validUntil *timestamppb.Timestamp
+
+	Metadata *ResultRowMetadata
+}
+
+func (pqd *preparedQueryData) initializeMetadataAndMap() error {
+	rrMetadata, err := newResultRowMetadata(pqd.metadata)
+	if err != nil {
+		return err
+	}
+	pqd.Metadata = rrMetadata
+	return nil
 }
 
 // PrepareOption can be passed while preparing a query statement.
@@ -480,6 +491,9 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 	for k, v := range paramTypes {
 		if v == nil {
 			return nil, errors.New("bigtable: invalid SQLType: nil")
+		}
+		if !v.isValidPrepareParamType() {
+			return nil, fmt.Errorf("bigtable: %T cannot be used as parameter type", v)
 		}
 		tpb, err := v.typeProto()
 		if err != nil {
@@ -524,9 +538,15 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 // Allowed parameter value types are []byte, string, int64, float32, float64, bool,
 // time.Time, civil.Date, array, slice and nil
 func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error) {
-	bs := BoundStatement{
-		ps:     ps,
-		params: map[string]*btpb.Value{},
+	if ps == nil {
+		return nil, errors.New("bigtable: nil prepared statement")
+	}
+	// check that every parameter is bound
+	for paramName := range ps.paramTypes {
+		_, found := values[paramName]
+		if !found {
+			return nil, fmt.Errorf("bigtable: parameter %q not bound in call to Bind", paramName)
+		}
 	}
 
 	boundParams := map[string]*btpb.Value{}
@@ -534,7 +554,7 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 		// Validate that the parameter was specified during prepare
 		psType, found := ps.paramTypes[paramName]
 		if !found {
-			return &bs, errors.New("bigtable: no parameter with name " + paramName + " in prepared statement")
+			return nil, errors.New("bigtable: no parameter with name " + paramName + " in prepared statement")
 		}
 
 		// Convert value specified by user to *btpb.Value
@@ -543,13 +563,6 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 			return nil, err
 		}
 		boundParams[paramName] = pbVal
-	}
-	// check that every parameter is bound
-	for paramName := range ps.paramTypes {
-		_, found := boundParams[paramName]
-		if !found {
-			return &bs, errors.New("bigtable: parameter " + paramName + " not bound in prepared statement")
-		}
 	}
 
 	return &BoundStatement{
@@ -624,12 +637,6 @@ func (ps *PreparedStatement) refresh(ctx context.Context) error {
 type BoundStatement struct {
 	ps     *PreparedStatement
 	params map[string]*btpb.Value
-}
-
-// ResultRow represents a single row in the result set returned on executing a GoogleSQL query.
-type ResultRow struct {
-	values   []*btpb.Value
-	metadata *btpb.ResultSetMetadata
 }
 
 // ExecuteOption is an optional argument to Execute.
@@ -724,7 +731,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 			Params:        bs.params,
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
-
 		if err != nil {
 			prevError = err
 			return err
@@ -803,6 +809,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				if !receivedResumeToken {
 					// first ResumeToken received
 					finalizedStmt = candFinalizedStmt
+					finalizedStmt.initializeMetadataAndMap()
 					receivedResumeToken = true
 				}
 
@@ -828,11 +835,12 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 
 					completeRowValues, valuesBuffer = valuesBuffer[0:numCols], valuesBuffer[numCols:]
 
-					rr := ResultRow{
-						values:   completeRowValues,
-						metadata: finalizedStmt.metadata,
+					// Construct ResultRow
+					rr, err := newResultRow(completeRowValues, finalizedStmt.metadata, finalizedStmt.Metadata)
+					if err != nil {
+						return err
 					}
-					continueReading := f(rr)
+					continueReading := f(*rr)
 					if !continueReading {
 						// Cancel and drain stream.
 						cancel()

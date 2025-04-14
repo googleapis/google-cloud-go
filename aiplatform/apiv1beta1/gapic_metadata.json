@@ -533,6 +533,11 @@
                 "DeployModel"
               ]
             },
+            "FetchPublisherModelConfig": {
+              "methods": [
+                "FetchPublisherModelConfig"
+              ]
+            },
             "GetEndpoint": {
               "methods": [
                 "GetEndpoint"
@@ -576,6 +581,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "SetPublisherModelConfig": {
+              "methods": [
+                "SetPublisherModelConfig"
               ]
             },
             "TestIamPermissions": {
@@ -633,6 +643,11 @@
                 "DeployModel"
               ]
             },
+            "FetchPublisherModelConfig": {
+              "methods": [
+                "FetchPublisherModelConfig"
+              ]
+            },
             "GetEndpoint": {
               "methods": [
                 "GetEndpoint"
@@ -676,6 +691,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "SetPublisherModelConfig": {
+              "methods": [
+                "SetPublisherModelConfig"
               ]
             },
             "TestIamPermissions": {
@@ -1602,6 +1622,11 @@
                 "DeleteOperation"
               ]
             },
+            "FeatureViewDirectWrite": {
+              "methods": [
+                "FeatureViewDirectWrite"
+              ]
+            },
             "FetchFeatureValues": {
               "methods": [
                 "FetchFeatureValues"
@@ -1670,6 +1695,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "FeatureViewDirectWrite": {
+              "methods": [
+                "FeatureViewDirectWrite"
               ]
             },
             "FetchFeatureValues": {
@@ -7431,6 +7461,11 @@
                 "GetRagCorpus"
               ]
             },
+            "GetRagEngineConfig": {
+              "methods": [
+                "GetRagEngineConfig"
+              ]
+            },
             "GetRagFile": {
               "methods": [
                 "GetRagFile"
@@ -7474,6 +7509,11 @@
             "UpdateRagCorpus": {
               "methods": [
                 "UpdateRagCorpus"
+              ]
+            },
+            "UpdateRagEngineConfig": {
+              "methods": [
+                "UpdateRagEngineConfig"
               ]
             },
             "UploadRagFile": {
@@ -7536,6 +7576,11 @@
                 "GetRagCorpus"
               ]
             },
+            "GetRagEngineConfig": {
+              "methods": [
+                "GetRagEngineConfig"
+              ]
+            },
             "GetRagFile": {
               "methods": [
                 "GetRagFile"
@@ -7579,6 +7624,11 @@
             "UpdateRagCorpus": {
               "methods": [
                 "UpdateRagCorpus"
+              ]
+            },
+            "UpdateRagEngineConfig": {
+              "methods": [
+                "UpdateRagEngineConfig"
               ]
             },
             "UploadRagFile": {
