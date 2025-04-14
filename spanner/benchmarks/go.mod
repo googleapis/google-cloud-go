@@ -2,8 +2,6 @@ module cloud.google.com/go/spanner/benchmarks
 
 go 1.23.0
 
-toolchain go1.24.2
-
 replace cloud.google.com/go/spanner => ../
 
 exclude google.golang.org/grpc v1.71.0
