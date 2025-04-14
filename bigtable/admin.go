@@ -1847,17 +1847,17 @@ func (iac *InstanceAdminClient) InstanceIAM(instanceID string) *iam.Handle {
 
 // Routing policies.
 const (
+	// Deprecated: Use MultiClusterRoutingUseAnyConfig instead.
 	// MultiClusterRouting is a policy that allows read/write requests to be
 	// routed to any cluster in the instance. Requests will will fail over to
 	// another cluster in the event of transient errors or delays. Choosing
 	// this option sacrifices read-your-writes consistency to improve
 	// availability.
-	// Deprecated: Use MultiClusterRoutingUseAnyConfig instead.
 	MultiClusterRouting = "multi_cluster_routing_use_any"
+	// Deprecated: Use SingleClusterRoutingConfig instead.
 	// SingleClusterRouting is a policy that unconditionally routes all
 	// read/write requests to a specific cluster. This option preserves
 	// read-your-writes consistency, but does not improve availability.
-	// Deprecated: Use SingleClusterRoutingConfig instead.
 	SingleClusterRouting = "single_cluster_routing"
 )
 
@@ -1873,13 +1873,15 @@ type ProfileConf struct {
 	Isolation     AppProfileIsolation
 
 	// Deprecated: Use RoutingConfig instead.
+	// Ignored when RoutingConfig is set.
 	RoutingPolicy string
-
-	// To use with RoutingPolicy field while specifying SingleClusterRouting.
 	// Deprecated: Use RoutingConfig with SingleClusterRoutingConfig instead.
+	// Ignored when RoutingConfig is set.
+	// To use with RoutingPolicy field while specifying SingleClusterRouting.
 	ClusterID string
-	// To use with RoutingPolicy field while specifying SingleClusterRouting.
 	// Deprecated: Use RoutingConfig with SingleClusterRoutingConfig instead.
+	// Ignored when RoutingConfig is set.
+	// To use with RoutingPolicy field while specifying SingleClusterRouting.
 	AllowTransactionalWrites bool
 
 	// If true, warnings are ignored
@@ -2093,9 +2095,12 @@ type AppProfilePriority int32
 const (
 	// AppProfilePriorityUnspecified is the default value. Mapped to PRIORITY_HIGH (the legacy behavior) on creation.
 	AppProfilePriorityUnspecified AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_UNSPECIFIED)
-	AppProfilePriorityLow         AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_LOW)
-	AppProfilePriorityMedium      AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_MEDIUM)
-	AppProfilePriorityHigh        AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_HIGH)
+	// AppProfilePriorityLow represents the lowest priority.
+	AppProfilePriorityLow AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_LOW)
+	// AppProfilePriorityMedium represents the medium priority.
+	AppProfilePriorityMedium AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_MEDIUM)
+	// AppProfilePriorityHigh represents the highest priority.
+	AppProfilePriorityHigh AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_HIGH)
 )
 
 // DataBoostIsolationReadOnly configures Data Boost isolation.
@@ -2120,9 +2125,11 @@ func (*DataBoostIsolationReadOnly) getFieldMaskPath() string { return "data_boos
 type IsolationComputeBillingOwner int32
 
 const (
-	// IsolationComputeBillingOwnerUnspecified is the default value.
+	// ComputeBillingOwnerUnspecified is the default value.
 	ComputeBillingOwnerUnspecified IsolationComputeBillingOwner = IsolationComputeBillingOwner(btapb.AppProfile_DataBoostIsolationReadOnly_COMPUTE_BILLING_OWNER_UNSPECIFIED)
-	HostPays                       IsolationComputeBillingOwner = IsolationComputeBillingOwner(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS)
+	// HostPays indicates that the host Cloud Project containing the targeted Bigtable Instance /
+	// Table pays for compute.
+	HostPays IsolationComputeBillingOwner = IsolationComputeBillingOwner(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS)
 )
 
 // PageInfo supports pagination. See https://godoc.org/google.golang.org/api/iterator package for details.
