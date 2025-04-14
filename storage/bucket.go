@@ -518,6 +518,9 @@ type BucketAttrs struct {
 	// OwnerEntity contains entity information in the form "project-owner-projectId".
 	OwnerEntity string
 
+	// IpFilter specifies the network sources that are allowed to access
+	// operations on the bucket, as well as its underlying objects.
+	// Only enforced when mode is set to 'Enabled'.
 	IpFilter *raw.BucketIpFilter
 }
 
