@@ -83,6 +83,12 @@ func (it *DataTaxonomyIterator) All() iter.Seq2[*dataplexpb.DataTaxonomy, error]
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *EncryptionConfigIterator) All() iter.Seq2[*dataplexpb.EncryptionConfig, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *EntityIterator) All() iter.Seq2[*dataplexpb.Entity, error] {
 	return iterator.RangeAdapter(it.Next)
 }

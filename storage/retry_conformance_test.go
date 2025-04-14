@@ -613,8 +613,9 @@ var methods = map[string][]retryFunc{
 				obj = obj.If(Conditions{DoesNotExist: true})
 			}
 			w := obj.NewWriter(ctx)
-			// Set Writer.ChunkSize to 2 MiB to perform resumable uploads.
-			w.ChunkSize = 2097152
+			// Set Writer.ChunkSize to 4MiB to perform resumable uploads on a smaller object size.
+			// Set it larger than 2MiB so it can test boundaries for max message size.
+			w.ChunkSize = 4 * MiB
 
 			if _, err := w.Write(randomBytes9MiB); err != nil {
 				return fmt.Errorf("writing object: %v", err)
@@ -642,6 +643,7 @@ var methods = map[string][]retryFunc{
 			objW := obj.NewWriter(ctx)
 			objW.ChunkSize = MiB
 			objW.Append = true
+			objW.FinalizeOnClose = true
 
 			if _, err := objW.Write(randomBytes3MiB); err != nil {
 				return fmt.Errorf("Writer.Write: %v", err)
@@ -662,7 +664,7 @@ var methods = map[string][]retryFunc{
 			}
 
 			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
-				return fmt.Errorf("content got(-),want(+):\n%v", d)
+				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(randomBytes3MiB))
 			}
 			return nil
 		},

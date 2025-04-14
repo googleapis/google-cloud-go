@@ -45,16 +45,17 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListWorkflows   []gax.CallOption
-	GetWorkflow     []gax.CallOption
-	CreateWorkflow  []gax.CallOption
-	DeleteWorkflow  []gax.CallOption
-	UpdateWorkflow  []gax.CallOption
-	GetLocation     []gax.CallOption
-	ListLocations   []gax.CallOption
-	DeleteOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	ListWorkflows         []gax.CallOption
+	GetWorkflow           []gax.CallOption
+	CreateWorkflow        []gax.CallOption
+	DeleteWorkflow        []gax.CallOption
+	UpdateWorkflow        []gax.CallOption
+	ListWorkflowRevisions []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -74,31 +75,33 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListWorkflows:   []gax.CallOption{},
-		GetWorkflow:     []gax.CallOption{},
-		CreateWorkflow:  []gax.CallOption{},
-		DeleteWorkflow:  []gax.CallOption{},
-		UpdateWorkflow:  []gax.CallOption{},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ListWorkflows:         []gax.CallOption{},
+		GetWorkflow:           []gax.CallOption{},
+		CreateWorkflow:        []gax.CallOption{},
+		DeleteWorkflow:        []gax.CallOption{},
+		UpdateWorkflow:        []gax.CallOption{},
+		ListWorkflowRevisions: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		ListWorkflows:   []gax.CallOption{},
-		GetWorkflow:     []gax.CallOption{},
-		CreateWorkflow:  []gax.CallOption{},
-		DeleteWorkflow:  []gax.CallOption{},
-		UpdateWorkflow:  []gax.CallOption{},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ListWorkflows:         []gax.CallOption{},
+		GetWorkflow:           []gax.CallOption{},
+		CreateWorkflow:        []gax.CallOption{},
+		DeleteWorkflow:        []gax.CallOption{},
+		UpdateWorkflow:        []gax.CallOption{},
+		ListWorkflowRevisions: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
 	}
 }
 
@@ -115,6 +118,7 @@ type internalClient interface {
 	DeleteWorkflowOperation(name string) *DeleteWorkflowOperation
 	UpdateWorkflow(context.Context, *workflowspb.UpdateWorkflowRequest, ...gax.CallOption) (*UpdateWorkflowOperation, error)
 	UpdateWorkflowOperation(name string) *UpdateWorkflowOperation
+	ListWorkflowRevisions(context.Context, *workflowspb.ListWorkflowRevisionsRequest, ...gax.CallOption) *WorkflowIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
@@ -214,6 +218,11 @@ func (c *Client) UpdateWorkflow(ctx context.Context, req *workflowspb.UpdateWork
 // The name must be that of a previously created UpdateWorkflowOperation, possibly from a different process.
 func (c *Client) UpdateWorkflowOperation(name string) *UpdateWorkflowOperation {
 	return c.internalClient.UpdateWorkflowOperation(name)
+}
+
+// ListWorkflowRevisions lists revisions for a given workflow.
+func (c *Client) ListWorkflowRevisions(ctx context.Context, req *workflowspb.ListWorkflowRevisionsRequest, opts ...gax.CallOption) *WorkflowIterator {
+	return c.internalClient.ListWorkflowRevisions(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -557,6 +566,52 @@ func (c *gRPCClient) UpdateWorkflow(ctx context.Context, req *workflowspb.Update
 	return &UpdateWorkflowOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) ListWorkflowRevisions(ctx context.Context, req *workflowspb.ListWorkflowRevisionsRequest, opts ...gax.CallOption) *WorkflowIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListWorkflowRevisions[0:len((*c.CallOptions).ListWorkflowRevisions):len((*c.CallOptions).ListWorkflowRevisions)], opts...)
+	it := &WorkflowIterator{}
+	req = proto.Clone(req).(*workflowspb.ListWorkflowRevisionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*workflowspb.Workflow, string, error) {
+		resp := &workflowspb.ListWorkflowRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListWorkflowRevisions, req, settings.GRPC, c.logger, "ListWorkflowRevisions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetWorkflows(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1026,6 +1081,84 @@ func (c *restClient) UpdateWorkflow(ctx context.Context, req *workflowspb.Update
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// ListWorkflowRevisions lists revisions for a given workflow.
+func (c *restClient) ListWorkflowRevisions(ctx context.Context, req *workflowspb.ListWorkflowRevisionsRequest, opts ...gax.CallOption) *WorkflowIterator {
+	it := &WorkflowIterator{}
+	req = proto.Clone(req).(*workflowspb.ListWorkflowRevisionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*workflowspb.Workflow, string, error) {
+		resp := &workflowspb.ListWorkflowRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listRevisions", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkflowRevisions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetWorkflows(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetLocation gets information about a location.

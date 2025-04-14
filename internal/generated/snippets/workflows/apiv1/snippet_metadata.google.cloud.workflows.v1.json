@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/workflows/apiv1",
-    "version": "1.13.5",
+    "version": "1.14.0",
     "language": "GO",
     "apis": [
       {
@@ -366,6 +366,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_ListWorkflowRevisions_sync",
+      "title": "workflows ListWorkflowRevisions Sample",
+      "description": "ListWorkflowRevisions lists revisions for a given workflow.",
+      "file": "Client/ListWorkflowRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkflowRevisions",
+        "fullName": "google.cloud.workflows.v1.Client.ListWorkflowRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workflowspb.ListWorkflowRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkflowIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "ListWorkflowRevisions",
+          "fullName": "google.cloud.workflows.v1.Workflows.ListWorkflowRevisions",
+          "service": {
+            "shortName": "Workflows",
+            "fullName": "google.cloud.workflows.v1.Workflows"
           }
         }
       },

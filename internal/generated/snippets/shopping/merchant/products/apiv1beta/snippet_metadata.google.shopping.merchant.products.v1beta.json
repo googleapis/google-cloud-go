@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/products/apiv1beta",
-    "version": "0.17.1",
+    "version": "0.18.1",
     "language": "GO",
     "apis": [
       {
@@ -197,7 +197,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_ProductsService_ListProducts_sync",
       "title": "merchantapi ListProducts Sample",
-      "description": "ListProducts lists the processed products in your Merchant Center account. The response\nmight contain fewer items than specified by pageSize. Rely on pageToken to\ndetermine if there are more items to be requested.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the updated processed product can be retrieved.",
+      "description": "ListProducts lists the processed products in your Merchant Center account. The response\nmight contain fewer items than specified by `pageSize`. Rely on `pageToken`\nto determine if there are more items to be requested.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the updated processed product can be retrieved.",
       "file": "Client/ListProducts/main.go",
       "language": "GO",
       "clientMethod": {
