@@ -138,6 +138,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				},
 			}},
 		},
+		IpFilter: &raw.BucketIpFilter{Mode: "disabled"},
 	}
 	got := attrs.toRawBucket()
 	want := &raw.Bucket{
@@ -252,6 +253,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				},
 			},
 		},
+		IpFilter: &raw.BucketIpFilter{Mode: "disabled"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -406,6 +408,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		StorageClass:     "NEARLINE",
 		Autoclass:        &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
 		SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: time.Hour},
+		IpFilter:         &raw.BucketIpFilter{Mode: "disabled"},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -452,6 +455,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Autoclass:        &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "ARCHIVE", ForceSendFields: []string{"Enabled"}},
 		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 3600, ForceSendFields: []string{"RetentionDurationSeconds"}},
 		ForceSendFields:  []string{"DefaultEventBasedHold", "Lifecycle", "Autoclass"},
+		IpFilter:         &raw.BucketIpFilter{Mode: "disabled"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -675,6 +679,7 @@ func TestNewBucket(t *testing.T) {
 		},
 		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
 		Owner:                 &raw.BucketOwner{Entity: "project-owner-projectId"},
+		IpFilter:              &raw.BucketIpFilter{Mode: "disabled"},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -739,6 +744,7 @@ func TestNewBucket(t *testing.T) {
 		},
 		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		OwnerEntity:           "project-owner-projectId",
+		IpFilter:              &raw.BucketIpFilter{Mode: "disabled"},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
