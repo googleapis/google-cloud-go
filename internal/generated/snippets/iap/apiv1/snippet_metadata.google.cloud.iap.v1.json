@@ -471,6 +471,52 @@
       ]
     },
     {
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_ValidateIapAttributeExpression_sync",
+      "title": "iap ValidateIapAttributeExpression Sample",
+      "description": "ValidateIapAttributeExpression validates that a given CEL expression conforms to IAP restrictions.",
+      "file": "IdentityAwareProxyAdminClient/ValidateIapAttributeExpression/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateIapAttributeExpression",
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.ValidateIapAttributeExpression",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iappb.ValidateIapAttributeExpressionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iappb.ValidateIapAttributeExpressionResponse",
+        "client": {
+          "shortName": "IdentityAwareProxyAdminClient",
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
+        },
+        "method": {
+          "shortName": "ValidateIapAttributeExpression",
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.ValidateIapAttributeExpression",
+          "service": {
+            "shortName": "IdentityAwareProxyAdminService",
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_CreateBrand_sync",
       "title": "iap CreateBrand Sample",
       "description": "CreateBrand constructs a new OAuth brand for the project if one does not exist.\nThe created brand is \"internal only\", meaning that OAuth clients created\nunder it only accept requests from users who belong to the same Google\nWorkspace organization as the project. The brand is created in an\nun-reviewed status. NOTE: The \"internal only\" status can be manually\nchanged in the Google Cloud Console. Requires that a brand does not already\nexist for the project, and that the specified support email is owned by the\ncaller.",

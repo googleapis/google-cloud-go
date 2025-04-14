@@ -58,6 +58,52 @@
       ]
     },
     {
+      "regionTag": "merchantapi_v1beta_generated_LfpMerchantStateService_GetLfpMerchantState_sync",
+      "title": "merchantapi GetLfpMerchantState Sample",
+      "description": "GetLfpMerchantState gets the LFP state of a merchant",
+      "file": "LfpMerchantStateClient/GetLfpMerchantState/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLfpMerchantState",
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateClient.GetLfpMerchantState",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "lfppb.GetLfpMerchantStateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*lfppb.LfpMerchantState",
+        "client": {
+          "shortName": "LfpMerchantStateClient",
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateClient"
+        },
+        "method": {
+          "shortName": "GetLfpMerchantState",
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateService.GetLfpMerchantState",
+          "service": {
+            "shortName": "LfpMerchantStateService",
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "merchantapi_v1beta_generated_LfpSaleService_InsertLfpSale_sync",
       "title": "merchantapi InsertLfpSale Sample",
       "description": "InsertLfpSale inserts a `LfpSale` for the given merchant.",

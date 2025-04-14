@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -46,7 +45,7 @@ func (t *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	t.gotReq = req
 	t.gotBody = nil
 	if req.Body != nil {
-		bytes, err := ioutil.ReadAll(req.Body)
+		bytes, err := io.ReadAll(req.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -78,5 +77,5 @@ func mockClient(t *testing.T, m *mockTransport, opts ...option.ClientOption) *Cl
 }
 
 func bodyReader(s string) io.ReadCloser {
-	return ioutil.NopCloser(strings.NewReader(s))
+	return io.NopCloser(strings.NewReader(s))
 }
