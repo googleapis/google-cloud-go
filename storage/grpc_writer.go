@@ -95,7 +95,10 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 	if err := s.connect(ctx); err != nil {
 		return nil, fmt.Errorf("storage: opening appendable write stream: %w", err)
 	}
-	s.sendOnConnectedStream(nil, 0, true, false, true)
+	_, err := s.sendOnConnectedStream(nil, 0, true, false, true)
+	if err != nil {
+		return nil, err
+	}
 	firstResp := <-s.recvs
 	s.takeoverOffset = firstResp.GetResource().GetSize()
 	return s, nil
@@ -278,7 +281,6 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 		proto.Merge(req, s.firstMessage)
 	}
 
-	// log.Printf("sending msg: send first msg %v, offset %v, flush %v, finishwrite %v, finalize: %v", sendFirstMessage, offset, flush, finishWrite, finalizeObject)
 	if err = s.stream.Send(req); err != nil {
 		return nil, err
 	}
@@ -317,13 +319,15 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			if flushOffset < rSize {
 				flushOffset = rSize
 			}
+			if resp.GetResource() != nil {
+				obj = resp.GetResource()
+			}
 		}
 		if s.flushOffset < flushOffset {
 			s.flushOffset = flushOffset
 			s.progress(s.flushOffset)
 		}
 	}
-
 	return
 }
 
@@ -355,7 +359,6 @@ func (s *gRPCAppendBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []
 			s.forceFirstMessage = true
 			continue
 		}
-
 		return
 	}
 }

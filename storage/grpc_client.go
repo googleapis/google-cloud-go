@@ -1793,6 +1793,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			}
 
 			// Loop until there is an error or the Object has been finalized.
+			var o *storagepb.Object
 			for {
 				// Note: This blocks until either the buffer is full or EOF is read.
 				recvd, doneReading, err := gw.read()
@@ -1800,10 +1801,11 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					return err
 				}
 
-				var o *storagepb.Object
 				uploadBuff := func(ctx context.Context) error {
 					obj, err := gw.uploadBuffer(ctx, recvd, offset, doneReading)
-					o = obj
+					if obj != nil {
+						o = obj
+					}
 					return err
 				}
 

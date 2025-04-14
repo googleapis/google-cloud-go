@@ -3282,6 +3282,13 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				chunkSize:      4 * MiB,
 				takeoverOffset: 8*MiB + 100,
 			},
+			{
+				name:           "finalize object",
+				finalize:       true,
+				content:        randomBytes9MiB,
+				chunkSize:      4 * MiB,
+				takeoverOffset: MiB,
+			},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
@@ -3296,7 +3303,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				h.mustWrite(w, tc.content[:tc.takeoverOffset])
 
 				// Takeover and write remainder of content.
-				gen := h.mustObjectAttrs(obj).Generation
+				gen := w.Attrs().Generation
 				w2, off, err := obj.Generation(gen).NewWriterFromAppendableObject(ctx)
 				if err != nil {
 					t.Fatalf("NewWriterFromAppendableObject: %v", err)
@@ -3304,7 +3311,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				if off != tc.takeoverOffset {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
 				}
-				w2.FinalizeOnClose = true
+				w2.FinalizeOnClose = tc.finalize
 				h.mustWrite(w2, tc.content[tc.takeoverOffset:])
 
 				// Download content again and validate.
