@@ -2091,6 +2091,7 @@ func (*StandardIsolation) getFieldMaskPath() string { return "standard_isolation
 type AppProfilePriority int32
 
 const (
+	// AppProfilePriorityUnspecified is the default value. Mapped to PRIORITY_HIGH (the legacy behavior) on creation.
 	AppProfilePriorityUnspecified AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_UNSPECIFIED)
 	AppProfilePriorityLow         AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_LOW)
 	AppProfilePriorityMedium      AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_MEDIUM)
@@ -2119,6 +2120,7 @@ func (*DataBoostIsolationReadOnly) getFieldMaskPath() string { return "data_boos
 type IsolationComputeBillingOwner int32
 
 const (
+	// IsolationComputeBillingOwnerUnspecified is the default value.
 	ComputeBillingOwnerUnspecified IsolationComputeBillingOwner = IsolationComputeBillingOwner(btapb.AppProfile_DataBoostIsolationReadOnly_COMPUTE_BILLING_OWNER_UNSPECIFIED)
 	HostPays                       IsolationComputeBillingOwner = IsolationComputeBillingOwner(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS)
 )
