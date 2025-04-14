@@ -43,16 +43,17 @@ var newIdentityAwareProxyAdminClientHook clientHook
 
 // IdentityAwareProxyAdminCallOptions contains the retry settings for each method of IdentityAwareProxyAdminClient.
 type IdentityAwareProxyAdminCallOptions struct {
-	SetIamPolicy          []gax.CallOption
-	GetIamPolicy          []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	GetIapSettings        []gax.CallOption
-	UpdateIapSettings     []gax.CallOption
-	ListTunnelDestGroups  []gax.CallOption
-	CreateTunnelDestGroup []gax.CallOption
-	GetTunnelDestGroup    []gax.CallOption
-	DeleteTunnelDestGroup []gax.CallOption
-	UpdateTunnelDestGroup []gax.CallOption
+	SetIamPolicy                   []gax.CallOption
+	GetIamPolicy                   []gax.CallOption
+	TestIamPermissions             []gax.CallOption
+	GetIapSettings                 []gax.CallOption
+	UpdateIapSettings              []gax.CallOption
+	ValidateIapAttributeExpression []gax.CallOption
+	ListTunnelDestGroups           []gax.CallOption
+	CreateTunnelDestGroup          []gax.CallOption
+	GetTunnelDestGroup             []gax.CallOption
+	DeleteTunnelDestGroup          []gax.CallOption
+	UpdateTunnelDestGroup          []gax.CallOption
 }
 
 func defaultIdentityAwareProxyAdminGRPCClientOptions() []option.ClientOption {
@@ -85,6 +86,9 @@ func defaultIdentityAwareProxyAdminCallOptions() *IdentityAwareProxyAdminCallOpt
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateIapSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ValidateIapAttributeExpression: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListTunnelDestGroups: []gax.CallOption{
@@ -122,6 +126,9 @@ func defaultIdentityAwareProxyAdminRESTCallOptions() *IdentityAwareProxyAdminCal
 		UpdateIapSettings: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ValidateIapAttributeExpression: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListTunnelDestGroups: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -150,6 +157,7 @@ type internalIdentityAwareProxyAdminClient interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	GetIapSettings(context.Context, *iappb.GetIapSettingsRequest, ...gax.CallOption) (*iappb.IapSettings, error)
 	UpdateIapSettings(context.Context, *iappb.UpdateIapSettingsRequest, ...gax.CallOption) (*iappb.IapSettings, error)
+	ValidateIapAttributeExpression(context.Context, *iappb.ValidateIapAttributeExpressionRequest, ...gax.CallOption) (*iappb.ValidateIapAttributeExpressionResponse, error)
 	ListTunnelDestGroups(context.Context, *iappb.ListTunnelDestGroupsRequest, ...gax.CallOption) *TunnelDestGroupIterator
 	CreateTunnelDestGroup(context.Context, *iappb.CreateTunnelDestGroupRequest, ...gax.CallOption) (*iappb.TunnelDestGroup, error)
 	GetTunnelDestGroup(context.Context, *iappb.GetTunnelDestGroupRequest, ...gax.CallOption) (*iappb.TunnelDestGroup, error)
@@ -225,6 +233,11 @@ func (c *IdentityAwareProxyAdminClient) GetIapSettings(ctx context.Context, req 
 // replaces all fields unless the update_mask is set.
 func (c *IdentityAwareProxyAdminClient) UpdateIapSettings(ctx context.Context, req *iappb.UpdateIapSettingsRequest, opts ...gax.CallOption) (*iappb.IapSettings, error) {
 	return c.internalClient.UpdateIapSettings(ctx, req, opts...)
+}
+
+// ValidateIapAttributeExpression validates that a given CEL expression conforms to IAP restrictions.
+func (c *IdentityAwareProxyAdminClient) ValidateIapAttributeExpression(ctx context.Context, req *iappb.ValidateIapAttributeExpressionRequest, opts ...gax.CallOption) (*iappb.ValidateIapAttributeExpressionResponse, error) {
+	return c.internalClient.ValidateIapAttributeExpression(ctx, req, opts...)
 }
 
 // ListTunnelDestGroups lists the existing TunnelDestGroups. To group across all locations, use a
@@ -489,6 +502,24 @@ func (c *identityAwareProxyAdminGRPCClient) UpdateIapSettings(ctx context.Contex
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.UpdateIapSettings, req, settings.GRPC, c.logger, "UpdateIapSettings")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *identityAwareProxyAdminGRPCClient) ValidateIapAttributeExpression(ctx context.Context, req *iappb.ValidateIapAttributeExpressionRequest, opts ...gax.CallOption) (*iappb.ValidateIapAttributeExpressionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ValidateIapAttributeExpression[0:len((*c.CallOptions).ValidateIapAttributeExpression):len((*c.CallOptions).ValidateIapAttributeExpression)], opts...)
+	var resp *iappb.ValidateIapAttributeExpressionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.ValidateIapAttributeExpression, req, settings.GRPC, c.logger, "ValidateIapAttributeExpression")
 		return err
 	}, opts...)
 	if err != nil {
@@ -887,6 +918,57 @@ func (c *identityAwareProxyAdminRESTClient) UpdateIapSettings(ctx context.Contex
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIapSettings")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ValidateIapAttributeExpression validates that a given CEL expression conforms to IAP restrictions.
+func (c *identityAwareProxyAdminRESTClient) ValidateIapAttributeExpression(ctx context.Context, req *iappb.ValidateIapAttributeExpressionRequest, opts ...gax.CallOption) (*iappb.ValidateIapAttributeExpressionResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:validateAttributeExpression", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("expression", fmt.Sprintf("%v", req.GetExpression()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ValidateIapAttributeExpression[0:len((*c.CallOptions).ValidateIapAttributeExpression):len((*c.CallOptions).ValidateIapAttributeExpression)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iappb.ValidateIapAttributeExpressionResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ValidateIapAttributeExpression")
 		if err != nil {
 			return err
 		}
