@@ -1163,7 +1163,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		cancel:           cancel,
 		settings:         s,
 		readHandle:       msg.GetReadHandle().GetHandle(),
-		readID:           1,
+		readIDGenerator:  &readIDGenerator{},
 		reopen:           openStream,
 		readSpec:         bidiObject,
 		rangesToRead:     make(chan []mrdRange, 100),
@@ -1376,19 +1376,19 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 type gRPCBidiReader struct {
-	ctx           context.Context
-	stream        storagepb.Storage_BidiReadObjectClient
-	cancel        context.CancelFunc
-	settings      *settings
-	readHandle    ReadHandle
-	readID        int64
-	reopen        func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
-	readSpec      *storagepb.BidiReadObjectSpec
-	objectSize    int64 // always use the mutex when accessing this variable
-	closeReceiver chan bool
-	closeSender   chan bool
-	senderRetry   chan bool
-	receiverRetry chan bool
+	ctx             context.Context
+	stream          storagepb.Storage_BidiReadObjectClient
+	cancel          context.CancelFunc
+	settings        *settings
+	readHandle      ReadHandle
+	readIDGenerator *readIDGenerator
+	reopen          func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
+	readSpec        *storagepb.BidiReadObjectSpec
+	objectSize      int64 // always use the mutex when accessing this variable
+	closeReceiver   chan bool
+	closeSender     chan bool
+	senderRetry     chan bool
+	receiverRetry   chan bool
 	// rangesToRead are ranges that have not yet been sent or have been sent but
 	// must be retried.
 	rangesToRead chan []mrdRange
@@ -1464,24 +1464,24 @@ func (mrd *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback f
 	mrd.mu.Unlock()
 
 	if offset > objectSize {
-		callback(offset, 0, fmt.Errorf("storage: offset should not be larger than size of object (%v)", objectSize))
+		callback(offset, 0, fmt.Errorf("storage: offset should not be larger than the size of object (%v)", objectSize))
 		return
 	}
 	if limit < 0 {
 		callback(offset, 0, errors.New("storage: cannot add range because the limit cannot be negative"))
 		return
 	}
-	mrd.mu.Lock()
-	currentID := (*mrd).readID
-	(*mrd).readID++
+
+	id := mrd.readIDGenerator.Next()
 	if !mrd.done {
-		spec := mrdRange{readID: currentID, writer: output, offset: offset, limit: limit, currentBytesWritten: 0, totalBytesWritten: 0, callback: callback}
+		spec := mrdRange{readID: id, writer: output, offset: offset, limit: limit, currentBytesWritten: 0, totalBytesWritten: 0, callback: callback}
+		mrd.mu.Lock()
 		mrd.numActiveRanges++
 		mrd.rangesToRead <- []mrdRange{spec}
+		mrd.mu.Unlock()
 	} else {
 		callback(offset, 0, errors.New("storage: cannot add range because the stream is closed"))
 	}
-	mrd.mu.Unlock()
 }
 
 func (mrd *gRPCBidiReader) wait() {
