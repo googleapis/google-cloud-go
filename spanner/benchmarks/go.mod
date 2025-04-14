@@ -2,14 +2,14 @@ module cloud.google.com/go/spanner/benchmarks
 
 go 1.23.0
 
-toolchain go1.23.7
+toolchain go1.24.2
 
 replace cloud.google.com/go/spanner => ../
 
 exclude google.golang.org/grpc v1.71.0
 
 require (
-	cloud.google.com/go/spanner v1.78.0
+	cloud.google.com/go/spanner v1.79.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.27.0
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/sdk v1.35.0
