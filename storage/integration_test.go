@@ -3289,6 +3289,27 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				chunkSize:      4 * MiB,
 				takeoverOffset: MiB,
 			},
+			{
+				name:           "0 byte takeover",
+				finalize:       false,
+				content:        randomBytes9MiB,
+				chunkSize:      4 * MiB,
+				takeoverOffset: 0,
+			},
+			{
+				name:           "last byte takeover",
+				finalize:       false,
+				content:        randomBytes9MiB,
+				chunkSize:      4 * MiB,
+				takeoverOffset: 9 * MiB,
+			},
+			{
+				name:           "last byte takeover and finalize",
+				finalize:       true,
+				content:        randomBytes9MiB,
+				chunkSize:      4 * MiB,
+				takeoverOffset: 9 * MiB,
+			},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
