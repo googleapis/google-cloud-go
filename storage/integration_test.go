@@ -3249,66 +3249,71 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 
 		testCases := []struct {
 			name           string
-			finalize       bool
 			content        []byte
-			chunkSize      int
 			takeoverOffset int64
+			opts           *AppendableWriterOpts
 		}{
 			{
 				name:           "first message takeover",
-				finalize:       false,
 				content:        randomBytes9MiB,
-				chunkSize:      4 * MiB,
 				takeoverOffset: MiB,
+				opts:           nil,
 			},
 			{
 				name:           "first chunk takeover",
-				finalize:       false,
 				content:        randomBytes9MiB,
-				chunkSize:      4 * MiB,
 				takeoverOffset: 3 * MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
 			},
 			{
 				name:           "middle chunk takeover",
-				finalize:       false,
 				content:        randomBytes9MiB,
-				chunkSize:      4 * MiB,
 				takeoverOffset: 6 * MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
 			},
 			{
 				name:           "final chunk takeover",
-				finalize:       false,
 				content:        randomBytes9MiB,
-				chunkSize:      4 * MiB,
 				takeoverOffset: 8*MiB + 100,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
 			},
 			{
 				name:           "finalize object",
-				finalize:       true,
 				content:        randomBytes9MiB,
-				chunkSize:      4 * MiB,
 				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
 			},
 			{
 				name:           "0 byte takeover",
-				finalize:       false,
 				content:        randomBytes9MiB,
-				chunkSize:      4 * MiB,
 				takeoverOffset: 0,
+				opts:           nil,
 			},
 			{
 				name:           "last byte takeover",
-				finalize:       false,
 				content:        randomBytes9MiB,
-				chunkSize:      4 * MiB,
 				takeoverOffset: 9 * MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
 			},
 			{
 				name:           "last byte takeover and finalize",
-				finalize:       true,
 				content:        randomBytes9MiB,
-				chunkSize:      4 * MiB,
 				takeoverOffset: 9 * MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
 			},
 		}
 		for _, tc := range testCases {
@@ -3319,20 +3324,21 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 				w.Append = true
 				w.FinalizeOnClose = false
-				w.ChunkSize = tc.chunkSize
+				if tc.opts != nil && tc.opts.ChunkSize > 0 {
+					w.ChunkSize = tc.opts.ChunkSize
+				}
 
 				h.mustWrite(w, tc.content[:tc.takeoverOffset])
 
 				// Takeover and write remainder of content.
 				gen := w.Attrs().Generation
-				w2, off, err := obj.Generation(gen).NewWriterFromAppendableObject(ctx)
+				w2, off, err := obj.Generation(gen).NewWriterFromAppendableObject(ctx, tc.opts)
 				if err != nil {
 					t.Fatalf("NewWriterFromAppendableObject: %v", err)
 				}
 				if off != tc.takeoverOffset {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
 				}
-				w2.FinalizeOnClose = tc.finalize
 				h.mustWrite(w2, tc.content[tc.takeoverOffset:])
 
 				// Download content again and validate.
@@ -3344,10 +3350,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 
 				// Check object exists and Finalized attribute set as expected.
 				attrs := h.mustObjectAttrs(obj)
-				if tc.finalize && attrs.Finalized.IsZero() {
+				if tc.opts != nil && tc.opts.FinalizeOnClose && attrs.Finalized.IsZero() {
 					t.Errorf("got unfinalized object, want finalized")
 				}
-				if !tc.finalize && !attrs.Finalized.IsZero() {
+				if (tc.opts == nil || !tc.opts.FinalizeOnClose) && !attrs.Finalized.IsZero() {
 					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
 				}
 

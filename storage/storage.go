@@ -1248,10 +1248,11 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 //
 // Generation must be set on the ObjectHandle or an error will be returned.
 //
-// Writer attributes such as ChunkSize or ChunkRetryDuration can be set on the
-// returned writer. However, Writer.ObjectAttrs will be ignored since object
-// metadata cannot be updated when appending to an existing object.
-// Writer.Append will be true and cannot be modified.
+// Writer fields such as ChunkSize or ChunkRetryDuration can be set only
+// by setting the equivalent field in [AppendableWriterOpts]. Attributes set
+// on the returned Writer will not be honored since the stream to GCS has
+// already been opened. Some fields such as ObjectAttrs and checksums cannot
+// be set on a takeover for append.
 //
 // It is the caller's responsibility to call Close when writing is complete to
 // close the stream.
@@ -1263,7 +1264,7 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 // NewWriterFromAppendableObject is supported only for gRPC clients and only for
 // objects which were created append semantics and not finalized.
 // This feature is in preview and is not yet available for general use.
-func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context) (*Writer, int64, error) {
+func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context, opts *AppendableWriterOpts) (*Writer, int64, error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Writer")
 	if o.gen == 0 {
 		return nil, 0, errors.New("storage: ObjectHandle.Generation must be set to use NewWriterFromAppendableObject")
@@ -1273,14 +1274,47 @@ func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context) (*Writ
 		o:           o,
 		donec:       make(chan struct{}),
 		ObjectAttrs: ObjectAttrs{Name: o.object},
-		ChunkSize:   googleapi.DefaultUploadChunkSize,
 		Append:      true,
+	}
+	opts.apply(w)
+	if w.ChunkSize == 0 {
+		w.ChunkSize = googleapi.DefaultUploadChunkSize
 	}
 	err := w.openWriter()
 	if err != nil {
 		return nil, 0, err
 	}
 	return w, w.takeoverOffset, nil
+}
+
+// AppendableWriterOpts provides options to set on a Writer initialized
+// by [NewWriterFromAppendableObject]. Writer options must be set via this
+// struct rather than being modified on the returned Writer. All Writer
+// fields not present in this struct cannot be set when taking over an
+// appendable object.
+//
+// AppendableWriterOpts is supported only for gRPC clients and only for
+// objects which were created append semantics and not finalized.
+// This feature is in preview and is not yet available for general use.
+type AppendableWriterOpts struct {
+	// ChunkSize: See Writer.ChunkSize.
+	ChunkSize int
+	// ChunkRetryDeadline: See Writer.ChunkRetryDeadline.
+	ChunkRetryDeadline time.Duration
+	// ProgressFunc: See Writer.ProgressFunc.
+	ProgressFunc func(int64)
+	// FinalizeOnClose: See Writer.FinalizeOnClose.
+	FinalizeOnClose bool
+}
+
+func (opts *AppendableWriterOpts) apply(w *Writer) {
+	if opts == nil {
+		return
+	}
+	w.ChunkRetryDeadline = opts.ChunkRetryDeadline
+	w.ProgressFunc = opts.ProgressFunc
+	w.ChunkSize = opts.ChunkSize
+	w.FinalizeOnClose = opts.FinalizeOnClose
 }
 
 func (o *ObjectHandle) validate() error {
