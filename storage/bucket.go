@@ -2252,13 +2252,6 @@ func ownerEntityFromProto(p *storagepb.Owner) string {
 	return p.GetEntity()
 }
 
-// func ipFiltersFromRaw(r *raw.BucketIpFilter) string {
-// 	if r == nil {
-// 		return ""
-// 	}
-// 	return r.IpFilter
-// }
-
 // Objects returns an iterator over the objects in the bucket that match the
 // Query q. If q is nil, no filtering is done. Objects will be iterated over
 // lexicographically by name.
