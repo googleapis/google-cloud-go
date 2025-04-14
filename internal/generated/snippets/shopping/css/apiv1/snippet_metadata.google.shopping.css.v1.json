@@ -560,6 +560,52 @@
           "type": "FULL"
         }
       ]
+    },
+    {
+      "regionTag": "css_v1_generated_QuotaService_ListQuotaGroups_sync",
+      "title": "css ListQuotaGroups Sample",
+      "description": "ListQuotaGroups lists the daily call quota and usage per group for your CSS Center account.",
+      "file": "QuotaClient/ListQuotaGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListQuotaGroups",
+        "fullName": "google.shopping.css.v1.QuotaClient.ListQuotaGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.ListQuotaGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QuotaGroupIterator",
+        "client": {
+          "shortName": "QuotaClient",
+          "fullName": "google.shopping.css.v1.QuotaClient"
+        },
+        "method": {
+          "shortName": "ListQuotaGroups",
+          "fullName": "google.shopping.css.v1.QuotaService.ListQuotaGroups",
+          "service": {
+            "shortName": "QuotaService",
+            "fullName": "google.shopping.css.v1.QuotaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
     }
   ]
 }

@@ -1062,16 +1062,6 @@ func contextMetadataFromBidiReadObject(req *storagepb.BidiReadObjectRequest) []s
 	return []string{"x-goog-request-params", fmt.Sprintf("bucket=%s", req.GetReadObjectSpec().GetBucket())}
 }
 
-type rangeSpec struct {
-	readID              int64
-	writer              io.Writer
-	offset              int64
-	limit               int64
-	currentBytesWritten int64
-	totalBytesWritten   int64
-	callback            func(int64, int64, error)
-}
-
 func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (mr *MultiRangeDownloader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewMultiRangeDownloader")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -1083,7 +1073,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	b := bucketResourceName(globalProjectAlias, params.bucket)
 	object := params.object
-	r := &storagepb.BidiReadObjectSpec{
+	bidiObject := &storagepb.BidiReadObjectSpec{
 		Bucket:                    b,
 		Object:                    object,
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(params.encryptionKey),
@@ -1091,22 +1081,22 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	// The default is a negative value, which means latest.
 	if params.gen >= 0 {
-		r.Generation = params.gen
+		bidiObject.Generation = params.gen
 	}
 
 	if params.handle != nil && len(*params.handle) != 0 {
-		r.ReadHandle = &storagepb.BidiReadHandle{
+		bidiObject.ReadHandle = &storagepb.BidiReadHandle{
 			Handle: *params.handle,
 		}
 	}
 	req := &storagepb.BidiReadObjectRequest{
-		ReadObjectSpec: r,
+		ReadObjectSpec: bidiObject,
 	}
 
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
 
 	openStream := func(readHandle ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error) {
-		if err := applyCondsProto("grpcStorageClient.BidiReadObject", params.gen, params.conds, r); err != nil {
+		if err := applyCondsProto("grpcStorageClient.BidiReadObject", params.gen, params.conds, bidiObject); err != nil {
 			return nil, nil, err
 		}
 		if len(readHandle) != 0 {
@@ -1126,9 +1116,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				details := rpcStatus.Details()
 				for _, detail := range details {
 					if bidiError, ok := detail.(*storagepb.BidiReadObjectRedirectedError); ok {
-						r.ReadHandle = bidiError.ReadHandle
-						r.RoutingToken = bidiError.RoutingToken
-						req.ReadObjectSpec = r
+						bidiObject.ReadHandle = bidiError.ReadHandle
+						bidiObject.RoutingToken = bidiError.RoutingToken
+						req.ReadObjectSpec = bidiObject
 						ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
 					}
 				}
@@ -1168,58 +1158,58 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	// This is the size of the entire object, even if only a range was requested.
 	size := obj.GetSize()
 
-	rr := &gRPCBidiReader{
+	mrd := &gRPCBidiReader{
 		stream:           resp.stream,
 		cancel:           cancel,
 		settings:         s,
 		readHandle:       msg.GetReadHandle().GetHandle(),
 		readID:           1,
 		reopen:           openStream,
-		readSpec:         r,
-		data:             make(chan []rangeSpec, 100),
+		readSpec:         bidiObject,
+		rangesToRead:     make(chan []mrdRange, 100),
 		ctx:              ctx,
 		closeReceiver:    make(chan bool, 10),
-		closeManager:     make(chan bool, 10),
-		managerRetry:     make(chan bool), // create unbuffered channel for closing the streamManager goroutine.
+		closeSender:      make(chan bool, 10),
+		senderRetry:      make(chan bool), // create unbuffered channel for closing the streamManager goroutine.
 		receiverRetry:    make(chan bool), // create unbuffered channel for closing the streamReceiver goroutine.
-		mp:               make(map[int64]rangeSpec),
+		activeRanges:     make(map[int64]mrdRange),
 		done:             false,
-		activeTask:       0,
+		numActiveRanges:  0,
 		streamRecreation: false,
 	}
 
-	// streamManager goroutine runs in background where we send message to gcs and process response.
-	streamManager := func() {
-		var currentSpec []rangeSpec
+	// sender receives ranges from user adds and requests these ranges from GCS.
+	sender := func() {
+		var currentSpec []mrdRange
 		for {
 			select {
-			case <-rr.ctx.Done():
-				rr.mu.Lock()
-				rr.done = true
-				rr.mu.Unlock()
+			case <-mrd.ctx.Done():
+				mrd.mu.Lock()
+				mrd.done = true
+				mrd.mu.Unlock()
 				return
-			case <-rr.managerRetry:
+			case <-mrd.senderRetry:
 				return
-			case <-rr.closeManager:
-				rr.mu.Lock()
-				if len(rr.mp) != 0 {
-					for key := range rr.mp {
-						rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, fmt.Errorf("stream closed early"))
-						delete(rr.mp, key)
+			case <-mrd.closeSender:
+				mrd.mu.Lock()
+				if len(mrd.activeRanges) != 0 {
+					for key := range mrd.activeRanges {
+						mrd.activeRanges[key].callback(mrd.activeRanges[key].offset, mrd.activeRanges[key].totalBytesWritten, fmt.Errorf("stream closed early"))
+						delete(mrd.activeRanges, key)
 					}
 				}
-				rr.activeTask = 0
-				rr.mu.Unlock()
+				mrd.numActiveRanges = 0
+				mrd.mu.Unlock()
 				return
-			case currentSpec = <-rr.data:
+			case currentSpec = <-mrd.rangesToRead:
 				var readRanges []*storagepb.ReadRange
 				var err error
-				rr.mu.Lock()
+				mrd.mu.Lock()
 				for _, v := range currentSpec {
-					rr.mp[v.readID] = v
+					mrd.activeRanges[v.readID] = v
 					readRanges = append(readRanges, &storagepb.ReadRange{ReadOffset: v.offset, ReadLength: v.limit, ReadId: v.readID})
 				}
-				rr.mu.Unlock()
+				mrd.mu.Unlock()
 				// We can just send 100 request to gcs in one request.
 				// In case of Add we will send only one range request to gcs but in case of retry we can have more than 100 ranges.
 				// Hence be will divide the request in chunk of 100.
@@ -1235,13 +1225,13 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						end = len(readRanges)
 					}
 					curReq := readRanges[start:end]
-					err = rr.stream.Send(&storagepb.BidiReadObjectRequest{
+					err = mrd.stream.Send(&storagepb.BidiReadObjectRequest{
 						ReadRanges: curReq,
 					})
 					if err != nil {
 						// cancel stream and reopen the stream again.
 						// Incase again an error is thrown close the streamManager goroutine.
-						rr.retrier(err, "manager")
+						mrd.retrier(err, "manager")
 						break
 					}
 				}
@@ -1250,24 +1240,25 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		}
 	}
 
-	streamReceiver := func() {
+	// receives ranges responses on the stream and executes the callback.
+	receiver := func() {
 		var resp *storagepb.BidiReadObjectResponse
 		var err error
 		for {
 			select {
-			case <-rr.ctx.Done():
-				rr.done = true
+			case <-mrd.ctx.Done():
+				mrd.done = true
 				return
-			case <-rr.receiverRetry:
+			case <-mrd.receiverRetry:
 				return
-			case <-rr.closeReceiver:
+			case <-mrd.closeReceiver:
 				return
 			default:
 				// This function reads the data sent for a particular range request and has a callback
 				// to indicate that output buffer is filled.
-				resp, err = rr.stream.Recv()
+				resp, err = mrd.stream.Recv()
 				if resp.GetReadHandle().GetHandle() != nil {
-					rr.readHandle = resp.GetReadHandle().GetHandle()
+					mrd.readHandle = resp.GetReadHandle().GetHandle()
 				}
 				if err == io.EOF {
 					err = nil
@@ -1275,101 +1266,100 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				if err != nil {
 					// cancel stream and reopen the stream again.
 					// Incase again an error is thrown close the streamManager goroutine.
-					rr.retrier(err, "receiver")
+					mrd.retrier(err, "receiver")
 				}
 
 				if err == nil {
-					rr.mu.Lock()
-					if len(rr.mp) == 0 && rr.activeTask == 0 {
-						rr.closeReceiver <- true
-						rr.closeManager <- true
+					mrd.mu.Lock()
+					if len(mrd.activeRanges) == 0 && mrd.numActiveRanges == 0 {
+						mrd.closeReceiver <- true
+						mrd.closeSender <- true
 						return
 					}
-					rr.mu.Unlock()
+					mrd.mu.Unlock()
 					arr := resp.GetObjectDataRanges()
 					for _, val := range arr {
 						id := val.GetReadRange().GetReadId()
-						rr.mu.Lock()
-						_, ok := rr.mp[id]
+						mrd.mu.Lock()
+						_, ok := mrd.activeRanges[id]
 						if !ok {
 							// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
 							continue
 						}
-						_, err = rr.mp[id].writer.Write(val.GetChecksummedData().GetContent())
+						_, err = mrd.activeRanges[id].writer.Write(val.GetChecksummedData().GetContent())
 						if err != nil {
-							rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].totalBytesWritten, err)
-							rr.activeTask--
-							delete(rr.mp, id)
+							mrd.activeRanges[id].callback(mrd.activeRanges[id].offset, mrd.activeRanges[id].totalBytesWritten, err)
+							mrd.numActiveRanges--
+							delete(mrd.activeRanges, id)
 						} else {
-							rr.mp[id] = rangeSpec{
-								readID:              rr.mp[id].readID,
-								writer:              rr.mp[id].writer,
-								offset:              rr.mp[id].offset,
-								limit:               rr.mp[id].limit,
-								currentBytesWritten: rr.mp[id].currentBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
-								totalBytesWritten:   rr.mp[id].totalBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
-								callback:            rr.mp[id].callback,
+							mrd.activeRanges[id] = mrdRange{
+								readID:              mrd.activeRanges[id].readID,
+								writer:              mrd.activeRanges[id].writer,
+								offset:              mrd.activeRanges[id].offset,
+								limit:               mrd.activeRanges[id].limit,
+								currentBytesWritten: mrd.activeRanges[id].currentBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
+								totalBytesWritten:   mrd.activeRanges[id].totalBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
+								callback:            mrd.activeRanges[id].callback,
 							}
 						}
 						if val.GetRangeEnd() {
-							rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].totalBytesWritten, nil)
-							rr.activeTask--
-							delete(rr.mp, id)
+							mrd.activeRanges[id].callback(mrd.activeRanges[id].offset, mrd.activeRanges[id].totalBytesWritten, nil)
+							mrd.numActiveRanges--
+							delete(mrd.activeRanges, id)
 						}
-						rr.mu.Unlock()
+						mrd.mu.Unlock()
 					}
 				}
-
 			}
 		}
 	}
 
-	rr.retrier = func(err error, thread string) {
-		rr.mu.Lock()
-		if !rr.streamRecreation {
-			rr.streamRecreation = true
+	mrd.retrier = func(err error, thread string) {
+		mrd.mu.Lock()
+		if !mrd.streamRecreation {
+			mrd.streamRecreation = true
 		} else {
-			rr.mu.Unlock()
+			mrd.mu.Unlock()
 			return
 		}
-		rr.mu.Unlock()
+		mrd.mu.Unlock()
 		// close both the go routines to make the stream recreation syncronous.
 		if thread == "receiver" {
-			rr.managerRetry <- true
+			mrd.senderRetry <- true
 		} else {
-			rr.receiverRetry <- true
+			mrd.receiverRetry <- true
 		}
-		err = rr.retryStream(err)
+		err = mrd.retryStream(err)
 		if err != nil {
-			rr.mu.Lock()
-			for key := range rr.mp {
-				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].totalBytesWritten, err)
-				delete(rr.mp, key)
+			mrd.mu.Lock()
+			for key := range mrd.activeRanges {
+				mrd.activeRanges[key].callback(mrd.activeRanges[key].offset, mrd.activeRanges[key].totalBytesWritten, err)
+				delete(mrd.activeRanges, key)
 			}
 			// In case we hit an permanent error, delete entries from map and remove active tasks.
-			rr.activeTask = 0
-			rr.mu.Unlock()
-			rr.close()
+			mrd.numActiveRanges = 0
+			mrd.mu.Unlock()
+			mrd.close()
 		} else {
 			// If stream recreation happened successfully lets again start
 			// both the goroutine making the whole flow asynchronous again.
 			if thread == "receiver" {
-				go streamManager()
+				go sender()
 			} else {
-				go streamReceiver()
+				go receiver()
 			}
 		}
-		rr.mu.Lock()
-		rr.streamRecreation = false
-		rr.mu.Unlock()
+		mrd.mu.Lock()
+		mrd.streamRecreation = false
+		mrd.mu.Unlock()
 	}
 
-	rr.mu.Lock()
-	rr.objectSize = size
-	rr.mu.Unlock()
+	mrd.mu.Lock()
+	mrd.objectSize = size
+	mrd.mu.Unlock()
 
-	go streamManager()
-	go streamReceiver()
+	go sender()
+	go receiver()
 
 	return &MultiRangeDownloader{
 		Attrs: ReaderObjectAttrs{
@@ -1381,16 +1371,43 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			Metageneration:  obj.GetMetageneration(),
 			Generation:      obj.GetGeneration(),
 		},
-		reader: rr,
+		reader: mrd,
 	}, nil
 }
 
-func getActiveRange(r *gRPCBidiReader) []rangeSpec {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	var activeRange []rangeSpec
-	for k, v := range r.mp {
-		activeRange = append(activeRange, rangeSpec{
+type gRPCBidiReader struct {
+	ctx           context.Context
+	stream        storagepb.Storage_BidiReadObjectClient
+	cancel        context.CancelFunc
+	settings      *settings
+	readHandle    ReadHandle
+	readID        int64
+	reopen        func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
+	readSpec      *storagepb.BidiReadObjectSpec
+	objectSize    int64 // always use the mutex when accessing this variable
+	closeReceiver chan bool
+	closeSender   chan bool
+	senderRetry   chan bool
+	receiverRetry chan bool
+	// rangesToRead are ranges that have not yet been sent or have been sent but
+	// must be retried.
+	rangesToRead chan []mrdRange
+	// activeRanges are ranges that are currently being sent or are waiting for
+	// a response from GCS.
+	activeRanges     map[int64]mrdRange // always use the mutex when accessing the map
+	numActiveRanges  int64              // always use the mutex when accessing this variable
+	done             bool               // always use the mutex when accessing this variable, indicates whether stream is closed or not.
+	mu               sync.Mutex         // protects all vars in gRPCBidiReader from concurrent access
+	retrier          func(error, string)
+	streamRecreation bool // This helps us identify if stream recreation is in progress or not. If stream recreation gets called from two goroutine then this will stop second one.
+}
+
+func (mrd *gRPCBidiReader) activeRange() []mrdRange {
+	mrd.mu.Lock()
+	defer mrd.mu.Unlock()
+	var activeRange []mrdRange
+	for k, v := range mrd.activeRanges {
+		activeRange = append(activeRange, mrdRange{
 			readID:              k,
 			writer:              v.writer,
 			offset:              (v.offset + v.currentBytesWritten),
@@ -1399,114 +1416,124 @@ func getActiveRange(r *gRPCBidiReader) []rangeSpec {
 			currentBytesWritten: 0,
 			totalBytesWritten:   v.totalBytesWritten,
 		})
-		r.mp[k] = activeRange[len(activeRange)-1]
+		mrd.activeRanges[k] = activeRange[len(activeRange)-1]
 	}
 	return activeRange
 }
 
 // retryStream cancel's stream and reopen the stream again.
-func (r *gRPCBidiReader) retryStream(err error) error {
+func (mrd *gRPCBidiReader) retryStream(err error) error {
 	var shouldRetry = ShouldRetry
-	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
-		shouldRetry = r.settings.retry.shouldRetry
+	if mrd.settings.retry != nil && mrd.settings.retry.shouldRetry != nil {
+		shouldRetry = mrd.settings.retry.shouldRetry
 	}
 	if shouldRetry(err) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// When Reopening the stream only failed readID will be added to stream.
-		return r.reopenStream(getActiveRange(r))
+		return mrd.reopenStream(mrd.activeRange())
 	}
 	return err
 }
 
 // reopenStream "closes" the existing stream and attempts to reopen a stream and
 // sets the Reader's stream and cancelStream properties in the process.
-func (r *gRPCBidiReader) reopenStream(failSpec []rangeSpec) error {
+func (mrd *gRPCBidiReader) reopenStream(failSpec []mrdRange) error {
 	// Close existing stream and initialize new stream with updated offset.
-	if r.cancel != nil {
-		r.cancel()
+	if mrd.cancel != nil {
+		mrd.cancel()
 	}
 
-	res, cancel, err := r.reopen(r.readHandle)
+	res, cancel, err := mrd.reopen(mrd.readHandle)
 	if err != nil {
 		return err
 	}
-	r.stream = res.stream
-	r.cancel = cancel
-	r.readHandle = res.response.GetReadHandle().GetHandle()
+	mrd.stream = res.stream
+	mrd.cancel = cancel
+	mrd.readHandle = res.response.GetReadHandle().GetHandle()
 	if failSpec != nil {
-		r.data <- failSpec
+		mrd.rangesToRead <- failSpec
 	}
 	return nil
 }
 
 // Add will add current range to stream.
-func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback func(int64, int64, error)) {
-	mr.mu.Lock()
-	objectSize := mr.objectSize
-	mr.mu.Unlock()
+func (mrd *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback func(int64, int64, error)) {
+	mrd.mu.Lock()
+	objectSize := mrd.objectSize
+	mrd.mu.Unlock()
 
 	if offset > objectSize {
-		callback(offset, 0, fmt.Errorf("offset larger than size of object: %v", objectSize))
+		callback(offset, 0, fmt.Errorf("storage: offset should not be larger than size of object (%v)", objectSize))
 		return
 	}
 	if limit < 0 {
-		callback(offset, 0, fmt.Errorf("limit can't be negative"))
+		callback(offset, 0, errors.New("storage: cannot add range because the limit cannot be negative"))
 		return
 	}
-	mr.mu.Lock()
-	currentID := (*mr).readID
-	(*mr).readID++
-	if !mr.done {
-		spec := rangeSpec{readID: currentID, writer: output, offset: offset, limit: limit, currentBytesWritten: 0, totalBytesWritten: 0, callback: callback}
-		mr.activeTask++
-		mr.data <- []rangeSpec{spec}
+	mrd.mu.Lock()
+	currentID := (*mrd).readID
+	(*mrd).readID++
+	if !mrd.done {
+		spec := mrdRange{readID: currentID, writer: output, offset: offset, limit: limit, currentBytesWritten: 0, totalBytesWritten: 0, callback: callback}
+		mrd.numActiveRanges++
+		mrd.rangesToRead <- []mrdRange{spec}
 	} else {
-		callback(offset, 0, fmt.Errorf("stream is closed, can't add range"))
+		callback(offset, 0, errors.New("storage: cannot add range because the stream is closed"))
 	}
-	mr.mu.Unlock()
+	mrd.mu.Unlock()
 }
 
-func (mr *gRPCBidiReader) wait() {
-	mr.mu.Lock()
+func (mrd *gRPCBidiReader) wait() {
+	mrd.mu.Lock()
 	// we should wait until there is active task or an entry in the map.
 	// there can be a scenario we have nothing in map for a moment or too but still have active task.
 	// hence in case we have permanent errors we reduce active task to 0 so that this does not block wait.
-	keepWaiting := len(mr.mp) != 0 || mr.activeTask != 0
-	mr.mu.Unlock()
+	keepWaiting := len(mrd.activeRanges) != 0 || mrd.numActiveRanges != 0
+	mrd.mu.Unlock()
 
 	for keepWaiting {
-		mr.mu.Lock()
-		keepWaiting = len(mr.mp) != 0 || mr.activeTask != 0
-		mr.mu.Unlock()
+		mrd.mu.Lock()
+		keepWaiting = len(mrd.activeRanges) != 0 || mrd.numActiveRanges != 0
+		mrd.mu.Unlock()
 	}
 }
 
 // Close will notify stream manager goroutine that the reader has been closed, if it's still running.
-func (mr *gRPCBidiReader) close() error {
-	if mr.cancel != nil {
-		mr.cancel()
+func (mrd *gRPCBidiReader) close() error {
+	if mrd.cancel != nil {
+		mrd.cancel()
 	}
-	mr.mu.Lock()
-	mr.done = true
-	mr.activeTask = 0
-	mr.mu.Unlock()
-	mr.closeReceiver <- true
-	mr.closeManager <- true
+	mrd.mu.Lock()
+	mrd.done = true
+	mrd.numActiveRanges = 0
+	mrd.mu.Unlock()
+	mrd.closeReceiver <- true
+	mrd.closeSender <- true
 	return nil
 }
 
-func (mrr *gRPCBidiReader) getHandle() []byte {
-	return mrr.readHandle
+func (mrd *gRPCBidiReader) getHandle() []byte {
+	return mrd.readHandle
 }
 
-func (mrr *gRPCBidiReader) error() error {
-	mrr.mu.Lock()
-	defer mrr.mu.Unlock()
-	if mrr.done {
+func (mrd *gRPCBidiReader) error() error {
+	mrd.mu.Lock()
+	defer mrd.mu.Unlock()
+	if mrd.done {
 		return errors.New("storage: stream is permanently closed")
 	}
 	return nil
+}
+
+type mrdRange struct {
+	readID              int64
+	writer              io.Writer
+	offset              int64
+	limit               int64
+	currentBytesWritten int64
+	totalBytesWritten   int64
+	callback            func(int64, int64, error)
 }
 
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
@@ -1934,29 +1961,6 @@ type readStreamResponse struct {
 type bidiReadStreamResponse struct {
 	stream   storagepb.Storage_BidiReadObjectClient
 	response *storagepb.BidiReadObjectResponse
-}
-
-type gRPCBidiReader struct {
-	stream           storagepb.Storage_BidiReadObjectClient
-	cancel           context.CancelFunc
-	settings         *settings
-	readHandle       ReadHandle
-	readID           int64
-	reopen           func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
-	readSpec         *storagepb.BidiReadObjectSpec
-	data             chan []rangeSpec
-	ctx              context.Context
-	closeReceiver    chan bool
-	closeManager     chan bool
-	managerRetry     chan bool
-	receiverRetry    chan bool
-	mu               sync.Mutex          // protects all vars in gRPCBidiReader from concurrent access
-	mp               map[int64]rangeSpec // always use the mutex when accessing the map
-	done             bool                // always use the mutex when accessing this variable, indicates whether stream is closed or not.
-	activeTask       int64               // always use the mutex when accessing this variable
-	objectSize       int64               // always use the mutex when accessing this variable
-	retrier          func(error, string)
-	streamRecreation bool // This helps us identify if stream recreation is in progress or not. If stream recreation gets called from two goroutine then this will stop second one.
 }
 
 // gRPCReader is used by storage.Reader if the experimental option WithGRPCBidiReads is passed.
