@@ -1,5 +1,18 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.10.5...webrisk/v1.11.0) (2025-04-15)
+
+
+### Features
+
+* **webrisk:** A new method_signature `parent,submission` is added to method `SubmitUri` in service `WebRiskService` ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
+
+### Documentation
+
+* **webrisk:** A comment for message `SubmitUriMetadata` is changed ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **webrisk:** A comment for message `ThreatInfo` is changed ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
 ## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.10.4...webrisk/v1.10.5) (2025-03-13)
 
 

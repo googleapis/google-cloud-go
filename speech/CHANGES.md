@@ -1,5 +1,21 @@
 # Changes
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.26.1...speech/v1.27.0) (2025-04-15)
+
+
+### Features
+
+* **speech:** Add ALAW support to RecognitionConfig ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **speech:** Add new fields to CustomClass and PhraseSet.Phrase messages ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **speech:** Deprecating speaker_tag (int) for speaker_label (string) ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **speech:** Expose google.cloud.location.Locations API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **speech:** Make transcript_normalization field optional ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
+
+### Documentation
+
+* **speech:** Miscellaneous clarifications ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
 ## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.26.0...speech/v1.26.1) (2025-03-13)
 
 
