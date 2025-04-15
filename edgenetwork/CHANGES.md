@@ -2,6 +2,20 @@
 
 
 
+## [1.2.6](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.2.5...edgenetwork/v1.2.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **edgenetwork:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.2.5](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.2.4...edgenetwork/v1.2.5) (2025-04-15)
+
+
+### Documentation
+
+* **edgenetwork:** Fix typos in comments ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+
 ## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.2.3...edgenetwork/v1.2.4) (2025-03-13)
 
 
