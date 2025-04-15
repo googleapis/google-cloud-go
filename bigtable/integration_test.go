@@ -35,6 +35,8 @@ import (
 	"testing"
 	"time"
 
+	cryptorand "crypto/rand"
+
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/iam"
@@ -3492,7 +3494,7 @@ func TestIntegration_Granularity(t *testing.T) {
 	}
 }
 
-func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
+func TestIntegration_InstanceAdminClient_CreateAppProfile(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -3521,6 +3523,229 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 
+	profileIDPrefix := "app_profile_id"
+	uniqueID := make([]byte, 4)
+	wantProfiles := map[string]struct{}{"default": {}}
+	gotProfiles := []*btapb.AppProfile{}
+	for _, testcase := range []struct {
+		desc        string
+		profileConf ProfileConf
+		wantProfile *btapb.AppProfile
+	}{
+		{
+			desc: "SingleClusterRouting",
+			profileConf: ProfileConf{
+				RoutingPolicy: SingleClusterRouting,
+				ClusterID:     testEnv.Config().Cluster,
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "MultiClusterRouting",
+			profileConf: ProfileConf{
+				RoutingPolicy: MultiClusterRouting,
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+
+		{
+			desc: "MultiClusterRoutingUseAnyConfig no affinity",
+			profileConf: ProfileConf{
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{
+					ClusterIDs: []string{testEnv.Config().Cluster},
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+						ClusterIds: []string{testEnv.Config().Cluster},
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "MultiClusterRoutingUseAnyConfig row affinity",
+			profileConf: ProfileConf{
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{
+					ClusterIDs: []string{testEnv.Config().Cluster},
+					Affinity:   &RowAffinity{},
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+						ClusterIds: []string{testEnv.Config().Cluster},
+						Affinity:   &btapb.AppProfile_MultiClusterRoutingUseAny_RowAffinity_{},
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "SingleClusterRoutingConfig no Isolation",
+			profileConf: ProfileConf{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID:                testEnv.Config().Cluster,
+					AllowTransactionalWrites: true,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId:                testEnv.Config().Cluster,
+						AllowTransactionalWrites: true,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "SingleClusterRoutingConfig and low priority standard Isolation",
+			profileConf: ProfileConf{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID:                testEnv.Config().Cluster,
+					AllowTransactionalWrites: true,
+				},
+				Isolation: &StandardIsolation{
+					Priority: AppProfilePriorityLow,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId:                testEnv.Config().Cluster,
+						AllowTransactionalWrites: true,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_LOW,
+					},
+				},
+			},
+		},
+		{
+			desc: "SingleClusterRoutingConfig and DataBoost Isolation HostPays ComputeBillingOwner",
+			profileConf: ProfileConf{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID: testEnv.Config().Cluster,
+				},
+				Isolation: &DataBoostIsolationReadOnly{
+					ComputeBillingOwner: HostPays,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_DataBoostIsolationReadOnly_{
+					DataBoostIsolationReadOnly: &btapb.AppProfile_DataBoostIsolationReadOnly{
+						ComputeBillingOwner: ptr(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS),
+					},
+				},
+			},
+		},
+	} {
+		t.Run(testcase.desc, func(t *testing.T) {
+			cryptorand.Read(uniqueID)
+			profileID := fmt.Sprintf("%s%x", profileIDPrefix, uniqueID)
+
+			testcase.profileConf.ProfileID = profileID
+			testcase.profileConf.InstanceID = adminClient.instance
+			testcase.profileConf.Description = testcase.desc
+
+			_, err := iAdminClient.CreateAppProfile(ctx, testcase.profileConf)
+			if err != nil {
+				t.Fatalf("Creating app profile: %v", err)
+			}
+
+			gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
+			if err != nil {
+				t.Fatalf("Get app profile: %v", err)
+			}
+			gotProfiles = append(gotProfiles, gotProfile)
+			defer func() {
+				err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+				if err != nil {
+					t.Fatalf("Delete app profile: %v", err)
+				}
+			}()
+
+			testcase.wantProfile.Name = appProfilePath(testEnv.Config().Project, adminClient.instance, profileID)
+			testcase.wantProfile.Description = testcase.desc
+			if !proto.Equal(testcase.wantProfile, gotProfile) {
+				t.Fatalf("profile: got: %s, want: %s", gotProfile, testcase.wantProfile)
+			}
+
+			wantProfiles[profileID] = struct{}{}
+		})
+	}
+}
+
+func TestIntegration_InstanceAdminClient_UpdateAppProfile(t *testing.T) {
+	testEnv, gotErr := NewIntegrationEnv()
+	if gotErr != nil {
+		t.Fatalf("IntegrationEnv: %v", gotErr)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, gotErr := testEnv.NewAdminClient()
+	if gotErr != nil {
+		t.Fatalf("NewAdminClient: %v", gotErr)
+	}
+	defer adminClient.Close()
+
+	iAdminClient, gotErr := testEnv.NewInstanceAdminClient()
+	if gotErr != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", gotErr)
+	}
+	if iAdminClient == nil {
+		return
+	}
+	defer iAdminClient.Close()
+
 	uniqueID := make([]byte, 4)
 	rand.Read(uniqueID)
 	profileID := fmt.Sprintf("app_profile_id%x", uniqueID)
@@ -3533,20 +3758,20 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		RoutingPolicy: SingleClusterRouting,
 	}
 
-	createdProfile, err := iAdminClient.CreateAppProfile(ctx, profile)
-	if err != nil {
-		t.Fatalf("Creating app profile: %v", err)
+	createdProfile, gotErr := iAdminClient.CreateAppProfile(ctx, profile)
+	if gotErr != nil {
+		t.Fatalf("Creating app profile: %v", gotErr)
 	}
 
-	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
-	if err != nil {
-		t.Fatalf("Get app profile: %v", err)
+	gotProfile, gotErr := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
+	if gotErr != nil {
+		t.Fatalf("Get app profile: %v", gotErr)
 	}
 
 	defer func() {
-		err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
-		if err != nil {
-			t.Fatalf("Delete app profile: %v", err)
+		gotErr = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+		if gotErr != nil {
+			t.Fatalf("Delete app profile: %v", gotErr)
 		}
 	}()
 
@@ -3568,12 +3793,12 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			}
 			profiles = append(profiles, s)
 		}
-		return profiles, err
+		return profiles, gotErr
 	}
 
-	profiles, err := list(adminClient.instance)
-	if err != nil {
-		t.Fatalf("List app profile: %v", err)
+	profiles, gotErr := list(adminClient.instance)
+	if gotErr != nil {
+		t.Fatalf("List app profile: %v", gotErr)
 	}
 
 	// Ensure the profiles we require exist. profiles ⊂ allProfiles
@@ -3592,20 +3817,20 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	verifyProfilesSubset(profiles, wantProfiles)
 
 	for _, test := range []struct {
-		desc   string
-		uattrs ProfileAttrsToUpdate
-		want   *btapb.AppProfile // nil means error
+		desc        string
+		uattrs      ProfileAttrsToUpdate
+		wantProfile *btapb.AppProfile
+		wantErrMsg  string
 	}{
 		{
-			desc:   "empty update",
-			uattrs: ProfileAttrsToUpdate{},
-			want:   nil,
+			desc:       "empty update",
+			uattrs:     ProfileAttrsToUpdate{},
+			wantErrMsg: "A non-empty 'update_mask' must be specified",
 		},
-
 		{
 			desc:   "empty description update",
 			uattrs: ProfileAttrsToUpdate{Description: ""},
-			want: &btapb.AppProfile{
+			wantProfile: &btapb.AppProfile{
 				Name:          gotProfile.Name,
 				Description:   "",
 				RoutingPolicy: gotProfile.RoutingPolicy,
@@ -3618,12 +3843,12 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			},
 		},
 		{
-			desc: "routing update",
+			desc: "routing update SingleClusterRouting",
 			uattrs: ProfileAttrsToUpdate{
 				RoutingPolicy: SingleClusterRouting,
 				ClusterID:     testEnv.Config().Cluster,
 			},
-			want: &btapb.AppProfile{
+			wantProfile: &btapb.AppProfile{
 				Name:        gotProfile.Name,
 				Description: "",
 				Etag:        gotProfile.Etag,
@@ -3639,25 +3864,84 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "isolation only update DataBoost",
+			uattrs: ProfileAttrsToUpdate{
+				Isolation: &DataBoostIsolationReadOnly{
+					ComputeBillingOwner: HostPays,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				Name: gotProfile.Name,
+				Etag: gotProfile.Etag,
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_DataBoostIsolationReadOnly_{
+					DataBoostIsolationReadOnly: &btapb.AppProfile_DataBoostIsolationReadOnly{
+						ComputeBillingOwner: ptr(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS),
+					},
+				},
+			},
+		},
+		{
+			desc: "routing only update MultiClusterRoutingUseAnyConfig",
+			uattrs: ProfileAttrsToUpdate{
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{},
+			},
+			wantProfile: &btapb.AppProfile{
+				Name: gotProfile.Name,
+				Etag: gotProfile.Etag,
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+						ClusterIds: []string{testEnv.Config().Cluster},
+					},
+				},
+				Isolation: &btapb.AppProfile_DataBoostIsolationReadOnly_{
+					DataBoostIsolationReadOnly: &btapb.AppProfile_DataBoostIsolationReadOnly{
+						ComputeBillingOwner: ptr(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS),
+					},
+				},
+			},
+		},
+		{
+			desc: "routing only update SingleClusterRoutingConfig",
+			uattrs: ProfileAttrsToUpdate{
+				RoutingConfig: &SingleClusterRoutingConfig{},
+			},
+			wantProfile: &btapb.AppProfile{
+				Name: gotProfile.Name,
+				Etag: gotProfile.Etag,
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
 	} {
-		err = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, profileID, test.uattrs)
-		if err != nil {
-			if test.want != nil {
-				t.Errorf("%s: %v", test.desc, err)
-			}
-			continue
+		gotErr = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, profileID, test.uattrs)
+		if gotErr == nil && test.wantErrMsg != "" {
+			t.Fatalf("%s: UpdateAppProfile: got: nil, want: error: %v", test.desc, test.wantErrMsg)
 		}
-		if err == nil && test.want == nil {
-			t.Errorf("%s: got nil, want error", test.desc)
-			continue
+		if gotErr != nil && test.wantErrMsg == "" {
+			t.Fatalf("%s: UpdateAppProfile: got: %v, want: nil", test.desc, gotErr)
 		}
-
+		if gotErr != nil {
+			return
+		}
 		// Retry to see if the update has been completed
 		testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
 			got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
-
-			if !proto.Equal(got, test.want) {
-				r.Errorf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
+			if !proto.Equal(got, test.wantProfile) {
+				r.Errorf("%s: got profile: %v, want profile: %v", test.desc, gotProfile, test.wantProfile)
 			}
 		})
 	}
