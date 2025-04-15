@@ -1782,7 +1782,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		params.setTakeoverOffset(wbs.takeoverOffset)
 		offset = wbs.takeoverOffset
 		gw.streamSender = wbs
-		o = wbs.obj
+		o = wbs.takeoverObj
 	}
 
 	// This function reads the data sent to the pipe and sends sets of messages
