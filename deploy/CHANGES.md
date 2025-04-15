@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.4...deploy/v1.27.0) (2025-04-15)
+
+
+### Features
+
+* **deploy:** Add resource definition for Revision ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
+
+### Documentation
+
+* **deploy:** Typos fixes and small improvements ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
 ## [1.26.4](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.3...deploy/v1.26.4) (2025-03-25)
 
 
