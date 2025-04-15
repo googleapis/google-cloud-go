@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.1...aiplatform/v1.83.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden EULA(End User License Agreement) related APIs ([#11982](https://github.com/googleapis/google-cloud-go/issues/11982)) ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
 ## [1.82.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.0...aiplatform/v1.82.1) (2025-04-15)
 
 
