@@ -1,5 +1,12 @@
 # Changes
 
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.36.0...compute/v1.36.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **compute:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.35.0...compute/v1.36.0) (2025-03-27)
 
 

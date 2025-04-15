@@ -146,9 +146,10 @@ type Writer struct {
 	donec chan struct{} // closed after err and obj are set.
 	obj   *ObjectAttrs
 
-	mu    sync.Mutex
-	err   error
-	flush func() (int64, error)
+	mu             sync.Mutex
+	err            error
+	flush          func() (int64, error)
+	takeoverOffset int64 // offset from which the writer started appending to the object.
 }
 
 // Write appends to w. It implements the io.Writer interface.
@@ -257,8 +258,8 @@ func (w *Writer) openWriter() (err error) {
 	if err := w.validateWriteAttrs(); err != nil {
 		return err
 	}
-	if w.o.gen != defaultGen {
-		return fmt.Errorf("storage: generation not supported on Writer, got %v", w.o.gen)
+	if w.o.gen != defaultGen && !w.Append {
+		return fmt.Errorf("storage: generation supported on Writer for appendable objects only, got %v", w.o.gen)
 	}
 
 	isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist)
@@ -271,6 +272,7 @@ func (w *Writer) openWriter() (err error) {
 		bucket:                w.o.bucket,
 		attrs:                 &w.ObjectAttrs,
 		conds:                 w.o.conds,
+		appendGen:             w.o.gen,
 		encryptionKey:         w.o.encryptionKey,
 		sendCRC32C:            w.SendCRC32C,
 		append:                w.Append,
@@ -281,6 +283,7 @@ func (w *Writer) openWriter() (err error) {
 		setObj:                func(o *ObjectAttrs) { w.obj = o },
 		setFlush:              func(f func() (int64, error)) { w.flush = f },
 		setPipeWriter:         func(pw *io.PipeWriter) { w.pw = pw },
+		setTakeoverOffset:     func(n int64) { w.takeoverOffset = n },
 		forceEmptyContentType: w.ForceEmptyContentType,
 	}
 	if err := w.ctx.Err(); err != nil {

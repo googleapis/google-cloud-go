@@ -3180,25 +3180,7 @@ func TestIntegration_WriterAppend(t *testing.T) {
 		bucketName := prefix + uidSpace.New()
 		bkt := client.Bucket(bucketName)
 
-		// Create a bucket in the same zone as the test VM.
-		zone, err := metadata.ZoneWithContext(ctx)
-		if err != nil {
-			t.Fatalf("could not determine VM zone: %v", err)
-		}
-		region := strings.Join(strings.Split(zone, "-")[:2], "-")
-		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
-			Location: region,
-			CustomPlacementConfig: &CustomPlacementConfig{
-				DataLocations: []string{zone},
-			},
-			StorageClass: "RAPID",
-			HierarchicalNamespace: &HierarchicalNamespace{
-				Enabled: true,
-			},
-			UniformBucketLevelAccess: UniformBucketLevelAccess{
-				Enabled: true,
-			},
-		})
+		h.mustCreateZonalBucket(bkt, testutil.ProjID())
 		defer h.mustDeleteBucket(bkt)
 
 		testCases := []struct {
@@ -3233,7 +3215,7 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				h.mustWrite(w, tc.content)
 
 				// Download content again and validate.
-				// Disabled due to b/408373388; unskip after this is resolved.
+				// Disabled due to b/395944605; unskip after this is resolved.
 				// gotBytes := h.mustRead(obj)
 				// if !bytes.Equal(gotBytes, tc.content) {
 				// 	t.Errorf("content mismatch: got %v bytes, want %v bytes", len(gotBytes), len(tc.content))
@@ -3248,6 +3230,173 @@ func TestIntegration_WriterAppend(t *testing.T) {
 					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
 				}
 
+			})
+		}
+	})
+}
+
+// Writer test for append takeover of unfinalized object.
+func TestIntegration_WriterAppendTakeover(t *testing.T) {
+	t.Skip("b/402283880")
+	ctx := skipAllButBidi(context.Background(), "ZB test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(bucketName)
+
+		h.mustCreateZonalBucket(bkt, testutil.ProjID())
+		defer h.mustDeleteBucket(bkt)
+
+		testCases := []struct {
+			name                 string
+			content              []byte
+			takeoverOffset       int64
+			opts                 *AppendableWriterOpts
+			checkProgressOffsets []int64
+		}{
+			{
+				name:           "first message takeover",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts:           nil,
+			},
+			{
+				name:           "first chunk takeover, progressfunc",
+				content:        randomBytes9MiB,
+				takeoverOffset: 3 * MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
+				checkProgressOffsets: []int64{7 * MiB},
+			},
+			{
+				name:           "middle chunk takeover",
+				content:        randomBytes9MiB,
+				takeoverOffset: 6 * MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
+			},
+			{
+				name:           "final chunk takeover",
+				content:        randomBytes9MiB,
+				takeoverOffset: 8*MiB + 100,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
+			},
+			{
+				name:           "finalize object",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+			},
+			{
+				name:           "finalize object, default chunkSize",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts:           nil,
+			},
+			{
+				name:           "0 byte takeover, progressfunc",
+				content:        randomBytes9MiB,
+				takeoverOffset: 0,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
+				checkProgressOffsets: []int64{4 * MiB, 8 * MiB},
+			},
+			{
+				name:           "last byte takeover",
+				content:        randomBytes9MiB,
+				takeoverOffset: 9 * MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
+				},
+			},
+			{
+				name:           "last byte takeover and finalize",
+				content:        randomBytes9MiB,
+				takeoverOffset: 9 * MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+			},
+		}
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				// Create non-finalized appendable writer and upload first part of content.
+				obj := bkt.Object(tc.name + uidSpace.New()).Retryer(WithPolicy(RetryAlways))
+				defer h.mustDeleteObject(obj)
+				w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = false
+				if tc.opts != nil && tc.opts.ChunkSize > 0 {
+					w.ChunkSize = tc.opts.ChunkSize
+				}
+
+				h.mustWrite(w, tc.content[:tc.takeoverOffset])
+
+				// Takeover to create new Writer.
+				gen := w.Attrs().Generation
+				opts := tc.opts
+				gotOffsets := []int64{}
+				if tc.checkProgressOffsets != nil {
+					opts.ProgressFunc = func(n int64) {
+						gotOffsets = append(gotOffsets, n)
+					}
+				}
+				w2, off, err := obj.Generation(gen).NewWriterFromAppendableObject(ctx, opts)
+				if err != nil {
+					t.Fatalf("NewWriterFromAppendableObject: %v", err)
+				}
+				if off != tc.takeoverOffset {
+					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
+				}
+
+				// Validate that options are populated as expected.
+				wantChunkSize := 16 * MiB
+				if opts != nil && opts.ChunkSize != 0 {
+					wantChunkSize = opts.ChunkSize
+				}
+				if w2.ChunkSize != wantChunkSize {
+					t.Errorf("Writer.ChunkSize: got %v, want %v", w2.ChunkSize, wantChunkSize)
+				}
+				if opts != nil && opts.ProgressFunc != nil && w2.ProgressFunc == nil {
+					t.Errorf("Writer.ProgressFunc: got nil, want non-nil")
+				}
+				if (opts == nil || opts != nil && opts.ProgressFunc == nil) && w2.ProgressFunc != nil {
+					t.Errorf("Writer.ProgressFunc: got non-nil, want nil")
+				}
+
+				// Write remainder of the content and close.
+				h.mustWrite(w2, tc.content[tc.takeoverOffset:])
+
+				// Download content again and validate.
+				// Disabled due to b/395944605; unskip after this is resolved.
+				// gotBytes := h.mustRead(obj)
+				// if !bytes.Equal(gotBytes, tc.content) {
+				// 	t.Errorf("content mismatch: got %v bytes, want %v bytes", len(gotBytes), len(tc.content))
+				// }
+
+				// Check object exists and Finalized attribute set as expected.
+				attrs := h.mustObjectAttrs(obj)
+				if opts != nil && opts.FinalizeOnClose && attrs.Finalized.IsZero() {
+					t.Errorf("got unfinalized object, want finalized")
+				}
+				if (opts == nil || !opts.FinalizeOnClose) && !attrs.Finalized.IsZero() {
+					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
+				}
+				// Check ProgressFunc was called if applicable
+				if tc.checkProgressOffsets != nil {
+					if !slices.Equal(gotOffsets, tc.checkProgressOffsets) {
+						t.Errorf("progressFunc calls: got %v, want %v", gotOffsets, tc.checkProgressOffsets)
+					}
+				}
 			})
 		}
 	})
@@ -6635,6 +6784,30 @@ func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttr
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
 		h.t.Fatalf("BucketHandle(%q).Create: %v", b.BucketName(), err)
 	}
+}
+
+func (h testHelper) mustCreateZonalBucket(b *BucketHandle, projID string) {
+	h.t.Helper()
+
+	// Create a bucket in the same zone as the test VM.
+	zone, err := metadata.ZoneWithContext(context.Background())
+	if err != nil {
+		h.t.Fatalf("could not determine VM zone: %v", err)
+	}
+	region := strings.Join(strings.Split(zone, "-")[:2], "-")
+	h.mustCreate(b, testutil.ProjID(), &BucketAttrs{
+		Location: region,
+		CustomPlacementConfig: &CustomPlacementConfig{
+			DataLocations: []string{zone},
+		},
+		StorageClass: "RAPID",
+		HierarchicalNamespace: &HierarchicalNamespace{
+			Enabled: true,
+		},
+		UniformBucketLevelAccess: UniformBucketLevelAccess{
+			Enabled: true,
+		},
+	})
 }
 
 func (h testHelper) mustDeleteBucket(b *BucketHandle) {
