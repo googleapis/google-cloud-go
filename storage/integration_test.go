@@ -289,6 +289,8 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 	test func(*testing.T, context.Context, string, string, *Client),
 	opts ...option.ClientOption) {
 	for transport, client := range initTransportClients(ctx, t, opts...) {
+		fmt.Println("done creating client for tests")
+
 		t.Run(transport, func(t *testing.T) {
 			t.Cleanup(func() {
 				client.Close()
@@ -675,7 +677,7 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 	ctx := skipHTTP("grpc only test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
-		err := CheckDirectConnectivitySupported(ctx, bucket)
+		err := CheckDirectConnectivitySupported(ctx, bucket, internaloption.EnableDirectPath(false))
 		if err == nil {
 			t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
 		}
