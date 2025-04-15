@@ -1767,6 +1767,8 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		return nil, err
 	}
 
+	var o *storagepb.Object
+
 	// If we are taking over an appendable object, send the first message here
 	// to get the append offset.
 	if params.appendGen > 0 {
@@ -1780,6 +1782,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		params.setTakeoverOffset(wbs.takeoverOffset)
 		offset = wbs.takeoverOffset
 		gw.streamSender = wbs
+		o = wbs.obj
 	}
 
 	// This function reads the data sent to the pipe and sends sets of messages
@@ -1793,7 +1796,6 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			}
 
 			// Loop until there is an error or the Object has been finalized.
-			var o *storagepb.Object
 			for {
 				// Note: This blocks until either the buffer is full or EOF is read.
 				recvd, doneReading, err := gw.read()
