@@ -3276,11 +3276,12 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				},
 			},
 			{
-				name:           "final chunk takeover",
+				name:           "final chunk takeover, progressfunc",
 				content:        randomBytes9MiB,
 				takeoverOffset: 8*MiB + 100,
 				opts: &AppendableWriterOpts{
-					ChunkSize: 4 * MiB,
+					ChunkSize:    4 * MiB,
+					ProgressFunc: func(_ int64) {},
 				},
 			},
 			{
@@ -3290,6 +3291,14 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize:       4 * MiB,
 					FinalizeOnClose: true,
+				},
+			},
+			{
+				name:           "finalize object, default chunkSize",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize: 4 * MiB,
 				},
 			},
 			{
@@ -3330,15 +3339,33 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 
 				h.mustWrite(w, tc.content[:tc.takeoverOffset])
 
-				// Takeover and write remainder of content.
+				// Takeover to create new Writer.
 				gen := w.Attrs().Generation
-				w2, off, err := obj.Generation(gen).NewWriterFromAppendableObject(ctx, tc.opts)
+				opts := tc.opts
+				w2, off, err := obj.Generation(gen).NewWriterFromAppendableObject(ctx, opts)
 				if err != nil {
 					t.Fatalf("NewWriterFromAppendableObject: %v", err)
 				}
 				if off != tc.takeoverOffset {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
 				}
+
+				// Validate that options are populated as expected.
+				wantChunkSize := 16 * MiB
+				if opts != nil && opts.ChunkSize != 0 {
+					wantChunkSize = opts.ChunkSize
+				}
+				if w2.ChunkSize != wantChunkSize {
+					t.Errorf("Writer.ChunkSize: got %v, want %v", w2.ChunkSize, wantChunkSize)
+				}
+				if opts != nil && opts.ProgressFunc != nil && w2.ProgressFunc == nil {
+					t.Errorf("Writer.ProgressFunc: got nil, want non-nil")
+				}
+				if (opts == nil || opts != nil && opts.ProgressFunc == nil) && w2.ProgressFunc != nil {
+					t.Errorf("Writer.ProgressFunc: got non-nil, want nil")
+				}
+
+				// Write remainder of the content and close.
 				h.mustWrite(w2, tc.content[tc.takeoverOffset:])
 
 				// Download content again and validate.
@@ -3350,10 +3377,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 
 				// Check object exists and Finalized attribute set as expected.
 				attrs := h.mustObjectAttrs(obj)
-				if tc.opts != nil && tc.opts.FinalizeOnClose && attrs.Finalized.IsZero() {
+				if opts != nil && opts.FinalizeOnClose && attrs.Finalized.IsZero() {
 					t.Errorf("got unfinalized object, want finalized")
 				}
-				if (tc.opts == nil || !tc.opts.FinalizeOnClose) && !attrs.Finalized.IsZero() {
+				if (opts == nil || !opts.FinalizeOnClose) && !attrs.Finalized.IsZero() {
 					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
 				}
 
