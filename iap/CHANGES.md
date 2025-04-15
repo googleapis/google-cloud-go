@@ -1,5 +1,40 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.10.5...iap/v1.11.0) (2025-04-15)
+
+
+### Features
+
+* **iap:** Identity-aware Proxy (IAP) released a feature `Use IAP with Workforce Identity Federation`(https ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+
+
+### Documentation
+
+* **iap:** A comment for enum `PolicyType` is changed ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** A comment for field `cidrs` in message `.google.cloud.iap.v1.TunnelDestGroup` is changed ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** A comment for field `fqdns` in message `.google.cloud.iap.v1.TunnelDestGroup` is changed ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** A comment for field `name` in message `.google.cloud.iap.v1.TunnelDestGroup` is changed ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `access_denied_page_settings` in message `.google.cloud.iap.v1.ApplicationSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `access_settings` in message `.google.cloud.iap.v1.IapSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `allowed_domains_settings` in message `.google.cloud.iap.v1.AccessSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `application_settings` in message `.google.cloud.iap.v1.IapSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `attribute_propagation_settings` in message `.google.cloud.iap.v1.ApplicationSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `cors_settings` in message `.google.cloud.iap.v1.AccessSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `csm_settings` in message `.google.cloud.iap.v1.ApplicationSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `domains` in message `.google.cloud.iap.v1.AllowedDomainsSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `enable` in message `.google.cloud.iap.v1.AllowedDomainsSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `enable` in message `.google.cloud.iap.v1.AttributePropagationSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `expression` in message `.google.cloud.iap.v1.AttributePropagationSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `gcip_settings` in message `.google.cloud.iap.v1.AccessSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `max_age` in message `.google.cloud.iap.v1.ReauthSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `method` in message `.google.cloud.iap.v1.ReauthSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `oauth_settings` in message `.google.cloud.iap.v1.AccessSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `output_credentials` in message `.google.cloud.iap.v1.AttributePropagationSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `policy_type` in message `.google.cloud.iap.v1.ReauthSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `programmatic_clients` in message `.google.cloud.iap.v1.OAuthSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `reauth_settings` in message `.google.cloud.iap.v1.AccessSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **iap:** Mark `tenant_ids` in message `.google.cloud.iap.v1.GcipSettings` as optional ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+
 ## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/iap/v1.10.4...iap/v1.10.5) (2025-03-13)
 
 

@@ -1,5 +1,23 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.18.2...networkmanagement/v1.19.0) (2025-04-15)
+
+
+### Features
+
+* **networkmanagement:** Add enum types related to Abort ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **networkmanagement:** Add enum types related to Drop ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **networkmanagement:** Add enum types related to Firewall ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **networkmanagement:** Add enum types related to Google Service ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **networkmanagement:** Add messages and fields related to Direct VPC Egress ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **networkmanagement:** Add messages and fields related to Route ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **networkmanagement:** Add messages and fields related to Serverless External ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
+
+### Documentation
+
+* **networkmanagement:** Update outdated comments ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
 ## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.18.1...networkmanagement/v1.18.2) (2025-03-19)
 
 
