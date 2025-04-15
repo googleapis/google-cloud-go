@@ -794,7 +794,7 @@
     {
       "regionTag": "analyticshub_v1_generated_AnalyticsHubService_SubscribeDataExchange_sync",
       "title": "analyticshub SubscribeDataExchange Sample",
-      "description": "SubscribeDataExchange creates a Subscription to a Data Exchange. This is a long-running operation\nas it will create one or more linked datasets.",
+      "description": "SubscribeDataExchange creates a Subscription to a Data Clean Room. This is a long-running\noperation as it will create one or more linked datasets.",
       "file": "Client/SubscribeDataExchange/main.go",
       "language": "GO",
       "clientMethod": {

@@ -1,6 +1,20 @@
 # Changes
 
 
+## [2.20.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.20.2...recaptchaenterprise/v2.20.3) (2025-04-15)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [2.20.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.20.1...recaptchaenterprise/v2.20.2) (2025-03-19)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Fix typo in FraudPrevention.DISABLE comment ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
 ## [2.20.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.20.0...recaptchaenterprise/v2.20.1) (2025-03-13)
 
 

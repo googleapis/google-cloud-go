@@ -2,6 +2,13 @@
 
 
 
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.1...maps/v1.20.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **maps:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.0...maps/v1.20.1) (2025-03-13)
 
 

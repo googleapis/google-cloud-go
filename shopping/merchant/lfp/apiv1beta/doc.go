@@ -17,7 +17,7 @@
 // Package lfp is an auto-generated package for the
 // Merchant API.
 //
-// Programmatically manage your Merchant Center accounts.
+// Programmatically manage your Merchant Center Accounts.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

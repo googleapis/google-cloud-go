@@ -107,11 +107,24 @@ type Writer struct {
 	// Append is a parameter to indicate whether the writer should use appendable
 	// object semantics for the new object generation. Appendable objects are
 	// visible on the first Write() call, and can be appended to until they are
-	// finalized. The object is finalized on a call to Close().
+	// finalized. If Writer.FinalizeOnClose is set to true, the object is finalized
+	// when Writer.Close() is called; otherwise, the object is left unfinalized
+	// and can be appended to later.
 	//
 	// Append is only supported for gRPC. This feature is in preview and is not
 	// yet available for general use.
 	Append bool
+
+	// FinalizeOnClose indicates whether the writer should finalize an object when
+	// closing the write stream. This only applies to Writers where Append is
+	// true, since append semantics allow a prefix of the object to be durable and
+	// readable. By default, objects written with Append semantics will not be
+	// finalized, which means they can be appended to later.
+	//
+	// FinalizeOnClose is supported only on gRPC clients where [Writer.Append] is
+	// set to true. This feature is in preview and is not yet available for
+	// general use.
+	FinalizeOnClose bool
 
 	// ProgressFunc can be used to monitor the progress of a large write
 	// operation. If ProgressFunc is not nil and writing requires multiple
@@ -133,9 +146,10 @@ type Writer struct {
 	donec chan struct{} // closed after err and obj are set.
 	obj   *ObjectAttrs
 
-	mu    sync.Mutex
-	err   error
-	flush func() (int64, error)
+	mu             sync.Mutex
+	err            error
+	flush          func() (int64, error)
+	takeoverOffset int64 // offset from which the writer started appending to the object.
 }
 
 // Write appends to w. It implements the io.Writer interface.
@@ -185,6 +199,9 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 //
 // Do not call Flush concurrently with Write or Close. A single Writer is not
 // safe for unsynchronized use across threads.
+//
+// Note that calling Flush very early (before 512 bytes) may interfere with
+// automatic content sniffing in the Writer.
 //
 // Flush is supported only on gRPC clients where [Writer.Append] is set
 // to true. This feature is in preview and is not yet available for general use.
@@ -241,8 +258,8 @@ func (w *Writer) openWriter() (err error) {
 	if err := w.validateWriteAttrs(); err != nil {
 		return err
 	}
-	if w.o.gen != defaultGen {
-		return fmt.Errorf("storage: generation not supported on Writer, got %v", w.o.gen)
+	if w.o.gen != defaultGen && !w.Append {
+		return fmt.Errorf("storage: generation supported on Writer for appendable objects only, got %v", w.o.gen)
 	}
 
 	isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist)
@@ -255,15 +272,18 @@ func (w *Writer) openWriter() (err error) {
 		bucket:                w.o.bucket,
 		attrs:                 &w.ObjectAttrs,
 		conds:                 w.o.conds,
+		appendGen:             w.o.gen,
 		encryptionKey:         w.o.encryptionKey,
 		sendCRC32C:            w.SendCRC32C,
 		append:                w.Append,
+		finalizeOnClose:       w.FinalizeOnClose,
 		donec:                 w.donec,
 		setError:              w.error,
 		progress:              w.progress,
 		setObj:                func(o *ObjectAttrs) { w.obj = o },
 		setFlush:              func(f func() (int64, error)) { w.flush = f },
 		setPipeWriter:         func(pw *io.PipeWriter) { w.pw = pw },
+		setTakeoverOffset:     func(n int64) { w.takeoverOffset = n },
 		forceEmptyContentType: w.ForceEmptyContentType,
 	}
 	if err := w.ctx.Err(); err != nil {
@@ -328,6 +348,9 @@ func (w *Writer) validateWriteAttrs() error {
 	}
 	if w.ChunkSize < 0 {
 		return errors.New("storage: Writer.ChunkSize must be non-negative")
+	}
+	if w.FinalizeOnClose && !w.Append {
+		return errors.New("storage: Writer.FinalizeOnClose may only be true if Writer.Append is true")
 	}
 	return nil
 }

@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.1.7](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.1.6...rapidmigrationassessment/v1.1.7) (2025-04-15)
+
+
+### Bug Fixes
+
+* **rapidmigrationassessment:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.1.5...rapidmigrationassessment/v1.1.6) (2025-03-27)
+
+
+### Documentation
+
+* **rapidmigrationassessment:** Fix typo in comment ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
 ## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.1.4...rapidmigrationassessment/v1.1.5) (2025-03-13)
 
 

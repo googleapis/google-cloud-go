@@ -1,5 +1,12 @@
 # Changes
 
+## [1.20.6](https://github.com/googleapis/google-cloud-go/compare/asset/v1.20.5...asset/v1.20.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **asset:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.20.5](https://github.com/googleapis/google-cloud-go/compare/asset/v1.20.4...asset/v1.20.5) (2025-03-13)
 
 

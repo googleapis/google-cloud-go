@@ -2,6 +2,33 @@
 
 
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.15.0...alloydb/v1.15.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **alloydb:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.14.2...alloydb/v1.15.0) (2025-03-19)
+
+
+### Features
+
+* **alloydb:** A new message `ExportClusterRequest` is added ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **alloydb:** A new message `ExportClusterResponse` is added ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **alloydb:** A new message `GcsDestination` is added ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **alloydb:** A new method `ExportCluster` is added to service `AlloyDBAdmin` ([#11861](https://github.com/googleapis/google-cloud-go/issues/11861)) ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+
+
+### Documentation
+
+* **alloydb:** A comment for field `database_flags` in message `.google.cloud.alloydb.v1beta.Instance` is changed ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **alloydb:** A comment for field `id` in message `.google.cloud.alloydb.v1beta.Instance` is changed ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **alloydb:** A comment for field `ip` in message `.google.cloud.alloydb.v1beta.Instance` is changed ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **alloydb:** A comment for field `requested_cancellation` in message `.google.cloud.alloydb.v1beta.OperationMetadata` is changed ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **alloydb:** A comment for field `state` in message `.google.cloud.alloydb.v1beta.Instance` is changed ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **alloydb:** A comment for field `zone_id` in message `.google.cloud.alloydb.v1beta.Instance` is changed ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+
 ## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.14.1...alloydb/v1.14.2) (2025-03-13)
 
 
