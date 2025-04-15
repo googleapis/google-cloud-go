@@ -1,0 +1,286 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/devicestreaming/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.devicestreaming.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "devicestreaming_v1_generated_DirectAccessService_AdbConnect_sync",
+      "title": "devicestreaming AdbConnect Sample",
+      "description": "AdbConnect exposes an ADB connection if the device supports ADB.\ngRPC headers are used to authenticate the Connect RPC, as well as\nassociate to a particular DeviceSession.\nIn particular, the user must specify the \"X-Omnilab-Session-Name\" header.\n\n\nThis method is not supported for the REST transport.",
+      "file": "DirectAccessClient/AdbConnect/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AdbConnect",
+        "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient.AdbConnect",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "devicestreamingpb.DirectAccessService_AdbConnectClient",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "AdbConnect",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessService.AdbConnect",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.cloud.devicestreaming.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "devicestreaming_v1_generated_DirectAccessService_CancelDeviceSession_sync",
+      "title": "devicestreaming CancelDeviceSession Sample",
+      "description": "CancelDeviceSession cancel a DeviceSession.\nThis RPC changes the DeviceSession to state FINISHED and terminates all\nconnections.\nCanceled sessions are not deleted and can be retrieved or\nlisted by the user until they expire based on the 28 day deletion policy.",
+      "file": "DirectAccessClient/CancelDeviceSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelDeviceSession",
+        "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient.CancelDeviceSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "devicestreamingpb.CancelDeviceSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "CancelDeviceSession",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessService.CancelDeviceSession",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.cloud.devicestreaming.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "devicestreaming_v1_generated_DirectAccessService_CreateDeviceSession_sync",
+      "title": "devicestreaming CreateDeviceSession Sample",
+      "description": "CreateDeviceSession creates a DeviceSession.",
+      "file": "DirectAccessClient/CreateDeviceSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDeviceSession",
+        "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient.CreateDeviceSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "devicestreamingpb.CreateDeviceSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*devicestreamingpb.DeviceSession",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "CreateDeviceSession",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessService.CreateDeviceSession",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.cloud.devicestreaming.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "devicestreaming_v1_generated_DirectAccessService_GetDeviceSession_sync",
+      "title": "devicestreaming GetDeviceSession Sample",
+      "description": "GetDeviceSession gets a DeviceSession, which documents the allocation status and\nwhether the device is allocated. Clients making requests from this API\nmust poll GetDeviceSession.",
+      "file": "DirectAccessClient/GetDeviceSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeviceSession",
+        "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient.GetDeviceSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "devicestreamingpb.GetDeviceSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*devicestreamingpb.DeviceSession",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "GetDeviceSession",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessService.GetDeviceSession",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.cloud.devicestreaming.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "devicestreaming_v1_generated_DirectAccessService_ListDeviceSessions_sync",
+      "title": "devicestreaming ListDeviceSessions Sample",
+      "description": "ListDeviceSessions lists DeviceSessions owned by the project user.",
+      "file": "DirectAccessClient/ListDeviceSessions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeviceSessions",
+        "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient.ListDeviceSessions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "devicestreamingpb.ListDeviceSessionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeviceSessionIterator",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "ListDeviceSessions",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessService.ListDeviceSessions",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.cloud.devicestreaming.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "devicestreaming_v1_generated_DirectAccessService_UpdateDeviceSession_sync",
+      "title": "devicestreaming UpdateDeviceSession Sample",
+      "description": "UpdateDeviceSession updates the current DeviceSession to the fields described by the\nupdate_mask.",
+      "file": "DirectAccessClient/UpdateDeviceSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeviceSession",
+        "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient.UpdateDeviceSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "devicestreamingpb.UpdateDeviceSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*devicestreamingpb.DeviceSession",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "UpdateDeviceSession",
+          "fullName": "google.cloud.devicestreaming.v1.DirectAccessService.UpdateDeviceSession",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.cloud.devicestreaming.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
