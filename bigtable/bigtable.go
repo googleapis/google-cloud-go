@@ -211,7 +211,7 @@ var (
 
 func isQueryExpiredViolation(err error) bool {
 	apiErr, ok := apierror.FromError(err)
-	if ok && apiErr != nil && apiErr.Details().PreconditionFailure != nil {
+	if ok && apiErr != nil && apiErr.Details().PreconditionFailure != nil && status.Code(err) == codes.FailedPrecondition {
 		for _, violation := range apiErr.Details().PreconditionFailure.GetViolations() {
 			if violation != nil && violation.GetType() == queryExpiredViolationType {
 				return true
