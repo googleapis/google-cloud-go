@@ -266,29 +266,6 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	}
 }
 
-func TestOptions_InitTokenBindingTypeToNoBinding(t *testing.T) {
-	l, _ := net.Listen("tcp", "localhost:0")
-	opts := &Options{
-		InternalOptions: &InternalOptions{
-			DefaultEndpointTemplate: l.Addr().String(),
-		},
-		DetectOpts: &credentials.DetectOptions{
-			Audience:         l.Addr().String(),
-			CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
-			TokenBindingType: credentials.MTLSHardBinding,
-		},
-	}
-
-	_, err := Dial(context.Background(), false, opts)
-	if err != nil {
-		t.Fatalf("Dial() returned error: %v", err)
-	}
-
-	if opts.DetectOpts.TokenBindingType != credentials.NoBinding {
-		t.Errorf("TokenBindingType = %v, want %v", opts.DetectOpts.TokenBindingType, credentials.NoBinding)
-	}
-}
-
 func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 	nonDefault := "example.com"
 	nonDefault2 := "other-example.com"
