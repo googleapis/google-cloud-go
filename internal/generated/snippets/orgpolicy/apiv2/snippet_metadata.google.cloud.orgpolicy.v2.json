@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/orgpolicy/apiv2",
-    "version": "$VERSION",
+    "version": "1.14.4",
     "language": "GO",
     "apis": [
       {
