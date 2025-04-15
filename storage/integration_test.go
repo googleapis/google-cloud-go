@@ -3248,10 +3248,11 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 		defer h.mustDeleteBucket(bkt)
 
 		testCases := []struct {
-			name           string
-			content        []byte
-			takeoverOffset int64
-			opts           *AppendableWriterOpts
+			name                 string
+			content              []byte
+			takeoverOffset       int64
+			opts                 *AppendableWriterOpts
+			checkProgressOffsets []int64
 		}{
 			{
 				name:           "first message takeover",
@@ -3260,12 +3261,13 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts:           nil,
 			},
 			{
-				name:           "first chunk takeover",
+				name:           "first chunk takeover, progressfunc",
 				content:        randomBytes9MiB,
 				takeoverOffset: 3 * MiB,
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
+				checkProgressOffsets: []int64{7 * MiB},
 			},
 			{
 				name:           "middle chunk takeover",
@@ -3276,12 +3278,11 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				},
 			},
 			{
-				name:           "final chunk takeover, progressfunc",
+				name:           "final chunk takeover",
 				content:        randomBytes9MiB,
 				takeoverOffset: 8*MiB + 100,
 				opts: &AppendableWriterOpts{
-					ChunkSize:    4 * MiB,
-					ProgressFunc: func(_ int64) {},
+					ChunkSize: 4 * MiB,
 				},
 			},
 			{
@@ -3297,15 +3298,16 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				name:           "finalize object, default chunkSize",
 				content:        randomBytes9MiB,
 				takeoverOffset: MiB,
+				opts:           nil,
+			},
+			{
+				name:           "0 byte takeover, progressfunc",
+				content:        randomBytes9MiB,
+				takeoverOffset: 0,
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-			},
-			{
-				name:           "0 byte takeover",
-				content:        randomBytes9MiB,
-				takeoverOffset: 0,
-				opts:           nil,
+				checkProgressOffsets: []int64{4 * MiB, 8 * MiB},
 			},
 			{
 				name:           "last byte takeover",
@@ -3342,6 +3344,12 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				// Takeover to create new Writer.
 				gen := w.Attrs().Generation
 				opts := tc.opts
+				gotOffsets := []int64{}
+				if tc.checkProgressOffsets != nil {
+					opts.ProgressFunc = func(n int64) {
+						gotOffsets = append(gotOffsets, n)
+					}
+				}
 				w2, off, err := obj.Generation(gen).NewWriterFromAppendableObject(ctx, opts)
 				if err != nil {
 					t.Fatalf("NewWriterFromAppendableObject: %v", err)
@@ -3383,7 +3391,12 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				if (opts == nil || !opts.FinalizeOnClose) && !attrs.Finalized.IsZero() {
 					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
 				}
-
+				// Check ProgressFunc was called if applicable
+				if tc.checkProgressOffsets != nil {
+					if !slices.Equal(gotOffsets, tc.checkProgressOffsets) {
+						t.Errorf("progressFunc calls: got %v, want %v", gotOffsets, tc.checkProgressOffsets)
+					}
+				}
 			})
 		}
 	})
