@@ -1,5 +1,12 @@
 # Changes
 
+## [0.10.7](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.10.6...privatecatalog/v0.10.7) (2025-04-15)
+
+
+### Bug Fixes
+
+* **privatecatalog:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [0.10.6](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.10.5...privatecatalog/v0.10.6) (2025-03-13)
 
 
