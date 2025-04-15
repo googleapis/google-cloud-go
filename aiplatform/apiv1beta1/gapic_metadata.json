@@ -4534,9 +4534,19 @@
         "grpc": {
           "libraryClient": "ModelGardenClient",
           "rpcs": {
+            "AcceptPublisherModelEula": {
+              "methods": [
+                "AcceptPublisherModelEula"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CheckPublisherModelEulaAcceptance": {
+              "methods": [
+                "CheckPublisherModelEulaAcceptance"
               ]
             },
             "DeleteOperation": {
@@ -4614,9 +4624,19 @@
         "rest": {
           "libraryClient": "ModelGardenClient",
           "rpcs": {
+            "AcceptPublisherModelEula": {
+              "methods": [
+                "AcceptPublisherModelEula"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CheckPublisherModelEulaAcceptance": {
+              "methods": [
+                "CheckPublisherModelEulaAcceptance"
               ]
             },
             "DeleteOperation": {
