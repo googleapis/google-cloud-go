@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.27.0...deploy/v1.27.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **deploy:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.4...deploy/v1.27.0) (2025-04-15)
 
 
