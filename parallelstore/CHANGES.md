@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.1...parallelstore/v0.11.2) (2025-04-15)
+
+
+### Documentation
+
+* **parallelstore:** A comment for field `bytes_failed` in message `.google.cloud.parallelstore.v1.TransferCounters` is changed ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+* **parallelstore:** A comment for field `daos_version` in message `.google.cloud.parallelstore.v1.Instance` is changed ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+* **parallelstore:** A comment for field `objects_failed` in message `.google.cloud.parallelstore.v1.TransferCounters` is changed ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
 ## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.0...parallelstore/v0.11.1) (2025-04-15)
 
 
