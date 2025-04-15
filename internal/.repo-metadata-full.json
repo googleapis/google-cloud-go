@@ -1105,7 +1105,7 @@
     "description": "Device Streaming API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/devicestreaming/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/devicestreaming/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
