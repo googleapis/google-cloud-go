@@ -533,3 +533,5 @@ replace cloud.google.com/go/parametermanager => ../../../parametermanager
 replace cloud.google.com/go/financialservices => ../../../financialservices
 
 replace cloud.google.com/go/modelarmor => ../../../modelarmor
+
+replace cloud.google.com/go/devicestreaming => ../../../devicestreaming
