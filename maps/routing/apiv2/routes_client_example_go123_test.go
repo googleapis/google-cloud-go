@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package routing_test
-
-import (
-	routing "cloud.google.com/go/maps/routing/apiv2"
-)
