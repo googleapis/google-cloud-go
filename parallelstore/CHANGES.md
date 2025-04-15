@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.0...parallelstore/v0.11.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.10.1...parallelstore/v0.11.0) (2025-04-15)
 
 

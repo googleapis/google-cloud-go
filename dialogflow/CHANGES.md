@@ -1,5 +1,12 @@
 # Changes
 
+## [1.68.2](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.68.1...dialogflow/v1.68.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **dialogflow:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.68.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.68.0...dialogflow/v1.68.1) (2025-03-13)
 
 

@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/iam/v1.5.1...iam/v1.5.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **iam:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/iam/v1.5.0...iam/v1.5.1) (2025-04-15)
 
 
