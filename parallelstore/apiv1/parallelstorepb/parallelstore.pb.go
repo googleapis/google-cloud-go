@@ -362,7 +362,7 @@ type Instance struct {
 	// Allowed values are between 12000 and 100000, in multiples of 4000; e.g.,
 	// 12000, 16000, 20000, ...
 	CapacityGib int64 `protobuf:"varint,8,opt,name=capacity_gib,json=capacityGib,proto3" json:"capacity_gib,omitempty"`
-	// Deprecated 'daos_version' field.
+	// Output only. Deprecated 'daos_version' field.
 	// Output only. The version of DAOS software running in the instance.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/parallelstore/v1/parallelstore.proto.
@@ -2191,9 +2191,9 @@ type TransferCounters struct {
 	ObjectsCopied int64 `protobuf:"varint,5,opt,name=objects_copied,json=objectsCopied,proto3" json:"objects_copied,omitempty"`
 	// Bytes that are copied to the data destination.
 	BytesCopied int64 `protobuf:"varint,6,opt,name=bytes_copied,json=bytesCopied,proto3" json:"bytes_copied,omitempty"`
-	// Objects that failed to write to the data destination.
+	// Objects that are failed to write to the data destination.
 	ObjectsFailed int64 `protobuf:"varint,7,opt,name=objects_failed,json=objectsFailed,proto3" json:"objects_failed,omitempty"`
-	// Number of Bytes that failed to be written to the data destination.
+	// Bytes that are failed to write to the data destination.
 	BytesFailed int64 `protobuf:"varint,8,opt,name=bytes_failed,json=bytesFailed,proto3" json:"bytes_failed,omitempty"`
 }
 

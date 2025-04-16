@@ -46,21 +46,23 @@ var newModelGardenClientHook clientHook
 
 // ModelGardenCallOptions contains the retry settings for each method of ModelGardenClient.
 type ModelGardenCallOptions struct {
-	GetPublisherModel    []gax.CallOption
-	ListPublisherModels  []gax.CallOption
-	Deploy               []gax.CallOption
-	DeployPublisherModel []gax.CallOption
-	ExportPublisherModel []gax.CallOption
-	GetLocation          []gax.CallOption
-	ListLocations        []gax.CallOption
-	GetIamPolicy         []gax.CallOption
-	SetIamPolicy         []gax.CallOption
-	TestIamPermissions   []gax.CallOption
-	CancelOperation      []gax.CallOption
-	DeleteOperation      []gax.CallOption
-	GetOperation         []gax.CallOption
-	ListOperations       []gax.CallOption
-	WaitOperation        []gax.CallOption
+	GetPublisherModel                 []gax.CallOption
+	ListPublisherModels               []gax.CallOption
+	Deploy                            []gax.CallOption
+	DeployPublisherModel              []gax.CallOption
+	ExportPublisherModel              []gax.CallOption
+	CheckPublisherModelEulaAcceptance []gax.CallOption
+	AcceptPublisherModelEula          []gax.CallOption
+	GetLocation                       []gax.CallOption
+	ListLocations                     []gax.CallOption
+	GetIamPolicy                      []gax.CallOption
+	SetIamPolicy                      []gax.CallOption
+	TestIamPermissions                []gax.CallOption
+	CancelOperation                   []gax.CallOption
+	DeleteOperation                   []gax.CallOption
+	GetOperation                      []gax.CallOption
+	ListOperations                    []gax.CallOption
+	WaitOperation                     []gax.CallOption
 }
 
 func defaultModelGardenGRPCClientOptions() []option.ClientOption {
@@ -80,41 +82,45 @@ func defaultModelGardenGRPCClientOptions() []option.ClientOption {
 
 func defaultModelGardenCallOptions() *ModelGardenCallOptions {
 	return &ModelGardenCallOptions{
-		GetPublisherModel:    []gax.CallOption{},
-		ListPublisherModels:  []gax.CallOption{},
-		Deploy:               []gax.CallOption{},
-		DeployPublisherModel: []gax.CallOption{},
-		ExportPublisherModel: []gax.CallOption{},
-		GetLocation:          []gax.CallOption{},
-		ListLocations:        []gax.CallOption{},
-		GetIamPolicy:         []gax.CallOption{},
-		SetIamPolicy:         []gax.CallOption{},
-		TestIamPermissions:   []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
-		WaitOperation:        []gax.CallOption{},
+		GetPublisherModel:                 []gax.CallOption{},
+		ListPublisherModels:               []gax.CallOption{},
+		Deploy:                            []gax.CallOption{},
+		DeployPublisherModel:              []gax.CallOption{},
+		ExportPublisherModel:              []gax.CallOption{},
+		CheckPublisherModelEulaAcceptance: []gax.CallOption{},
+		AcceptPublisherModelEula:          []gax.CallOption{},
+		GetLocation:                       []gax.CallOption{},
+		ListLocations:                     []gax.CallOption{},
+		GetIamPolicy:                      []gax.CallOption{},
+		SetIamPolicy:                      []gax.CallOption{},
+		TestIamPermissions:                []gax.CallOption{},
+		CancelOperation:                   []gax.CallOption{},
+		DeleteOperation:                   []gax.CallOption{},
+		GetOperation:                      []gax.CallOption{},
+		ListOperations:                    []gax.CallOption{},
+		WaitOperation:                     []gax.CallOption{},
 	}
 }
 
 func defaultModelGardenRESTCallOptions() *ModelGardenCallOptions {
 	return &ModelGardenCallOptions{
-		GetPublisherModel:    []gax.CallOption{},
-		ListPublisherModels:  []gax.CallOption{},
-		Deploy:               []gax.CallOption{},
-		DeployPublisherModel: []gax.CallOption{},
-		ExportPublisherModel: []gax.CallOption{},
-		GetLocation:          []gax.CallOption{},
-		ListLocations:        []gax.CallOption{},
-		GetIamPolicy:         []gax.CallOption{},
-		SetIamPolicy:         []gax.CallOption{},
-		TestIamPermissions:   []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
-		WaitOperation:        []gax.CallOption{},
+		GetPublisherModel:                 []gax.CallOption{},
+		ListPublisherModels:               []gax.CallOption{},
+		Deploy:                            []gax.CallOption{},
+		DeployPublisherModel:              []gax.CallOption{},
+		ExportPublisherModel:              []gax.CallOption{},
+		CheckPublisherModelEulaAcceptance: []gax.CallOption{},
+		AcceptPublisherModelEula:          []gax.CallOption{},
+		GetLocation:                       []gax.CallOption{},
+		ListLocations:                     []gax.CallOption{},
+		GetIamPolicy:                      []gax.CallOption{},
+		SetIamPolicy:                      []gax.CallOption{},
+		TestIamPermissions:                []gax.CallOption{},
+		CancelOperation:                   []gax.CallOption{},
+		DeleteOperation:                   []gax.CallOption{},
+		GetOperation:                      []gax.CallOption{},
+		ListOperations:                    []gax.CallOption{},
+		WaitOperation:                     []gax.CallOption{},
 	}
 }
 
@@ -131,6 +137,8 @@ type internalModelGardenClient interface {
 	DeployPublisherModelOperation(name string) *DeployPublisherModelOperation
 	ExportPublisherModel(context.Context, *aiplatformpb.ExportPublisherModelRequest, ...gax.CallOption) (*ExportPublisherModelOperation, error)
 	ExportPublisherModelOperation(name string) *ExportPublisherModelOperation
+	CheckPublisherModelEulaAcceptance(context.Context, *aiplatformpb.CheckPublisherModelEulaAcceptanceRequest, ...gax.CallOption) (*aiplatformpb.PublisherModelEulaAcceptance, error)
+	AcceptPublisherModelEula(context.Context, *aiplatformpb.AcceptPublisherModelEulaRequest, ...gax.CallOption) (*aiplatformpb.PublisherModelEulaAcceptance, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -226,6 +234,16 @@ func (c *ModelGardenClient) ExportPublisherModel(ctx context.Context, req *aipla
 // The name must be that of a previously created ExportPublisherModelOperation, possibly from a different process.
 func (c *ModelGardenClient) ExportPublisherModelOperation(name string) *ExportPublisherModelOperation {
 	return c.internalClient.ExportPublisherModelOperation(name)
+}
+
+// CheckPublisherModelEulaAcceptance checks the EULA acceptance status of a publisher model.
+func (c *ModelGardenClient) CheckPublisherModelEulaAcceptance(ctx context.Context, req *aiplatformpb.CheckPublisherModelEulaAcceptanceRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelEulaAcceptance, error) {
+	return c.internalClient.CheckPublisherModelEulaAcceptance(ctx, req, opts...)
+}
+
+// AcceptPublisherModelEula accepts the EULA acceptance status of a publisher model.
+func (c *ModelGardenClient) AcceptPublisherModelEula(ctx context.Context, req *aiplatformpb.AcceptPublisherModelEulaRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelEulaAcceptance, error) {
+	return c.internalClient.AcceptPublisherModelEula(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -604,6 +622,42 @@ func (c *modelGardenGRPCClient) ExportPublisherModel(ctx context.Context, req *a
 	return &ExportPublisherModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *modelGardenGRPCClient) CheckPublisherModelEulaAcceptance(ctx context.Context, req *aiplatformpb.CheckPublisherModelEulaAcceptanceRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelEulaAcceptance, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CheckPublisherModelEulaAcceptance[0:len((*c.CallOptions).CheckPublisherModelEulaAcceptance):len((*c.CallOptions).CheckPublisherModelEulaAcceptance)], opts...)
+	var resp *aiplatformpb.PublisherModelEulaAcceptance
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.modelGardenClient.CheckPublisherModelEulaAcceptance, req, settings.GRPC, c.logger, "CheckPublisherModelEulaAcceptance")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *modelGardenGRPCClient) AcceptPublisherModelEula(ctx context.Context, req *aiplatformpb.AcceptPublisherModelEulaRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelEulaAcceptance, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AcceptPublisherModelEula[0:len((*c.CallOptions).AcceptPublisherModelEula):len((*c.CallOptions).AcceptPublisherModelEula)], opts...)
+	var resp *aiplatformpb.PublisherModelEulaAcceptance
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.modelGardenClient.AcceptPublisherModelEula, req, settings.GRPC, c.logger, "AcceptPublisherModelEula")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *modelGardenGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1169,6 +1223,118 @@ func (c *modelGardenRESTClient) ExportPublisherModel(ctx context.Context, req *a
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// CheckPublisherModelEulaAcceptance checks the EULA acceptance status of a publisher model.
+func (c *modelGardenRESTClient) CheckPublisherModelEulaAcceptance(ctx context.Context, req *aiplatformpb.CheckPublisherModelEulaAcceptanceRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelEulaAcceptance, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelGardenEula:check", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CheckPublisherModelEulaAcceptance[0:len((*c.CallOptions).CheckPublisherModelEulaAcceptance):len((*c.CallOptions).CheckPublisherModelEulaAcceptance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.PublisherModelEulaAcceptance{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CheckPublisherModelEulaAcceptance")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AcceptPublisherModelEula accepts the EULA acceptance status of a publisher model.
+func (c *modelGardenRESTClient) AcceptPublisherModelEula(ctx context.Context, req *aiplatformpb.AcceptPublisherModelEulaRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModelEulaAcceptance, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelGardenEula:accept", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AcceptPublisherModelEula[0:len((*c.CallOptions).AcceptPublisherModelEula):len((*c.CallOptions).AcceptPublisherModelEula)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.PublisherModelEulaAcceptance{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AcceptPublisherModelEula")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.
