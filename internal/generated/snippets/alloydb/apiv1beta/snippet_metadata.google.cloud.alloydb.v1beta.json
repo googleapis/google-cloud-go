@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1beta",
-    "version": "$VERSION",
+    "version": "1.15.1",
     "language": "GO",
     "apis": [
       {
