@@ -362,7 +362,7 @@ func TestSubscribeMessageExpirationFlowControl(t *testing.T) {
 	s.ReceiveSettings.NumGoroutines = 1
 	s.ReceiveSettings.MaxOutstandingMessages = 1
 	s.ReceiveSettings.MaxExtension = 10 * time.Second
-	s.ReceiveSettings.MaxDurationPerLeaseExtension = 10 * time.Second
+	s.ReceiveSettings.MaxDurationPerAckExtension = 10 * time.Second
 	r := publisher.Publish(ctx, &Message{
 		Data: []byte("redelivered-message"),
 	})
