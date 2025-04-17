@@ -3467,3 +3467,657 @@ func TestScanNullNumeric(t *testing.T) {
 		}
 	}
 }
+
+func TestInterval(t *testing.T) {
+	tests := []struct {
+		name     string
+		interval Interval
+		want     *proto3.Value
+		wantType *sppb.Type
+	}{
+		{
+			name: "Basic interval",
+			interval: Interval{
+				Months: 14,
+				Days:   3,
+				Nanos:  big.NewInt(43926789000123),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P1Y2M3DT12H12M6.789000123S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Months only",
+			interval: Interval{
+				Months: 10,
+				Days:   0,
+				Nanos:  big.NewInt(0),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10M",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Days only",
+			interval: Interval{
+				Months: 0,
+				Days:   10,
+				Nanos:  big.NewInt(0),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10D",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Seconds only",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(10000000000),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "PT10S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Milliseconds only",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(10000000),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "PT0.010S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Microseconds only",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(10000),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "PT0.000010S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Nanoseconds only",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(10),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "PT0.000000010S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Mixed components",
+			interval: Interval{
+				Months: 10,
+				Days:   20,
+				Nanos:  big.NewInt(1030),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10M20DT0.000001030S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Mixed components with negative nanos",
+			interval: Interval{
+				Months: 10,
+				Days:   20,
+				Nanos:  big.NewInt(-1030),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10M20DT-0.000001030S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Negative interval",
+			interval: Interval{
+				Months: -14,
+				Days:   -3,
+				Nanos:  big.NewInt(-43926789000123),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P-1Y-2M-3DT-12H-12M-6.789000123S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Mixed signs",
+			interval: Interval{
+				Months: 10,
+				Days:   3,
+				Nanos:  big.NewInt(-41401234000000),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10M3DT-11H-30M-1.234S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Large values",
+			interval: Interval{
+				Months: 25,
+				Days:   15,
+				Nanos:  func() *big.Int { n, _ := new(big.Int).SetString("316223999999999999999", 10); return n }(),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P2Y1M15DT87839999H59M59.999999999S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Zero interval",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(0),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P0Y",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got, gotType, err := encodeValue(test.interval)
+			if err != nil {
+				t.Fatalf("encodeValue(%v) failed: %v", test.interval, err)
+			}
+			if !testEqual(got, test.want) {
+				t.Errorf("encodeValue(%v) = %v, want %v", test.interval, got, test.want)
+			}
+			if !testEqual(gotType, test.wantType) {
+				t.Errorf("encodeValue(%v) type = %v, want %v", test.interval, gotType, test.wantType)
+			}
+		})
+	}
+}
+
+// TestNullInterval tests the encoding and type checking of NullInterval values.
+// Note: Interval type is a preview feature only available in Cloud-Devel environment.
+// It is not yet supported in the emulator or production.
+func TestNullInterval(t *testing.T) {
+	tests := []struct {
+		name     string
+		interval NullInterval
+		want     *proto3.Value
+		wantType *sppb.Type
+	}{
+		{
+			name: "Valid interval",
+			interval: NullInterval{
+				Interval: Interval{
+					Months: 14,
+					Days:   3,
+					Nanos:  big.NewInt(14706000000000),
+				},
+				Valid: true,
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P1Y2M3DT4H5M6S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Null interval",
+			interval: NullInterval{
+				Interval: Interval{},
+				Valid:    false,
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_NullValue{},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got, gotType, err := encodeValue(test.interval)
+			if err != nil {
+				t.Fatalf("encodeValue(%v) failed: %v", test.interval, err)
+			}
+			if !testEqual(got, test.want) {
+				t.Errorf("encodeValue(%v) = %v, want %v", test.interval, got, test.want)
+			}
+			if !testEqual(gotType, test.wantType) {
+				t.Errorf("encodeValue(%v) type = %v, want %v", test.interval, gotType, test.wantType)
+			}
+		})
+	}
+}
+
+func mustParseBigInt(s string) *big.Int {
+	n, ok := new(big.Int).SetString(s, 10)
+	if !ok {
+		panic(fmt.Sprintf("failed to parse big.Int: %s", s))
+	}
+	return n
+}
+
+func TestDecodeInterval(t *testing.T) {
+	type testCase struct {
+		desc    string
+		input   string
+		months  int32
+		days    int32
+		nanos   *big.Int
+		wantErr bool
+	}
+
+	tests := []testCase{
+		// Regular cases
+		{
+			desc:    "full interval with all components",
+			input:   "P1Y2M3DT12H12M6.789000123S",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(43926789000123),
+			wantErr: false,
+		},
+		{
+			desc:    "interval with negative minutes",
+			input:   "P1Y2M3DT13H-48M6S",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(43926000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "date only interval",
+			input:   "P1Y2M3D",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "years and months only",
+			input:   "P1Y2M",
+			months:  14,
+			days:    0,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "years only",
+			input:   "P1Y",
+			months:  12,
+			days:    0,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "months only",
+			input:   "P2M",
+			months:  2,
+			days:    0,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "days only",
+			input:   "P3D",
+			months:  0,
+			days:    3,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "time components with fractional seconds",
+			input:   "PT4H25M6.7890001S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(15906789000100),
+			wantErr: false,
+		},
+		{
+			desc:    "time components without fractional seconds",
+			input:   "PT4H25M6S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(15906000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "hours and seconds only",
+			input:   "PT4H30S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(14430000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "hours and minutes only",
+			input:   "PT4H1M",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(14460000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "minutes only",
+			input:   "PT5M",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(300000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "fractional seconds only",
+			input:   "PT6.789S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(6789000000),
+			wantErr: false,
+		},
+		{
+			desc:    "small fractional seconds",
+			input:   "PT0.123S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(123000000),
+			wantErr: false,
+		},
+		{
+			desc:    "very small fractional seconds",
+			input:   "PT.000000123S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(123),
+			wantErr: false,
+		},
+		{
+			desc:    "zero years",
+			input:   "P0Y",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "all negative components",
+			input:   "P-1Y-2M-3DT-12H-12M-6.789000123S",
+			months:  -14,
+			days:    -3,
+			nanos:   big.NewInt(-43926789000123),
+			wantErr: false,
+		},
+		{
+			desc:    "mixed signs in components",
+			input:   "P1Y-2M3DT13H-51M6.789S",
+			months:  10,
+			days:    3,
+			nanos:   big.NewInt(43746789000000),
+			wantErr: false,
+		},
+		{
+			desc:    "negative years with mixed signs",
+			input:   "P-1Y2M-3DT-13H49M-6.789S",
+			months:  -10,
+			days:    -3,
+			nanos:   big.NewInt(-43866789000000),
+			wantErr: false,
+		},
+		{
+			desc:    "negative time components",
+			input:   "P1Y2M3DT-4H25M-6.7890001S",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(-12906789000100),
+			wantErr: false,
+		},
+		{
+			desc:    "large time values",
+			input:   "PT100H100M100.5S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(366100500000000),
+			wantErr: false,
+		},
+
+		// Invalid cases
+		{
+			desc:    "invalid format",
+			input:   "invalid",
+			wantErr: true,
+		},
+		{
+			desc:    "missing duration specifier",
+			input:   "P",
+			wantErr: true,
+		},
+		{
+			desc:    "missing time components",
+			input:   "PT",
+			wantErr: true,
+		},
+		{
+			desc:    "missing unit specifier",
+			input:   "P1YM",
+			wantErr: true,
+		},
+		{
+			desc:    "missing T separator",
+			input:   "P1Y2M3D4H5M6S",
+			wantErr: true,
+		},
+		{
+			desc:    "missing decimal value",
+			input:   "P1Y2M3DT4H5M6.S",
+			wantErr: true,
+		},
+		{
+			desc:    "extra unit specifier",
+			input:   "P1Y2M3DT4H5M6.789SS",
+			wantErr: true,
+		},
+		{
+			desc:    "missing value after decimal",
+			input:   "P1Y2M3DT4H5M6.",
+			wantErr: true,
+		},
+		{
+			desc:    "non-digit after decimal",
+			input:   "P1Y2M3DT4H5M6.ABC",
+			wantErr: true,
+		},
+		{
+			desc:    "missing unit",
+			input:   "P1Y2M3",
+			wantErr: true,
+		},
+		{
+			desc:    "missing time value",
+			input:   "P1Y2M3DT",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid negative sign position",
+			input:   "P-T1H",
+			wantErr: true,
+		},
+		{
+			desc:    "trailing negative sign",
+			input:   "PT1H-",
+			wantErr: true,
+		},
+		{
+			desc:    "too many decimal places",
+			input:   "P1Y2M3DT4H5M6.789123456789S",
+			wantErr: true,
+		},
+		{
+			desc:    "multiple decimal points",
+			input:   "P1Y2M3DT4H5M6.123.456S",
+			wantErr: true,
+		},
+		{
+			desc:    "both dot and comma decimals",
+			input:   "P1Y2M3DT4H5M6.,789S",
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			interval, err := ParseInterval(tc.input)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("ParseInterval(%q) succeeded, want error", tc.input)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("ParseInterval(%q) failed with %v", tc.input, err)
+				return
+			}
+
+			if interval.Months != tc.months {
+				t.Errorf("ParseInterval(%q).Months = %d, want %d", tc.input, interval.Months, tc.months)
+			}
+			if interval.Days != tc.days {
+				t.Errorf("ParseInterval(%q).Days = %d, want %d", tc.input, interval.Days, tc.days)
+			}
+			if interval.Nanos.Cmp(tc.nanos) != 0 {
+				t.Errorf("ParseInterval(%q).Nanos = %v, want %v", tc.input, interval.Nanos, tc.nanos)
+			}
+		})
+	}
+
+	// Test decoding large values
+	largeTests := []testCase{
+		{
+			desc:    "large positive hours",
+			input:   "PT87840000H",
+			months:  0,
+			days:    0,
+			nanos:   mustParseBigInt("316224000000000000000"),
+			wantErr: false,
+		},
+		{
+			desc:    "large negative hours",
+			input:   "PT-87840000H",
+			months:  0,
+			days:    0,
+			nanos:   mustParseBigInt("-316224000000000000000"),
+			wantErr: false,
+		},
+		{
+			desc:    "large mixed values with max precision",
+			input:   "P2Y1M15DT87839999H59M59.999999999S",
+			months:  25,
+			days:    15,
+			nanos:   mustParseBigInt("316223999999999999999"),
+			wantErr: false,
+		},
+		{
+			desc:    "large mixed negative values with max precision",
+			input:   "P2Y1M15DT-87839999H-59M-59.999999999S",
+			months:  25,
+			days:    15,
+			nanos:   mustParseBigInt("-316223999999999999999"),
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range largeTests {
+		t.Run(tc.desc, func(t *testing.T) {
+			interval, err := ParseInterval(tc.input)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("ParseInterval(%q) succeeded, want error", tc.input)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("ParseInterval(%q) failed with %v", tc.input, err)
+				return
+			}
+
+			if interval.Months != tc.months {
+				t.Errorf("ParseInterval(%q).Months = %d, want %d", tc.input, interval.Months, tc.months)
+			}
+			if interval.Days != tc.days {
+				t.Errorf("ParseInterval(%q).Days = %d, want %d", tc.input, interval.Days, tc.days)
+			}
+			if interval.Nanos.Cmp(tc.nanos) != 0 {
+				t.Errorf("ParseInterval(%q).Nanos = %v, want %v", tc.input, interval.Nanos, tc.nanos)
+			}
+		})
+	}
+}
