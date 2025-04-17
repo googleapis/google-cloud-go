@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/modelarmor/apiv1",
-    "version": "$VERSION",
+    "version": "0.1.1",
     "language": "GO",
     "apis": [
       {
