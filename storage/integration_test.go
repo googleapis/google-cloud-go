@@ -3397,6 +3397,12 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 						t.Errorf("progressFunc calls: got %v, want %v", gotOffsets, tc.checkProgressOffsets)
 					}
 				}
+				if w2.Attrs() == nil {
+					t.Fatalf("takeover writer attrs: expected attrs, got nil")
+				}
+				if w2.Attrs().Size != 9*MiB {
+					t.Errorf("final object size: got %v, want %v", w2.Attrs().Size, 9*MiB)
+				}
 			})
 		}
 	})

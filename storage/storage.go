@@ -1258,8 +1258,9 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 // close the stream.
 // Calling Close or Flush is necessary to sync any data in the pipe to GCS.
 //
-// Appending to an object across multiple threads or clients is unsafe. Only
-// one Writer should be open at a time for a particular object.
+// The returned Writer is not safe to use across multiple go routines. In
+// addition, if you attempt to append to the same object from multiple
+// Writers at the same time, an error will be returned on Flush or Close.
 //
 // NewWriterFromAppendableObject is supported only for gRPC clients and only for
 // objects which were created append semantics and not finalized.
