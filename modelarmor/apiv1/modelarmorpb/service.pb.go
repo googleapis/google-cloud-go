@@ -22,9 +22,6 @@ package modelarmorpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -217,7 +216,7 @@ func (RaiFilterType) EnumDescriptor() ([]byte, []int) {
 type DetectionConfidenceLevel int32
 
 const (
-	// Same as LOW_AND_ABOVE.
+	// Same as MEDIUM_AND_ABOVE.
 	DetectionConfidenceLevel_DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED DetectionConfidenceLevel = 0
 	// Highest chance of a false positive.
 	DetectionConfidenceLevel_LOW_AND_ABOVE DetectionConfidenceLevel = 1
