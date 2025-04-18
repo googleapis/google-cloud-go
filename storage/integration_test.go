@@ -3251,36 +3251,40 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 			name                 string
 			content              []byte
 			takeoverOffset       int64
+			takeoverFlushOffset  int64
 			opts                 *AppendableWriterOpts
 			checkProgressOffsets []int64
 		}{
 			{
-				name:           "first message takeover",
+				name:           "first message takeover w/large flush",
 				content:        randomBytes9MiB,
 				takeoverOffset: MiB,
 				opts:           nil,
 			},
 			{
-				name:           "first chunk takeover, progressfunc",
-				content:        randomBytes9MiB,
-				takeoverOffset: 3 * MiB,
+				name:                "first chunk takeover, progressfunc, larger flush",
+				content:             randomBytes9MiB,
+				takeoverOffset:      3 * MiB,
+				takeoverFlushOffset: 8 * MiB,
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{7 * MiB},
+				checkProgressOffsets: []int64{7 * MiB, 8 * MiB},
 			},
 			{
-				name:           "middle chunk takeover",
-				content:        randomBytes9MiB,
-				takeoverOffset: 6 * MiB,
+				name:                "middle chunk takeover, small flush",
+				content:             randomBytes9MiB,
+				takeoverOffset:      6 * MiB,
+				takeoverFlushOffset: 6*MiB + 100,
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
 			},
 			{
-				name:           "final chunk takeover",
-				content:        randomBytes9MiB,
-				takeoverOffset: 8*MiB + 100,
+				name:                "final chunk takeover, zero byte flush",
+				content:             randomBytes9MiB,
+				takeoverOffset:      8*MiB + 100,
+				takeoverFlushOffset: 8*MiB + 100,
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
@@ -3373,8 +3377,23 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					t.Errorf("Writer.ProgressFunc: got non-nil, want nil")
 				}
 
+				remainingOffset := tc.takeoverOffset
+				if tc.takeoverFlushOffset != 0 {
+					if _, err := w2.Write(tc.content[remainingOffset:tc.takeoverFlushOffset]); err != nil {
+						t.Fatalf("writing after takeover: %v", err)
+					}
+					remainingOffset = tc.takeoverFlushOffset
+					n, err := w2.Flush()
+					if err != nil {
+						t.Fatalf("Writer.Flush: %v", err)
+					}
+					if n != remainingOffset {
+						t.Errorf("Writer.Flush: got %v bytes flushed, want %v", n, remainingOffset)
+					}
+				}
+
 				// Write remainder of the content and close.
-				h.mustWrite(w2, tc.content[tc.takeoverOffset:])
+				h.mustWrite(w2, tc.content[remainingOffset:])
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
