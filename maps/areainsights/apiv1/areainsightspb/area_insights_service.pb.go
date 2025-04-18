@@ -395,8 +395,8 @@ type PlaceInsight struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of a place. This resource name can be used to retrieve
-	// details about the place using the [Places
+	// The unique identifier of the place. This resource name can be used to
+	// retrieve details about the place using the [Places
 	// API](https://developers.google.com/maps/documentation/places/web-service/reference/rest/v1/places/get).
 	Place string `protobuf:"bytes,1,opt,name=place,proto3" json:"place,omitempty"`
 }
@@ -890,7 +890,8 @@ type LocationFilter_Region struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of a region.
+	// Defines a geographic region. Only one type of region (e.g. place) can
+	// specified at a time.
 	//
 	// Types that are assignable to Region:
 	//
@@ -947,7 +948,7 @@ type isLocationFilter_Region_Region interface {
 }
 
 type LocationFilter_Region_Place struct {
-	// The Place resource name of a region.
+	// The unique identifier of a specific geographic region.
 	Place string `protobuf:"bytes,1,opt,name=place,proto3,oneof"`
 }
 
