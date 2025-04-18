@@ -3171,7 +3171,8 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 	})
 }
 
-// Basic Writer test for appendable uploads with and without finalization.
+// Writer test for appendable uploads with and without finalization,
+// also validating Flush() at various offsets.
 func TestIntegration_WriterAppend(t *testing.T) {
 	t.Skip("b/402283880")
 	ctx := skipAllButBidi(context.Background(), "ZB test")
@@ -3184,22 +3185,53 @@ func TestIntegration_WriterAppend(t *testing.T) {
 		defer h.mustDeleteBucket(bkt)
 
 		testCases := []struct {
-			name      string
-			finalize  bool
-			content   []byte
-			chunkSize int
+			name        string
+			finalize    bool
+			content     []byte
+			chunkSize   int
+			flushOffset int64
 		}{
 			{
-				name:      "finalized_object",
-				finalize:  true,
-				content:   randomBytes9MiB,
-				chunkSize: 4 * MiB,
+				name:        "finalized_object",
+				finalize:    true,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				flushOffset: -1, // no flush
 			},
 			{
-				name:      "unfinalized_object",
-				finalize:  false,
-				content:   randomBytes9MiB,
-				chunkSize: 4 * MiB,
+				name:        "unfinalized_object",
+				finalize:    false,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				flushOffset: -1,
+			},
+			{
+				name:        "zero_byte_flush",
+				finalize:    false,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				flushOffset: 0,
+			},
+			{
+				name:        "small_flush",
+				finalize:    false,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				flushOffset: 100,
+			},
+			{
+				name:        "middle_chunk_flush",
+				finalize:    false,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				flushOffset: 5 * MiB,
+			},
+			{
+				name:        "last_byte_flush",
+				finalize:    false,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				flushOffset: 9 * MiB,
 			},
 		}
 		for _, tc := range testCases {
@@ -3211,8 +3243,43 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				w.Append = true
 				w.FinalizeOnClose = tc.finalize
 				w.ChunkSize = tc.chunkSize
+				content := tc.content
 
-				h.mustWrite(w, tc.content)
+				// If flushOffset is 0, just do a flush and check the attributes.
+				if tc.flushOffset == 0 {
+					if _, err := w.Flush(); err != nil {
+						t.Fatalf("Writer.Flush: %v", err)
+					}
+					attrs, err := obj.Attrs(ctx)
+					if err != nil {
+						t.Fatalf("ObjectHandle.Attrs: %v", err)
+					}
+					if attrs.Size != 0 {
+						t.Errorf("attrs.Size: got %v, want 0", attrs.Size)
+					}
+				}
+				// If flushOffset > 0, write the first part of the data and then flush.
+				if tc.flushOffset > 0 {
+					if _, err := w.Write(content[:tc.flushOffset]); err != nil {
+						t.Fatalf("writing first part of data: %v", err)
+					}
+					content = content[tc.flushOffset:]
+					if _, err := w.Flush(); err != nil {
+						t.Fatalf("Writer.Flush: %v", err)
+					}
+					_, err := obj.Attrs(ctx)
+					if err != nil {
+						t.Fatalf("ObjectHandle.Attrs: %v", err)
+					}
+					// TODO: re-enable this check once Size is correctly populated
+					// server side for unfinalized objects.
+					// if attrs.Size != tc.flushOffset {
+					// 	t.Errorf("attrs.Size: got %v, want %v", attrs.Size, tc.flushOffset)
+					// }
+				}
+
+				// Write remaining data.
+				h.mustWrite(w, content)
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -3229,13 +3296,13 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				if !tc.finalize && !attrs.Finalized.IsZero() {
 					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
 				}
-
 			})
 		}
 	})
 }
 
-// Writer test for append takeover of unfinalized object.
+// Writer test for append takeover of unfinalized object, including
+// calls to Flush() on takeover.
 func TestIntegration_WriterAppendTakeover(t *testing.T) {
 	t.Skip("b/402283880")
 	ctx := skipAllButBidi(context.Background(), "ZB test")
