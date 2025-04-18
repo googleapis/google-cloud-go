@@ -96,7 +96,7 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 	if err := s.connect(ctx); err != nil {
 		return nil, fmt.Errorf("storage: opening appendable write stream: %w", err)
 	}
-	_, err := s.sendOnConnectedStream(nil, 0, true, false, true)
+	_, err := s.sendOnConnectedStream(nil, 0, false, false, true)
 	if err != nil {
 		return nil, err
 	}
