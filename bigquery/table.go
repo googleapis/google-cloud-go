@@ -288,12 +288,17 @@ const (
 	// Data is appended atomically on successful completion of a job.
 	WriteAppend TableWriteDisposition = "WRITE_APPEND"
 
-	// WriteTruncate overrides the existing data in the destination table.
+	// WriteTruncate overwrites the existing data in the destination table.
 	// Data is overwritten atomically on successful completion of a job.
 	WriteTruncate TableWriteDisposition = "WRITE_TRUNCATE"
 
+	// WriteTruncateData overwrites the data, but keeps the constraints and
+	// reuses the schema for an existing table.
+	WriteTruncateData TableWriteDisposition = "WRITE_TRUNCATE_DATA"
+
 	// WriteEmpty fails writes if the destination table already contains data.
 	WriteEmpty TableWriteDisposition = "WRITE_EMPTY"
+
 )
 
 // TableType is the type of table.
