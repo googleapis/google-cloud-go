@@ -46,6 +46,7 @@ type gRPCAppendBidiWriteBufferSender struct {
 	progress          func(int64)
 	flushOffset       int64
 	takeoverOffset    int64
+	takeoverObj       *storagepb.Object // Object returned by takeover stream reopening.
 
 	// Fields used to report responses from the receive side of the stream
 	// recvs is closed when the current recv goroutine is complete. recvErr is set
@@ -100,6 +101,9 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 		return nil, err
 	}
 	firstResp := <-s.recvs
+	// Object resource is returned in the first response on takeover, so capture
+	// this now.
+	s.takeoverObj = firstResp.GetResource()
 	s.takeoverOffset = firstResp.GetResource().GetSize()
 	return s, nil
 }
@@ -291,6 +295,12 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			if resp.GetResource() != nil {
 				obj = resp.GetResource()
 			}
+			// When closing the stream, update the object resource to reflect
+			// the persisted size. We get a new object from the stream if
+			// the object was finalized, but not if it's unfinalized.
+			if s.takeoverObj != nil && resp.GetPersistedSize() > 0 {
+				s.takeoverObj.Size = resp.GetPersistedSize()
+			}
 		}
 		if s.recvErr != io.EOF {
 			return nil, s.recvErr
@@ -306,7 +316,10 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 		// We don't necessarily expect multiple responses for a single flush, but
 		// this allows the server to send multiple responses if it wants to.
 		flushOffset := s.flushOffset
-		for flushOffset < offset+int64(len(buf)) {
+
+		// Await a response on the stream. Loop at least once or until the
+		// persisted offset matches the flush offset.
+		for {
 			resp, ok := <-s.recvs
 			if !ok {
 				return nil, s.recvErr
@@ -321,6 +334,9 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			}
 			if resp.GetResource() != nil {
 				obj = resp.GetResource()
+			}
+			if flushOffset <= offset+int64(len(buf)) {
+				break
 			}
 		}
 		if s.flushOffset < flushOffset {

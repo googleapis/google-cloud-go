@@ -1,6 +1,13 @@
 # Changes
 
 
+## [2.20.4](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.20.3...recaptchaenterprise/v2.20.4) (2025-04-15)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Marked fields as output only ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
 ## [2.20.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.20.2...recaptchaenterprise/v2.20.3) (2025-04-15)
 
 
