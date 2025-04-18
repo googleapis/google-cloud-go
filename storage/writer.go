@@ -224,8 +224,10 @@ func (w *Writer) Flush() (int64, error) {
 	// at zero bytes. This will make the object visible with zero length data.
 	if !w.opened {
 		err := w.openWriter()
+		if err != nil {
+			return 0, err
+		}
 		w.progress(0)
-		return 0, err
 	}
 
 	return w.flush()
