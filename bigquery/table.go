@@ -298,7 +298,6 @@ const (
 
 	// WriteEmpty fails writes if the destination table already contains data.
 	WriteEmpty TableWriteDisposition = "WRITE_EMPTY"
-
 )
 
 // TableType is the type of table.
