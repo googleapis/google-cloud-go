@@ -46,7 +46,7 @@ type gRPCAppendBidiWriteBufferSender struct {
 	progress          func(int64)
 	flushOffset       int64
 	takeoverOffset    int64
-	takeoverObj       *storagepb.Object // Object returned by takeover stream reopening.
+	objResource       *storagepb.Object // Captures received obj to set w.Attrs.
 
 	// Fields used to report responses from the receive side of the stream
 	// recvs is closed when the current recv goroutine is complete. recvErr is set
@@ -103,7 +103,7 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 	firstResp := <-s.recvs
 	// Object resource is returned in the first response on takeover, so capture
 	// this now.
-	s.takeoverObj = firstResp.GetResource()
+	s.objResource = firstResp.GetResource()
 	s.takeoverOffset = firstResp.GetResource().GetSize()
 	return s, nil
 }
@@ -298,8 +298,8 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			// When closing the stream, update the object resource to reflect
 			// the persisted size. We get a new object from the stream if
 			// the object was finalized, but not if it's unfinalized.
-			if s.takeoverObj != nil && resp.GetPersistedSize() > 0 {
-				s.takeoverObj.Size = resp.GetPersistedSize()
+			if s.objResource != nil && resp.GetPersistedSize() > 0 {
+				s.objResource.Size = resp.GetPersistedSize()
 			}
 		}
 		if s.recvErr != io.EOF {
@@ -358,6 +358,9 @@ func (s *gRPCAppendBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []
 		}
 
 		obj, err = s.sendOnConnectedStream(buf, offset, flush, finishWrite, sendFirstMessage)
+		if obj != nil {
+			s.objResource = obj
+		}
 		if err == nil {
 			return
 		}
