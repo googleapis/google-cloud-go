@@ -1767,6 +1767,24 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		return nil, err
 	}
 
+	var o *storagepb.Object
+
+	// If we are taking over an appendable object, send the first message here
+	// to get the append offset.
+	if params.appendGen > 0 {
+		// Create the buffer sender. This opens a stream and blocks until we
+		// get a response that tells us what offset to write from.
+		wbs, err := gw.newGRPCAppendTakeoverWriteBufferSender(params.ctx)
+		if err != nil {
+			return nil, fmt.Errorf("storage: creating buffer sender: %w", err)
+		}
+		// Propagate append offset to caller and buffer sending logic below.
+		params.setTakeoverOffset(wbs.takeoverOffset)
+		offset = wbs.takeoverOffset
+		gw.streamSender = wbs
+		o = wbs.objResource
+	}
+
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
 	go func() {
@@ -1785,10 +1803,11 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					return err
 				}
 
-				var o *storagepb.Object
 				uploadBuff := func(ctx context.Context) error {
 					obj, err := gw.uploadBuffer(ctx, recvd, offset, doneReading)
-					o = obj
+					if obj != nil {
+						o = obj
+					}
 					return err
 				}
 
@@ -2620,6 +2639,14 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		Resource:   params.attrs.toProtoObject(params.bucket),
 		Appendable: proto.Bool(params.append),
 	}
+	var appendSpec *storagepb.AppendObjectSpec
+	if params.appendGen > 0 {
+		appendSpec = &storagepb.AppendObjectSpec{
+			Bucket:     bucketResourceName(globalProjectAlias, params.bucket),
+			Object:     params.attrs.Name,
+			Generation: params.appendGen,
+		}
+	}
 	// WriteObject doesn't support the generation condition, so use default.
 	if err := applyCondsProto("WriteObject", defaultGen, params.conds, spec); err != nil {
 		return nil, err
@@ -2635,6 +2662,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		attrs:                 params.attrs,
 		conds:                 params.conds,
 		spec:                  spec,
+		appendSpec:            appendSpec,
 		encryptionKey:         params.encryptionKey,
 		settings:              s,
 		progress:              params.progress,
@@ -2663,6 +2691,7 @@ type gRPCWriter struct {
 	attrs         *ObjectAttrs
 	conds         *Conditions
 	spec          *storagepb.WriteObjectSpec
+	appendSpec    *storagepb.AppendObjectSpec
 	encryptionKey []byte
 	settings      *settings
 	progress      func(int64)
@@ -2700,17 +2729,22 @@ func drainInboundStream(stream storagepb.Storage_BidiWriteObjectClient) (object 
 }
 
 func bidiWriteObjectRequest(buf []byte, offset int64, flush, finishWrite bool) *storagepb.BidiWriteObjectRequest {
-	return &storagepb.BidiWriteObjectRequest{
-		Data: &storagepb.BidiWriteObjectRequest_ChecksummedData{
+	var data *storagepb.BidiWriteObjectRequest_ChecksummedData
+	if buf != nil {
+		data = &storagepb.BidiWriteObjectRequest_ChecksummedData{
 			ChecksummedData: &storagepb.ChecksummedData{
 				Content: buf,
 			},
-		},
+		}
+	}
+	req := &storagepb.BidiWriteObjectRequest{
+		Data:        data,
 		WriteOffset: offset,
 		FinishWrite: finishWrite,
 		Flush:       flush,
 		StateLookup: flush,
 	}
+	return req
 }
 
 type gRPCBidiWriteBufferSender interface {
@@ -2938,7 +2972,7 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 	if w.streamSender == nil {
 		if w.append {
 			// Appendable object semantics
-			w.streamSender, err = w.newGRPCAppendBidiWriteBufferSender()
+			w.streamSender, err = w.newGRPCAppendableObjectBufferSender()
 		} else if doneReading || w.forceOneShot {
 			// One shot semantics
 			w.streamSender, err = w.newGRPCOneshotBidiWriteBufferSender()

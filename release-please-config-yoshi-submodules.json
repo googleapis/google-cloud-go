@@ -165,6 +165,9 @@
         "developerconnect": {
             "component": "developerconnect"
         },
+        "devicestreaming": {
+            "component": "devicestreaming"
+        },
         "dialogflow": {
             "component": "dialogflow"
         },
@@ -398,6 +401,9 @@
         },
         "shopping": {
             "component": "shopping"
+        },
+        "spanner/benchmarks": {
+            "component": "spanner/benchmarks"
         },
         "speech": {
             "component": "speech"

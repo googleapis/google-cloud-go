@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.81.0",
+    "version": "1.83.0",
     "language": "GO",
     "apis": [
       {
@@ -19365,6 +19365,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_AcceptPublisherModelEula_sync",
+      "title": "aiplatform AcceptPublisherModelEula Sample",
+      "description": "AcceptPublisherModelEula accepts the EULA acceptance status of a publisher model.",
+      "file": "ModelGardenClient/AcceptPublisherModelEula/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AcceptPublisherModelEula",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.AcceptPublisherModelEula",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.AcceptPublisherModelEulaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.PublisherModelEulaAcceptance",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "AcceptPublisherModelEula",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService.AcceptPublisherModelEula",
+          "service": {
+            "shortName": "ModelGardenService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -19405,6 +19451,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_CheckPublisherModelEulaAcceptance_sync",
+      "title": "aiplatform CheckPublisherModelEulaAcceptance Sample",
+      "description": "CheckPublisherModelEulaAcceptance checks the EULA acceptance status of a publisher model.",
+      "file": "ModelGardenClient/CheckPublisherModelEulaAcceptance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckPublisherModelEulaAcceptance",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.CheckPublisherModelEulaAcceptance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CheckPublisherModelEulaAcceptanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.PublisherModelEulaAcceptance",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "CheckPublisherModelEulaAcceptance",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService.CheckPublisherModelEulaAcceptance",
+          "service": {
+            "shortName": "ModelGardenService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

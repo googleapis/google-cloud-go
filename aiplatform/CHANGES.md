@@ -1,6 +1,32 @@
 # Changes
 
 
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.1...aiplatform/v1.83.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden EULA(End User License Agreement) related APIs ([#11982](https://github.com/googleapis/google-cloud-go/issues/11982)) ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
+## [1.82.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.0...aiplatform/v1.82.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **aiplatform:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.81.0...aiplatform/v1.82.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add FeatureViewDirectWrite API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add Gen AI logging public preview API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add global quota config to vertex rag engine api ([#11949](https://github.com/googleapis/google-cloud-go/issues/11949)) ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add rag_managed_db_config to RagEngineConfig for specifying Basic or Enterprise RagManagedDb tiers ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add RagEngineConfig to specify RAG project-level config ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add UpdateRagEngineConfig rpc ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+
 ## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.80.0...aiplatform/v1.81.0) (2025-03-31)
 
 

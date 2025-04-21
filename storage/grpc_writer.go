@@ -45,6 +45,8 @@ type gRPCAppendBidiWriteBufferSender struct {
 	forceFirstMessage bool
 	progress          func(int64)
 	flushOffset       int64
+	takeoverOffset    int64
+	objResource       *storagepb.Object // Captures received obj to set w.Attrs.
 
 	// Fields used to report responses from the receive side of the stream
 	// recvs is closed when the current recv goroutine is complete. recvErr is set
@@ -53,7 +55,8 @@ type gRPCAppendBidiWriteBufferSender struct {
 	recvErr error
 }
 
-func (w *gRPCWriter) newGRPCAppendBidiWriteBufferSender() (*gRPCAppendBidiWriteBufferSender, error) {
+// Use for a newly created appendable object.
+func (w *gRPCWriter) newGRPCAppendableObjectBufferSender() (*gRPCAppendBidiWriteBufferSender, error) {
 	s := &gRPCAppendBidiWriteBufferSender{
 		bucket:   w.spec.GetResource().GetBucket(),
 		raw:      w.c.raw,
@@ -72,6 +75,39 @@ func (w *gRPCWriter) newGRPCAppendBidiWriteBufferSender() (*gRPCAppendBidiWriteB
 	return s, nil
 }
 
+// Use for a takeover of an appendable object.
+// Unlike newGRPCAppendableObjectBufferSender, this blocks until the stream is
+// open because it needs to get the append offset from the server.
+func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context) (*gRPCAppendBidiWriteBufferSender, error) {
+	s := &gRPCAppendBidiWriteBufferSender{
+		bucket:   w.spec.GetResource().GetBucket(),
+		raw:      w.c.raw,
+		settings: w.c.settings,
+		firstMessage: &storagepb.BidiWriteObjectRequest{
+			FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
+				AppendObjectSpec: w.appendSpec,
+			},
+		},
+		objectChecksums:   toProtoChecksums(w.sendCRC32C, w.attrs),
+		finalizeOnClose:   w.finalizeOnClose,
+		forceFirstMessage: true,
+		progress:          w.progress,
+	}
+	if err := s.connect(ctx); err != nil {
+		return nil, fmt.Errorf("storage: opening appendable write stream: %w", err)
+	}
+	_, err := s.sendOnConnectedStream(nil, 0, false, false, true)
+	if err != nil {
+		return nil, err
+	}
+	firstResp := <-s.recvs
+	// Object resource is returned in the first response on takeover, so capture
+	// this now.
+	s.objResource = firstResp.GetResource()
+	s.takeoverOffset = firstResp.GetResource().GetSize()
+	return s, nil
+}
+
 func (s *gRPCAppendBidiWriteBufferSender) connect(ctx context.Context) (err error) {
 	err = func() error {
 		// If this is a forced first message, we've already determined it's safe to
@@ -84,6 +120,10 @@ func (s *gRPCAppendBidiWriteBufferSender) connect(ctx context.Context) (err erro
 		// It's always ok to reconnect if there is a handle. This is the common
 		// case.
 		if s.firstMessage.GetAppendObjectSpec().GetWriteHandle() != nil {
+			return nil
+		}
+		// Also always okay to reconnect if there is a generation.
+		if s.firstMessage.GetAppendObjectSpec().GetGeneration() != 0 {
 			return nil
 		}
 
@@ -255,6 +295,12 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			if resp.GetResource() != nil {
 				obj = resp.GetResource()
 			}
+			// When closing the stream, update the object resource to reflect
+			// the persisted size. We get a new object from the stream if
+			// the object was finalized, but not if it's unfinalized.
+			if s.objResource != nil && resp.GetPersistedSize() > 0 {
+				s.objResource.Size = resp.GetPersistedSize()
+			}
 		}
 		if s.recvErr != io.EOF {
 			return nil, s.recvErr
@@ -270,7 +316,10 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 		// We don't necessarily expect multiple responses for a single flush, but
 		// this allows the server to send multiple responses if it wants to.
 		flushOffset := s.flushOffset
-		for flushOffset < offset+int64(len(buf)) {
+
+		// Await a response on the stream. Loop at least once or until the
+		// persisted offset matches the flush offset.
+		for {
 			resp, ok := <-s.recvs
 			if !ok {
 				return nil, s.recvErr
@@ -283,13 +332,18 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			if flushOffset < rSize {
 				flushOffset = rSize
 			}
+			if resp.GetResource() != nil {
+				obj = resp.GetResource()
+			}
+			if flushOffset <= offset+int64(len(buf)) {
+				break
+			}
 		}
 		if s.flushOffset < flushOffset {
 			s.flushOffset = flushOffset
 			s.progress(s.flushOffset)
 		}
 	}
-
 	return
 }
 
@@ -304,6 +358,9 @@ func (s *gRPCAppendBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []
 		}
 
 		obj, err = s.sendOnConnectedStream(buf, offset, flush, finishWrite, sendFirstMessage)
+		if obj != nil {
+			s.objResource = obj
+		}
 		if err == nil {
 			return
 		}
@@ -321,7 +378,6 @@ func (s *gRPCAppendBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []
 			s.forceFirstMessage = true
 			continue
 		}
-
 		return
 	}
 }
