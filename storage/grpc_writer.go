@@ -316,7 +316,10 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 		// We don't necessarily expect multiple responses for a single flush, but
 		// this allows the server to send multiple responses if it wants to.
 		flushOffset := s.flushOffset
-		for flushOffset < offset+int64(len(buf)) {
+
+		// Await a response on the stream. Loop at least once or until the
+		// persisted offset matches the flush offset.
+		for {
 			resp, ok := <-s.recvs
 			if !ok {
 				return nil, s.recvErr
@@ -331,6 +334,9 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			}
 			if resp.GetResource() != nil {
 				obj = resp.GetResource()
+			}
+			if flushOffset <= offset+int64(len(buf)) {
+				break
 			}
 		}
 		if s.flushOffset < flushOffset {

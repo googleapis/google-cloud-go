@@ -217,7 +217,7 @@ func (RaiFilterType) EnumDescriptor() ([]byte, []int) {
 type DetectionConfidenceLevel int32
 
 const (
-	// Same as LOW_AND_ABOVE.
+	// Same as MEDIUM_AND_ABOVE.
 	DetectionConfidenceLevel_DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED DetectionConfidenceLevel = 0
 	// Highest chance of a false positive.
 	DetectionConfidenceLevel_LOW_AND_ABOVE DetectionConfidenceLevel = 1

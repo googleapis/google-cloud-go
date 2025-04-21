@@ -2125,7 +2125,7 @@ type TieringPolicy struct {
 	// Default is PAUSED.
 	TierAction *TieringPolicy_TierAction `protobuf:"varint,1,opt,name=tier_action,json=tierAction,proto3,enum=google.cloud.netapp.v1.TieringPolicy_TierAction,oneof" json:"tier_action,omitempty"`
 	// Optional. Time in days to mark the volume's data block as cold and make it
-	// eligible for tiering, can be range from 7-183. Default is 31.
+	// eligible for tiering, can be range from 2-183. Default is 31.
 	CoolingThresholdDays *int32 `protobuf:"varint,2,opt,name=cooling_threshold_days,json=coolingThresholdDays,proto3,oneof" json:"cooling_threshold_days,omitempty"`
 }
 
