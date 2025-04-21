@@ -3480,16 +3480,17 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 						t.Errorf("Writer.Flush: got %v bytes flushed, want %v", n, remainingOffset)
 					}
 					// Check local w.Attrs().Size is updated as expected.
-					if w2.Attrs().Size != remainingOffset {
-						t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs().Size, remainingOffset)
+					if got, want := w2.Attrs().Size, remainingOffset; got != want {
+						t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
 					}
 				}
 
 				// Write remainder of the content and close.
 				h.mustWrite(w2, tc.content[remainingOffset:])
+
 				// Check local w.Attrs().Size is updated as expected.
-				if w2.Attrs().Size != int64(len(tc.content)) {
-					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs(), tc.takeoverOffset)
+				if got, want := w2.Attrs().Size, int64(len(tc.content)); got != want {
+					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
 				}
 
 				// Download content again and validate.
