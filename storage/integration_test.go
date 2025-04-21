@@ -3276,7 +3276,6 @@ func TestIntegration_WriterAppend(t *testing.T) {
 						t.Fatalf("ObjectHandle.Attrs: %v", err)
 					}
 					// Check that local Writer.Attrs() is populated after the first flush.
-					time.Sleep(time.Second)
 					if w.Attrs() == nil || w.Attrs().Size != tc.flushOffset {
 						t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), tc.flushOffset)
 					}
