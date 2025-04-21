@@ -146,6 +146,7 @@ require (
 	cloud.google.com/go/commerce v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/config v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/developerconnect v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/devicestreaming v0.1.0
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/financialservices v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/identitytoolkit v0.0.0-00010101000000-000000000000
