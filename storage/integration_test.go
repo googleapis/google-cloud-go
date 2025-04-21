@@ -3280,6 +3280,10 @@ func TestIntegration_WriterAppend(t *testing.T) {
 
 				// Write remaining data.
 				h.mustWrite(w, content)
+				// Check that local Writer.Attrs() is populated as expected.
+				if w.Attrs() == nil || w.Attrs().Size != int64(len(tc.content)) {
+					t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs().Size, int64(len(tc.content)))
+				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
