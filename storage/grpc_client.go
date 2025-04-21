@@ -1783,6 +1783,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		offset = wbs.takeoverOffset
 		gw.streamSender = wbs
 		o = wbs.objResource
+		setObj(newObjectFromProto(o))
 	}
 
 	// This function reads the data sent to the pipe and sends sets of messages
@@ -1807,6 +1808,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					obj, err := gw.uploadBuffer(ctx, recvd, offset, doneReading)
 					if obj != nil {
 						o = obj
+						setObj(newObjectFromProto(o))
 					}
 					return err
 				}
@@ -2666,6 +2668,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		encryptionKey:         params.encryptionKey,
 		settings:              s,
 		progress:              params.progress,
+		setSize:               params.setSize,
 		sendCRC32C:            params.sendCRC32C,
 		forceOneShot:          params.chunkSize <= 0,
 		forceEmptyContentType: params.forceEmptyContentType,
@@ -2695,6 +2698,7 @@ type gRPCWriter struct {
 	encryptionKey []byte
 	settings      *settings
 	progress      func(int64)
+	setSize       func(int64)
 
 	sendCRC32C            bool
 	forceOneShot          bool
@@ -3005,10 +3009,15 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 		data = data[l:]
 		offset += int64(l)
 		if len(data) == 0 {
+			// Update object size to match persisted offset.
+			if obj != nil {
+				obj.Size = offset
+			}
 			break
 		}
 	}
 	if w.flushInProgress {
+		w.setSize(offset)
 		w.flushInProgress = false
 		w.flushComplete <- offset
 	}
