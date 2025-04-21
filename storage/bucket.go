@@ -521,7 +521,7 @@ type BucketAttrs struct {
 	// IpFilter specifies the network sources that are allowed to access
 	// operations on the bucket, as well as its underlying objects.
 	// Only enforced when mode is set to 'Enabled'.
-	IpFilter *raw.BucketIpFilter
+	IPFilter *raw.BucketIpFilter
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -873,7 +873,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		SoftDeletePolicy:         toSoftDeletePolicyFromRaw(b.SoftDeletePolicy),
 		HierarchicalNamespace:    toHierarchicalNamespaceFromRaw(b.HierarchicalNamespace),
 		OwnerEntity:              ownerEntityFromRaw(b.Owner),
-		IpFilter:                 b.IpFilter,
+		IPFilter:                 b.IpFilter,
 	}, nil
 }
 
@@ -968,7 +968,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Autoclass:             b.Autoclass.toRawAutoclass(),
 		SoftDeletePolicy:      b.SoftDeletePolicy.toRawSoftDeletePolicy(),
 		HierarchicalNamespace: b.HierarchicalNamespace.toRawHierarchicalNamespace(),
-		IpFilter:              b.IpFilter,
+		IpFilter:              b.IPFilter,
 	}
 }
 
@@ -1250,7 +1250,7 @@ type BucketAttrsToUpdate struct {
 	// Library users should use ACLHandle methods directly.
 	defaultObjectACL []ACLRule
 
-	IpFilter *raw.BucketIpFilter
+	IPFilter *raw.BucketIpFilter
 
 	setLabels    map[string]string
 	deleteLabels map[string]bool
@@ -1372,8 +1372,8 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 			rb.SoftDeletePolicy = ua.SoftDeletePolicy.toRawSoftDeletePolicy()
 		}
 	}
-	if ua.IpFilter != nil {
-		rb.IpFilter = ua.IpFilter
+	if ua.IPFilter != nil {
+		rb.IpFilter = ua.IPFilter
 	}
 	if ua.PredefinedACL != "" {
 		// Clear ACL or the call will fail.
