@@ -3424,6 +3424,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 
 				h.mustWrite(w, tc.content[:tc.takeoverOffset])
+				// Check that local Writer.Attrs() is populated.
+				if w.Attrs() == nil || w.Attrs().Size != tc.takeoverOffset {
+					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), tc.takeoverOffset)
+				}
 
 				// Takeover to create new Writer.
 				gen := w.Attrs().Generation
@@ -3440,6 +3444,11 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 				if off != tc.takeoverOffset {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
+				}
+
+				// Check that local Writer.Attrs() is populated after takeover.
+				if w2.Attrs() == nil || w2.Attrs().Size != tc.takeoverOffset {
+					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs(), tc.takeoverOffset)
 				}
 
 				// Validate that options are populated as expected.
@@ -3470,10 +3479,18 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					if n != remainingOffset {
 						t.Errorf("Writer.Flush: got %v bytes flushed, want %v", n, remainingOffset)
 					}
+					// Check local w.Attrs().Size is updated as expected.
+					if w2.Attrs().Size != remainingOffset {
+						t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs().Size, remainingOffset)
+					}
 				}
 
 				// Write remainder of the content and close.
 				h.mustWrite(w2, tc.content[remainingOffset:])
+				// Check local w.Attrs().Size is updated as expected.
+				if w2.Attrs().Size != int64(len(tc.content)) {
+					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs(), tc.takeoverOffset)
+				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.

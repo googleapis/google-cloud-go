@@ -3009,6 +3009,10 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 		data = data[l:]
 		offset += int64(l)
 		if len(data) == 0 {
+			// Update object size to match persisted offset.
+			if obj != nil {
+				obj.Size = offset
+			}
 			break
 		}
 	}
