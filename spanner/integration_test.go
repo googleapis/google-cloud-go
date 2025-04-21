@@ -70,6 +70,7 @@ const (
 	backupDDLStatements               = "BACKUP_DDL_STATEMENTS"
 	testTableDDLStatements            = "TEST_TABLE_DDL_STATEMENTS"
 	fkdcDDLStatements                 = "FKDC_DDL_STATEMENTS"
+	intervalDDLStatements             = "INTERVAL_DDL_STATEMENTS"
 	testTableBitReversedSeqStatements = "TEST_TABLE_BIT_REVERSED_SEQUENCE_STATEMENTS"
 )
 
@@ -135,13 +136,6 @@ var (
 			Numeric		NUMERIC,
 			JSONB		jsonb
 		)`,
-		`CREATE TABLE IntervalTable (
-		    key text primary key,
-		    create_time timestamptz,
-		    expiry_time timestamptz,
-		    expiry_within_month bool GENERATED ALWAYS AS (expiry_time - create_time < INTERVAL '30' DAY) STORED,
-		    interval_array_len bigint GENERATED ALWAYS AS (ARRAY_LENGTH(ARRAY[INTERVAL '1-2 3 4:5:6'], 1)) STORED
-    	)`,
 	}
 
 	singerDBStatements = []string{
@@ -177,13 +171,6 @@ var (
 				Numeric		NUMERIC,
 				NumericArray	ARRAY<NUMERIC>
 			) PRIMARY KEY (RowID)`,
-		`CREATE TABLE IntervalTable (
-			key STRING(MAX),
-			create_time TIMESTAMP,
-			expiry_time TIMESTAMP,
-			expiry_within_month bool AS (expiry_time - create_time < INTERVAL 30 DAY),
-			interval_array_len INT64 AS (ARRAY_LENGTH(ARRAY<INTERVAL>[INTERVAL '1-2 3 4:5:6' YEAR TO SECOND]))
-		) PRIMARY KEY (key)`,
 	}
 
 	readDBStatements = []string{
@@ -339,6 +326,25 @@ var (
 		)`,
 	}
 
+	intervalDBStatements = []string{
+		`CREATE TABLE IntervalTable (
+			key STRING(MAX),
+			create_time TIMESTAMP,
+			expiry_time TIMESTAMP,
+			expiry_within_month bool AS (expiry_time - create_time < INTERVAL 30 DAY),
+			interval_array_len INT64 AS (ARRAY_LENGTH(ARRAY<INTERVAL>[INTERVAL '1-2 3 4:5:6' YEAR TO SECOND]))
+		) PRIMARY KEY (key)`,
+	}
+	intervalDBPGStatements = []string{
+		`CREATE TABLE IntervalTable (
+		    key text primary key,
+		    create_time timestamptz,
+		    expiry_time timestamptz,
+		    expiry_within_month bool GENERATED ALWAYS AS (expiry_time - create_time < INTERVAL '30' DAY) STORED,
+		    interval_array_len bigint GENERATED ALWAYS AS (ARRAY_LENGTH(ARRAY[INTERVAL '1-2 3 4:5:6'], 1)) STORED
+    	)`,
+	}
+
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
 			singerDDLStatements:               singerDBStatements,
@@ -348,6 +354,7 @@ var (
 			testTableDDLStatements:            readDBStatements,
 			fkdcDDLStatements:                 fkdcDBStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBStatments,
+			intervalDDLStatements:             intervalDBStatements,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
 			singerDDLStatements:               singerDBPGStatements,
@@ -357,6 +364,7 @@ var (
 			testTableDDLStatements:            readDBPGStatements,
 			fkdcDDLStatements:                 fkdcDBPGStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBPGStatments,
+			intervalDDLStatements:             intervalDBPGStatements,
 		},
 	}
 
@@ -878,7 +886,7 @@ func TestIntegration_Interval(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][intervalDDLStatements])
 	defer cleanup()
 
 	m := InsertOrUpdate("IntervalTable", []string{"key", "create_time", "expiry_time"},

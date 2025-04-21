@@ -5377,7 +5377,7 @@ func ParseInterval(s string) (Interval, error) {
 	var interval Interval
 	interval.Nanos = new(big.Int)
 
-	pattern := `^P(-?\d+Y)?(-?\d+M)?(-?\d+D)?(T(-?\d+H)?(-?\d+M)?(-?(\d+(\.\d{1,9})?|\.\d{1,9})S)?)?$`
+	pattern := `^P(-?\d+Y)?(-?\d+M)?(-?\d+D)?(T(-?\d+H)?(-?\d+M)?(-?((\d+([.,]\d{1,9})?)|([.,]\d{1,9}))S)?)?$`
 	re := regexp.MustCompile(pattern)
 
 	if !re.MatchString(s) {
@@ -5387,6 +5387,10 @@ func ParseInterval(s string) (Interval, error) {
 	parts := re.FindStringSubmatch(s)
 	if parts == nil {
 		return Interval{}, fmt.Errorf("invalid interval format: %s", s)
+	}
+
+	if len(s) == 1 {
+		return Interval{}, fmt.Errorf("invalid interval format: at least one component (Y/M/D/H/M/S) is required: %s", s)
 	}
 
 	// Verify that at least one component is present (Y, M, D, H, M, or S)
@@ -5403,6 +5407,7 @@ func ParseInterval(s string) (Interval, error) {
 			return 0
 		}
 		s = strings.TrimSuffix(s, suffix)
+
 		num, _ := strconv.ParseInt(s, 10, 64)
 		return num
 	}
