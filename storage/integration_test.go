@@ -3257,6 +3257,10 @@ func TestIntegration_WriterAppend(t *testing.T) {
 					if attrs.Size != 0 {
 						t.Errorf("attrs.Size: got %v, want 0", attrs.Size)
 					}
+					// Check that local Writer.Attrs() is populated after the first flush.
+					if w.Attrs() == nil || w.Attrs().Size != 0 {
+						t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), 0)
+					}
 				}
 				// If flushOffset > 0, write the first part of the data and then flush.
 				if tc.flushOffset > 0 {
@@ -3271,6 +3275,11 @@ func TestIntegration_WriterAppend(t *testing.T) {
 					if err != nil {
 						t.Fatalf("ObjectHandle.Attrs: %v", err)
 					}
+					// Check that local Writer.Attrs() is populated after the first flush.
+					time.Sleep(time.Second)
+					if w.Attrs() == nil || w.Attrs().Size != tc.flushOffset {
+						t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), tc.flushOffset)
+					}
 					// TODO: re-enable this check once Size is correctly populated
 					// server side for unfinalized objects.
 					// if attrs.Size != tc.flushOffset {
@@ -3280,9 +3289,9 @@ func TestIntegration_WriterAppend(t *testing.T) {
 
 				// Write remaining data.
 				h.mustWrite(w, content)
-				// Check that local Writer.Attrs() is populated as expected.
+				// Check that local Writer.Attrs() is populated with correct size.
 				if w.Attrs() == nil || w.Attrs().Size != int64(len(tc.content)) {
-					t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs().Size, int64(len(tc.content)))
+					t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), int64(len(tc.content)))
 				}
 
 				// Download content again and validate.

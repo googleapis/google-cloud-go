@@ -332,6 +332,8 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			if flushOffset < rSize {
 				flushOffset = rSize
 			}
+			// On the first flush, we expect to get an object resource back and
+			// should return it.
 			if resp.GetResource() != nil {
 				obj = resp.GetResource()
 			}
