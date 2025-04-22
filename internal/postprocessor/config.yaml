@@ -934,6 +934,9 @@ service-configs:
   - input-directory: google/shopping/merchant/notifications/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
+  - input-directory: google/shopping/merchant/ordertracking/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta
   - input-directory: google/shopping/merchant/products/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/products/apiv1beta
