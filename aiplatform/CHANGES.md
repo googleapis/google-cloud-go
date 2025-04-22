@@ -1,6 +1,105 @@
 # Changes
 
 
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.1...aiplatform/v1.83.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden EULA(End User License Agreement) related APIs ([#11982](https://github.com/googleapis/google-cloud-go/issues/11982)) ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
+## [1.82.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.0...aiplatform/v1.82.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **aiplatform:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.81.0...aiplatform/v1.82.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add FeatureViewDirectWrite API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add Gen AI logging public preview API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add global quota config to vertex rag engine api ([#11949](https://github.com/googleapis/google-cloud-go/issues/11949)) ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add rag_managed_db_config to RagEngineConfig for specifying Basic or Enterprise RagManagedDb tiers ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add RagEngineConfig to specify RAG project-level config ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add UpdateRagEngineConfig rpc ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+
+## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.80.0...aiplatform/v1.81.0) (2025-03-31)
+
+
+### Features
+
+* **aiplatform:** Add page spans in retrieved contexts from Vertex RAG Engine in aiplatform v1 ([#11917](https://github.com/googleapis/google-cloud-go/issues/11917)) ([28632c6](https://github.com/googleapis/google-cloud-go/commit/28632c6b7c8f0f9250c2dd6ab86d8cc19de84522))
+* **aiplatform:** Add page spans in retrieved contexts from Vertex RAG Engine in aiplatform v1beta1 ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `model_name` in message `.google.cloud.aiplatform.v1beta1.RagFileParsingConfig` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **aiplatform:** A comment for field `rag_files_count` in message `.google.cloud.aiplatform.v1beta1.RagCorpus` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+
+## [1.80.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.79.0...aiplatform/v1.80.0) (2025-03-27)
+
+
+### Features
+
+* **aiplatform:** Add batch prediction assessments to multimodal dataset RPCs ([#11906](https://github.com/googleapis/google-cloud-go/issues/11906)) ([12465b5](https://github.com/googleapis/google-cloud-go/commit/12465b5f3f70d49b19ee5e24dae0f731a24b894d))
+* **aiplatform:** Add example, example_store, and example_store_service protos ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **aiplatform:** Add session.proto and session_service.proto ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **aiplatform:** Add support for Vertex AI Search engine ([#11912](https://github.com/googleapis/google-cloud-go/issues/11912)) ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **aiplatform:** Enable force deletion in ReasoningEngine ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
+## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.78.0...aiplatform/v1.79.0) (2025-03-25)
+
+
+### Features
+
+* **aiplatform:** Add a ExportPublisherModel API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add AssessData and AssembleData RPCs to DatasetService ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add import result bq sink to the import files API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add import result gcs sink to the import files API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add model_config field for model selection preference ([57a62c0](https://github.com/googleapis/google-cloud-go/commit/57a62c05a11b71b4c505061eb4b9469186adeda5))
+* **aiplatform:** Enable force deletion in ReasoningEngine v1beta1 ([#11901](https://github.com/googleapis/google-cloud-go/issues/11901)) ([57a62c0](https://github.com/googleapis/google-cloud-go/commit/57a62c05a11b71b4c505061eb4b9469186adeda5))
+* **aiplatform:** Update multimodal evaluation (content_map_instance), rubric generation (rubric_based_instance, etc) and raw_output(raw_output, custom_output, etc) proto change in online eval API ([#11876](https://github.com/googleapis/google-cloud-go/issues/11876)) ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `autorater_config` in message `.google.cloud.aiplatform.v1beta1.EvaluateDatasetRequest` is changed ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** A comment for field `gcs_source` in message `.google.cloud.aiplatform.v1beta1.EvaluationDataset` is changed ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.77.0...aiplatform/v1.78.0) (2025-03-19)
+
+
+### Features
+
+* **aiplatform:** Add env variables and agent framework to ReasoningEngineSpec ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Add env variables and agent framework to ReasoningEngineSpec in v1beta1 ([#11867](https://github.com/googleapis/google-cloud-go/issues/11867)) ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+* **aiplatform:** Add VertexAISearch.engine option ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **aiplatform:** Add `deployment_spec` and `agent_framework` field to `ReasoningEngineSpec`. ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Add `deployment_spec` and `agent_framework` field to `ReasoningEngineSpec`. ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+* **aiplatform:** Update comment for `package_spec` from required to optional in `ReasoningEngineSpec`. ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Update comment for `package_spec` from required to optional in `ReasoningEngineSpec`. ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+
+## [1.77.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.76.0...aiplatform/v1.77.0) (2025-03-13)
+
+
+### Features
+
+* **aiplatform:** Add function_call.id and function_response.id ([#11820](https://github.com/googleapis/google-cloud-go/issues/11820)) ([1c7cc4b](https://github.com/googleapis/google-cloud-go/commit/1c7cc4b06d24a1af6c4df23f0417880b9629a3a7))
+
+
+### Bug Fixes
+
+* **aiplatform:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.76.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.75.0...aiplatform/v1.76.0) (2025-03-12)
 
 

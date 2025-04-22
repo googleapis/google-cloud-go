@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/iap/apiv1",
-    "version": "1.10.4",
+    "version": "1.11.1",
     "language": "GO",
     "apis": [
       {
@@ -455,6 +455,52 @@
         "method": {
           "shortName": "UpdateTunnelDestGroup",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateTunnelDestGroup",
+          "service": {
+            "shortName": "IdentityAwareProxyAdminService",
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_ValidateIapAttributeExpression_sync",
+      "title": "iap ValidateIapAttributeExpression Sample",
+      "description": "ValidateIapAttributeExpression validates that a given CEL expression conforms to IAP restrictions.",
+      "file": "IdentityAwareProxyAdminClient/ValidateIapAttributeExpression/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateIapAttributeExpression",
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.ValidateIapAttributeExpression",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iappb.ValidateIapAttributeExpressionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iappb.ValidateIapAttributeExpressionResponse",
+        "client": {
+          "shortName": "IdentityAwareProxyAdminClient",
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
+        },
+        "method": {
+          "shortName": "ValidateIapAttributeExpression",
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.ValidateIapAttributeExpression",
           "service": {
             "shortName": "IdentityAwareProxyAdminService",
             "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService"

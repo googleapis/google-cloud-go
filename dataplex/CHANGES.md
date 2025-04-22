@@ -1,6 +1,48 @@
 # Changes
 
 
+## [1.25.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.25.1...dataplex/v1.25.2) (2025-04-15)
+
+
+### Documentation
+
+* **dataplex:** Minor changes ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.25.0...dataplex/v1.25.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **dataplex:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.24.0...dataplex/v1.25.0) (2025-04-15)
+
+
+### Features
+
+* **dataplex:** Add Data Discovery result statistics ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+* **dataplex:** Add Data Discovery result statistics ([#11968](https://github.com/googleapis/google-cloud-go/issues/11968)) ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **dataplex:** Add EntryLinkEvent for logs ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
+
+### Documentation
+
+* **dataplex:** Minor formatting changes ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.23.1...dataplex/v1.24.0) (2025-03-27)
+
+
+### Features
+
+* **dataplex:** Add support for REST transport ([#11903](https://github.com/googleapis/google-cloud-go/issues/11903)) ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.23.0...dataplex/v1.23.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **dataplex:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.22.0...dataplex/v1.23.0) (2025-03-12)
 
 

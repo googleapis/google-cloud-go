@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dlp/apiv2",
-    "version": "1.21.0",
+    "version": "1.22.1",
     "language": "GO",
     "apis": [
       {
@@ -2119,7 +2119,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_RedactImage_sync",
       "title": "dlp RedactImage Sample",
-      "description": "RedactImage redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images\nto learn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
+      "description": "RedactImage redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images\nto learn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.\n\nOnly the first frame of each multiframe image is redacted. Metadata and\nother frames are omitted in the response.",
       "file": "Client/RedactImage/main.go",
       "language": "GO",
       "clientMethod": {

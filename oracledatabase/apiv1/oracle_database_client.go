@@ -67,6 +67,9 @@ type CallOptions struct {
 	ListAutonomousDbVersions            []gax.CallOption
 	ListAutonomousDatabaseCharacterSets []gax.CallOption
 	ListAutonomousDatabaseBackups       []gax.CallOption
+	StopAutonomousDatabase              []gax.CallOption
+	StartAutonomousDatabase             []gax.CallOption
+	RestartAutonomousDatabase           []gax.CallOption
 	GetLocation                         []gax.CallOption
 	ListLocations                       []gax.CallOption
 	CancelOperation                     []gax.CallOption
@@ -297,6 +300,15 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		StopAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestartAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -340,6 +352,12 @@ type internalClient interface {
 	ListAutonomousDbVersions(context.Context, *oracledatabasepb.ListAutonomousDbVersionsRequest, ...gax.CallOption) *AutonomousDbVersionIterator
 	ListAutonomousDatabaseCharacterSets(context.Context, *oracledatabasepb.ListAutonomousDatabaseCharacterSetsRequest, ...gax.CallOption) *AutonomousDatabaseCharacterSetIterator
 	ListAutonomousDatabaseBackups(context.Context, *oracledatabasepb.ListAutonomousDatabaseBackupsRequest, ...gax.CallOption) *AutonomousDatabaseBackupIterator
+	StopAutonomousDatabase(context.Context, *oracledatabasepb.StopAutonomousDatabaseRequest, ...gax.CallOption) (*StopAutonomousDatabaseOperation, error)
+	StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation
+	StartAutonomousDatabase(context.Context, *oracledatabasepb.StartAutonomousDatabaseRequest, ...gax.CallOption) (*StartAutonomousDatabaseOperation, error)
+	StartAutonomousDatabaseOperation(name string) *StartAutonomousDatabaseOperation
+	RestartAutonomousDatabase(context.Context, *oracledatabasepb.RestartAutonomousDatabaseRequest, ...gax.CallOption) (*RestartAutonomousDatabaseOperation, error)
+	RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -540,6 +558,39 @@ func (c *Client) ListAutonomousDatabaseCharacterSets(ctx context.Context, req *o
 // ListAutonomousDatabaseBackups lists the long-term and automatic backups of an Autonomous Database.
 func (c *Client) ListAutonomousDatabaseBackups(ctx context.Context, req *oracledatabasepb.ListAutonomousDatabaseBackupsRequest, opts ...gax.CallOption) *AutonomousDatabaseBackupIterator {
 	return c.internalClient.ListAutonomousDatabaseBackups(ctx, req, opts...)
+}
+
+// StopAutonomousDatabase stops an Autonomous Database.
+func (c *Client) StopAutonomousDatabase(ctx context.Context, req *oracledatabasepb.StopAutonomousDatabaseRequest, opts ...gax.CallOption) (*StopAutonomousDatabaseOperation, error) {
+	return c.internalClient.StopAutonomousDatabase(ctx, req, opts...)
+}
+
+// StopAutonomousDatabaseOperation returns a new StopAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created StopAutonomousDatabaseOperation, possibly from a different process.
+func (c *Client) StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation {
+	return c.internalClient.StopAutonomousDatabaseOperation(name)
+}
+
+// StartAutonomousDatabase starts an Autonomous Database.
+func (c *Client) StartAutonomousDatabase(ctx context.Context, req *oracledatabasepb.StartAutonomousDatabaseRequest, opts ...gax.CallOption) (*StartAutonomousDatabaseOperation, error) {
+	return c.internalClient.StartAutonomousDatabase(ctx, req, opts...)
+}
+
+// StartAutonomousDatabaseOperation returns a new StartAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created StartAutonomousDatabaseOperation, possibly from a different process.
+func (c *Client) StartAutonomousDatabaseOperation(name string) *StartAutonomousDatabaseOperation {
+	return c.internalClient.StartAutonomousDatabaseOperation(name)
+}
+
+// RestartAutonomousDatabase restarts an Autonomous Database.
+func (c *Client) RestartAutonomousDatabase(ctx context.Context, req *oracledatabasepb.RestartAutonomousDatabaseRequest, opts ...gax.CallOption) (*RestartAutonomousDatabaseOperation, error) {
+	return c.internalClient.RestartAutonomousDatabase(ctx, req, opts...)
+}
+
+// RestartAutonomousDatabaseOperation returns a new RestartAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created RestartAutonomousDatabaseOperation, possibly from a different process.
+func (c *Client) RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation {
+	return c.internalClient.RestartAutonomousDatabaseOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -2170,6 +2221,183 @@ func (c *restClient) ListAutonomousDatabaseBackups(ctx context.Context, req *ora
 	return it
 }
 
+// StopAutonomousDatabase stops an Autonomous Database.
+func (c *restClient) StopAutonomousDatabase(ctx context.Context, req *oracledatabasepb.StopAutonomousDatabaseRequest, opts ...gax.CallOption) (*StopAutonomousDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StopAutonomousDatabase")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &StopAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// StartAutonomousDatabase starts an Autonomous Database.
+func (c *restClient) StartAutonomousDatabase(ctx context.Context, req *oracledatabasepb.StartAutonomousDatabaseRequest, opts ...gax.CallOption) (*StartAutonomousDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartAutonomousDatabase")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &StartAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RestartAutonomousDatabase restarts an Autonomous Database.
+func (c *restClient) RestartAutonomousDatabase(ctx context.Context, req *oracledatabasepb.RestartAutonomousDatabaseRequest, opts ...gax.CallOption) (*RestartAutonomousDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:restart", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestartAutonomousDatabase")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RestartAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2568,11 +2796,41 @@ func (c *restClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmCl
 	}
 }
 
+// RestartAutonomousDatabaseOperation returns a new RestartAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created RestartAutonomousDatabaseOperation, possibly from a different process.
+func (c *restClient) RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RestartAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // RestoreAutonomousDatabaseOperation returns a new RestoreAutonomousDatabaseOperation from a given name.
 // The name must be that of a previously created RestoreAutonomousDatabaseOperation, possibly from a different process.
 func (c *restClient) RestoreAutonomousDatabaseOperation(name string) *RestoreAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestoreAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// StartAutonomousDatabaseOperation returns a new StartAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created StartAutonomousDatabaseOperation, possibly from a different process.
+func (c *restClient) StartAutonomousDatabaseOperation(name string) *StartAutonomousDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StartAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// StopAutonomousDatabaseOperation returns a new StopAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created StopAutonomousDatabaseOperation, possibly from a different process.
+func (c *restClient) StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StopAutonomousDatabaseOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

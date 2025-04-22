@@ -2,6 +2,20 @@
 
 
 
+## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.1.4...workstations/v1.1.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **workstations:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.1.4](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.1.3...workstations/v1.1.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **workstations:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.1.2...workstations/v1.1.3) (2025-01-02)
 
 

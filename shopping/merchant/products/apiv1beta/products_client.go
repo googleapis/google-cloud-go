@@ -130,7 +130,6 @@ type internalClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service to use Product resource.
-// This service works for products with online channel only.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -171,8 +170,8 @@ func (c *Client) GetProduct(ctx context.Context, req *productspb.GetProductReque
 }
 
 // ListProducts lists the processed products in your Merchant Center account. The response
-// might contain fewer items than specified by pageSize. Rely on pageToken to
-// determine if there are more items to be requested.
+// might contain fewer items than specified by pageSize. Rely on pageToken
+// to determine if there are more items to be requested.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the updated processed product can be retrieved.
@@ -203,7 +202,6 @@ type gRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service to use Product resource.
-// This service works for products with online channel only.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -278,7 +276,6 @@ type restClient struct {
 // NewRESTClient creates a new products service rest client.
 //
 // Service to use Product resource.
-// This service works for products with online channel only.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -453,8 +450,8 @@ func (c *restClient) GetProduct(ctx context.Context, req *productspb.GetProductR
 }
 
 // ListProducts lists the processed products in your Merchant Center account. The response
-// might contain fewer items than specified by pageSize. Rely on pageToken to
-// determine if there are more items to be requested.
+// might contain fewer items than specified by pageSize. Rely on pageToken
+// to determine if there are more items to be requested.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the updated processed product can be retrieved.

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.36.2](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.36.1...securitycenter/v1.36.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **securitycenter:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.36.0...securitycenter/v1.36.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **securitycenter:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.35.3...securitycenter/v1.36.0) (2025-02-14)
 
 

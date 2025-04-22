@@ -1,5 +1,32 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.22.0...dlp/v1.22.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **dlp:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.21.1...dlp/v1.22.0) (2025-03-19)
+
+
+### Features
+
+* **dlp:** Add sample findings for data profiles ([#11869](https://github.com/googleapis/google-cloud-go/issues/11869)) ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **dlp:** List tags on resources for data profiles ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
+
+### Documentation
+
+* **dlp:** Updated documentation for various fields and messages ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.21.0...dlp/v1.21.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **dlp:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.20.1...dlp/v1.21.0) (2025-02-20)
 
 

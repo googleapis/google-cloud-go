@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.3.6](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.3.5...baremetalsolution/v1.3.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.3.5](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.3.4...baremetalsolution/v1.3.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.3.3...baremetalsolution/v1.3.4) (2025-03-06)
 
 

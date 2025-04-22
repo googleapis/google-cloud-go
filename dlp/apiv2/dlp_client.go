@@ -1160,6 +1160,9 @@ func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRe
 // When no InfoTypes or CustomInfoTypes are specified in this request, the
 // system will automatically choose what detectors to run. By default this may
 // be all types, but may change over time as detectors are updated.
+//
+// Only the first frame of each multiframe image is redacted. Metadata and
+// other frames are omitted in the response.
 func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest, opts ...gax.CallOption) (*dlppb.RedactImageResponse, error) {
 	return c.internalClient.RedactImage(ctx, req, opts...)
 }
@@ -3067,6 +3070,9 @@ func (c *restClient) InspectContent(ctx context.Context, req *dlppb.InspectConte
 // When no InfoTypes or CustomInfoTypes are specified in this request, the
 // system will automatically choose what detectors to run. By default this may
 // be all types, but may change over time as detectors are updated.
+//
+// Only the first frame of each multiframe image is redacted. Metadata and
+// other frames are omitted in the response.
 func (c *restClient) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest, opts ...gax.CallOption) (*dlppb.RedactImageResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

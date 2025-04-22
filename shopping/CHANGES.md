@@ -1,5 +1,60 @@
 # Changelog
 
+## [0.19.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.19.0...shopping/v0.19.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **shopping:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.19.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.18.1...shopping/v0.19.0) (2025-04-15)
+
+
+### Features
+
+* **shopping/css:** Introduce QuotaService for CSS API ([#11962](https://github.com/googleapis/google-cloud-go/issues/11962)) ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/merchant/lfp:** Add GetLfpMerchantState method ([#11973](https://github.com/googleapis/google-cloud-go/issues/11973)) ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **shopping/merchant/products:** A new field `automated_discounts` is added to message `google.shopping.merchant.products.v1beta.Product` ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+
+
+### Documentation
+
+* **shopping/css:** A comment for field `name` in message `.google.shopping.css.v1.CssProductInput` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/css:** A comment for field `name` in message `.google.shopping.css.v1.DeleteCssProductInputRequest` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/merchant/products:** Modified several comments ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+
+## [0.18.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.18.0...shopping/v0.18.1) (2025-03-25)
+
+
+### Documentation
+
+* **shopping/css:** Added a clarifying note to the description of the parent field in the Account resource ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.17.1...shopping/v0.18.0) (2025-03-19)
+
+
+### Features
+
+* **shopping/merchant/accounts:** Add AutomaticImprovements service ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/datasources:** Add a new destinations field ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/products:** Add an update method ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **shopping/merchant/datasources:** A comment for field `channel` in message `.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource` is changed ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/datasources:** A comment for field `promotion_data_source` in message `.google.shopping.merchant.datasources.v1beta.DataSource` is changed ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/products:** A comment for field `channel` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+* **shopping/merchant/products:** A comment for field `data_source` in message `.google.shopping.merchant.products.v1beta.InsertProductInputRequest` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+* **shopping/merchant/products:** A comment for message `ProductInput` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+## [0.17.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.17.0...shopping/v0.17.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **shopping:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [0.17.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.16.0...shopping/v0.17.0) (2025-03-12)
 
 
