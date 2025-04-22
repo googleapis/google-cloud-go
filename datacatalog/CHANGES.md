@@ -1,5 +1,20 @@
 # Changes
 
+## [1.25.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.1...datacatalog/v1.25.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.0...datacatalog/v1.25.1) (2025-04-15)
+
+
+### Documentation
+
+* **datacatalog:** A comment for field `sql_resource` in message `.google.cloud.datacatalog.v1.LookupEntryRequest` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **datacatalog:** Clarify sql variant in comment for v1beta1.LookupEntryRequest.sql_resource ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.5...datacatalog/v1.25.0) (2025-03-19)
 
 

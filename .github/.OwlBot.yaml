@@ -108,6 +108,7 @@ deep-remove-regex:
   # - /debugger/apiv2/
   - /deploy/apiv1/
   - /developerconnect/apiv1/
+  - /devicestreaming/apiv1/
   - /dialogflow/apiv2/
   - /dialogflow/apiv2beta1/
   - /dialogflow/cx/apiv3/
@@ -140,6 +141,8 @@ deep-remove-regex:
   - /gsuiteaddons/apiv1/
   - /iam/apiv1/
   - /iam/apiv2/
+  - /iam/apiv3/
+  - /iam/apiv3beta/
   - /iam/credentials/apiv1/
   - /iap/apiv1/
   - /identitytoolkit/apiv2/
@@ -244,6 +247,7 @@ deep-remove-regex:
   # - /internal/generated/snippets/debugger/apiv2/
   - /internal/generated/snippets/deploy/apiv1/
   - /internal/generated/snippets//developerconnect/apiv1/
+  - /internal/generated/snippets//devicestreaming/apiv1/
   - /internal/generated/snippets/dialogflow/apiv2/
   - /internal/generated/snippets/dialogflow/apiv2beta1/
   - /internal/generated/snippets/dialogflow/cx/apiv3/
@@ -276,6 +280,8 @@ deep-remove-regex:
   - /internal/generated/snippets/gsuiteaddons/apiv1/
   - /internal/generated/snippets/iam/apiv1/
   - /internal/generated/snippets/iam/apiv2/
+  - /internal/generated/snippets/iam/apiv3/
+  - /internal/generated/snippets/iam/apiv3beta/
   - /internal/generated/snippets/iam/credentials/apiv1/
   - /internal/generated/snippets/iap/apiv1/
   - /internal/generated/snippets/identitytoolkit/apiv2/
@@ -289,6 +295,7 @@ deep-remove-regex:
   - /internal/generated/snippets/lifesciences/apiv2beta/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
+  - /internal/generated/snippets/lustre/apiv1/
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
@@ -391,6 +398,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reviews/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/lfp/apiv1beta/
+  - /internal/generated/snippets/spanner/adapter/apiv1/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
   - /internal/generated/snippets/spanner/apiv1/
@@ -441,6 +449,7 @@ deep-remove-regex:
   - /lifesciences/apiv2beta/
   - /logging/apiv2/
   - /longrunning/autogen/
+  - /lustre/apiv1/
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
@@ -547,6 +556,7 @@ deep-remove-regex:
   - /shopping/merchant/reports/apiv1beta/
   - /shopping/merchant/reviews/apiv1beta/
   - /shopping/type/
+  - /spanner/adapter/apiv1/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
   - /spanner/apiv1/
@@ -845,6 +855,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/developerconnect/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/devicestreaming/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/dialogflow/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/dialogflow/v2beta1/cloud.google.com/go
@@ -909,6 +921,10 @@ deep-copy-regex:
     dest: /
   - source: /google/iam/v2/cloud.google.com/go
     dest: /
+  - source: /google/iam/v3/cloud.google.com/go
+    dest: /
+  - source: /google/iam/v3beta/cloud.google.com/go
+    dest: /
   - source: /google/iam/credentials/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/iap/v1/cloud.google.com/go
@@ -934,6 +950,8 @@ deep-copy-regex:
   - source: /google/logging/v2/cloud.google.com/go
     dest: /
   - source: /google/longrunning/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/lustre/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go
     dest: /
@@ -1150,6 +1168,8 @@ deep-copy-regex:
   - source: /google/shopping/merchant/reviews/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/type/cloud.google.com/go
+    dest: /
+  - source: /google/spanner/adapter/v1/cloud.google.com/go
     dest: /
   - source: /google/spanner/admin/database/v1/cloud.google.com/go
     dest: /

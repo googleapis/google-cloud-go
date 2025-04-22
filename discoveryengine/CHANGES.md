@@ -1,6 +1,44 @@
 # Changelog
 
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.17.0...discoveryengine/v1.17.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.16.2...discoveryengine/v1.17.0) (2025-03-27)
+
+
+### Features
+
+* **discoveryengine:** Add interpolation boost action and promotion action ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Add sitemap APIs ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Add stream answer API ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Add time_zone in user info ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **discoveryengine:** Allow FHIR import to use latest predefined schema ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Allow unstructured data import to force refresh all content ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Move serving config update API to GA ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **discoveryengine:** Support auto mode in search as your type ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support boosting for blended search ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support conversion user event ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support end user spec for answer API ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support enterprise web retrieval source for grounding ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support grounding and safety rating for answer API ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support images in web search grounding ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support model scores in search ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support panel aware user event ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support query rephraser model for answer API ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support relevance threshold in search ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support search highlighting ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+
 ## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.16.1...discoveryengine/v1.16.2) (2025-03-13)
 
 

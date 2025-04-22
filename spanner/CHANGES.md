@@ -1,5 +1,28 @@
 # Changes
 
+## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.78.0...spanner/v1.79.0) (2025-04-08)
+
+
+### Features
+
+* **spanner:** Allow string values for Scan functions ([#11898](https://github.com/googleapis/google-cloud-go/issues/11898)) ([9989dd0](https://github.com/googleapis/google-cloud-go/commit/9989dd063ba36f39c880b2e7423adde05c703504))
+* **spanner:** New client(s) ([#11946](https://github.com/googleapis/google-cloud-go/issues/11946)) ([c60f28d](https://github.com/googleapis/google-cloud-go/commit/c60f28d5fd99d5356f39276268a68b729130f152))
+
+## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.77.0...spanner/v1.78.0) (2025-03-24)
+
+
+### Features
+
+* **spanner/spansql:** Add support for tokenlist and create search index ([#11522](https://github.com/googleapis/google-cloud-go/issues/11522)) ([cd894f8](https://github.com/googleapis/google-cloud-go/commit/cd894f8aea935c43a6c5625c2fd66b132a9b2f8b))
+* **spanner:** Support multiplexed sessions for ReadWriteStmtBasedTransaction ([#11852](https://github.com/googleapis/google-cloud-go/issues/11852)) ([528d9dd](https://github.com/googleapis/google-cloud-go/commit/528d9ddc548c5f05237cf5a0cc4b762ca5f1dd31))
+
+
+### Bug Fixes
+
+* **spanner/test/opentelemetry/test:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+* **spanner:** Revert the ALTS bound token enablement ([#11799](https://github.com/googleapis/google-cloud-go/issues/11799)) ([68cfb38](https://github.com/googleapis/google-cloud-go/commit/68cfb385ef30c636ab491e6d010cb69e8e1bebf4))
+* **spanner:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.77.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.76.1...spanner/v1.77.0) (2025-03-03)
 
 

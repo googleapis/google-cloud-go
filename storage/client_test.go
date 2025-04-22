@@ -906,6 +906,7 @@ func TestOpenWriterEmulated(t *testing.T) {
 			progress: func(_ int64) {}, // no-op
 			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
 			setFlush: func(f func() (int64, error)) {},
+			setSize:  func(int64) {},
 		}
 		pw, err := client.OpenWriter(params)
 		if err != nil {
@@ -971,6 +972,7 @@ func TestOpenAppendableWriterEmulated(t *testing.T) {
 		vc := &Client{tc: client}
 		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 		w.Append = true
+		w.FinalizeOnClose = true
 		_, err = w.Write(randomBytesToWrite)
 		if err != nil {
 			t.Fatalf("writing test data: got %v; want ok", err)
@@ -996,6 +998,14 @@ func TestOpenAppendableWriterEmulated(t *testing.T) {
 		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
 			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
 		}
+
+		o, err := veneerClient.Bucket(bucket).Object(objName).Attrs(ctx)
+		if err != nil {
+			t.Fatalf("getting object attrs: got %v; want ok", err)
+		}
+		if o.Finalized.IsZero() {
+			t.Errorf("expected valid finalize time: got %v; want non-zero", o.Finalized)
+		}
 	})
 }
 
@@ -1014,6 +1024,7 @@ func TestOpenAppendableWriterMultipleChunksEmulated(t *testing.T) {
 		vc := &Client{tc: client}
 		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 		w.Append = true
+		w.FinalizeOnClose = true
 		// This should chunk the request into three separate flushes to storage.
 		w.ChunkSize = MiB
 		var lastReportedOffset int64
@@ -1051,6 +1062,59 @@ func TestOpenAppendableWriterMultipleChunksEmulated(t *testing.T) {
 		if diff := cmp.Diff(got, randomBytes3MiB); diff != "" {
 			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
 		}
+
+		o, err := veneerClient.Bucket(bucket).Object(objName).Attrs(ctx)
+		if err != nil {
+			t.Fatalf("getting object attrs: got %v; want ok", err)
+		}
+		if o.Finalized.IsZero() {
+			t.Errorf("expected valid finalize time: got %v; want non-zero", o.Finalized)
+		}
+	})
+}
+
+func TestOpenAppendableWriterLeaveUnfinalizedEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		w.Append = true
+		w.FinalizeOnClose = false
+		var lastReportedOffset int64
+		w.ProgressFunc = func(offset int64) {
+			lastReportedOffset = offset
+		}
+		_, err = w.Write(randomBytesToWrite)
+		wantLen := int64(len(randomBytesToWrite))
+		if err != nil {
+			t.Fatalf("writing test data: got %v; want ok", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing test data writer: got %v; want ok", err)
+		}
+		if lastReportedOffset != wantLen {
+			t.Errorf("incorrect final progress report: got %d; want %d", lastReportedOffset, wantLen)
+		}
+		// No finalize time on the object.
+		o, err := vc.Bucket(bucket).Object(objName).Attrs(ctx)
+		if err != nil {
+			t.Fatalf("getting object attrs: got %v; want ok", err)
+		}
+		if o.Created.IsZero() {
+			t.Errorf("expected valid  create time: got %v; want non-zero", o.Created)
+		}
+		if !o.Finalized.IsZero() {
+			t.Errorf("unexpected valid finalize time: got %v; want zero", o.Finalized)
+		}
 	})
 }
 
@@ -1069,6 +1133,7 @@ func TestWriterFlushEmulated(t *testing.T) {
 		vc := &Client{tc: client}
 		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 		w.Append = true
+		w.FinalizeOnClose = true
 		w.ChunkSize = 3 * MiB
 		var gotOffsets []int64
 		w.ProgressFunc = func(offset int64) {
@@ -1188,6 +1253,7 @@ func TestWriterFlushAtCloseEmulated(t *testing.T) {
 		vc := &Client{tc: client}
 		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
 		w.Append = true
+		w.FinalizeOnClose = true
 		w.ChunkSize = MiB
 		var gotOffsets []int64
 		w.ProgressFunc = func(offset int64) {
@@ -1232,6 +1298,119 @@ func TestWriterFlushAtCloseEmulated(t *testing.T) {
 		if diff := cmp.Diff(got, randomBytes3MiB); diff != "" {
 			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
 		}
+	})
+}
+
+// Tests small flush (under 512 bytes) to verify that logic avoiding
+// content type sniffing works as expected in this case.
+func TestWriterSmallFlushEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Create test bucket.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		testCases := []struct {
+			initialBytes    []byte
+			wantContentType string
+		}{
+			{
+				initialBytes:    []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+				wantContentType: "application/octet-stream",
+			},
+			{
+				initialBytes:    []byte("helloworld"),
+				wantContentType: "text/plain; charset=utf-8",
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.wantContentType, func(t *testing.T) {
+				objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+				vc := &Client{tc: client}
+				w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = true
+				w.ChunkSize = MiB
+				var gotOffsets []int64
+				w.ProgressFunc = func(offset int64) {
+					gotOffsets = append(gotOffsets, offset)
+				}
+				wantOffsets := []int64{10, 1010, 1010 + MiB, 1010 + 2*MiB, 3 * MiB}
+
+				// Make content with fixed first 10 bytes which will yield
+				// expected type when sniffed.
+				content := bytes.Clone(randomBytes3MiB)
+				copy(content, tc.initialBytes)
+
+				// Test Flush at a 10 byte offset.
+				n, err := w.Write(content[:10])
+				if err != nil {
+					t.Fatalf("writing data: got %v; want ok", err)
+				}
+				if n != 10 {
+					t.Errorf("writing data: got %v bytes written, want %v", n, 10)
+				}
+				off, err := w.Flush()
+				if err != nil {
+					t.Fatalf("flush: got %v; want ok", err)
+				}
+				if off != 10 {
+					t.Errorf("flushing data: got %v bytes written, want %v", off, 10)
+				}
+				// Write another 1000 bytes and flush again.
+				n, err = w.Write(content[10:1010])
+				if err != nil {
+					t.Fatalf("writing data: got %v; want ok", err)
+				}
+				if n != 1000 {
+					t.Errorf("writing data: got %v bytes written, want %v", n, 1000)
+				}
+				off, err = w.Flush()
+				if err != nil {
+					t.Fatalf("flush: got %v; want ok", err)
+				}
+				if off != 1010 {
+					t.Errorf("flushing data: got %v bytes written, want %v", off, 1010)
+				}
+				// Write the rest of the object
+				_, err = w.Write(content[1010:])
+				if err != nil {
+					t.Fatalf("writing data: got %v; want ok", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("closing writer: %v", err)
+				}
+				// Check offsets
+				if !slices.Equal(gotOffsets, wantOffsets) {
+					t.Errorf("progress offsets: got %v, want %v", gotOffsets, wantOffsets)
+				}
+
+				// Download object and check data
+				r, err := veneerClient.Bucket(bucket).Object(objName).NewReader(ctx)
+				defer r.Close()
+				if err != nil {
+					t.Fatalf("opening reading: %v", err)
+				}
+				wantLen := 3 * MiB
+				got, err := io.ReadAll(r)
+				if n := len(got); n != wantLen {
+					t.Fatalf("expected to read %d bytes, but got %d (%v)", wantLen, n, err)
+				}
+				if diff := cmp.Diff(got, content); diff != "" {
+					t.Errorf("checking written content: got(-), want(+):\n%s", diff)
+				}
+				// Check expected content type.
+				if got, want := r.Attrs.ContentType, tc.wantContentType; got != want {
+					t.Errorf("content type: got %v, want %v", got, want)
+				}
+			})
+		}
+
 	})
 }
 
@@ -1347,6 +1526,11 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		reader.Add(&res[1].buf, 100, 1000, callback2)
 		reader.Add(&res[2].buf, 0, 600, callback3)
 		reader.Add(&res[3].buf, 36, 999, callback4)
+
+		if err := reader.Error(); err != nil {
+			t.Fatalf("expected valid reader, got reader.Error: %v", err)
+		}
+
 		reader.Wait()
 		for _, k := range res {
 			if !bytes.Equal(k.buf.Bytes(), content[k.offset:k.offset+k.limit]) {
@@ -1359,6 +1543,10 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		}
 		if err = reader.Close(); err != nil {
 			t.Errorf("Error while closing reader %v", err)
+		}
+
+		if err := reader.Error(); err == nil {
+			t.Fatalf("reader.Error: expected a non-nil error, got %v", err)
 		}
 	})
 }
@@ -1393,20 +1581,20 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("opening reading: %v", err)
 		}
-		var err1 error
-		callback := func(x, y int64, err error) {
-			err1 = err
-		}
 		err = reader.Close()
 		if err != nil {
 			t.Errorf("Error while closing reader %v", err)
 		}
+		var callbackErr error
+		callback := func(x, y int64, err error) {
+			callbackErr = err
+		}
 		reader.Add(buf, 10, 3000, callback)
-		if err1 == nil {
+		if callbackErr == nil {
 			t.Fatalf("Expected error: stream to be closed")
 		}
-		if got, want := err1, fmt.Errorf("stream is closed, can't add range"); got.Error() != want.Error() {
-			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		if got, want := callbackErr, "stream is closed"; !strings.Contains(got.Error(), want) {
+			t.Errorf("err: got %q, want err to contain %q", got.Error(), want)
 		}
 	})
 }
@@ -1889,6 +2077,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 						progress: nil,
 						setObj:   nil,
 						setFlush: func(f func() (int64, error)) {},
+						setSize:  func(int64) {},
 					})
 					return err
 				},
@@ -2259,6 +2448,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					progress:             func(_ int64) {}, // no-op
 					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
 					setFlush:             func(func() (int64, error)) {}, // no-op
+					setSize:              func(int64) {},
 				}
 
 				pw, err := client.OpenWriter(params)
@@ -2354,6 +2544,7 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 			progress:           func(_ int64) {}, // no-op
 			setObj:             func(_ *ObjectAttrs) {},
 			setFlush:           func(f func() (int64, error)) {},
+			setSize:            func(int64) {},
 		}
 
 		pw, err := client.OpenWriter(params, &idempotentOption{true})

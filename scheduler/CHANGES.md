@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.6...scheduler/v1.11.7) (2025-04-15)
+
+
+### Bug Fixes
+
+* **scheduler:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.5...scheduler/v1.11.6) (2025-03-13)
 
 

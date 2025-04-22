@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/apphub/v0.3.0...apphub/v0.3.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **apphub:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/apphub/v0.2.4...apphub/v0.3.0) (2025-03-27)
+
+
+### Features
+
+* **apphub:** Add enum `Type.GLOBAL` ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
+
+### Documentation
+
+* **apphub:** Misc comment updates, formatting ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
 ## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/apphub/v0.2.3...apphub/v0.2.4) (2025-03-13)
 
 
