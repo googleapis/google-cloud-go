@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/routing/apiv2",
-    "version": "$VERSION",
+    "version": "1.20.2",
     "language": "GO",
     "apis": [
       {
