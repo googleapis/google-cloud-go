@@ -103,6 +103,7 @@ use (
 	./lifesciences
 	./logging
 	./longrunning
+	./lustre
 	./managedidentities
 	./managedkafka
 	./maps
