@@ -906,6 +906,7 @@ func TestOpenWriterEmulated(t *testing.T) {
 			progress: func(_ int64) {}, // no-op
 			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
 			setFlush: func(f func() (int64, error)) {},
+			setSize:  func(int64) {},
 		}
 		pw, err := client.OpenWriter(params)
 		if err != nil {
@@ -2076,6 +2077,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 						progress: nil,
 						setObj:   nil,
 						setFlush: func(f func() (int64, error)) {},
+						setSize:  func(int64) {},
 					})
 					return err
 				},
@@ -2446,6 +2448,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					progress:             func(_ int64) {}, // no-op
 					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
 					setFlush:             func(func() (int64, error)) {}, // no-op
+					setSize:              func(int64) {},
 				}
 
 				pw, err := client.OpenWriter(params)
@@ -2541,6 +2544,7 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 			progress:           func(_ int64) {}, // no-op
 			setObj:             func(_ *ObjectAttrs) {},
 			setFlush:           func(f func() (int64, error)) {},
+			setSize:            func(int64) {},
 		}
 
 		pw, err := client.OpenWriter(params, &idempotentOption{true})
