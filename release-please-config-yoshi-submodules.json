@@ -249,6 +249,9 @@
         "longrunning": {
             "component": "longrunning"
         },
+        "lustre": {
+            "component": "lustre"
+        },
         "managedidentities": {
             "component": "managedidentities"
         },
