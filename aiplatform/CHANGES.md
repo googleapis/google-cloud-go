@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.83.0...aiplatform/v1.84.0) (2025-04-22)
+
+
+### Features
+
+* **aiplatform:** Deprecated EventActions.transfer_to_agent and replaced with EventActions.transfer_agent ([2551567](https://github.com/googleapis/google-cloud-go/commit/25515675379c6f0ff57cc18565293971d65d1bf2))
+* **aiplatform:** Model Registry Model Checkpoint API ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+
+### Bug Fixes
+
+* **aiplatform:** Removed support for session resource paths that do not include reasoning engine ([#12023](https://github.com/googleapis/google-cloud-go/issues/12023)) ([2551567](https://github.com/googleapis/google-cloud-go/commit/25515675379c6f0ff57cc18565293971d65d1bf2))
+
 ## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.1...aiplatform/v1.83.0) (2025-04-15)
 
 
