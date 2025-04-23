@@ -158,9 +158,9 @@ func TestRunWithRetryOnInternalAuthError(t *testing.T) {
 	// Use a very short backoff for testing purposes to speed it up.
 	originalBackoff := DefaultRetryBackoff
 	DefaultRetryBackoff = gax.Backoff{
-		Initial:    1 * time.Millisecond,
-		Max:        10 * time.Millisecond,
-		Multiplier: 1.1,
+		Initial:    1 * time.Nanosecond,
+		Max:        10 * time.Nanosecond,
+		Multiplier: 1.0,
 	}
 	defer func() { DefaultRetryBackoff = originalBackoff }() // Restore original backoff
 
