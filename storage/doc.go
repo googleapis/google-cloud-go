@@ -355,8 +355,10 @@ enabling requests to skip some proxy steps and reducing responce latency.
 Requirements to use Direct Connectivity include:
 
   - Your application must be running inside Google Cloud.
-  - Your Cloud Storage bucket must be located in the same region as your VM or
-    compute environment.
+  - Your Cloud Storage [bucket location] must overlap with your VM or compute
+    environment zone. For example, if your VM is in us-east1a, your bucket
+    must be located in either us-east1 (single region), nam4 (dual region),
+    or us (multi-region).
   - Your client must use service account authentication.
 
 Additional requirements for Direct Connectivity are documented in the
@@ -392,6 +394,7 @@ client, which is available as a subpackage in this module. See package docs at
 [Storage Control API]: https://cloud.google.com/storage/docs/reference/rpc/google.storage.control.v2
 [Cloud Storage gRPC API]: https://cloud.google.com/storage/docs/enable-grpc-api
 [Direct Connectivity]: https://cloud.google.com/vpc-service-controls/docs/set-up-private-connectivity#direct-connectivity
+[bucket location]: https://cloud.google.com/storage/docs/locations
 [Cloud Storage gRPC docs]: https://cloud.google.com/storage/docs/enable-grpc-api#limitations
 [gRPC client-side metrics]: https://cloud.google.com/storage/docs/client-side-metrics
 */
