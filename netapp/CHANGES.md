@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.2...netapp/v1.7.3) (2025-04-22)
+
+
+### Documentation
+
+* **netapp:** A comment for field `cooling_threshold_days` in message `.google.cloud.netapp.v1.TieringPolicy` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
 ## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.1...netapp/v1.7.2) (2025-04-15)
 
 
