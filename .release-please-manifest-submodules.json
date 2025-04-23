@@ -81,6 +81,7 @@
     "language": "1.14.5",
     "lifesciences": "0.10.6",
     "longrunning": "0.6.7",
+    "lustre": "0.0.0",
     "managedidentities": "1.7.6",
     "managedkafka": "0.5.1",
     "maps": "1.20.2",

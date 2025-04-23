@@ -66,7 +66,6 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 		// See b/27794742.
 		!strings.Contains(err.Error(), "Connection closed with unknown cause") &&
 		!strings.Contains(err.Error(), "Received unexpected EOS on DATA frame from server") &&
-		// See b/331865203.
 		!strings.Contains(err.Error(), "Authentication backend internal server error. Please retry") {
 		return 0, false
 	}

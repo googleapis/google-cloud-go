@@ -86,6 +86,7 @@ modules:
   - lifesciences
   - logging
   - longrunning
+  - lustre
   - managedidentities
   - managedkafka
   - maps
@@ -673,6 +674,9 @@ service-configs:
   - input-directory: google/cloud/lifesciences/v2beta
     service-config: lifesciences_v2beta.yaml
     import-path: cloud.google.com/go/lifesciences/apiv2beta
+  - input-directory: google/cloud/lustre/v1
+    service-config: lustre_v1.yaml
+    import-path: cloud.google.com/go/lustre/apiv1
   - input-directory: google/cloud/managedidentities/v1
     service-config: managedidentities_v1.yaml
     import-path: cloud.google.com/go/managedidentities/apiv1
@@ -930,6 +934,9 @@ service-configs:
   - input-directory: google/shopping/merchant/notifications/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
+  - input-directory: google/shopping/merchant/ordertracking/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta
   - input-directory: google/shopping/merchant/products/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/products/apiv1beta
