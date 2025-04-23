@@ -1063,6 +1063,10 @@ func contextMetadataFromBidiReadObject(req *storagepb.BidiReadObjectRequest) []s
 }
 
 func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (mr *MultiRangeDownloader, err error) {
+	if !c.config.grpcBidiReads {
+		return nil, errors.New("storage: MultiRangeDownloader requires the experimental.WithGRPCBidiReads option")
+	}
+	
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewMultiRangeDownloader")
 	defer func() { trace.EndSpan(ctx, err) }()
 	s := callSettings(c.settings, opts...)
