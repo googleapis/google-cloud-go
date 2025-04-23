@@ -337,7 +337,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	var p *pb.Profile
 	md := grpcmd.New(nil)
 
-	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		debugLog("creating a new profile via profiler service")
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
@@ -361,7 +361,11 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 		}
 	}))
 
-	debugLog("successfully created profile %v", p.GetProfileType())
+	if err != nil {
+		debugLog("failed to create new profile: %v", err)
+	} else {
+		debugLog("successfully created profile %v", p.GetProfileType())
+	}
 	return p
 }
 
