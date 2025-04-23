@@ -1182,7 +1182,7 @@ service-configs:
     import-path: cloud.google.com/go/dlp/apiv2
   - input-directory: google/pubsub/v1
     service-config: pubsub_v1.yaml
-    import-path: cloud.google.com/go/pubsub/apiv1
+    import-path: cloud.google.com/go/pubsub/v2/apiv1
   - input-directory: google/spanner/adapter/v1
     service-config: spanner.yaml
     import-path: cloud.google.com/go/spanner/adapter/apiv1

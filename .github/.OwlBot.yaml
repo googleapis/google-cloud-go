@@ -505,7 +505,7 @@ deep-remove-regex:
   - /policytroubleshooter/iam/apiv3/
   - /privatecatalog/apiv1beta1/
   - /privilegedaccessmanager/apiv1/
-  - /pubsub/apiv1/
+  - /pubsub/v2/apiv1/
   - /pubsublite/apiv1/
   - /rapidmigrationassessment/apiv1/
   - /recaptchaenterprise/apiv1/
@@ -614,9 +614,10 @@ deep-preserve-regex:
   - /networkconnectivity/apiv1/policy_based_routing_client.go
   - /networkconnectivity/apiv1/policy_based_routing_client_example_test.go
   - /networkconnectivity/apiv1/networkconnectivitypb/policy_based_routing.pb.go
-  - /pubsub/apiv1/iam.go
-  - /pubsub/apiv1/ListTopics_smoke_test.go
-  - /pubsub/apiv1/pubsub_pull_example_test.go
+  # Preserve pubsub apiv1 until deprecation date in a year even though it's not generated.
+  - /pubsub/apiv1/.*
+  - /pubsub/v2/apiv1/iam.go
+  - /pubsub/v2/apiv1/ListTopics_smoke_test.go
   - /secretmanager/apiv1/iam.go
   - /secretmanager/apiv1/iam_example_test.go
   - /spanner/admin/database/apiv1/backup.go
