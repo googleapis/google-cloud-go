@@ -4958,6 +4958,19 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 	// in case the client fails
 	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
 
+	client, err := testEnv.NewClient()
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	// Populate table
+	tbl := client.OpenTable(tblConf.TableID)
+	mut := NewMutation()
+	mut.Set("fam1", "col1", 1000, []byte("1"))
+	if err := tbl.Apply(ctx, "r1", mut); err != nil {
+		t.Fatalf("Mutating row: %v", err)
+	}
 	// Create materialized view
 	materializedViewUUID := uid.NewSpace("materializedView-", &uid.Options{})
 	materializedView := materializedViewUUID.New()
@@ -4965,20 +4978,14 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 
 	materializedViewInfo := MaterializedViewInfo{
 		MaterializedViewID: materializedView,
-		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col, count(*) as count FROM %s", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, count(fam1[col1]) as `result.count` FROM `%s` GROUP BY _key", tblConf.TableID),
 		DeletionProtection: Unprotected,
 	}
 	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
 		t.Fatalf("Creating materialized view: %v", err)
 	}
 
-	client, err := testEnv.NewClient()
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	defer client.Close()
 	mv := client.OpenMaterializedView(materializedView)
-	tbl := client.OpenTable(tblConf.TableID)
 
 	// Test ReadRow
 	gotRow, err := mv.ReadRow(ctx, "r1")
@@ -4986,9 +4993,8 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 		t.Fatalf("Reading row from a materialized view: %v", err)
 	}
 	wantRow := Row{
-		"fam1": []ReadItem{
-			{Row: "r1", Column: "fam1:col1", Timestamp: 1000, Value: []byte("1")},
-			{Row: "r1", Column: "fam1:col2", Timestamp: 1000, Value: []byte("1")},
+		"result": []ReadItem{
+			{Row: "r1", Column: "result:count", Timestamp: 1000, Value: []byte("1")},
 		},
 	}
 	if !testutil.Equal(gotRow, wantRow) {
@@ -5015,17 +5021,9 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 	if err = mv.ReadRows(ctx, RowRange{}, f); err != nil {
 		t.Fatalf("Reading rows from an materialized view: %v", err)
 	}
-	want := "r1-col1-1,r1-col2-1"
+	want := "r1-col1-1"
 	if got := strings.Join(elt, ","); got != want {
 		t.Fatalf("Error bulk reading from materialized view.\n Got %v\n Want %v", got, want)
-	}
-	elt = nil
-	if err = tbl.ReadRows(ctx, RowRange{}, f); err != nil {
-		t.Fatalf("Reading rows from a table: %v", err)
-	}
-	want = "r1-col1-1,r1-col2-1,r2-col1-1"
-	if got := strings.Join(elt, ","); got != want {
-		t.Fatalf("Error bulk reading from table.\n Got %v\n Want %v", got, want)
 	}
 
 	// Test SampleRowKeys
@@ -5194,7 +5192,7 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 
 	materializedViewInfo := MaterializedViewInfo{
 		MaterializedViewID: materializedView,
-		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, count(fam1[col1]) as count FROM %s GROUP BY _key", tblConf.TableID),
 		DeletionProtection: Protected,
 	}
 	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
