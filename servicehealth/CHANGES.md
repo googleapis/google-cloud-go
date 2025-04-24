@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.2.2...servicehealth/v1.2.3) (2025-04-15)
+
+
+### Bug Fixes
+
+* **servicehealth:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.2.1...servicehealth/v1.2.2) (2025-03-13)
 
 

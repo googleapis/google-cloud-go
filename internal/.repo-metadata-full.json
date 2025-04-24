@@ -1099,6 +1099,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/devicestreaming/apiv1": {
+    "api_shortname": "devicestreaming",
+    "distribution_name": "cloud.google.com/go/devicestreaming/apiv1",
+    "description": "Device Streaming API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/devicestreaming/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/dialogflow/apiv2": {
     "api_shortname": "dialogflow",
     "distribution_name": "cloud.google.com/go/dialogflow/apiv2",
@@ -1617,6 +1627,16 @@
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/longrunning/latest/autogen",
     "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/lustre/apiv1": {
+    "api_shortname": "lustre",
+    "distribution_name": "cloud.google.com/go/lustre/apiv1",
+    "description": "Google Cloud Managed Lustre API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/lustre/latest/apiv1",
+    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/managedidentities/apiv1": {
@@ -2312,7 +2332,7 @@
   "cloud.google.com/go/retail/apiv2alpha": {
     "api_shortname": "retail",
     "distribution_name": "cloud.google.com/go/retail/apiv2alpha",
-    "description": "Vertex AI Search for Retail API",
+    "description": "Vertex AI Search for commerce API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2alpha",

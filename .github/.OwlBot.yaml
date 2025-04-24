@@ -108,6 +108,7 @@ deep-remove-regex:
   # - /debugger/apiv2/
   - /deploy/apiv1/
   - /developerconnect/apiv1/
+  - /devicestreaming/apiv1/
   - /dialogflow/apiv2/
   - /dialogflow/apiv2beta1/
   - /dialogflow/cx/apiv3/
@@ -246,6 +247,7 @@ deep-remove-regex:
   # - /internal/generated/snippets/debugger/apiv2/
   - /internal/generated/snippets/deploy/apiv1/
   - /internal/generated/snippets//developerconnect/apiv1/
+  - /internal/generated/snippets//devicestreaming/apiv1/
   - /internal/generated/snippets/dialogflow/apiv2/
   - /internal/generated/snippets/dialogflow/apiv2beta1/
   - /internal/generated/snippets/dialogflow/cx/apiv3/
@@ -293,6 +295,7 @@ deep-remove-regex:
   - /internal/generated/snippets/lifesciences/apiv2beta/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
+  - /internal/generated/snippets/lustre/apiv1/
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
@@ -388,6 +391,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/conversions/v1beta/
   - /internal/generated/snippets/shopping/merchant/datasources/v1beta/
   - /internal/generated/snippets/shopping/merchant/notifications/v1beta/
+  - /internal/generated/snippets/shopping/merchant/ordertracking/v1beta/
   - /internal/generated/snippets/shopping/merchant/products/v1beta/
   - /internal/generated/snippets/shopping/merchant/promotions/v1beta/
   - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
@@ -446,6 +450,7 @@ deep-remove-regex:
   - /lifesciences/apiv2beta/
   - /logging/apiv2/
   - /longrunning/autogen/
+  - /lustre/apiv1/
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
@@ -544,6 +549,7 @@ deep-remove-regex:
   - /shopping/merchant/conversions/apiv1beta/
   - /shopping/merchant/datasources/apiv1beta/
   - /shopping/merchant/notifications/apiv1beta/
+  - /shopping/merchant/ordertracking/apiv1beta/
   - /shopping/merchant/products/apiv1beta/
   - /shopping/merchant/promotions/apiv1beta/
   - /shopping/merchant/quota/apiv1beta/
@@ -851,6 +857,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/developerconnect/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/devicestreaming/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/dialogflow/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/dialogflow/v2beta1/cloud.google.com/go
@@ -944,6 +952,8 @@ deep-copy-regex:
   - source: /google/logging/v2/cloud.google.com/go
     dest: /
   - source: /google/longrunning/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/lustre/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go
     dest: /
@@ -1144,6 +1154,8 @@ deep-copy-regex:
   - source: /google/shopping/merchant/datasources/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/notifications/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/ordertracking/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/products/v1beta/cloud.google.com/go
     dest: /

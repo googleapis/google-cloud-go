@@ -54,7 +54,10 @@ type CssProductInput struct {
 
 	// The name of the CSS Product input.
 	// Format:
-	// `accounts/{account}/cssProductInputs/{css_product_input}`
+	// `accounts/{account}/cssProductInputs/{css_product_input}`, where the
+	// last section `css_product_input` consists of 3 parts:
+	// contentLanguage~feedLabel~offerId. Example:
+	// accounts/123/cssProductInputs/de~DE~rawProvidedId123
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The name of the processed CSS Product.
 	// Format:
@@ -350,7 +353,10 @@ type DeleteCssProductInputRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the CSS product input resource to delete.
-	// Format: accounts/{account}/cssProductInputs/{css_product_input}
+	// Format: accounts/{account}/cssProductInputs/{css_product_input}, where the
+	// last section `css_product_input` consists of 3 parts:
+	// contentLanguage~feedLabel~offerId. Example:
+	// accounts/123/cssProductInputs/de~DE~rawProvidedId123
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The Content API Supplemental Feed ID.
 	// The field must not be set if the action applies to a primary feed.

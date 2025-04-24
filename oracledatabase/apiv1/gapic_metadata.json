@@ -145,9 +145,24 @@
                 "ListOperations"
               ]
             },
+            "RestartAutonomousDatabase": {
+              "methods": [
+                "RestartAutonomousDatabase"
+              ]
+            },
             "RestoreAutonomousDatabase": {
               "methods": [
                 "RestoreAutonomousDatabase"
+              ]
+            },
+            "StartAutonomousDatabase": {
+              "methods": [
+                "StartAutonomousDatabase"
+              ]
+            },
+            "StopAutonomousDatabase": {
+              "methods": [
+                "StopAutonomousDatabase"
               ]
             }
           }

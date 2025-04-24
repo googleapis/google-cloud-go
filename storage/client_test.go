@@ -906,6 +906,7 @@ func TestOpenWriterEmulated(t *testing.T) {
 			progress: func(_ int64) {}, // no-op
 			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
 			setFlush: func(f func() (int64, error)) {},
+			setSize:  func(int64) {},
 		}
 		pw, err := client.OpenWriter(params)
 		if err != nil {
@@ -1580,20 +1581,20 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("opening reading: %v", err)
 		}
-		var err1 error
-		callback := func(x, y int64, err error) {
-			err1 = err
-		}
 		err = reader.Close()
 		if err != nil {
 			t.Errorf("Error while closing reader %v", err)
 		}
+		var callbackErr error
+		callback := func(x, y int64, err error) {
+			callbackErr = err
+		}
 		reader.Add(buf, 10, 3000, callback)
-		if err1 == nil {
+		if callbackErr == nil {
 			t.Fatalf("Expected error: stream to be closed")
 		}
-		if got, want := err1, fmt.Errorf("stream is closed, can't add range"); got.Error() != want.Error() {
-			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		if got, want := callbackErr, "stream is closed"; !strings.Contains(got.Error(), want) {
+			t.Errorf("err: got %q, want err to contain %q", got.Error(), want)
 		}
 	})
 }
@@ -2076,6 +2077,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 						progress: nil,
 						setObj:   nil,
 						setFlush: func(f func() (int64, error)) {},
+						setSize:  func(int64) {},
 					})
 					return err
 				},
@@ -2446,6 +2448,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					progress:             func(_ int64) {}, // no-op
 					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
 					setFlush:             func(func() (int64, error)) {}, // no-op
+					setSize:              func(int64) {},
 				}
 
 				pw, err := client.OpenWriter(params)
@@ -2541,6 +2544,7 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 			progress:           func(_ int64) {}, // no-op
 			setObj:             func(_ *ObjectAttrs) {},
 			setFlush:           func(f func() (int64, error)) {},
+			setSize:            func(int64) {},
 		}
 
 		pw, err := client.OpenWriter(params, &idempotentOption{true})
