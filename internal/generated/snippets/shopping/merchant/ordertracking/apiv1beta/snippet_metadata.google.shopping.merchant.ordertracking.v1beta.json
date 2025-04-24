@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.ordertracking.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_OrderTrackingSignalsService_CreateOrderTrackingSignal_sync",
+      "title": "merchantapi CreateOrderTrackingSignal Sample",
+      "description": "CreateOrderTrackingSignal creates new order tracking signal.",
+      "file": "OrderTrackingSignalsClient/CreateOrderTrackingSignal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateOrderTrackingSignal",
+        "fullName": "google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsClient.CreateOrderTrackingSignal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "ordertrackingpb.CreateOrderTrackingSignalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*ordertrackingpb.OrderTrackingSignal",
+        "client": {
+          "shortName": "OrderTrackingSignalsClient",
+          "fullName": "google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsClient"
+        },
+        "method": {
+          "shortName": "CreateOrderTrackingSignal",
+          "fullName": "google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsService.CreateOrderTrackingSignal",
+          "service": {
+            "shortName": "OrderTrackingSignalsService",
+            "fullName": "google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

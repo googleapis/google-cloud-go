@@ -1,0 +1,2028 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/pubsub/v2/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.pubsub.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_CreateTopic_sync",
+      "title": "pubsub CreateTopic Sample",
+      "description": "CreateTopic creates the given topic with the given name. See the [resource name rules]\n(https: //cloud.google.com/pubsub/docs/pubsub-basics#resource_names).",
+      "file": "PublisherClient/CreateTopic/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTopic",
+        "fullName": "google.pubsub.v1.PublisherClient.CreateTopic",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.Topic",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Topic",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "CreateTopic",
+          "fullName": "google.pubsub.v1.Publisher.CreateTopic",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_DeleteTopic_sync",
+      "title": "pubsub DeleteTopic Sample",
+      "description": "DeleteTopic deletes the topic with the given name. Returns `NOT_FOUND` if the topic\ndoes not exist. After a topic is deleted, a new topic may be created with\nthe same name; this is an entirely new topic with none of the old\nconfiguration or subscriptions. Existing subscriptions to this topic are\nnot deleted, but their `topic` field is set to `_deleted-topic_`.",
+      "file": "PublisherClient/DeleteTopic/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTopic",
+        "fullName": "google.pubsub.v1.PublisherClient.DeleteTopic",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.DeleteTopicRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "DeleteTopic",
+          "fullName": "google.pubsub.v1.Publisher.DeleteTopic",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_DetachSubscription_sync",
+      "title": "pubsub DetachSubscription Sample",
+      "description": "DetachSubscription detaches a subscription from this topic. All messages retained in the\nsubscription are dropped. Subsequent `Pull` and `StreamingPull` requests\nwill return FAILED_PRECONDITION. If the subscription is a push\nsubscription, pushes to the endpoint will stop.",
+      "file": "PublisherClient/DetachSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DetachSubscription",
+        "fullName": "google.pubsub.v1.PublisherClient.DetachSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.DetachSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.DetachSubscriptionResponse",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "DetachSubscription",
+          "fullName": "google.pubsub.v1.Publisher.DetachSubscription",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_GetIamPolicy_sync",
+      "title": "pubsub GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "PublisherClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.pubsub.v1.PublisherClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_GetTopic_sync",
+      "title": "pubsub GetTopic Sample",
+      "description": "GetTopic gets the configuration of a topic.",
+      "file": "PublisherClient/GetTopic/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTopic",
+        "fullName": "google.pubsub.v1.PublisherClient.GetTopic",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.GetTopicRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Topic",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "GetTopic",
+          "fullName": "google.pubsub.v1.Publisher.GetTopic",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_ListTopicSnapshots_sync",
+      "title": "pubsub ListTopicSnapshots Sample",
+      "description": "ListTopicSnapshots lists the names of the snapshots on this topic. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
+      "file": "PublisherClient/ListTopicSnapshots/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTopicSnapshots",
+        "fullName": "google.pubsub.v1.PublisherClient.ListTopicSnapshots",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ListTopicSnapshotsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StringIterator",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "ListTopicSnapshots",
+          "fullName": "google.pubsub.v1.Publisher.ListTopicSnapshots",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_ListTopicSubscriptions_sync",
+      "title": "pubsub ListTopicSubscriptions Sample",
+      "description": "ListTopicSubscriptions lists the names of the attached subscriptions on this topic.",
+      "file": "PublisherClient/ListTopicSubscriptions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTopicSubscriptions",
+        "fullName": "google.pubsub.v1.PublisherClient.ListTopicSubscriptions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ListTopicSubscriptionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StringIterator",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "ListTopicSubscriptions",
+          "fullName": "google.pubsub.v1.Publisher.ListTopicSubscriptions",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_ListTopics_sync",
+      "title": "pubsub ListTopics Sample",
+      "description": "ListTopics lists matching topics.",
+      "file": "PublisherClient/ListTopics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTopics",
+        "fullName": "google.pubsub.v1.PublisherClient.ListTopics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ListTopicsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TopicIterator",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "ListTopics",
+          "fullName": "google.pubsub.v1.Publisher.ListTopics",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_Publish_sync",
+      "title": "pubsub Publish Sample",
+      "description": "Publish adds one or more messages to the topic. Returns `NOT_FOUND` if the topic\ndoes not exist.",
+      "file": "PublisherClient/Publish/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Publish",
+        "fullName": "google.pubsub.v1.PublisherClient.Publish",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.PublishRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.PublishResponse",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "Publish",
+          "fullName": "google.pubsub.v1.Publisher.Publish",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_SetIamPolicy_sync",
+      "title": "pubsub SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "PublisherClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.pubsub.v1.PublisherClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_TestIamPermissions_sync",
+      "title": "pubsub TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "PublisherClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.pubsub.v1.PublisherClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Publisher_UpdateTopic_sync",
+      "title": "pubsub UpdateTopic Sample",
+      "description": "UpdateTopic updates an existing topic by updating the fields specified in the update\nmask. Note that certain properties of a topic are not modifiable.",
+      "file": "PublisherClient/UpdateTopic/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTopic",
+        "fullName": "google.pubsub.v1.PublisherClient.UpdateTopic",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.UpdateTopicRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Topic",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.pubsub.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "UpdateTopic",
+          "fullName": "google.pubsub.v1.Publisher.UpdateTopic",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.pubsub.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_CommitSchema_sync",
+      "title": "pubsub CommitSchema Sample",
+      "description": "CommitSchema commits a new schema revision to an existing schema.",
+      "file": "SchemaClient/CommitSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CommitSchema",
+        "fullName": "google.pubsub.v1.SchemaClient.CommitSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.CommitSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Schema",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "CommitSchema",
+          "fullName": "google.pubsub.v1.SchemaService.CommitSchema",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_CreateSchema_sync",
+      "title": "pubsub CreateSchema Sample",
+      "description": "CreateSchema creates a schema.",
+      "file": "SchemaClient/CreateSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSchema",
+        "fullName": "google.pubsub.v1.SchemaClient.CreateSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.CreateSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Schema",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "CreateSchema",
+          "fullName": "google.pubsub.v1.SchemaService.CreateSchema",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_DeleteSchema_sync",
+      "title": "pubsub DeleteSchema Sample",
+      "description": "DeleteSchema deletes a schema.",
+      "file": "SchemaClient/DeleteSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSchema",
+        "fullName": "google.pubsub.v1.SchemaClient.DeleteSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.DeleteSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "DeleteSchema",
+          "fullName": "google.pubsub.v1.SchemaService.DeleteSchema",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_DeleteSchemaRevision_sync",
+      "title": "pubsub DeleteSchemaRevision Sample",
+      "description": "DeleteSchemaRevision deletes a specific schema revision.",
+      "file": "SchemaClient/DeleteSchemaRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSchemaRevision",
+        "fullName": "google.pubsub.v1.SchemaClient.DeleteSchemaRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.DeleteSchemaRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Schema",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "DeleteSchemaRevision",
+          "fullName": "google.pubsub.v1.SchemaService.DeleteSchemaRevision",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_GetIamPolicy_sync",
+      "title": "pubsub GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "SchemaClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.pubsub.v1.SchemaClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_GetSchema_sync",
+      "title": "pubsub GetSchema Sample",
+      "description": "GetSchema gets a schema.",
+      "file": "SchemaClient/GetSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSchema",
+        "fullName": "google.pubsub.v1.SchemaClient.GetSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.GetSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Schema",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "GetSchema",
+          "fullName": "google.pubsub.v1.SchemaService.GetSchema",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_ListSchemaRevisions_sync",
+      "title": "pubsub ListSchemaRevisions Sample",
+      "description": "ListSchemaRevisions lists all schema revisions for the named schema.",
+      "file": "SchemaClient/ListSchemaRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSchemaRevisions",
+        "fullName": "google.pubsub.v1.SchemaClient.ListSchemaRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ListSchemaRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SchemaIterator",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "ListSchemaRevisions",
+          "fullName": "google.pubsub.v1.SchemaService.ListSchemaRevisions",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_ListSchemas_sync",
+      "title": "pubsub ListSchemas Sample",
+      "description": "ListSchemas lists schemas in a project.",
+      "file": "SchemaClient/ListSchemas/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSchemas",
+        "fullName": "google.pubsub.v1.SchemaClient.ListSchemas",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ListSchemasRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SchemaIterator",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "ListSchemas",
+          "fullName": "google.pubsub.v1.SchemaService.ListSchemas",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_RollbackSchema_sync",
+      "title": "pubsub RollbackSchema Sample",
+      "description": "RollbackSchema creates a new schema revision that is a copy of the provided revision_id.",
+      "file": "SchemaClient/RollbackSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RollbackSchema",
+        "fullName": "google.pubsub.v1.SchemaClient.RollbackSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.RollbackSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Schema",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "RollbackSchema",
+          "fullName": "google.pubsub.v1.SchemaService.RollbackSchema",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_SetIamPolicy_sync",
+      "title": "pubsub SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "SchemaClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.pubsub.v1.SchemaClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_TestIamPermissions_sync",
+      "title": "pubsub TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "SchemaClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.pubsub.v1.SchemaClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_ValidateMessage_sync",
+      "title": "pubsub ValidateMessage Sample",
+      "description": "ValidateMessage validates a message against a schema.",
+      "file": "SchemaClient/ValidateMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateMessage",
+        "fullName": "google.pubsub.v1.SchemaClient.ValidateMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ValidateMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.ValidateMessageResponse",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "ValidateMessage",
+          "fullName": "google.pubsub.v1.SchemaService.ValidateMessage",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_SchemaService_ValidateSchema_sync",
+      "title": "pubsub ValidateSchema Sample",
+      "description": "ValidateSchema validates a schema.",
+      "file": "SchemaClient/ValidateSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateSchema",
+        "fullName": "google.pubsub.v1.SchemaClient.ValidateSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ValidateSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.ValidateSchemaResponse",
+        "client": {
+          "shortName": "SchemaClient",
+          "fullName": "google.pubsub.v1.SchemaClient"
+        },
+        "method": {
+          "shortName": "ValidateSchema",
+          "fullName": "google.pubsub.v1.SchemaService.ValidateSchema",
+          "service": {
+            "shortName": "SchemaService",
+            "fullName": "google.pubsub.v1.SchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_Acknowledge_sync",
+      "title": "pubsub Acknowledge Sample",
+      "description": "Acknowledge acknowledges the messages associated with the `ack_ids` in the\n`AcknowledgeRequest`. The Pub/Sub system can remove the relevant messages\nfrom the subscription.\n\nAcknowledging a message whose ack deadline has expired may succeed,\nbut such a message may be redelivered later. Acknowledging a message more\nthan once will not result in an error.",
+      "file": "SubscriberClient/Acknowledge/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Acknowledge",
+        "fullName": "google.pubsub.v1.SubscriberClient.Acknowledge",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.AcknowledgeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "Acknowledge",
+          "fullName": "google.pubsub.v1.Subscriber.Acknowledge",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_CreateSnapshot_sync",
+      "title": "pubsub CreateSnapshot Sample",
+      "description": "CreateSnapshot creates a snapshot from the requested subscription. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.\nIf the snapshot already exists, returns `ALREADY_EXISTS`.\nIf the requested subscription doesn't exist, returns `NOT_FOUND`.\nIf the backlog in the subscription is too old -- and the resulting snapshot\nwould expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.\nSee also the `Snapshot.expire_time` field. If the name is not provided in\nthe request, the server will assign a random\nname for this snapshot on the same project as the subscription, conforming\nto the [resource name format]\n(https: //cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The\ngenerated name is populated in the returned Snapshot object. Note that for\nREST API requests, you must specify a name in the request.",
+      "file": "SubscriberClient/CreateSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSnapshot",
+        "fullName": "google.pubsub.v1.SubscriberClient.CreateSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.CreateSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Snapshot",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "CreateSnapshot",
+          "fullName": "google.pubsub.v1.Subscriber.CreateSnapshot",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_CreateSubscription_sync",
+      "title": "pubsub CreateSubscription Sample",
+      "description": "CreateSubscription creates a subscription to a given topic. See the [resource name rules]\n(https: //cloud.google.com/pubsub/docs/pubsub-basics#resource_names).\nIf the subscription already exists, returns `ALREADY_EXISTS`.\nIf the corresponding topic doesn't exist, returns `NOT_FOUND`.\n\nIf the name is not provided in the request, the server will assign a random\nname for this subscription on the same project as the topic, conforming\nto the [resource name format]\n(https: //cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The\ngenerated name is populated in the returned Subscription object. Note that\nfor REST API requests, you must specify a name in the request.",
+      "file": "SubscriberClient/CreateSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSubscription",
+        "fullName": "google.pubsub.v1.SubscriberClient.CreateSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.Subscription",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Subscription",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "CreateSubscription",
+          "fullName": "google.pubsub.v1.Subscriber.CreateSubscription",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_DeleteSnapshot_sync",
+      "title": "pubsub DeleteSnapshot Sample",
+      "description": "DeleteSnapshot removes an existing snapshot. Snapshots are used in [Seek]\n(https: //cloud.google.com/pubsub/docs/replay-overview) operations, which\nallow you to manage message acknowledgments in bulk. That is, you can set\nthe acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.\nWhen the snapshot is deleted, all messages retained in the snapshot\nare immediately dropped. After a snapshot is deleted, a new one may be\ncreated with the same name, but the new one has no association with the old\nsnapshot or its subscription, unless the same subscription is specified.",
+      "file": "SubscriberClient/DeleteSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSnapshot",
+        "fullName": "google.pubsub.v1.SubscriberClient.DeleteSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.DeleteSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "DeleteSnapshot",
+          "fullName": "google.pubsub.v1.Subscriber.DeleteSnapshot",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_DeleteSubscription_sync",
+      "title": "pubsub DeleteSubscription Sample",
+      "description": "DeleteSubscription deletes an existing subscription. All messages retained in the subscription\nare immediately dropped. Calls to `Pull` after deletion will return\n`NOT_FOUND`. After a subscription is deleted, a new one may be created with\nthe same name, but the new one has no association with the old\nsubscription or its topic unless the same topic is specified.",
+      "file": "SubscriberClient/DeleteSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSubscription",
+        "fullName": "google.pubsub.v1.SubscriberClient.DeleteSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.DeleteSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "DeleteSubscription",
+          "fullName": "google.pubsub.v1.Subscriber.DeleteSubscription",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_GetIamPolicy_sync",
+      "title": "pubsub GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "SubscriberClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.pubsub.v1.SubscriberClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_GetSnapshot_sync",
+      "title": "pubsub GetSnapshot Sample",
+      "description": "GetSnapshot gets the configuration details of a snapshot. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
+      "file": "SubscriberClient/GetSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSnapshot",
+        "fullName": "google.pubsub.v1.SubscriberClient.GetSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.GetSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Snapshot",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "GetSnapshot",
+          "fullName": "google.pubsub.v1.Subscriber.GetSnapshot",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_GetSubscription_sync",
+      "title": "pubsub GetSubscription Sample",
+      "description": "GetSubscription gets the configuration details of a subscription.",
+      "file": "SubscriberClient/GetSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSubscription",
+        "fullName": "google.pubsub.v1.SubscriberClient.GetSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.GetSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Subscription",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "GetSubscription",
+          "fullName": "google.pubsub.v1.Subscriber.GetSubscription",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_ListSnapshots_sync",
+      "title": "pubsub ListSnapshots Sample",
+      "description": "ListSnapshots lists the existing snapshots. Snapshots are used in [Seek](\nhttps: //cloud.google.com/pubsub/docs/replay-overview) operations, which\nallow you to manage message acknowledgments in bulk. That is, you can set\nthe acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
+      "file": "SubscriberClient/ListSnapshots/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSnapshots",
+        "fullName": "google.pubsub.v1.SubscriberClient.ListSnapshots",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ListSnapshotsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SnapshotIterator",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "ListSnapshots",
+          "fullName": "google.pubsub.v1.Subscriber.ListSnapshots",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_ListSubscriptions_sync",
+      "title": "pubsub ListSubscriptions Sample",
+      "description": "ListSubscriptions lists matching subscriptions.",
+      "file": "SubscriberClient/ListSubscriptions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubscriptions",
+        "fullName": "google.pubsub.v1.SubscriberClient.ListSubscriptions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ListSubscriptionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubscriptionIterator",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "ListSubscriptions",
+          "fullName": "google.pubsub.v1.Subscriber.ListSubscriptions",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_ModifyAckDeadline_sync",
+      "title": "pubsub ModifyAckDeadline Sample",
+      "description": "ModifyAckDeadline modifies the ack deadline for a specific message. This method is useful\nto indicate that more time is needed to process a message by the\nsubscriber, or to make the message available for redelivery if the\nprocessing was interrupted. Note that this does not modify the\nsubscription-level `ackDeadlineSeconds` used for subsequent messages.",
+      "file": "SubscriberClient/ModifyAckDeadline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ModifyAckDeadline",
+        "fullName": "google.pubsub.v1.SubscriberClient.ModifyAckDeadline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ModifyAckDeadlineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "ModifyAckDeadline",
+          "fullName": "google.pubsub.v1.Subscriber.ModifyAckDeadline",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_ModifyPushConfig_sync",
+      "title": "pubsub ModifyPushConfig Sample",
+      "description": "ModifyPushConfig modifies the `PushConfig` for a specified subscription.\n\nThis may be used to change a push subscription to a pull one (signified by\nan empty `PushConfig`) or vice versa, or change the endpoint URL and other\nattributes of a push subscription. Messages will accumulate for delivery\ncontinuously through the call regardless of changes to the `PushConfig`.",
+      "file": "SubscriberClient/ModifyPushConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ModifyPushConfig",
+        "fullName": "google.pubsub.v1.SubscriberClient.ModifyPushConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.ModifyPushConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "ModifyPushConfig",
+          "fullName": "google.pubsub.v1.Subscriber.ModifyPushConfig",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_Pull_sync",
+      "title": "pubsub Pull Sample",
+      "description": "Pull pulls messages from the server.",
+      "file": "SubscriberClient/Pull/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Pull",
+        "fullName": "google.pubsub.v1.SubscriberClient.Pull",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.PullRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.PullResponse",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "Pull",
+          "fullName": "google.pubsub.v1.Subscriber.Pull",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_Seek_sync",
+      "title": "pubsub Seek Sample",
+      "description": "Seek seeks an existing subscription to a point in time or to a given snapshot,\nwhichever is provided in the request. Snapshots are used in [Seek]\n(https: //cloud.google.com/pubsub/docs/replay-overview) operations, which\nallow you to manage message acknowledgments in bulk. That is, you can set\nthe acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot. Note that both the subscription and the\nsnapshot must be on the same topic.",
+      "file": "SubscriberClient/Seek/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Seek",
+        "fullName": "google.pubsub.v1.SubscriberClient.Seek",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.SeekRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.SeekResponse",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "Seek",
+          "fullName": "google.pubsub.v1.Subscriber.Seek",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_SetIamPolicy_sync",
+      "title": "pubsub SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "SubscriberClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.pubsub.v1.SubscriberClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_StreamingPull_sync",
+      "title": "pubsub StreamingPull Sample",
+      "description": "StreamingPull establishes a stream with the server, which sends messages down to the\nclient. The client streams acknowledgements and ack deadline modifications\nback to the server. The server will close the stream and return the status\non any error. The server may close the stream with status `UNAVAILABLE` to\nreassign server-side resources, in which case, the client should\nre-establish the stream. Flow control can be achieved by configuring the\nunderlying RPC channel.\n\n\nThis method is not supported for the REST transport.",
+      "file": "SubscriberClient/StreamingPull/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingPull",
+        "fullName": "google.pubsub.v1.SubscriberClient.StreamingPull",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "pubsubpb.Subscriber_StreamingPullClient",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "StreamingPull",
+          "fullName": "google.pubsub.v1.Subscriber.StreamingPull",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_TestIamPermissions_sync",
+      "title": "pubsub TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "SubscriberClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.pubsub.v1.SubscriberClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_UpdateSnapshot_sync",
+      "title": "pubsub UpdateSnapshot Sample",
+      "description": "UpdateSnapshot updates an existing snapshot by updating the fields specified in the update\nmask. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
+      "file": "SubscriberClient/UpdateSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSnapshot",
+        "fullName": "google.pubsub.v1.SubscriberClient.UpdateSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.UpdateSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Snapshot",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "UpdateSnapshot",
+          "fullName": "google.pubsub.v1.Subscriber.UpdateSnapshot",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsub_v1_generated_Subscriber_UpdateSubscription_sync",
+      "title": "pubsub UpdateSubscription Sample",
+      "description": "UpdateSubscription updates an existing subscription by updating the fields specified in the\nupdate mask. Note that certain properties of a subscription, such as its\ntopic, are not modifiable.",
+      "file": "SubscriberClient/UpdateSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSubscription",
+        "fullName": "google.pubsub.v1.SubscriberClient.UpdateSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsubpb.UpdateSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsubpb.Subscription",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.pubsub.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "UpdateSubscription",
+          "fullName": "google.pubsub.v1.Subscriber.UpdateSubscription",
+          "service": {
+            "shortName": "Subscriber",
+            "fullName": "google.pubsub.v1.Subscriber"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
