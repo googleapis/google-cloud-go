@@ -1,5 +1,17 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.14.4...orgpolicy/v1.15.0) (2025-04-22)
+
+
+### Features
+
+* **orgpolicy:** Add managed constraints new fields (e.g. parameter) ([#11997](https://github.com/googleapis/google-cloud-go/issues/11997)) ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+
+### Documentation
+
+* **orgpolicy:** Updated comments ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
 ## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.14.3...orgpolicy/v1.14.4) (2025-04-15)
 
 

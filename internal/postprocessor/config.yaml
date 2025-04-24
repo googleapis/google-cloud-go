@@ -1003,9 +1003,6 @@ service-configs:
   - input-directory: google/cloud/translate/v3
     service-config: translate_v3.yaml
     import-path: cloud.google.com/go/translate/apiv3
-  - input-directory: google/devtools/clouddebugger/v2
-    service-config: clouddebugger_v2.yaml
-    import-path: cloud.google.com/go/debugger/apiv2
   - input-directory: google/devtools/clouderrorreporting/v1beta1
     service-config: clouderrorreporting_v1beta1.yaml
     import-path: cloud.google.com/go/errorreporting/apiv1beta1

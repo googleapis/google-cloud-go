@@ -105,7 +105,6 @@ deep-remove-regex:
   - /datastore/apiv1/
   - /datastream/apiv1/
   - /datastream/apiv1alpha1/
-  # - /debugger/apiv2/
   - /deploy/apiv1/
   - /developerconnect/apiv1/
   - /devicestreaming/apiv1/
@@ -244,7 +243,6 @@ deep-remove-regex:
   - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets/datastream/apiv1/
   - /internal/generated/snippets/datastream/apiv1alpha1/
-  # - /internal/generated/snippets/debugger/apiv2/
   - /internal/generated/snippets/deploy/apiv1/
   - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets//devicestreaming/apiv1/
@@ -852,8 +850,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go
     dest: /
-  # - source: /google/devtools/clouddebugger/v2/cloud.google.com/go
-  #   dest: /
   - source: /google/cloud/deploy/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/developerconnect/v1/cloud.google.com/go
