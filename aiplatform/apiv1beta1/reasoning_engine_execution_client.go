@@ -744,7 +744,7 @@ func (c *reasoningEngineExecutionRESTClient) StreamQueryReasoningEngine(ctx cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *streamQueryReasoningEngineRESTClient
+	var streamClient *streamQueryReasoningEngineRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -761,7 +761,7 @@ func (c *reasoningEngineExecutionRESTClient) StreamQueryReasoningEngine(ctx cont
 			return err
 		}
 
-		streamClient = &streamQueryReasoningEngineRESTClient{
+		streamClient = &streamQueryReasoningEngineRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&httpbodypb.HttpBody{}).ProtoReflect().Type()),
@@ -772,15 +772,15 @@ func (c *reasoningEngineExecutionRESTClient) StreamQueryReasoningEngine(ctx cont
 	return streamClient, e
 }
 
-// streamQueryReasoningEngineRESTClient is the stream client used to consume the server stream created by
+// streamQueryReasoningEngineRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of StreamQueryReasoningEngine.
-type streamQueryReasoningEngineRESTClient struct {
+type streamQueryReasoningEngineRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *streamQueryReasoningEngineRESTClient) Recv() (*httpbodypb.HttpBody, error) {
+func (c *streamQueryReasoningEngineRESTStreamClient) Recv() (*httpbodypb.HttpBody, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -794,29 +794,29 @@ func (c *streamQueryReasoningEngineRESTClient) Recv() (*httpbodypb.HttpBody, err
 	return res, nil
 }
 
-func (c *streamQueryReasoningEngineRESTClient) Header() (metadata.MD, error) {
+func (c *streamQueryReasoningEngineRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *streamQueryReasoningEngineRESTClient) Trailer() metadata.MD {
+func (c *streamQueryReasoningEngineRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *streamQueryReasoningEngineRESTClient) CloseSend() error {
+func (c *streamQueryReasoningEngineRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamQueryReasoningEngineRESTClient) Context() context.Context {
+func (c *streamQueryReasoningEngineRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *streamQueryReasoningEngineRESTClient) SendMsg(m interface{}) error {
+func (c *streamQueryReasoningEngineRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamQueryReasoningEngineRESTClient) RecvMsg(m interface{}) error {
+func (c *streamQueryReasoningEngineRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

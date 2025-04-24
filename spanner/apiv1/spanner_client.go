@@ -1571,7 +1571,7 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *executeStreamingSqlRESTClient
+	var streamClient *executeStreamingSqlRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1588,7 +1588,7 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 			return err
 		}
 
-		streamClient = &executeStreamingSqlRESTClient{
+		streamClient = &executeStreamingSqlRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&spannerpb.PartialResultSet{}).ProtoReflect().Type()),
@@ -1599,15 +1599,15 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 	return streamClient, e
 }
 
-// executeStreamingSqlRESTClient is the stream client used to consume the server stream created by
+// executeStreamingSqlRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of ExecuteStreamingSql.
-type executeStreamingSqlRESTClient struct {
+type executeStreamingSqlRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *executeStreamingSqlRESTClient) Recv() (*spannerpb.PartialResultSet, error) {
+func (c *executeStreamingSqlRESTStreamClient) Recv() (*spannerpb.PartialResultSet, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -1621,29 +1621,29 @@ func (c *executeStreamingSqlRESTClient) Recv() (*spannerpb.PartialResultSet, err
 	return res, nil
 }
 
-func (c *executeStreamingSqlRESTClient) Header() (metadata.MD, error) {
+func (c *executeStreamingSqlRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *executeStreamingSqlRESTClient) Trailer() metadata.MD {
+func (c *executeStreamingSqlRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *executeStreamingSqlRESTClient) CloseSend() error {
+func (c *executeStreamingSqlRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *executeStreamingSqlRESTClient) Context() context.Context {
+func (c *executeStreamingSqlRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *executeStreamingSqlRESTClient) SendMsg(m interface{}) error {
+func (c *executeStreamingSqlRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *executeStreamingSqlRESTClient) RecvMsg(m interface{}) error {
+func (c *executeStreamingSqlRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }
@@ -1813,7 +1813,7 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *streamingReadRESTClient
+	var streamClient *streamingReadRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1830,7 +1830,7 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 			return err
 		}
 
-		streamClient = &streamingReadRESTClient{
+		streamClient = &streamingReadRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&spannerpb.PartialResultSet{}).ProtoReflect().Type()),
@@ -1841,15 +1841,15 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 	return streamClient, e
 }
 
-// streamingReadRESTClient is the stream client used to consume the server stream created by
+// streamingReadRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of StreamingRead.
-type streamingReadRESTClient struct {
+type streamingReadRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *streamingReadRESTClient) Recv() (*spannerpb.PartialResultSet, error) {
+func (c *streamingReadRESTStreamClient) Recv() (*spannerpb.PartialResultSet, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -1863,29 +1863,29 @@ func (c *streamingReadRESTClient) Recv() (*spannerpb.PartialResultSet, error) {
 	return res, nil
 }
 
-func (c *streamingReadRESTClient) Header() (metadata.MD, error) {
+func (c *streamingReadRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *streamingReadRESTClient) Trailer() metadata.MD {
+func (c *streamingReadRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *streamingReadRESTClient) CloseSend() error {
+func (c *streamingReadRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamingReadRESTClient) Context() context.Context {
+func (c *streamingReadRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *streamingReadRESTClient) SendMsg(m interface{}) error {
+func (c *streamingReadRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamingReadRESTClient) RecvMsg(m interface{}) error {
+func (c *streamingReadRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }
@@ -2243,7 +2243,7 @@ func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *batchWriteRESTClient
+	var streamClient *batchWriteRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2260,7 +2260,7 @@ func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 			return err
 		}
 
-		streamClient = &batchWriteRESTClient{
+		streamClient = &batchWriteRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&spannerpb.BatchWriteResponse{}).ProtoReflect().Type()),
@@ -2271,15 +2271,15 @@ func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 	return streamClient, e
 }
 
-// batchWriteRESTClient is the stream client used to consume the server stream created by
+// batchWriteRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of BatchWrite.
-type batchWriteRESTClient struct {
+type batchWriteRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *batchWriteRESTClient) Recv() (*spannerpb.BatchWriteResponse, error) {
+func (c *batchWriteRESTStreamClient) Recv() (*spannerpb.BatchWriteResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -2293,29 +2293,29 @@ func (c *batchWriteRESTClient) Recv() (*spannerpb.BatchWriteResponse, error) {
 	return res, nil
 }
 
-func (c *batchWriteRESTClient) Header() (metadata.MD, error) {
+func (c *batchWriteRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *batchWriteRESTClient) Trailer() metadata.MD {
+func (c *batchWriteRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *batchWriteRESTClient) CloseSend() error {
+func (c *batchWriteRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *batchWriteRESTClient) Context() context.Context {
+func (c *batchWriteRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *batchWriteRESTClient) SendMsg(m interface{}) error {
+func (c *batchWriteRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *batchWriteRESTClient) RecvMsg(m interface{}) error {
+func (c *batchWriteRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }
