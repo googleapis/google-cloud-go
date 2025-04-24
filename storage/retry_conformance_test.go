@@ -654,9 +654,7 @@ var methods = map[string][]retryFunc{
 			}
 
 			// Don't reuse obj, in case preconditions were set on the write request.
-			// TODO: switch to using NewReader instead of NewRangeReader once emulator
-			// issue with CRC32C for appendable objects is fixed.
-			r, err := b.Object(obj.ObjectName()).NewRangeReader(ctx, 0, 3*MiB)
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
 			defer r.Close()
 			if err != nil {
 				return fmt.Errorf("obj.NewReader: %v", err)
