@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networkconnectivity/apiv1alpha1",
-    "version": "$VERSION",
+    "version": "1.17.1",
     "language": "GO",
     "apis": [
       {
