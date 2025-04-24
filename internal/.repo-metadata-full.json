@@ -1662,7 +1662,7 @@
   "cloud.google.com/go/maps/areainsights/apiv1": {
     "api_shortname": "areainsights",
     "distribution_name": "cloud.google.com/go/maps/areainsights/apiv1",
-    "description": "Places Insights API",
+    "description": "Places Aggregate API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/maps/latest/areainsights/apiv1",
@@ -2169,13 +2169,13 @@
     "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
-  "cloud.google.com/go/pubsub/apiv1": {
+  "cloud.google.com/go/pubsub/v2/apiv1": {
     "api_shortname": "pubsub",
-    "distribution_name": "cloud.google.com/go/pubsub/apiv1",
+    "distribution_name": "cloud.google.com/go/pubsub/v2/apiv1",
     "description": "Cloud Pub/Sub API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest/v2/apiv1",
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
@@ -2646,6 +2646,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/notifications/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta": {
+    "api_shortname": "merchantapi",
+    "distribution_name": "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta",
+    "description": "Merchant API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/ordertracking/apiv1beta",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
