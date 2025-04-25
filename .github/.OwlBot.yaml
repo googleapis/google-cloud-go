@@ -394,6 +394,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/promotions/v1beta/
   - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/issueresolution/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reviews/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/lfp/apiv1beta/
@@ -552,6 +553,7 @@ deep-remove-regex:
   - /shopping/merchant/promotions/apiv1beta/
   - /shopping/merchant/quota/apiv1beta/
   - /shopping/merchant/inventories/apiv1beta/
+  - /shopping/merchant/issueresolution/apiv1beta/
   - /shopping/merchant/lfp/apiv1beta/
   - /shopping/merchant/reports/apiv1beta/
   - /shopping/merchant/reviews/apiv1beta/
@@ -1161,6 +1163,8 @@ deep-copy-regex:
   - source: /google/shopping/merchant/quota/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/issueresolution/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
     dest: /

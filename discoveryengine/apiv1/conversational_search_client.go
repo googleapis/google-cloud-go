@@ -1634,7 +1634,7 @@ func (c *conversationalSearchRESTClient) StreamAnswerQuery(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *streamAnswerQueryRESTClient
+	var streamClient *streamAnswerQueryRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1651,7 +1651,7 @@ func (c *conversationalSearchRESTClient) StreamAnswerQuery(ctx context.Context, 
 			return err
 		}
 
-		streamClient = &streamAnswerQueryRESTClient{
+		streamClient = &streamAnswerQueryRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&discoveryenginepb.AnswerQueryResponse{}).ProtoReflect().Type()),
@@ -1662,15 +1662,15 @@ func (c *conversationalSearchRESTClient) StreamAnswerQuery(ctx context.Context, 
 	return streamClient, e
 }
 
-// streamAnswerQueryRESTClient is the stream client used to consume the server stream created by
+// streamAnswerQueryRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of StreamAnswerQuery.
-type streamAnswerQueryRESTClient struct {
+type streamAnswerQueryRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *streamAnswerQueryRESTClient) Recv() (*discoveryenginepb.AnswerQueryResponse, error) {
+func (c *streamAnswerQueryRESTStreamClient) Recv() (*discoveryenginepb.AnswerQueryResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -1684,29 +1684,29 @@ func (c *streamAnswerQueryRESTClient) Recv() (*discoveryenginepb.AnswerQueryResp
 	return res, nil
 }
 
-func (c *streamAnswerQueryRESTClient) Header() (metadata.MD, error) {
+func (c *streamAnswerQueryRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *streamAnswerQueryRESTClient) Trailer() metadata.MD {
+func (c *streamAnswerQueryRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *streamAnswerQueryRESTClient) CloseSend() error {
+func (c *streamAnswerQueryRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamAnswerQueryRESTClient) Context() context.Context {
+func (c *streamAnswerQueryRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *streamAnswerQueryRESTClient) SendMsg(m interface{}) error {
+func (c *streamAnswerQueryRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamAnswerQueryRESTClient) RecvMsg(m interface{}) error {
+func (c *streamAnswerQueryRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }
