@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/storage/experimental"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
@@ -613,8 +614,9 @@ var methods = map[string][]retryFunc{
 				obj = obj.If(Conditions{DoesNotExist: true})
 			}
 			w := obj.NewWriter(ctx)
-			// Set Writer.ChunkSize to 2 MiB to perform resumable uploads.
-			w.ChunkSize = 2097152
+			// Set Writer.ChunkSize to 4MiB to perform resumable uploads on a smaller object size.
+			// Set it larger than 2MiB so it can test boundaries for max message size.
+			w.ChunkSize = 4 * MiB
 
 			if _, err := w.Write(randomBytes9MiB); err != nil {
 				return fmt.Errorf("writing object: %v", err)
@@ -642,6 +644,7 @@ var methods = map[string][]retryFunc{
 			objW := obj.NewWriter(ctx)
 			objW.ChunkSize = MiB
 			objW.Append = true
+			objW.FinalizeOnClose = true
 
 			if _, err := objW.Write(randomBytes3MiB); err != nil {
 				return fmt.Errorf("Writer.Write: %v", err)
@@ -651,7 +654,9 @@ var methods = map[string][]retryFunc{
 			}
 
 			// Don't reuse obj, in case preconditions were set on the write request.
-			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			// TODO: switch to using NewReader instead of NewRangeReader once emulator
+			// issue with CRC32C for appendable objects is fixed.
+			r, err := b.Object(obj.ObjectName()).NewRangeReader(ctx, 0, 3*MiB)
 			defer r.Close()
 			if err != nil {
 				return fmt.Errorf("obj.NewReader: %v", err)
@@ -662,7 +667,7 @@ var methods = map[string][]retryFunc{
 			}
 
 			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
-				return fmt.Errorf("content got(-),want(+):\n%v", d)
+				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(randomBytes3MiB))
 			}
 			return nil
 		},
@@ -976,7 +981,7 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 		et.Fatalf("HTTP transportClient: %v", err)
 	}
 	if transport == "grpc" {
-		transportClient, err = NewGRPCClient(ctx)
+		transportClient, err = NewGRPCClient(ctx, experimental.WithGRPCBidiReads())
 		if err != nil {
 			et.Fatalf("GRPC transportClient: %v", err)
 		}

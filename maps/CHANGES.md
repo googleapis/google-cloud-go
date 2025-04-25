@@ -2,6 +2,28 @@
 
 
 
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.2...maps/v1.20.3) (2025-04-22)
+
+
+### Documentation
+
+* **maps/areainsights:** A comment for field `place` in message `.google.maps.areainsights.v1.LocationFilter` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **maps/areainsights:** A comment for field `place` in message `.google.maps.areainsights.v1.PlaceInsight` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.1...maps/v1.20.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **maps:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.0...maps/v1.20.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **maps:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.19.0...maps/v1.20.0) (2025-03-12)
 
 

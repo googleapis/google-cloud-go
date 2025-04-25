@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/servicecontrol/apiv1",
-    "version": "1.14.3",
+    "version": "1.14.5",
     "language": "GO",
     "apis": [
       {

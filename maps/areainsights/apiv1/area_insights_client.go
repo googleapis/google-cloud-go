@@ -92,7 +92,7 @@ func defaultRESTCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods available from Places Insights API.
+// internalClient is an interface that defines the methods available from Places Aggregate API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -100,10 +100,10 @@ type internalClient interface {
 	ComputeInsights(context.Context, *areainsightspb.ComputeInsightsRequest, ...gax.CallOption) (*areainsightspb.ComputeInsightsResponse, error)
 }
 
-// Client is a client for interacting with Places Insights API.
+// Client is a client for interacting with Places Aggregate API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service definition for the Places Insights API.
+// Service definition for the Places Aggregate RPC.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -135,9 +135,7 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ComputeInsights compute Insights RPC
-//
-// This method lets you retrieve insights about areas using a variaty of
+// ComputeInsights this method lets you retrieve insights about areas using a variety of
 // filter such as: area, place type, operating status, price level
 // and ratings. Currently “count” and “places” insights are supported. With
 // “count” insights you can answer questions such as “How many restaurant are
@@ -150,7 +148,7 @@ func (c *Client) ComputeInsights(ctx context.Context, req *areainsightspb.Comput
 	return c.internalClient.ComputeInsights(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Places Insights API over gRPC transport.
+// gRPCClient is a client for interacting with Places Aggregate API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
@@ -172,7 +170,7 @@ type gRPCClient struct {
 // NewClient creates a new area insights client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service definition for the Places Insights API.
+// Service definition for the Places Aggregate RPC.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -246,7 +244,7 @@ type restClient struct {
 
 // NewRESTClient creates a new area insights rest client.
 //
-// Service definition for the Places Insights API.
+// Service definition for the Places Aggregate RPC.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -318,9 +316,7 @@ func (c *gRPCClient) ComputeInsights(ctx context.Context, req *areainsightspb.Co
 	return resp, nil
 }
 
-// ComputeInsights compute Insights RPC
-//
-// This method lets you retrieve insights about areas using a variaty of
+// ComputeInsights this method lets you retrieve insights about areas using a variety of
 // filter such as: area, place type, operating status, price level
 // and ratings. Currently “count” and “places” insights are supported. With
 // “count” insights you can answer questions such as “How many restaurant are

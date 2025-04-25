@@ -50,6 +50,11 @@
                 "ListOperations"
               ]
             },
+            "ListWorkflowRevisions": {
+              "methods": [
+                "ListWorkflowRevisions"
+              ]
+            },
             "ListWorkflows": {
               "methods": [
                 "ListWorkflows"
@@ -103,6 +108,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListWorkflowRevisions": {
+              "methods": [
+                "ListWorkflowRevisions"
               ]
             },
             "ListWorkflows": {
