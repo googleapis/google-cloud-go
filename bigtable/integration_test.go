@@ -5081,7 +5081,6 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	logicalViewInfo := LogicalViewInfo{
 		LogicalViewID:      logicalView,
 		Query:              fmt.Sprintf("SELECT _key, fam1['col1'] as col FROM %s", tblConf.TableID),
-		DeletionProtection: Protected,
 	}
 	if err = instanceAdminClient.CreateLogicalView(ctx, testEnv.Config().Instance, &logicalViewInfo); err != nil {
 		t.Fatalf("Creating logical view: %v", err)
