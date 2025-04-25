@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/areainsights/apiv1",
-    "version": "1.20.2",
+    "version": "1.20.3",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "areainsights_v1_generated_AreaInsights_ComputeInsights_sync",
       "title": "areainsights ComputeInsights Sample",
-      "description": "ComputeInsights compute Insights RPC\n\nThis method lets you retrieve insights about areas using a variaty of\nfilter such as: area, place type, operating status, price level\nand ratings. Currently \"count\" and \"places\" insights are supported. With\n\"count\" insights you can answer questions such as \"How many restaurant are\nlocated in California that are operational, are inexpensive and have an\naverage rating of at least 4 stars\" (see `insight` enum for more details).\nWith \"places\" insights, you can determine which places match the\nrequested filter. Clients can then use those place resource names to fetch\nmore details about each individual place using the Places API.",
+      "description": "ComputeInsights this method lets you retrieve insights about areas using a variety of\nfilter such as: area, place type, operating status, price level\nand ratings. Currently \"count\" and \"places\" insights are supported. With\n\"count\" insights you can answer questions such as \"How many restaurant are\nlocated in California that are operational, are inexpensive and have an\naverage rating of at least 4 stars\" (see `insight` enum for more details).\nWith \"places\" insights, you can determine which places match the\nrequested filter. Clients can then use those place resource names to fetch\nmore details about each individual place using the Places API.",
       "file": "Client/ComputeInsights/main.go",
       "language": "GO",
       "clientMethod": {
