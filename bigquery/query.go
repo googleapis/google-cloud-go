@@ -438,7 +438,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 // user's Query configuration.  If all the options set on the job are supported on the
 // faster query path, this method returns a QueryRequest suitable for execution.
 func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
-	if q.forceStorageAPI && q.client.isStorageReadAvailable() {
+	if q.ForceStorageAPI && q.client.isStorageReadAvailable() {
 		return nil, fmt.Errorf("force Storage API usage")
 	}
 	// This is a denylist of settings which prevent us from composing an equivalent

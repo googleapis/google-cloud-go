@@ -55,7 +55,7 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 			b.Run(fmt.Sprintf("storage_api_%d_max_streams_%s", maxStreamCount, bc.name), func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
 					q := storageOptimizedClient.Query(sql)
-					q.forceStorageAPI = true
+					q.ForceStorageAPI = true
 					it, err := q.Read(ctx)
 					if err != nil {
 						b.Fatal(err)
