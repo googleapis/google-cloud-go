@@ -150,8 +150,8 @@ type QueryConfig struct {
 	// regardless of any other documented package stability guarantees.
 	JobTimeout time.Duration
 
-	// Force usage of Storage API if client is available. For test scenarios
-	forceStorageAPI bool
+	// Force usage of Storage API if client is available.
+	ForceStorageAPI bool
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
