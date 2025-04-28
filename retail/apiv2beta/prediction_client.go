@@ -126,7 +126,7 @@ func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 	}
 }
 
-// internalPredictionClient is an interface that defines the methods available from Vertex AI Search for Retail API.
+// internalPredictionClient is an interface that defines the methods available from Vertex AI Search for commerce API.
 type internalPredictionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -136,7 +136,7 @@ type internalPredictionClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// PredictionClient is a client for interacting with Vertex AI Search for Retail API.
+// PredictionClient is a client for interacting with Vertex AI Search for commerce API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for making recommendation prediction.
@@ -186,7 +186,7 @@ func (c *PredictionClient) ListOperations(ctx context.Context, req *longrunningp
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// predictionGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
+// predictionGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type predictionGRPCClient struct {

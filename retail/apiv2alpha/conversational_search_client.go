@@ -19,6 +19,7 @@ package retail
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math"
@@ -26,10 +27,8 @@ import (
 	"net/url"
 	"time"
 
-	"cloud.google.com/go/longrunning"
-	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -38,20 +37,21 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
-var newAnalyticsClientHook clientHook
+var newConversationalSearchClientHook clientHook
 
-// AnalyticsCallOptions contains the retry settings for each method of AnalyticsClient.
-type AnalyticsCallOptions struct {
-	ExportAnalyticsMetrics []gax.CallOption
-	GetOperation           []gax.CallOption
-	ListOperations         []gax.CallOption
+// ConversationalSearchCallOptions contains the retry settings for each method of ConversationalSearchClient.
+type ConversationalSearchCallOptions struct {
+	ConversationalSearch []gax.CallOption
+	GetOperation         []gax.CallOption
+	ListOperations       []gax.CallOption
 }
 
-func defaultAnalyticsGRPCClientOptions() []option.ClientOption {
+func defaultConversationalSearchGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
 		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
@@ -66,22 +66,10 @@ func defaultAnalyticsGRPCClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultAnalyticsCallOptions() *AnalyticsCallOptions {
-	return &AnalyticsCallOptions{
-		ExportAnalyticsMetrics: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetOperation: []gax.CallOption{},
+func defaultConversationalSearchCallOptions() *ConversationalSearchCallOptions {
+	return &ConversationalSearchCallOptions{
+		ConversationalSearch: []gax.CallOption{},
+		GetOperation:         []gax.CallOption{},
 		ListOperations: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -98,21 +86,10 @@ func defaultAnalyticsCallOptions() *AnalyticsCallOptions {
 	}
 }
 
-func defaultAnalyticsRESTCallOptions() *AnalyticsCallOptions {
-	return &AnalyticsCallOptions{
-		ExportAnalyticsMetrics: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout)
-			}),
-		},
-		GetOperation: []gax.CallOption{},
+func defaultConversationalSearchRESTCallOptions() *ConversationalSearchCallOptions {
+	return &ConversationalSearchCallOptions{
+		ConversationalSearch: []gax.CallOption{},
+		GetOperation:         []gax.CallOption{},
 		ListOperations: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -128,47 +105,44 @@ func defaultAnalyticsRESTCallOptions() *AnalyticsCallOptions {
 	}
 }
 
-// internalAnalyticsClient is an interface that defines the methods available from Vertex AI Search for commerce API.
-type internalAnalyticsClient interface {
+// internalConversationalSearchClient is an interface that defines the methods available from Vertex AI Search for commerce API.
+type internalConversationalSearchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	ExportAnalyticsMetrics(context.Context, *retailpb.ExportAnalyticsMetricsRequest, ...gax.CallOption) (*ExportAnalyticsMetricsOperation, error)
-	ExportAnalyticsMetricsOperation(name string) *ExportAnalyticsMetricsOperation
+	ConversationalSearch(context.Context, *retailpb.ConversationalSearchRequest, ...gax.CallOption) (retailpb.ConversationalSearchService_ConversationalSearchClient, error)
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AnalyticsClient is a client for interacting with Vertex AI Search for commerce API.
+// ConversationalSearchClient is a client for interacting with Vertex AI Search for commerce API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing & accessing retail search business metric.
-// Retail recommendation business metric is currently not available.
-type AnalyticsClient struct {
+// Service for retail conversational search.
+//
+// This feature is only available for users who have Retail Conversational
+// Search enabled. Enable Retail Conversational Search on Cloud Console
+// before using this feature.
+type ConversationalSearchClient struct {
 	// The internal transport-dependent client.
-	internalClient internalAnalyticsClient
+	internalClient internalConversationalSearchClient
 
 	// The call options for this service.
-	CallOptions *AnalyticsCallOptions
-
-	// LROClient is used internally to handle long-running operations.
-	// It is exposed so that its CallOptions can be modified if required.
-	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
+	CallOptions *ConversationalSearchCallOptions
 }
 
 // Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *AnalyticsClient) Close() error {
+func (c *ConversationalSearchClient) Close() error {
 	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *AnalyticsClient) setGoogleClientInfo(keyval ...string) {
+func (c *ConversationalSearchClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
@@ -176,51 +150,40 @@ func (c *AnalyticsClient) setGoogleClientInfo(keyval ...string) {
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *AnalyticsClient) Connection() *grpc.ClientConn {
+func (c *ConversationalSearchClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ExportAnalyticsMetrics exports analytics metrics.
+// ConversationalSearch performs a conversational search.
 //
-// Operation.response is of type ExportAnalyticsMetricsResponse.
-// Operation.metadata is of type ExportMetadata.
-func (c *AnalyticsClient) ExportAnalyticsMetrics(ctx context.Context, req *retailpb.ExportAnalyticsMetricsRequest, opts ...gax.CallOption) (*ExportAnalyticsMetricsOperation, error) {
-	return c.internalClient.ExportAnalyticsMetrics(ctx, req, opts...)
-}
-
-// ExportAnalyticsMetricsOperation returns a new ExportAnalyticsMetricsOperation from a given name.
-// The name must be that of a previously created ExportAnalyticsMetricsOperation, possibly from a different process.
-func (c *AnalyticsClient) ExportAnalyticsMetricsOperation(name string) *ExportAnalyticsMetricsOperation {
-	return c.internalClient.ExportAnalyticsMetricsOperation(name)
+// This feature is only available for users who have Conversational Search
+// enabled.
+func (c *ConversationalSearchClient) ConversationalSearch(ctx context.Context, req *retailpb.ConversationalSearchRequest, opts ...gax.CallOption) (retailpb.ConversationalSearchService_ConversationalSearchClient, error) {
+	return c.internalClient.ConversationalSearch(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *AnalyticsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *ConversationalSearchClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *AnalyticsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *ConversationalSearchClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// analyticsGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
+// conversationalSearchGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type analyticsGRPCClient struct {
+type conversationalSearchGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// Points back to the CallOptions field of the containing AnalyticsClient
-	CallOptions **AnalyticsCallOptions
+	// Points back to the CallOptions field of the containing ConversationalSearchClient
+	CallOptions **ConversationalSearchCallOptions
 
 	// The gRPC API client.
-	analyticsClient retailpb.AnalyticsServiceClient
-
-	// LROClient is used internally to handle long-running operations.
-	// It is exposed so that its CallOptions can be modified if required.
-	// Users should not Close this client.
-	LROClient **lroauto.OperationsClient
+	conversationalSearchClient retailpb.ConversationalSearchServiceClient
 
 	operationsClient longrunningpb.OperationsClient
 
@@ -230,15 +193,18 @@ type analyticsGRPCClient struct {
 	logger *slog.Logger
 }
 
-// NewAnalyticsClient creates a new analytics service client based on gRPC.
+// NewConversationalSearchClient creates a new conversational search service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing & accessing retail search business metric.
-// Retail recommendation business metric is currently not available.
-func NewAnalyticsClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsClient, error) {
-	clientOpts := defaultAnalyticsGRPCClientOptions()
-	if newAnalyticsClientHook != nil {
-		hookOpts, err := newAnalyticsClientHook(ctx, clientHookParams{})
+// Service for retail conversational search.
+//
+// This feature is only available for users who have Retail Conversational
+// Search enabled. Enable Retail Conversational Search on Cloud Console
+// before using this feature.
+func NewConversationalSearchClient(ctx context.Context, opts ...option.ClientOption) (*ConversationalSearchClient, error) {
+	clientOpts := defaultConversationalSearchGRPCClientOptions()
+	if newConversationalSearchClientHook != nil {
+		hookOpts, err := newConversationalSearchClientHook(ctx, clientHookParams{})
 		if err != nil {
 			return nil, err
 		}
@@ -249,30 +215,19 @@ func NewAnalyticsClient(ctx context.Context, opts ...option.ClientOption) (*Anal
 	if err != nil {
 		return nil, err
 	}
-	client := AnalyticsClient{CallOptions: defaultAnalyticsCallOptions()}
+	client := ConversationalSearchClient{CallOptions: defaultConversationalSearchCallOptions()}
 
-	c := &analyticsGRPCClient{
-		connPool:         connPool,
-		analyticsClient:  retailpb.NewAnalyticsServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
-		logger:           internaloption.GetLogger(opts),
-		operationsClient: longrunningpb.NewOperationsClient(connPool),
+	c := &conversationalSearchGRPCClient{
+		connPool:                   connPool,
+		conversationalSearchClient: retailpb.NewConversationalSearchServiceClient(connPool),
+		CallOptions:                &client.CallOptions,
+		logger:                     internaloption.GetLogger(opts),
+		operationsClient:           longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	client.internalClient = c
 
-	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
-	if err != nil {
-		// This error "should not happen", since we are just reusing old connection pool
-		// and never actually need to dial.
-		// If this does happen, we could leak connp. However, we cannot close conn:
-		// If the user invoked the constructor with option.WithGRPCConn,
-		// we would close a connection that's still in use.
-		// TODO: investigate error conditions.
-		return nil, err
-	}
-	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -280,14 +235,14 @@ func NewAnalyticsClient(ctx context.Context, opts ...option.ClientOption) (*Anal
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *analyticsGRPCClient) Connection() *grpc.ClientConn {
+func (c *conversationalSearchGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *analyticsGRPCClient) setGoogleClientInfo(keyval ...string) {
+func (c *conversationalSearchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogHeaders = []string{
@@ -297,45 +252,43 @@ func (c *analyticsGRPCClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *analyticsGRPCClient) Close() error {
+func (c *conversationalSearchGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type analyticsRESTClient struct {
+type conversationalSearchRESTClient struct {
 	// The http endpoint to connect to.
 	endpoint string
 
 	// The http client.
 	httpClient *http.Client
 
-	// LROClient is used internally to handle long-running operations.
-	// It is exposed so that its CallOptions can be modified if required.
-	// Users should not Close this client.
-	LROClient **lroauto.OperationsClient
-
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
-	// Points back to the CallOptions field of the containing AnalyticsClient
-	CallOptions **AnalyticsCallOptions
+	// Points back to the CallOptions field of the containing ConversationalSearchClient
+	CallOptions **ConversationalSearchCallOptions
 
 	logger *slog.Logger
 }
 
-// NewAnalyticsRESTClient creates a new analytics service rest client.
+// NewConversationalSearchRESTClient creates a new conversational search service rest client.
 //
-// Service for managing & accessing retail search business metric.
-// Retail recommendation business metric is currently not available.
-func NewAnalyticsRESTClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsClient, error) {
-	clientOpts := append(defaultAnalyticsRESTClientOptions(), opts...)
+// Service for retail conversational search.
+//
+// This feature is only available for users who have Retail Conversational
+// Search enabled. Enable Retail Conversational Search on Cloud Console
+// before using this feature.
+func NewConversationalSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConversationalSearchClient, error) {
+	clientOpts := append(defaultConversationalSearchRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
 
-	callOpts := defaultAnalyticsRESTCallOptions()
-	c := &analyticsRESTClient{
+	callOpts := defaultConversationalSearchRESTCallOptions()
+	c := &conversationalSearchRESTClient{
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
@@ -343,20 +296,10 @@ func NewAnalyticsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 	}
 	c.setGoogleClientInfo()
 
-	lroOpts := []option.ClientOption{
-		option.WithHTTPClient(httpClient),
-		option.WithEndpoint(endpoint),
-	}
-	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
-	if err != nil {
-		return nil, err
-	}
-	c.LROClient = &opClient
-
-	return &AnalyticsClient{internalClient: c, CallOptions: callOpts}, nil
+	return &ConversationalSearchClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
-func defaultAnalyticsRESTClientOptions() []option.ClientOption {
+func defaultConversationalSearchRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
 		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
@@ -371,7 +314,7 @@ func defaultAnalyticsRESTClientOptions() []option.ClientOption {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *analyticsRESTClient) setGoogleClientInfo(keyval ...string) {
+func (c *conversationalSearchRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogHeaders = []string{
@@ -381,7 +324,7 @@ func (c *analyticsRESTClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *analyticsRESTClient) Close() error {
+func (c *conversationalSearchRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
 	return nil
@@ -390,30 +333,30 @@ func (c *analyticsRESTClient) Close() error {
 // Connection returns a connection to the API service.
 //
 // Deprecated: This method always returns nil.
-func (c *analyticsRESTClient) Connection() *grpc.ClientConn {
+func (c *conversationalSearchRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *analyticsGRPCClient) ExportAnalyticsMetrics(ctx context.Context, req *retailpb.ExportAnalyticsMetricsRequest, opts ...gax.CallOption) (*ExportAnalyticsMetricsOperation, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog()))}
+func (c *conversationalSearchGRPCClient) ConversationalSearch(ctx context.Context, req *retailpb.ConversationalSearchRequest, opts ...gax.CallOption) (retailpb.ConversationalSearchService_ConversationalSearchClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "placement", url.QueryEscape(req.GetPlacement()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ExportAnalyticsMetrics[0:len((*c.CallOptions).ExportAnalyticsMetrics):len((*c.CallOptions).ExportAnalyticsMetrics)], opts...)
-	var resp *longrunningpb.Operation
+	opts = append((*c.CallOptions).ConversationalSearch[0:len((*c.CallOptions).ConversationalSearch):len((*c.CallOptions).ConversationalSearch)], opts...)
+	var resp retailpb.ConversationalSearchService_ConversationalSearchClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = executeRPC(ctx, c.analyticsClient.ExportAnalyticsMetrics, req, settings.GRPC, c.logger, "ExportAnalyticsMetrics")
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ConversationalSearch")
+		resp, err = c.conversationalSearchClient.ConversationalSearch(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ConversationalSearch")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return &ExportAnalyticsMetricsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
+	return resp, nil
 }
 
-func (c *analyticsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *conversationalSearchGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -431,7 +374,7 @@ func (c *analyticsGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	return resp, nil
 }
 
-func (c *analyticsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *conversationalSearchGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -477,11 +420,11 @@ func (c *analyticsGRPCClient) ListOperations(ctx context.Context, req *longrunni
 	return it
 }
 
-// ExportAnalyticsMetrics exports analytics metrics.
+// ConversationalSearch performs a conversational search.
 //
-// Operation.response is of type ExportAnalyticsMetricsResponse.
-// Operation.metadata is of type ExportMetadata.
-func (c *analyticsRESTClient) ExportAnalyticsMetrics(ctx context.Context, req *retailpb.ExportAnalyticsMetricsRequest, opts ...gax.CallOption) (*ExportAnalyticsMetricsOperation, error) {
+// This feature is only available for users who have Conversational Search
+// enabled.
+func (c *conversationalSearchRESTClient) ConversationalSearch(ctx context.Context, req *retailpb.ConversationalSearchRequest, opts ...gax.CallOption) (retailpb.ConversationalSearchService_ConversationalSearchClient, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -492,7 +435,7 @@ func (c *analyticsRESTClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v2beta/%v:exportAnalyticsMetrics", req.GetCatalog())
+	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:conversationalSearch", req.GetPlacement())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
@@ -500,13 +443,12 @@ func (c *analyticsRESTClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "placement", url.QueryEscape(req.GetPlacement()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &longrunningpb.Operation{}
+	var streamClient *conversationalSearchRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -518,34 +460,78 @@ func (c *analyticsRESTClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportAnalyticsMetrics")
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ConversationalSearch")
 		if err != nil {
 			return err
 		}
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
 
+		streamClient = &conversationalSearchRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&retailpb.ConversationalSearchResponse{}).ProtoReflect().Type()),
+		}
 		return nil
 	}, opts...)
-	if e != nil {
-		return nil, e
-	}
 
-	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
-	return &ExportAnalyticsMetricsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
-		pollPath: override,
-	}, nil
+	return streamClient, e
+}
+
+// conversationalSearchRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of ConversationalSearch.
+type conversationalSearchRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *conversationalSearchRESTStreamClient) Recv() (*retailpb.ConversationalSearchResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*retailpb.ConversationalSearchResponse)
+	return res, nil
+}
+
+func (c *conversationalSearchRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *conversationalSearchRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *conversationalSearchRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *conversationalSearchRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *conversationalSearchRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *conversationalSearchRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *analyticsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *conversationalSearchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
@@ -590,7 +576,7 @@ func (c *analyticsRESTClient) GetOperation(ctx context.Context, req *longrunning
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *analyticsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *conversationalSearchRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -608,7 +594,7 @@ func (c *analyticsRESTClient) ListOperations(ctx context.Context, req *longrunni
 		if err != nil {
 			return nil, "", err
 		}
-		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())
+		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
@@ -668,22 +654,4 @@ func (c *analyticsRESTClient) ListOperations(ctx context.Context, req *longrunni
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// ExportAnalyticsMetricsOperation returns a new ExportAnalyticsMetricsOperation from a given name.
-// The name must be that of a previously created ExportAnalyticsMetricsOperation, possibly from a different process.
-func (c *analyticsGRPCClient) ExportAnalyticsMetricsOperation(name string) *ExportAnalyticsMetricsOperation {
-	return &ExportAnalyticsMetricsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// ExportAnalyticsMetricsOperation returns a new ExportAnalyticsMetricsOperation from a given name.
-// The name must be that of a previously created ExportAnalyticsMetricsOperation, possibly from a different process.
-func (c *analyticsRESTClient) ExportAnalyticsMetricsOperation(name string) *ExportAnalyticsMetricsOperation {
-	override := fmt.Sprintf("/v2beta/%s", name)
-	return &ExportAnalyticsMetricsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-		pollPath: override,
-	}
 }
