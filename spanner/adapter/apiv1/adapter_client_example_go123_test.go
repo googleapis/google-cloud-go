@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package adapter_test
-
-import (
-	adapter "cloud.google.com/go/spanner/adapter/apiv1"
-)
