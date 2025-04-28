@@ -2312,7 +2312,7 @@
   "cloud.google.com/go/retail/apiv2": {
     "api_shortname": "retail",
     "distribution_name": "cloud.google.com/go/retail/apiv2",
-    "description": "Vertex AI Search for Retail API",
+    "description": "Vertex AI Search for commerce API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2",
