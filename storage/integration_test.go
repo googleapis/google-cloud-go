@@ -3524,6 +3524,57 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 	})
 }
 
+func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
+	t.Skip("b/402283880")
+	ctx := skipAllButBidi(context.Background(), "ZB test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(bucketName)
+
+		h.mustCreateZonalBucket(bkt, testutil.ProjID())
+		defer h.mustDeleteBucket(bkt)
+
+		objName := "object1"
+		obj := bkt.Object(objName)
+		defer h.mustDeleteObject(obj)
+
+		// Takeover Writer to a non-existent object should fail, with or
+		// without generation specified.
+		if _, _, err := obj.NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{}); err == nil {
+			t.Errorf("NewWriterFromAppendableObject: got nil, want error")
+		}
+		_, _, err := obj.Generation(1234).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{})
+		if err == nil || status.Code(err) != codes.NotFound {
+			t.Errorf("NewWriterFromAppendableObject: got %v, want NotFound", err)
+		}
+
+		// If a takeover is opened, flush or close to the original writer
+		// should fail.
+		w := obj.NewWriter(ctx)
+		w.Append = true
+		w.ChunkSize = MiB
+		if _, err := w.Write(randomBytes3MiB); err != nil {
+			t.Fatalf("w.Write: %v", err)
+		}
+
+		tw, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, nil)
+		if err != nil {
+			t.Fatalf("NewWriterFromAppendableObject: %v", err)
+		}
+		if _, err := tw.Write([]byte("hello world")); err != nil {
+			t.Fatalf("tw.Write: %v", err)
+		}
+		if _, err := tw.Flush(); err != nil {
+			t.Fatalf("tw.Flush: %v", err)
+		}
+
+		// Expect precondition error when writer to orginal Writer.
+		if _, err := w.Write(randomBytes3MiB); status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("got %v", err)
+		}
+	})
+}
 func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {

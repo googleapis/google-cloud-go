@@ -686,6 +686,11 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 		return nil, err
 	}
 	firstResp := <-s.recvs
+	// Check recvErr after getting the response.
+	if s.recvErr != nil {
+		return nil, s.recvErr
+	}
+
 	// Object resource is returned in the first response on takeover, so capture
 	// this now.
 	s.objResource = firstResp.GetResource()
