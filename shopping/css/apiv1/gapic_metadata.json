@@ -180,6 +180,30 @@
           }
         }
       }
+    },
+    "QuotaService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "QuotaClient",
+          "rpcs": {
+            "ListQuotaGroups": {
+              "methods": [
+                "ListQuotaGroups"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "QuotaClient",
+          "rpcs": {
+            "ListQuotaGroups": {
+              "methods": [
+                "ListQuotaGroups"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

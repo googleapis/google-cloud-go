@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
-    "version": "0.16.0",
+    "version": "0.18.1",
     "language": "GO",
     "apis": [
       {
@@ -563,6 +563,98 @@
       ]
     },
     {
+      "regionTag": "merchantapi_v1beta_generated_AutomaticImprovementsService_GetAutomaticImprovements_sync",
+      "title": "merchantapi GetAutomaticImprovements Sample",
+      "description": "GetAutomaticImprovements retrieves the automatic improvements of an account.",
+      "file": "AutomaticImprovementsClient/GetAutomaticImprovements/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAutomaticImprovements",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsClient.GetAutomaticImprovements",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetAutomaticImprovementsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.AutomaticImprovements",
+        "client": {
+          "shortName": "AutomaticImprovementsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsClient"
+        },
+        "method": {
+          "shortName": "GetAutomaticImprovements",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService.GetAutomaticImprovements",
+          "service": {
+            "shortName": "AutomaticImprovementsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AutomaticImprovementsService_UpdateAutomaticImprovements_sync",
+      "title": "merchantapi UpdateAutomaticImprovements Sample",
+      "description": "UpdateAutomaticImprovements updates the automatic improvements of an account.",
+      "file": "AutomaticImprovementsClient/UpdateAutomaticImprovements/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAutomaticImprovements",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsClient.UpdateAutomaticImprovements",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateAutomaticImprovementsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.AutomaticImprovements",
+        "client": {
+          "shortName": "AutomaticImprovementsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsClient"
+        },
+        "method": {
+          "shortName": "UpdateAutomaticImprovements",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService.UpdateAutomaticImprovements",
+          "service": {
+            "shortName": "AutomaticImprovementsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "merchantapi_v1beta_generated_BusinessIdentityService_GetBusinessIdentity_sync",
       "title": "merchantapi GetBusinessIdentity Sample",
       "description": "GetBusinessIdentity retrieves the business identity of an account.",
@@ -1025,7 +1117,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_GetOnlineReturnPolicy_sync",
       "title": "merchantapi GetOnlineReturnPolicy Sample",
-      "description": "GetOnlineReturnPolicy gets an existing return policy.",
+      "description": "GetOnlineReturnPolicy gets an existing return policy for a given business.",
       "file": "OnlineReturnPolicyClient/GetOnlineReturnPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1071,7 +1163,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_ListOnlineReturnPolicies_sync",
       "title": "merchantapi ListOnlineReturnPolicies Sample",
-      "description": "ListOnlineReturnPolicies lists all existing return policies.",
+      "description": "ListOnlineReturnPolicies lists all existing return policies for a given business.",
       "file": "OnlineReturnPolicyClient/ListOnlineReturnPolicies/main.go",
       "language": "GO",
       "clientMethod": {

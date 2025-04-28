@@ -266,6 +266,10 @@ type openWriterParams struct {
 	// append - Write with appendable object semantics.
 	// Optional.
 	append bool
+	// finalizeOnClose - Finalize the object when the storage.Writer is closed
+	// successfully.
+	// Optional.
+	finalizeOnClose bool
 
 	// Writer callbacks
 
@@ -281,6 +285,11 @@ type openWriterParams struct {
 	// setObj callback for reporting the resulting object - see `Writer.obj`.
 	// Required.
 	setObj func(*ObjectAttrs)
+	// setFlush callback for providing a Flush function implementation - see `Writer.Flush`.
+	// Required.
+	setFlush func(func() (int64, error))
+	// setPipeWriter callback for reseting `Writer.pw` if needed.
+	setPipeWriter func(*io.PipeWriter)
 }
 
 type newMultiRangeDownloaderParams struct {

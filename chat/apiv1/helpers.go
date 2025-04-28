@@ -71,6 +71,7 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/chat.spaces.readonly",
 		"https://www.googleapis.com/auth/chat.users.readstate",
 		"https://www.googleapis.com/auth/chat.users.readstate.readonly",
+		"https://www.googleapis.com/auth/chat.users.spacesettings",
 	}
 }
 

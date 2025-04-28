@@ -1385,20 +1385,24 @@ func TestIntegration_QueryUnary(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	docRefs := []*DocumentRef{coll.NewDoc(), coll.NewDoc(), coll.NewDoc()}
-	h.mustCreate(docRefs[0], map[string]interface{}{"x": 2, "q": "a"})
-	h.mustCreate(docRefs[1], map[string]interface{}{"x": 2, "q": nil})
-	h.mustCreate(docRefs[2], map[string]interface{}{"x": 2, "q": math.NaN()})
+	h.mustCreate(docRefs[0], map[string]interface{}{"x": 2, "q": "a", "testNull": true, "testNaN": true})
+	h.mustCreate(docRefs[1], map[string]interface{}{"x": 2, "q": nil, "testNull": true, "testNaN": false})
+	h.mustCreate(docRefs[2], map[string]interface{}{"x": 2, "q": math.NaN(), "testNull": false, "testNaN": true})
 	wantNull := map[string]interface{}{"q": nil}
 	wantNaN := map[string]interface{}{"q": math.NaN()}
+	wantA := map[string]interface{}{"q": "a"}
 
 	base := coll.Select("q").Where("x", "==", 2)
+	baseNull := base.Where("testNull", "==", true)
+	baseNaN := base.Where("testNaN", "==", true)
 	for _, test := range []struct {
 		q    Query
 		want map[string]interface{}
 	}{
-		{base.Where("q", "==", nil), wantNull},
-		{base.Where("q", "!=", nil), wantNull},
-		{base.Where("q", "==", math.NaN()), wantNaN},
+		{baseNull.Where("q", "==", nil), wantNull},
+		{baseNull.Where("q", "!=", nil), wantA},
+		{baseNaN.Where("q", "==", math.NaN()), wantNaN},
+		{baseNaN.Where("q", "!=", math.NaN()), wantA},
 	} {
 		got, err := test.q.Documents(ctx).GetAll()
 		if err != nil {

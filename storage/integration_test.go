@@ -44,6 +44,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -395,6 +396,55 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 			if k.err != nil {
 				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
 			}
+		}
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
+// TestIntegration_MRDCallbackReturnsDataLength tests if the callback returns the correct data
+// read length or not.
+func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 1000)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MRDCallback"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		var res multiRangeDownloaderOutput
+		callback := func(x, y int64, err error) {
+			res.offset = x
+			res.limit = y
+			res.err = err
+		}
+		// Read All At Once.
+		offset := 0
+		limit := 10000
+		reader.Add(&res.buf, int64(offset), int64(limit), callback)
+		reader.Wait()
+		if res.limit != 1000 {
+			t.Errorf("Error in callback want data length 1000, got: %v", res.limit)
+		}
+		if !bytes.Equal(res.buf.Bytes(), content) {
+			t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+				offset, limit, res.buf.Bytes(), content)
+		}
+		if res.err != nil {
+			t.Errorf("read range %v to %v : %v", res.offset, 10000, res.err)
 		}
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
@@ -3116,6 +3166,88 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 				if attrs.Size != int64(objSize) {
 					t.Errorf("incorrect number of bytes written; got %v, want %v", attrs.Size, objSize)
 				}
+			})
+		}
+	})
+}
+
+// Basic Writer test for appendable uploads with and without finalization.
+func TestIntegration_WriterAppend(t *testing.T) {
+	t.Skip("b/402283880")
+	ctx := skipAllButBidi(context.Background(), "ZB test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(bucketName)
+
+		// Create a bucket in the same zone as the test VM.
+		zone, err := metadata.ZoneWithContext(ctx)
+		if err != nil {
+			t.Fatalf("could not determine VM zone: %v", err)
+		}
+		region := strings.Join(strings.Split(zone, "-")[:2], "-")
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			Location: region,
+			CustomPlacementConfig: &CustomPlacementConfig{
+				DataLocations: []string{zone},
+			},
+			StorageClass: "RAPID",
+			HierarchicalNamespace: &HierarchicalNamespace{
+				Enabled: true,
+			},
+			UniformBucketLevelAccess: UniformBucketLevelAccess{
+				Enabled: true,
+			},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		testCases := []struct {
+			name      string
+			finalize  bool
+			content   []byte
+			chunkSize int
+		}{
+			{
+				name:      "finalized_object",
+				finalize:  true,
+				content:   randomBytes9MiB,
+				chunkSize: 4 * MiB,
+			},
+			{
+				name:      "unfinalized_object",
+				finalize:  false,
+				content:   randomBytes9MiB,
+				chunkSize: 4 * MiB,
+			},
+		}
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				// Create writer and upload content.
+				obj := bkt.Object(tc.name + uidSpace.New())
+				defer h.mustDeleteObject(obj)
+				w := obj.Retryer(WithPolicy(RetryAlways)).If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = tc.finalize
+				w.ChunkSize = tc.chunkSize
+
+				h.mustWrite(w, tc.content)
+
+				// Download content again and validate.
+				// Disabled due to b/408373388; unskip after this is resolved.
+				// gotBytes := h.mustRead(obj)
+				// if !bytes.Equal(gotBytes, tc.content) {
+				// 	t.Errorf("content mismatch: got %v bytes, want %v bytes", len(gotBytes), len(tc.content))
+				// }
+
+				// Check object exists and Finalized attribute set as expected.
+				attrs := h.mustObjectAttrs(obj)
+				if tc.finalize && attrs.Finalized.IsZero() {
+					t.Errorf("got unfinalized object, want finalized")
+				}
+				if !tc.finalize && !attrs.Finalized.IsZero() {
+					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
+				}
+
 			})
 		}
 	})
@@ -6947,6 +7079,13 @@ func skipHTTP(reason string) context.Context {
 // downloads.
 func skipExtraReadAPIs(ctx context.Context, reason string) context.Context {
 	ctx = context.WithValue(ctx, skipTransportTestKey("bidiReads"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+}
+
+// Skip all APIs except Bidi reads. Use for ZB tests.
+func skipAllButBidi(ctx context.Context, reason string) context.Context {
+	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 

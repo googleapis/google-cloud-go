@@ -1,5 +1,19 @@
 # Changes
 
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/tpu/v1.8.1...tpu/v1.8.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **tpu:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/tpu/v1.8.0...tpu/v1.8.1) (2025-03-06)
+
+
+### Bug Fixes
+
+* **tpu:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/tpu/v1.7.3...tpu/v1.8.0) (2025-01-15)
 
 

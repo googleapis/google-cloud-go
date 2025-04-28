@@ -3445,3 +3445,109 @@ func TestDecodeProtoArrayUsingBaseVariant(t *testing.T) {
 		t.Errorf("%s: got %+v, want %+v", "Test PROTO decode to [][]byte custom type", nb, b)
 	}
 }
+
+func TestScanNullInt64(t *testing.T) {
+	for _, val := range []any{"99", stringPointer("99")} {
+		n := NullInt64{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		want := NullInt64{Int64: 99, Valid: true}
+		if g, w := n, want; !cmp.Equal(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}
+
+func TestScanNullString(t *testing.T) {
+	for _, val := range []any{"foo", stringPointer("foo")} {
+		n := NullString{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		want := NullString{StringVal: "foo", Valid: true}
+		if g, w := n, want; !cmp.Equal(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}
+
+func TestScanNullFloat64(t *testing.T) {
+	for _, val := range []any{"3.14", stringPointer("3.14")} {
+		n := NullFloat64{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		want := NullFloat64{Float64: 3.14, Valid: true}
+		if g, w := n, want; !cmp.Equal(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}
+
+func TestScanNullFloat32(t *testing.T) {
+	for _, val := range []any{"3.14", stringPointer("3.14")} {
+		n := NullFloat32{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		want := NullFloat32{Float32: float32(3.14), Valid: true}
+		if g, w := n, want; !cmp.Equal(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}
+
+func TestScanNullBool(t *testing.T) {
+	for _, val := range []any{"true", stringPointer("true")} {
+		n := NullBool{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		want := NullBool{Bool: true, Valid: true}
+		if g, w := n, want; !cmp.Equal(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}
+
+func TestScanNullTime(t *testing.T) {
+	for _, val := range []any{"2025-03-25T17:54:00+01:00", stringPointer("2025-03-25T17:54:00+01:00")} {
+		n := NullTime{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		tm, _ := time.Parse(time.RFC3339Nano, "2025-03-25T16:54:00Z")
+		want := NullTime{Time: tm, Valid: true}
+		if g, w := n, want; !cmp.Equal(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}
+
+func TestScanNullDate(t *testing.T) {
+	for _, val := range []any{"2025-03-25", stringPointer("2025-03-25")} {
+		n := NullDate{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		want := NullDate{Date: civil.Date{Year: 2025, Month: 3, Day: 25}, Valid: true}
+		if g, w := n, want; !cmp.Equal(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}
+
+func TestScanNullNumeric(t *testing.T) {
+	for _, val := range []any{"3.14", stringPointer("3.14")} {
+		n := NullNumeric{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		r, _ := (&big.Rat{}).SetString("3.14")
+		want := NullNumeric{Numeric: *r, Valid: true}
+		if g, w := n, want; !reflect.DeepEqual(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}

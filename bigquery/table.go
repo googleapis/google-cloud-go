@@ -164,6 +164,9 @@ type TableMetadata struct {
 	// where 12345 is parent id. The value is the friendly short name of the
 	// tag value, e.g. "production".
 	ResourceTags map[string]string
+
+	// Specifies the configuration of a BigQuery table for Apache Iceberg (formerly BigLake Managed Table).
+	BigLakeConfiguration *BigLakeConfiguration
 }
 
 // TableConstraints defines the primary key and foreign key of a table.
@@ -377,6 +380,71 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 		RefreshInterval:               time.Duration(q.RefreshIntervalMs) * time.Millisecond,
 		AllowNonIncrementalDefinition: q.AllowNonIncrementalDefinition,
 		MaxStaleness:                  maxStaleness,
+	}
+}
+
+// BigLakeFileFormat represents the file format for Managed Tables for Apache Iceberg.
+type BigLakeFileFormat string
+
+var (
+	// UnspecifiedBigLakeFileFormat represents the default value.
+	UnspecifiedBigLakeFileFormat BigLakeFileFormat = "FILE_FORMAT_UNSPECIFIED"
+	// ParquetBigLakeFileFormat represents Apache Parquet Format.
+	ParquetBigLakeFileFormat BigLakeFileFormat = "PARQUET"
+)
+
+// BigLakeTableFormat represents the table metadata format for Managed Tables for Apache Iceberg.
+type BigLakeTableFormat string
+
+var (
+	// UnspecifiedBigLakeTableFormat represents the default value.
+	UnspecifiedBigLakeTableFormat BigLakeTableFormat = "TABLE_FORMAT_UNSPECIFIED"
+	// IcebergBigLakeTableFormat represent Apache Iceberg Format.
+	IcebergBigLakeTableFormat BigLakeTableFormat = "ICEBERG"
+)
+
+// BigLakeConfiguration is used to configure aspects of BigQuery tables for
+// Apache Iceberg (previously known as BigLake managed tables).
+type BigLakeConfiguration struct {
+	// Optional. The connection specifying the credentials to be used to read and
+	// write to external storage, such as Cloud Storage. The connection_id can
+	// have the form `{project}.{location}.{connection_id}` or
+	// `projects/{project}/locations/{location}/connections/{connection_id}".
+	ConnectionID string
+
+	// Optional. The fully qualified location prefix of the external folder where
+	// table data is stored. The '*' wildcard character is not allowed. The URI
+	// should be in the format `gs://bucket/path_to_table/`
+	StorageURI string
+
+	// Optional. The file format the table data is stored in.
+	FileFormat BigLakeFileFormat
+
+	// Optional. The table format the metadata only snapshots are stored in.
+	TableFormat BigLakeTableFormat
+}
+
+func (blc *BigLakeConfiguration) toBQ() *bq.BigLakeConfiguration {
+	if blc == nil {
+		return nil
+	}
+	return &bq.BigLakeConfiguration{
+		ConnectionId: blc.ConnectionID,
+		StorageUri:   blc.StorageURI,
+		FileFormat:   string(blc.FileFormat),
+		TableFormat:  string(blc.TableFormat),
+	}
+}
+
+func bqToBigLakeConfiguration(in *bq.BigLakeConfiguration) *BigLakeConfiguration {
+	if in == nil {
+		return nil
+	}
+	return &BigLakeConfiguration{
+		ConnectionID: in.ConnectionId,
+		StorageURI:   in.StorageUri,
+		FileFormat:   BigLakeFileFormat(in.FileFormat),
+		TableFormat:  BigLakeTableFormat(in.TableFormat),
 	}
 }
 
@@ -769,6 +837,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	t.RequirePartitionFilter = tm.RequirePartitionFilter
 	t.SnapshotDefinition = tm.SnapshotDefinition.toBQ()
 	t.CloneDefinition = tm.CloneDefinition.toBQ()
+	t.BiglakeConfiguration = tm.BigLakeConfiguration.toBQ()
 
 	if !validExpiration(tm.ExpirationTime) {
 		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
@@ -917,6 +986,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		RequirePartitionFilter: t.RequirePartitionFilter,
 		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
 		CloneDefinition:        bqToCloneDefinition(t.CloneDefinition, c),
+		BigLakeConfiguration:   bqToBigLakeConfiguration(t.BiglakeConfiguration),
 	}
 	if t.MaterializedView != nil {
 		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
@@ -1145,6 +1215,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		}
 		forceSend("ResourceTags")
 	}
+	if tm.BigLakeConfiguration != nil {
+		t.BiglakeConfiguration = tm.BigLakeConfiguration.toBQ()
+		forceSend("BigLakeConfiguration")
+	}
 	labels, forces, nulls := tm.update()
 	t.Labels = labels
 	t.ForceSendFields = append(t.ForceSendFields, forces...)
@@ -1238,6 +1312,9 @@ type TableMetadataToUpdate struct {
 	// where 12345 is parent id. The value is the friendly short name of the
 	// tag value, e.g. "production".
 	ResourceTags map[string]string
+
+	// Update the configuration of a BigQuery table for Apache Iceberg (formerly BigLake Managed Table).
+	BigLakeConfiguration *BigLakeConfiguration
 
 	labelUpdater
 }

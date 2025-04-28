@@ -62,6 +62,8 @@ type RankingRecord struct {
 	// set otherwise an INVALID_ARGUMENT error is thrown.
 	Content string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 	// The score of this record based on the given query and selected model.
+	// The score will be rounded to 2 decimal places. If the score is close to 0,
+	// it will be rounded to 0.0001 to avoid returning unset.
 	Score float32 `protobuf:"fixed32,4,opt,name=score,proto3" json:"score,omitempty"`
 }
 
@@ -135,7 +137,7 @@ type RankRequest struct {
 	RankingConfig string `protobuf:"bytes,1,opt,name=ranking_config,json=rankingConfig,proto3" json:"ranking_config,omitempty"`
 	// The identifier of the model to use. It is one of:
 	//
-	// * `semantic-ranker-512@latest`: Semantic ranking model with maxiumn input
+	// * `semantic-ranker-512@latest`: Semantic ranking model with maximum input
 	// token size 512.
 	//
 	// It is set to `semantic-ranker-512@latest` by default if unspecified.

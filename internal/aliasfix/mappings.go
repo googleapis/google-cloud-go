@@ -238,10 +238,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb",
 		Status:     StatusMigrated,
 	},
-	"google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2": {
-		ImportPath: "cloud.google.com/go/dataform/apiv1alpha2/dataformpb",
-		Status:     StatusMigrated,
-	},
 	"google.golang.org/genproto/googleapis/cloud/datafusion/v1": {
 		ImportPath: "cloud.google.com/go/datafusion/apiv1/datafusionpb",
 		Status:     StatusMigrated,

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.18.1...networkmanagement/v1.18.2) (2025-03-19)
+
+
+### Documentation
+
+* **networkmanagement:** Update comments for Connectivity Test ([#11847](https://github.com/googleapis/google-cloud-go/issues/11847)) ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.18.0...networkmanagement/v1.18.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.17.1...networkmanagement/v1.18.0) (2025-01-15)
 
 

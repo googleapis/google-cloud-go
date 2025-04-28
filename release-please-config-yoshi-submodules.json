@@ -195,6 +195,9 @@
         "filestore": {
             "component": "filestore"
         },
+        "financialservices": {
+            "component": "financialservices"
+        },
         "functions": {
             "component": "functions"
         },
@@ -266,6 +269,9 @@
         },
         "migrationcenter": {
             "component": "migrationcenter"
+        },
+        "modelarmor": {
+            "component": "modelarmor"
         },
         "monitoring": {
             "component": "monitoring"

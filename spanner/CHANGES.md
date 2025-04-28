@@ -1,5 +1,62 @@
 # Changes
 
+## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.78.0...spanner/v1.79.0) (2025-04-08)
+
+
+### Features
+
+* **spanner:** Allow string values for Scan functions ([#11898](https://github.com/googleapis/google-cloud-go/issues/11898)) ([9989dd0](https://github.com/googleapis/google-cloud-go/commit/9989dd063ba36f39c880b2e7423adde05c703504))
+* **spanner:** New client(s) ([#11946](https://github.com/googleapis/google-cloud-go/issues/11946)) ([c60f28d](https://github.com/googleapis/google-cloud-go/commit/c60f28d5fd99d5356f39276268a68b729130f152))
+
+## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.77.0...spanner/v1.78.0) (2025-03-24)
+
+
+### Features
+
+* **spanner/spansql:** Add support for tokenlist and create search index ([#11522](https://github.com/googleapis/google-cloud-go/issues/11522)) ([cd894f8](https://github.com/googleapis/google-cloud-go/commit/cd894f8aea935c43a6c5625c2fd66b132a9b2f8b))
+* **spanner:** Support multiplexed sessions for ReadWriteStmtBasedTransaction ([#11852](https://github.com/googleapis/google-cloud-go/issues/11852)) ([528d9dd](https://github.com/googleapis/google-cloud-go/commit/528d9ddc548c5f05237cf5a0cc4b762ca5f1dd31))
+
+
+### Bug Fixes
+
+* **spanner/test/opentelemetry/test:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+* **spanner:** Revert the ALTS bound token enablement ([#11799](https://github.com/googleapis/google-cloud-go/issues/11799)) ([68cfb38](https://github.com/googleapis/google-cloud-go/commit/68cfb385ef30c636ab491e6d010cb69e8e1bebf4))
+* **spanner:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.77.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.76.1...spanner/v1.77.0) (2025-03-03)
+
+
+### Features
+
+* **spanner:** A new enum `IsolationLevel` is added ([#11624](https://github.com/googleapis/google-cloud-go/issues/11624)) ([2c4fb44](https://github.com/googleapis/google-cloud-go/commit/2c4fb448a2207a6d9988ec3a7646ea6cbb6f65f9))
+* **spanner:** A new field `isolation_level` is added to message `.google.spanner.v1.TransactionOptions` ([2c4fb44](https://github.com/googleapis/google-cloud-go/commit/2c4fb448a2207a6d9988ec3a7646ea6cbb6f65f9))
+* **spanner:** Add a last field in the PartialResultSet ([#11645](https://github.com/googleapis/google-cloud-go/issues/11645)) ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** Add option for LastStatement in transaction ([#11638](https://github.com/googleapis/google-cloud-go/issues/11638)) ([d662a45](https://github.com/googleapis/google-cloud-go/commit/d662a4537c3883d13a612e335477ca875b5cf479))
+
+
+### Bug Fixes
+
+* **spanner:** Avoid desructive context augmentation that dropped all headers ([#11659](https://github.com/googleapis/google-cloud-go/issues/11659)) ([594732d](https://github.com/googleapis/google-cloud-go/commit/594732dac26341ec00fe20cd40a6cfab9bde6317))
+
+
+### Documentation
+
+* **spanner:** A comment for enum value `OPTIMISTIC` in enum `ReadLockMode` is changed ([2c4fb44](https://github.com/googleapis/google-cloud-go/commit/2c4fb448a2207a6d9988ec3a7646ea6cbb6f65f9))
+* **spanner:** A comment for enum value `PESSIMISTIC` in enum `ReadLockMode` is changed ([2c4fb44](https://github.com/googleapis/google-cloud-go/commit/2c4fb448a2207a6d9988ec3a7646ea6cbb6f65f9))
+* **spanner:** A comment for enum value `READ_LOCK_MODE_UNSPECIFIED` in enum `ReadLockMode` is changed ([2c4fb44](https://github.com/googleapis/google-cloud-go/commit/2c4fb448a2207a6d9988ec3a7646ea6cbb6f65f9))
+* **spanner:** A comment for field `chunked_value` in message `.google.spanner.v1.PartialResultSet` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `precommit_token` in message `.google.spanner.v1.PartialResultSet` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `precommit_token` in message `.google.spanner.v1.ResultSet` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `query_plan` in message `.google.spanner.v1.ResultSetStats` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `row_count_lower_bound` in message `.google.spanner.v1.ResultSetStats` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `row_type` in message `.google.spanner.v1.ResultSetMetadata` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `rows` in message `.google.spanner.v1.ResultSet` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `stats` in message `.google.spanner.v1.PartialResultSet` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `stats` in message `.google.spanner.v1.ResultSet` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for field `values` in message `.google.spanner.v1.PartialResultSet` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for message `ResultSetMetadata` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+* **spanner:** A comment for message `ResultSetStats` is changed ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+
 ## [1.76.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.76.0...spanner/v1.76.1) (2025-02-21)
 
 

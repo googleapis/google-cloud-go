@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/addressvalidation/apiv1",
-    "version": "1.19.0",
+    "version": "1.20.1",
     "language": "GO",
     "apis": [
       {
