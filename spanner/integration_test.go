@@ -2302,7 +2302,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	}
 }
 
-// TODO: Remove once UUID is enabled in production.
+// TODO: Rename it to `TestIntegration_BasicTypes` and remove the current one once UUID is enabled in production.
 // Test encoding/decoding non-struct Cloud Spanner types.
 func TestIntegration_UUID(t *testing.T) {
 	t.Parallel()
