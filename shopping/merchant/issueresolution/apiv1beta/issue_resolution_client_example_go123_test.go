@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package issueresolution_test
+
+import (
+	issueresolution "cloud.google.com/go/shopping/merchant/issueresolution/apiv1beta"
+)
