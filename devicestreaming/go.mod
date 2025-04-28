@@ -2,8 +2,6 @@ module cloud.google.com/go/devicestreaming
 
 go 1.23.0
 
-toolchain go1.24.2
-
 require (
 	github.com/googleapis/gax-go/v2 v2.14.1
 	google.golang.org/api v0.230.0
