@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//    http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -1538,14 +1538,15 @@ type CatalogServiceClient interface {
 	//
 	// Using multiple branches can be useful when developers would like
 	// to have a staging branch to test and verify for future usage. When it
-	// becomes ready, developers switch on the staging branch using this API while
-	// keeping using `projects/*/locations/*/catalogs/*/branches/default_branch`
-	// as [SearchRequest.branch][google.cloud.retail.v2beta.SearchRequest.branch]
-	// to route the traffic to this staging branch.
+	// becomes ready, developers switch on the staging branch using this API
+	// while keeping using
+	// `projects/*/locations/*/catalogs/*/branches/default_branch` as
+	// [SearchRequest.branch][google.cloud.retail.v2beta.SearchRequest.branch] to
+	// route the traffic to this staging branch.
 	//
 	// CAUTION: If you have live predict/search traffic, switching the default
-	// branch could potentially cause outages if the ID space of the new branch is
-	// very different from the old one.
+	// branch could potentially cause outages if the ID space of the new branch
+	// is very different from the old one.
 	//
 	// More specifically:
 	//
@@ -1745,14 +1746,15 @@ type CatalogServiceServer interface {
 	//
 	// Using multiple branches can be useful when developers would like
 	// to have a staging branch to test and verify for future usage. When it
-	// becomes ready, developers switch on the staging branch using this API while
-	// keeping using `projects/*/locations/*/catalogs/*/branches/default_branch`
-	// as [SearchRequest.branch][google.cloud.retail.v2beta.SearchRequest.branch]
-	// to route the traffic to this staging branch.
+	// becomes ready, developers switch on the staging branch using this API
+	// while keeping using
+	// `projects/*/locations/*/catalogs/*/branches/default_branch` as
+	// [SearchRequest.branch][google.cloud.retail.v2beta.SearchRequest.branch] to
+	// route the traffic to this staging branch.
 	//
 	// CAUTION: If you have live predict/search traffic, switching the default
-	// branch could potentially cause outages if the ID space of the new branch is
-	// very different from the old one.
+	// branch could potentially cause outages if the ID space of the new branch
+	// is very different from the old one.
 	//
 	// More specifically:
 	//
