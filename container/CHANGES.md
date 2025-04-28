@@ -1,5 +1,12 @@
 # Changes
 
+## [1.42.4](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.3...container/v1.42.4) (2025-04-15)
+
+
+### Bug Fixes
+
+* **container:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.42.3](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.2...container/v1.42.3) (2025-03-13)
 
 

@@ -3293,7 +3293,7 @@ func (c *tensorboardRESTClient) ReadTensorboardBlobData(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *readTensorboardBlobDataRESTClient
+	var streamClient *readTensorboardBlobDataRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3310,7 +3310,7 @@ func (c *tensorboardRESTClient) ReadTensorboardBlobData(ctx context.Context, req
 			return err
 		}
 
-		streamClient = &readTensorboardBlobDataRESTClient{
+		streamClient = &readTensorboardBlobDataRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&aiplatformpb.ReadTensorboardBlobDataResponse{}).ProtoReflect().Type()),
@@ -3321,15 +3321,15 @@ func (c *tensorboardRESTClient) ReadTensorboardBlobData(ctx context.Context, req
 	return streamClient, e
 }
 
-// readTensorboardBlobDataRESTClient is the stream client used to consume the server stream created by
+// readTensorboardBlobDataRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of ReadTensorboardBlobData.
-type readTensorboardBlobDataRESTClient struct {
+type readTensorboardBlobDataRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *readTensorboardBlobDataRESTClient) Recv() (*aiplatformpb.ReadTensorboardBlobDataResponse, error) {
+func (c *readTensorboardBlobDataRESTStreamClient) Recv() (*aiplatformpb.ReadTensorboardBlobDataResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -3343,29 +3343,29 @@ func (c *readTensorboardBlobDataRESTClient) Recv() (*aiplatformpb.ReadTensorboar
 	return res, nil
 }
 
-func (c *readTensorboardBlobDataRESTClient) Header() (metadata.MD, error) {
+func (c *readTensorboardBlobDataRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *readTensorboardBlobDataRESTClient) Trailer() metadata.MD {
+func (c *readTensorboardBlobDataRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *readTensorboardBlobDataRESTClient) CloseSend() error {
+func (c *readTensorboardBlobDataRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *readTensorboardBlobDataRESTClient) Context() context.Context {
+func (c *readTensorboardBlobDataRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *readTensorboardBlobDataRESTClient) SendMsg(m interface{}) error {
+func (c *readTensorboardBlobDataRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *readTensorboardBlobDataRESTClient) RecvMsg(m interface{}) error {
+func (c *readTensorboardBlobDataRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.24.0",
+    "version": "1.25.2",
     "language": "GO",
     "apis": [
       {
@@ -1468,6 +1468,510 @@
           "service": {
             "shortName": "CatalogService",
             "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmekClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_CreateEncryptionConfig_sync",
+      "title": "dataplex CreateEncryptionConfig Sample",
+      "description": "CreateEncryptionConfig create an EncryptionConfig.",
+      "file": "CmekClient/CreateEncryptionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEncryptionConfig",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.CreateEncryptionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateEncryptionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEncryptionConfigOperation",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "CreateEncryptionConfig",
+          "fullName": "google.cloud.dataplex.v1.CmekService.CreateEncryptionConfig",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_DeleteEncryptionConfig_sync",
+      "title": "dataplex DeleteEncryptionConfig Sample",
+      "description": "DeleteEncryptionConfig delete an EncryptionConfig.",
+      "file": "CmekClient/DeleteEncryptionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEncryptionConfig",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.DeleteEncryptionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteEncryptionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEncryptionConfigOperation",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "DeleteEncryptionConfig",
+          "fullName": "google.cloud.dataplex.v1.CmekService.DeleteEncryptionConfig",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmekClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_GetEncryptionConfig_sync",
+      "title": "dataplex GetEncryptionConfig Sample",
+      "description": "GetEncryptionConfig get an EncryptionConfig.",
+      "file": "CmekClient/GetEncryptionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEncryptionConfig",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.GetEncryptionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetEncryptionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.EncryptionConfig",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "GetEncryptionConfig",
+          "fullName": "google.cloud.dataplex.v1.CmekService.GetEncryptionConfig",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CmekClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmekClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_ListEncryptionConfigs_sync",
+      "title": "dataplex ListEncryptionConfigs Sample",
+      "description": "ListEncryptionConfigs list EncryptionConfigs.",
+      "file": "CmekClient/ListEncryptionConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEncryptionConfigs",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.ListEncryptionConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListEncryptionConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EncryptionConfigIterator",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "ListEncryptionConfigs",
+          "fullName": "google.cloud.dataplex.v1.CmekService.ListEncryptionConfigs",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CmekClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CmekClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_UpdateEncryptionConfig_sync",
+      "title": "dataplex UpdateEncryptionConfig Sample",
+      "description": "UpdateEncryptionConfig update an EncryptionConfig.",
+      "file": "CmekClient/UpdateEncryptionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEncryptionConfig",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.UpdateEncryptionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateEncryptionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEncryptionConfigOperation",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "UpdateEncryptionConfig",
+          "fullName": "google.cloud.dataplex.v1.CmekService.UpdateEncryptionConfig",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
           }
         }
       },

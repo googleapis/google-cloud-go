@@ -1723,7 +1723,7 @@ func TestExecuteQuery(t *testing.T) {
 	}
 	defer client.Close()
 
-	stPcf, _ := status.New(codes.InvalidArgument, "invalid argument").WithDetails(&errdetails.PreconditionFailure{
+	stPcfIa, _ := status.New(codes.InvalidArgument, "invalid argument").WithDetails(&errdetails.PreconditionFailure{
 		Violations: []*errdetails.PreconditionFailure_Violation{
 			{
 				Type:        queryExpiredViolationType,
@@ -1731,7 +1731,17 @@ func TestExecuteQuery(t *testing.T) {
 			},
 		},
 	})
-	aePcf, _ := apierror.FromError(stPcf.Err())
+	aePcfIa, _ := apierror.FromError(stPcfIa.Err())
+
+	stPcfFp, _ := status.New(codes.FailedPrecondition, "failed precondition").WithDetails(&errdetails.PreconditionFailure{
+		Violations: []*errdetails.PreconditionFailure_Violation{
+			{
+				Type:        queryExpiredViolationType,
+				Description: "The prepared query has expired. Please re-issue the ExecuteQuery with a valid prepared query.",
+			},
+		},
+	})
+	aePcfFp, _ := apierror.FromError(stPcfFp.Err())
 	preparedQuery1 := "first mock prepared query"
 	preparedQuery2 := "second mock prepared query"
 	for _, tc := range []struct {
@@ -1834,7 +1844,7 @@ func TestExecuteQuery(t *testing.T) {
 				newPrepareQueryResp(preparedQuery2, colFamAddress),
 			},
 			mockRecvMsgResps: []recvMsgResp{
-				{err: aePcf},
+				{err: aePcfFp},
 				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
 				newExecQueryRespResumeToken(),
 				{err: io.EOF},
@@ -1844,6 +1854,24 @@ func TestExecuteQuery(t *testing.T) {
 				[]byte(preparedQuery2),
 			},
 			wantResultRowValues: [][]*btpb.Value{newProtoRowValuesWithKey(colFamAddress)},
+		},
+		{
+			/*
+				1. PrepareQuery
+				2. ExecuteQuery
+				3. RecvMsg - receives InvalidArgument with PrecondtionFailure error
+			*/
+			desc: "should not retry on expired query when code is not FailedPrecondition",
+			mockPrepQueryResps: []prepareQueryResp{
+				newPrepareQueryResp(preparedQuery1, colFamAddress),
+			},
+			mockRecvMsgResps: []recvMsgResp{
+				{err: aePcfIa},
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+			},
+			wantExecErr: status.Error(codes.InvalidArgument, "invalid argument"),
 		},
 		{
 			/*
@@ -1921,7 +1949,7 @@ func TestExecuteQuery(t *testing.T) {
 				newPrepareQueryResp(preparedQuery1, colFamAddress),
 			},
 			mockRecvMsgResps: []recvMsgResp{
-				{err: aePcf},
+				{err: aePcfFp},
 				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
 				newExecQueryRespResumeToken(),
 				{err: io.EOF},
@@ -1956,7 +1984,7 @@ func TestExecuteQuery(t *testing.T) {
 				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),  // Step 3
 				newExecQueryRespFullBatch(false, nil /* sleep */, []string{colFamAddress}), // Step 4
 				{err: status.Error(codes.Unavailable, "mock unavailable error")},           // Step 5, retryable error
-				{err: aePcf}, // Step 7, retryable error
+				{err: aePcfFp}, // Step 7, retryable error
 				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress, colFamInfo}), // Step 10
 				newExecQueryRespResumeToken(), // Step 11
 				{err: io.EOF},                 // Step 12

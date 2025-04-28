@@ -1,6 +1,45 @@
 # Changes
 
 
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.83.0...aiplatform/v1.84.0) (2025-04-22)
+
+
+### Features
+
+* **aiplatform:** Deprecated EventActions.transfer_to_agent and replaced with EventActions.transfer_agent ([2551567](https://github.com/googleapis/google-cloud-go/commit/25515675379c6f0ff57cc18565293971d65d1bf2))
+* **aiplatform:** Model Registry Model Checkpoint API ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+
+### Bug Fixes
+
+* **aiplatform:** Removed support for session resource paths that do not include reasoning engine ([#12023](https://github.com/googleapis/google-cloud-go/issues/12023)) ([2551567](https://github.com/googleapis/google-cloud-go/commit/25515675379c6f0ff57cc18565293971d65d1bf2))
+
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.1...aiplatform/v1.83.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden EULA(End User License Agreement) related APIs ([#11982](https://github.com/googleapis/google-cloud-go/issues/11982)) ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
+## [1.82.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.0...aiplatform/v1.82.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **aiplatform:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.81.0...aiplatform/v1.82.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add FeatureViewDirectWrite API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add Gen AI logging public preview API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add global quota config to vertex rag engine api ([#11949](https://github.com/googleapis/google-cloud-go/issues/11949)) ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add rag_managed_db_config to RagEngineConfig for specifying Basic or Enterprise RagManagedDb tiers ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add RagEngineConfig to specify RAG project-level config ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add UpdateRagEngineConfig rpc ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+
 ## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.80.0...aiplatform/v1.81.0) (2025-03-31)
 
 

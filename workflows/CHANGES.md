@@ -1,5 +1,21 @@
 # Changes
 
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.14.1...workflows/v1.14.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **workflows:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.14.0...workflows/v1.14.1) (2025-04-15)
+
+
+### Documentation
+
+* **workflows:** A comment for field `revision_id` in message `.google.cloud.workflows.v1beta.Workflow` is changed ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **workflows:** A comment for field `service_account` in message `.google.cloud.workflows.v1beta.Workflow` is changed ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **workflows:** A comment for field `source_contents` in message `.google.cloud.workflows.v1beta.Workflow` is changed ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.5...workflows/v1.14.0) (2025-03-19)
 
 
