@@ -38,7 +38,9 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -47,7 +49,47 @@ import (
 const adminAddr = "bigtableadmin.googleapis.com:443"
 const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
-var errExpiryMissing = errors.New("WithExpiry is a required option")
+var (
+	errExpiryMissing  = errors.New("WithExpiry is a required option")
+	adminRetryOptions = []gax.CallOption{
+		gax.WithRetry(func() gax.Retryer {
+			backoff := gax.Backoff{
+				Initial:    100 * time.Millisecond,
+				Max:        2 * time.Second,
+				Multiplier: 1.2,
+			}
+			return &bigtableAdminRetryer{
+				Backoff: backoff,
+			}
+		}),
+	}
+)
+
+// bigtableAdminRetryer extends the generic gax Retryer, but also checks
+// error messages to check if operation can be retried
+//
+// Retry is made if :
+// - error code is one of the `idempotentRetryCodes` OR
+// - error code is internal and error message is one of the `retryableInternalErrMsgs`
+type bigtableAdminRetryer struct {
+	gax.Backoff
+}
+
+func (r *bigtableAdminRetryer) Retry(err error) (time.Duration, bool) {
+	// Similar to gax.OnCodes but shares the backoff with INTERNAL retry messages check
+	st, ok := grpcstatus.FromError(err)
+	if !ok {
+		return 0, false
+	}
+	c := st.Code()
+	_, isIdempotent := isIdempotentRetryCode[c]
+	if isIdempotent ||
+		(grpcstatus.Code(err) == codes.Internal && containsAny(err.Error(), retryableInternalErrMsgs)) {
+		pause := r.Backoff.Pause()
+		return pause, true
+	}
+	return 0, false
+}
 
 // ErrPartiallyUnavailable is returned when some locations (clusters) are
 // unavailable. Both partial results (retrieved from available locations)
@@ -221,7 +263,7 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 		var err error
 		res, err = ac.tClient.ListTables(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -660,7 +702,7 @@ func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Ta
 		var err error
 		res, err = ac.tClient.GetTable(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -913,7 +955,7 @@ func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotI
 			var err error
 			resp, err = ac.tClient.ListSnapshots(ctx, req)
 			return err
-		}, retryOptions...)
+		}, adminRetryOptions...)
 		if err != nil {
 			return "", err
 		}
@@ -1018,7 +1060,7 @@ func (ac *AdminClient) SnapshotInfo(ctx context.Context, cluster, snapshot strin
 		var err error
 		resp, err = ac.tClient.GetSnapshot(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1070,7 +1112,7 @@ func (ac *AdminClient) isConsistent(ctx context.Context, tableName, token string
 		var err error
 		resp, err = ac.tClient.CheckConsistency(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return false, err
 	}
@@ -1430,7 +1472,7 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 		var err error
 		res, err = iac.iClient.ListInstances(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1468,7 +1510,7 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 		var err error
 		res, err = iac.iClient.GetInstance(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1744,7 +1786,7 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 		var err error
 		res, err = iac.iClient.ListClusters(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1792,7 +1834,7 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		var err error
 		c, err = iac.iClient.GetCluster(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -2187,7 +2229,7 @@ func (iac *InstanceAdminClient) GetAppProfile(ctx context.Context, instanceID, n
 		var err error
 		ap, err = iac.iClient.GetAppProfile(ctx, profileRequest)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -2209,7 +2251,7 @@ func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID 
 			var err error
 			profileRes, err = iac.iClient.ListAppProfiles(ctx, listRequest)
 			return err
-		}, retryOptions...)
+		}, adminRetryOptions...)
 		if err != nil {
 			return "", err
 		}
@@ -2228,7 +2270,6 @@ func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID 
 // UpdateAppProfile updates an app profile within an instance.
 // updateAttrs should be set. If unset, all fields will be replaced.
 func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID, profileID string, updateAttrs ProfileAttrsToUpdate) error {
-	fmt.Println("Entering UpdateAppProfile")
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 
 	profile := &btapb.AppProfile{
@@ -2595,7 +2636,7 @@ func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupItera
 			var err error
 			resp, err = ac.tClient.ListBackups(ctx, req)
 			return err
-		}, retryOptions...)
+		}, adminRetryOptions...)
 		if err != nil {
 			return "", err
 		}
@@ -2744,7 +2785,7 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 		var err error
 		resp, err = ac.tClient.GetBackup(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -2983,7 +3024,7 @@ func (ac *AdminClient) AuthorizedViewInfo(ctx context.Context, tableID, authoriz
 		var err error
 		res, err = ac.tClient.GetAuthorizedView(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 
 	if err != nil {
 		return nil, err
@@ -3017,7 +3058,7 @@ func (ac *AdminClient) AuthorizedViews(ctx context.Context, tableID string) ([]s
 		var err error
 		res, err = ac.tClient.ListAuthorizedViews(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -3124,7 +3165,7 @@ func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID,
 		var err error
 		res, err = iac.iClient.GetLogicalView(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 
 	if err != nil {
 		return nil, err
@@ -3144,7 +3185,7 @@ func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID str
 		var err error
 		res, err = iac.iClient.ListLogicalViews(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -3253,7 +3294,7 @@ func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instan
 		var err error
 		res, err = iac.iClient.GetMaterializedView(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 
 	if err != nil {
 		return nil, err
@@ -3279,7 +3320,7 @@ func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceI
 		var err error
 		res, err = iac.iClient.ListMaterializedViews(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
