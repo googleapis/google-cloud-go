@@ -3545,7 +3545,7 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 			t.Errorf("NewWriterFromAppendableObject: got nil, want error")
 		}
 		_, _, err := obj.Generation(1234).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{})
-		if err == nil || status.Code(err) != codes.NotFound {
+		if status.Code(err) != codes.NotFound {
 			t.Errorf("NewWriterFromAppendableObject: got %v, want NotFound", err)
 		}
 
@@ -3572,6 +3572,17 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		// Expect precondition error when writer to orginal Writer.
 		if _, err := w.Write(randomBytes3MiB); status.Code(err) != codes.FailedPrecondition {
 			t.Fatalf("got %v", err)
+		}
+
+		// Another NewWriter to the unfinalized object should also return a
+		// precondition error when data is flushed.
+		w2 := obj.NewWriter(ctx)
+		w2.Append = true
+		if _, err := w2.Write([]byte("hello world")); err != nil {
+			t.Fatalf("w2.Write: %v", err)
+		}
+		if _, err := w2.Flush(); status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("w2.Flush: %v", err)
 		}
 	})
 }
