@@ -22,15 +22,14 @@ package lfppb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -222,9 +221,11 @@ type LfpMerchantState struct {
 	// Number of [GBPs](https://www.google.com/business/) this merchant has access
 	// to.
 	LinkedGbps int64 `protobuf:"varint,2,opt,name=linked_gbps,json=linkedGbps,proto3" json:"linked_gbps,omitempty"`
-	// Output only. The state per store from the specified merchant.
+	// Output only. The state per store from the specified merchant. The field
+	// will be absent if the merchant has no stores submitted through LFP.
 	StoreStates []*LfpMerchantState_LfpStoreState `protobuf:"bytes,3,rep,name=store_states,json=storeStates,proto3" json:"store_states,omitempty"`
-	// The inventory statistics for the merchant.
+	// The inventory statistics for the merchant. The field will be absent if the
+	// merchant has no inventory submitted through LFP.
 	InventoryStats *LfpMerchantState_InventoryStats `protobuf:"bytes,4,opt,name=inventory_stats,json=inventoryStats,proto3" json:"inventory_stats,omitempty"`
 	// Country-specific settings for the merchant.
 	CountrySettings []*LfpMerchantState_CountrySettings `protobuf:"bytes,5,rep,name=country_settings,json=countrySettings,proto3" json:"country_settings,omitempty"`
