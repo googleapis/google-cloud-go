@@ -127,11 +127,17 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					bctx = bucketContext(bctx, gw.bucket)
 				}
 				err = run(bctx, uploadBuff, gw.settings.retry, s.idempotent)
+				offset += int64(recvd)
+				// If this buffer upload was triggered by a flush, reset and
+				// communicate back the result.
+				if gw.flushInProgress {
+					gw.setSize(offset)
+					gw.flushInProgress = false
+					gw.flushComplete <- flushResult{offset: offset, err: err}
+				}
 				if err != nil {
 					return err
 				}
-				offset += int64(recvd)
-
 				// When we are done reading data without errors, set the object and
 				// finish.
 				if doneReading {
@@ -213,7 +219,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		append:                params.append,
 		finalizeOnClose:       params.finalizeOnClose,
 		setPipeWriter:         setPipeWriter,
-		flushComplete:         make(chan int64),
+		flushComplete:         make(chan flushResult),
 	}, nil
 }
 
@@ -245,8 +251,13 @@ type gRPCWriter struct {
 	finalizeOnClose       bool
 
 	streamSender    gRPCBidiWriteBufferSender
-	flushInProgress bool       // true when the pipe is being recreated for a flush.
-	flushComplete   chan int64 // use to signal back to flush call that flush to server was completed.
+	flushInProgress bool             // true when the pipe is being recreated for a flush.
+	flushComplete   chan flushResult // use to signal back to flush call that flush to server was completed.
+}
+
+type flushResult struct {
+	err    error
+	offset int64
 }
 
 func bucketContext(ctx context.Context, bucket string) context.Context {
@@ -554,11 +565,6 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 			break
 		}
 	}
-	if w.flushInProgress {
-		w.setSize(offset)
-		w.flushInProgress = false
-		w.flushComplete <- offset
-	}
 	return
 }
 
@@ -604,8 +610,8 @@ func (w *gRPCWriter) flush() (int64, error) {
 	w.pw.Close()
 
 	// Wait for flush to complete
-	offset := <-w.flushComplete
-	return offset, nil
+	result := <-w.flushComplete
+	return result.offset, result.err
 }
 
 func checkCanceled(err error) error {
@@ -686,6 +692,11 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 		return nil, err
 	}
 	firstResp := <-s.recvs
+	// Check recvErr after getting the response.
+	if s.recvErr != nil {
+		return nil, s.recvErr
+	}
+
 	// Object resource is returned in the first response on takeover, so capture
 	// this now.
 	s.objResource = firstResp.GetResource()
