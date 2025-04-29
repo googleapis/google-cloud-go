@@ -34,9 +34,11 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -76,6 +78,275 @@ type CallOptions struct {
 	DeleteOperation                     []gax.CallOption
 	GetOperation                        []gax.CallOption
 	ListOperations                      []gax.CallOption
+}
+
+func defaultGRPCClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("oracledatabase.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("oracledatabase.UNIVERSE_DOMAIN:443"),
+		internaloption.WithDefaultMTLSEndpoint("oracledatabase.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://oracledatabase.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
+	}
+}
+
+func defaultCallOptions() *CallOptions {
+	return &CallOptions{
+		ListCloudExadataInfrastructures: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCloudExadataInfrastructure: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCloudExadataInfrastructure: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteCloudExadataInfrastructure: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListCloudVmClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCloudVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCloudVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteCloudVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDbServers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDbNodes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListGiVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDbSystemShapes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAutonomousDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestoreAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GenerateAutonomousDatabaseWallet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListAutonomousDbVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAutonomousDatabaseCharacterSets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAutonomousDatabaseBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		StopAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestartAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
+	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
@@ -623,6 +894,105 @@ func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOper
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
+// gRPCClient is a client for interacting with Oracle Database@Google Cloud API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type gRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
+	// The gRPC API client.
+	client oracledatabasepb.OracleDatabaseClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
+
+	locationsClient locationpb.LocationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogHeaders []string
+
+	logger *slog.Logger
+}
+
+// NewClient creates a new oracle database client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service describing handlers for resources
+func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := defaultGRPCClientOptions()
+	if newClientHook != nil {
+		hookOpts, err := newClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
+		connPool:         connPool,
+		client:           oracledatabasepb.NewOracleDatabaseClient(connPool),
+		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *gRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type restClient struct {
 	// The http endpoint to connect to.
@@ -713,6 +1083,939 @@ func (c *restClient) Close() error {
 // Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
+}
+func (c *gRPCClient) ListCloudExadataInfrastructures(ctx context.Context, req *oracledatabasepb.ListCloudExadataInfrastructuresRequest, opts ...gax.CallOption) *CloudExadataInfrastructureIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListCloudExadataInfrastructures[0:len((*c.CallOptions).ListCloudExadataInfrastructures):len((*c.CallOptions).ListCloudExadataInfrastructures)], opts...)
+	it := &CloudExadataInfrastructureIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListCloudExadataInfrastructuresRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.CloudExadataInfrastructure, string, error) {
+		resp := &oracledatabasepb.ListCloudExadataInfrastructuresResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListCloudExadataInfrastructures, req, settings.GRPC, c.logger, "ListCloudExadataInfrastructures")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCloudExadataInfrastructures(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetCloudExadataInfrastructure(ctx context.Context, req *oracledatabasepb.GetCloudExadataInfrastructureRequest, opts ...gax.CallOption) (*oracledatabasepb.CloudExadataInfrastructure, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetCloudExadataInfrastructure[0:len((*c.CallOptions).GetCloudExadataInfrastructure):len((*c.CallOptions).GetCloudExadataInfrastructure)], opts...)
+	var resp *oracledatabasepb.CloudExadataInfrastructure
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetCloudExadataInfrastructure, req, settings.GRPC, c.logger, "GetCloudExadataInfrastructure")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateCloudExadataInfrastructure(ctx context.Context, req *oracledatabasepb.CreateCloudExadataInfrastructureRequest, opts ...gax.CallOption) (*CreateCloudExadataInfrastructureOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCloudExadataInfrastructure[0:len((*c.CallOptions).CreateCloudExadataInfrastructure):len((*c.CallOptions).CreateCloudExadataInfrastructure)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateCloudExadataInfrastructure, req, settings.GRPC, c.logger, "CreateCloudExadataInfrastructure")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateCloudExadataInfrastructureOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *oracledatabasepb.DeleteCloudExadataInfrastructureRequest, opts ...gax.CallOption) (*DeleteCloudExadataInfrastructureOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteCloudExadataInfrastructure[0:len((*c.CallOptions).DeleteCloudExadataInfrastructure):len((*c.CallOptions).DeleteCloudExadataInfrastructure)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteCloudExadataInfrastructure, req, settings.GRPC, c.logger, "DeleteCloudExadataInfrastructure")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteCloudExadataInfrastructureOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListCloudVmClusters(ctx context.Context, req *oracledatabasepb.ListCloudVmClustersRequest, opts ...gax.CallOption) *CloudVmClusterIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListCloudVmClusters[0:len((*c.CallOptions).ListCloudVmClusters):len((*c.CallOptions).ListCloudVmClusters)], opts...)
+	it := &CloudVmClusterIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListCloudVmClustersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.CloudVmCluster, string, error) {
+		resp := &oracledatabasepb.ListCloudVmClustersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListCloudVmClusters, req, settings.GRPC, c.logger, "ListCloudVmClusters")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCloudVmClusters(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetCloudVmCluster(ctx context.Context, req *oracledatabasepb.GetCloudVmClusterRequest, opts ...gax.CallOption) (*oracledatabasepb.CloudVmCluster, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetCloudVmCluster[0:len((*c.CallOptions).GetCloudVmCluster):len((*c.CallOptions).GetCloudVmCluster)], opts...)
+	var resp *oracledatabasepb.CloudVmCluster
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetCloudVmCluster, req, settings.GRPC, c.logger, "GetCloudVmCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateCloudVmCluster(ctx context.Context, req *oracledatabasepb.CreateCloudVmClusterRequest, opts ...gax.CallOption) (*CreateCloudVmClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCloudVmCluster[0:len((*c.CallOptions).CreateCloudVmCluster):len((*c.CallOptions).CreateCloudVmCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateCloudVmCluster, req, settings.GRPC, c.logger, "CreateCloudVmCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateCloudVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteCloudVmCluster(ctx context.Context, req *oracledatabasepb.DeleteCloudVmClusterRequest, opts ...gax.CallOption) (*DeleteCloudVmClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteCloudVmCluster[0:len((*c.CallOptions).DeleteCloudVmCluster):len((*c.CallOptions).DeleteCloudVmCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteCloudVmCluster, req, settings.GRPC, c.logger, "DeleteCloudVmCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteCloudVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListEntitlements(ctx context.Context, req *oracledatabasepb.ListEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListEntitlements[0:len((*c.CallOptions).ListEntitlements):len((*c.CallOptions).ListEntitlements)], opts...)
+	it := &EntitlementIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListEntitlementsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.Entitlement, string, error) {
+		resp := &oracledatabasepb.ListEntitlementsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListEntitlements, req, settings.GRPC, c.logger, "ListEntitlements")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntitlements(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListDbServers(ctx context.Context, req *oracledatabasepb.ListDbServersRequest, opts ...gax.CallOption) *DbServerIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDbServers[0:len((*c.CallOptions).ListDbServers):len((*c.CallOptions).ListDbServers)], opts...)
+	it := &DbServerIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbServersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbServer, string, error) {
+		resp := &oracledatabasepb.ListDbServersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDbServers, req, settings.GRPC, c.logger, "ListDbServers")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDbServers(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListDbNodes(ctx context.Context, req *oracledatabasepb.ListDbNodesRequest, opts ...gax.CallOption) *DbNodeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDbNodes[0:len((*c.CallOptions).ListDbNodes):len((*c.CallOptions).ListDbNodes)], opts...)
+	it := &DbNodeIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbNodesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbNode, string, error) {
+		resp := &oracledatabasepb.ListDbNodesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDbNodes, req, settings.GRPC, c.logger, "ListDbNodes")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDbNodes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.ListGiVersionsRequest, opts ...gax.CallOption) *GiVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListGiVersions[0:len((*c.CallOptions).ListGiVersions):len((*c.CallOptions).ListGiVersions)], opts...)
+	it := &GiVersionIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListGiVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GiVersion, string, error) {
+		resp := &oracledatabasepb.ListGiVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGiVersions, req, settings.GRPC, c.logger, "ListGiVersions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGiVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListDbSystemShapes(ctx context.Context, req *oracledatabasepb.ListDbSystemShapesRequest, opts ...gax.CallOption) *DbSystemShapeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDbSystemShapes[0:len((*c.CallOptions).ListDbSystemShapes):len((*c.CallOptions).ListDbSystemShapes)], opts...)
+	it := &DbSystemShapeIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemShapesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystemShape, string, error) {
+		resp := &oracledatabasepb.ListDbSystemShapesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDbSystemShapes, req, settings.GRPC, c.logger, "ListDbSystemShapes")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDbSystemShapes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListAutonomousDatabases(ctx context.Context, req *oracledatabasepb.ListAutonomousDatabasesRequest, opts ...gax.CallOption) *AutonomousDatabaseIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAutonomousDatabases[0:len((*c.CallOptions).ListAutonomousDatabases):len((*c.CallOptions).ListAutonomousDatabases)], opts...)
+	it := &AutonomousDatabaseIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabasesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabase, string, error) {
+		resp := &oracledatabasepb.ListAutonomousDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAutonomousDatabases, req, settings.GRPC, c.logger, "ListAutonomousDatabases")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAutonomousDatabases(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetAutonomousDatabase(ctx context.Context, req *oracledatabasepb.GetAutonomousDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.AutonomousDatabase, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAutonomousDatabase[0:len((*c.CallOptions).GetAutonomousDatabase):len((*c.CallOptions).GetAutonomousDatabase)], opts...)
+	var resp *oracledatabasepb.AutonomousDatabase
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAutonomousDatabase, req, settings.GRPC, c.logger, "GetAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateAutonomousDatabase(ctx context.Context, req *oracledatabasepb.CreateAutonomousDatabaseRequest, opts ...gax.CallOption) (*CreateAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAutonomousDatabase[0:len((*c.CallOptions).CreateAutonomousDatabase):len((*c.CallOptions).CreateAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateAutonomousDatabase, req, settings.GRPC, c.logger, "CreateAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteAutonomousDatabase(ctx context.Context, req *oracledatabasepb.DeleteAutonomousDatabaseRequest, opts ...gax.CallOption) (*DeleteAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteAutonomousDatabase[0:len((*c.CallOptions).DeleteAutonomousDatabase):len((*c.CallOptions).DeleteAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteAutonomousDatabase, req, settings.GRPC, c.logger, "DeleteAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) RestoreAutonomousDatabase(ctx context.Context, req *oracledatabasepb.RestoreAutonomousDatabaseRequest, opts ...gax.CallOption) (*RestoreAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestoreAutonomousDatabase[0:len((*c.CallOptions).RestoreAutonomousDatabase):len((*c.CallOptions).RestoreAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RestoreAutonomousDatabase, req, settings.GRPC, c.logger, "RestoreAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RestoreAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GenerateAutonomousDatabaseWallet(ctx context.Context, req *oracledatabasepb.GenerateAutonomousDatabaseWalletRequest, opts ...gax.CallOption) (*oracledatabasepb.GenerateAutonomousDatabaseWalletResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateAutonomousDatabaseWallet[0:len((*c.CallOptions).GenerateAutonomousDatabaseWallet):len((*c.CallOptions).GenerateAutonomousDatabaseWallet)], opts...)
+	var resp *oracledatabasepb.GenerateAutonomousDatabaseWalletResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GenerateAutonomousDatabaseWallet, req, settings.GRPC, c.logger, "GenerateAutonomousDatabaseWallet")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListAutonomousDbVersions(ctx context.Context, req *oracledatabasepb.ListAutonomousDbVersionsRequest, opts ...gax.CallOption) *AutonomousDbVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAutonomousDbVersions[0:len((*c.CallOptions).ListAutonomousDbVersions):len((*c.CallOptions).ListAutonomousDbVersions)], opts...)
+	it := &AutonomousDbVersionIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDbVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDbVersion, string, error) {
+		resp := &oracledatabasepb.ListAutonomousDbVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAutonomousDbVersions, req, settings.GRPC, c.logger, "ListAutonomousDbVersions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAutonomousDbVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListAutonomousDatabaseCharacterSets(ctx context.Context, req *oracledatabasepb.ListAutonomousDatabaseCharacterSetsRequest, opts ...gax.CallOption) *AutonomousDatabaseCharacterSetIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAutonomousDatabaseCharacterSets[0:len((*c.CallOptions).ListAutonomousDatabaseCharacterSets):len((*c.CallOptions).ListAutonomousDatabaseCharacterSets)], opts...)
+	it := &AutonomousDatabaseCharacterSetIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabaseCharacterSetsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabaseCharacterSet, string, error) {
+		resp := &oracledatabasepb.ListAutonomousDatabaseCharacterSetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAutonomousDatabaseCharacterSets, req, settings.GRPC, c.logger, "ListAutonomousDatabaseCharacterSets")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAutonomousDatabaseCharacterSets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListAutonomousDatabaseBackups(ctx context.Context, req *oracledatabasepb.ListAutonomousDatabaseBackupsRequest, opts ...gax.CallOption) *AutonomousDatabaseBackupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAutonomousDatabaseBackups[0:len((*c.CallOptions).ListAutonomousDatabaseBackups):len((*c.CallOptions).ListAutonomousDatabaseBackups)], opts...)
+	it := &AutonomousDatabaseBackupIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabaseBackupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabaseBackup, string, error) {
+		resp := &oracledatabasepb.ListAutonomousDatabaseBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAutonomousDatabaseBackups, req, settings.GRPC, c.logger, "ListAutonomousDatabaseBackups")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAutonomousDatabaseBackups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) StopAutonomousDatabase(ctx context.Context, req *oracledatabasepb.StopAutonomousDatabaseRequest, opts ...gax.CallOption) (*StopAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StopAutonomousDatabase[0:len((*c.CallOptions).StopAutonomousDatabase):len((*c.CallOptions).StopAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StopAutonomousDatabase, req, settings.GRPC, c.logger, "StopAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &StopAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) StartAutonomousDatabase(ctx context.Context, req *oracledatabasepb.StartAutonomousDatabaseRequest, opts ...gax.CallOption) (*StartAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StartAutonomousDatabase[0:len((*c.CallOptions).StartAutonomousDatabase):len((*c.CallOptions).StartAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StartAutonomousDatabase, req, settings.GRPC, c.logger, "StartAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &StartAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) RestartAutonomousDatabase(ctx context.Context, req *oracledatabasepb.RestartAutonomousDatabaseRequest, opts ...gax.CallOption) (*RestartAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestartAutonomousDatabase[0:len((*c.CallOptions).RestartAutonomousDatabase):len((*c.CallOptions).RestartAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RestartAutonomousDatabase, req, settings.GRPC, c.logger, "RestartAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RestartAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ListCloudExadataInfrastructures lists Exadata Infrastructures in a given project and location.
@@ -2738,11 +4041,27 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 // CreateAutonomousDatabaseOperation returns a new CreateAutonomousDatabaseOperation from a given name.
 // The name must be that of a previously created CreateAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) CreateAutonomousDatabaseOperation(name string) *CreateAutonomousDatabaseOperation {
+	return &CreateAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateAutonomousDatabaseOperation returns a new CreateAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created CreateAutonomousDatabaseOperation, possibly from a different process.
 func (c *restClient) CreateAutonomousDatabaseOperation(name string) *CreateAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAutonomousDatabaseOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
+	}
+}
+
+// CreateCloudExadataInfrastructureOperation returns a new CreateCloudExadataInfrastructureOperation from a given name.
+// The name must be that of a previously created CreateCloudExadataInfrastructureOperation, possibly from a different process.
+func (c *gRPCClient) CreateCloudExadataInfrastructureOperation(name string) *CreateCloudExadataInfrastructureOperation {
+	return &CreateCloudExadataInfrastructureOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2758,11 +4077,27 @@ func (c *restClient) CreateCloudExadataInfrastructureOperation(name string) *Cre
 
 // CreateCloudVmClusterOperation returns a new CreateCloudVmClusterOperation from a given name.
 // The name must be that of a previously created CreateCloudVmClusterOperation, possibly from a different process.
+func (c *gRPCClient) CreateCloudVmClusterOperation(name string) *CreateCloudVmClusterOperation {
+	return &CreateCloudVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateCloudVmClusterOperation returns a new CreateCloudVmClusterOperation from a given name.
+// The name must be that of a previously created CreateCloudVmClusterOperation, possibly from a different process.
 func (c *restClient) CreateCloudVmClusterOperation(name string) *CreateCloudVmClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCloudVmClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
+	}
+}
+
+// DeleteAutonomousDatabaseOperation returns a new DeleteAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created DeleteAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) DeleteAutonomousDatabaseOperation(name string) *DeleteAutonomousDatabaseOperation {
+	return &DeleteAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2778,11 +4113,27 @@ func (c *restClient) DeleteAutonomousDatabaseOperation(name string) *DeleteAuton
 
 // DeleteCloudExadataInfrastructureOperation returns a new DeleteCloudExadataInfrastructureOperation from a given name.
 // The name must be that of a previously created DeleteCloudExadataInfrastructureOperation, possibly from a different process.
+func (c *gRPCClient) DeleteCloudExadataInfrastructureOperation(name string) *DeleteCloudExadataInfrastructureOperation {
+	return &DeleteCloudExadataInfrastructureOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteCloudExadataInfrastructureOperation returns a new DeleteCloudExadataInfrastructureOperation from a given name.
+// The name must be that of a previously created DeleteCloudExadataInfrastructureOperation, possibly from a different process.
 func (c *restClient) DeleteCloudExadataInfrastructureOperation(name string) *DeleteCloudExadataInfrastructureOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCloudExadataInfrastructureOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
+	}
+}
+
+// DeleteCloudVmClusterOperation returns a new DeleteCloudVmClusterOperation from a given name.
+// The name must be that of a previously created DeleteCloudVmClusterOperation, possibly from a different process.
+func (c *gRPCClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmClusterOperation {
+	return &DeleteCloudVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2798,11 +4149,27 @@ func (c *restClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmCl
 
 // RestartAutonomousDatabaseOperation returns a new RestartAutonomousDatabaseOperation from a given name.
 // The name must be that of a previously created RestartAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation {
+	return &RestartAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RestartAutonomousDatabaseOperation returns a new RestartAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created RestartAutonomousDatabaseOperation, possibly from a different process.
 func (c *restClient) RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestartAutonomousDatabaseOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
+	}
+}
+
+// RestoreAutonomousDatabaseOperation returns a new RestoreAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created RestoreAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) RestoreAutonomousDatabaseOperation(name string) *RestoreAutonomousDatabaseOperation {
+	return &RestoreAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2818,11 +4185,27 @@ func (c *restClient) RestoreAutonomousDatabaseOperation(name string) *RestoreAut
 
 // StartAutonomousDatabaseOperation returns a new StartAutonomousDatabaseOperation from a given name.
 // The name must be that of a previously created StartAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) StartAutonomousDatabaseOperation(name string) *StartAutonomousDatabaseOperation {
+	return &StartAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// StartAutonomousDatabaseOperation returns a new StartAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created StartAutonomousDatabaseOperation, possibly from a different process.
 func (c *restClient) StartAutonomousDatabaseOperation(name string) *StartAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartAutonomousDatabaseOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
+	}
+}
+
+// StopAutonomousDatabaseOperation returns a new StopAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created StopAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation {
+	return &StopAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
