@@ -53,13 +53,8 @@ var (
 	errExpiryMissing  = errors.New("WithExpiry is a required option")
 	adminRetryOptions = []gax.CallOption{
 		gax.WithRetry(func() gax.Retryer {
-			backoff := gax.Backoff{
-				Initial:    100 * time.Millisecond,
-				Max:        2 * time.Second,
-				Multiplier: 1.2,
-			}
 			return &bigtableAdminRetryer{
-				Backoff: backoff,
+				Backoff: defaultBackoff,
 			}
 		}),
 	}
