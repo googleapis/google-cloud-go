@@ -72,6 +72,7 @@ deep-remove-regex:
   - /certificatemanager/apiv1/
   - /channel/apiv1/
   - /chat/apiv1/
+  - /chronicle/apiv1/
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /cloudcontrolspartner/apiv1/
@@ -212,6 +213,7 @@ deep-remove-regex:
   - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/channel/apiv1/
   - /internal/generated/snippets/chat/apiv1/
+  - /internal/generated/snippets/chronicle/apiv1/
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
   - /internal/generated/snippets/cloudcontrolspartner/apiv1/
@@ -786,6 +788,8 @@ deep-copy-regex:
   - source: /google/cloud/channel/v1/cloud.google.com/go
     dest: /
   - source: /google/chat/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/chronicle/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
     dest: /
