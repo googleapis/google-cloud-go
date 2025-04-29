@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/issueresolution/apiv1beta",
+    "version": "0.19.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.issueresolution.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_IssueResolutionService_RenderAccountIssues_sync",
+      "title": "merchantapi RenderAccountIssues Sample",
+      "description": "RenderAccountIssues provide a list of business's account issues with an issue resolution\ncontent and available actions. This content and actions are meant to be\nrendered and shown in third-party applications.",
+      "file": "Client/RenderAccountIssues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenderAccountIssues",
+        "fullName": "google.shopping.merchant.issueresolution.v1beta.Client.RenderAccountIssues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issueresolutionpb.RenderAccountIssuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issueresolutionpb.RenderAccountIssuesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.issueresolution.v1beta.Client"
+        },
+        "method": {
+          "shortName": "RenderAccountIssues",
+          "fullName": "google.shopping.merchant.issueresolution.v1beta.IssueResolutionService.RenderAccountIssues",
+          "service": {
+            "shortName": "IssueResolutionService",
+            "fullName": "google.shopping.merchant.issueresolution.v1beta.IssueResolutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_IssueResolutionService_RenderProductIssues_sync",
+      "title": "merchantapi RenderProductIssues Sample",
+      "description": "RenderProductIssues provide a list of issues for business's product with an issue resolution\ncontent and available actions. This content and actions are meant to be\nrendered and shown in third-party applications.",
+      "file": "Client/RenderProductIssues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenderProductIssues",
+        "fullName": "google.shopping.merchant.issueresolution.v1beta.Client.RenderProductIssues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issueresolutionpb.RenderProductIssuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issueresolutionpb.RenderProductIssuesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.issueresolution.v1beta.Client"
+        },
+        "method": {
+          "shortName": "RenderProductIssues",
+          "fullName": "google.shopping.merchant.issueresolution.v1beta.IssueResolutionService.RenderProductIssues",
+          "service": {
+            "shortName": "IssueResolutionService",
+            "fullName": "google.shopping.merchant.issueresolution.v1beta.IssueResolutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_IssueResolutionService_TriggerAction_sync",
+      "title": "merchantapi TriggerAction Sample",
+      "description": "TriggerAction start an action. The action can be requested by a business in\nthird-party application. Before the business can request the action, the\nthird-party application needs to show them action specific content and\ndisplay a user input form.\n\nThe action can be successfully started only once all `required` inputs are\nprovided. If any `required` input is missing, or invalid value was\nprovided, the service will return 400 error. Validation errors will contain\n[Ids][google.shopping.merchant.issueresolution.v1beta.InputField.id] for\nall problematic field together with translated, human readable error\nmessages that can be shown to the user.",
+      "file": "Client/TriggerAction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TriggerAction",
+        "fullName": "google.shopping.merchant.issueresolution.v1beta.Client.TriggerAction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issueresolutionpb.TriggerActionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issueresolutionpb.TriggerActionResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.issueresolution.v1beta.Client"
+        },
+        "method": {
+          "shortName": "TriggerAction",
+          "fullName": "google.shopping.merchant.issueresolution.v1beta.IssueResolutionService.TriggerAction",
+          "service": {
+            "shortName": "IssueResolutionService",
+            "fullName": "google.shopping.merchant.issueresolution.v1beta.IssueResolutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
