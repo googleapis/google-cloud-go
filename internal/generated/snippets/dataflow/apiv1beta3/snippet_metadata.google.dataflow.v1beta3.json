@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataflow/apiv1beta3",
-    "version": "$VERSION",
+    "version": "0.10.6",
     "language": "GO",
     "apis": [
       {
