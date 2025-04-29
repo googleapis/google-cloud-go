@@ -30,6 +30,7 @@ modules:
   - certificatemanager
   - channel
   - chat
+  - chronicle
   - cloudbuild
   - cloudcontrolspartner
   - clouddms
@@ -493,6 +494,9 @@ service-configs:
   - input-directory: google/chat/v1
     service-config: chat_v1.yaml
     import-path: cloud.google.com/go/chat/apiv1
+  - input-directory: google/cloud/chronicle/v1
+    service-config: chronicle_v1.yaml
+    import-path: cloud.google.com/go/chronicle/apiv1
   - input-directory: google/cloud/cloudcontrolspartner/v1
     service-config: cloudcontrolspartner_v1.yaml
     import-path: cloud.google.com/go/cloudcontrolspartner/apiv1
