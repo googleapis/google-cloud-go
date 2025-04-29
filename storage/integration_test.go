@@ -3584,6 +3584,25 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		if _, err := w2.Flush(); status.Code(err) != codes.FailedPrecondition {
 			t.Fatalf("w2.Flush: %v", err)
 		}
+
+		// If we add yet another takeover writer to finalize and delete the object,
+		// tw should also return an error on flush.
+		tw2, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
+			FinalizeOnClose: true,
+		})
+		if err != nil {
+			t.Fatalf("NewWriterFromAppendableObject: %v", err)
+		}
+		if err := tw2.Close(); err != nil {
+			t.Fatalf("tw2.Close: %v", err)
+		}
+		h.mustDeleteObject(obj)
+		if _, err := tw.Write([]byte("abcde")); err != nil {
+			t.Fatalf("tw.Write: %v", err)
+		}
+		if _, err := tw.Flush(); status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("tw.Flush: got %v, want FailedPrecondition", err)
+		}
 	})
 }
 func TestIntegration_ZeroSizedObject(t *testing.T) {
