@@ -44,7 +44,7 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			q := storageOptimizedClient.Query(c.query)
 			q.Parameters = c.parameters
-			q.forceStorageAPI = true
+			q.ForceStorageAPI = true
 			it, err := q.Read(ctx)
 			if err != nil {
 				t.Fatal(err)
@@ -165,7 +165,7 @@ ORDER BY num`
 		t.Fatalf("reading job should use Storage API")
 	}
 	q.Dst = nil
-	q.forceStorageAPI = true
+	q.ForceStorageAPI = true
 	qRowIt, err := q.Read(ctx)
 	if err != nil {
 		t.Fatalf("ReadQuery(query): %v", err)
@@ -210,7 +210,7 @@ CREATE TABLE %s.%s ( num INT64, str STRING );
 DROP TABLE %s.%s;
 `, dataset.DatasetID, tableID, dataset.DatasetID, tableID)
 	q := storageOptimizedClient.Query(sql)
-	q.forceStorageAPI = true
+	q.ForceStorageAPI = true
 	it, err := q.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -261,7 +261,7 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 
 	for _, tc := range testCases {
 		q := storageOptimizedClient.Query(tc.query)
-		q.forceStorageAPI = true
+		q.ForceStorageAPI = true
 
 		it, err := q.Read(ctx)
 		if err != nil {
@@ -319,7 +319,7 @@ func TestIntegration_StorageReadQueryStruct(t *testing.T) {
 	table := "`bigquery-public-data.samples.wikipedia`"
 	sql := fmt.Sprintf(`SELECT id, title, timestamp, comment FROM %s LIMIT 1000`, table)
 	q := storageOptimizedClient.Query(sql)
-	q.forceStorageAPI = true
+	q.ForceStorageAPI = true
 	q.DisableQueryCache = true
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -422,7 +422,7 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 	storageOptimizedClient.rc.settings.maxWorkerCount = 1
 	q := storageOptimizedClient.Query(sql)
 	q.DisableQueryCache = true
-	q.forceStorageAPI = true
+	q.ForceStorageAPI = true
 	it, err := q.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
