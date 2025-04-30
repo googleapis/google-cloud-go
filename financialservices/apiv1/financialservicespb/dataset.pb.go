@@ -21,9 +21,6 @@
 package financialservicespb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	datetime "google.golang.org/genproto/googleapis/type/datetime"
 	interval "google.golang.org/genproto/googleapis/type/interval"
@@ -31,6 +28,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
