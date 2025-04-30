@@ -46,6 +46,7 @@ type FileCallOptions struct {
 	ListFiles      []gax.CallOption
 	GetFile        []gax.CallOption
 	DeleteFile     []gax.CallOption
+	DownloadFile   []gax.CallOption
 	GetOperation   []gax.CallOption
 	ListOperations []gax.CallOption
 }
@@ -71,6 +72,7 @@ func defaultFileCallOptions() *FileCallOptions {
 		ListFiles:      []gax.CallOption{},
 		GetFile:        []gax.CallOption{},
 		DeleteFile:     []gax.CallOption{},
+		DownloadFile:   []gax.CallOption{},
 		GetOperation:   []gax.CallOption{},
 		ListOperations: []gax.CallOption{},
 	}
@@ -82,6 +84,7 @@ func defaultFileRESTCallOptions() *FileCallOptions {
 		ListFiles:      []gax.CallOption{},
 		GetFile:        []gax.CallOption{},
 		DeleteFile:     []gax.CallOption{},
+		DownloadFile:   []gax.CallOption{},
 		GetOperation:   []gax.CallOption{},
 		ListOperations: []gax.CallOption{},
 	}
@@ -96,6 +99,7 @@ type internalFileClient interface {
 	ListFiles(context.Context, *generativelanguagepb.ListFilesRequest, ...gax.CallOption) *FileIterator
 	GetFile(context.Context, *generativelanguagepb.GetFileRequest, ...gax.CallOption) (*generativelanguagepb.File, error)
 	DeleteFile(context.Context, *generativelanguagepb.DeleteFileRequest, ...gax.CallOption) error
+	DownloadFile(context.Context, *generativelanguagepb.DownloadFileRequest, ...gax.CallOption) (*generativelanguagepb.DownloadFileResponse, error)
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -153,6 +157,11 @@ func (c *FileClient) GetFile(ctx context.Context, req *generativelanguagepb.GetF
 // DeleteFile deletes the File.
 func (c *FileClient) DeleteFile(ctx context.Context, req *generativelanguagepb.DeleteFileRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteFile(ctx, req, opts...)
+}
+
+// DownloadFile download the File.
+func (c *FileClient) DownloadFile(ctx context.Context, req *generativelanguagepb.DownloadFileRequest, opts ...gax.CallOption) (*generativelanguagepb.DownloadFileResponse, error) {
+	return c.internalClient.DownloadFile(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -409,6 +418,24 @@ func (c *fileGRPCClient) DeleteFile(ctx context.Context, req *generativelanguage
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *fileGRPCClient) DownloadFile(ctx context.Context, req *generativelanguagepb.DownloadFileRequest, opts ...gax.CallOption) (*generativelanguagepb.DownloadFileResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DownloadFile[0:len((*c.CallOptions).DownloadFile):len((*c.CallOptions).DownloadFile)], opts...)
+	var resp *generativelanguagepb.DownloadFileResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.fileClient.DownloadFile, req, settings.GRPC, c.logger, "DownloadFile")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *fileGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
@@ -689,6 +716,56 @@ func (c *fileRESTClient) DeleteFile(ctx context.Context, req *generativelanguage
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFile")
 		return err
 	}, opts...)
+}
+
+// DownloadFile download the File.
+func (c *fileRESTClient) DownloadFile(ctx context.Context, req *generativelanguagepb.DownloadFileRequest, opts ...gax.CallOption) (*generativelanguagepb.DownloadFileResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:download", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).DownloadFile[0:len((*c.CallOptions).DownloadFile):len((*c.CallOptions).DownloadFile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &generativelanguagepb.DownloadFileResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DownloadFile")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
