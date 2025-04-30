@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
-    "version": "$VERSION",
+    "version": "1.14.5",
     "language": "GO",
     "apis": [
       {
