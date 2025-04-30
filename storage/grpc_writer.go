@@ -652,7 +652,7 @@ func (w *gRPCWriter) newGRPCAppendableObjectBufferSender() (*gRPCAppendBidiWrite
 	s := &gRPCAppendBidiWriteBufferSender{
 		bucket:   w.spec.GetResource().GetBucket(),
 		raw:      w.c.raw,
-		settings: w.c.settings,
+		settings: w.settings,
 		firstMessage: &storagepb.BidiWriteObjectRequest{
 			FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
 				WriteObjectSpec: w.spec,
@@ -674,7 +674,7 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 	s := &gRPCAppendBidiWriteBufferSender{
 		bucket:   w.spec.GetResource().GetBucket(),
 		raw:      w.c.raw,
-		settings: w.c.settings,
+		settings: w.settings,
 		firstMessage: &storagepb.BidiWriteObjectRequest{
 			FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
 				AppendObjectSpec: w.appendSpec,

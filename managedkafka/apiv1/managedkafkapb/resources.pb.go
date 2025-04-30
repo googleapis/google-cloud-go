@@ -1498,7 +1498,8 @@ func (*Connector_TaskRestartPolicy) isConnector_RestartPolicy() {}
 // Note that the delay between consecutive task restarts may not always
 // precisely match the configured settings. This can happen when the
 // ConnectCluster is in rebalancing state or if the ConnectCluster is
-// unresponsive etc.
+// unresponsive etc. The default values for minimum and maximum backoffs are
+// 60 seconds and 30 minutes respectively.
 type TaskRetryPolicy struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
