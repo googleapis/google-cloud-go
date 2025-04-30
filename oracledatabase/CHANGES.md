@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.4.1...oracledatabase/v0.5.0) (2025-04-30)
+
+
+### Features
+
+* **oracledatabase:** Re-enable gRPC support ([#12075](https://github.com/googleapis/google-cloud-go/issues/12075)) ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.4.0...oracledatabase/v0.4.1) (2025-04-15)
 
 
