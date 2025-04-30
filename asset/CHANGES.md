@@ -1,5 +1,26 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.20.6...asset/v1.21.0) (2025-04-30)
+
+
+### Features
+
+* **asset:** A new field `enrichments` is added to message `.google.cloud.asset.v1.ResourceSearchResult` ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A new message `AssetEnrichment` is added ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A new message `ResourceOwners` is added ([#12029](https://github.com/googleapis/google-cloud-go/issues/12029)) ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A new value `GOVERN_TAGS` is added to enum `MethodType` ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A new value `REMOVE_GRANT` is added to enum `MethodType` ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Documentation
+
+* **asset:** A comment for field `attached_resource` in message `.google.cloud.asset.v1.EffectiveTagDetails` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A comment for field `consolidated_policy` in message `.google.cloud.asset.v1.AnalyzeOrgPoliciesResponse` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A comment for field `policy_bundle` in message `.google.cloud.asset.v1.AnalyzeOrgPoliciesResponse` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A comment for field `policy_bundle` in message `.google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A comment for field `policy_bundle` in message `.google.cloud.asset.v1.AnalyzeOrgPolicyGovernedContainersResponse` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **asset:** A comment for field `service_account_impersonation_analysis` in message `.google.cloud.asset.v1.AnalyzeIamPolicyResponse` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
 ## [1.20.6](https://github.com/googleapis/google-cloud-go/compare/asset/v1.20.5...asset/v1.20.6) (2025-04-15)
 
 
