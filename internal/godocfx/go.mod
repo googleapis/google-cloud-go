@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/godocfx
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.120.1
+	cloud.google.com/go v0.120.0
 	cloud.google.com/go/bigquery v1.67.0
 	cloud.google.com/go/datastore v1.20.0
 	github.com/google/go-cmp v0.7.0
@@ -48,7 +48,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/api v0.229.0 // indirect
 	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250414145226-207652e42e2e // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250303144028-a0af3efb3deb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250414145226-207652e42e2e // indirect
 	google.golang.org/grpc v1.71.1 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
