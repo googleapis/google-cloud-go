@@ -669,6 +669,52 @@ var methods = map[string][]retryFunc{
 			}
 			return nil
 		},
+		// Appendable upload using Flush() and FinalizeOnClose=false.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
+			b := c.Bucket(bucketName)
+			if err := b.Create(ctx, projectID, nil); err != nil {
+				return err
+			}
+			defer b.Delete(ctx)
+
+			obj := b.Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			objW.Append = true
+			objW.ChunkSize = MiB
+
+			if _, err := objW.Write(randomBytes3MiB); err != nil {
+				return fmt.Errorf("Writer.Write: %w", err)
+			}
+			if _, err := objW.Flush(); err != nil {
+				return fmt.Errorf("Writer.Flush: %w", err)
+
+			}
+
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %w", err)
+			}
+
+			// Don't reuse obj, in case preconditions were set on the write request.
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			defer r.Close()
+			if err != nil {
+				return fmt.Errorf("obj.NewReader: %w", err)
+			}
+			content, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("Reader.Read: %w", err)
+			}
+
+			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(randomBytes3MiB))
+			}
+			return nil
+		},
 	},
 	"storage.objects.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {

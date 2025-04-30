@@ -85,6 +85,7 @@ func TestExtract(t *testing.T) {
 				DisableHeader: true,
 				Labels:        map[string]string{"a": "b"},
 				JobTimeout:    8 * time.Second,
+				Reservation:   "reservation/1",
 			},
 			want: func() *bq.Job {
 				j := defaultExtractJob()
@@ -92,6 +93,7 @@ func TestExtract(t *testing.T) {
 				j.Configuration.JobTimeoutMs = 8000
 				f := false
 				j.Configuration.Extract.PrintHeader = &f
+				j.Configuration.Reservation = "reservation/1"
 				return j
 			}(),
 		},
