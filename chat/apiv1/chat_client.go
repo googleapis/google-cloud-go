@@ -67,6 +67,10 @@ type CallOptions struct {
 	CreateReaction                 []gax.CallOption
 	ListReactions                  []gax.CallOption
 	DeleteReaction                 []gax.CallOption
+	CreateCustomEmoji              []gax.CallOption
+	GetCustomEmoji                 []gax.CallOption
+	ListCustomEmojis               []gax.CallOption
+	DeleteCustomEmoji              []gax.CallOption
 	GetSpaceReadState              []gax.CallOption
 	UpdateSpaceReadState           []gax.CallOption
 	GetThreadReadState             []gax.CallOption
@@ -370,6 +374,54 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteReaction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCustomEmoji: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCustomEmoji: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListCustomEmojis: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteCustomEmoji: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -734,6 +786,50 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateCustomEmoji: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetCustomEmoji: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListCustomEmojis: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteCustomEmoji: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetSpaceReadState: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -843,6 +939,10 @@ type internalClient interface {
 	CreateReaction(context.Context, *chatpb.CreateReactionRequest, ...gax.CallOption) (*chatpb.Reaction, error)
 	ListReactions(context.Context, *chatpb.ListReactionsRequest, ...gax.CallOption) *ReactionIterator
 	DeleteReaction(context.Context, *chatpb.DeleteReactionRequest, ...gax.CallOption) error
+	CreateCustomEmoji(context.Context, *chatpb.CreateCustomEmojiRequest, ...gax.CallOption) (*chatpb.CustomEmoji, error)
+	GetCustomEmoji(context.Context, *chatpb.GetCustomEmojiRequest, ...gax.CallOption) (*chatpb.CustomEmoji, error)
+	ListCustomEmojis(context.Context, *chatpb.ListCustomEmojisRequest, ...gax.CallOption) *CustomEmojiIterator
+	DeleteCustomEmoji(context.Context, *chatpb.DeleteCustomEmojiRequest, ...gax.CallOption) error
 	GetSpaceReadState(context.Context, *chatpb.GetSpaceReadStateRequest, ...gax.CallOption) (*chatpb.SpaceReadState, error)
 	UpdateSpaceReadState(context.Context, *chatpb.UpdateSpaceReadStateRequest, ...gax.CallOption) (*chatpb.SpaceReadState, error)
 	GetThreadReadState(context.Context, *chatpb.GetThreadReadStateRequest, ...gax.CallOption) (*chatpb.ThreadReadState, error)
@@ -1380,6 +1480,70 @@ func (c *Client) ListReactions(ctx context.Context, req *chatpb.ListReactionsReq
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *Client) DeleteReaction(ctx context.Context, req *chatpb.DeleteReactionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteReaction(ctx, req, opts...)
+}
+
+// CreateCustomEmoji creates a custom emoji.
+//
+// Custom emojis are only available for Google Workspace accounts, and the
+// administrator must turn custom emojis on for the organization. For more
+// information, see Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149) and
+// Manage custom emoji
+// permissions (at https://support.google.com/a/answer/12850085).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *Client) CreateCustomEmoji(ctx context.Context, req *chatpb.CreateCustomEmojiRequest, opts ...gax.CallOption) (*chatpb.CustomEmoji, error) {
+	return c.internalClient.CreateCustomEmoji(ctx, req, opts...)
+}
+
+// GetCustomEmoji returns details about a custom emoji.
+//
+// Custom emojis are only available for Google Workspace accounts, and the
+// administrator must turn custom emojis on for the organization. For more
+// information, see Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149) and
+// Manage custom emoji
+// permissions (at https://support.google.com/a/answer/12850085).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *Client) GetCustomEmoji(ctx context.Context, req *chatpb.GetCustomEmojiRequest, opts ...gax.CallOption) (*chatpb.CustomEmoji, error) {
+	return c.internalClient.GetCustomEmoji(ctx, req, opts...)
+}
+
+// ListCustomEmojis lists custom emojis visible to the authenticated user.
+//
+// Custom emojis are only available for Google Workspace accounts, and the
+// administrator must turn custom emojis on for the organization. For more
+// information, see Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149) and
+// Manage custom emoji
+// permissions (at https://support.google.com/a/answer/12850085).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *Client) ListCustomEmojis(ctx context.Context, req *chatpb.ListCustomEmojisRequest, opts ...gax.CallOption) *CustomEmojiIterator {
+	return c.internalClient.ListCustomEmojis(ctx, req, opts...)
+}
+
+// DeleteCustomEmoji deletes a custom emoji. By default, users can only delete custom emoji they
+// created. Emoji managers (at https://support.google.com/a/answer/12850085)
+// assigned by the administrator can delete any custom emoji in the
+// organization. See Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149).
+//
+// Custom emojis are only available for Google Workspace accounts, and the
+// administrator must turn custom emojis on for the organization. For more
+// information, see Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149) and
+// Manage custom emoji
+// permissions (at https://support.google.com/a/answer/12850085).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *Client) DeleteCustomEmoji(ctx context.Context, req *chatpb.DeleteCustomEmojiRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteCustomEmoji(ctx, req, opts...)
 }
 
 // GetSpaceReadState returns details about a user’s read state within a space, used to identify
@@ -2168,6 +2332,96 @@ func (c *gRPCClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = executeRPC(ctx, c.client.DeleteReaction, req, settings.GRPC, c.logger, "DeleteReaction")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) CreateCustomEmoji(ctx context.Context, req *chatpb.CreateCustomEmojiRequest, opts ...gax.CallOption) (*chatpb.CustomEmoji, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).CreateCustomEmoji[0:len((*c.CallOptions).CreateCustomEmoji):len((*c.CallOptions).CreateCustomEmoji)], opts...)
+	var resp *chatpb.CustomEmoji
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateCustomEmoji, req, settings.GRPC, c.logger, "CreateCustomEmoji")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetCustomEmoji(ctx context.Context, req *chatpb.GetCustomEmojiRequest, opts ...gax.CallOption) (*chatpb.CustomEmoji, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetCustomEmoji[0:len((*c.CallOptions).GetCustomEmoji):len((*c.CallOptions).GetCustomEmoji)], opts...)
+	var resp *chatpb.CustomEmoji
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetCustomEmoji, req, settings.GRPC, c.logger, "GetCustomEmoji")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListCustomEmojis(ctx context.Context, req *chatpb.ListCustomEmojisRequest, opts ...gax.CallOption) *CustomEmojiIterator {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).ListCustomEmojis[0:len((*c.CallOptions).ListCustomEmojis):len((*c.CallOptions).ListCustomEmojis)], opts...)
+	it := &CustomEmojiIterator{}
+	req = proto.Clone(req).(*chatpb.ListCustomEmojisRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.CustomEmoji, string, error) {
+		resp := &chatpb.ListCustomEmojisResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListCustomEmojis, req, settings.GRPC, c.logger, "ListCustomEmojis")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCustomEmojis(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DeleteCustomEmoji(ctx context.Context, req *chatpb.DeleteCustomEmojiRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteCustomEmoji[0:len((*c.CallOptions).DeleteCustomEmoji):len((*c.CallOptions).DeleteCustomEmoji)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteCustomEmoji, req, settings.GRPC, c.logger, "DeleteCustomEmoji")
 		return err
 	}, opts...)
 	return err
@@ -4148,6 +4402,270 @@ func (c *restClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 		httpReq.Header = headers
 
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReaction")
+		return err
+	}, opts...)
+}
+
+// CreateCustomEmoji creates a custom emoji.
+//
+// Custom emojis are only available for Google Workspace accounts, and the
+// administrator must turn custom emojis on for the organization. For more
+// information, see Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149) and
+// Manage custom emoji
+// permissions (at https://support.google.com/a/answer/12850085).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *restClient) CreateCustomEmoji(ctx context.Context, req *chatpb.CreateCustomEmojiRequest, opts ...gax.CallOption) (*chatpb.CustomEmoji, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomEmoji()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/customEmojis")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCustomEmoji[0:len((*c.CallOptions).CreateCustomEmoji):len((*c.CallOptions).CreateCustomEmoji)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.CustomEmoji{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomEmoji")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetCustomEmoji returns details about a custom emoji.
+//
+// Custom emojis are only available for Google Workspace accounts, and the
+// administrator must turn custom emojis on for the organization. For more
+// information, see Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149) and
+// Manage custom emoji
+// permissions (at https://support.google.com/a/answer/12850085).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *restClient) GetCustomEmoji(ctx context.Context, req *chatpb.GetCustomEmojiRequest, opts ...gax.CallOption) (*chatpb.CustomEmoji, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetCustomEmoji[0:len((*c.CallOptions).GetCustomEmoji):len((*c.CallOptions).GetCustomEmoji)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.CustomEmoji{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomEmoji")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListCustomEmojis lists custom emojis visible to the authenticated user.
+//
+// Custom emojis are only available for Google Workspace accounts, and the
+// administrator must turn custom emojis on for the organization. For more
+// information, see Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149) and
+// Manage custom emoji
+// permissions (at https://support.google.com/a/answer/12850085).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *restClient) ListCustomEmojis(ctx context.Context, req *chatpb.ListCustomEmojisRequest, opts ...gax.CallOption) *CustomEmojiIterator {
+	it := &CustomEmojiIterator{}
+	req = proto.Clone(req).(*chatpb.ListCustomEmojisRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.CustomEmoji, string, error) {
+		resp := &chatpb.ListCustomEmojisResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/customEmojis")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomEmojis")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetCustomEmojis(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteCustomEmoji deletes a custom emoji. By default, users can only delete custom emoji they
+// created. Emoji managers (at https://support.google.com/a/answer/12850085)
+// assigned by the administrator can delete any custom emoji in the
+// organization. See Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149).
+//
+// Custom emojis are only available for Google Workspace accounts, and the
+// administrator must turn custom emojis on for the organization. For more
+// information, see Learn about custom emojis in Google
+// Chat (at https://support.google.com/chat/answer/12800149) and
+// Manage custom emoji
+// permissions (at https://support.google.com/a/answer/12850085).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *restClient) DeleteCustomEmoji(ctx context.Context, req *chatpb.DeleteCustomEmojiRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomEmoji")
 		return err
 	}, opts...)
 }
