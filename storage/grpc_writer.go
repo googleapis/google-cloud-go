@@ -464,6 +464,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 			trim = int64(len(buf))
 		}
 		buf = buf[trim:]
+		offset += trim
 	}
 	if len(buf) == 0 && !flush && !finishWrite {
 		// no need to send anything
