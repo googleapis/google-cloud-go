@@ -133,17 +133,36 @@ func (c *TemplatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateJobFromTemplate creates a Cloud Dataflow job from a template.
+// CreateJobFromTemplate creates a Cloud Dataflow job from a template. Do not enter confidential
+// information when you supply string values using the API.
+//
+// To create a job, we recommend using projects.locations.templates.create
+// with a [regional endpoint]
+// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
+// projects.templates.create is not recommended, because your job will
+// always start in us-central1.
 func (c *TemplatesClient) CreateJobFromTemplate(ctx context.Context, req *dataflowpb.CreateJobFromTemplateRequest, opts ...gax.CallOption) (*dataflowpb.Job, error) {
 	return c.internalClient.CreateJobFromTemplate(ctx, req, opts...)
 }
 
-// LaunchTemplate launch a template.
+// LaunchTemplate launches a template.
+//
+// To launch a template, we recommend using
+// projects.locations.templates.launch with a [regional endpoint]
+// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
+// projects.templates.launch is not recommended, because jobs launched
+// from the template will always start in us-central1.
 func (c *TemplatesClient) LaunchTemplate(ctx context.Context, req *dataflowpb.LaunchTemplateRequest, opts ...gax.CallOption) (*dataflowpb.LaunchTemplateResponse, error) {
 	return c.internalClient.LaunchTemplate(ctx, req, opts...)
 }
 
 // GetTemplate get the template associated with a template.
+//
+// To get the template, we recommend using projects.locations.templates.get
+// with a [regional endpoint]
+// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
+// projects.templates.get is not recommended, because only
+// templates that are running in us-central1 are retrieved.
 func (c *TemplatesClient) GetTemplate(ctx context.Context, req *dataflowpb.GetTemplateRequest, opts ...gax.CallOption) (*dataflowpb.GetTemplateResponse, error) {
 	return c.internalClient.GetTemplate(ctx, req, opts...)
 }
@@ -355,7 +374,14 @@ func (c *templatesGRPCClient) GetTemplate(ctx context.Context, req *dataflowpb.G
 	return resp, nil
 }
 
-// CreateJobFromTemplate creates a Cloud Dataflow job from a template.
+// CreateJobFromTemplate creates a Cloud Dataflow job from a template. Do not enter confidential
+// information when you supply string values using the API.
+//
+// To create a job, we recommend using projects.locations.templates.create
+// with a [regional endpoint]
+// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
+// projects.templates.create is not recommended, because your job will
+// always start in us-central1.
 func (c *templatesRESTClient) CreateJobFromTemplate(ctx context.Context, req *dataflowpb.CreateJobFromTemplateRequest, opts ...gax.CallOption) (*dataflowpb.Job, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -411,7 +437,13 @@ func (c *templatesRESTClient) CreateJobFromTemplate(ctx context.Context, req *da
 	return resp, nil
 }
 
-// LaunchTemplate launch a template.
+// LaunchTemplate launches a template.
+//
+// To launch a template, we recommend using
+// projects.locations.templates.launch with a [regional endpoint]
+// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
+// projects.templates.launch is not recommended, because jobs launched
+// from the template will always start in us-central1.
 func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowpb.LaunchTemplateRequest, opts ...gax.CallOption) (*dataflowpb.LaunchTemplateResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetLaunchParameters()
@@ -481,6 +513,12 @@ func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowp
 }
 
 // GetTemplate get the template associated with a template.
+//
+// To get the template, we recommend using projects.locations.templates.get
+// with a [regional endpoint]
+// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
+// projects.templates.get is not recommended, because only
+// templates that are running in us-central1 are retrieved.
 func (c *templatesRESTClient) GetTemplate(ctx context.Context, req *dataflowpb.GetTemplateRequest, opts ...gax.CallOption) (*dataflowpb.GetTemplateResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
