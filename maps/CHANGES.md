@@ -2,6 +2,24 @@
 
 
 
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.3...maps/v1.20.4) (2025-04-30)
+
+
+### Documentation
+
+* **maps/areainsights:** A comment for method `ComputeInsights` in service `AreaInsights` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **maps/areainsights:** A comment for service `AreaInsights` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **maps/areainsights:** Clarifications of comments ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **maps/areainsights:** Sample requests rewritten as JSON ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.2...maps/v1.20.3) (2025-04-22)
+
+
+### Documentation
+
+* **maps/areainsights:** A comment for field `place` in message `.google.maps.areainsights.v1.LocationFilter` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **maps/areainsights:** A comment for field `place` in message `.google.maps.areainsights.v1.PlaceInsight` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
 ## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.1...maps/v1.20.2) (2025-04-15)
 
 

@@ -288,6 +288,8 @@ type openWriterParams struct {
 	// setObj callback for reporting the resulting object - see `Writer.obj`.
 	// Required.
 	setObj func(*ObjectAttrs)
+	// setSize callback for updated the persisted size in Writer.obj.
+	setSize func(int64)
 	// setFlush callback for providing a Flush function implementation - see `Writer.Flush`.
 	// Required.
 	setFlush func(func() (int64, error))

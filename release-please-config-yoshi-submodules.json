@@ -90,6 +90,9 @@
         "chat": {
             "component": "chat"
         },
+        "chronicle": {
+            "component": "chronicle"
+        },
         "cloudbuild": {
             "component": "cloudbuild"
         },
@@ -248,6 +251,9 @@
         },
         "longrunning": {
             "component": "longrunning"
+        },
+        "lustre": {
+            "component": "lustre"
         },
         "managedidentities": {
             "component": "managedidentities"

@@ -747,6 +747,28 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterSearchIndex{
+				Name: "iname",
+				Alteration: AddStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER SEARCH INDEX iname ADD STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
+			&AlterSearchIndex{
+				Name: "iname",
+				Alteration: DropStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER SEARCH INDEX iname DROP STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
 			&CreateTable{
 				Name:        "tname",
 				IfNotExists: true,
@@ -928,6 +950,15 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"DROP INDEX IF EXISTS iname",
+			reparseDDL,
+		},
+		{
+			&DropSearchIndex{
+				Name:     "iname",
+				IfExists: true,
+				Position: line(1),
+			},
+			"DROP SEARCH INDEX IF EXISTS iname",
 			reparseDDL,
 		},
 		{

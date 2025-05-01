@@ -339,7 +339,7 @@ var readCases = []readCase{
 }
 
 func TestIntegration_MultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloader"
@@ -406,7 +406,7 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 // TestIntegration_MRDCallbackReturnsDataLength tests if the callback returns the correct data
 // read length or not.
 func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
-	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 1000)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MRDCallback"
@@ -455,7 +455,7 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloader"
@@ -539,7 +539,7 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 }
 
 func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
-	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "mrdnonretry"
@@ -3257,6 +3257,10 @@ func TestIntegration_WriterAppend(t *testing.T) {
 					if attrs.Size != 0 {
 						t.Errorf("attrs.Size: got %v, want 0", attrs.Size)
 					}
+					// Check that local Writer.Attrs() is populated after the first flush.
+					if w.Attrs() == nil || w.Attrs().Size != 0 {
+						t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), 0)
+					}
 				}
 				// If flushOffset > 0, write the first part of the data and then flush.
 				if tc.flushOffset > 0 {
@@ -3271,6 +3275,10 @@ func TestIntegration_WriterAppend(t *testing.T) {
 					if err != nil {
 						t.Fatalf("ObjectHandle.Attrs: %v", err)
 					}
+					// Check that local Writer.Attrs() is populated after the first flush.
+					if w.Attrs() == nil || w.Attrs().Size != tc.flushOffset {
+						t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), tc.flushOffset)
+					}
 					// TODO: re-enable this check once Size is correctly populated
 					// server side for unfinalized objects.
 					// if attrs.Size != tc.flushOffset {
@@ -3280,6 +3288,10 @@ func TestIntegration_WriterAppend(t *testing.T) {
 
 				// Write remaining data.
 				h.mustWrite(w, content)
+				// Check that local Writer.Attrs() is populated with correct size.
+				if w.Attrs() == nil || w.Attrs().Size != int64(len(tc.content)) {
+					t.Errorf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), int64(len(tc.content)))
+				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -3411,6 +3423,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 
 				h.mustWrite(w, tc.content[:tc.takeoverOffset])
+				// Check that local Writer.Attrs() is populated.
+				if w.Attrs() == nil || w.Attrs().Size != tc.takeoverOffset {
+					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w.Attrs(), tc.takeoverOffset)
+				}
 
 				// Takeover to create new Writer.
 				gen := w.Attrs().Generation
@@ -3427,6 +3443,11 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 				if off != tc.takeoverOffset {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
+				}
+
+				// Check that local Writer.Attrs() is populated after takeover.
+				if w2.Attrs() == nil || w2.Attrs().Size != tc.takeoverOffset {
+					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs(), tc.takeoverOffset)
 				}
 
 				// Validate that options are populated as expected.
@@ -3457,10 +3478,19 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					if n != remainingOffset {
 						t.Errorf("Writer.Flush: got %v bytes flushed, want %v", n, remainingOffset)
 					}
+					// Check local w.Attrs().Size is updated as expected.
+					if got, want := w2.Attrs().Size, remainingOffset; got != want {
+						t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
+					}
 				}
 
 				// Write remainder of the content and close.
 				h.mustWrite(w2, tc.content[remainingOffset:])
+
+				// Check local w.Attrs().Size is updated as expected.
+				if got, want := w2.Attrs().Size, int64(len(tc.content)); got != want {
+					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
+				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -3494,6 +3524,87 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 	})
 }
 
+func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
+	t.Skip("b/402283880")
+	ctx := skipAllButBidi(context.Background(), "ZB test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(bucketName)
+
+		h.mustCreateZonalBucket(bkt, testutil.ProjID())
+		defer h.mustDeleteBucket(bkt)
+
+		objName := "object1"
+		obj := bkt.Object(objName)
+		defer h.mustDeleteObject(obj)
+
+		// Takeover Writer to a non-existent object should fail, with or
+		// without generation specified.
+		if _, _, err := obj.NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{}); err == nil {
+			t.Errorf("NewWriterFromAppendableObject: got nil, want error")
+		}
+		_, _, err := obj.Generation(1234).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{})
+		if status.Code(err) != codes.NotFound {
+			t.Errorf("NewWriterFromAppendableObject: got %v, want NotFound", err)
+		}
+
+		// If a takeover is opened, flush or close to the original writer
+		// should fail.
+		w := obj.NewWriter(ctx)
+		w.Append = true
+		w.ChunkSize = MiB
+		if _, err := w.Write(randomBytes3MiB); err != nil {
+			t.Fatalf("w.Write: %v", err)
+		}
+
+		tw, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, nil)
+		if err != nil {
+			t.Fatalf("NewWriterFromAppendableObject: %v", err)
+		}
+		if _, err := tw.Write([]byte("hello world")); err != nil {
+			t.Fatalf("tw.Write: %v", err)
+		}
+		if _, err := tw.Flush(); err != nil {
+			t.Fatalf("tw.Flush: %v", err)
+		}
+
+		// Expect precondition error when writer to orginal Writer.
+		if _, err := w.Write(randomBytes3MiB); status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("got %v", err)
+		}
+
+		// Another NewWriter to the unfinalized object should also return a
+		// precondition error when data is flushed.
+		w2 := obj.NewWriter(ctx)
+		w2.Append = true
+		if _, err := w2.Write([]byte("hello world")); err != nil {
+			t.Fatalf("w2.Write: %v", err)
+		}
+		if _, err := w2.Flush(); status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("w2.Flush: %v", err)
+		}
+
+		// If we add yet another takeover writer to finalize and delete the object,
+		// tw should also return an error on flush.
+		tw2, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
+			FinalizeOnClose: true,
+		})
+		if err != nil {
+			t.Fatalf("NewWriterFromAppendableObject: %v", err)
+		}
+		if err := tw2.Close(); err != nil {
+			t.Fatalf("tw2.Close: %v", err)
+		}
+		h.mustDeleteObject(obj)
+		if _, err := tw.Write([]byte("abcde")); err != nil {
+			t.Fatalf("tw.Write: %v", err)
+		}
+		if _, err := tw.Flush(); status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("tw.Flush: got %v, want FailedPrecondition", err)
+		}
+	})
+}
 func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
