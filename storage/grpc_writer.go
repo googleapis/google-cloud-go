@@ -48,9 +48,9 @@ func withBidiWriteObjectRedirectionErrorRetries(s *settings) (newr *retryConfig)
 	if newr == nil {
 		newr = &retryConfig{}
 	}
-	if oldr.policy == RetryNever || !s.idempotent {
-		// We still retry redirection errors for RetryNever or non-idempotent
-		// requests.
+	if (oldr.policy == RetryIdempotent && !s.idempotent) || oldr.policy == RetryNever {
+		// We still retry redirection errors even when settings indicate not to
+		// retry.
 		//
 		// The protocol requires us to respect redirection errors, so RetryNever has
 		// to ignore them.
