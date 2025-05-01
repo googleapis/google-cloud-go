@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/retail/apiv2beta",
-    "version": "1.19.4",
+    "version": "1.20.0",
     "language": "GO",
     "apis": [
       {
