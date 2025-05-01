@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@
 //
 // To get started with this package, create a client.
 //
-//	// go get cloud.google.com/go/pubsub/apiv1@latest
+//	// go get cloud.google.com/go/pubsub/v2/apiv1@latest
 //	ctx := context.Background()
 //	// This snippet has been automatically generated and should be regarded as a code template only.
 //	// It will require modifications to work:
@@ -59,7 +59,7 @@
 //
 //	req := &pubsubpb.CommitSchemaRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CommitSchemaRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#CommitSchemaRequest.
 //	}
 //	resp, err := c.CommitSchema(ctx, req)
 //	if err != nil {
@@ -81,4 +81,4 @@
 // [Testing against Client Libraries]: https://pkg.go.dev/cloud.google.com/go#hdr-Testing
 // [Debugging Client Libraries]: https://pkg.go.dev/cloud.google.com/go#hdr-Debugging
 // [Inspecting errors]: https://pkg.go.dev/cloud.google.com/go#hdr-Inspecting_errors
-package pubsub // import "cloud.google.com/go/pubsub/apiv1"
+package pubsub // import "cloud.google.com/go/pubsub/v2/apiv1"
