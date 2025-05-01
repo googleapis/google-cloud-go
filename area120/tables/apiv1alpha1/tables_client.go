@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -294,6 +293,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new tables service client based on gRPC.
@@ -331,6 +332,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      tablespb.NewTablesServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -377,6 +379,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new tables service rest client.
@@ -405,6 +409,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -457,7 +462,7 @@ func (c *gRPCClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 	var resp *tablespb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTable, req, settings.GRPC, c.logger, "GetTable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -483,7 +488,7 @@ func (c *gRPCClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTables(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTables, req, settings.GRPC, c.logger, "ListTables")
 			return err
 		}, opts...)
 		if err != nil {
@@ -518,7 +523,7 @@ func (c *gRPCClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 	var resp *tablespb.Workspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetWorkspace, req, settings.GRPC, c.logger, "GetWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -544,7 +549,7 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorks
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListWorkspaces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListWorkspaces, req, settings.GRPC, c.logger, "ListWorkspaces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -579,7 +584,7 @@ func (c *gRPCClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 	var resp *tablespb.Row
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetRow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetRow, req, settings.GRPC, c.logger, "GetRow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -608,7 +613,7 @@ func (c *gRPCClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRows(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRows, req, settings.GRPC, c.logger, "ListRows")
 			return err
 		}, opts...)
 		if err != nil {
@@ -643,7 +648,7 @@ func (c *gRPCClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 	var resp *tablespb.Row
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateRow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateRow, req, settings.GRPC, c.logger, "CreateRow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -661,7 +666,7 @@ func (c *gRPCClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 	var resp *tablespb.BatchCreateRowsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchCreateRows(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchCreateRows, req, settings.GRPC, c.logger, "BatchCreateRows")
 		return err
 	}, opts...)
 	if err != nil {
@@ -679,7 +684,7 @@ func (c *gRPCClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 	var resp *tablespb.Row
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateRow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateRow, req, settings.GRPC, c.logger, "UpdateRow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -697,7 +702,7 @@ func (c *gRPCClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 	var resp *tablespb.BatchUpdateRowsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchUpdateRows(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchUpdateRows, req, settings.GRPC, c.logger, "BatchUpdateRows")
 		return err
 	}, opts...)
 	if err != nil {
@@ -714,7 +719,7 @@ func (c *gRPCClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowReque
 	opts = append((*c.CallOptions).DeleteRow[0:len((*c.CallOptions).DeleteRow):len((*c.CallOptions).DeleteRow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteRow(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteRow, req, settings.GRPC, c.logger, "DeleteRow")
 		return err
 	}, opts...)
 	return err
@@ -728,7 +733,7 @@ func (c *gRPCClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDel
 	opts = append((*c.CallOptions).BatchDeleteRows[0:len((*c.CallOptions).BatchDeleteRows):len((*c.CallOptions).BatchDeleteRows)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.BatchDeleteRows(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.BatchDeleteRows, req, settings.GRPC, c.logger, "BatchDeleteRows")
 		return err
 	}, opts...)
 	return err
@@ -767,17 +772,7 @@ func (c *restClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTable")
 		if err != nil {
 			return err
 		}
@@ -839,21 +834,10 @@ func (c *restClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTables")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -916,17 +900,7 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWorkspace")
 		if err != nil {
 			return err
 		}
@@ -988,21 +962,10 @@ func (c *restClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorks
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkspaces")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1068,17 +1031,7 @@ func (c *restClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRow")
 		if err != nil {
 			return err
 		}
@@ -1146,21 +1099,10 @@ func (c *restClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRows")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1233,17 +1175,7 @@ func (c *restClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRow")
 		if err != nil {
 			return err
 		}
@@ -1299,17 +1231,7 @@ func (c *restClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateRows")
 		if err != nil {
 			return err
 		}
@@ -1376,17 +1298,7 @@ func (c *restClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRow")
 		if err != nil {
 			return err
 		}
@@ -1442,17 +1354,7 @@ func (c *restClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdateRows")
 		if err != nil {
 			return err
 		}
@@ -1499,15 +1401,8 @@ func (c *restClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRow")
+		return err
 	}, opts...)
 }
 
@@ -1547,14 +1442,7 @@ func (c *restClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteRows")
+		return err
 	}, opts...)
 }

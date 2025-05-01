@@ -1,6 +1,52 @@
 # Changelog
 
 
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.1...config/v1.3.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **config:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.0...config/v1.3.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **config:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.2.1...config/v1.3.0) (2025-01-08)
+
+
+### Features
+
+* **config:** Specify retry configuration ([e4e1a49](https://github.com/googleapis/google-cloud-go/commit/e4e1a498f21b0792e0a7662f82f9e062e5aa0fe9))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.2.0...config/v1.2.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **config:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.1.2...config/v1.2.0) (2024-12-13)
+
+
+### Features
+
+* **config:** Added annotations ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+
+
+### Bug Fixes
+
+* **config:** Changed field behavior for an existing field `service_account` in message `.google.cloud.config.v1.Deployment` ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+* **config:** Changed field behavior for an existing field `service_account` in message `.google.cloud.config.v1.Preview` ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+
+
+### Documentation
+
+* **config:** Service Account is a required field ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+
 ## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/config/v1.1.1...config/v1.1.2) (2024-10-23)
 
 

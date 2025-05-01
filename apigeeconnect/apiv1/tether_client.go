@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package apigeeconnect
 
 import (
 	"context"
+	"log/slog"
 	"math"
 
 	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
@@ -127,6 +128,8 @@ type tetherGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTetherClient creates a new tether client based on gRPC.
@@ -155,6 +158,7 @@ func NewTetherClient(ctx context.Context, opts ...option.ClientOption) (*TetherC
 		connPool:     connPool,
 		tetherClient: apigeeconnectpb.NewTetherClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -194,7 +198,9 @@ func (c *tetherGRPCClient) Egress(ctx context.Context, opts ...gax.CallOption) (
 	opts = append((*c.CallOptions).Egress[0:len((*c.CallOptions).Egress):len((*c.CallOptions).Egress)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "Egress")
 		resp, err = c.tetherClient.Egress(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "Egress")
 		return err
 	}, opts...)
 	if err != nil {

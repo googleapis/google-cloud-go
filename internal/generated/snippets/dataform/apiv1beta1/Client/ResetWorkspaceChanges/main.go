@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,10 +42,12 @@ func main() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ResetWorkspaceChangesRequest.
 	}
-	err = c.ResetWorkspaceChanges(ctx, req)
+	resp, err := c.ResetWorkspaceChanges(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 // [END dataform_v1beta1_generated_Dataform_ResetWorkspaceChanges_sync]

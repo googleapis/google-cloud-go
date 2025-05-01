@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -160,6 +160,12 @@ func (it *MeasurementProtocolSecretIterator) All() iter.Seq2[*adminpb.Measuremen
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *PropertyIterator) All() iter.Seq2[*adminpb.Property, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReportingDataAnnotationIterator) All() iter.Seq2[*adminpb.ReportingDataAnnotation, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

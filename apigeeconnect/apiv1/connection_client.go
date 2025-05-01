@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package apigeeconnect
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -138,6 +139,8 @@ type connectionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewConnectionClient creates a new connection service client based on gRPC.
@@ -164,6 +167,7 @@ func NewConnectionClient(ctx context.Context, opts ...option.ClientOption) (*Con
 		connPool:         connPool,
 		connectionClient: apigeeconnectpb.NewConnectionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -217,7 +221,7 @@ func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeec
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.connectionClient.ListConnections(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.connectionClient.ListConnections, req, settings.GRPC, c.logger, "ListConnections")
 			return err
 		}, opts...)
 		if err != nil {

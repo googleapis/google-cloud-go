@@ -1,6 +1,34 @@
 # Changes
 
 
+## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.10.1...filestore/v1.10.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **filestore:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.10.0...filestore/v1.10.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **filestore:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.9.3...filestore/v1.10.0) (2025-03-12)
+
+
+### Features
+
+* **filestore:** Added REGIONAL tier support in the v1 API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.9.2...filestore/v1.9.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **filestore:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.9.1...filestore/v1.9.2) (2024-10-23)
 
 

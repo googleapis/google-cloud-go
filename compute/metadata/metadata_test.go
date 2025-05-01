@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -70,7 +69,6 @@ func TestGetFailsOnBadURL(t *testing.T) {
 	c := NewClient(http.DefaultClient)
 	t.Setenv(metadataHostEnv, "host:-1")
 	_, err := c.GetWithContext(ctx, "suffix")
-	log.Printf("%v", err)
 	if err == nil {
 		t.Errorf("got %v, want non-nil error", err)
 	}

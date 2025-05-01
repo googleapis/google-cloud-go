@@ -1,6 +1,47 @@
 # Changelog
 
 
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.12.1...batch/v1.12.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **batch:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.12.0...batch/v1.12.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **batch:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.5...batch/v1.12.0) (2025-02-12)
+
+
+### Features
+
+* **batch:** Promote cancel job API to GA ([#11575](https://github.com/googleapis/google-cloud-go/issues/11575)) ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.4...batch/v1.11.5) (2025-01-02)
+
+
+### Bug Fixes
+
+* **batch:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **batch:** Fix broken references in comments ([#11316](https://github.com/googleapis/google-cloud-go/issues/11316)) ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.3...batch/v1.11.4) (2024-12-11)
+
+
+### Documentation
+
+* **batch:** Clarify options for logs ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+* **batch:** Clarify the custom instance template needs to be in the same project ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.2...batch/v1.11.3) (2024-12-04)
 
 

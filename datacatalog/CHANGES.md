@@ -1,5 +1,79 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.2...datacatalog/v1.26.0) (2025-04-30)
+
+
+### Features
+
+* **datacatalog:** Add field `template_migration_enabled_time` to `.google.cloud.datacatalog.v1.MigrationConfig` ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Documentation
+
+* **datacatalog:** Update documentation URL ([#12080](https://github.com/googleapis/google-cloud-go/issues/12080)) ([2133634](https://github.com/googleapis/google-cloud-go/commit/2133634fa6f9b9523d95b3a4bda7e031fc33afed))
+
+## [1.25.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.1...datacatalog/v1.25.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.0...datacatalog/v1.25.1) (2025-04-15)
+
+
+### Documentation
+
+* **datacatalog:** A comment for field `sql_resource` in message `.google.cloud.datacatalog.v1.LookupEntryRequest` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **datacatalog:** Clarify sql variant in comment for v1beta1.LookupEntryRequest.sql_resource ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.5...datacatalog/v1.25.0) (2025-03-19)
+
+
+### Features
+
+* **datacatalog:** Mark DataCatalog service deprecated, use Dataplex Catalog instead ([#11823](https://github.com/googleapis/google-cloud-go/issues/11823)) ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+
+
+### Documentation
+
+* **datacatalog:** Fix a few typos ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+
+## [1.24.5](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.4...datacatalog/v1.24.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.24.4](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.3...datacatalog/v1.24.4) (2025-03-12)
+
+
+### Documentation
+
+* **datacatalog:** Mark DataCatalog v1beta1 service and corresponding methods as deprecated ([#11800](https://github.com/googleapis/google-cloud-go/issues/11800)) ([484978a](https://github.com/googleapis/google-cloud-go/commit/484978aa8ad4213172e7ffefcfd939071b90ee14))
+
+## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.2...datacatalog/v1.24.3) (2025-01-08)
+
+
+### Documentation
+
+* **datacatalog:** A comment for field `parent` in message `.google.cloud.datacatalog.v1beta1.CreateTagRequest` is changed ([9d60b40](https://github.com/googleapis/google-cloud-go/commit/9d60b40e9ce47aba2f027b42bfdbfed43339df6d))
+
+## [1.24.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.1...datacatalog/v1.24.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.24.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.0...datacatalog/v1.24.1) (2024-12-18)
+
+
+### Documentation
+
+* **datacatalog:** Fix markdown reference in `TagTemplate.is_publicly_readable` comment ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.23.0...datacatalog/v1.24.0) (2024-11-21)
 
 

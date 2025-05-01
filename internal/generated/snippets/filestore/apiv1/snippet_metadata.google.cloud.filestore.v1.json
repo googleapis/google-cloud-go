@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/filestore/apiv1",
-    "version": "1.9.2",
+    "version": "1.10.2",
     "language": "GO",
     "apis": [
       {
@@ -833,6 +833,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "file_v1_generated_CloudFilestoreManager_PromoteReplica_sync",
+      "title": "file PromoteReplica Sample",
+      "description": "PromoteReplica promote the standby instance (replica).",
+      "file": "CloudFilestoreManagerClient/PromoteReplica/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PromoteReplica",
+        "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient.PromoteReplica",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "filestorepb.PromoteReplicaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PromoteReplicaOperation",
+        "client": {
+          "shortName": "CloudFilestoreManagerClient",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient"
+        },
+        "method": {
+          "shortName": "PromoteReplica",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManager.PromoteReplica",
+          "service": {
+            "shortName": "CloudFilestoreManager",
+            "fullName": "google.cloud.filestore.v1.CloudFilestoreManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

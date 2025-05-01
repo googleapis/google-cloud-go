@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -225,6 +224,8 @@ type accountTaxGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAccountTaxClient creates a new account tax service client based on gRPC.
@@ -255,6 +256,7 @@ func NewAccountTaxClient(ctx context.Context, opts ...option.ClientOption) (*Acc
 		connPool:         connPool,
 		accountTaxClient: accountspb.NewAccountTaxServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -301,6 +303,8 @@ type accountTaxRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AccountTaxClient
 	CallOptions **AccountTaxCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAccountTaxRESTClient creates a new account tax service rest client.
@@ -322,6 +326,7 @@ func NewAccountTaxRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -374,7 +379,7 @@ func (c *accountTaxGRPCClient) GetAccountTax(ctx context.Context, req *accountsp
 	var resp *accountspb.AccountTax
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountTaxClient.GetAccountTax(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountTaxClient.GetAccountTax, req, settings.GRPC, c.logger, "GetAccountTax")
 		return err
 	}, opts...)
 	if err != nil {
@@ -403,7 +408,7 @@ func (c *accountTaxGRPCClient) ListAccountTax(ctx context.Context, req *accounts
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.accountTaxClient.ListAccountTax(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.accountTaxClient.ListAccountTax, req, settings.GRPC, c.logger, "ListAccountTax")
 			return err
 		}, opts...)
 		if err != nil {
@@ -438,7 +443,7 @@ func (c *accountTaxGRPCClient) UpdateAccountTax(ctx context.Context, req *accoun
 	var resp *accountspb.AccountTax
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountTaxClient.UpdateAccountTax(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountTaxClient.UpdateAccountTax, req, settings.GRPC, c.logger, "UpdateAccountTax")
 		return err
 	}, opts...)
 	if err != nil {
@@ -480,17 +485,7 @@ func (c *accountTaxRESTClient) GetAccountTax(ctx context.Context, req *accountsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccountTax")
 		if err != nil {
 			return err
 		}
@@ -555,21 +550,10 @@ func (c *accountTaxRESTClient) ListAccountTax(ctx context.Context, req *accounts
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccountTax")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -646,17 +630,7 @@ func (c *accountTaxRESTClient) UpdateAccountTax(ctx context.Context, req *accoun
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAccountTax")
 		if err != nil {
 			return err
 		}

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
-    "version": "1.16.0",
+    "version": "1.20.3",
     "language": "GO",
     "apis": [
       {
@@ -145,6 +145,96 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_DeliveryService_DeleteDeliveryVehicle_sync",
+      "title": "fleetengine DeleteDeliveryVehicle Sample",
+      "description": "DeleteDeliveryVehicle deletes a DeliveryVehicle from the Fleet Engine.\n\nReturns FAILED_PRECONDITION if the DeliveryVehicle has OPEN Tasks\nassigned to it.",
+      "file": "Client/DeleteDeliveryVehicle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDeliveryVehicle",
+        "fullName": "maps.fleetengine.delivery.v1.Client.DeleteDeliveryVehicle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deliverypb.DeleteDeliveryVehicleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "maps.fleetengine.delivery.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDeliveryVehicle",
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.DeleteDeliveryVehicle",
+          "service": {
+            "shortName": "DeliveryService",
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_DeliveryService_DeleteTask_sync",
+      "title": "fleetengine DeleteTask Sample",
+      "description": "DeleteTask deletes a single Task.\n\nReturns FAILED_PRECONDITION if the Task is OPEN and assigned to a\nDeliveryVehicle.",
+      "file": "Client/DeleteTask/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTask",
+        "fullName": "maps.fleetengine.delivery.v1.Client.DeleteTask",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deliverypb.DeleteTaskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "maps.fleetengine.delivery.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteTask",
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.DeleteTask",
+          "service": {
+            "shortName": "DeliveryService",
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]

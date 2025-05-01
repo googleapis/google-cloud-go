@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v1.1.4...migrationcenter/v1.1.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.1.4](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v1.1.3...migrationcenter/v1.1.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v1.1.2...migrationcenter/v1.1.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v1.1.1...migrationcenter/v1.1.2) (2024-10-23)
 
 

@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.7.2](https://github.com/googleapis/google-cloud-go/compare/apps/v0.7.1...apps/v0.7.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **apps:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/apps/v0.7.0...apps/v0.7.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **apps:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.6.0...apps/v0.7.0) (2025-02-26)
+
+
+### Features
+
+* **apps/meet:** Add `ConnectActiveConference` method to `SpacesService` ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.3...apps/v0.6.0) (2025-01-30)
+
+
+### Features
+
+* **apps/meet:** Add methods for [configuring meeting spaces and members](https ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **apps/meet:** Add new OAuth scope `https ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **apps/meet:** Add new OAuth scope `https ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Documentation
+
+* **apps/meet:** Improve docs for `GetSpaceRequest`, `EndActiveConferenceRequest`, `ListConferenceRecordsRequest` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **apps/meet:** Improve docs for GetSpaceRequest, EndActiveConferenceRequest, ListConferenceRecordsRequest ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **apps/meet:** Remove *Developer Preview* label from methods that are now generally available ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+## [0.5.3](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.2...apps/v0.5.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **apps:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.5.2](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.1...apps/v0.5.2) (2024-10-23)
 
 

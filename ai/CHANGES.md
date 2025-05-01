@@ -1,5 +1,68 @@
 # Changelog
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.10.2...ai/v0.11.0) (2025-04-30)
+
+
+### Features
+
+* **ai/generativelanguage:** Add CODE_RETRIEVAL_QUERY embedding task type ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **ai/generativelanguage:** Add CODE_RETRIEVAL_QUERY embedding task type ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add language_code to speech config ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add minimum, maximum, any_of, property_ordering, default and null type to Schema ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add seed to GenerationConfig ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **ai/generativelanguage:** Add support for live API (https ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add support for ModalityTokenCounts in UsageMetadata responses ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **ai/generativelanguage:** Add support for ModalityTokenCounts in UsageMetadata responses ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add support for Veo ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add ThinkingConfig, MediaResolution, and seed to GenerationConfig ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+
+## [0.10.2](https://github.com/googleapis/google-cloud-go/compare/ai/v0.10.1...ai/v0.10.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **ai:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.10.0...ai/v0.10.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **ai:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.9.0...ai/v0.10.0) (2025-01-08)
+
+
+### Features
+
+* **ai/generativelanguage:** Add civic_integrity toggle ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add civic_integrity toggle to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add GenerateContentRespoinse.model_version ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Add GoogleSearch tool type ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add GroundingMetadata.web_search_queries ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Add id to FunctionCall and FunctionResponse ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add image_safety block_reason + finish_reason ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add image_safety block_reason + finish_reason ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add response_modalities to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add return type `Schema response` to function declarations ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add voice_config to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Adds `GenerateContentResponse.model_version` output ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Adds search grounding ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai:** New client(s) ([#11407](https://github.com/googleapis/google-cloud-go/issues/11407)) ([5b04931](https://github.com/googleapis/google-cloud-go/commit/5b04931038c8722dbe517deabb91e65ca351c76d))
+
+
+### Bug Fixes
+
+* **ai:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Small updates ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Some small updates. ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Update safety filter list to include civic_integrity ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Update safety filter list to include civic_integrity ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.2...ai/v0.9.0) (2024-11-13)
 
 

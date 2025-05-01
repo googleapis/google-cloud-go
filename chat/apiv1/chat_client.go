@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	chatpb "cloud.google.com/go/chat/apiv1/chatpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -44,35 +43,37 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateMessage        []gax.CallOption
-	ListMessages         []gax.CallOption
-	ListMemberships      []gax.CallOption
-	GetMembership        []gax.CallOption
-	GetMessage           []gax.CallOption
-	UpdateMessage        []gax.CallOption
-	DeleteMessage        []gax.CallOption
-	GetAttachment        []gax.CallOption
-	UploadAttachment     []gax.CallOption
-	ListSpaces           []gax.CallOption
-	SearchSpaces         []gax.CallOption
-	GetSpace             []gax.CallOption
-	CreateSpace          []gax.CallOption
-	SetUpSpace           []gax.CallOption
-	UpdateSpace          []gax.CallOption
-	DeleteSpace          []gax.CallOption
-	CompleteImportSpace  []gax.CallOption
-	FindDirectMessage    []gax.CallOption
-	CreateMembership     []gax.CallOption
-	UpdateMembership     []gax.CallOption
-	DeleteMembership     []gax.CallOption
-	CreateReaction       []gax.CallOption
-	ListReactions        []gax.CallOption
-	DeleteReaction       []gax.CallOption
-	GetSpaceReadState    []gax.CallOption
-	UpdateSpaceReadState []gax.CallOption
-	GetThreadReadState   []gax.CallOption
-	GetSpaceEvent        []gax.CallOption
-	ListSpaceEvents      []gax.CallOption
+	CreateMessage                  []gax.CallOption
+	ListMessages                   []gax.CallOption
+	ListMemberships                []gax.CallOption
+	GetMembership                  []gax.CallOption
+	GetMessage                     []gax.CallOption
+	UpdateMessage                  []gax.CallOption
+	DeleteMessage                  []gax.CallOption
+	GetAttachment                  []gax.CallOption
+	UploadAttachment               []gax.CallOption
+	ListSpaces                     []gax.CallOption
+	SearchSpaces                   []gax.CallOption
+	GetSpace                       []gax.CallOption
+	CreateSpace                    []gax.CallOption
+	SetUpSpace                     []gax.CallOption
+	UpdateSpace                    []gax.CallOption
+	DeleteSpace                    []gax.CallOption
+	CompleteImportSpace            []gax.CallOption
+	FindDirectMessage              []gax.CallOption
+	CreateMembership               []gax.CallOption
+	UpdateMembership               []gax.CallOption
+	DeleteMembership               []gax.CallOption
+	CreateReaction                 []gax.CallOption
+	ListReactions                  []gax.CallOption
+	DeleteReaction                 []gax.CallOption
+	GetSpaceReadState              []gax.CallOption
+	UpdateSpaceReadState           []gax.CallOption
+	GetThreadReadState             []gax.CallOption
+	GetSpaceEvent                  []gax.CallOption
+	ListSpaceEvents                []gax.CallOption
+	GetSpaceNotificationSetting    []gax.CallOption
+	UpdateSpaceNotificationSetting []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -440,6 +441,30 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		GetSpaceNotificationSetting: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSpaceNotificationSetting: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -764,6 +789,28 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetSpaceNotificationSetting: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateSpaceNotificationSetting: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -801,6 +848,8 @@ type internalClient interface {
 	GetThreadReadState(context.Context, *chatpb.GetThreadReadStateRequest, ...gax.CallOption) (*chatpb.ThreadReadState, error)
 	GetSpaceEvent(context.Context, *chatpb.GetSpaceEventRequest, ...gax.CallOption) (*chatpb.SpaceEvent, error)
 	ListSpaceEvents(context.Context, *chatpb.ListSpaceEventsRequest, ...gax.CallOption) *SpaceEventIterator
+	GetSpaceNotificationSetting(context.Context, *chatpb.GetSpaceNotificationSettingRequest, ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error)
+	UpdateSpaceNotificationSetting(context.Context, *chatpb.UpdateSpaceNotificationSettingRequest, ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error)
 }
 
 // Client is a client for interacting with Google Chat API.
@@ -1303,8 +1352,7 @@ func (c *Client) DeleteMembership(ctx context.Context, req *chatpb.DeleteMembers
 	return c.internalClient.DeleteMembership(ctx, req, opts...)
 }
 
-// CreateReaction creates a reaction and adds it to a message. Only unicode emojis are
-// supported. For an example, see
+// CreateReaction creates a reaction and adds it to a message. For an example, see
 // Add a reaction to a
 // message (at https://developers.google.com/workspace/chat/create-reactions).
 //
@@ -1324,8 +1372,7 @@ func (c *Client) ListReactions(ctx context.Context, req *chatpb.ListReactionsReq
 	return c.internalClient.ListReactions(ctx, req, opts...)
 }
 
-// DeleteReaction deletes a reaction to a message. Only unicode emojis are supported.
-// For an example, see
+// DeleteReaction deletes a reaction to a message. For an example, see
 // Delete a
 // reaction (at https://developers.google.com/workspace/chat/delete-reactions).
 //
@@ -1406,6 +1453,26 @@ func (c *Client) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceEvent
 	return c.internalClient.ListSpaceEvents(ctx, req, opts...)
 }
 
+// GetSpaceNotificationSetting gets the space notification setting. For an example, see Get the
+// caller’s space notification
+// setting (at https://developers.google.com/workspace/chat/get-space-notification-setting).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *Client) GetSpaceNotificationSetting(ctx context.Context, req *chatpb.GetSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	return c.internalClient.GetSpaceNotificationSetting(ctx, req, opts...)
+}
+
+// UpdateSpaceNotificationSetting updates the space notification setting. For an example, see Update
+// the caller’s space notification
+// setting (at https://developers.google.com/workspace/chat/update-space-notification-setting).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *Client) UpdateSpaceNotificationSetting(ctx context.Context, req *chatpb.UpdateSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	return c.internalClient.UpdateSpaceNotificationSetting(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Google Chat API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -1421,6 +1488,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new chat service client based on gRPC.
@@ -1448,6 +1517,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      chatpb.NewChatServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1494,6 +1564,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new chat service rest client.
@@ -1512,6 +1584,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1564,7 +1637,7 @@ func (c *gRPCClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMessage, req, settings.GRPC, c.logger, "CreateMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1593,7 +1666,7 @@ func (c *gRPCClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMessages(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMessages, req, settings.GRPC, c.logger, "ListMessages")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1639,7 +1712,7 @@ func (c *gRPCClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMemberships(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMemberships, req, settings.GRPC, c.logger, "ListMemberships")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1674,7 +1747,7 @@ func (c *gRPCClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMembership, req, settings.GRPC, c.logger, "GetMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1692,7 +1765,7 @@ func (c *gRPCClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMessage, req, settings.GRPC, c.logger, "GetMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1710,7 +1783,7 @@ func (c *gRPCClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateMessage, req, settings.GRPC, c.logger, "UpdateMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1727,7 +1800,7 @@ func (c *gRPCClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessag
 	opts = append((*c.CallOptions).DeleteMessage[0:len((*c.CallOptions).DeleteMessage):len((*c.CallOptions).DeleteMessage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteMessage(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteMessage, req, settings.GRPC, c.logger, "DeleteMessage")
 		return err
 	}, opts...)
 	return err
@@ -1742,7 +1815,7 @@ func (c *gRPCClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmen
 	var resp *chatpb.Attachment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAttachment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAttachment, req, settings.GRPC, c.logger, "GetAttachment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1760,7 +1833,7 @@ func (c *gRPCClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 	var resp *chatpb.UploadAttachmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UploadAttachment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UploadAttachment, req, settings.GRPC, c.logger, "UploadAttachment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1786,7 +1859,7 @@ func (c *gRPCClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSpaces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSpaces, req, settings.GRPC, c.logger, "ListSpaces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1829,7 +1902,7 @@ func (c *gRPCClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchSpaces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchSpaces, req, settings.GRPC, c.logger, "SearchSpaces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1864,7 +1937,7 @@ func (c *gRPCClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSpace, req, settings.GRPC, c.logger, "GetSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1879,7 +1952,7 @@ func (c *gRPCClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceReq
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSpace, req, settings.GRPC, c.logger, "CreateSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1894,7 +1967,7 @@ func (c *gRPCClient) SetUpSpace(ctx context.Context, req *chatpb.SetUpSpaceReque
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SetUpSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SetUpSpace, req, settings.GRPC, c.logger, "SetUpSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1912,7 +1985,7 @@ func (c *gRPCClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSpace, req, settings.GRPC, c.logger, "UpdateSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1929,7 +2002,7 @@ func (c *gRPCClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceReq
 	opts = append((*c.CallOptions).DeleteSpace[0:len((*c.CallOptions).DeleteSpace):len((*c.CallOptions).DeleteSpace)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSpace(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSpace, req, settings.GRPC, c.logger, "DeleteSpace")
 		return err
 	}, opts...)
 	return err
@@ -1944,7 +2017,7 @@ func (c *gRPCClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 	var resp *chatpb.CompleteImportSpaceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CompleteImportSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CompleteImportSpace, req, settings.GRPC, c.logger, "CompleteImportSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1959,7 +2032,7 @@ func (c *gRPCClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FindDirectMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FindDirectMessage, req, settings.GRPC, c.logger, "FindDirectMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1977,7 +2050,7 @@ func (c *gRPCClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMembership, req, settings.GRPC, c.logger, "CreateMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1995,7 +2068,7 @@ func (c *gRPCClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateMembership, req, settings.GRPC, c.logger, "UpdateMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2013,7 +2086,7 @@ func (c *gRPCClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteMembership, req, settings.GRPC, c.logger, "DeleteMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2031,7 +2104,7 @@ func (c *gRPCClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 	var resp *chatpb.Reaction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateReaction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateReaction, req, settings.GRPC, c.logger, "CreateReaction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2060,7 +2133,7 @@ func (c *gRPCClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListReactions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListReactions, req, settings.GRPC, c.logger, "ListReactions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2094,7 +2167,7 @@ func (c *gRPCClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 	opts = append((*c.CallOptions).DeleteReaction[0:len((*c.CallOptions).DeleteReaction):len((*c.CallOptions).DeleteReaction)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteReaction(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteReaction, req, settings.GRPC, c.logger, "DeleteReaction")
 		return err
 	}, opts...)
 	return err
@@ -2109,7 +2182,7 @@ func (c *gRPCClient) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpace
 	var resp *chatpb.SpaceReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSpaceReadState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSpaceReadState, req, settings.GRPC, c.logger, "GetSpaceReadState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2127,7 +2200,7 @@ func (c *gRPCClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 	var resp *chatpb.SpaceReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSpaceReadState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSpaceReadState, req, settings.GRPC, c.logger, "UpdateSpaceReadState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2145,7 +2218,7 @@ func (c *gRPCClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 	var resp *chatpb.ThreadReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetThreadReadState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetThreadReadState, req, settings.GRPC, c.logger, "GetThreadReadState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2163,7 +2236,7 @@ func (c *gRPCClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 	var resp *chatpb.SpaceEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSpaceEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSpaceEvent, req, settings.GRPC, c.logger, "GetSpaceEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2192,7 +2265,7 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSpaceEvents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSpaceEvents, req, settings.GRPC, c.logger, "ListSpaceEvents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2216,6 +2289,42 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) GetSpaceNotificationSetting(ctx context.Context, req *chatpb.GetSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSpaceNotificationSetting[0:len((*c.CallOptions).GetSpaceNotificationSetting):len((*c.CallOptions).GetSpaceNotificationSetting)], opts...)
+	var resp *chatpb.SpaceNotificationSetting
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetSpaceNotificationSetting, req, settings.GRPC, c.logger, "GetSpaceNotificationSetting")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateSpaceNotificationSetting(ctx context.Context, req *chatpb.UpdateSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "space_notification_setting.name", url.QueryEscape(req.GetSpaceNotificationSetting().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSpaceNotificationSetting[0:len((*c.CallOptions).UpdateSpaceNotificationSetting):len((*c.CallOptions).UpdateSpaceNotificationSetting)], opts...)
+	var resp *chatpb.SpaceNotificationSetting
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateSpaceNotificationSetting, req, settings.GRPC, c.logger, "UpdateSpaceNotificationSetting")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateMessage creates a message in a Google Chat space. For an example, see Send a
@@ -2296,17 +2405,7 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMessage")
 		if err != nil {
 			return err
 		}
@@ -2386,21 +2485,10 @@ func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMessages")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2508,21 +2596,10 @@ func (c *restClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMemberships")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2601,17 +2678,7 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMembership")
 		if err != nil {
 			return err
 		}
@@ -2674,17 +2741,7 @@ func (c *restClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMessage")
 		if err != nil {
 			return err
 		}
@@ -2768,17 +2825,7 @@ func (c *restClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMessage")
 		if err != nil {
 			return err
 		}
@@ -2842,15 +2889,8 @@ func (c *restClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMessage")
+		return err
 	}, opts...)
 }
 
@@ -2894,17 +2934,7 @@ func (c *restClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAttachment")
 		if err != nil {
 			return err
 		}
@@ -2969,17 +2999,7 @@ func (c *restClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UploadAttachment")
 		if err != nil {
 			return err
 		}
@@ -3060,21 +3080,10 @@ func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSpaces")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3162,21 +3171,10 @@ func (c *restClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchSpaces")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3255,17 +3253,7 @@ func (c *restClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpace")
 		if err != nil {
 			return err
 		}
@@ -3342,17 +3330,7 @@ func (c *restClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSpace")
 		if err != nil {
 			return err
 		}
@@ -3456,17 +3434,7 @@ func (c *restClient) SetUpSpace(ctx context.Context, req *chatpb.SetUpSpaceReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetUpSpace")
 		if err != nil {
 			return err
 		}
@@ -3552,17 +3520,7 @@ func (c *restClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpace")
 		if err != nil {
 			return err
 		}
@@ -3629,15 +3587,8 @@ func (c *restClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSpace")
+		return err
 	}, opts...)
 }
 
@@ -3688,17 +3639,7 @@ func (c *restClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CompleteImportSpace")
 		if err != nil {
 			return err
 		}
@@ -3768,17 +3709,7 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FindDirectMessage")
 		if err != nil {
 			return err
 		}
@@ -3867,17 +3798,7 @@ func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMembership")
 		if err != nil {
 			return err
 		}
@@ -3958,17 +3879,7 @@ func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMembership")
 		if err != nil {
 			return err
 		}
@@ -4036,17 +3947,7 @@ func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMembership")
 		if err != nil {
 			return err
 		}
@@ -4063,8 +3964,7 @@ func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 	return resp, nil
 }
 
-// CreateReaction creates a reaction and adds it to a message. Only unicode emojis are
-// supported. For an example, see
+// CreateReaction creates a reaction and adds it to a message. For an example, see
 // Add a reaction to a
 // message (at https://developers.google.com/workspace/chat/create-reactions).
 //
@@ -4109,17 +4009,7 @@ func (c *restClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReaction")
 		if err != nil {
 			return err
 		}
@@ -4189,21 +4079,10 @@ func (c *restClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReactions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4233,8 +4112,7 @@ func (c *restClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 	return it
 }
 
-// DeleteReaction deletes a reaction to a message. Only unicode emojis are supported.
-// For an example, see
+// DeleteReaction deletes a reaction to a message. For an example, see
 // Delete a
 // reaction (at https://developers.google.com/workspace/chat/delete-reactions).
 //
@@ -4269,15 +4147,8 @@ func (c *restClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReaction")
+		return err
 	}, opts...)
 }
 
@@ -4320,17 +4191,7 @@ func (c *restClient) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpace
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpaceReadState")
 		if err != nil {
 			return err
 		}
@@ -4399,17 +4260,7 @@ func (c *restClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpaceReadState")
 		if err != nil {
 			return err
 		}
@@ -4465,17 +4316,7 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetThreadReadState")
 		if err != nil {
 			return err
 		}
@@ -4541,17 +4382,7 @@ func (c *restClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpaceEvent")
 		if err != nil {
 			return err
 		}
@@ -4627,21 +4458,10 @@ func (c *restClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSpaceEvents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4669,4 +4489,128 @@ func (c *restClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetSpaceNotificationSetting gets the space notification setting. For an example, see Get the
+// caller’s space notification
+// setting (at https://developers.google.com/workspace/chat/get-space-notification-setting).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *restClient) GetSpaceNotificationSetting(ctx context.Context, req *chatpb.GetSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSpaceNotificationSetting[0:len((*c.CallOptions).GetSpaceNotificationSetting):len((*c.CallOptions).GetSpaceNotificationSetting)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.SpaceNotificationSetting{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpaceNotificationSetting")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateSpaceNotificationSetting updates the space notification setting. For an example, see Update
+// the caller’s space notification
+// setting (at https://developers.google.com/workspace/chat/update-space-notification-setting).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+func (c *restClient) UpdateSpaceNotificationSetting(ctx context.Context, req *chatpb.UpdateSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSpaceNotificationSetting()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSpaceNotificationSetting().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "space_notification_setting.name", url.QueryEscape(req.GetSpaceNotificationSetting().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSpaceNotificationSetting[0:len((*c.CallOptions).UpdateSpaceNotificationSetting):len((*c.CallOptions).UpdateSpaceNotificationSetting)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.SpaceNotificationSetting{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpaceNotificationSetting")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

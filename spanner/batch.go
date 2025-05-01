@@ -152,6 +152,9 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 	if metricErr := recordGFELatencyMetricsOT(ctx, md, "PartitionReadUsingIndexWithOptions", t.otConfig); metricErr != nil {
 		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
+	if isUnimplementedErrorForMultiplexedPartitionReads(err) && t.sp.isMultiplexedSessionForPartitionedOpsEnabled() {
+		t.sp.disableMultiplexedSessionForPartitionedOps()
+	}
 	// Prepare ReadRequest.
 	req := &sppb.ReadRequest{
 		Session:             sid,
@@ -219,6 +222,9 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 	if metricErr := recordGFELatencyMetricsOT(ctx, md, "partitionQuery", t.otConfig); metricErr != nil {
 		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
+	if isUnimplementedErrorForMultiplexedPartitionReads(err) && t.sp.isMultiplexedSessionForPartitionedOpsEnabled() {
+		t.sp.disableMultiplexedSessionForPartitionedOps()
+	}
 
 	// prepare ExecuteSqlRequest
 	r := &sppb.ExecuteSqlRequest{
@@ -281,6 +287,10 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	}
 	t.sh = nil
 	sid, client := sh.getID(), sh.getClient()
+	// skip cleanup if session is multiplexed
+	if sh.session.isMultiplexed {
+		return
+	}
 
 	var md metadata.MD
 	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
@@ -309,7 +319,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	var (
 		sh  *sessionHandle
 		err error
-		rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
+		rpc func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error)
 	)
 	if sh, _, err = t.acquire(ctx); err != nil {
 		return &RowIterator{err: err}
@@ -322,7 +332,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	sh.updateLastUseTime()
 	// Read or query partition.
 	if p.rreq != nil {
-		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+		rpc = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx, &sppb.ReadRequest{
 				Session:             p.rreq.Session,
 				Transaction:         p.rreq.Transaction,
@@ -335,7 +345,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ResumeToken:         resumeToken,
 				DataBoostEnabled:    p.rreq.DataBoostEnabled,
 				DirectedReadOptions: p.rreq.DirectedReadOptions,
-			})
+			}, opts...)
 			if err != nil {
 				return client, err
 			}
@@ -348,10 +358,13 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			if metricErr := recordGFELatencyMetricsOT(ctx, md, "Execute", t.otConfig); metricErr != nil {
 				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 			}
+			if isUnimplementedErrorForMultiplexedPartitionReads(err) && t.sp.isMultiplexedSessionForPartitionedOpsEnabled() {
+				t.sp.disableMultiplexedSessionForPartitionedOps()
+			}
 			return client, err
 		}
 	} else {
-		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+		rpc = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			client, err := client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
 				Session:             p.qreq.Session,
 				Transaction:         p.qreq.Transaction,
@@ -364,7 +377,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ResumeToken:         resumeToken,
 				DataBoostEnabled:    p.qreq.DataBoostEnabled,
 				DirectedReadOptions: p.qreq.DirectedReadOptions,
-			})
+			}, opts...)
 			if err != nil {
 				return client, err
 			}
@@ -378,6 +391,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			if metricErr := recordGFELatencyMetricsOT(ctx, md, "Execute", t.otConfig); metricErr != nil {
 				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 			}
+			if isUnimplementedErrorForMultiplexedPartitionReads(err) && t.sp.isMultiplexedSessionForPartitionedOpsEnabled() {
+				t.sp.disableMultiplexedSessionForPartitionedOps()
+			}
 			return client, err
 		}
 	}
@@ -387,7 +403,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		t.sp.sc.metricsTracerFactory,
 		rpc,
 		t.setTimestamp,
-		t.release)
+		t.release, client.(*grpcSpannerClient))
 }
 
 // MarshalBinary implements BinaryMarshaler.

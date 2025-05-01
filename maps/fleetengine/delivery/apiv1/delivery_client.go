@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 
 	deliverypb "cloud.google.com/go/maps/fleetengine/delivery/apiv1/deliverypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -48,10 +47,12 @@ var newClientHook clientHook
 type CallOptions struct {
 	CreateDeliveryVehicle []gax.CallOption
 	GetDeliveryVehicle    []gax.CallOption
+	DeleteDeliveryVehicle []gax.CallOption
 	UpdateDeliveryVehicle []gax.CallOption
 	BatchCreateTasks      []gax.CallOption
 	CreateTask            []gax.CallOption
 	GetTask               []gax.CallOption
+	DeleteTask            []gax.CallOption
 	UpdateTask            []gax.CallOption
 	ListTasks             []gax.CallOption
 	GetTaskTrackingInfo   []gax.CallOption
@@ -99,6 +100,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		DeleteDeliveryVehicle: []gax.CallOption{},
 		UpdateDeliveryVehicle: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -147,6 +149,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		DeleteTask: []gax.CallOption{},
 		UpdateTask: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -222,6 +225,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		DeleteDeliveryVehicle: []gax.CallOption{},
 		UpdateDeliveryVehicle: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -266,6 +270,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		DeleteTask: []gax.CallOption{},
 		UpdateTask: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -320,10 +325,12 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	CreateDeliveryVehicle(context.Context, *deliverypb.CreateDeliveryVehicleRequest, ...gax.CallOption) (*deliverypb.DeliveryVehicle, error)
 	GetDeliveryVehicle(context.Context, *deliverypb.GetDeliveryVehicleRequest, ...gax.CallOption) (*deliverypb.DeliveryVehicle, error)
+	DeleteDeliveryVehicle(context.Context, *deliverypb.DeleteDeliveryVehicleRequest, ...gax.CallOption) error
 	UpdateDeliveryVehicle(context.Context, *deliverypb.UpdateDeliveryVehicleRequest, ...gax.CallOption) (*deliverypb.DeliveryVehicle, error)
 	BatchCreateTasks(context.Context, *deliverypb.BatchCreateTasksRequest, ...gax.CallOption) (*deliverypb.BatchCreateTasksResponse, error)
 	CreateTask(context.Context, *deliverypb.CreateTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
 	GetTask(context.Context, *deliverypb.GetTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
+	DeleteTask(context.Context, *deliverypb.DeleteTaskRequest, ...gax.CallOption) error
 	UpdateTask(context.Context, *deliverypb.UpdateTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
 	ListTasks(context.Context, *deliverypb.ListTasksRequest, ...gax.CallOption) *TaskIterator
 	GetTaskTrackingInfo(context.Context, *deliverypb.GetTaskTrackingInfoRequest, ...gax.CallOption) (*deliverypb.TaskTrackingInfo, error)
@@ -375,6 +382,14 @@ func (c *Client) GetDeliveryVehicle(ctx context.Context, req *deliverypb.GetDeli
 	return c.internalClient.GetDeliveryVehicle(ctx, req, opts...)
 }
 
+// DeleteDeliveryVehicle deletes a DeliveryVehicle from the Fleet Engine.
+//
+// Returns FAILED_PRECONDITION if the DeliveryVehicle has OPEN Tasks
+// assigned to it.
+func (c *Client) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.DeleteDeliveryVehicleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDeliveryVehicle(ctx, req, opts...)
+}
+
 // UpdateDeliveryVehicle writes updated DeliveryVehicle data to Fleet Engine, and assigns
 // Tasks to the DeliveryVehicle. You cannot update the name of the
 // DeliveryVehicle. You can update remaining_vehicle_journey_segments,
@@ -399,6 +414,14 @@ func (c *Client) CreateTask(ctx context.Context, req *deliverypb.CreateTaskReque
 // GetTask gets information about a Task.
 func (c *Client) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest, opts ...gax.CallOption) (*deliverypb.Task, error) {
 	return c.internalClient.GetTask(ctx, req, opts...)
+}
+
+// DeleteTask deletes a single Task.
+//
+// Returns FAILED_PRECONDITION if the Task is OPEN and assigned to a
+// DeliveryVehicle.
+func (c *Client) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTask(ctx, req, opts...)
 }
 
 // UpdateTask updates Task data.
@@ -436,6 +459,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new delivery service client based on gRPC.
@@ -462,6 +487,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      deliverypb.NewDeliveryServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -508,6 +534,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new delivery service rest client.
@@ -525,6 +553,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -586,7 +615,7 @@ func (c *gRPCClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDeliveryVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDeliveryVehicle, req, settings.GRPC, c.logger, "CreateDeliveryVehicle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -613,13 +642,36 @@ func (c *gRPCClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDeliveryVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDeliveryVehicle, req, settings.GRPC, c.logger, "GetDeliveryVehicle")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.DeleteDeliveryVehicleRequest, opts ...gax.CallOption) error {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDeliveryVehicle[0:len((*c.CallOptions).DeleteDeliveryVehicle):len((*c.CallOptions).DeleteDeliveryVehicle)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteDeliveryVehicle, req, settings.GRPC, c.logger, "DeleteDeliveryVehicle")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *gRPCClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.UpdateDeliveryVehicleRequest, opts ...gax.CallOption) (*deliverypb.DeliveryVehicle, error) {
@@ -640,7 +692,7 @@ func (c *gRPCClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDeliveryVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDeliveryVehicle, req, settings.GRPC, c.logger, "UpdateDeliveryVehicle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -667,7 +719,7 @@ func (c *gRPCClient) BatchCreateTasks(ctx context.Context, req *deliverypb.Batch
 	var resp *deliverypb.BatchCreateTasksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchCreateTasks(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchCreateTasks, req, settings.GRPC, c.logger, "BatchCreateTasks")
 		return err
 	}, opts...)
 	if err != nil {
@@ -694,7 +746,7 @@ func (c *gRPCClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateTask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateTask, req, settings.GRPC, c.logger, "CreateTask")
 		return err
 	}, opts...)
 	if err != nil {
@@ -721,13 +773,36 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTask, req, settings.GRPC, c.logger, "GetTask")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskRequest, opts ...gax.CallOption) error {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteTask[0:len((*c.CallOptions).DeleteTask):len((*c.CallOptions).DeleteTask)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteTask, req, settings.GRPC, c.logger, "DeleteTask")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *gRPCClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskRequest, opts ...gax.CallOption) (*deliverypb.Task, error) {
@@ -748,7 +823,7 @@ func (c *gRPCClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTask, req, settings.GRPC, c.logger, "UpdateTask")
 		return err
 	}, opts...)
 	if err != nil {
@@ -786,7 +861,7 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTasks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTasks, req, settings.GRPC, c.logger, "ListTasks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -830,7 +905,7 @@ func (c *gRPCClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 	var resp *deliverypb.TaskTrackingInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTaskTrackingInfo(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTaskTrackingInfo, req, settings.GRPC, c.logger, "GetTaskTrackingInfo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -868,7 +943,7 @@ func (c *gRPCClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDeliveryVehicles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDeliveryVehicles, req, settings.GRPC, c.logger, "ListDeliveryVehicles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -978,17 +1053,7 @@ func (c *restClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeliveryVehicle")
 		if err != nil {
 			return err
 		}
@@ -1081,17 +1146,7 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeliveryVehicle")
 		if err != nil {
 			return err
 		}
@@ -1106,6 +1161,87 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 		return nil, e
 	}
 	return resp, nil
+}
+
+// DeleteDeliveryVehicle deletes a DeliveryVehicle from the Fleet Engine.
+//
+// Returns FAILED_PRECONDITION if the DeliveryVehicle has OPEN Tasks
+// assigned to it.
+func (c *restClient) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.DeleteDeliveryVehicleRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetHeader().GetAndroidApiLevel() != 0 {
+		params.Add("header.androidApiLevel", fmt.Sprintf("%v", req.GetHeader().GetAndroidApiLevel()))
+	}
+	if req.GetHeader().GetDeviceModel() != "" {
+		params.Add("header.deviceModel", fmt.Sprintf("%v", req.GetHeader().GetDeviceModel()))
+	}
+	if req.GetHeader().GetLanguageCode() != "" {
+		params.Add("header.languageCode", fmt.Sprintf("%v", req.GetHeader().GetLanguageCode()))
+	}
+	if req.GetHeader().GetManufacturer() != "" {
+		params.Add("header.manufacturer", fmt.Sprintf("%v", req.GetHeader().GetManufacturer()))
+	}
+	if req.GetHeader().GetMapsSdkVersion() != "" {
+		params.Add("header.mapsSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetMapsSdkVersion()))
+	}
+	if req.GetHeader().GetNavSdkVersion() != "" {
+		params.Add("header.navSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetNavSdkVersion()))
+	}
+	if req.GetHeader().GetOsVersion() != "" {
+		params.Add("header.osVersion", fmt.Sprintf("%v", req.GetHeader().GetOsVersion()))
+	}
+	if req.GetHeader().GetPlatform() != 0 {
+		params.Add("header.platform", fmt.Sprintf("%v", req.GetHeader().GetPlatform()))
+	}
+	params.Add("header.regionCode", fmt.Sprintf("%v", req.GetHeader().GetRegionCode()))
+	if req.GetHeader().GetSdkType() != 0 {
+		params.Add("header.sdkType", fmt.Sprintf("%v", req.GetHeader().GetSdkType()))
+	}
+	if req.GetHeader().GetSdkVersion() != "" {
+		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeliveryVehicle")
+		return err
+	}, opts...)
 }
 
 // UpdateDeliveryVehicle writes updated DeliveryVehicle data to Fleet Engine, and assigns
@@ -1204,17 +1340,7 @@ func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDeliveryVehicle")
 		if err != nil {
 			return err
 		}
@@ -1279,17 +1405,7 @@ func (c *restClient) BatchCreateTasks(ctx context.Context, req *deliverypb.Batch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateTasks")
 		if err != nil {
 			return err
 		}
@@ -1390,17 +1506,7 @@ func (c *restClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTask")
 		if err != nil {
 			return err
 		}
@@ -1493,17 +1599,7 @@ func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTask")
 		if err != nil {
 			return err
 		}
@@ -1518,6 +1614,87 @@ func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 		return nil, e
 	}
 	return resp, nil
+}
+
+// DeleteTask deletes a single Task.
+//
+// Returns FAILED_PRECONDITION if the Task is OPEN and assigned to a
+// DeliveryVehicle.
+func (c *restClient) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetHeader().GetAndroidApiLevel() != 0 {
+		params.Add("header.androidApiLevel", fmt.Sprintf("%v", req.GetHeader().GetAndroidApiLevel()))
+	}
+	if req.GetHeader().GetDeviceModel() != "" {
+		params.Add("header.deviceModel", fmt.Sprintf("%v", req.GetHeader().GetDeviceModel()))
+	}
+	if req.GetHeader().GetLanguageCode() != "" {
+		params.Add("header.languageCode", fmt.Sprintf("%v", req.GetHeader().GetLanguageCode()))
+	}
+	if req.GetHeader().GetManufacturer() != "" {
+		params.Add("header.manufacturer", fmt.Sprintf("%v", req.GetHeader().GetManufacturer()))
+	}
+	if req.GetHeader().GetMapsSdkVersion() != "" {
+		params.Add("header.mapsSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetMapsSdkVersion()))
+	}
+	if req.GetHeader().GetNavSdkVersion() != "" {
+		params.Add("header.navSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetNavSdkVersion()))
+	}
+	if req.GetHeader().GetOsVersion() != "" {
+		params.Add("header.osVersion", fmt.Sprintf("%v", req.GetHeader().GetOsVersion()))
+	}
+	if req.GetHeader().GetPlatform() != 0 {
+		params.Add("header.platform", fmt.Sprintf("%v", req.GetHeader().GetPlatform()))
+	}
+	params.Add("header.regionCode", fmt.Sprintf("%v", req.GetHeader().GetRegionCode()))
+	if req.GetHeader().GetSdkType() != 0 {
+		params.Add("header.sdkType", fmt.Sprintf("%v", req.GetHeader().GetSdkType()))
+	}
+	if req.GetHeader().GetSdkVersion() != "" {
+		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTask")
+		return err
+	}, opts...)
 }
 
 // UpdateTask updates Task data.
@@ -1610,17 +1787,7 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTask")
 		if err != nil {
 			return err
 		}
@@ -1719,21 +1886,10 @@ func (c *restClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTasks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1839,17 +1995,7 @@ func (c *restClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTaskTrackingInfo")
 		if err != nil {
 			return err
 		}
@@ -1960,21 +2106,10 @@ func (c *restClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeliveryVehicles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

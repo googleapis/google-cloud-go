@@ -8,7 +8,7 @@ assign_issues_by:
 - labels:
   - 'api: storage'
   to:
-  - tritone
+  - BrennaEpp
 - labels:
   - 'api: bigquery'
   to:

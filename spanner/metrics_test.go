@@ -41,7 +41,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	if testing.Short() {
 		t.Skip("TestNewBuiltinMetricsTracerFactory tests skipped in -short mode.")
 	}
-	t.Parallel()
 
 	ctx := context.Background()
 	clientUID := "test-uid"
@@ -121,7 +120,12 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		{
 			desc:              "should create a new tracer factory with default meter provider",
 			runOnlyInEmulator: isEmulatorEnvSet(),
-			config:            ClientConfig{},
+			config: ClientConfig{
+				SessionPoolConfig: SessionPoolConfig{
+					MinOpened: 0,
+					MaxOpened: 1,
+				},
+			},
 
 			wantBuiltinEnabled:     true,
 			wantCreateTSCallsCount: 2,

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -210,6 +211,8 @@ type bigQueryReadGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBigQueryReadClient creates a new big query read client based on gRPC.
@@ -238,6 +241,7 @@ func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*B
 		connPool:           connPool,
 		bigQueryReadClient: storagepb.NewBigQueryReadClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -280,7 +284,7 @@ func (c *bigQueryReadGRPCClient) CreateReadSession(ctx context.Context, req *sto
 	var resp *storagepb.ReadSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryReadClient.CreateReadSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryReadClient.CreateReadSession, req, settings.GRPC, c.logger, "CreateReadSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -298,7 +302,9 @@ func (c *bigQueryReadGRPCClient) ReadRows(ctx context.Context, req *storagepb.Re
 	var resp storagepb.BigQueryRead_ReadRowsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ReadRows")
 		resp, err = c.bigQueryReadClient.ReadRows(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ReadRows")
 		return err
 	}, opts...)
 	if err != nil {
@@ -316,7 +322,7 @@ func (c *bigQueryReadGRPCClient) SplitReadStream(ctx context.Context, req *stora
 	var resp *storagepb.SplitReadStreamResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryReadClient.SplitReadStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryReadClient.SplitReadStream, req, settings.GRPC, c.logger, "SplitReadStream")
 		return err
 	}, opts...)
 	if err != nil {

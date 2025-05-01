@@ -2,6 +2,43 @@
 
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.6.5...gkebackup/v1.7.0) (2025-04-30)
+
+
+### Features
+
+* **gkebackup:** Adding `CLEANED_UP` enum in state field of volume.proto ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **gkebackup:** Adding `last_successful_backup_time` field in BackupPlan ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **gkebackup:** Adding `VALIDATING` enum in state field of restore.proto ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **gkebackup:** Adding new BackupChannel, RestoreChannel, BackupPlanBinding and RestorePlanBinding ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **gkebackup:** Generation of new cross project APIs ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Documentation
+
+* **gkebackup:** Minor documentation fixes ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+## [1.6.5](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.6.4...gkebackup/v1.6.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **gkebackup:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.6.4](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.6.3...gkebackup/v1.6.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **gkebackup:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.6.2...gkebackup/v1.6.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **gkebackup:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.6.1...gkebackup/v1.6.2) (2024-10-23)
 
 

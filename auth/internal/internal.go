@@ -181,6 +181,7 @@ func (p StaticProperty) GetProperty(context.Context) (string, error) {
 // ComputeUniverseDomainProvider fetches the credentials universe domain from
 // the google cloud metadata service.
 type ComputeUniverseDomainProvider struct {
+	MetadataClient     *metadata.Client
 	universeDomainOnce sync.Once
 	universeDomain     string
 	universeDomainErr  error
@@ -190,7 +191,7 @@ type ComputeUniverseDomainProvider struct {
 // metadata service.
 func (c *ComputeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
 	c.universeDomainOnce.Do(func() {
-		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx)
+		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx, c.MetadataClient)
 	})
 	if c.universeDomainErr != nil {
 		return "", c.universeDomainErr
@@ -199,14 +200,14 @@ func (c *ComputeUniverseDomainProvider) GetProperty(ctx context.Context) (string
 }
 
 // httpGetMetadataUniverseDomain is a package var for unit test substitution.
-var httpGetMetadataUniverseDomain = func(ctx context.Context) (string, error) {
+var httpGetMetadataUniverseDomain = func(ctx context.Context, client *metadata.Client) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
-	return metadata.GetWithContext(ctx, "universe/universe-domain")
+	return client.GetWithContext(ctx, "universe/universe-domain")
 }
 
-func getMetadataUniverseDomain(ctx context.Context) (string, error) {
-	universeDomain, err := httpGetMetadataUniverseDomain(ctx)
+func getMetadataUniverseDomain(ctx context.Context, client *metadata.Client) (string, error) {
+	universeDomain, err := httpGetMetadataUniverseDomain(ctx, client)
 	if err == nil {
 		return universeDomain, nil
 	}
@@ -215,4 +216,10 @@ func getMetadataUniverseDomain(ctx context.Context) (string, error) {
 		return DefaultUniverseDomain, nil
 	}
 	return "", err
+}
+
+// FormatIAMServiceAccountResource sets a service account name in an IAM resource
+// name.
+func FormatIAMServiceAccountResource(name string) string {
+	return fmt.Sprintf("projects/-/serviceAccounts/%s", name)
 }

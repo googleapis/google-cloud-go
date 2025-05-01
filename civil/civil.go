@@ -22,6 +22,7 @@
 package civil
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"time"
 )
@@ -86,6 +87,18 @@ func (d Date) AddDays(n int) Date {
 	return DateOf(d.In(time.UTC).AddDate(0, 0, n))
 }
 
+// AddMonths returns the date that is n months in the future.
+// n can also be negative to go into the past.
+func (d Date) AddMonths(n int) Date {
+	return DateOf(d.In(time.UTC).AddDate(0, n, 0))
+}
+
+// AddYears returns the date that is n years in the future.
+// n can also be negative to go into the past.
+func (d Date) AddYears(n int) Date {
+	return DateOf(d.In(time.UTC).AddDate(n, 0, 0))
+}
+
 // DaysSince returns the signed number of days between the date and s, not including the end day.
 // This is the inverse operation to AddDays.
 func (d Date) DaysSince(s Date) (days int) {
@@ -127,6 +140,11 @@ func (d Date) IsZero() bool {
 	return (d.Year == 0) && (int(d.Month) == 0) && (d.Day == 0)
 }
 
+// Weekday returns the day of the week for the date.
+func (d Date) Weekday() time.Weekday {
+	return d.In(time.UTC).Weekday()
+}
+
 // MarshalText implements the encoding.TextMarshaler interface.
 // The output is the result of d.String().
 func (d Date) MarshalText() ([]byte, error) {
@@ -139,6 +157,46 @@ func (d *Date) UnmarshalText(data []byte) error {
 	var err error
 	*d, err = ParseDate(string(data))
 	return err
+}
+
+// Value implements the database/sql/driver Valuer interface.
+func (d Date) Value() (driver.Value, error) {
+	return d.String(), nil
+}
+
+// Scan implements the database/sql Scanner interface.
+func (d *Date) Scan(v any) error {
+	switch vt := v.(type) {
+	case time.Time:
+		*d = DateOf(vt)
+	case *time.Time:
+		if vt != nil {
+			*d = DateOf(*vt)
+		}
+	case string:
+		var err error
+		*d, err = ParseDate(vt)
+		return err
+	case *string:
+		var err error
+		if vt != nil {
+			*d, err = ParseDate(*vt)
+		}
+		return err
+	case []byte:
+		var err error
+		*d, err = ParseDate(string(vt))
+		return err
+	case *[]byte:
+		var err error
+		if vt != nil {
+			*d, err = ParseDate(string(*vt))
+		}
+		return err
+	default:
+		return fmt.Errorf("unsupported scan type for Date: %T", v)
+	}
+	return nil
 }
 
 // A Time represents a time with nanosecond precision.
@@ -245,6 +303,46 @@ func (t *Time) UnmarshalText(data []byte) error {
 	return err
 }
 
+// Value implements the database/sql/driver Valuer interface.
+func (t Time) Value() (driver.Value, error) {
+	return t.String(), nil
+}
+
+// Scan implements the database/sql Scanner interface.
+func (t *Time) Scan(v any) error {
+	switch vt := v.(type) {
+	case time.Time:
+		*t = TimeOf(vt)
+	case *time.Time:
+		if vt != nil {
+			*t = TimeOf(*vt)
+		}
+	case string:
+		var err error
+		*t, err = ParseTime(vt)
+		return err
+	case *string:
+		var err error
+		if vt != nil {
+			*t, err = ParseTime(*vt)
+		}
+		return err
+	case []byte:
+		var err error
+		*t, err = ParseTime(string(vt))
+		return err
+	case *[]byte:
+		var err error
+		if vt != nil {
+			*t, err = ParseTime(string(*vt))
+		}
+		return err
+	default:
+		return fmt.Errorf("unsupported scan type for Time: %T", v)
+	}
+	return nil
+}
+
 // A DateTime represents a date and time.
 //
 // This type does not include location information, and therefore does not
@@ -347,4 +445,44 @@ func (dt *DateTime) UnmarshalText(data []byte) error {
 	var err error
 	*dt, err = ParseDateTime(string(data))
 	return err
+}
+
+// Value implements the database/sql/driver Valuer interface.
+func (dt DateTime) Value() (driver.Value, error) {
+	return dt.String(), nil
+}
+
+// Scan implements the database/sql Scanner interface.
+func (dt *DateTime) Scan(v any) error {
+	switch vt := v.(type) {
+	case time.Time:
+		*dt = DateTimeOf(vt)
+	case *time.Time:
+		if vt != nil {
+			*dt = DateTimeOf(*vt)
+		}
+	case string:
+		var err error
+		*dt, err = ParseDateTime(vt)
+		return err
+	case *string:
+		var err error
+		if vt != nil {
+			*dt, err = ParseDateTime(*vt)
+		}
+		return err
+	case []byte:
+		var err error
+		*dt, err = ParseDateTime(string(vt))
+		return err
+	case *[]byte:
+		var err error
+		if vt != nil {
+			*dt, err = ParseDateTime(string(*vt))
+		}
+		return err
+	default:
+		return fmt.Errorf("unsupported scan type for DateTime: %T", v)
+	}
+	return nil
 }

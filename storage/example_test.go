@@ -17,10 +17,10 @@ package storage_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -272,7 +272,7 @@ func ExampleObjectIterator_Next() {
 }
 
 func ExampleSignedURL() {
-	pkey, err := ioutil.ReadFile("my-private-key.pem")
+	pkey, err := os.ReadFile("my-private-key.pem")
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -350,7 +350,7 @@ func ExampleObjectHandle_NewReader() {
 	if err != nil {
 		// TODO: handle error.
 	}
-	slurp, err := ioutil.ReadAll(rc)
+	slurp, err := io.ReadAll(rc)
 	rc.Close()
 	if err != nil {
 		// TODO: handle error.
@@ -371,7 +371,7 @@ func ExampleObjectHandle_NewRangeReader() {
 	}
 	defer rc.Close()
 
-	slurp, err := ioutil.ReadAll(rc)
+	slurp, err := io.ReadAll(rc)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -391,7 +391,7 @@ func ExampleObjectHandle_NewRangeReader_lastNBytes() {
 	}
 	defer rc.Close()
 
-	slurp, err := ioutil.ReadAll(rc)
+	slurp, err := io.ReadAll(rc)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -411,7 +411,7 @@ func ExampleObjectHandle_NewRangeReader_untilEnd() {
 	}
 	defer rc.Close()
 
-	slurp, err := ioutil.ReadAll(rc)
+	slurp, err := io.ReadAll(rc)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -426,6 +426,40 @@ func ExampleObjectHandle_NewWriter() {
 	}
 	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
 	_ = wc // TODO: Use the Writer.
+}
+
+func ExampleObjectHandle_NewWriterFromAppendableObject() {
+	ctx := context.Background()
+	client, err := storage.NewGRPCClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	bucketName := "my-rapid-bucket"
+	objectName := "appendable-obj"
+	obj := client.Bucket(bucketName).Object(objectName)
+
+	// First get the object's generation. This is required to append to an
+	// existing object.
+	attrs, err := obj.Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	// Create a writer for appending to the object.
+	// Set Writer fields such as ChunkSize and FinalizeOnClose here.
+	w, offset, err := obj.Generation(attrs.Generation).NewWriterFromAppendableObject(ctx, &storage.AppendableWriterOpts{
+		ChunkSize:       8 * 1024 * 1024, // 8 MiB
+		FinalizeOnClose: true,            // finalize the object; default is unfinalized.
+	})
+	if err != nil {
+		// TODO: handle error
+	}
+
+	// TODO: Start writing data from object offset using Writer.Write().
+	_ = offset
+	if err := w.Close(); err != nil {
+		// TODO: handle error.
+	}
 }
 
 func ExampleObjectHandle_OverrideUnlockedRetention() {
@@ -466,6 +500,40 @@ func ExampleWriter_Write() {
 		// TODO: handle error.
 	}
 	fmt.Println("updated object:", wc.Attrs())
+}
+
+func ExampleWriter_Flush() {
+	ctx := context.Background()
+	client, err := storage.NewGRPCClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	bucketName := "my-rapid-bucket"
+	objectName := "appendable-obj"
+	obj := client.Bucket(bucketName).Object(objectName)
+
+	// Create an appendable object using NewWriter, or append to an existing
+	// one with NewWriterFromAppendableObject.
+	w := obj.NewWriter(ctx)
+	w.Append = true
+
+	// Calling Writer.Write, the data may still be in a local buffer in the
+	// client.
+	if _, err := w.Write([]byte("hello ")); err != nil {
+		// TODO: handle error.
+	}
+	// Call Writer.Flush to ensure data is synced to GCS.
+	if _, err := w.Flush(); err != nil {
+		// TODO: Handle error.
+	}
+	// Write remaining data and close writer. Data is automatically synced
+	// at ChunkSize boundaries and when Close is called.
+	if _, err := w.Write([]byte("world!")); err != nil {
+		// TODO: handle error.
+	}
+	if err := w.Close(); err != nil {
+		// TODO: handle error.
+	}
 }
 
 // To limit the time to write an object (or do anything else
@@ -878,7 +946,7 @@ func ExampleBucketHandle_exists() {
 	}
 
 	attrs, err := client.Bucket("my-bucket").Attrs(ctx)
-	if err == storage.ErrBucketNotExist {
+	if errors.Is(err, storage.ErrBucketNotExist) {
 		fmt.Println("The bucket does not exist")
 		return
 	}
@@ -896,7 +964,7 @@ func ExampleObjectHandle_exists() {
 	}
 
 	attrs, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
-	if err == storage.ErrObjectNotExist {
+	if errors.Is(err, storage.ErrObjectNotExist) {
 		fmt.Println("The object does not exist")
 		return
 	}

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/orgpolicy/apiv2",
-    "version": "1.14.1",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -196,7 +196,7 @@
     {
       "regionTag": "orgpolicy_v2_generated_OrgPolicy_GetCustomConstraint_sync",
       "title": "orgpolicy GetCustomConstraint Sample",
-      "description": "GetCustomConstraint gets a custom constraint.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\ncustom constraint does not exist.",
+      "description": "GetCustomConstraint gets a custom or managed constraint.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\ncustom or managed constraint does not exist.",
       "file": "Client/GetCustomConstraint/main.go",
       "language": "GO",
       "clientMethod": {

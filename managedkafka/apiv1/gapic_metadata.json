@@ -218,6 +218,220 @@
           }
         }
       }
+    },
+    "ManagedKafkaConnect": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ManagedKafkaConnectClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConnectCluster": {
+              "methods": [
+                "CreateConnectCluster"
+              ]
+            },
+            "CreateConnector": {
+              "methods": [
+                "CreateConnector"
+              ]
+            },
+            "DeleteConnectCluster": {
+              "methods": [
+                "DeleteConnectCluster"
+              ]
+            },
+            "DeleteConnector": {
+              "methods": [
+                "DeleteConnector"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetConnectCluster": {
+              "methods": [
+                "GetConnectCluster"
+              ]
+            },
+            "GetConnector": {
+              "methods": [
+                "GetConnector"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConnectClusters": {
+              "methods": [
+                "ListConnectClusters"
+              ]
+            },
+            "ListConnectors": {
+              "methods": [
+                "ListConnectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PauseConnector": {
+              "methods": [
+                "PauseConnector"
+              ]
+            },
+            "RestartConnector": {
+              "methods": [
+                "RestartConnector"
+              ]
+            },
+            "ResumeConnector": {
+              "methods": [
+                "ResumeConnector"
+              ]
+            },
+            "StopConnector": {
+              "methods": [
+                "StopConnector"
+              ]
+            },
+            "UpdateConnectCluster": {
+              "methods": [
+                "UpdateConnectCluster"
+              ]
+            },
+            "UpdateConnector": {
+              "methods": [
+                "UpdateConnector"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ManagedKafkaConnectClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConnectCluster": {
+              "methods": [
+                "CreateConnectCluster"
+              ]
+            },
+            "CreateConnector": {
+              "methods": [
+                "CreateConnector"
+              ]
+            },
+            "DeleteConnectCluster": {
+              "methods": [
+                "DeleteConnectCluster"
+              ]
+            },
+            "DeleteConnector": {
+              "methods": [
+                "DeleteConnector"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetConnectCluster": {
+              "methods": [
+                "GetConnectCluster"
+              ]
+            },
+            "GetConnector": {
+              "methods": [
+                "GetConnector"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConnectClusters": {
+              "methods": [
+                "ListConnectClusters"
+              ]
+            },
+            "ListConnectors": {
+              "methods": [
+                "ListConnectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PauseConnector": {
+              "methods": [
+                "PauseConnector"
+              ]
+            },
+            "RestartConnector": {
+              "methods": [
+                "RestartConnector"
+              ]
+            },
+            "ResumeConnector": {
+              "methods": [
+                "ResumeConnector"
+              ]
+            },
+            "StopConnector": {
+              "methods": [
+                "StopConnector"
+              ]
+            },
+            "UpdateConnectCluster": {
+              "methods": [
+                "UpdateConnectCluster"
+              ]
+            },
+            "UpdateConnector": {
+              "methods": [
+                "UpdateConnector"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

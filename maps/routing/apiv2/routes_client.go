@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	routingpb "cloud.google.com/go/maps/routing/apiv2/routingpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -216,6 +215,8 @@ type routesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRoutesClient creates a new routes client based on gRPC.
@@ -242,6 +243,7 @@ func NewRoutesClient(ctx context.Context, opts ...option.ClientOption) (*RoutesC
 		connPool:     connPool,
 		routesClient: routingpb.NewRoutesClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -288,6 +290,8 @@ type routesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing RoutesClient
 	CallOptions **RoutesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewRoutesRESTClient creates a new routes rest client.
@@ -305,6 +309,7 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -354,7 +359,7 @@ func (c *routesGRPCClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 	var resp *routingpb.ComputeRoutesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.routesClient.ComputeRoutes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.routesClient.ComputeRoutes, req, settings.GRPC, c.logger, "ComputeRoutes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -369,7 +374,9 @@ func (c *routesGRPCClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 	var resp routingpb.Routes_ComputeRouteMatrixClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ComputeRouteMatrix")
 		resp, err = c.routesClient.ComputeRouteMatrix(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ComputeRouteMatrix")
 		return err
 	}, opts...)
 	if err != nil {
@@ -450,17 +457,7 @@ func (c *routesRESTClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ComputeRoutes")
 		if err != nil {
 			return err
 		}
@@ -535,7 +532,7 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *computeRouteMatrixRESTClient
+	var streamClient *computeRouteMatrixRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -547,16 +544,12 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ComputeRouteMatrix")
 		if err != nil {
 			return err
 		}
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		streamClient = &computeRouteMatrixRESTClient{
+		streamClient = &computeRouteMatrixRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&routingpb.RouteMatrixElement{}).ProtoReflect().Type()),
@@ -567,15 +560,15 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 	return streamClient, e
 }
 
-// computeRouteMatrixRESTClient is the stream client used to consume the server stream created by
+// computeRouteMatrixRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of ComputeRouteMatrix.
-type computeRouteMatrixRESTClient struct {
+type computeRouteMatrixRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *computeRouteMatrixRESTClient) Recv() (*routingpb.RouteMatrixElement, error) {
+func (c *computeRouteMatrixRESTStreamClient) Recv() (*routingpb.RouteMatrixElement, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -589,29 +582,29 @@ func (c *computeRouteMatrixRESTClient) Recv() (*routingpb.RouteMatrixElement, er
 	return res, nil
 }
 
-func (c *computeRouteMatrixRESTClient) Header() (metadata.MD, error) {
+func (c *computeRouteMatrixRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *computeRouteMatrixRESTClient) Trailer() metadata.MD {
+func (c *computeRouteMatrixRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *computeRouteMatrixRESTClient) CloseSend() error {
+func (c *computeRouteMatrixRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *computeRouteMatrixRESTClient) Context() context.Context {
+func (c *computeRouteMatrixRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *computeRouteMatrixRESTClient) SendMsg(m interface{}) error {
+func (c *computeRouteMatrixRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *computeRouteMatrixRESTClient) RecvMsg(m interface{}) error {
+func (c *computeRouteMatrixRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

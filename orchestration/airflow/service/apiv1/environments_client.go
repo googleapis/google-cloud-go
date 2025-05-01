@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	servicepb "cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -296,7 +295,7 @@ func (c *EnvironmentsClient) PollAirflowCommand(ctx context.Context, req *servic
 // runs a single Composer component.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-2..-airflow-..* and newer.
 func (c *EnvironmentsClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
 	return c.internalClient.ListWorkloads(ctx, req, opts...)
 }
@@ -317,7 +316,7 @@ func (c *EnvironmentsClient) CheckUpgradeOperation(name string) *CheckUpgradeOpe
 // CreateUserWorkloadsSecret creates a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) CreateUserWorkloadsSecret(ctx context.Context, req *servicepb.CreateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	return c.internalClient.CreateUserWorkloadsSecret(ctx, req, opts...)
 }
@@ -326,7 +325,7 @@ func (c *EnvironmentsClient) CreateUserWorkloadsSecret(ctx context.Context, req 
 // Values of the “data” field in the response are cleared.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) GetUserWorkloadsSecret(ctx context.Context, req *servicepb.GetUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	return c.internalClient.GetUserWorkloadsSecret(ctx, req, opts...)
 }
@@ -334,7 +333,7 @@ func (c *EnvironmentsClient) GetUserWorkloadsSecret(ctx context.Context, req *se
 // ListUserWorkloadsSecrets lists user workloads Secrets.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) ListUserWorkloadsSecrets(ctx context.Context, req *servicepb.ListUserWorkloadsSecretsRequest, opts ...gax.CallOption) *UserWorkloadsSecretIterator {
 	return c.internalClient.ListUserWorkloadsSecrets(ctx, req, opts...)
 }
@@ -342,7 +341,7 @@ func (c *EnvironmentsClient) ListUserWorkloadsSecrets(ctx context.Context, req *
 // UpdateUserWorkloadsSecret updates a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) UpdateUserWorkloadsSecret(ctx context.Context, req *servicepb.UpdateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	return c.internalClient.UpdateUserWorkloadsSecret(ctx, req, opts...)
 }
@@ -350,7 +349,7 @@ func (c *EnvironmentsClient) UpdateUserWorkloadsSecret(ctx context.Context, req 
 // DeleteUserWorkloadsSecret deletes a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) DeleteUserWorkloadsSecret(ctx context.Context, req *servicepb.DeleteUserWorkloadsSecretRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteUserWorkloadsSecret(ctx, req, opts...)
 }
@@ -358,7 +357,7 @@ func (c *EnvironmentsClient) DeleteUserWorkloadsSecret(ctx context.Context, req 
 // CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) CreateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.CreateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	return c.internalClient.CreateUserWorkloadsConfigMap(ctx, req, opts...)
 }
@@ -366,7 +365,7 @@ func (c *EnvironmentsClient) CreateUserWorkloadsConfigMap(ctx context.Context, r
 // GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) GetUserWorkloadsConfigMap(ctx context.Context, req *servicepb.GetUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	return c.internalClient.GetUserWorkloadsConfigMap(ctx, req, opts...)
 }
@@ -374,7 +373,7 @@ func (c *EnvironmentsClient) GetUserWorkloadsConfigMap(ctx context.Context, req 
 // ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) ListUserWorkloadsConfigMaps(ctx context.Context, req *servicepb.ListUserWorkloadsConfigMapsRequest, opts ...gax.CallOption) *UserWorkloadsConfigMapIterator {
 	return c.internalClient.ListUserWorkloadsConfigMaps(ctx, req, opts...)
 }
@@ -382,7 +381,7 @@ func (c *EnvironmentsClient) ListUserWorkloadsConfigMaps(ctx context.Context, re
 // UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) UpdateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.UpdateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	return c.internalClient.UpdateUserWorkloadsConfigMap(ctx, req, opts...)
 }
@@ -390,7 +389,7 @@ func (c *EnvironmentsClient) UpdateUserWorkloadsConfigMap(ctx context.Context, r
 // DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *EnvironmentsClient) DeleteUserWorkloadsConfigMap(ctx context.Context, req *servicepb.DeleteUserWorkloadsConfigMapRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteUserWorkloadsConfigMap(ctx, req, opts...)
 }
@@ -476,6 +475,8 @@ type environmentsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewEnvironmentsClient creates a new environments client based on gRPC.
@@ -502,6 +503,7 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		connPool:           connPool,
 		environmentsClient: servicepb.NewEnvironmentsClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -565,6 +567,8 @@ type environmentsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing EnvironmentsClient
 	CallOptions **EnvironmentsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewEnvironmentsRESTClient creates a new environments rest client.
@@ -582,6 +586,7 @@ func NewEnvironmentsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -644,7 +649,7 @@ func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *ser
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.CreateEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.CreateEnvironment, req, settings.GRPC, c.logger, "CreateEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -664,7 +669,7 @@ func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *servic
 	var resp *servicepb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.GetEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.GetEnvironment, req, settings.GRPC, c.logger, "GetEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -693,7 +698,7 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *serv
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.environmentsClient.ListEnvironments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.environmentsClient.ListEnvironments, req, settings.GRPC, c.logger, "ListEnvironments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -728,7 +733,7 @@ func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *ser
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.UpdateEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.UpdateEnvironment, req, settings.GRPC, c.logger, "UpdateEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -748,7 +753,7 @@ func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *ser
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.DeleteEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.DeleteEnvironment, req, settings.GRPC, c.logger, "DeleteEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -768,7 +773,7 @@ func (c *environmentsGRPCClient) ExecuteAirflowCommand(ctx context.Context, req 
 	var resp *servicepb.ExecuteAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.ExecuteAirflowCommand(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.ExecuteAirflowCommand, req, settings.GRPC, c.logger, "ExecuteAirflowCommand")
 		return err
 	}, opts...)
 	if err != nil {
@@ -786,7 +791,7 @@ func (c *environmentsGRPCClient) StopAirflowCommand(ctx context.Context, req *se
 	var resp *servicepb.StopAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.StopAirflowCommand(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.StopAirflowCommand, req, settings.GRPC, c.logger, "StopAirflowCommand")
 		return err
 	}, opts...)
 	if err != nil {
@@ -804,7 +809,7 @@ func (c *environmentsGRPCClient) PollAirflowCommand(ctx context.Context, req *se
 	var resp *servicepb.PollAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.PollAirflowCommand(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.PollAirflowCommand, req, settings.GRPC, c.logger, "PollAirflowCommand")
 		return err
 	}, opts...)
 	if err != nil {
@@ -833,7 +838,7 @@ func (c *environmentsGRPCClient) ListWorkloads(ctx context.Context, req *service
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.environmentsClient.ListWorkloads(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.environmentsClient.ListWorkloads, req, settings.GRPC, c.logger, "ListWorkloads")
 			return err
 		}, opts...)
 		if err != nil {
@@ -868,7 +873,7 @@ func (c *environmentsGRPCClient) CheckUpgrade(ctx context.Context, req *servicep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.CheckUpgrade(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.CheckUpgrade, req, settings.GRPC, c.logger, "CheckUpgrade")
 		return err
 	}, opts...)
 	if err != nil {
@@ -888,7 +893,7 @@ func (c *environmentsGRPCClient) CreateUserWorkloadsSecret(ctx context.Context, 
 	var resp *servicepb.UserWorkloadsSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.CreateUserWorkloadsSecret(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.CreateUserWorkloadsSecret, req, settings.GRPC, c.logger, "CreateUserWorkloadsSecret")
 		return err
 	}, opts...)
 	if err != nil {
@@ -906,7 +911,7 @@ func (c *environmentsGRPCClient) GetUserWorkloadsSecret(ctx context.Context, req
 	var resp *servicepb.UserWorkloadsSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.GetUserWorkloadsSecret(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.GetUserWorkloadsSecret, req, settings.GRPC, c.logger, "GetUserWorkloadsSecret")
 		return err
 	}, opts...)
 	if err != nil {
@@ -935,7 +940,7 @@ func (c *environmentsGRPCClient) ListUserWorkloadsSecrets(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.environmentsClient.ListUserWorkloadsSecrets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.environmentsClient.ListUserWorkloadsSecrets, req, settings.GRPC, c.logger, "ListUserWorkloadsSecrets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -970,7 +975,7 @@ func (c *environmentsGRPCClient) UpdateUserWorkloadsSecret(ctx context.Context, 
 	var resp *servicepb.UserWorkloadsSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.UpdateUserWorkloadsSecret(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.UpdateUserWorkloadsSecret, req, settings.GRPC, c.logger, "UpdateUserWorkloadsSecret")
 		return err
 	}, opts...)
 	if err != nil {
@@ -987,7 +992,7 @@ func (c *environmentsGRPCClient) DeleteUserWorkloadsSecret(ctx context.Context, 
 	opts = append((*c.CallOptions).DeleteUserWorkloadsSecret[0:len((*c.CallOptions).DeleteUserWorkloadsSecret):len((*c.CallOptions).DeleteUserWorkloadsSecret)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.environmentsClient.DeleteUserWorkloadsSecret(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.environmentsClient.DeleteUserWorkloadsSecret, req, settings.GRPC, c.logger, "DeleteUserWorkloadsSecret")
 		return err
 	}, opts...)
 	return err
@@ -1002,7 +1007,7 @@ func (c *environmentsGRPCClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 	var resp *servicepb.UserWorkloadsConfigMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.CreateUserWorkloadsConfigMap(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.CreateUserWorkloadsConfigMap, req, settings.GRPC, c.logger, "CreateUserWorkloadsConfigMap")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1020,7 +1025,7 @@ func (c *environmentsGRPCClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 	var resp *servicepb.UserWorkloadsConfigMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.GetUserWorkloadsConfigMap(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.GetUserWorkloadsConfigMap, req, settings.GRPC, c.logger, "GetUserWorkloadsConfigMap")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1049,7 +1054,7 @@ func (c *environmentsGRPCClient) ListUserWorkloadsConfigMaps(ctx context.Context
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.environmentsClient.ListUserWorkloadsConfigMaps(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.environmentsClient.ListUserWorkloadsConfigMaps, req, settings.GRPC, c.logger, "ListUserWorkloadsConfigMaps")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1084,7 +1089,7 @@ func (c *environmentsGRPCClient) UpdateUserWorkloadsConfigMap(ctx context.Contex
 	var resp *servicepb.UserWorkloadsConfigMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.UpdateUserWorkloadsConfigMap(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.UpdateUserWorkloadsConfigMap, req, settings.GRPC, c.logger, "UpdateUserWorkloadsConfigMap")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1101,7 +1106,7 @@ func (c *environmentsGRPCClient) DeleteUserWorkloadsConfigMap(ctx context.Contex
 	opts = append((*c.CallOptions).DeleteUserWorkloadsConfigMap[0:len((*c.CallOptions).DeleteUserWorkloadsConfigMap):len((*c.CallOptions).DeleteUserWorkloadsConfigMap)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.environmentsClient.DeleteUserWorkloadsConfigMap(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.environmentsClient.DeleteUserWorkloadsConfigMap, req, settings.GRPC, c.logger, "DeleteUserWorkloadsConfigMap")
 		return err
 	}, opts...)
 	return err
@@ -1116,7 +1121,7 @@ func (c *environmentsGRPCClient) SaveSnapshot(ctx context.Context, req *servicep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.SaveSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.SaveSnapshot, req, settings.GRPC, c.logger, "SaveSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1136,7 +1141,7 @@ func (c *environmentsGRPCClient) LoadSnapshot(ctx context.Context, req *servicep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.LoadSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.LoadSnapshot, req, settings.GRPC, c.logger, "LoadSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1156,7 +1161,7 @@ func (c *environmentsGRPCClient) DatabaseFailover(ctx context.Context, req *serv
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.DatabaseFailover(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.DatabaseFailover, req, settings.GRPC, c.logger, "DatabaseFailover")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1176,7 +1181,7 @@ func (c *environmentsGRPCClient) FetchDatabaseProperties(ctx context.Context, re
 	var resp *servicepb.FetchDatabasePropertiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.environmentsClient.FetchDatabaseProperties(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.environmentsClient.FetchDatabaseProperties, req, settings.GRPC, c.logger, "FetchDatabaseProperties")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1193,7 +1198,7 @@ func (c *environmentsGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1208,7 +1213,7 @@ func (c *environmentsGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1237,7 +1242,7 @@ func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1302,21 +1307,10 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *ser
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEnvironment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1367,17 +1361,7 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *servic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEnvironment")
 		if err != nil {
 			return err
 		}
@@ -1439,21 +1423,10 @@ func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *serv
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEnvironments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1529,21 +1502,10 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEnvironment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1593,21 +1555,10 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *ser
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEnvironment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1664,17 +1615,7 @@ func (c *environmentsRESTClient) ExecuteAirflowCommand(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteAirflowCommand")
 		if err != nil {
 			return err
 		}
@@ -1730,17 +1671,7 @@ func (c *environmentsRESTClient) StopAirflowCommand(ctx context.Context, req *se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StopAirflowCommand")
 		if err != nil {
 			return err
 		}
@@ -1796,17 +1727,7 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PollAirflowCommand")
 		if err != nil {
 			return err
 		}
@@ -1827,7 +1748,7 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 // runs a single Composer component.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-2..-airflow-..* and newer.
 func (c *environmentsRESTClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
 	it := &ListWorkloadsResponse_ComposerWorkloadIterator{}
 	req = proto.Clone(req).(*servicepb.ListWorkloadsRequest)
@@ -1875,21 +1796,10 @@ func (c *environmentsRESTClient) ListWorkloads(ctx context.Context, req *service
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkloads")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1959,21 +1869,10 @@ func (c *environmentsRESTClient) CheckUpgrade(ctx context.Context, req *servicep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CheckUpgrade")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1994,7 +1893,7 @@ func (c *environmentsRESTClient) CheckUpgrade(ctx context.Context, req *servicep
 // CreateUserWorkloadsSecret creates a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, req *servicepb.CreateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetUserWorkloadsSecret()
@@ -2034,17 +1933,7 @@ func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateUserWorkloadsSecret")
 		if err != nil {
 			return err
 		}
@@ -2065,7 +1954,7 @@ func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, 
 // Values of the “data” field in the response are cleared.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req *servicepb.GetUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2098,17 +1987,7 @@ func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUserWorkloadsSecret")
 		if err != nil {
 			return err
 		}
@@ -2128,7 +2007,7 @@ func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req
 // ListUserWorkloadsSecrets lists user workloads Secrets.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) ListUserWorkloadsSecrets(ctx context.Context, req *servicepb.ListUserWorkloadsSecretsRequest, opts ...gax.CallOption) *UserWorkloadsSecretIterator {
 	it := &UserWorkloadsSecretIterator{}
 	req = proto.Clone(req).(*servicepb.ListUserWorkloadsSecretsRequest)
@@ -2173,21 +2052,10 @@ func (c *environmentsRESTClient) ListUserWorkloadsSecrets(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUserWorkloadsSecrets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2220,7 +2088,7 @@ func (c *environmentsRESTClient) ListUserWorkloadsSecrets(ctx context.Context, r
 // UpdateUserWorkloadsSecret updates a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) UpdateUserWorkloadsSecret(ctx context.Context, req *servicepb.UpdateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetUserWorkloadsSecret()
@@ -2260,17 +2128,7 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsSecret(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateUserWorkloadsSecret")
 		if err != nil {
 			return err
 		}
@@ -2290,7 +2148,7 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsSecret(ctx context.Context, 
 // DeleteUserWorkloadsSecret deletes a user workloads Secret.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) DeleteUserWorkloadsSecret(ctx context.Context, req *servicepb.DeleteUserWorkloadsSecretRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2320,22 +2178,15 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsSecret(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteUserWorkloadsSecret")
+		return err
 	}, opts...)
 }
 
 // CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.CreateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetUserWorkloadsConfigMap()
@@ -2375,17 +2226,7 @@ func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateUserWorkloadsConfigMap")
 		if err != nil {
 			return err
 		}
@@ -2405,7 +2246,7 @@ func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 // GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, req *servicepb.GetUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2438,17 +2279,7 @@ func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUserWorkloadsConfigMap")
 		if err != nil {
 			return err
 		}
@@ -2468,7 +2299,7 @@ func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 // ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) ListUserWorkloadsConfigMaps(ctx context.Context, req *servicepb.ListUserWorkloadsConfigMapsRequest, opts ...gax.CallOption) *UserWorkloadsConfigMapIterator {
 	it := &UserWorkloadsConfigMapIterator{}
 	req = proto.Clone(req).(*servicepb.ListUserWorkloadsConfigMapsRequest)
@@ -2513,21 +2344,10 @@ func (c *environmentsRESTClient) ListUserWorkloadsConfigMaps(ctx context.Context
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUserWorkloadsConfigMaps")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2560,7 +2380,7 @@ func (c *environmentsRESTClient) ListUserWorkloadsConfigMaps(ctx context.Context
 // UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) UpdateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.UpdateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetUserWorkloadsConfigMap()
@@ -2600,17 +2420,7 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsConfigMap(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateUserWorkloadsConfigMap")
 		if err != nil {
 			return err
 		}
@@ -2630,7 +2440,7 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsConfigMap(ctx context.Contex
 // DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) DeleteUserWorkloadsConfigMap(ctx context.Context, req *servicepb.DeleteUserWorkloadsConfigMapRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2660,15 +2470,8 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsConfigMap(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteUserWorkloadsConfigMap")
+		return err
 	}, opts...)
 }
 
@@ -2713,21 +2516,10 @@ func (c *environmentsRESTClient) SaveSnapshot(ctx context.Context, req *servicep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SaveSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2786,21 +2578,10 @@ func (c *environmentsRESTClient) LoadSnapshot(ctx context.Context, req *servicep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LoadSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2856,21 +2637,10 @@ func (c *environmentsRESTClient) DatabaseFailover(ctx context.Context, req *serv
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DatabaseFailover")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2921,17 +2691,7 @@ func (c *environmentsRESTClient) FetchDatabaseProperties(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchDatabaseProperties")
 		if err != nil {
 			return err
 		}
@@ -2978,15 +2738,8 @@ func (c *environmentsRESTClient) DeleteOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -3023,17 +2776,7 @@ func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3098,21 +2841,10 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
