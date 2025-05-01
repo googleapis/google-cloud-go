@@ -51,6 +51,14 @@ type CallOptions struct {
 	UpdateInstance          []gax.CallOption
 	DeleteInstance          []gax.CallOption
 	GetCertificateAuthority []gax.CallOption
+	RescheduleMaintenance   []gax.CallOption
+	ListBackupCollections   []gax.CallOption
+	GetBackupCollection     []gax.CallOption
+	ListBackups             []gax.CallOption
+	GetBackup               []gax.CallOption
+	DeleteBackup            []gax.CallOption
+	ExportBackup            []gax.CallOption
+	BackupInstance          []gax.CallOption
 	GetLocation             []gax.CallOption
 	ListLocations           []gax.CallOption
 	CancelOperation         []gax.CallOption
@@ -103,12 +111,20 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		RescheduleMaintenance: []gax.CallOption{},
+		ListBackupCollections: []gax.CallOption{},
+		GetBackupCollection:   []gax.CallOption{},
+		ListBackups:           []gax.CallOption{},
+		GetBackup:             []gax.CallOption{},
+		DeleteBackup:          []gax.CallOption{},
+		ExportBackup:          []gax.CallOption{},
+		BackupInstance:        []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
 	}
 }
 
@@ -126,6 +142,18 @@ type internalClient interface {
 	DeleteInstance(context.Context, *memorystorepb.DeleteInstanceRequest, ...gax.CallOption) (*DeleteInstanceOperation, error)
 	DeleteInstanceOperation(name string) *DeleteInstanceOperation
 	GetCertificateAuthority(context.Context, *memorystorepb.GetCertificateAuthorityRequest, ...gax.CallOption) (*memorystorepb.CertificateAuthority, error)
+	RescheduleMaintenance(context.Context, *memorystorepb.RescheduleMaintenanceRequest, ...gax.CallOption) (*RescheduleMaintenanceOperation, error)
+	RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation
+	ListBackupCollections(context.Context, *memorystorepb.ListBackupCollectionsRequest, ...gax.CallOption) *BackupCollectionIterator
+	GetBackupCollection(context.Context, *memorystorepb.GetBackupCollectionRequest, ...gax.CallOption) (*memorystorepb.BackupCollection, error)
+	ListBackups(context.Context, *memorystorepb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
+	GetBackup(context.Context, *memorystorepb.GetBackupRequest, ...gax.CallOption) (*memorystorepb.Backup, error)
+	DeleteBackup(context.Context, *memorystorepb.DeleteBackupRequest, ...gax.CallOption) (*DeleteBackupOperation, error)
+	DeleteBackupOperation(name string) *DeleteBackupOperation
+	ExportBackup(context.Context, *memorystorepb.ExportBackupRequest, ...gax.CallOption) (*ExportBackupOperation, error)
+	ExportBackupOperation(name string) *ExportBackupOperation
+	BackupInstance(context.Context, *memorystorepb.BackupInstanceRequest, ...gax.CallOption) (*BackupInstanceOperation, error)
+	BackupInstanceOperation(name string) *BackupInstanceOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -220,6 +248,85 @@ func (c *Client) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 // GetCertificateAuthority gets details about the certificate authority for an Instance.
 func (c *Client) GetCertificateAuthority(ctx context.Context, req *memorystorepb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*memorystorepb.CertificateAuthority, error) {
 	return c.internalClient.GetCertificateAuthority(ctx, req, opts...)
+}
+
+// RescheduleMaintenance reschedules upcoming maintenance event.
+func (c *Client) RescheduleMaintenance(ctx context.Context, req *memorystorepb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
+	return c.internalClient.RescheduleMaintenance(ctx, req, opts...)
+}
+
+// RescheduleMaintenanceOperation returns a new RescheduleMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleMaintenanceOperation, possibly from a different process.
+func (c *Client) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
+	return c.internalClient.RescheduleMaintenanceOperation(name)
+}
+
+// ListBackupCollections lists all backup collections owned by a consumer project in either the
+// specified location (region) or all locations.
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *Client) ListBackupCollections(ctx context.Context, req *memorystorepb.ListBackupCollectionsRequest, opts ...gax.CallOption) *BackupCollectionIterator {
+	return c.internalClient.ListBackupCollections(ctx, req, opts...)
+}
+
+// GetBackupCollection get a backup collection.
+func (c *Client) GetBackupCollection(ctx context.Context, req *memorystorepb.GetBackupCollectionRequest, opts ...gax.CallOption) (*memorystorepb.BackupCollection, error) {
+	return c.internalClient.GetBackupCollection(ctx, req, opts...)
+}
+
+// ListBackups lists all backups owned by a backup collection.
+func (c *Client) ListBackups(ctx context.Context, req *memorystorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	return c.internalClient.ListBackups(ctx, req, opts...)
+}
+
+// GetBackup gets the details of a specific backup.
+func (c *Client) GetBackup(ctx context.Context, req *memorystorepb.GetBackupRequest, opts ...gax.CallOption) (*memorystorepb.Backup, error) {
+	return c.internalClient.GetBackup(ctx, req, opts...)
+}
+
+// DeleteBackup deletes a specific backup.
+func (c *Client) DeleteBackup(ctx context.Context, req *memorystorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	return c.internalClient.DeleteBackup(ctx, req, opts...)
+}
+
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *Client) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	return c.internalClient.DeleteBackupOperation(name)
+}
+
+// ExportBackup exports a specific backup to a customer target Cloud Storage URI.
+func (c *Client) ExportBackup(ctx context.Context, req *memorystorepb.ExportBackupRequest, opts ...gax.CallOption) (*ExportBackupOperation, error) {
+	return c.internalClient.ExportBackup(ctx, req, opts...)
+}
+
+// ExportBackupOperation returns a new ExportBackupOperation from a given name.
+// The name must be that of a previously created ExportBackupOperation, possibly from a different process.
+func (c *Client) ExportBackupOperation(name string) *ExportBackupOperation {
+	return c.internalClient.ExportBackupOperation(name)
+}
+
+// BackupInstance backup Instance.
+// If this is the first time a backup is being created, a backup collection
+// will be created at the backend, and this backup belongs to this collection.
+// Both collection and backup will have a resource name. Backup will be
+// executed for each shard. A replica (primary if nonHA) will be selected to
+// perform the execution. Backup call will be rejected if there is an ongoing
+// backup or update operation. Be aware that during preview, if the instance’s
+// internal software version is too old, critical update will be performed
+// before actual backup. Once the internal software version is updated to the
+// minimum version required by the backup feature, subsequent backups will not
+// require critical update. After preview, there will be no critical update
+// needed for backup.
+func (c *Client) BackupInstance(ctx context.Context, req *memorystorepb.BackupInstanceRequest, opts ...gax.CallOption) (*BackupInstanceOperation, error) {
+	return c.internalClient.BackupInstance(ctx, req, opts...)
+}
+
+// BackupInstanceOperation returns a new BackupInstanceOperation from a given name.
+// The name must be that of a previously created BackupInstanceOperation, possibly from a different process.
+func (c *Client) BackupInstanceOperation(name string) *BackupInstanceOperation {
+	return c.internalClient.BackupInstanceOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -718,6 +825,510 @@ func (c *restClient) GetCertificateAuthority(ctx context.Context, req *memorysto
 	return resp, nil
 }
 
+// RescheduleMaintenance reschedules upcoming maintenance event.
+func (c *restClient) RescheduleMaintenance(ctx context.Context, req *memorystorepb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:rescheduleMaintenance", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RescheduleMaintenance")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RescheduleMaintenanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListBackupCollections lists all backup collections owned by a consumer project in either the
+// specified location (region) or all locations.
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *restClient) ListBackupCollections(ctx context.Context, req *memorystorepb.ListBackupCollectionsRequest, opts ...gax.CallOption) *BackupCollectionIterator {
+	it := &BackupCollectionIterator{}
+	req = proto.Clone(req).(*memorystorepb.ListBackupCollectionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.BackupCollection, string, error) {
+		resp := &memorystorepb.ListBackupCollectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupCollections", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupCollections")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupCollections(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetBackupCollection get a backup collection.
+func (c *restClient) GetBackupCollection(ctx context.Context, req *memorystorepb.GetBackupCollectionRequest, opts ...gax.CallOption) (*memorystorepb.BackupCollection, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupCollection[0:len((*c.CallOptions).GetBackupCollection):len((*c.CallOptions).GetBackupCollection)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &memorystorepb.BackupCollection{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupCollection")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBackups lists all backups owned by a backup collection.
+func (c *restClient) ListBackups(ctx context.Context, req *memorystorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*memorystorepb.ListBackupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.Backup, string, error) {
+		resp := &memorystorepb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackups")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetBackup gets the details of a specific backup.
+func (c *restClient) GetBackup(ctx context.Context, req *memorystorepb.GetBackupRequest, opts ...gax.CallOption) (*memorystorepb.Backup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &memorystorepb.Backup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackup")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteBackup deletes a specific backup.
+func (c *restClient) DeleteBackup(ctx context.Context, req *memorystorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportBackup exports a specific backup to a customer target Cloud Storage URI.
+func (c *restClient) ExportBackup(ctx context.Context, req *memorystorepb.ExportBackupRequest, opts ...gax.CallOption) (*ExportBackupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportBackup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ExportBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// BackupInstance backup Instance.
+// If this is the first time a backup is being created, a backup collection
+// will be created at the backend, and this backup belongs to this collection.
+// Both collection and backup will have a resource name. Backup will be
+// executed for each shard. A replica (primary if nonHA) will be selected to
+// perform the execution. Backup call will be rejected if there is an ongoing
+// backup or update operation. Be aware that during preview, if the instance’s
+// internal software version is too old, critical update will be performed
+// before actual backup. Once the internal software version is updated to the
+// minimum version required by the backup feature, subsequent backups will not
+// require critical update. After preview, there will be no critical update
+// needed for backup.
+func (c *restClient) BackupInstance(ctx context.Context, req *memorystorepb.BackupInstanceRequest, opts ...gax.CallOption) (*BackupInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:backup", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BackupInstance")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BackupInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1050,6 +1661,16 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
+// BackupInstanceOperation returns a new BackupInstanceOperation from a given name.
+// The name must be that of a previously created BackupInstanceOperation, possibly from a different process.
+func (c *restClient) BackupInstanceOperation(name string) *BackupInstanceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BackupInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
@@ -1060,11 +1681,41 @@ func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 	}
 }
 
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *restClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExportBackupOperation returns a new ExportBackupOperation from a given name.
+// The name must be that of a previously created ExportBackupOperation, possibly from a different process.
+func (c *restClient) ExportBackupOperation(name string) *ExportBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ExportBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// RescheduleMaintenanceOperation returns a new RescheduleMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleMaintenanceOperation, possibly from a different process.
+func (c *restClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RescheduleMaintenanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
