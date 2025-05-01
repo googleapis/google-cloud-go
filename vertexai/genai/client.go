@@ -290,6 +290,13 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 	return gcp, nil
 }
 
+// MergedResponse returns the result of combining all the streamed responses seen so far.
+// After iteration completes, the merged response should match the response obtained without streaming
+// (that is, if [GenerativeModel.GenerateContent] were called).
+func (iter *GenerateContentResponseIterator) MergedResponse() *GenerateContentResponse {
+	return iter.merged
+}
+
 // CountTokens counts the number of tokens in the content.
 func (m *GenerativeModel) CountTokens(ctx context.Context, parts ...Part) (*CountTokensResponse, error) {
 	req := m.newCountTokensRequest(NewUserContent(parts...))
