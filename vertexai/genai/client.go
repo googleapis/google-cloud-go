@@ -17,7 +17,6 @@
 
 //go:generate protoveneer -license license.txt config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
 
-// Package genai is a client for the generative VertexAI model.
 package genai
 
 import (
