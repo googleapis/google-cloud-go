@@ -669,7 +669,8 @@ var methods = map[string][]retryFunc{
 			}
 			return nil
 		},
-		// Appendable upload using Flush() and FinalizeOnClose=false.
+		// Appendable upload using Flush(), FinalizeOnClose=false
+		// and larger chunk and object size.
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
 			b := c.Bucket(bucketName)
@@ -682,12 +683,13 @@ var methods = map[string][]retryFunc{
 			if preconditions {
 				obj = obj.If(Conditions{DoesNotExist: true})
 			}
+			contentToWrite := randomBytes9MiB
 
 			objW := obj.NewWriter(ctx)
 			objW.Append = true
-			objW.ChunkSize = MiB
+			objW.ChunkSize = 6 * MiB
 
-			if _, err := objW.Write(randomBytes3MiB); err != nil {
+			if _, err := objW.Write(contentToWrite); err != nil {
 				return fmt.Errorf("Writer.Write: %w", err)
 			}
 			if _, err := objW.Flush(); err != nil {
@@ -710,8 +712,8 @@ var methods = map[string][]retryFunc{
 				return fmt.Errorf("Reader.Read: %w", err)
 			}
 
-			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
-				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(randomBytes3MiB))
+			if d := cmp.Diff(content, contentToWrite); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(contentToWrite))
 			}
 			return nil
 		},
