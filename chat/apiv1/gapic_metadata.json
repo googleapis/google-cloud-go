@@ -15,6 +15,11 @@
                 "CompleteImportSpace"
               ]
             },
+            "CreateCustomEmoji": {
+              "methods": [
+                "CreateCustomEmoji"
+              ]
+            },
             "CreateMembership": {
               "methods": [
                 "CreateMembership"
@@ -33,6 +38,11 @@
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
+              ]
+            },
+            "DeleteCustomEmoji": {
+              "methods": [
+                "DeleteCustomEmoji"
               ]
             },
             "DeleteMembership": {
@@ -63,6 +73,11 @@
             "GetAttachment": {
               "methods": [
                 "GetAttachment"
+              ]
+            },
+            "GetCustomEmoji": {
+              "methods": [
+                "GetCustomEmoji"
               ]
             },
             "GetMembership": {
@@ -98,6 +113,11 @@
             "GetThreadReadState": {
               "methods": [
                 "GetThreadReadState"
+              ]
+            },
+            "ListCustomEmojis": {
+              "methods": [
+                "ListCustomEmojis"
               ]
             },
             "ListMemberships": {
@@ -175,6 +195,11 @@
                 "CompleteImportSpace"
               ]
             },
+            "CreateCustomEmoji": {
+              "methods": [
+                "CreateCustomEmoji"
+              ]
+            },
             "CreateMembership": {
               "methods": [
                 "CreateMembership"
@@ -193,6 +218,11 @@
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
+              ]
+            },
+            "DeleteCustomEmoji": {
+              "methods": [
+                "DeleteCustomEmoji"
               ]
             },
             "DeleteMembership": {
@@ -223,6 +253,11 @@
             "GetAttachment": {
               "methods": [
                 "GetAttachment"
+              ]
+            },
+            "GetCustomEmoji": {
+              "methods": [
+                "GetCustomEmoji"
               ]
             },
             "GetMembership": {
@@ -258,6 +293,11 @@
             "GetThreadReadState": {
               "methods": [
                 "GetThreadReadState"
+              ]
+            },
+            "ListCustomEmojis": {
+              "methods": [
+                "ListCustomEmojis"
               ]
             },
             "ListMemberships": {

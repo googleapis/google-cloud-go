@@ -175,6 +175,9 @@ func (c *JobsV1Beta3Client) Connection() *grpc.ClientConn {
 // (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
 // projects.jobs.create is not recommended, as your job will always start
 // in us-central1.
+//
+// Do not enter confidential information when you supply string values using
+// the API.
 func (c *JobsV1Beta3Client) CreateJob(ctx context.Context, req *dataflowpb.CreateJobRequest, opts ...gax.CallOption) (*dataflowpb.Job, error) {
 	return c.internalClient.CreateJob(ctx, req, opts...)
 }
@@ -207,13 +210,20 @@ func (c *JobsV1Beta3Client) UpdateJob(ctx context.Context, req *dataflowpb.Updat
 // projects.locations.jobs.list with a [regional endpoint]
 // (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). To
 // list the all jobs across all regions, use projects.jobs.aggregated. Using
-// projects.jobs.list is not recommended, as you can only get the list of
-// jobs that are running in us-central1.
+// projects.jobs.list is not recommended, because you can only get the list
+// of jobs that are running in us-central1.
+//
+// projects.locations.jobs.list and projects.jobs.list support filtering
+// the list of jobs by name. Filtering by name isn’t supported by
+// projects.jobs.aggregated.
 func (c *JobsV1Beta3Client) ListJobs(ctx context.Context, req *dataflowpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
 
 // AggregatedListJobs list the jobs of a project across all regions.
+//
+// Note: This method doesn’t support filtering the list of
+// jobs by name.
 func (c *JobsV1Beta3Client) AggregatedListJobs(ctx context.Context, req *dataflowpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	return c.internalClient.AggregatedListJobs(ctx, req, opts...)
 }
@@ -569,6 +579,9 @@ func (c *jobsV1Beta3GRPCClient) SnapshotJob(ctx context.Context, req *dataflowpb
 // (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
 // projects.jobs.create is not recommended, as your job will always start
 // in us-central1.
+//
+// Do not enter confidential information when you supply string values using
+// the API.
 func (c *jobsV1Beta3RESTClient) CreateJob(ctx context.Context, req *dataflowpb.CreateJobRequest, opts ...gax.CallOption) (*dataflowpb.Job, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetJob()
@@ -713,6 +726,13 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req != nil && req.UpdateMask != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -759,8 +779,12 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 // projects.locations.jobs.list with a [regional endpoint]
 // (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). To
 // list the all jobs across all regions, use projects.jobs.aggregated. Using
-// projects.jobs.list is not recommended, as you can only get the list of
-// jobs that are running in us-central1.
+// projects.jobs.list is not recommended, because you can only get the list
+// of jobs that are running in us-central1.
+//
+// projects.locations.jobs.list and projects.jobs.list support filtering
+// the list of jobs by name. Filtering by name isn’t supported by
+// projects.jobs.aggregated.
 func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobsRequest)
@@ -785,6 +809,9 @@ func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != 0 {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.Name != nil {
+			params.Add("name", fmt.Sprintf("%v", req.GetName()))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -845,6 +872,9 @@ func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 }
 
 // AggregatedListJobs list the jobs of a project across all regions.
+//
+// Note: This method doesn’t support filtering the list of
+// jobs by name.
 func (c *jobsV1Beta3RESTClient) AggregatedListJobs(ctx context.Context, req *dataflowpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobsRequest)
@@ -872,6 +902,9 @@ func (c *jobsV1Beta3RESTClient) AggregatedListJobs(ctx context.Context, req *dat
 		}
 		if req.GetLocation() != "" {
 			params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+		}
+		if req != nil && req.Name != nil {
+			params.Add("name", fmt.Sprintf("%v", req.GetName()))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
