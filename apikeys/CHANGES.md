@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.2.6](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.5...apikeys/v1.2.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **apikeys:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.2.5](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.4...apikeys/v1.2.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **apikeys:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.3...apikeys/v1.2.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* **apikeys:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.2...apikeys/v1.2.3) (2025-01-02)
 
 

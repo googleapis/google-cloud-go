@@ -1,5 +1,34 @@
 # Changes
 
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.6...scheduler/v1.11.7) (2025-04-15)
+
+
+### Bug Fixes
+
+* **scheduler:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.5...scheduler/v1.11.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* **scheduler:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.4...scheduler/v1.11.5) (2025-03-06)
+
+
+### Bug Fixes
+
+* **scheduler:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.3...scheduler/v1.11.4) (2025-01-30)
+
+
+### Documentation
+
+* **scheduler:** Annotate output-only fields as such ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **scheduler:** Update comments ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.2...scheduler/v1.11.3) (2025-01-02)
 
 

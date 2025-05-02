@@ -674,6 +674,7 @@ func TestNewBucket(t *testing.T) {
 			RetentionDurationSeconds: 3600,
 		},
 		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
+		Owner:                 &raw.BucketOwner{Entity: "project-owner-projectId"},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -737,6 +738,7 @@ func TestNewBucket(t *testing.T) {
 			RetentionDuration: time.Hour,
 		},
 		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
+		OwnerEntity:           "project-owner-projectId",
 	}
 	got, err := newBucket(rb)
 	if err != nil {
@@ -810,6 +812,7 @@ func TestNewBucketFromProto(t *testing.T) {
 				},
 			},
 		},
+		Owner: &storagepb.Owner{Entity: "project-owner-projectId"},
 	}
 	want := &BucketAttrs{
 		Name:             "name",
@@ -859,6 +862,7 @@ func TestNewBucketFromProto(t *testing.T) {
 				},
 			}},
 		},
+		OwnerEntity: "project-owner-projectId",
 	}
 	got := newBucketFromProto(pb)
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -1125,7 +1129,7 @@ func TestBucketRetryer(t *testing.T) {
 					Multiplier: 3,
 				},
 				policy:      RetryAlways,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: func(err error) bool { return false },
 			},
 		},
@@ -1157,7 +1161,7 @@ func TestBucketRetryer(t *testing.T) {
 				return b.Retryer(WithMaxAttempts(5))
 			},
 			want: &retryConfig{
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 			},
 		},
 		{
@@ -1664,9 +1668,10 @@ func TestDefaultSignBlobRetry(t *testing.T) {
 	b := client.Bucket("fakebucket")
 
 	if _, err := b.SignedURL("fakeobj", &SignedURLOptions{
-		Method:    "GET",
-		Expires:   time.Now().Add(time.Hour),
-		SignBytes: b.defaultSignBytesFunc("example@example.com"),
+		Method:         "GET",
+		Expires:        time.Now().Add(time.Hour),
+		SignBytes:      b.defaultSignBytesFunc("example@example.com"),
+		GoogleAccessID: "example@example.com",
 	}); err != nil {
 		t.Fatalf("BucketHandle.SignedURL: %v", err)
 	}

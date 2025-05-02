@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -657,7 +657,7 @@ type Job struct {
 	// Set the launch stage to a preview stage on input to allow use of preview
 	// features in that stage. On read (or output), describes whether the resource
 	// uses preview features.
-	// <p>
+	//
 	// For example, if ALPHA is provided as input, but only BETA and GA-level
 	// features are used, this field will be BETA on output.
 	LaunchStage api.LaunchStage `protobuf:"varint,14,opt,name=launch_stage,json=launchStage,proto3,enum=google.api.LaunchStage" json:"launch_stage,omitempty"`

@@ -45,7 +45,7 @@ const (
 	// This is the default Go version that will be generated into new go.mod
 	// files. It should be updated every time we drop support for old Go
 	// versions.
-	defaultGoModuleVersion = "1.22.7"
+	defaultGoModuleVersion = "1.23.0"
 )
 
 var (
@@ -300,7 +300,7 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 func (p *postProcessor) generateVersionFile(moduleName, path string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(path, "debugger/apiv2") || strings.Contains(path, "orgpolicy/apiv1") {
+	if strings.Contains(path, "orgpolicy/apiv1") {
 		return nil
 	}
 	log.Println("generating version.go file in", path)
@@ -381,10 +381,6 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 		}
 		// Skip if dirs option set and this module is not included.
 		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
-			continue
-		}
-		// debugger/apiv2 is not in a module so it does not have version info to read.
-		if strings.Contains(clientRelPath, "debugger/apiv2") {
 			continue
 		}
 		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)

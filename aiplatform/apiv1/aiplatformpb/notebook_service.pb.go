@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -286,6 +286,8 @@ type ListNotebookRuntimeTemplatesRequest struct {
 	//   - A key including a space must be quoted. `labels."a key"`.
 	//   - `notebookRuntimeType` supports = and !=. notebookRuntimeType enum:
 	//     [USER_DEFINED, ONE_CLICK].
+	//   - `machineType` supports = and !=.
+	//   - `acceleratorType` supports = and !=.
 	//
 	// Some examples:
 	//
@@ -293,6 +295,8 @@ type ListNotebookRuntimeTemplatesRequest struct {
 	//   - `displayName="myDisplayName"`
 	//   - `labels.myKey="myValue"`
 	//   - `notebookRuntimeType=USER_DEFINED`
+	//   - `machineType=e2-standard-4`
+	//   - `acceleratorType=NVIDIA_TESLA_T4`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -782,6 +786,8 @@ type ListNotebookRuntimesRequest struct {
 	//     UI_RESOURCE_STATE_CREATION_FAILED].
 	//   - `notebookRuntimeType` supports = and !=. notebookRuntimeType enum:
 	//     [USER_DEFINED, ONE_CLICK].
+	//   - `machineType` supports = and !=.
+	//   - `acceleratorType` supports = and !=.
 	//
 	// Some examples:
 	//
@@ -793,6 +799,8 @@ type ListNotebookRuntimesRequest struct {
 	//   - `runtimeUser="test@google.com"`
 	//   - `uiState=UI_RESOURCE_STATE_BEING_DELETED`
 	//   - `notebookRuntimeType=USER_DEFINED`
+	//   - `machineType=e2-standard-4`
+	//   - `acceleratorType=NVIDIA_TESLA_T4`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`

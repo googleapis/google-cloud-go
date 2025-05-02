@@ -152,6 +152,10 @@ type TableMetadata struct {
 	// Present only if the table has primary or foreign keys.
 	TableConstraints *TableConstraints
 
+	// MaxStaleness staleness of data that could be
+	// returned when the table (or stale MV) is queried.
+	MaxStaleness *IntervalValue
+
 	// The tags associated with this table. Tag
 	// keys are globally unique. See additional information on tags
 	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
@@ -160,6 +164,9 @@ type TableMetadata struct {
 	// where 12345 is parent id. The value is the friendly short name of the
 	// tag value, e.g. "production".
 	ResourceTags map[string]string
+
+	// Specifies the configuration of a BigQuery table for Apache Iceberg (formerly BigLake Managed Table).
+	BigLakeConfiguration *BigLakeConfiguration
 }
 
 // TableConstraints defines the primary key and foreign key of a table.
@@ -281,9 +288,13 @@ const (
 	// Data is appended atomically on successful completion of a job.
 	WriteAppend TableWriteDisposition = "WRITE_APPEND"
 
-	// WriteTruncate overrides the existing data in the destination table.
+	// WriteTruncate overwrites the existing data in the destination table.
 	// Data is overwritten atomically on successful completion of a job.
 	WriteTruncate TableWriteDisposition = "WRITE_TRUNCATE"
+
+	// WriteTruncateData overwrites the data, but keeps the constraints and
+	// reuses the schema for an existing table.
+	WriteTruncateData TableWriteDisposition = "WRITE_TRUNCATE_DATA"
 
 	// WriteEmpty fails writes if the destination table already contains data.
 	WriteEmpty TableWriteDisposition = "WRITE_EMPTY"
@@ -333,6 +344,8 @@ type MaterializedViewDefinition struct {
 
 	// MaxStaleness of data that could be returned when materialized
 	// view is queried.
+	//
+	// Deprecated: use Table level MaxStaleness.
 	MaxStaleness *IntervalValue
 }
 
@@ -371,6 +384,71 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 		RefreshInterval:               time.Duration(q.RefreshIntervalMs) * time.Millisecond,
 		AllowNonIncrementalDefinition: q.AllowNonIncrementalDefinition,
 		MaxStaleness:                  maxStaleness,
+	}
+}
+
+// BigLakeFileFormat represents the file format for Managed Tables for Apache Iceberg.
+type BigLakeFileFormat string
+
+var (
+	// UnspecifiedBigLakeFileFormat represents the default value.
+	UnspecifiedBigLakeFileFormat BigLakeFileFormat = "FILE_FORMAT_UNSPECIFIED"
+	// ParquetBigLakeFileFormat represents Apache Parquet Format.
+	ParquetBigLakeFileFormat BigLakeFileFormat = "PARQUET"
+)
+
+// BigLakeTableFormat represents the table metadata format for Managed Tables for Apache Iceberg.
+type BigLakeTableFormat string
+
+var (
+	// UnspecifiedBigLakeTableFormat represents the default value.
+	UnspecifiedBigLakeTableFormat BigLakeTableFormat = "TABLE_FORMAT_UNSPECIFIED"
+	// IcebergBigLakeTableFormat represent Apache Iceberg Format.
+	IcebergBigLakeTableFormat BigLakeTableFormat = "ICEBERG"
+)
+
+// BigLakeConfiguration is used to configure aspects of BigQuery tables for
+// Apache Iceberg (previously known as BigLake managed tables).
+type BigLakeConfiguration struct {
+	// Optional. The connection specifying the credentials to be used to read and
+	// write to external storage, such as Cloud Storage. The connection_id can
+	// have the form `{project}.{location}.{connection_id}` or
+	// `projects/{project}/locations/{location}/connections/{connection_id}".
+	ConnectionID string
+
+	// Optional. The fully qualified location prefix of the external folder where
+	// table data is stored. The '*' wildcard character is not allowed. The URI
+	// should be in the format `gs://bucket/path_to_table/`
+	StorageURI string
+
+	// Optional. The file format the table data is stored in.
+	FileFormat BigLakeFileFormat
+
+	// Optional. The table format the metadata only snapshots are stored in.
+	TableFormat BigLakeTableFormat
+}
+
+func (blc *BigLakeConfiguration) toBQ() *bq.BigLakeConfiguration {
+	if blc == nil {
+		return nil
+	}
+	return &bq.BigLakeConfiguration{
+		ConnectionId: blc.ConnectionID,
+		StorageUri:   blc.StorageURI,
+		FileFormat:   string(blc.FileFormat),
+		TableFormat:  string(blc.TableFormat),
+	}
+}
+
+func bqToBigLakeConfiguration(in *bq.BigLakeConfiguration) *BigLakeConfiguration {
+	if in == nil {
+		return nil
+	}
+	return &BigLakeConfiguration{
+		ConnectionID: in.ConnectionId,
+		StorageURI:   in.StorageUri,
+		FileFormat:   BigLakeFileFormat(in.FileFormat),
+		TableFormat:  BigLakeTableFormat(in.TableFormat),
 	}
 }
 
@@ -763,6 +841,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	t.RequirePartitionFilter = tm.RequirePartitionFilter
 	t.SnapshotDefinition = tm.SnapshotDefinition.toBQ()
 	t.CloneDefinition = tm.CloneDefinition.toBQ()
+	t.BiglakeConfiguration = tm.BigLakeConfiguration.toBQ()
 
 	if !validExpiration(tm.ExpirationTime) {
 		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
@@ -816,6 +895,9 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
 			}
 		}
+	}
+	if tm.MaxStaleness != nil {
+		t.MaxStaleness = tm.MaxStaleness.String()
 	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
@@ -908,6 +990,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		RequirePartitionFilter: t.RequirePartitionFilter,
 		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
 		CloneDefinition:        bqToCloneDefinition(t.CloneDefinition, c),
+		BigLakeConfiguration:   bqToBigLakeConfiguration(t.BiglakeConfiguration),
 	}
 	if t.MaterializedView != nil {
 		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
@@ -941,6 +1024,9 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 			PrimaryKey:  bqToPrimaryKey(t.TableConstraints),
 			ForeignKeys: bqToForeignKeys(t.TableConstraints, c),
 		}
+	}
+	if t.MaxStaleness != "" {
+		md.MaxStaleness, _ = ParseInterval(t.MaxStaleness)
 	}
 	if t.ResourceTags != nil {
 		md.ResourceTags = make(map[string]string)
@@ -1122,12 +1208,20 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
 		}
 	}
+	if tm.MaxStaleness != nil {
+		t.MaxStaleness = tm.MaxStaleness.String()
+		forceSend("MaxStaleness")
+	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
 		for k, v := range tm.ResourceTags {
 			t.ResourceTags[k] = v
 		}
 		forceSend("ResourceTags")
+	}
+	if tm.BigLakeConfiguration != nil {
+		t.BiglakeConfiguration = tm.BigLakeConfiguration.toBQ()
+		forceSend("BigLakeConfiguration")
 	}
 	labels, forces, nulls := tm.update()
 	t.Labels = labels
@@ -1210,6 +1304,10 @@ type TableMetadataToUpdate struct {
 	// such as primary and foreign keys.
 	TableConstraints *TableConstraints
 
+	// MaxStaleness staleness of data that could be
+	// returned when the table (or stale MV) is queried.
+	MaxStaleness *IntervalValue
+
 	// The tags associated with this table. Tag
 	// keys are globally unique. See additional information on tags
 	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
@@ -1218,6 +1316,9 @@ type TableMetadataToUpdate struct {
 	// where 12345 is parent id. The value is the friendly short name of the
 	// tag value, e.g. "production".
 	ResourceTags map[string]string
+
+	// Update the configuration of a BigQuery table for Apache Iceberg (formerly BigLake Managed Table).
+	BigLakeConfiguration *BigLakeConfiguration
 
 	labelUpdater
 }

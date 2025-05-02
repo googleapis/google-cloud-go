@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.31.1",
+    "version": "1.37.0",
     "language": "GO",
     "apis": [
       {
@@ -10316,6 +10316,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Instances_ReportHostAsFaulty_sync",
+      "title": "compute ReportHostAsFaulty Sample",
+      "description": "ReportHostAsFaulty mark the host as faulty and try to restart the instance on a new host.",
+      "file": "InstancesClient/ReportHostAsFaulty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReportHostAsFaulty",
+        "fullName": "google.cloud.compute.v1.InstancesClient.ReportHostAsFaulty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ReportHostAsFaultyInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "ReportHostAsFaulty",
+          "fullName": "google.cloud.compute.v1.Instances.ReportHostAsFaulty",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Instances_Reset_sync",
       "title": "compute Reset Sample",
       "description": "Reset performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance.",
@@ -13582,6 +13628,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_MachineImages_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a machine image. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "MachineImagesClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.MachineImagesClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsMachineImageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "MachineImagesClient",
+          "fullName": "google.cloud.compute.v1.MachineImagesClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.MachineImages.SetLabels",
+          "service": {
+            "shortName": "MachineImages",
+            "fullName": "google.cloud.compute.v1.MachineImages"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_MachineImages_TestIamPermissions_sync",
       "title": "compute TestIamPermissions Sample",
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
@@ -14870,6 +14962,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_AddPacketMirroringRule_sync",
+      "title": "compute AddPacketMirroringRule Sample",
+      "description": "AddPacketMirroringRule inserts a packet mirroring rule into a firewall policy.",
+      "file": "NetworkFirewallPoliciesClient/AddPacketMirroringRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddPacketMirroringRule",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.AddPacketMirroringRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddPacketMirroringRuleNetworkFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "AddPacketMirroringRule",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.AddPacketMirroringRule",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NetworkFirewallPolicies_AddRule_sync",
       "title": "compute AddRule Sample",
       "description": "AddRule inserts a rule into a firewall policy.",
@@ -15192,6 +15330,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_GetPacketMirroringRule_sync",
+      "title": "compute GetPacketMirroringRule Sample",
+      "description": "GetPacketMirroringRule gets a packet mirroring rule of the specified priority.",
+      "file": "NetworkFirewallPoliciesClient/GetPacketMirroringRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPacketMirroringRule",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.GetPacketMirroringRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetPacketMirroringRuleNetworkFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.FirewallPolicyRule",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "GetPacketMirroringRule",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.GetPacketMirroringRule",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NetworkFirewallPolicies_GetRule_sync",
       "title": "compute GetRule Sample",
       "description": "GetRule gets a rule of the specified priority.",
@@ -15376,6 +15560,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_PatchPacketMirroringRule_sync",
+      "title": "compute PatchPacketMirroringRule Sample",
+      "description": "PatchPacketMirroringRule patches a packet mirroring rule of the specified priority.",
+      "file": "NetworkFirewallPoliciesClient/PatchPacketMirroringRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchPacketMirroringRule",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.PatchPacketMirroringRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchPacketMirroringRuleNetworkFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "PatchPacketMirroringRule",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.PatchPacketMirroringRule",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NetworkFirewallPolicies_PatchRule_sync",
       "title": "compute PatchRule Sample",
       "description": "PatchRule patches a rule of the specified priority.",
@@ -15452,6 +15682,52 @@
         "method": {
           "shortName": "RemoveAssociation",
           "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.RemoveAssociation",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_RemovePacketMirroringRule_sync",
+      "title": "compute RemovePacketMirroringRule Sample",
+      "description": "RemovePacketMirroringRule deletes a packet mirroring rule of the specified priority.",
+      "file": "NetworkFirewallPoliciesClient/RemovePacketMirroringRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemovePacketMirroringRule",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.RemovePacketMirroringRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RemovePacketMirroringRuleNetworkFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "RemovePacketMirroringRule",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.RemovePacketMirroringRule",
           "service": {
             "shortName": "NetworkFirewallPolicies",
             "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
@@ -20070,7 +20346,7 @@
     {
       "regionTag": "compute_v1_generated_RegionCommitments_Update_sync",
       "title": "compute Update Sample",
-      "description": "Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.",
+      "description": "Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.",
       "file": "RegionCommitmentsClient/Update/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26922,6 +27198,144 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_ReservationBlocks_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get retrieves information about the specified reservation block.",
+      "file": "ReservationBlocksClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.ReservationBlocksClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetReservationBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.ReservationBlocksGetResponse",
+        "client": {
+          "shortName": "ReservationBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationBlocksClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.ReservationBlocks.Get",
+          "service": {
+            "shortName": "ReservationBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationBlocks_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of reservation blocks under a single reservation.",
+      "file": "ReservationBlocksClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.ReservationBlocksClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListReservationBlocksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReservationBlockIterator",
+        "client": {
+          "shortName": "ReservationBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationBlocksClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.ReservationBlocks.List",
+          "service": {
+            "shortName": "ReservationBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationBlocks_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance allows customers to perform maintenance on a reservation block",
+      "file": "ReservationBlocksClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.ReservationBlocksClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceReservationBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationBlocksClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.ReservationBlocks.PerformMaintenance",
+          "service": {
+            "shortName": "ReservationBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Reservations_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
@@ -27193,6 +27607,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Reservations_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance perform maintenance on an extended reservation",
+      "file": "ReservationsClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.ReservationsClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceReservationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationsClient",
+          "fullName": "google.cloud.compute.v1.ReservationsClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.Reservations.PerformMaintenance",
+          "service": {
+            "shortName": "Reservations",
+            "fullName": "google.cloud.compute.v1.Reservations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -27888,6 +28348,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Routers_DeleteRoutePolicy_sync",
+      "title": "compute DeleteRoutePolicy Sample",
+      "description": "DeleteRoutePolicy deletes Route Policy",
+      "file": "RoutersClient/DeleteRoutePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRoutePolicy",
+        "fullName": "google.cloud.compute.v1.RoutersClient.DeleteRoutePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRoutePolicyRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "DeleteRoutePolicy",
+          "fullName": "google.cloud.compute.v1.Routers.DeleteRoutePolicy",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Routers_Get_sync",
       "title": "compute Get Sample",
       "description": "Get returns the specified Router resource.",
@@ -28021,6 +28527,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Routers_GetRoutePolicy_sync",
+      "title": "compute GetRoutePolicy Sample",
+      "description": "GetRoutePolicy returns specified Route Policy",
+      "file": "RoutersClient/GetRoutePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRoutePolicy",
+        "fullName": "google.cloud.compute.v1.RoutersClient.GetRoutePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRoutePolicyRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.RoutersGetRoutePolicyResponse",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "GetRoutePolicy",
+          "fullName": "google.cloud.compute.v1.Routers.GetRoutePolicy",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -28164,6 +28716,98 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Routers_ListBgpRoutes_sync",
+      "title": "compute ListBgpRoutes Sample",
+      "description": "ListBgpRoutes retrieves a list of router bgp routes available to the specified project.",
+      "file": "RoutersClient/ListBgpRoutes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBgpRoutes",
+        "fullName": "google.cloud.compute.v1.RoutersClient.ListBgpRoutes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListBgpRoutesRoutersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BgpRouteIterator",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "ListBgpRoutes",
+          "fullName": "google.cloud.compute.v1.Routers.ListBgpRoutes",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Routers_ListRoutePolicies_sync",
+      "title": "compute ListRoutePolicies Sample",
+      "description": "ListRoutePolicies retrieves a list of router route policy subresources available to the specified project.",
+      "file": "RoutersClient/ListRoutePolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRoutePolicies",
+        "fullName": "google.cloud.compute.v1.RoutersClient.ListRoutePolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRoutePoliciesRoutersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RoutePolicyIterator",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "ListRoutePolicies",
+          "fullName": "google.cloud.compute.v1.Routers.ListRoutePolicies",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Routers_Patch_sync",
       "title": "compute Patch Sample",
       "description": "Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.",
@@ -28194,6 +28838,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.Routers.Patch",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Routers_PatchRoutePolicy_sync",
+      "title": "compute PatchRoutePolicy Sample",
+      "description": "PatchRoutePolicy patches Route Policy",
+      "file": "RoutersClient/PatchRoutePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchRoutePolicy",
+        "fullName": "google.cloud.compute.v1.RoutersClient.PatchRoutePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRoutePolicyRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "PatchRoutePolicy",
+          "fullName": "google.cloud.compute.v1.Routers.PatchRoutePolicy",
           "service": {
             "shortName": "Routers",
             "fullName": "google.cloud.compute.v1.Routers"
@@ -28286,6 +28976,52 @@
         "method": {
           "shortName": "Update",
           "fullName": "google.cloud.compute.v1.Routers.Update",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Routers_UpdateRoutePolicy_sync",
+      "title": "compute UpdateRoutePolicy Sample",
+      "description": "UpdateRoutePolicy updates or creates new Route Policy",
+      "file": "RoutersClient/UpdateRoutePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRoutePolicy",
+        "fullName": "google.cloud.compute.v1.RoutersClient.UpdateRoutePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateRoutePolicyRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "UpdateRoutePolicy",
+          "fullName": "google.cloud.compute.v1.Routers.UpdateRoutePolicy",
           "service": {
             "shortName": "Routers",
             "fullName": "google.cloud.compute.v1.Routers"

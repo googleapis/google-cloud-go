@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkebackup/apiv1",
-    "version": "1.6.3",
+    "version": "1.7.0",
     "language": "GO",
     "apis": [
       {
@@ -87,6 +87,52 @@
         "method": {
           "shortName": "CreateBackup",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKE.CreateBackup",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_CreateBackupChannel_sync",
+      "title": "gkebackup CreateBackupChannel Sample",
+      "description": "CreateBackupChannel creates a new BackupChannel in a given location.",
+      "file": "BackupForGKEClient/CreateBackupChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackupChannel",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.CreateBackupChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.CreateBackupChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBackupChannelOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "CreateBackupChannel",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.CreateBackupChannel",
           "service": {
             "shortName": "BackupForGKE",
             "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
@@ -195,6 +241,52 @@
       ]
     },
     {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_CreateRestoreChannel_sync",
+      "title": "gkebackup CreateRestoreChannel Sample",
+      "description": "CreateRestoreChannel creates a new RestoreChannel in a given location.",
+      "file": "BackupForGKEClient/CreateRestoreChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRestoreChannel",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.CreateRestoreChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.CreateRestoreChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRestoreChannelOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "CreateRestoreChannel",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.CreateRestoreChannel",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkebackup_v1_generated_BackupForGKE_CreateRestorePlan_sync",
       "title": "gkebackup CreateRestorePlan Sample",
       "description": "CreateRestorePlan creates a new RestorePlan in a given location.",
@@ -271,6 +363,52 @@
         "method": {
           "shortName": "DeleteBackup",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKE.DeleteBackup",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_DeleteBackupChannel_sync",
+      "title": "gkebackup DeleteBackupChannel Sample",
+      "description": "DeleteBackupChannel deletes an existing BackupChannel.",
+      "file": "BackupForGKEClient/DeleteBackupChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackupChannel",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.DeleteBackupChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.DeleteBackupChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBackupChannelOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "DeleteBackupChannel",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.DeleteBackupChannel",
           "service": {
             "shortName": "BackupForGKE",
             "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
@@ -424,6 +562,52 @@
       ]
     },
     {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_DeleteRestoreChannel_sync",
+      "title": "gkebackup DeleteRestoreChannel Sample",
+      "description": "DeleteRestoreChannel deletes an existing RestoreChannel.",
+      "file": "BackupForGKEClient/DeleteRestoreChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRestoreChannel",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.DeleteRestoreChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.DeleteRestoreChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRestoreChannelOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "DeleteRestoreChannel",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.DeleteRestoreChannel",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkebackup_v1_generated_BackupForGKE_DeleteRestorePlan_sync",
       "title": "gkebackup DeleteRestorePlan Sample",
       "description": "DeleteRestorePlan deletes an existing RestorePlan.",
@@ -516,6 +700,52 @@
       ]
     },
     {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetBackupChannel_sync",
+      "title": "gkebackup GetBackupChannel Sample",
+      "description": "GetBackupChannel retrieve the details of a single BackupChannel.",
+      "file": "BackupForGKEClient/GetBackupChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupChannel",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetBackupChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetBackupChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkebackuppb.BackupChannel",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetBackupChannel",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetBackupChannel",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkebackup_v1_generated_BackupForGKE_GetBackupIndexDownloadUrl_sync",
       "title": "gkebackup GetBackupIndexDownloadUrl Sample",
       "description": "GetBackupIndexDownloadUrl retrieve the link to the backupIndex.",
@@ -592,6 +822,52 @@
         "method": {
           "shortName": "GetBackupPlan",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetBackupPlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetBackupPlanBinding_sync",
+      "title": "gkebackup GetBackupPlanBinding Sample",
+      "description": "GetBackupPlanBinding retrieve the details of a single BackupPlanBinding.",
+      "file": "BackupForGKEClient/GetBackupPlanBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupPlanBinding",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetBackupPlanBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetBackupPlanBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkebackuppb.BackupPlanBinding",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetBackupPlanBinding",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetBackupPlanBinding",
           "service": {
             "shortName": "BackupForGKE",
             "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
@@ -792,6 +1068,52 @@
       ]
     },
     {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetRestoreChannel_sync",
+      "title": "gkebackup GetRestoreChannel Sample",
+      "description": "GetRestoreChannel retrieve the details of a single RestoreChannel.",
+      "file": "BackupForGKEClient/GetRestoreChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRestoreChannel",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetRestoreChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetRestoreChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkebackuppb.RestoreChannel",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetRestoreChannel",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetRestoreChannel",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkebackup_v1_generated_BackupForGKE_GetRestorePlan_sync",
       "title": "gkebackup GetRestorePlan Sample",
       "description": "GetRestorePlan retrieve the details of a single RestorePlan.",
@@ -822,6 +1144,52 @@
         "method": {
           "shortName": "GetRestorePlan",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetRestorePlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetRestorePlanBinding_sync",
+      "title": "gkebackup GetRestorePlanBinding Sample",
+      "description": "GetRestorePlanBinding retrieve the details of a single RestorePlanBinding.",
+      "file": "BackupForGKEClient/GetRestorePlanBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRestorePlanBinding",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetRestorePlanBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetRestorePlanBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkebackuppb.RestorePlanBinding",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetRestorePlanBinding",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetRestorePlanBinding",
           "service": {
             "shortName": "BackupForGKE",
             "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
@@ -925,6 +1293,98 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListBackupChannels_sync",
+      "title": "gkebackup ListBackupChannels Sample",
+      "description": "ListBackupChannels lists BackupChannels in a given location.",
+      "file": "BackupForGKEClient/ListBackupChannels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackupChannels",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListBackupChannels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListBackupChannelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupChannelIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListBackupChannels",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListBackupChannels",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListBackupPlanBindings_sync",
+      "title": "gkebackup ListBackupPlanBindings Sample",
+      "description": "ListBackupPlanBindings lists BackupPlanBindings in a given location.",
+      "file": "BackupForGKEClient/ListBackupPlanBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackupPlanBindings",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListBackupPlanBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListBackupPlanBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupPlanBindingIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListBackupPlanBindings",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListBackupPlanBindings",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1101,6 +1561,98 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListRestoreChannels_sync",
+      "title": "gkebackup ListRestoreChannels Sample",
+      "description": "ListRestoreChannels lists RestoreChannels in a given location.",
+      "file": "BackupForGKEClient/ListRestoreChannels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRestoreChannels",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListRestoreChannels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListRestoreChannelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreChannelIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListRestoreChannels",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListRestoreChannels",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListRestorePlanBindings_sync",
+      "title": "gkebackup ListRestorePlanBindings Sample",
+      "description": "ListRestorePlanBindings lists RestorePlanBindings in a given location.",
+      "file": "BackupForGKEClient/ListRestorePlanBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRestorePlanBindings",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListRestorePlanBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListRestorePlanBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestorePlanBindingIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListRestorePlanBindings",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListRestorePlanBindings",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
           }
         }
       },
@@ -1436,6 +1988,52 @@
       ]
     },
     {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_UpdateBackupChannel_sync",
+      "title": "gkebackup UpdateBackupChannel Sample",
+      "description": "UpdateBackupChannel update a BackupChannel.",
+      "file": "BackupForGKEClient/UpdateBackupChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackupChannel",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.UpdateBackupChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.UpdateBackupChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBackupChannelOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "UpdateBackupChannel",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.UpdateBackupChannel",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkebackup_v1_generated_BackupForGKE_UpdateBackupPlan_sync",
       "title": "gkebackup UpdateBackupPlan Sample",
       "description": "UpdateBackupPlan update a BackupPlan.",
@@ -1512,6 +2110,52 @@
         "method": {
           "shortName": "UpdateRestore",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKE.UpdateRestore",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_UpdateRestoreChannel_sync",
+      "title": "gkebackup UpdateRestoreChannel Sample",
+      "description": "UpdateRestoreChannel update a RestoreChannel.",
+      "file": "BackupForGKEClient/UpdateRestoreChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRestoreChannel",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.UpdateRestoreChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.UpdateRestoreChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateRestoreChannelOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "UpdateRestoreChannel",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.UpdateRestoreChannel",
           "service": {
             "shortName": "BackupForGKE",
             "fullName": "google.cloud.gkebackup.v1.BackupForGKE"

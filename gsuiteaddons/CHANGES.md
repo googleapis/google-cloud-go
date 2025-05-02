@@ -1,5 +1,33 @@
 # Changes
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.6...gsuiteaddons/v1.7.7) (2025-04-15)
+
+
+### Bug Fixes
+
+* **gsuiteaddons:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.5...gsuiteaddons/v1.7.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* **gsuiteaddons:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.7.5](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.4...gsuiteaddons/v1.7.5) (2025-03-06)
+
+
+### Bug Fixes
+
+* **gsuiteaddons:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.3...gsuiteaddons/v1.7.4) (2025-01-30)
+
+
+### Documentation
+
+* **gsuiteaddons:** Minor documentation edits ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+
 ## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.2...gsuiteaddons/v1.7.3) (2025-01-02)
 
 

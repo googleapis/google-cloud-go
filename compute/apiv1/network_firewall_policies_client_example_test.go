@@ -69,6 +69,34 @@ func ExampleNetworkFirewallPoliciesClient_AddAssociation() {
 	}
 }
 
+func ExampleNetworkFirewallPoliciesClient_AddPacketMirroringRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewNetworkFirewallPoliciesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.AddPacketMirroringRuleNetworkFirewallPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddPacketMirroringRuleNetworkFirewallPolicyRequest.
+	}
+	op, err := c.AddPacketMirroringRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleNetworkFirewallPoliciesClient_AddRule() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -265,6 +293,31 @@ func ExampleNetworkFirewallPoliciesClient_GetIamPolicy() {
 	_ = resp
 }
 
+func ExampleNetworkFirewallPoliciesClient_GetPacketMirroringRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewNetworkFirewallPoliciesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.GetPacketMirroringRuleNetworkFirewallPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetPacketMirroringRuleNetworkFirewallPolicyRequest.
+	}
+	resp, err := c.GetPacketMirroringRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleNetworkFirewallPoliciesClient_GetRule() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -383,6 +436,34 @@ func ExampleNetworkFirewallPoliciesClient_Patch() {
 	}
 }
 
+func ExampleNetworkFirewallPoliciesClient_PatchPacketMirroringRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewNetworkFirewallPoliciesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.PatchPacketMirroringRuleNetworkFirewallPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchPacketMirroringRuleNetworkFirewallPolicyRequest.
+	}
+	op, err := c.PatchPacketMirroringRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleNetworkFirewallPoliciesClient_PatchRule() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -429,6 +510,34 @@ func ExampleNetworkFirewallPoliciesClient_RemoveAssociation() {
 		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveAssociationNetworkFirewallPolicyRequest.
 	}
 	op, err := c.RemoveAssociation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleNetworkFirewallPoliciesClient_RemovePacketMirroringRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewNetworkFirewallPoliciesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.RemovePacketMirroringRuleNetworkFirewallPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemovePacketMirroringRuleNetworkFirewallPolicyRequest.
+	}
+	op, err := c.RemovePacketMirroringRule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

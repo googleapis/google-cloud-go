@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,8 +53,6 @@ type UserEvent struct {
 	//     viewed.
 	//   - `detail-page-view`: Products detail page viewed.
 	//   - `home-page-view`: Homepage viewed.
-	//   - `promotion-offered`: Promotion is offered to a user.
-	//   - `promotion-not-offered`: Promotion is not offered to a user.
 	//   - `purchase-complete`: User finishing a purchase.
 	//   - `search`: Product search.
 	//   - `shopping-cart-page-view`: User viewing a shopping cart.

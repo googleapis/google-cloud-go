@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -303,9 +303,8 @@ type DataSource_RegionalInventoryDataSource struct {
 }
 
 type DataSource_PromotionDataSource struct {
-	// The
-	// [promotion](https://support.google.com/merchants/answer/2906014) data
-	// source.
+	// The [promotion](https://support.google.com/merchants/answer/2906014)
+	// data source.
 	PromotionDataSource *PromotionDataSource `protobuf:"bytes,8,opt,name=promotion_data_source,json=promotionDataSource,proto3,oneof"`
 }
 

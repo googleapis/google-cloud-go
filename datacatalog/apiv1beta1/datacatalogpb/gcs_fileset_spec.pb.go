@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ type GcsFilesetSpec struct {
 
 	// Required. Patterns to identify a set of files in Google Cloud Storage.
 	// See [Cloud Storage
-	// documentation](https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames)
+	// documentation](https://cloud.google.com/storage/docs/wildcards)
 	// for more information. Note that bucket wildcards are currently not
 	// supported.
 	//

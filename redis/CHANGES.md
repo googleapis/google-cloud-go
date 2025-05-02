@@ -1,5 +1,54 @@
 # Changes
 
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.18.1...redis/v1.18.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **redis:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.18.0...redis/v1.18.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **redis:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.17.3...redis/v1.18.0) (2025-01-30)
+
+
+### Features
+
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for Backups and Backup Collections ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for CMEK ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for Cross Cluster Replication ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for maintenance window and rescheduling maintenance ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for Multiple VPCs ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** New REQUIRED field `service_attachment` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+
+
+### Bug Fixes
+
+* **redis/cluster:** Changed field behavior for an existing field `address` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** Changed field behavior for an existing field `forwarding_rule` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** Changed field behavior for an existing field `network` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** Changed field behavior for an existing field `psc_connection_id` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+
+
+### Documentation
+
+* **redis/cluster:** A comment for enum value `ALWAYS` in enum `AppendFsync` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for enum value `NODE_TYPE_UNSPECIFIED` in enum `NodeType` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `address` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `forwarding_rule` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `name` in message `.google.cloud.redis.cluster.v1beta1.Cluster` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `network` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `project_id` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `psc_configs` in message `.google.cloud.redis.cluster.v1beta1.Cluster` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `psc_connection_id` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `psc_connections` in message `.google.cloud.redis.cluster.v1beta1.Cluster` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `shard_count` in message `.google.cloud.redis.cluster.v1beta1.Cluster` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+
 ## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.17.2...redis/v1.17.3) (2025-01-02)
 
 

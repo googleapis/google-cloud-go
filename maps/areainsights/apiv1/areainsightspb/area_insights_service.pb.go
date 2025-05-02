@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,62 +51,84 @@ const (
 	//
 	// When this insight is specified ComputeInsights returns the number of
 	// places that match the specified filter criteria.
-	// ```
-	// For example if the request is:
 	//
-	//	ComputeInsightsRequest {
-	//	  insights: INSIGHT_COUNT
-	//	  filter {
-	//	    location_filter {region: <PlaceId of state of CA>}
-	//	    type_filter {included_types: "restaurant"}
-	//	    operating_status: OPERATING_STATUS_OPERATIONAL
-	//	    price_levels: PRICE_LEVEL_FREE
-	//	    price_levels: PRICE_LEVEL_INEXPENSIVE
-	//	    min_rating: 4.0
+	// Example request:
+	// ```
+	//
+	//	{
+	//	  "insights": ["INSIGHT_COUNT"],
+	//	  "filter": {
+	//	    "locationFilter": {
+	//	      "region": {
+	//	        "place": "places/ChIJPV4oX_65j4ARVW8IJ6IJUYs"
+	//	      }
+	//	    },
+	//	    "typeFilter": {
+	//	      "includedTypes": ["restaurant"]
+	//	    },
+	//	    "operatingStatus": ["OPERATING_STATUS_OPERATIONAL"],
+	//	    "priceLevels": [
+	//	      "PRICE_LEVEL_FREE",
+	//	      "PRICE_LEVEL_INEXPENSIVE"
+	//	    ],
+	//	    "ratingFilter": {
+	//	      "minRating": 4.0
+	//	    }
 	//	  }
 	//	}
 	//
-	// The method will return the count of restaurants in California that are
-	// operational, with price level free or inexpensive and have an average
-	// rating of at least 4 starts.
+	// ```
 	//
 	// Example response:
+	// ```
 	//
-	//	ComputeInsightsResponse {
-	//	  count: <number of places>
+	//	{
+	//	  "count": 1234
 	//	}
 	//
 	// ```
 	Insight_INSIGHT_COUNT Insight = 1
 	// Return Places
 	//
-	// When this insight is specified ComputeInsights returns Places
+	// When this insight is specified ComputeInsights returns places IDs
 	// that match the specified filter criteria.
-	// ```
-	// For example if the request is:
 	//
-	//	ComputeInsightsRequest {
-	//	  insights: INSIGHT_PLACES
-	//	  filter {
-	//	    location_filter {region: <PlaceId of state of CA>}
-	//	    type_filter {included_types: "restaurant"}
-	//	    operating_status: OPERATING_STATUS_OPERATIONAL
-	//	    price_levels: PRICE_LEVEL_FREE
-	//	    price_levels: PRICE_LEVEL_INEXPENSIVE
-	//	    min_rating: 4.0
+	// Example request:
+	// ```
+	//
+	//	{
+	//	  "insights": ["INSIGHT_PLACES"],
+	//	  "filter": {
+	//	    "locationFilter": {
+	//	      "region": {
+	//	        "place": "places/ChIJPV4oX_65j4ARVW8IJ6IJUYs"
+	//	      }
+	//	    },
+	//	    "typeFilter": {
+	//	      "includedTypes": ["restaurant"]
+	//	    },
+	//	    "operatingStatus": ["OPERATING_STATUS_OPERATIONAL"],
+	//	    "priceLevels": [
+	//	      "PRICE_LEVEL_FREE",
+	//	      "PRICE_LEVEL_INEXPENSIVE"
+	//	    ],
+	//	    "ratingFilter": {
+	//	      "minRating": 4.0
+	//	    }
 	//	  }
 	//	}
 	//
-	// The method will return list of places of restaurants in
-	// California that are operational, with price level free or inexpensive and
-	// have an average rating of at least 4 stars.
+	// ```
 	//
 	// Example response:
+	// ```
 	//
-	//	ComputeInsightsResponse {
-	//	  place_insights { place: "places/ABC" }
-	//	  place_insights { place: "places/PQR" }
-	//	  place_insights { place: "places/XYZ" }
+	//	{
+	//	  "placeInsights": [
+	//	    {"place": "places/ABC"},
+	//	    {"place": "places/PQR"},
+	//	    {"place": "places/XYZ"}
+	//	  ]
 	//	}
 	//
 	// ```
@@ -158,13 +180,13 @@ func (Insight) EnumDescriptor() ([]byte, []int) {
 type OperatingStatus int32
 
 const (
-	// Not Specified.
+	// Not specified. This value should not be used.
 	OperatingStatus_OPERATING_STATUS_UNSPECIFIED OperatingStatus = 0
 	// The place is operational and its open during its defined hours.
 	OperatingStatus_OPERATING_STATUS_OPERATIONAL OperatingStatus = 1
 	// The Place is no longer in business.
 	OperatingStatus_OPERATING_STATUS_PERMANENTLY_CLOSED OperatingStatus = 3
-	// The Place is temporarily closed and expected to reopen in the future.
+	// The place is temporarily closed and expected to reopen in the future.
 	OperatingStatus_OPERATING_STATUS_TEMPORARILY_CLOSED OperatingStatus = 4
 )
 
@@ -215,7 +237,7 @@ func (OperatingStatus) EnumDescriptor() ([]byte, []int) {
 type PriceLevel int32
 
 const (
-	// Place price level is unspecified or unknown.
+	// Not specified. This value should not be used.
 	PriceLevel_PRICE_LEVEL_UNSPECIFIED PriceLevel = 0
 	// Place provides free services.
 	PriceLevel_PRICE_LEVEL_FREE PriceLevel = 1
@@ -395,8 +417,8 @@ type PlaceInsight struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of a place. This resource name can be used to retrieve
-	// details about the place using the [Places
+	// The unique identifier of the place. This resource name can be used to
+	// retrieve details about the place using the [Places
 	// API](https://developers.google.com/maps/documentation/places/web-service/reference/rest/v1/places/get).
 	Place string `protobuf:"bytes,1,opt,name=place,proto3" json:"place,omitempty"`
 }
@@ -454,7 +476,7 @@ type Filter struct {
 	// used as default.
 	OperatingStatus []OperatingStatus `protobuf:"varint,3,rep,packed,name=operating_status,json=operatingStatus,proto3,enum=google.maps.areainsights.v1.OperatingStatus" json:"operating_status,omitempty"`
 	// Optional. Restricts results to places whose price level is included on this
-	// list. If price_level is not set, all price levels are included in the
+	// list. If `price_levels` is not set, all price levels are included in the
 	// results.
 	PriceLevels []PriceLevel `protobuf:"varint,4,rep,packed,name=price_levels,json=priceLevels,proto3,enum=google.maps.areainsights.v1.PriceLevel" json:"price_levels,omitempty"`
 	// Optional. Restricts results to places whose average user ratings are in the
@@ -874,8 +896,9 @@ type LocationFilter_Circle_LatLng struct {
 }
 
 type LocationFilter_Circle_Place struct {
-	// The Place resource name of the center of the circle. Only point places
-	// are supported.
+	// **Format:**  Must be in the format `places/PLACE_ID`, where `PLACE_ID`
+	// is the unique identifier of a place. For example:
+	// `places/ChIJgUbEo8cfqokR5lP9_Wh_DaM`.
 	Place string `protobuf:"bytes,2,opt,name=place,proto3,oneof"`
 }
 
@@ -890,7 +913,8 @@ type LocationFilter_Region struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of a region.
+	// Defines a geographic region. Only one type of region (e.g. place) can
+	// specified at a time.
 	//
 	// Types that are assignable to Region:
 	//
@@ -947,7 +971,7 @@ type isLocationFilter_Region_Region interface {
 }
 
 type LocationFilter_Region_Place struct {
-	// The Place resource name of a region.
+	// The unique identifier of a specific geographic region.
 	Place string `protobuf:"bytes,1,opt,name=place,proto3,oneof"`
 }
 
@@ -1354,9 +1378,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AreaInsightsClient interface {
-	// Compute Insights RPC
-	//
-	// This method lets you retrieve insights about areas using a variaty of
+	// This method lets you retrieve insights about areas using a variety of
 	// filter such as: area, place type, operating status, price level
 	// and ratings. Currently "count" and "places" insights are supported. With
 	// "count" insights you can answer questions such as "How many restaurant are
@@ -1387,9 +1409,7 @@ func (c *areaInsightsClient) ComputeInsights(ctx context.Context, in *ComputeIns
 
 // AreaInsightsServer is the server API for AreaInsights service.
 type AreaInsightsServer interface {
-	// Compute Insights RPC
-	//
-	// This method lets you retrieve insights about areas using a variaty of
+	// This method lets you retrieve insights about areas using a variety of
 	// filter such as: area, place type, operating status, price level
 	// and ratings. Currently "count" and "places" insights are supported. With
 	// "count" insights you can answer questions such as "How many restaurant are

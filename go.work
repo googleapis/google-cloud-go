@@ -1,4 +1,4 @@
-go 1.22.7
+go 1.23.0
 
 use (
 	.
@@ -35,6 +35,7 @@ use (
 	./certificatemanager
 	./channel
 	./chat
+	./chronicle
 	./cloudbuild
 	./cloudcontrolspartner
 	./clouddms
@@ -61,6 +62,7 @@ use (
 	./datastream
 	./deploy
 	./developerconnect
+	./devicestreaming
 	./dialogflow
 	./discoveryengine
 	./dlp
@@ -72,6 +74,7 @@ use (
 	./essentialcontacts
 	./eventarc
 	./filestore
+	./financialservices
 	./firestore
 	./functions
 	./gkebackup
@@ -101,6 +104,7 @@ use (
 	./lifesciences
 	./logging
 	./longrunning
+	./lustre
 	./managedidentities
 	./managedkafka
 	./maps
@@ -109,6 +113,7 @@ use (
 	./memorystore
 	./metastore
 	./migrationcenter
+	./modelarmor
 	./monitoring
 	./netapp
 	./networkconnectivity
@@ -138,7 +143,6 @@ use (
 	./recommender
 	./redis
 	./resourcemanager
-	./resourcesettings
 	./retail
 	./run
 	./scheduler
@@ -156,6 +160,7 @@ use (
 	./shell
 	./shopping
 	./spanner
+	./spanner/benchmarks
 	./spanner/test/opentelemetry/test
 	./speech
 	./storage

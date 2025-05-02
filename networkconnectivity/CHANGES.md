@@ -1,5 +1,38 @@
 # Changes
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.17.0...networkconnectivity/v1.17.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.16.3...networkconnectivity/v1.17.0) (2025-03-25)
+
+
+### Features
+
+* **networkconnectivity:** Add Network Connectivity Center APIs for PSC service automation ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+
+### Documentation
+
+* **networkconnectivity:** Update some documentation. ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.16.2...networkconnectivity/v1.16.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.16.1...networkconnectivity/v1.16.2) (2025-03-06)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.16.0...networkconnectivity/v1.16.1) (2025-01-02)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/batch/apiv1",
-    "version": "1.11.5",
+    "version": "1.12.2",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "batch_v1_generated_BatchService_CancelJob_sync",
+      "title": "batch CancelJob Sample",
+      "description": "CancelJob cancel a Job.",
+      "file": "Client/CancelJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelJob",
+        "fullName": "google.cloud.batch.v1.Client.CancelJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "batchpb.CancelJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CancelJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.batch.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelJob",
+          "fullName": "google.cloud.batch.v1.BatchService.CancelJob",
+          "service": {
+            "shortName": "BatchService",
+            "fullName": "google.cloud.batch.v1.BatchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "batch_v1_generated_BatchService_CancelOperation_sync",
       "title": "batch CancelOperation Sample",

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.25.3",
+    "version": "0.28.0",
     "language": "GO",
     "apis": [
       {
@@ -1434,6 +1434,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateReportingDataAnnotation_sync",
+      "title": "analyticsadmin CreateReportingDataAnnotation Sample",
+      "description": "CreateReportingDataAnnotation creates a Reporting Data Annotation.",
+      "file": "AnalyticsAdminClient/CreateReportingDataAnnotation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReportingDataAnnotation",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateReportingDataAnnotation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateReportingDataAnnotationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ReportingDataAnnotation",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateReportingDataAnnotation",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateReportingDataAnnotation",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateRollupProperty_sync",
       "title": "analyticsadmin CreateRollupProperty Sample",
       "description": "CreateRollupProperty create a roll-up property and all roll-up property source links.",
@@ -2515,6 +2561,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteReportingDataAnnotation_sync",
+      "title": "analyticsadmin DeleteReportingDataAnnotation Sample",
+      "description": "DeleteReportingDataAnnotation deletes a Reporting Data Annotation.",
+      "file": "AnalyticsAdminClient/DeleteReportingDataAnnotation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteReportingDataAnnotation",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteReportingDataAnnotation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteReportingDataAnnotationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteReportingDataAnnotation",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteReportingDataAnnotation",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -3988,6 +4079,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetReportingDataAnnotation_sync",
+      "title": "analyticsadmin GetReportingDataAnnotation Sample",
+      "description": "GetReportingDataAnnotation lookup a single Reporting Data Annotation.",
+      "file": "AnalyticsAdminClient/GetReportingDataAnnotation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetReportingDataAnnotation",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetReportingDataAnnotation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetReportingDataAnnotationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ReportingDataAnnotation",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetReportingDataAnnotation",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetReportingDataAnnotation",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetRollupPropertySourceLink_sync",
       "title": "analyticsadmin GetRollupPropertySourceLink Sample",
       "description": "GetRollupPropertySourceLink lookup for a single roll-up property source Link.\nOnly roll-up properties can have source links, so this method will throw an\nerror if used on other types of properties.",
@@ -5230,6 +5367,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListReportingDataAnnotations_sync",
+      "title": "analyticsadmin ListReportingDataAnnotations Sample",
+      "description": "ListReportingDataAnnotations list all Reporting Data Annotations on a property.",
+      "file": "AnalyticsAdminClient/ListReportingDataAnnotations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReportingDataAnnotations",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListReportingDataAnnotations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListReportingDataAnnotationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReportingDataAnnotationIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListReportingDataAnnotations",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListReportingDataAnnotations",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListRollupPropertySourceLinks_sync",
       "title": "analyticsadmin ListRollupPropertySourceLinks Sample",
       "description": "ListRollupPropertySourceLinks lists roll-up property source Links on a property.\nOnly roll-up properties can have source links, so this method will throw an\nerror if used on other types of properties.",
@@ -5673,6 +5856,52 @@
         "method": {
           "shortName": "SetAutomatedGa4ConfigurationOptOut",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.SetAutomatedGa4ConfigurationOptOut",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_SubmitUserDeletion_sync",
+      "title": "analyticsadmin SubmitUserDeletion Sample",
+      "description": "SubmitUserDeletion submits a request for user deletion for a property.",
+      "file": "AnalyticsAdminClient/SubmitUserDeletion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubmitUserDeletion",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.SubmitUserDeletion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.SubmitUserDeletionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SubmitUserDeletionResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "SubmitUserDeletion",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.SubmitUserDeletion",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -6731,6 +6960,52 @@
         "method": {
           "shortName": "UpdateProperty",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateProperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateReportingDataAnnotation_sync",
+      "title": "analyticsadmin UpdateReportingDataAnnotation Sample",
+      "description": "UpdateReportingDataAnnotation updates a Reporting Data Annotation.",
+      "file": "AnalyticsAdminClient/UpdateReportingDataAnnotation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateReportingDataAnnotation",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateReportingDataAnnotation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateReportingDataAnnotationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ReportingDataAnnotation",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateReportingDataAnnotation",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateReportingDataAnnotation",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

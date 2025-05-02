@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apps/meet/apiv2beta",
-    "version": "0.5.3",
+    "version": "0.7.2",
     "language": "GO",
     "apis": [
       {
@@ -559,6 +559,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "meet_v2beta_generated_SpacesService_ConnectActiveConference_sync",
+      "title": "meet ConnectActiveConference Sample",
+      "description": "ConnectActiveConference [Developer Preview](https: //developers.google.com/workspace/preview): \nBroker a WebRTC connection to the active conference of a space.\n\nOn success, clients must use the resulting SDP (Session Description\nProtocol) answer to establish a WebRTC connection. Once connected,\nadditional functionality is available across WebRTC data channels.\n\nSee [Meet Media API\noverview](https: //developers.google.com/meet/media-api/guides/overview) for\nmore details about this connection.",
+      "file": "SpacesClient/ConnectActiveConference/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ConnectActiveConference",
+        "fullName": "google.apps.meet.v2beta.SpacesClient.ConnectActiveConference",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "meetpb.ConnectActiveConferenceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*meetpb.ConnectActiveConferenceResponse",
+        "client": {
+          "shortName": "SpacesClient",
+          "fullName": "google.apps.meet.v2beta.SpacesClient"
+        },
+        "method": {
+          "shortName": "ConnectActiveConference",
+          "fullName": "google.apps.meet.v2beta.SpacesService.ConnectActiveConference",
+          "service": {
+            "shortName": "SpacesService",
+            "fullName": "google.apps.meet.v2beta.SpacesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

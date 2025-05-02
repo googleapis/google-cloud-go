@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -109,8 +109,10 @@ type DataProfileSpec struct {
 	// 100.
 	SamplingPercent float32 `protobuf:"fixed32,2,opt,name=sampling_percent,json=samplingPercent,proto3" json:"sampling_percent,omitempty"`
 	// Optional. A filter applied to all rows in a single DataScan job.
-	// The filter needs to be a valid SQL expression for a WHERE clause in
-	// BigQuery standard SQL syntax.
+	// The filter needs to be a valid SQL expression for a [WHERE clause in
+	// GoogleSQL
+	// syntax](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#where_clause).
+	//
 	// Example: col1 >= 0 AND col2 < 10
 	RowFilter string `protobuf:"bytes,3,opt,name=row_filter,json=rowFilter,proto3" json:"row_filter,omitempty"`
 	// Optional. Actions to take upon job completion..
@@ -377,6 +379,8 @@ type DataProfileSpec_PostScanActions_BigQueryExport struct {
 	// Optional. The BigQuery table to export DataProfileScan results to.
 	// Format:
 	// //bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID
+	// or
+	// projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID
 	ResultsTable string `protobuf:"bytes,1,opt,name=results_table,json=resultsTable,proto3" json:"results_table,omitempty"`
 }
 
