@@ -42,6 +42,40 @@ const (
 	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
 )
 
+func withBidiWriteObjectRedirectionErrorRetries(s *settings) (newr *retryConfig) {
+	oldr := s.retry
+	newr = oldr.clone()
+	if newr == nil {
+		newr = &retryConfig{}
+	}
+	if (oldr.policy == RetryIdempotent && !s.idempotent) || oldr.policy == RetryNever {
+		// We still retry redirection errors even when settings indicate not to
+		// retry.
+		//
+		// The protocol requires us to respect redirection errors, so RetryNever has
+		// to ignore them.
+		//
+		// Idempotency is always protected by redirection errors: they either
+		// contain a handle which can be used as idempotency information, or they do
+		// not contain a handle and are "affirmative failures" which indicate that
+		// no server-side action occurred.
+		newr.policy = RetryAlways
+		newr.shouldRetry = func(err error) bool {
+			return errors.Is(err, bidiWriteObjectRedirectionError{})
+		}
+		return newr
+	}
+	// If retry settings allow retries normally, fall back to that behavior.
+	newr.shouldRetry = func(err error) bool {
+		if errors.Is(err, bidiWriteObjectRedirectionError{}) {
+			return true
+		}
+		v := oldr.runShouldRetry(err)
+		return v
+	}
+	return newr
+}
+
 func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
 	var offset int64
 	errorf := params.setError
@@ -57,6 +91,9 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}
 	if s.retry == nil {
 		s.retry = defaultRetry.clone()
+	}
+	if params.append {
+		s.retry = withBidiWriteObjectRedirectionErrorRetries(s)
 	}
 	s.retry.maxRetryDuration = retryDeadline
 
@@ -464,6 +501,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 			trim = int64(len(buf))
 		}
 		buf = buf[trim:]
+		offset += trim
 	}
 	if len(buf) == 0 && !flush && !finishWrite {
 		// no need to send anything
@@ -722,6 +760,10 @@ func (s *gRPCAppendBidiWriteBufferSender) connect(ctx context.Context) (err erro
 		if s.firstMessage.GetAppendObjectSpec().GetGeneration() != 0 {
 			return nil
 		}
+		// Also always ok to reconnect if we've seen a redirect token
+		if s.routingToken != nil {
+			return nil
+		}
 
 		// We can also reconnect if the first message has an if_generation_match or
 		// if_metageneration_match condition. Note that negative conditions like
@@ -804,7 +846,7 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeUpdateFirstMessage(resp *storagep
 type bidiWriteObjectRedirectionError struct{}
 
 func (e bidiWriteObjectRedirectionError) Error() string {
-	return "BidiWriteObjectRedirectedError"
+	return ""
 }
 
 func (s *gRPCAppendBidiWriteBufferSender) handleRedirectionError(e *storagepb.BidiWriteObjectRedirectedError) bool {
@@ -849,10 +891,10 @@ func (s *gRPCAppendBidiWriteBufferSender) receiveMessages(resps chan<- *storagep
 	if st, ok := status.FromError(err); ok && st.Code() == codes.Aborted {
 		for _, d := range st.Details() {
 			if e, ok := d.(*storagepb.BidiWriteObjectRedirectedError); ok {
-				// If we can handle this error, replace it with the sentinel. Otherwise,
-				// report it to the user.
+				// If we can handle this error, wrap it with the sentinel so it gets
+				// retried.
 				if ok := s.handleRedirectionError(e); ok {
-					err = bidiWriteObjectRedirectionError{}
+					err = fmt.Errorf("%w%w", bidiWriteObjectRedirectionError{}, err)
 				}
 			}
 		}
@@ -970,12 +1012,6 @@ func (s *gRPCAppendBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []
 			err = s.recvErr
 		}
 		s.stream = nil
-
-		// Retry transparently on a redirection error
-		if _, ok := err.(bidiWriteObjectRedirectionError); ok {
-			s.forceFirstMessage = true
-			continue
-		}
 		return
 	}
 }

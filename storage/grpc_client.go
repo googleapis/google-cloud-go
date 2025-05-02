@@ -452,6 +452,9 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		// Add trace span around List API call within the fetch.
+		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall")
+		defer func() { endSpan(ctx, err) }()
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
 		err = run(it.ctx, func(ctx context.Context) error {
@@ -1419,11 +1422,7 @@ func (mrd *gRPCBidiReader) activeRange() []mrdRange {
 
 // retryStream cancel's stream and reopen the stream again.
 func (mrd *gRPCBidiReader) retryStream(err error) error {
-	var shouldRetry = ShouldRetry
-	if mrd.settings.retry != nil && mrd.settings.retry.shouldRetry != nil {
-		shouldRetry = mrd.settings.retry.shouldRetry
-	}
-	if shouldRetry(err) {
+	if mrd.settings.retry.runShouldRetry(err) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// When Reopening the stream only failed readID will be added to stream.
@@ -2032,11 +2031,7 @@ func (r *gRPCReader) Close() error {
 func (r *gRPCReader) recv() error {
 	databufs := mem.BufferSlice{}
 	err := r.stream.RecvMsg(&databufs)
-	var shouldRetry = ShouldRetry
-	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
-		shouldRetry = r.settings.retry.shouldRetry
-	}
-	if err != nil && shouldRetry(err) {
+	if err != nil && r.settings.retry.runShouldRetry(err) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is

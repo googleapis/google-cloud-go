@@ -80,7 +80,7 @@ type internalFlexTemplatesClient interface {
 // FlexTemplatesClient is a client for interacting with Dataflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Provides a service for Flex templates. This feature is not ready yet.
+// Provides a service for Flex templates.
 type FlexTemplatesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalFlexTemplatesClient
@@ -139,7 +139,7 @@ type flexTemplatesGRPCClient struct {
 // NewFlexTemplatesClient creates a new flex templates service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Provides a service for Flex templates. This feature is not ready yet.
+// Provides a service for Flex templates.
 func NewFlexTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*FlexTemplatesClient, error) {
 	clientOpts := defaultFlexTemplatesGRPCClientOptions()
 	if newFlexTemplatesClientHook != nil {
@@ -213,7 +213,7 @@ type flexTemplatesRESTClient struct {
 
 // NewFlexTemplatesRESTClient creates a new flex templates service rest client.
 //
-// Provides a service for Flex templates. This feature is not ready yet.
+// Provides a service for Flex templates.
 func NewFlexTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*FlexTemplatesClient, error) {
 	clientOpts := append(defaultFlexTemplatesRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

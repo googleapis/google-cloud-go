@@ -2228,8 +2228,8 @@ func TestRetryTimeoutEmulated(t *testing.T) {
 				t.Errorf("GetBucket: got unexpected error: %v; want 503", err)
 			}
 		}
-		// Error should be wrapped so it's also equivalent to a context timeout.
-		if !errors.Is(err, context.DeadlineExceeded) {
+		// Error may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
+		if !(errors.Is(err, context.DeadlineExceeded) || status.Code(err) == codes.DeadlineExceeded) {
 			t.Errorf("GetBucket: got unexpected error %v, want to match DeadlineExceeded.", err)
 		}
 	})
@@ -2487,7 +2487,8 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 						t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
 					}
 				} else {
-					if !errors.Is(err, context.DeadlineExceeded) {
+					// Deadlines may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
+					if !(errors.Is(err, context.DeadlineExceeded) || status.Code(err) == codes.DeadlineExceeded) {
 						t.Fatalf("expected context deadline exceeded found %v", err)
 					}
 				}
