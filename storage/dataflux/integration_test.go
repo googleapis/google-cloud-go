@@ -96,7 +96,11 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 		t.Errorf("expected to receive %d results, got %d results", len(httpTestBucket.objects), len(objects))
 	}
 	if df.method != sequential {
-		t.Errorf("expected df.method to be %v, got %v", worksteal, df.method)
+		t.Errorf("aaaaa expected df.method to be %v, got %v", worksteal, df.method)
+	}
+
+	if got, want := df.method, sequential; got != want {
+		t.Errorf("expected df.method to be %v, got %v", want, got)
 	}
 }
 
