@@ -138,7 +138,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				},
 			}},
 		},
-		IPFilter: &raw.BucketIpFilter{Mode: "disabled"},
+		IPFilter: &IPFilter{Mode: "disabled"},
 	}
 	got := attrs.toRawBucket()
 	want := &raw.Bucket{
@@ -408,7 +408,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		StorageClass:     "NEARLINE",
 		Autoclass:        &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
 		SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: time.Hour},
-		IPFilter:         &raw.BucketIpFilter{Mode: "disabled"},
+		IPFilter:         &IPFilter{Mode: "disabled"},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -744,7 +744,7 @@ func TestNewBucket(t *testing.T) {
 		},
 		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		OwnerEntity:           "project-owner-projectId",
-		IPFilter:              &raw.BucketIpFilter{Mode: "disabled"},
+		IPFilter:              &IPFilter{Mode: "disabled"},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
