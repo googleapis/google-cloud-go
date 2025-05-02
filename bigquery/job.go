@@ -509,6 +509,9 @@ type QueryStatistics struct {
 
 	// Statistics for the EXPORT DATA statement as part of Query Job.
 	ExportDataStatistics *ExportDataStatistics
+
+	// Performance insights.
+	PerformanceInsights *PerformanceInsights
 }
 
 // ExportDataStatistics represents statistics for
@@ -797,6 +800,194 @@ func bqToDMLStatistics(q *bq.DmlStatistics) *DMLStatistics {
 	}
 }
 
+// PerformanceInsights contains performance insights for the job.
+type PerformanceInsights struct {
+	// Average execution of previous runs.
+	AvgPreviousExecution time.Duration
+
+	// Standalone query stage performance insights, for exploring potential improvements.
+	StagePerformanceStandaloneInsights []*StagePerformanceStandaloneInsight
+
+	// jobs.query stage performance insights compared to previous runs, for diagnosing performance regression.
+	StagePerformanceChangeInsights []*StagePerformanceChangeInsight
+}
+
+func bqToPerformanceInsights(in *bq.PerformanceInsights) *PerformanceInsights {
+	if in == nil {
+		return nil
+	}
+
+	var standaloneInsights []*StagePerformanceStandaloneInsight
+	if sis := in.StagePerformanceStandaloneInsights; len(sis) > 0 {
+		standaloneInsights = make([]*StagePerformanceStandaloneInsight, 0, len(sis))
+		for _, si := range sis {
+			standaloneInsights = append(standaloneInsights, bqToStagePerformanceStandaloneInsight(si))
+		}
+	}
+
+	var changeInsights []*StagePerformanceChangeInsight
+	if cis := in.StagePerformanceChangeInsights; len(cis) > 0 {
+		changeInsights = make([]*StagePerformanceChangeInsight, 0, len(cis))
+		for _, ci := range cis {
+			changeInsights = append(changeInsights, bqToStagePerformanceChangeInsight(ci))
+		}
+	}
+
+	return &PerformanceInsights{
+		AvgPreviousExecution:               time.Duration(in.AvgPreviousExecutionMs) * time.Millisecond,
+		StagePerformanceStandaloneInsights: standaloneInsights,
+		StagePerformanceChangeInsights:     changeInsights,
+	}
+}
+
+// StagePerformanceStandaloneInsight describes standalone performance insights for a specific stage.
+type StagePerformanceStandaloneInsight struct {
+	// The stage id that the insight mapped to.
+	StageID int64
+
+	// If present, the stage had the following reasons for being disqualified from BI Engine execution.
+	BIEngineReasons []*BIEngineReason
+
+	// High cardinality joins in the stage.
+	HighCardinalityJoins []*HighCardinalityJoin
+
+	// True if the stage has a slot contention issue.
+	SlotContention bool
+
+	// True if the stage has insufficient shuffle quota.
+	InsufficientShuffleQuota bool
+
+	// Partition skew in the stage.
+	PartitionSkew *PartitionSkew
+}
+
+func bqToStagePerformanceStandaloneInsight(in *bq.StagePerformanceStandaloneInsight) *StagePerformanceStandaloneInsight {
+	if in == nil {
+		return nil
+	}
+
+	var biEngineReasons []*BIEngineReason
+	if bers := in.BiEngineReasons; len(bers) > 0 {
+		biEngineReasons = make([]*BIEngineReason, 0, len(bers))
+		for _, r := range bers {
+			biEngineReasons = append(biEngineReasons, bqToBIEngineReason(r))
+		}
+	}
+
+	var highCardinalityJoins []*HighCardinalityJoin
+	if hcjs := in.HighCardinalityJoins; len(hcjs) > 0 {
+		highCardinalityJoins = make([]*HighCardinalityJoin, 0, len(hcjs))
+		for _, hcj := range hcjs {
+			highCardinalityJoins = append(highCardinalityJoins, bqToHighCardinalityJoin(hcj))
+		}
+	}
+
+	return &StagePerformanceStandaloneInsight{
+		StageID:                  in.StageId,
+		BIEngineReasons:          biEngineReasons,
+		HighCardinalityJoins:     highCardinalityJoins,
+		SlotContention:           in.SlotContention,
+		InsufficientShuffleQuota: in.InsufficientShuffleQuota,
+		PartitionSkew:            bqToPartitionSkew(in.PartitionSkew),
+	}
+}
+
+// StagePerformanceChangeInsight contains performance insights compared to the previous executions for a specific stage.
+type StagePerformanceChangeInsight struct {
+	//  The stage id that the insight mapped to.
+	StageID int64
+
+	InputDataChange *InputDataChange
+}
+
+func bqToStagePerformanceChangeInsight(in *bq.StagePerformanceChangeInsight) *StagePerformanceChangeInsight {
+	if in == nil {
+		return nil
+	}
+
+	return &StagePerformanceChangeInsight{
+		StageID:         in.StageId,
+		InputDataChange: bqToInputDataChange(in.InputDataChange),
+	}
+}
+
+// HighCardinalityJoin contains high cardinality join detailed information.
+type HighCardinalityJoin struct {
+	// Count of left input rows.
+	LeftRows int64
+
+	// Count of right input rows.
+	RightRows int64
+
+	// Count of the output rows.
+	OutputRows int64
+
+	// The index of the join operator in the ExplainQueryStep lists.
+	StepIndex int64
+}
+
+func bqToHighCardinalityJoin(in *bq.HighCardinalityJoin) *HighCardinalityJoin {
+	if in == nil {
+		return nil
+	}
+
+	return &HighCardinalityJoin{
+		LeftRows:   in.LeftRows,
+		RightRows:  in.RightRows,
+		OutputRows: in.OutputRows,
+		StepIndex:  in.StepIndex,
+	}
+}
+
+// PartitionSkew contains partition skew detailed information.
+type PartitionSkew struct {
+	// Source stages which produce skewed data.
+	SkewSources []*SkewSource
+}
+
+func bqToPartitionSkew(in *bq.PartitionSkew) *PartitionSkew {
+	if in == nil {
+		return nil
+	}
+
+	var skewSources []*SkewSource
+	if sss := in.SkewSources; len(sss) > 0 {
+		skewSources = make([]*SkewSource, 0, len(sss))
+		for _, s := range sss {
+			skewSources = append(skewSources, bqToSkewSource(s))
+		}
+	}
+	return &PartitionSkew{SkewSources: skewSources}
+}
+
+// SkewSource contains details about source stages which produce skewed data.
+type SkewSource struct {
+	// Stage id of the skew source stage.
+	StageID int64
+}
+
+func bqToSkewSource(in *bq.SkewSource) *SkewSource {
+	if in == nil {
+		return nil
+	}
+
+	return &SkewSource{StageID: in.StageId}
+}
+
+// InputDataChange contains details about the input data change insight.
+type InputDataChange struct {
+	// Records read difference percentage compared to a previous run.
+	RecordsReadDiffPercentage float64
+}
+
+func bqToInputDataChange(in *bq.InputDataChange) *InputDataChange {
+	if in == nil {
+		return nil
+	}
+
+	return &InputDataChange{RecordsReadDiffPercentage: in.RecordsReadDiffPercentage}
+}
+
 func (*ExtractStatistics) implementsStatistics() {}
 func (*LoadStatistics) implementsStatistics()    {}
 func (*QueryStatistics) implementsStatistics()   {}
@@ -1066,6 +1257,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			Timeline:                      timelineFromProto(s.Query.Timeline),
 			ReferencedTables:              tables,
 			UndeclaredQueryParameterNames: names,
+			PerformanceInsights:           bqToPerformanceInsights(s.Query.PerformanceInsights),
 		}
 	}
 	j.lastStatus.Statistics = js
