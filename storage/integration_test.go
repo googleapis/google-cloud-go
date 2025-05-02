@@ -675,15 +675,15 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 // "grpc.lb.locality" to return ""
 func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 	ctx := skipHTTP("grpc only test")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
-		err := CheckDirectConnectivitySupported(ctx, bucket)
+	multiTransportTest(skipExtraReadAPIs(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, _ *Client) {
+		err := CheckDirectConnectivitySupported(ctx, bucket, internaloption.EnableDirectPath(false))
 		if err == nil {
 			t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
 		}
 		if err != nil && !strings.Contains(err.Error(), "direct connectivity not detected") {
 			t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
 		}
-	}, internaloption.EnableDirectPath(false))
+	})
 }
 
 // TestIntegration_MetricsEnablement does not use multiTransportTest because it
