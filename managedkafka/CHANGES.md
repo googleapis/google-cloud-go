@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.5.1...managedkafka/v0.5.2) (2025-04-30)
+
+
+### Documentation
+
+* **managedkafka:** A comment for message `TaskRetryPolicy` is changed ([#12082](https://github.com/googleapis/google-cloud-go/issues/12082)) ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.5.0...managedkafka/v0.5.1) (2025-04-15)
 
 
