@@ -1,5 +1,101 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.19.4...retail/v1.20.0) (2025-04-30)
+
+
+### Features
+
+* **retail:** Add availability field to Localnventory ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **retail:** Add conversational search API ([73bd9a8](https://github.com/googleapis/google-cloud-go/commit/73bd9a8de74a3c71e81888cab98dcc489ba3302b))
+* **retail:** Add language_code, region_code and place_id to SearchRequest ([73bd9a8](https://github.com/googleapis/google-cloud-go/commit/73bd9a8de74a3c71e81888cab98dcc489ba3302b))
+* **retail:** Add language_code, region_code and place_id to SearchRequest ([#12069](https://github.com/googleapis/google-cloud-go/issues/12069)) ([8f6067c](https://github.com/googleapis/google-cloud-go/commit/8f6067c000833caa338a8cab15ec6fd0ea39f849))
+* **retail:** Add new fields including language_code, region_code and place_id to SearchRequest. ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **retail:** Add pin_control_metadata to SearchResponse ([8f6067c](https://github.com/googleapis/google-cloud-go/commit/8f6067c000833caa338a8cab15ec6fd0ea39f849))
+* **retail:** Add pin_control_metadata to SearchResponse ([73bd9a8](https://github.com/googleapis/google-cloud-go/commit/73bd9a8de74a3c71e81888cab98dcc489ba3302b))
+* **retail:** Add pin_control_metadata to SearchResponse. ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Bug Fixes
+
+* **retail:** An existing field `llm_embedding_config` is removed from message `.google.cloud.retail.v2alpha.Model` ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **retail:** An existing message `LlmEmbeddingConfig` is removed. ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Documentation
+
+* **retail:** Keep the API doc up-to-date with recent changes ([8f6067c](https://github.com/googleapis/google-cloud-go/commit/8f6067c000833caa338a8cab15ec6fd0ea39f849))
+* **retail:** Keep the API doc up-to-date with recent changes ([73bd9a8](https://github.com/googleapis/google-cloud-go/commit/73bd9a8de74a3c71e81888cab98dcc489ba3302b))
+* **retail:** Keep the API doc up-to-date with recent changes ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+## [1.19.4](https://github.com/googleapis/google-cloud-go/compare/retail/v1.19.3...retail/v1.19.4) (2025-04-15)
+
+
+### Bug Fixes
+
+* **retail:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/retail/v1.19.2...retail/v1.19.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **retail:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/retail/v1.19.1...retail/v1.19.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **retail:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.19.0...retail/v1.19.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **retail:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **retail:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.18.1...retail/v1.19.0) (2024-10-09)
+
+
+### Features
+
+* **retail:** Add conversational search ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add conversational search ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add conversational search ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add tile navigation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add tile navigation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add tile navigation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **retail:** Keep the API doc up-to-date with recent changes ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Keep the API doc up-to-date with recent changes ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Keep the API doc up-to-date with recent changes ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.18.0...retail/v1.18.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **retail:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.17.5...retail/v1.18.0) (2024-08-20)
+
+
+### Features
+
+* **retail:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.17.5](https://github.com/googleapis/google-cloud-go/compare/retail/v1.17.4...retail/v1.17.5) (2024-08-08)
+
+
+### Bug Fixes
+
+* **retail:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/retail/v1.17.3...retail/v1.17.4) (2024-07-24)
 
 

@@ -29,13 +29,13 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/rpcreplay"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -66,8 +66,8 @@ type replayInfo struct {
 var (
 	record = flag.Bool("record", false, "record RPCs")
 
-	newTestClient = func(ctx context.Context, t *testing.T) *Client {
-		return newClient(ctx, t, nil)
+	newTestClient = func(ctx context.Context, t *testing.T, opts ...option.ClientOption) *Client {
+		return newClient(ctx, t, nil, opts...)
 	}
 	testParams map[string]interface{}
 
@@ -109,8 +109,8 @@ func testMain(m *testing.M) int {
 				log.Fatalf("closing recorder: %v", err)
 			}
 		}()
-		newTestClient = func(ctx context.Context, t *testing.T) *Client {
-			return newClient(ctx, t, rec.DialOptions())
+		newTestClient = func(ctx context.Context, t *testing.T, opts ...option.ClientOption) *Client {
+			return newClient(ctx, t, rec.DialOptions(), opts...)
 		}
 		log.Printf("recording to %s", replayFilename)
 	}
@@ -172,7 +172,7 @@ func initReplay() {
 		log.Fatal(err)
 	}
 
-	newTestClient = func(ctx context.Context, t *testing.T) *Client {
+	newTestClient = func(ctx context.Context, t *testing.T, opts ...option.ClientOption) *Client {
 		grpcHeadersEnforcer := &testutil.HeadersEnforcer{
 			OnFailure: t.Fatalf,
 			Checkers: []*testutil.HeaderChecker{
@@ -181,7 +181,8 @@ func initReplay() {
 			},
 		}
 
-		opts := append(grpcHeadersEnforcer.CallOptions(), option.WithGRPCConn(conn))
+		opts = append(opts, grpcHeadersEnforcer.CallOptions()...)
+		opts = append(opts, option.WithGRPCConn(conn))
 		client, err := NewClientWithDatabase(ctx, ri.ProjectID, testParams["databaseID"].(string), opts...)
 		if err != nil {
 			t.Fatalf("NewClientWithDatabase: %v", err)
@@ -191,7 +192,7 @@ func initReplay() {
 	log.Printf("replaying from %s", replayFilename)
 }
 
-func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *Client {
+func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption, opts ...option.ClientOption) *Client {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -207,7 +208,8 @@ func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *C
 			xGoogReqParamsHeaderChecker,
 		},
 	}
-	opts := append(grpcHeadersEnforcer.CallOptions(), option.WithTokenSource(ts))
+	opts = append(opts, grpcHeadersEnforcer.CallOptions()...)
+	opts = append(opts, option.WithTokenSource(ts))
 	for _, opt := range dialOpts {
 		opts = append(opts, option.WithGRPCDialOption(opt))
 	}
@@ -264,6 +266,130 @@ func TestIntegration_Basics(t *testing.T) {
 	}
 }
 
+type OldX struct {
+	I int
+	J int
+}
+type NewX struct {
+	I int
+	j int
+}
+
+func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t, WithIgnoreFieldMismatch())
+	t.Cleanup(func() {
+		client.Close()
+	})
+
+	// Save entities with an extra field
+	keys := []*Key{
+		NameKey("X", "x1", nil),
+		NameKey("X", "x2", nil),
+	}
+	entitiesOld := []OldX{
+		{I: 10, J: 20},
+		{I: 30, J: 40},
+	}
+	_, gotErr := client.PutMulti(ctx, keys, entitiesOld)
+	if gotErr != nil {
+		t.Fatalf("Failed to save: %v\n", gotErr)
+	}
+
+	var wants []NewX
+	for _, oldX := range entitiesOld {
+		wants = append(wants, []NewX{{I: oldX.I}}...)
+	}
+
+	t.Cleanup(func() {
+		client.DeleteMulti(ctx, keys)
+	})
+
+	tests := []struct {
+		desc    string
+		client  *Client
+		wantErr error
+	}{
+		{
+			desc:   "Without IgnoreFieldMismatch option",
+			client: newTestClient(ctx, t),
+			wantErr: &ErrFieldMismatch{
+				StructType: reflect.TypeOf(NewX{}),
+				FieldName:  "J",
+				Reason:     "no such struct field",
+			},
+		},
+		{
+			desc:   "With IgnoreFieldMismatch option",
+			client: newTestClient(ctx, t, WithIgnoreFieldMismatch()),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			defer test.client.Close()
+			// FieldMismatch error in Next
+			query := NewQuery("X").FilterField("I", ">=", 10)
+			it := test.client.Run(ctx, query)
+			resIndex := 0
+			for {
+				var newX NewX
+				_, err := it.Next(&newX)
+				if err == iterator.Done {
+					break
+				}
+
+				compareIgnoreFieldMismatchResults(t, []NewX{wants[resIndex]}, []NewX{newX}, test.wantErr, err, "Next")
+				resIndex++
+			}
+
+			// FieldMismatch error in Get
+			var getX NewX
+			gotErr = test.client.Get(ctx, keys[0], &getX)
+			compareIgnoreFieldMismatchResults(t, []NewX{wants[0]}, []NewX{getX}, test.wantErr, gotErr, "Get")
+
+			// FieldMismatch error in GetAll
+			var getAllX []NewX
+			_, gotErr = test.client.GetAll(ctx, query, &getAllX)
+			compareIgnoreFieldMismatchResults(t, wants, getAllX, test.wantErr, gotErr, "GetAll")
+
+			// FieldMismatch error in GetMulti
+			getMultiX := make([]NewX, len(keys))
+			gotErr = test.client.GetMulti(ctx, keys, getMultiX)
+			compareIgnoreFieldMismatchResults(t, wants, getMultiX, test.wantErr, gotErr, "GetMulti")
+
+			tx, err := test.client.NewTransaction(ctx)
+			if err != nil {
+				t.Fatalf("tx.GetMulti got: %v, want: nil\n", err)
+			}
+
+			// FieldMismatch error in tx.Get
+			var txGetX NewX
+			err = tx.Get(keys[0], &txGetX)
+			compareIgnoreFieldMismatchResults(t, []NewX{wants[0]}, []NewX{txGetX}, test.wantErr, err, "tx.Get")
+
+			// FieldMismatch error in tx.GetMulti
+			txGetMultiX := make([]NewX, len(keys))
+			err = tx.GetMulti(keys, txGetMultiX)
+			compareIgnoreFieldMismatchResults(t, wants, txGetMultiX, test.wantErr, err, "tx.GetMulti")
+
+			tx.Commit()
+
+		})
+	}
+
+}
+
+func compareIgnoreFieldMismatchResults(t *testing.T, wantX []NewX, gotX []NewX, wantErr error, gotErr error, errPrefix string) {
+	if !equalErrs(gotErr, wantErr) {
+		t.Errorf("%v: error got: %v, want: %v", errPrefix, gotErr, wantErr)
+	}
+	for resIndex := 0; resIndex < len(wantX) && gotErr == nil; resIndex++ {
+		if wantX[resIndex].I != gotX[resIndex].I {
+			t.Fatalf("%v %v: got: %v, want: %v\n", errPrefix, resIndex, wantX[resIndex].I, gotX[resIndex].I)
+		}
+	}
+}
+
 func TestIntegration_GetWithReadTime(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	client := newTestClient(ctx, t)
@@ -300,6 +426,52 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
 		// exposed in anyway in the response.
 		err = client.Get(ctx, k, &got)
+		if err != nil {
+			r.Errorf("client.Get: %v", err)
+		}
+	})
+
+	// Cleanup
+	_ = client.Delete(ctx, k)
+}
+
+func TestIntegration_RunWithReadTime(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	client := newTestClient(ctx, t)
+	defer cancel()
+	defer client.Close()
+
+	type RT struct {
+		TimeCreated time.Time
+	}
+
+	rt1 := RT{time.Now()}
+	k := NameKey("RT", "ReadTime", nil)
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := tx.Put(k, &rt1); err != nil {
+		t.Fatalf("Transaction.Put: %v\n", err)
+	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Transaction.Commit: %v\n", err)
+	}
+
+	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
+		got := RT{}
+		tm := ReadTime(time.Now())
+
+		client.WithReadOptions(tm)
+
+		// If the Entity isn't available at the requested read time, we get
+		// a "datastore: no such entity" error. The ReadTime is otherwise not
+		// exposed in anyway in the response.
+		err = client.Get(ctx, k, &got)
+		client.Run(ctx, NewQuery("RT"))
 		if err != nil {
 			r.Errorf("client.Get: %v", err)
 		}
@@ -1099,6 +1271,8 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
+	beforeCreate := time.Now().Truncate(time.Millisecond)
+
 	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
@@ -1129,12 +1303,13 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}()
 
 	testCases := []struct {
-		desc            string
-		aggQuery        *AggregationQuery
-		transactionOpts []TransactionOption
-		wantFailure     bool
-		wantErrMsg      string
-		wantAggResult   AggregationResult
+		desc              string
+		aggQuery          *AggregationQuery
+		transactionOpts   []TransactionOption
+		clientReadOptions []ReadOption
+		wantFailure       bool
+		wantErrMsg        string
+		wantAggResult     AggregationResult
 	}{
 
 		{
@@ -1150,6 +1325,26 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
 				NewAggregationQuery().
 				WithCount("count"),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+			},
+		},
+		{
+			desc: "Count success before create with client read time",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
+				NewAggregationQuery().
+				WithCount("count"),
+			clientReadOptions: []ReadOption{ReadTime(beforeCreate)},
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+			},
+		},
+		{
+			desc: "Count success after create with client read time",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
+				NewAggregationQuery().
+				WithCount("count"),
+			clientReadOptions: []ReadOption{ReadTime(time.Now().Truncate(time.Millisecond))},
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
 			},
@@ -1226,8 +1421,16 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testClient := client
+		if testCase.clientReadOptions != nil {
+			clientWithReadTime := newTestClient(ctx, t)
+			clientWithReadTime.WithReadOptions(testCase.clientReadOptions...)
+			defer clientWithReadTime.Close()
+
+			testClient = clientWithReadTime
+		}
 		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
-			gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
+			gotAggResult, gotErr := testClient.RunAggregationQuery(ctx, testCase.aggQuery)
 			gotFailure := gotErr != nil
 
 			if gotFailure != testCase.wantFailure ||

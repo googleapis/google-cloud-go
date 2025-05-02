@@ -28,6 +28,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -46,6 +47,7 @@ const (
 	testPrefix      = "go-integration-test-tm"
 	grpcTestPrefix  = "golang-grpc-test-tm"
 	bucketExpiryAge = 24 * time.Hour
+	minObjectSize   = 1024
 	maxObjectSize   = 1024 * 1024
 )
 
@@ -99,6 +101,7 @@ func TestIntegration_DownloadDirectory(t *testing.T) {
 		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
 			Bucket:         tb.bucket,
 			LocalDirectory: localDir,
+			StripPrefix:    "dir/",
 			OnObjectDownload: func(got *DownloadOutput) {
 				callbackMu.Lock()
 				numCallbacks++
@@ -112,7 +115,9 @@ func TestIntegration_DownloadDirectory(t *testing.T) {
 					t.Errorf("expected object size %d, got %d", want, got)
 				}
 
-				path := filepath.Join(localDir, got.Object)
+				objectWithoutPrefix, _ := strings.CutPrefix(got.Object, "dir/")
+				path := filepath.Join(localDir, objectWithoutPrefix)
+
 				f, err := os.Open(path)
 				if err != nil {
 					t.Errorf("os.Open(%q): %v", path, err)
@@ -155,7 +160,8 @@ func TestIntegration_DownloadDirectory(t *testing.T) {
 				t.Errorf("expected object size %d, got %d", want, got)
 			}
 
-			path := filepath.Join(localDir, got.Object)
+			objectWithoutPrefix, _ := strings.CutPrefix(got.Object, "dir/")
+			path := filepath.Join(localDir, objectWithoutPrefix)
 			f, err := os.Open(path)
 			if err != nil {
 				t.Errorf("os.Open(%q): %v", path, err)
@@ -179,22 +185,37 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
 		localDir := t.TempDir()
 
-		numCallbacks := 0
-		callbackMu := sync.Mutex{}
-
 		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(maxObjectSize/2), WithCallbacks())
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
 
+		// Test download options - only download directory "dir".
 		// In lex order we have:
-		// "dir/nested/again/obj1", -- excluded
+		// "dir/nested/again/obj1", -- excluded by StartOffset
 		// "dir/nested/objA", -- included
 		// "dir/file" -- excluded by MatchGlob
 		// "dir/objA", -- included
 		// "dir/objB", -- included
-		// "dir/objC", -- excluded
-		wantObjs := 3
+		// "dir/objC", -- excluded by EndOffset
+		includedObjs := []string{"dir/nested/objA", "dir/objA", "dir/objB"}
+
+		objectDownloaded := make(chan bool)
+		done := make(chan bool)
+
+		trackObjectsDownloaded := func(numObjects *int) {
+			for {
+				select {
+				case <-done:
+					return
+				case <-objectDownloaded:
+					*numObjects++
+				}
+			}
+		}
+
+		objectsDownloaded := 0
+		go trackObjectsDownloaded(&objectsDownloaded)
 
 		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
 			Bucket:         tb.bucket,
@@ -204,9 +225,7 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 			EndOffset:      "dir/objC",
 			MatchGlob:      "**obj**",
 			OnObjectDownload: func(got *DownloadOutput) {
-				callbackMu.Lock()
-				numCallbacks++
-				callbackMu.Unlock()
+				objectDownloaded <- true
 
 				if got.Err != nil {
 					t.Errorf("result.Err: %v", got.Err)
@@ -234,8 +253,8 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 				got.Object = "modifying this shouldn't be a problem"
 			},
 			Callback: func(outs []DownloadOutput) {
-				if len(outs) != wantObjs {
-					t.Errorf("expected to receive %d results, got %d results", wantObjs, len(outs))
+				if len(outs) != len(includedObjs) {
+					t.Errorf("expected to receive %d results, got %d results", len(includedObjs), len(outs))
 				}
 
 				for _, got := range outs {
@@ -269,12 +288,13 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 			t.Errorf("d.DownloadDirectory: %v", err)
 		}
 
-		if _, err = d.WaitAndClose(); err != nil {
-			t.Fatalf("d.WaitAndClose: %v", err)
+		if _, err := d.WaitAndClose(); err != nil {
+			t.Errorf("d.WaitAndClose: %v", err)
 		}
+		done <- true
 
-		if numCallbacks != wantObjs {
-			t.Errorf("expected to receive %d results, got %d callbacks", (wantObjs), numCallbacks)
+		if want, got := len(includedObjs), objectsDownloaded; want != got {
+			t.Errorf("expected to receive %d callbacks, got %d", want, got)
 		}
 
 		entries, err := os.ReadDir(filepath.Join(localDir, "dir"))
@@ -282,8 +302,8 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 			t.Fatalf("os.ReadDir: %v", err)
 		}
 
-		if len(entries) != wantObjs {
-			t.Errorf("expected %d entries in dir, got %d", (wantObjs), len(entries))
+		if len(entries) != len(includedObjs) {
+			t.Errorf("expected %d entries in dir, got %d", len(includedObjs), len(entries))
 		}
 
 		for _, entry := range entries {
@@ -293,6 +313,65 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 			if !entry.IsDir() && entry.Name() != "objA" && entry.Name() != "objB" {
 				t.Errorf("unexpected file %q in dir", entry.Name())
 			}
+		}
+
+		// Test SkipIfExists() by attempting to download the entire directory.
+		// The files previously downloaded (ie. includedObjects) should be skipped.
+		d, err = NewDownloader(c, WithWorkers(2), SkipIfExists())
+		if err != nil {
+			t.Fatalf("NewDownloader: %v", err)
+		}
+
+		objectsDownloaded = 0
+		go trackObjectsDownloaded(&objectsDownloaded)
+
+		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+			OnObjectDownload: func(got *DownloadOutput) {
+				objectDownloaded <- true
+
+				if got.Err != nil {
+					t.Errorf("result.Err: %v", got.Err)
+				}
+
+				for _, obj := range includedObjs {
+					if strings.EqualFold(got.Object, obj) {
+						t.Errorf("should have skipped download of object %s", got.Object)
+					}
+				}
+
+				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+					t.Errorf("expected object size %d, got %d", want, got)
+				}
+
+				path := filepath.Join(localDir, got.Object)
+				f, err := os.Open(path)
+				if err != nil {
+					t.Errorf("os.Open(%q): %v", path, err)
+				}
+				defer f.Close()
+
+				b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
+				if _, err := io.Copy(b, f); err != nil {
+					t.Errorf("io.Copy: %v", err)
+				}
+
+				if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
+					t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+				}
+			},
+		}); err != nil {
+			t.Errorf("d.DownloadDirectory: %v", err)
+		}
+
+		if _, err := d.WaitAndClose(); err != nil {
+			t.Errorf("d.WaitAndClose: %v", err)
+		}
+		done <- true
+
+		if want, got := len(tb.objects)-len(includedObjs), objectsDownloaded; want != got {
+			t.Errorf("expected to receive %d callbacks, got %d", want, got)
 		}
 	})
 }
@@ -481,7 +560,7 @@ func TestIntegration_DownloaderErrorSync(t *testing.T) {
 
 			// Check that the nonexistent object returned an error.
 			if got.Object == nonexistentObject {
-				if got.Err != storage.ErrObjectNotExist {
+				if !errors.Is(got.Err, storage.ErrObjectNotExist) {
 					t.Errorf("Object(%q) should not exist, err found to be %v", got.Object, got.Err)
 				}
 				continue
@@ -639,7 +718,7 @@ func TestIntegration_DownloaderErrorAsync(t *testing.T) {
 				callbackMu.Unlock()
 
 				// Check that the nonexistent object returned an error.
-				if got.Err != storage.ErrObjectNotExist {
+				if !errors.Is(got.Err, storage.ErrObjectNotExist) {
 					t.Errorf("Object(%q) should not exist, err found to be %v", got.Object, got.Err)
 				}
 			},
@@ -721,7 +800,7 @@ func TestIntegration_DownloadShard(t *testing.T) {
 		o := c.Bucket(tb.bucket).Object(objectName)
 		r, err := o.NewReader(ctx)
 		if err != nil {
-			t.Fatalf("o.Attrs: %v", err)
+			t.Fatalf("o.NewReader: %v", err)
 		}
 
 		incorrectGen := r.Attrs.Generation - 1
@@ -1001,6 +1080,8 @@ func (tb *downloadTestBucket) Create(prefix string) error {
 	ctx := context.Background()
 
 	tb.bucket = prefix + uidSpace.New()
+	// Note: some tests depend on these object names.
+	// Verify that tests pass when adding or removing objects.
 	tb.objects = []string{
 		"!#$&'()*+,:;=,?@,[] and spaces",
 		"./obj",
@@ -1030,7 +1111,7 @@ func (tb *downloadTestBucket) Create(prefix string) error {
 
 	// Write objects.
 	for _, obj := range tb.objects {
-		size := randomInt64(1000, maxObjectSize)
+		size := randomInt64(minObjectSize, maxObjectSize)
 		crc, err := generateFileInGCS(ctx, b.Object(obj), size)
 		if err != nil {
 			return fmt.Errorf("generateFileInGCS: %v", err)

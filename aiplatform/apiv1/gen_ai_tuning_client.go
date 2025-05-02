@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -43,6 +46,7 @@ type GenAiTuningCallOptions struct {
 	GetTuningJob       []gax.CallOption
 	ListTuningJobs     []gax.CallOption
 	CancelTuningJob    []gax.CallOption
+	RebaseTunedModel   []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -64,6 +68,7 @@ func defaultGenAiTuningGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -75,6 +80,7 @@ func defaultGenAiTuningCallOptions() *GenAiTuningCallOptions {
 		GetTuningJob:       []gax.CallOption{},
 		ListTuningJobs:     []gax.CallOption{},
 		CancelTuningJob:    []gax.CallOption{},
+		RebaseTunedModel:   []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -97,6 +103,8 @@ type internalGenAiTuningClient interface {
 	GetTuningJob(context.Context, *aiplatformpb.GetTuningJobRequest, ...gax.CallOption) (*aiplatformpb.TuningJob, error)
 	ListTuningJobs(context.Context, *aiplatformpb.ListTuningJobsRequest, ...gax.CallOption) *TuningJobIterator
 	CancelTuningJob(context.Context, *aiplatformpb.CancelTuningJobRequest, ...gax.CallOption) error
+	RebaseTunedModel(context.Context, *aiplatformpb.RebaseTunedModelRequest, ...gax.CallOption) (*RebaseTunedModelOperation, error)
+	RebaseTunedModelOperation(name string) *RebaseTunedModelOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -119,6 +127,11 @@ type GenAiTuningClient struct {
 
 	// The call options for this service.
 	CallOptions *GenAiTuningCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -174,6 +187,17 @@ func (c *GenAiTuningClient) ListTuningJobs(ctx context.Context, req *aiplatformp
 // CANCELLED.
 func (c *GenAiTuningClient) CancelTuningJob(ctx context.Context, req *aiplatformpb.CancelTuningJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelTuningJob(ctx, req, opts...)
+}
+
+// RebaseTunedModel rebase a TunedModel.
+func (c *GenAiTuningClient) RebaseTunedModel(ctx context.Context, req *aiplatformpb.RebaseTunedModelRequest, opts ...gax.CallOption) (*RebaseTunedModelOperation, error) {
+	return c.internalClient.RebaseTunedModel(ctx, req, opts...)
+}
+
+// RebaseTunedModelOperation returns a new RebaseTunedModelOperation from a given name.
+// The name must be that of a previously created RebaseTunedModelOperation, possibly from a different process.
+func (c *GenAiTuningClient) RebaseTunedModelOperation(name string) *RebaseTunedModelOperation {
+	return c.internalClient.RebaseTunedModelOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -250,6 +274,11 @@ type genAiTuningGRPCClient struct {
 	// The gRPC API client.
 	genAiTuningClient aiplatformpb.GenAiTuningServiceClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	iamPolicyClient iampb.IAMPolicyClient
@@ -258,6 +287,8 @@ type genAiTuningGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewGenAiTuningClient creates a new gen ai tuning service client based on gRPC.
@@ -284,6 +315,7 @@ func NewGenAiTuningClient(ctx context.Context, opts ...option.ClientOption) (*Ge
 		connPool:          connPool,
 		genAiTuningClient: aiplatformpb.NewGenAiTuningServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:   iampb.NewIAMPolicyClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
@@ -292,6 +324,17 @@ func NewGenAiTuningClient(ctx context.Context, opts ...option.ClientOption) (*Ge
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -329,7 +372,7 @@ func (c *genAiTuningGRPCClient) CreateTuningJob(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.TuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.genAiTuningClient.CreateTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.genAiTuningClient.CreateTuningJob, req, settings.GRPC, c.logger, "CreateTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -347,7 +390,7 @@ func (c *genAiTuningGRPCClient) GetTuningJob(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.TuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.genAiTuningClient.GetTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.genAiTuningClient.GetTuningJob, req, settings.GRPC, c.logger, "GetTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -376,7 +419,7 @@ func (c *genAiTuningGRPCClient) ListTuningJobs(ctx context.Context, req *aiplatf
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.genAiTuningClient.ListTuningJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.genAiTuningClient.ListTuningJobs, req, settings.GRPC, c.logger, "ListTuningJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -410,10 +453,30 @@ func (c *genAiTuningGRPCClient) CancelTuningJob(ctx context.Context, req *aiplat
 	opts = append((*c.CallOptions).CancelTuningJob[0:len((*c.CallOptions).CancelTuningJob):len((*c.CallOptions).CancelTuningJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.genAiTuningClient.CancelTuningJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.genAiTuningClient.CancelTuningJob, req, settings.GRPC, c.logger, "CancelTuningJob")
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *genAiTuningGRPCClient) RebaseTunedModel(ctx context.Context, req *aiplatformpb.RebaseTunedModelRequest, opts ...gax.CallOption) (*RebaseTunedModelOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RebaseTunedModel[0:len((*c.CallOptions).RebaseTunedModel):len((*c.CallOptions).RebaseTunedModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.genAiTuningClient.RebaseTunedModel, req, settings.GRPC, c.logger, "RebaseTunedModel")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RebaseTunedModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *genAiTuningGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -425,7 +488,7 @@ func (c *genAiTuningGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -454,7 +517,7 @@ func (c *genAiTuningGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -489,7 +552,7 @@ func (c *genAiTuningGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -507,7 +570,7 @@ func (c *genAiTuningGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -525,7 +588,7 @@ func (c *genAiTuningGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -542,7 +605,7 @@ func (c *genAiTuningGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -556,7 +619,7 @@ func (c *genAiTuningGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -571,7 +634,7 @@ func (c *genAiTuningGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -600,7 +663,7 @@ func (c *genAiTuningGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -635,11 +698,19 @@ func (c *genAiTuningGRPCClient) WaitOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+// RebaseTunedModelOperation returns a new RebaseTunedModelOperation from a given name.
+// The name must be that of a previously created RebaseTunedModelOperation, possibly from a different process.
+func (c *genAiTuningGRPCClient) RebaseTunedModelOperation(name string) *RebaseTunedModelOperation {
+	return &RebaseTunedModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }

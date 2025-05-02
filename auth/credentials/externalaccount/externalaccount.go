@@ -17,12 +17,14 @@ package externalaccount
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"cloud.google.com/go/auth"
 	iexacc "cloud.google.com/go/auth/credentials/internal/externalaccount"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 // Options for creating a [cloud.google.com/go/auth.Credentials].
@@ -95,26 +97,36 @@ type Options struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
 	Client *http.Client
+	// Logger is used for debug logging. If provided, logging will be enabled
+	// at the loggers configured level. By default logging is disabled unless
+	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
+	// logger will be used. Optional.
+	Logger *slog.Logger
 }
 
 // CredentialSource stores the information necessary to retrieve the credentials for the STS exchange.
 type CredentialSource struct {
 	// File is the location for file sourced credentials.
-	// One field amongst File, URL, Executable, or EnvironmentID should be
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
 	// provided, depending on the kind of credential in question.
 	File string
 	// Url is the URL to call for URL sourced credentials.
-	// One field amongst File, URL, Executable, or EnvironmentID should be
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
 	// provided, depending on the kind of credential in question.
 	URL string
 	// Executable is the configuration object for executable sourced credentials.
-	// One field amongst File, URL, Executable, or EnvironmentID should be
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
 	// provided, depending on the kind of credential in question.
 	Executable *ExecutableConfig
 	// EnvironmentID is the EnvironmentID used for AWS sourced credentials.
 	// This should start with "AWS".
-	// One field amongst File, URL, Executable, or EnvironmentID should be provided, depending on the kind of credential in question.
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
+	// provided, depending on the kind of credential in question.
 	EnvironmentID string
+	// Certificate is the configuration object for certificate sourced credentials.
+	// One field amongst File, URL, Executable, Certificate, or EnvironmentID should be
+	// provided, depending on the kind of credential in question.
+	Certificate *CertificateConfig
 
 	// Headers are the headers to attach to the request for URL sourced
 	// credentials.
@@ -158,6 +170,31 @@ type ExecutableConfig struct {
 	// OutputFile is the absolute path to the output file where the executable will cache the response.
 	// If specified the auth libraries will first check this location before running the executable. Optional.
 	OutputFile string
+}
+
+// CertificateConfig represents the options used to set up X.509-based workload
+// credentials. It specifies how to locate and use the client certificate,
+// private key, and optional trust chain for mTLS authentication.
+// This configuration is used within the [CredentialSource] struct.
+type CertificateConfig struct {
+	// UseDefaultCertificateConfig, if true, attempts to load the default
+	// certificate configuration. It checks the GOOGLE_API_CERTIFICATE_CONFIG
+	// environment variable first, then a conventional default file location.
+	// Cannot be true if CertificateConfigLocation is set.
+	UseDefaultCertificateConfig bool `json:"use_default_certificate_config"`
+	// CertificateConfigLocation specifies the path to the client certificate
+	// and private key file. Must be set if UseDefaultCertificateConfig is
+	// false or unset.
+	CertificateConfigLocation string `json:"certificate_config_location"`
+	// TrustChainPath specifies the path to a PEM-formatted file containing
+	// the X.509 certificate trust chain. This file should contain any
+	// intermediate certificates required to complete the trust chain between
+	// the leaf certificate (used for mTLS) and the root certificate(s) in
+	// your workload identity pool's trust store. The leaf certificate and
+	// any certificates already present in the workload identity pool's trust
+	// store are optional in this file. Certificates should be ordered with the
+	// leaf certificate (or the certificate which signed the leaf) first.
+	TrustChainPath string `json:"trust_chain_path"`
 }
 
 // SubjectTokenProvider can be used to supply a subject token to exchange for a
@@ -219,7 +256,7 @@ func (o *Options) client() *http.Client {
 	if o.Client != nil {
 		return o.Client
 	}
-	return internal.CloneDefaultClient()
+	return internal.DefaultClient()
 }
 
 func (o *Options) toInternalOpts() *iexacc.Options {
@@ -242,6 +279,8 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 		SubjectTokenProvider:           toInternalSubjectTokenProvider(o.SubjectTokenProvider),
 		AwsSecurityCredentialsProvider: toInternalAwsSecurityCredentialsProvider(o.AwsSecurityCredentialsProvider),
 		Client:                         o.client(),
+		IsDefaultClient:                o.Client == nil,
+		Logger:                         internallog.New(o.Logger),
 	}
 	if o.CredentialSource != nil {
 		cs := o.CredentialSource
@@ -268,6 +307,14 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 			iOpts.CredentialSource.Format = &credsfile.Format{
 				Type:                  csf.Type,
 				SubjectTokenFieldName: csf.SubjectTokenFieldName,
+			}
+		}
+		if cs.Certificate != nil {
+			csc := cs.Certificate
+			iOpts.CredentialSource.Certificate = &credsfile.CertificateConfig{
+				UseDefaultCertificateConfig: csc.UseDefaultCertificateConfig,
+				CertificateConfigLocation:   csc.CertificateConfigLocation,
+				TrustChainPath:              csc.TrustChainPath,
 			}
 		}
 	}

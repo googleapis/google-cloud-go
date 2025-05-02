@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -687,6 +686,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new datastream client based on gRPC.
@@ -713,6 +714,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      datastreampb.NewDatastreamClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -775,6 +777,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new datastream rest client.
@@ -792,6 +796,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -865,7 +870,7 @@ func (c *gRPCClient) ListConnectionProfiles(ctx context.Context, req *datastream
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListConnectionProfiles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListConnectionProfiles, req, settings.GRPC, c.logger, "ListConnectionProfiles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -900,7 +905,7 @@ func (c *gRPCClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 	var resp *datastreampb.ConnectionProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetConnectionProfile, req, settings.GRPC, c.logger, "GetConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -918,7 +923,7 @@ func (c *gRPCClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateConnectionProfile, req, settings.GRPC, c.logger, "CreateConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -938,7 +943,7 @@ func (c *gRPCClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateConnectionProfile, req, settings.GRPC, c.logger, "UpdateConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -958,7 +963,7 @@ func (c *gRPCClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteConnectionProfile, req, settings.GRPC, c.logger, "DeleteConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -978,7 +983,7 @@ func (c *gRPCClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 	var resp *datastreampb.DiscoverConnectionProfileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DiscoverConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DiscoverConnectionProfile, req, settings.GRPC, c.logger, "DiscoverConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1007,7 +1012,7 @@ func (c *gRPCClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListStreams(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListStreams, req, settings.GRPC, c.logger, "ListStreams")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1042,7 +1047,7 @@ func (c *gRPCClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 	var resp *datastreampb.Stream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetStream, req, settings.GRPC, c.logger, "GetStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1060,7 +1065,7 @@ func (c *gRPCClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateStream, req, settings.GRPC, c.logger, "CreateStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1080,7 +1085,7 @@ func (c *gRPCClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateStream, req, settings.GRPC, c.logger, "UpdateStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1100,7 +1105,7 @@ func (c *gRPCClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteStream, req, settings.GRPC, c.logger, "DeleteStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1120,7 +1125,7 @@ func (c *gRPCClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FetchErrors(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FetchErrors, req, settings.GRPC, c.logger, "FetchErrors")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1151,7 +1156,7 @@ func (c *gRPCClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.FetchStaticIps(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.FetchStaticIps, req, settings.GRPC, c.logger, "FetchStaticIps")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1186,7 +1191,7 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreatePrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreatePrivateConnection, req, settings.GRPC, c.logger, "CreatePrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1206,7 +1211,7 @@ func (c *gRPCClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 	var resp *datastreampb.PrivateConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPrivateConnection, req, settings.GRPC, c.logger, "GetPrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1235,7 +1240,7 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *datastream
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPrivateConnections(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPrivateConnections, req, settings.GRPC, c.logger, "ListPrivateConnections")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1270,7 +1275,7 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeletePrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeletePrivateConnection, req, settings.GRPC, c.logger, "DeletePrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1290,7 +1295,7 @@ func (c *gRPCClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateRoute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateRoute, req, settings.GRPC, c.logger, "CreateRoute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1310,7 +1315,7 @@ func (c *gRPCClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 	var resp *datastreampb.Route
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetRoute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetRoute, req, settings.GRPC, c.logger, "GetRoute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1339,7 +1344,7 @@ func (c *gRPCClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRoutes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRoutes, req, settings.GRPC, c.logger, "ListRoutes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1374,7 +1379,7 @@ func (c *gRPCClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteRoute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteRoute, req, settings.GRPC, c.logger, "DeleteRoute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1437,21 +1442,10 @@ func (c *restClient) ListConnectionProfiles(ctx context.Context, req *datastream
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConnectionProfiles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1514,17 +1508,7 @@ func (c *restClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConnectionProfile")
 		if err != nil {
 			return err
 		}
@@ -1584,21 +1568,10 @@ func (c *restClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConnectionProfile")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1637,11 +1610,11 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1665,21 +1638,10 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConnectionProfile")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1732,21 +1694,10 @@ func (c *restClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConnectionProfile")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1806,17 +1757,7 @@ func (c *restClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DiscoverConnectionProfile")
 		if err != nil {
 			return err
 		}
@@ -1884,21 +1825,10 @@ func (c *restClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListStreams")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1961,17 +1891,7 @@ func (c *restClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetStream")
 		if err != nil {
 			return err
 		}
@@ -2037,21 +1957,10 @@ func (c *restClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateStream")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2093,11 +2002,11 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2124,21 +2033,10 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateStream")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2191,21 +2089,10 @@ func (c *restClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteStream")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2261,21 +2148,10 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchErrors")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2340,21 +2216,10 @@ func (c *restClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchStaticIps")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2427,21 +2292,10 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePrivateConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2492,17 +2346,7 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPrivateConnection")
 		if err != nil {
 			return err
 		}
@@ -2571,21 +2415,10 @@ func (c *restClient) ListPrivateConnections(ctx context.Context, req *datastream
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPrivateConnections")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2653,21 +2486,10 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePrivateConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2729,21 +2551,10 @@ func (c *restClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRoute")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2794,17 +2605,7 @@ func (c *restClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRoute")
 		if err != nil {
 			return err
 		}
@@ -2873,21 +2674,10 @@ func (c *restClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRoutes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2952,21 +2742,10 @@ func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRoute")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

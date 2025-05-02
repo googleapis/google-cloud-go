@@ -21,7 +21,10 @@ import (
 	"io"
 	"net"
 	"net/url"
+	"os"
 	"strings"
+	"sync"
+	"time"
 
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/version"
@@ -38,9 +41,24 @@ var defaultRetry *retryConfig = &retryConfig{}
 var xGoogDefaultHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), sinternal.Version)
 
 const (
-	xGoogHeaderKey       = "x-goog-api-client"
-	idempotencyHeaderKey = "x-goog-gcs-idempotency-token"
+	xGoogHeaderKey            = "x-goog-api-client"
+	idempotencyHeaderKey      = "x-goog-gcs-idempotency-token"
+	cookieHeaderKey           = "cookie"
+	directpathCookieHeaderKey = "x-directpath-tracing-cookie"
 )
+
+var (
+	cookieHeader = sync.OnceValue(func() string {
+		return os.Getenv("GOOGLE_SDK_GO_TRACING_COOKIE")
+	})
+)
+
+func (r *retryConfig) runShouldRetry(err error) bool {
+	if r == nil || r.shouldRetry == nil {
+		return ShouldRetry(err)
+	}
+	return r.shouldRetry(err)
+}
 
 // run determines whether a retry is necessary based on the config and
 // idempotency information. It then calls the function with or without retries
@@ -62,19 +80,41 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		bo.Initial = retry.backoff.Initial
 		bo.Max = retry.backoff.Max
 	}
-	var errorFunc func(err error) bool = ShouldRetry
-	if retry.shouldRetry != nil {
-		errorFunc = retry.shouldRetry
+
+	var quitAfterTimer *time.Timer
+	if retry.maxRetryDuration != 0 {
+		quitAfterTimer = time.NewTimer(retry.maxRetryDuration)
+		defer quitAfterTimer.Stop()
 	}
 
+	var lastErr error
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
+		if retry.maxRetryDuration != 0 {
+			select {
+			case <-quitAfterTimer.C:
+				if lastErr == nil {
+					return true, fmt.Errorf("storage: request not sent, choose a larger value for the retry deadline (currently set to %s)", retry.maxRetryDuration)
+				}
+				return true, fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %w", retry.maxRetryDuration, attempts, lastErr)
+			default:
+			}
+		}
+
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
-		err = call(ctxWithHeaders)
-		if err != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
-			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, err)
+		lastErr = call(ctxWithHeaders)
+		if lastErr != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
+			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, lastErr)
 		}
 		attempts++
-		return !errorFunc(err), err
+		retryable := retry.runShouldRetry(lastErr)
+		// Explicitly check context cancellation so that we can distinguish between a
+		// DEADLINE_EXCEEDED error from the server and a user-set context deadline.
+		// Unfortunately gRPC will codes.DeadlineExceeded (which may be retryable if it's
+		// sent by the server) in both cases.
+		if ctxErr := ctx.Err(); errors.Is(ctxErr, context.Canceled) || errors.Is(ctxErr, context.DeadlineExceeded) {
+			retryable = false
+		}
+		return !retryable, lastErr
 	})
 }
 
@@ -86,6 +126,12 @@ func setInvocationHeaders(ctx context.Context, invocationID string, attempts int
 
 	ctx = callctx.SetHeaders(ctx, xGoogHeaderKey, xGoogHeader)
 	ctx = callctx.SetHeaders(ctx, idempotencyHeaderKey, invocationID)
+
+	if c := cookieHeader(); c != "" {
+		ctx = callctx.SetHeaders(ctx, cookieHeaderKey, c)
+		ctx = callctx.SetHeaders(ctx, directpathCookieHeaderKey, c)
+	}
+
 	return ctx
 }
 
@@ -124,14 +170,18 @@ func ShouldRetry(err error) bool {
 				return true
 			}
 		}
+	case *net.DNSError:
+		if e.IsTemporary {
+			return true
+		}
 	case interface{ Temporary() bool }:
 		if e.Temporary() {
 			return true
 		}
 	}
-	// UNAVAILABLE, RESOURCE_EXHAUSTED, and INTERNAL codes are all retryable for gRPC.
+	// UNAVAILABLE, RESOURCE_EXHAUSTED, INTERNAL, and DEADLINE_EXCEEDED codes are all retryable for gRPC.
 	if st, ok := status.FromError(err); ok {
-		if code := st.Code(); code == codes.Unavailable || code == codes.ResourceExhausted || code == codes.Internal {
+		if code := st.Code(); code == codes.Unavailable || code == codes.ResourceExhausted || code == codes.Internal || code == codes.DeadlineExceeded {
 			return true
 		}
 	}

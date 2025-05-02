@@ -1,5 +1,82 @@
 # Changes
 
+## [1.15.5](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.4...eventarc/v1.15.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **eventarc:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.15.4](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.3...eventarc/v1.15.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **eventarc:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.2...eventarc/v1.15.3) (2025-03-12)
+
+
+### Documentation
+
+* **eventarc/publishing:** Documentation improvements for the Publisher service ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **eventarc/publishing:** Minor documentation improvements ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+
+## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.1...eventarc/v1.15.2) (2025-03-06)
+
+
+### Bug Fixes
+
+* **eventarc:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.0...eventarc/v1.15.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **eventarc:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.14.2...eventarc/v1.15.0) (2024-11-06)
+
+
+### Features
+
+* **eventarc:** Publish Eventarc Advanced protos ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
+
+### Documentation
+
+* **eventarc:** Clarified multiple comments in Eventarc Standard protos ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.14.1...eventarc/v1.14.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **eventarc:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **eventarc:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.14.0...eventarc/v1.14.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **eventarc:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.13.11...eventarc/v1.14.0) (2024-08-20)
+
+
+### Features
+
+* **eventarc:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.13.11](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.13.10...eventarc/v1.13.11) (2024-08-08)
+
+
+### Bug Fixes
+
+* **eventarc:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.13.10](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.13.9...eventarc/v1.13.10) (2024-07-24)
 
 

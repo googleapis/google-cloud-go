@@ -33,10 +33,12 @@ import (
 const (
 	textBaseCredPath                              = "testdata/3pi_cred.txt"
 	jsonBaseCredPath                              = "testdata/3pi_cred.json"
+	certConfigCredPath                            = "testdata/certificate_config_workload.json"
 	baseCredsRequestBody                          = "audience=32555940559.apps.googleusercontent.com&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aaccess_token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdevstorage.full_control&subject_token=street123&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token"
 	baseCredsResponseBody                         = `{"access_token":"Sample.Access.Token","issued_token_type":"urn:ietf:params:oauth:token-type:access_token","token_type":"Bearer","expires_in":3600,"scope":"https://www.googleapis.com/auth/cloud-platform"}`
 	workforcePoolRequestBodyWithClientID          = "audience=%2F%2Fiam.googleapis.com%2Flocations%2Feu%2FworkforcePools%2Fpool-id%2Fproviders%2Fprovider-id&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aaccess_token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdevstorage.full_control&subject_token=street123&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token"
 	workforcePoolRequestBodyWithoutClientID       = "audience=%2F%2Fiam.googleapis.com%2Flocations%2Feu%2FworkforcePools%2Fpool-id%2Fproviders%2Fprovider-id&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange&options=%7B%22userProject%22%3A%22myProject%22%7D&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aaccess_token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdevstorage.full_control&subject_token=street123&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token"
+	x509CredsRequestBody                          = "audience=32555940559.apps.googleusercontent.com&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aaccess_token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdevstorage.full_control&subject_token=&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Amtls"
 	correctAT                                     = "Sample.Access.Token"
 	expiry                                  int64 = 234852
 )
@@ -50,7 +52,7 @@ var (
 		ClientID:         "rbrgnognrhongo3bi4gb9ghg9g",
 		CredentialSource: testBaseCredSource,
 		Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
-		Client:           internal.CloneDefaultClient(),
+		Client:           internal.DefaultClient(),
 	}
 	testBaseCredSource = &credsfile.CredentialSource{
 		File:   textBaseCredPath,
@@ -221,7 +223,7 @@ func TestNonworkforceWithWorkforcePoolUserProject(t *testing.T) {
 		CredentialSource:         testBaseCredSource,
 		Scopes:                   []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 		WorkforcePoolUserProject: "myProject",
-		Client:                   internal.CloneDefaultClient(),
+		Client:                   internal.DefaultClient(),
 	}
 
 	_, err := NewTokenProvider(opts)
@@ -318,7 +320,7 @@ func run(t *testing.T, opts *Options, tets *testExchangeTokenServer) (*auth.Toke
 	}
 	tp := &tokenProvider{
 		opts:   opts,
-		client: internal.CloneDefaultClient(),
+		client: internal.DefaultClient(),
 		stp:    stp,
 	}
 
@@ -347,7 +349,7 @@ func cloneTestOpts() *Options {
 		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 		ClientSecret:                   "notsosecret",
 		ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-		Client:                         internal.CloneDefaultClient(),
+		Client:                         internal.DefaultClient(),
 	}
 }
 
@@ -371,7 +373,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 			},
 		},
@@ -384,7 +386,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 			},
 			wantErr: true,
@@ -398,7 +400,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 			},
 			wantErr: true,
@@ -414,7 +416,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 			},
 			wantErr: true,
@@ -429,7 +431,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 			},
 			wantErr: true,
 		},
@@ -443,7 +445,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 				SubjectTokenProvider:           fakeSubjectTokenProvider{},
 			},
@@ -460,6 +462,177 @@ func TestOptionsValidate(t *testing.T) {
 				t.Fatalf("o.validate() = non-nil error, want error")
 			}
 		})
+	}
+}
+
+func TestClient(t *testing.T) {
+	goodCertConfigFileLocation := credsfile.CertificateConfig{
+		CertificateConfigLocation: "testdata/certificate_config_workload.json",
+	}
+	goodCertConfigEnvLocation := credsfile.CertificateConfig{
+		UseDefaultCertificateConfig: true,
+	}
+	badCertConfig := credsfile.CertificateConfig{
+		CertificateConfigLocation: "bad_file.json",
+	}
+	t.Setenv("GOOGLE_API_CERTIFICATE_CONFIG", "testdata/certificate_config_workload.json")
+
+	client := internal.DefaultClient()
+
+	tests := []struct {
+		name              string
+		o                 *Options
+		wantErr           bool
+		wantClientChanged bool
+	}{
+		{
+			name: "isDefault true with no certificate config",
+			o: &Options{
+				Audience:                       "32555940559.apps.googleusercontent.com",
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                true,
+				CredentialSource:               testBaseCredSource,
+			},
+			wantErr:           false,
+			wantClientChanged: false,
+		},
+		{
+			name: "isDefault false with no certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                false,
+				CredentialSource:               testBaseCredSource,
+			},
+			wantErr:           false,
+			wantClientChanged: false,
+		},
+		{
+			name: "isDefault false with override certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                false,
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfigFileLocation},
+			},
+			wantErr:           false,
+			wantClientChanged: true,
+		},
+		{
+			name: "isDefault true with override certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                true,
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfigFileLocation},
+			},
+			wantErr:           false,
+			wantClientChanged: true,
+		},
+		{
+			name: "isDefault false with default certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                false,
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfigEnvLocation},
+			},
+			wantErr:           false,
+			wantClientChanged: false,
+		},
+		{
+			name: "isDefault true with default certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                true,
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfigEnvLocation},
+			},
+			wantErr:           false,
+			wantClientChanged: true,
+		},
+		{
+			name: "isDefault false with bad certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                false,
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &badCertConfig},
+			},
+			wantErr:           true,
+			wantClientChanged: true,
+		},
+		{
+			name: "isDefault true with bad certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                true,
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &badCertConfig},
+			},
+			wantErr:           true,
+			wantClientChanged: true,
+		},
+	}
+	for _, tc := range tests {
+		actualClient, err := tc.o.client()
+		if err == nil && tc.wantErr {
+			t.Fatalf("o.validate() = nil, want error")
+		}
+		if err != nil && !tc.wantErr {
+			t.Fatalf(err.Error())
+		}
+
+		if tc.wantClientChanged {
+			if actualClient == client {
+				t.Fatalf("wanted client to change, but default was used")
+			}
+		} else {
+			if actualClient != client {
+				t.Fatalf("wanted default client, but client was changed. %s", tc.name)
+			}
+		}
 	}
 }
 

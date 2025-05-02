@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -49,6 +48,7 @@ type FeatureOnlineStoreCallOptions struct {
 	FetchFeatureValues          []gax.CallOption
 	StreamingFetchFeatureValues []gax.CallOption
 	SearchNearestEntities       []gax.CallOption
+	FeatureViewDirectWrite      []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	GetIamPolicy                []gax.CallOption
@@ -70,6 +70,7 @@ func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -80,6 +81,7 @@ func defaultFeatureOnlineStoreCallOptions() *FeatureOnlineStoreCallOptions {
 		FetchFeatureValues:          []gax.CallOption{},
 		StreamingFetchFeatureValues: []gax.CallOption{},
 		SearchNearestEntities:       []gax.CallOption{},
+		FeatureViewDirectWrite:      []gax.CallOption{},
 		GetLocation:                 []gax.CallOption{},
 		ListLocations:               []gax.CallOption{},
 		GetIamPolicy:                []gax.CallOption{},
@@ -98,6 +100,7 @@ func defaultFeatureOnlineStoreRESTCallOptions() *FeatureOnlineStoreCallOptions {
 		FetchFeatureValues:          []gax.CallOption{},
 		StreamingFetchFeatureValues: []gax.CallOption{},
 		SearchNearestEntities:       []gax.CallOption{},
+		FeatureViewDirectWrite:      []gax.CallOption{},
 		GetLocation:                 []gax.CallOption{},
 		ListLocations:               []gax.CallOption{},
 		GetIamPolicy:                []gax.CallOption{},
@@ -119,6 +122,7 @@ type internalFeatureOnlineStoreClient interface {
 	FetchFeatureValues(context.Context, *aiplatformpb.FetchFeatureValuesRequest, ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error)
 	StreamingFetchFeatureValues(context.Context, ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error)
 	SearchNearestEntities(context.Context, *aiplatformpb.SearchNearestEntitiesRequest, ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error)
+	FeatureViewDirectWrite(context.Context, ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -185,6 +189,15 @@ func (c *FeatureOnlineStoreClient) StreamingFetchFeatureValues(ctx context.Conte
 // indexable, returns Invalid argument response.
 func (c *FeatureOnlineStoreClient) SearchNearestEntities(ctx context.Context, req *aiplatformpb.SearchNearestEntitiesRequest, opts ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error) {
 	return c.internalClient.SearchNearestEntities(ctx, req, opts...)
+}
+
+// FeatureViewDirectWrite bidirectional streaming RPC to directly write to feature values in a
+// feature view. Requests may not have a one-to-one mapping to responses and
+// responses may be returned out-of-order to reduce latency.
+//
+// This method is not supported for the REST transport.
+func (c *FeatureOnlineStoreClient) FeatureViewDirectWrite(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error) {
+	return c.internalClient.FeatureViewDirectWrite(ctx, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -269,6 +282,8 @@ type featureOnlineStoreGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFeatureOnlineStoreClient creates a new feature online store service client based on gRPC.
@@ -295,6 +310,7 @@ func NewFeatureOnlineStoreClient(ctx context.Context, opts ...option.ClientOptio
 		connPool:                 connPool,
 		featureOnlineStoreClient: aiplatformpb.NewFeatureOnlineStoreServiceClient(connPool),
 		CallOptions:              &client.CallOptions,
+		logger:                   internaloption.GetLogger(opts),
 		operationsClient:         longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:          iampb.NewIAMPolicyClient(connPool),
 		locationsClient:          locationpb.NewLocationsClient(connPool),
@@ -344,6 +360,8 @@ type featureOnlineStoreRESTClient struct {
 
 	// Points back to the CallOptions field of the containing FeatureOnlineStoreClient
 	CallOptions **FeatureOnlineStoreCallOptions
+
+	logger *slog.Logger
 }
 
 // NewFeatureOnlineStoreRESTClient creates a new feature online store service rest client.
@@ -361,6 +379,7 @@ func NewFeatureOnlineStoreRESTClient(ctx context.Context, opts ...option.ClientO
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -375,6 +394,7 @@ func defaultFeatureOnlineStoreRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -412,7 +432,7 @@ func (c *featureOnlineStoreGRPCClient) FetchFeatureValues(ctx context.Context, r
 	var resp *aiplatformpb.FetchFeatureValuesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreClient.FetchFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreClient.FetchFeatureValues, req, settings.GRPC, c.logger, "FetchFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -427,7 +447,9 @@ func (c *featureOnlineStoreGRPCClient) StreamingFetchFeatureValues(ctx context.C
 	opts = append((*c.CallOptions).StreamingFetchFeatureValues[0:len((*c.CallOptions).StreamingFetchFeatureValues):len((*c.CallOptions).StreamingFetchFeatureValues)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingFetchFeatureValues")
 		resp, err = c.featureOnlineStoreClient.StreamingFetchFeatureValues(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingFetchFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -445,7 +467,24 @@ func (c *featureOnlineStoreGRPCClient) SearchNearestEntities(ctx context.Context
 	var resp *aiplatformpb.SearchNearestEntitiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreClient.SearchNearestEntities(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreClient.SearchNearestEntities, req, settings.GRPC, c.logger, "SearchNearestEntities")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureOnlineStoreGRPCClient) FeatureViewDirectWrite(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient
+	opts = append((*c.CallOptions).FeatureViewDirectWrite[0:len((*c.CallOptions).FeatureViewDirectWrite):len((*c.CallOptions).FeatureViewDirectWrite)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "FeatureViewDirectWrite")
+		resp, err = c.featureOnlineStoreClient.FeatureViewDirectWrite(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "FeatureViewDirectWrite")
 		return err
 	}, opts...)
 	if err != nil {
@@ -463,7 +502,7 @@ func (c *featureOnlineStoreGRPCClient) GetLocation(ctx context.Context, req *loc
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -492,7 +531,7 @@ func (c *featureOnlineStoreGRPCClient) ListLocations(ctx context.Context, req *l
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -527,7 +566,7 @@ func (c *featureOnlineStoreGRPCClient) GetIamPolicy(ctx context.Context, req *ia
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -545,7 +584,7 @@ func (c *featureOnlineStoreGRPCClient) SetIamPolicy(ctx context.Context, req *ia
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -563,7 +602,7 @@ func (c *featureOnlineStoreGRPCClient) TestIamPermissions(ctx context.Context, r
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -580,7 +619,7 @@ func (c *featureOnlineStoreGRPCClient) CancelOperation(ctx context.Context, req 
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -594,7 +633,7 @@ func (c *featureOnlineStoreGRPCClient) DeleteOperation(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -609,7 +648,7 @@ func (c *featureOnlineStoreGRPCClient) GetOperation(ctx context.Context, req *lo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -638,7 +677,7 @@ func (c *featureOnlineStoreGRPCClient) ListOperations(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -673,7 +712,7 @@ func (c *featureOnlineStoreGRPCClient) WaitOperation(ctx context.Context, req *l
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -721,17 +760,7 @@ func (c *featureOnlineStoreRESTClient) FetchFeatureValues(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchFeatureValues")
 		if err != nil {
 			return err
 		}
@@ -798,17 +827,7 @@ func (c *featureOnlineStoreRESTClient) SearchNearestEntities(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchNearestEntities")
 		if err != nil {
 			return err
 		}
@@ -823,6 +842,15 @@ func (c *featureOnlineStoreRESTClient) SearchNearestEntities(ctx context.Context
 		return nil, e
 	}
 	return resp, nil
+}
+
+// FeatureViewDirectWrite bidirectional streaming RPC to directly write to feature values in a
+// feature view. Requests may not have a one-to-one mapping to responses and
+// responses may be returned out-of-order to reduce latency.
+//
+// This method is not supported for the REST transport.
+func (c *featureOnlineStoreRESTClient) FeatureViewDirectWrite(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error) {
+	return nil, errors.New("FeatureViewDirectWrite not yet supported for REST clients")
 }
 
 // GetLocation gets information about a location.
@@ -858,17 +886,7 @@ func (c *featureOnlineStoreRESTClient) GetLocation(ctx context.Context, req *loc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -933,21 +951,10 @@ func (c *featureOnlineStoreRESTClient) ListLocations(ctx context.Context, req *l
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1017,17 +1024,7 @@ func (c *featureOnlineStoreRESTClient) GetIamPolicy(ctx context.Context, req *ia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1087,17 +1084,7 @@ func (c *featureOnlineStoreRESTClient) SetIamPolicy(ctx context.Context, req *ia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1159,17 +1146,7 @@ func (c *featureOnlineStoreRESTClient) TestIamPermissions(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1216,15 +1193,8 @@ func (c *featureOnlineStoreRESTClient) CancelOperation(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1258,15 +1228,8 @@ func (c *featureOnlineStoreRESTClient) DeleteOperation(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -1303,17 +1266,7 @@ func (c *featureOnlineStoreRESTClient) GetOperation(ctx context.Context, req *lo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1378,21 +1331,10 @@ func (c *featureOnlineStoreRESTClient) ListOperations(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1433,11 +1375,11 @@ func (c *featureOnlineStoreRESTClient) WaitOperation(ctx context.Context, req *l
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1462,17 +1404,7 @@ func (c *featureOnlineStoreRESTClient) WaitOperation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "WaitOperation")
 		if err != nil {
 			return err
 		}

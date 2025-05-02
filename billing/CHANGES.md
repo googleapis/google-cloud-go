@@ -1,5 +1,69 @@
 # Changes
 
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.20.3...billing/v1.20.4) (2025-04-15)
+
+
+### Bug Fixes
+
+* **billing:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/billing/v1.20.2...billing/v1.20.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **billing:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.20.1...billing/v1.20.2) (2025-03-06)
+
+
+### Bug Fixes
+
+* **billing:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.20.0...billing/v1.20.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **billing:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.19.2...billing/v1.20.0) (2024-12-04)
+
+
+### Features
+
+* **billing:** Added currency field to billing account message ([d3de944](https://github.com/googleapis/google-cloud-go/commit/d3de9448192d4caf8506964cdc494d33f6b82070))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.19.1...billing/v1.19.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **billing:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **billing:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.19.0...billing/v1.19.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **billing:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.10...billing/v1.19.0) (2024-08-20)
+
+
+### Features
+
+* **billing:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.18.10](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.9...billing/v1.18.10) (2024-08-08)
+
+
+### Bug Fixes
+
+* **billing:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.18.9](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.8...billing/v1.18.9) (2024-07-24)
 
 

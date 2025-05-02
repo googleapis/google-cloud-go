@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -334,6 +333,8 @@ type engineGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewEngineClient creates a new engine service client based on gRPC.
@@ -361,6 +362,7 @@ func NewEngineClient(ctx context.Context, opts ...option.ClientOption) (*EngineC
 		connPool:         connPool,
 		engineClient:     discoveryenginepb.NewEngineServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -424,6 +426,8 @@ type engineRESTClient struct {
 
 	// Points back to the CallOptions field of the containing EngineClient
 	CallOptions **EngineCallOptions
+
+	logger *slog.Logger
 }
 
 // NewEngineRESTClient creates a new engine service rest client.
@@ -442,6 +446,7 @@ func NewEngineRESTClient(ctx context.Context, opts ...option.ClientOption) (*Eng
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -504,7 +509,7 @@ func (c *engineGRPCClient) CreateEngine(ctx context.Context, req *discoveryengin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.engineClient.CreateEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.engineClient.CreateEngine, req, settings.GRPC, c.logger, "CreateEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -524,7 +529,7 @@ func (c *engineGRPCClient) DeleteEngine(ctx context.Context, req *discoveryengin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.engineClient.DeleteEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.engineClient.DeleteEngine, req, settings.GRPC, c.logger, "DeleteEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -544,7 +549,7 @@ func (c *engineGRPCClient) UpdateEngine(ctx context.Context, req *discoveryengin
 	var resp *discoveryenginepb.Engine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.engineClient.UpdateEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.engineClient.UpdateEngine, req, settings.GRPC, c.logger, "UpdateEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -562,7 +567,7 @@ func (c *engineGRPCClient) GetEngine(ctx context.Context, req *discoveryenginepb
 	var resp *discoveryenginepb.Engine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.engineClient.GetEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.engineClient.GetEngine, req, settings.GRPC, c.logger, "GetEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -591,7 +596,7 @@ func (c *engineGRPCClient) ListEngines(ctx context.Context, req *discoveryengine
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.engineClient.ListEngines(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.engineClient.ListEngines, req, settings.GRPC, c.logger, "ListEngines")
 			return err
 		}, opts...)
 		if err != nil {
@@ -626,7 +631,7 @@ func (c *engineGRPCClient) PauseEngine(ctx context.Context, req *discoveryengine
 	var resp *discoveryenginepb.Engine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.engineClient.PauseEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.engineClient.PauseEngine, req, settings.GRPC, c.logger, "PauseEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -644,7 +649,7 @@ func (c *engineGRPCClient) ResumeEngine(ctx context.Context, req *discoveryengin
 	var resp *discoveryenginepb.Engine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.engineClient.ResumeEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.engineClient.ResumeEngine, req, settings.GRPC, c.logger, "ResumeEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -662,7 +667,7 @@ func (c *engineGRPCClient) TuneEngine(ctx context.Context, req *discoveryenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.engineClient.TuneEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.engineClient.TuneEngine, req, settings.GRPC, c.logger, "TuneEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -681,7 +686,7 @@ func (c *engineGRPCClient) CancelOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -696,7 +701,7 @@ func (c *engineGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -725,7 +730,7 @@ func (c *engineGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -791,21 +796,10 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEngine")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -855,21 +849,10 @@ func (c *engineRESTClient) DeleteEngine(ctx context.Context, req *discoveryengin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEngine")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -905,11 +888,11 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -934,17 +917,7 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEngine")
 		if err != nil {
 			return err
 		}
@@ -994,17 +967,7 @@ func (c *engineRESTClient) GetEngine(ctx context.Context, req *discoveryenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEngine")
 		if err != nil {
 			return err
 		}
@@ -1070,21 +1033,10 @@ func (c *engineRESTClient) ListEngines(ctx context.Context, req *discoveryengine
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEngines")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1155,17 +1107,7 @@ func (c *engineRESTClient) PauseEngine(ctx context.Context, req *discoveryengine
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PauseEngine")
 		if err != nil {
 			return err
 		}
@@ -1223,17 +1165,7 @@ func (c *engineRESTClient) ResumeEngine(ctx context.Context, req *discoveryengin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumeEngine")
 		if err != nil {
 			return err
 		}
@@ -1290,21 +1222,10 @@ func (c *engineRESTClient) TuneEngine(ctx context.Context, req *discoveryenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TuneEngine")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1358,15 +1279,8 @@ func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1403,17 +1317,7 @@ func (c *engineRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1478,21 +1382,10 @@ func (c *engineRESTClient) ListOperations(ctx context.Context, req *longrunningp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

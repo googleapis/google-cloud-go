@@ -1,5 +1,81 @@
 # Changes
 
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.27.0...speech/v1.27.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **speech:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.26.1...speech/v1.27.0) (2025-04-15)
+
+
+### Features
+
+* **speech:** Add ALAW support to RecognitionConfig ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **speech:** Add new fields to CustomClass and PhraseSet.Phrase messages ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **speech:** Deprecating speaker_tag (int) for speaker_label (string) ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **speech:** Expose google.cloud.location.Locations API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **speech:** Make transcript_normalization field optional ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
+
+### Documentation
+
+* **speech:** Miscellaneous clarifications ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.26.0...speech/v1.26.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **speech:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.25.2...speech/v1.26.0) (2025-01-02)
+
+
+### Features
+
+* **speech:** Expand the set of supported explicit audio encodings ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+
+### Bug Fixes
+
+* **speech:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **speech:** Updated ExplicitDecodingConfig documentation to reflect changes related to newly supported encodings ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+## [1.25.2](https://github.com/googleapis/google-cloud-go/compare/speech/v1.25.1...speech/v1.25.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **speech:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **speech:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.25.0...speech/v1.25.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **speech:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.24.1...speech/v1.25.0) (2024-08-20)
+
+
+### Features
+
+* **speech:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.24.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.24.0...speech/v1.24.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **speech:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.23.4...speech/v1.24.0) (2024-07-24)
 
 

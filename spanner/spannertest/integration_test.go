@@ -107,7 +107,7 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 	// Don't use SPANNER_EMULATOR_HOST because we need the raw connection for
 	// the database admin client anyway.
 
-	t.Logf("Using in-memory fake Spanner DB")
+	t.Log("Using in-memory fake Spanner DB")
 	srv, err := NewServer("localhost:0")
 	if err != nil {
 		t.Fatalf("Starting in-memory fake: %v", err)
@@ -115,7 +115,7 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 	srv.SetLogger(t.Logf)
 	dialCtx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
-	conn, err := grpc.DialContext(dialCtx, srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.DialContext(dialCtx, srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		srv.Close()
 		t.Fatalf("Dialing in-memory fake: %v", err)

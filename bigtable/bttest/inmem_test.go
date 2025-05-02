@@ -17,6 +17,7 @@ package bttest
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"math"
@@ -32,7 +33,6 @@ import (
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
-	"cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
@@ -42,6 +42,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -221,6 +222,52 @@ func TestCreateTableWithFamily(t *testing.T) {
 	}
 }
 
+func TestGetPartitionsByTableName(t *testing.T) {
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf1": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 123}}},
+			"cf2": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 456}}},
+		},
+	}
+	_, err1 := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t1", Table: &newTbl})
+	if err1 != nil {
+		t.Fatalf("Creating table: %v", err1)
+	}
+
+	newTbl = btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf3": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 567}}},
+			"cf4": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 890}}},
+		},
+	}
+	_, err2 := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t2", Table: &newTbl})
+	if err2 != nil {
+		t.Fatalf("Creating table: %v", err2)
+	}
+
+	tblNamePrefix := "cluster" + "/tables/"
+
+	// A random table name doesn't return partitions.
+	partitions := s.GetPartitionsByTableName(tblNamePrefix + "random")
+	if partitions != nil {
+		t.Fatalf("Getting partitions for table random")
+	}
+
+	partitions = s.GetPartitionsByTableName(tblNamePrefix + "t1")
+	if len(partitions) != 10 {
+		t.Fatalf("Getting partitions for table t1")
+	}
+
+	partitions = s.GetPartitionsByTableName(tblNamePrefix + "t2")
+	if len(partitions) != 10 {
+		t.Fatalf("Getting partitions for table t2")
+	}
+}
+
 type MockSampleRowKeysServer struct {
 	responses []*btpb.SampleRowKeysResponse
 	grpc.ServerStream
@@ -274,11 +321,25 @@ func TestSampleRowKeys(t *testing.T) {
 	if len(mock.responses) == 0 {
 		t.Fatal("Response count: got 0, want > 0")
 	}
-	// Make sure the offset of the final response is the offset of the final row
-	got := mock.responses[len(mock.responses)-1].OffsetBytes
+	// Make sure the offset of the penultimate response is the offset of the final row
+	got := mock.responses[len(mock.responses)-2].OffsetBytes
 	want := int64((rowCount - 1) * len(val))
 	if got != want {
-		t.Errorf("Invalid offset: got %d, want %d", got, want)
+		t.Errorf("Invalid penultimate offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the offset of the final response is the offset of all the rows
+	got = mock.responses[len(mock.responses)-1].OffsetBytes
+	want = int64(rowCount * len(val))
+	if got != want {
+		t.Errorf("Invalid final offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the key of the final response is empty
+	gotLastKey := mock.responses[len(mock.responses)-1].RowKey
+	wantLastKey := ""
+	if got != want {
+		t.Errorf("Invalid final RowKey: got %s, want %s", gotLastKey, wantLastKey)
 	}
 }
 
@@ -787,6 +848,22 @@ func TestReadRows(t *testing.T) {
 	}
 }
 
+// withFeatureFlags set the feature flags the client supports in the
+// `bigtable-features` header sent on each request.
+func withFeatureFlags() metadata.MD {
+	ffStr := ""
+	ff := btpb.FeatureFlags{
+		ReverseScans:             true,
+		LastScannedRowResponses:  true,
+		ClientSideMetricsEnabled: false, // Not suppported in emulator
+	}
+	b, err := proto.Marshal(&ff)
+	if err == nil {
+		ffStr = base64.URLEncoding.EncodeToString(b)
+	}
+	return metadata.Pairs("bigtable-features", ffStr)
+}
+
 func TestReadRowsLastScannedRow(t *testing.T) {
 	ctx := context.Background()
 	s := &server{
@@ -826,7 +903,7 @@ func TestReadRowsLastScannedRow(t *testing.T) {
 			EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("s")},
 		}}},
 	} {
-		featureFlags := option.WithFeatureFlags()
+		featureFlags := withFeatureFlags()
 		ctx := metadata.NewIncomingContext(context.Background(), featureFlags)
 
 		mock := &MockReadRowsServer{ctx: ctx}
@@ -1232,7 +1309,7 @@ func TestReadRowsReversed(t *testing.T) {
 		}
 	}
 
-	serverCtx := metadata.NewIncomingContext(context.Background(), option.WithFeatureFlags())
+	serverCtx := metadata.NewIncomingContext(context.Background(), withFeatureFlags())
 	rrss := &MockReadRowsServer{ctx: serverCtx}
 	rreq := &btpb.ReadRowsRequest{TableName: tbl.Name, Reversed: true}
 	if err := srv.ReadRows(rreq, rrss); err != nil {
@@ -2633,5 +2710,315 @@ func TestAuthorizedViewApis(t *testing.T) {
 	if fmt.Sprint(err) !=
 		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
 		t.Fatalf("Failed to error %s", err)
+	}
+}
+
+func TestUpdateGCPolicyOnAggregateColumnFamily(t *testing.T) {
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{
+		Parent:  "cluster",
+		TableId: "t",
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{
+				"sum": {
+					ValueType: &btapb.Type{
+						Kind: &btapb.Type_AggregateType{
+							AggregateType: &btapb.Type_Aggregate{
+								InputType: &btapb.Type{
+									Kind: &btapb.Type_Int64Type{},
+								},
+								Aggregator: &btapb.Type_Aggregate_Sum_{
+									Sum: &btapb.Type_Aggregate_Sum{},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetValueType().
+		GetAggregateType().
+		GetSum() == nil {
+		t.Fatal("Unexpected aggregate column family type at start of test")
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetGcRule().
+		GetMaxNumVersions() == 1 {
+		t.Fatal("Unexpected GC policy state at start of test")
+	}
+
+	tblInfo, err = s.ModifyColumnFamilies(ctx, &btapb.ModifyColumnFamiliesRequest{
+		Name: tblInfo.Name,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
+			{
+				Id: "sum",
+				// UpdateMask intentionally left empty, which the server will
+				// implicitly interpret as a gc_rule update.
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{
+					Update: &btapb.ColumnFamily{
+						GcRule: &btapb.GcRule{
+							Rule: &btapb.GcRule_MaxNumVersions{
+								MaxNumVersions: 1,
+							},
+						},
+						// HACK: Intentionally include an invalid type
+						// update, which should be ignored since it isn't
+						// present in the UpdateMask.
+						ValueType: &btapb.Type{
+							Kind: &btapb.Type_AggregateType{
+								AggregateType: &btapb.Type_Aggregate{
+									InputType: &btapb.Type{
+										Kind: &btapb.Type_Int64Type{},
+									},
+									Aggregator: &btapb.Type_Aggregate_Max_{
+										Max: &btapb.Type_Aggregate_Max{},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetValueType().
+		GetAggregateType().
+		GetSum() == nil {
+		t.Fatal("Aggregate type was updated when it should not have been")
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetGcRule().
+		GetMaxNumVersions() != 1 {
+		t.Fatal("GC policy was not updated when it should have been")
+	}
+
+	tblInfo, err = s.ModifyColumnFamilies(ctx, &btapb.ModifyColumnFamiliesRequest{
+		Name: tblInfo.Name,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
+			{
+				Id: "sum",
+				// Including UpdateMask in the request this time.
+				UpdateMask: &fieldmaskpb.FieldMask{
+					Paths: []string{"gc_rule"},
+				},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{
+					Update: &btapb.ColumnFamily{
+						GcRule: &btapb.GcRule{
+							Rule: &btapb.GcRule_MaxNumVersions{
+								MaxNumVersions: 2,
+							},
+						},
+						// HACK: Intentionally including an invalid type
+						// update, which should be ignored since it isn't
+						// present in the UpdateMask.
+						ValueType: &btapb.Type{
+							Kind: &btapb.Type_AggregateType{
+								AggregateType: &btapb.Type_Aggregate{
+									InputType: &btapb.Type{
+										Kind: &btapb.Type_Int64Type{},
+									},
+									Aggregator: &btapb.Type_Aggregate_Max_{
+										Max: &btapb.Type_Aggregate_Max{},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetValueType().
+		GetAggregateType().
+		GetSum() == nil {
+		t.Fatal("Aggregate type was updated when it should not have been")
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetGcRule().
+		GetMaxNumVersions() != 2 {
+		t.Fatal("GC policy was not updated when it should have been")
+	}
+}
+
+func TestCannotUpdateTypeOfAggregateColumnFamily(t *testing.T) {
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{
+		Parent:  "cluster",
+		TableId: "t",
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{
+				"sum": {
+					ValueType: &btapb.Type{
+						Kind: &btapb.Type_AggregateType{
+							AggregateType: &btapb.Type_Aggregate{
+								InputType: &btapb.Type{
+									Kind: &btapb.Type_Int64Type{},
+								},
+								Aggregator: &btapb.Type_Aggregate_Sum_{
+									Sum: &btapb.Type_Aggregate_Sum{},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetValueType().
+		GetAggregateType().
+		GetSum() == nil {
+		t.Fatal("Unexpected aggregate column family type at start of test")
+	}
+
+	_, err = s.ModifyColumnFamilies(ctx, &btapb.ModifyColumnFamiliesRequest{
+		Name: tblInfo.Name,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
+			{
+				Id: "sum",
+				UpdateMask: &fieldmaskpb.FieldMask{
+					Paths: []string{"value_type"},
+				},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{
+					Update: &btapb.ColumnFamily{
+						ValueType: &btapb.Type{
+							Kind: &btapb.Type_AggregateType{
+								AggregateType: &btapb.Type_Aggregate{
+									InputType: &btapb.Type{
+										Kind: &btapb.Type_Int64Type{},
+									},
+									Aggregator: &btapb.Type_Aggregate_Max_{
+										Max: &btapb.Type_Aggregate_Max{},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err == nil {
+		t.Fatal("ModifyColumnFamilies was supposed to return an error, but it did not")
+	}
+
+	tblInfo, err = s.GetTable(ctx, &btapb.GetTableRequest{Name: tblInfo.Name})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetValueType().
+		GetAggregateType().
+		GetSum() == nil {
+		t.Fatal("Aggregate type was updated when it should not have been")
+	}
+}
+
+func TestInvalidUpdateMaskInColumnFamilyUpdate(t *testing.T) {
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{
+		Parent:  "cluster",
+		TableId: "t",
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{
+				"sum": {
+					ValueType: &btapb.Type{
+						Kind: &btapb.Type_AggregateType{
+							AggregateType: &btapb.Type_Aggregate{
+								InputType: &btapb.Type{
+									Kind: &btapb.Type_Int64Type{},
+								},
+								Aggregator: &btapb.Type_Aggregate_Sum_{
+									Sum: &btapb.Type_Aggregate_Sum{},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetGcRule().
+		GetMaxNumVersions() == 1 {
+		t.Fatal("Unexpected GC policy state at start of test")
+	}
+
+	_, err = s.ModifyColumnFamilies(ctx, &btapb.ModifyColumnFamiliesRequest{
+		Name: tblInfo.Name,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
+			{
+				Id: "sum",
+				UpdateMask: &fieldmaskpb.FieldMask{
+					Paths: []string{"bad", "gc_rule"},
+				},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{
+					Update: &btapb.ColumnFamily{
+						GcRule: &btapb.GcRule{
+							Rule: &btapb.GcRule_MaxNumVersions{
+								MaxNumVersions: 1,
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err == nil {
+		t.Fatal("ModifyColumnFamilies was supposed to return an error, but it did not")
+	}
+
+	tblInfo, err = s.GetTable(ctx, &btapb.GetTableRequest{Name: tblInfo.Name})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if tblInfo.ColumnFamilies["sum"].
+		GetGcRule().
+		GetMaxNumVersions() == 1 {
+		t.Fatal("GC policy was updated when it should not have been")
 	}
 }

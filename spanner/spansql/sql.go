@@ -98,6 +98,78 @@ func (ci CreateIndex) SQL() string {
 	return str
 }
 
+func (csi CreateSearchIndex) SQL() string {
+	str := "CREATE SEARCH INDEX "
+
+	str += csi.Name.SQL() + " ON " + csi.Table.SQL() + "("
+	for i, c := range csi.Columns {
+		if i > 0 {
+			str += ", "
+		}
+		str += c.SQL()
+	}
+	str += ")"
+	if len(csi.Storing) > 0 {
+		str += " STORING (" + idList(csi.Storing, ", ") + ")"
+	}
+
+	if len(csi.PartitionBy) > 0 {
+		str += " PARTITION BY " + idList(csi.PartitionBy, ", ")
+	}
+
+	if len(csi.OrderBy) > 0 {
+		str += " ORDER BY "
+		for i, o := range csi.OrderBy {
+			if i > 0 {
+				str += ", "
+			}
+			str += o.SQL()
+		}
+	}
+
+	if len(csi.WhereIsNotNull) > 0 {
+		str += " WHERE " + idList(csi.WhereIsNotNull, " IS NOT NULL AND")
+		// Remove last " AND"
+		str = str[:len(str)-4]
+	}
+
+	if csi.Interleave != "" {
+		str += ", INTERLEAVE IN " + csi.Interleave.SQL()
+	}
+
+	if csi.Options != (SearchIndexOptions{}) {
+		str += " " + csi.Options.SQL()
+	}
+	return str
+}
+
+func (opts SearchIndexOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if opts.DisableAutomaticUIDColumn != nil {
+		hasOpt = true
+		str += fmt.Sprintf("disable_automatic_uid_column=%t", *opts.DisableAutomaticUIDColumn)
+	}
+	if opts.SortOrderSharding != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("sort_order_sharding=%t", *opts.SortOrderSharding)
+	}
+	str += ")"
+	return str
+}
+
+func (cp CreateProtoBundle) SQL() string {
+	typeList := ""
+	if len(cp.Types) > 0 {
+		typeList = "`" + strings.Join(cp.Types, "`, `") + "`"
+	}
+	// Backtick-quote all the types so we don't need to check for SQL keywords
+	return "CREATE PROTO BUNDLE (" + typeList + ")"
+}
+
 func (cv CreateView) SQL() string {
 	str := "CREATE"
 	if cv.OrReplace {
@@ -169,6 +241,15 @@ func (dt DropTable) SQL() string {
 
 func (di DropIndex) SQL() string {
 	str := "DROP INDEX "
+	if di.IfExists {
+		str += "IF EXISTS "
+	}
+	str += di.Name.SQL()
+	return str
+}
+
+func (di DropSearchIndex) SQL() string {
+	str := "DROP SEARCH INDEX "
 	if di.IfExists {
 		str += "IF EXISTS "
 	}
@@ -491,6 +572,10 @@ func (ai AlterIndex) SQL() string {
 	return "ALTER INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
 }
 
+func (ai AlterSearchIndex) SQL() string {
+	return "ALTER SEARCH INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
+}
+
 func (asc AddStoredColumn) SQL() string {
 	return "ADD STORED COLUMN " + asc.Name.SQL()
 }
@@ -558,6 +643,24 @@ func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }
 
+func (do DropProtoBundle) SQL() string {
+	return "DROP PROTO BUNDLE"
+}
+
+func (ap AlterProtoBundle) SQL() string {
+	str := "ALTER PROTO BUNDLE"
+	if len(ap.AddTypes) > 0 {
+		str += " INSERT (`" + strings.Join(ap.AddTypes, "`, `") + "`)"
+	}
+	if len(ap.UpdateTypes) > 0 {
+		str += " UPDATE (`" + strings.Join(ap.UpdateTypes, "`, `") + "`)"
+	}
+	if len(ap.DeleteTypes) > 0 {
+		str += " DELETE (`" + strings.Join(ap.DeleteTypes, "`, `") + "`)"
+	}
+	return str
+}
+
 func (u *Update) SQL() string {
 	str := "UPDATE " + u.Table.SQL() + " SET "
 	for i, item := range u.Items {
@@ -616,7 +719,12 @@ func (cd ColumnDef) SQL() string {
 		str += " DEFAULT (" + cd.Default.SQL() + ")"
 	}
 	if cd.Generated != nil {
-		str += " AS (" + cd.Generated.SQL() + ") STORED"
+		str += " AS (" + cd.Generated.SQL() + ")"
+		if cd.Hidden {
+			str += " HIDDEN"
+		} else {
+			str += " STORED"
+		}
 	}
 	if cd.Options != (ColumnOptions{}) {
 		str += " " + cd.Options.SQL()
@@ -651,6 +759,14 @@ func (c Check) SQL() string {
 
 func (t Type) SQL() string {
 	str := t.Base.SQL()
+
+	// If ProtoRef is empty, and Base is an Enum or Proto, we're probably
+	// in an expression where PROTO or ENUM are valid type names, in which
+	// case we can just fall through.
+	if t.Base == Proto || t.Base == Enum && t.ProtoRef != "" {
+		// If ProtoRef is non-empty, backtick-quote that and declare victory.
+		return "`" + t.ProtoRef + "`"
+	}
 	if t.Len > 0 && (t.Base == String || t.Base == Bytes) {
 		str += "("
 		if t.Len == MaxLen {
@@ -686,7 +802,14 @@ func (tb TypeBase) SQL() string {
 		return "TIMESTAMP"
 	case JSON:
 		return "JSON"
+	case Proto:
+		return "PROTO"
+	case Enum:
+		return "ENUM"
+	case Tokenlist:
+		return "TOKENLIST"
 	}
+
 	panic("unknown TypeBase")
 }
 
@@ -703,6 +826,7 @@ func (pt PrivilegeType) SQL() string {
 	}
 	panic("unknown PrivilegeType")
 }
+
 func (kp KeyPart) SQL() string {
 	str := kp.Column.SQL()
 	if kp.Desc {
@@ -989,6 +1113,13 @@ func (ee ExtractExpr) addSQL(sb *strings.Builder) {
 	sb.WriteString(ee.Part)
 	sb.WriteString(" FROM ")
 	ee.Expr.addSQL(sb)
+}
+
+func (de DefinitionExpr) SQL() string { return buildSQL(de) }
+func (de DefinitionExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString(de.Key)
+	sb.WriteString(" => ")
+	de.Value.addSQL(sb)
 }
 
 func (aze AtTimeZoneExpr) SQL() string { return buildSQL(aze) }

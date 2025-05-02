@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package stitcher
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -618,6 +619,8 @@ type videoStitcherGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewVideoStitcherClient creates a new video stitcher service client based on gRPC.
@@ -648,6 +651,7 @@ func NewVideoStitcherClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		videoStitcherClient: stitcherpb.NewVideoStitcherServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -702,7 +706,7 @@ func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitche
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.CreateCdnKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.CreateCdnKey, req, settings.GRPC, c.logger, "CreateCdnKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -733,7 +737,7 @@ func (c *videoStitcherGRPCClient) ListCdnKeys(ctx context.Context, req *stitcher
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.videoStitcherClient.ListCdnKeys(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.videoStitcherClient.ListCdnKeys, req, settings.GRPC, c.logger, "ListCdnKeys")
 			return err
 		}, opts...)
 		if err != nil {
@@ -768,7 +772,7 @@ func (c *videoStitcherGRPCClient) GetCdnKey(ctx context.Context, req *stitcherpb
 	var resp *stitcherpb.CdnKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetCdnKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetCdnKey, req, settings.GRPC, c.logger, "GetCdnKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -786,7 +790,7 @@ func (c *videoStitcherGRPCClient) DeleteCdnKey(ctx context.Context, req *stitche
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.DeleteCdnKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.DeleteCdnKey, req, settings.GRPC, c.logger, "DeleteCdnKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -806,7 +810,7 @@ func (c *videoStitcherGRPCClient) UpdateCdnKey(ctx context.Context, req *stitche
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.UpdateCdnKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.UpdateCdnKey, req, settings.GRPC, c.logger, "UpdateCdnKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -826,7 +830,7 @@ func (c *videoStitcherGRPCClient) CreateVodSession(ctx context.Context, req *sti
 	var resp *stitcherpb.VodSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.CreateVodSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.CreateVodSession, req, settings.GRPC, c.logger, "CreateVodSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -844,7 +848,7 @@ func (c *videoStitcherGRPCClient) GetVodSession(ctx context.Context, req *stitch
 	var resp *stitcherpb.VodSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetVodSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetVodSession, req, settings.GRPC, c.logger, "GetVodSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -873,7 +877,7 @@ func (c *videoStitcherGRPCClient) ListVodStitchDetails(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.videoStitcherClient.ListVodStitchDetails(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.videoStitcherClient.ListVodStitchDetails, req, settings.GRPC, c.logger, "ListVodStitchDetails")
 			return err
 		}, opts...)
 		if err != nil {
@@ -908,7 +912,7 @@ func (c *videoStitcherGRPCClient) GetVodStitchDetail(ctx context.Context, req *s
 	var resp *stitcherpb.VodStitchDetail
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetVodStitchDetail(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetVodStitchDetail, req, settings.GRPC, c.logger, "GetVodStitchDetail")
 		return err
 	}, opts...)
 	if err != nil {
@@ -937,7 +941,7 @@ func (c *videoStitcherGRPCClient) ListVodAdTagDetails(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.videoStitcherClient.ListVodAdTagDetails(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.videoStitcherClient.ListVodAdTagDetails, req, settings.GRPC, c.logger, "ListVodAdTagDetails")
 			return err
 		}, opts...)
 		if err != nil {
@@ -972,7 +976,7 @@ func (c *videoStitcherGRPCClient) GetVodAdTagDetail(ctx context.Context, req *st
 	var resp *stitcherpb.VodAdTagDetail
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetVodAdTagDetail(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetVodAdTagDetail, req, settings.GRPC, c.logger, "GetVodAdTagDetail")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1001,7 +1005,7 @@ func (c *videoStitcherGRPCClient) ListLiveAdTagDetails(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.videoStitcherClient.ListLiveAdTagDetails(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.videoStitcherClient.ListLiveAdTagDetails, req, settings.GRPC, c.logger, "ListLiveAdTagDetails")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1036,7 +1040,7 @@ func (c *videoStitcherGRPCClient) GetLiveAdTagDetail(ctx context.Context, req *s
 	var resp *stitcherpb.LiveAdTagDetail
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetLiveAdTagDetail(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetLiveAdTagDetail, req, settings.GRPC, c.logger, "GetLiveAdTagDetail")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1054,7 +1058,7 @@ func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcher
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.CreateSlate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.CreateSlate, req, settings.GRPC, c.logger, "CreateSlate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1085,7 +1089,7 @@ func (c *videoStitcherGRPCClient) ListSlates(ctx context.Context, req *stitcherp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.videoStitcherClient.ListSlates(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.videoStitcherClient.ListSlates, req, settings.GRPC, c.logger, "ListSlates")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1120,7 +1124,7 @@ func (c *videoStitcherGRPCClient) GetSlate(ctx context.Context, req *stitcherpb.
 	var resp *stitcherpb.Slate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetSlate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetSlate, req, settings.GRPC, c.logger, "GetSlate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1138,7 +1142,7 @@ func (c *videoStitcherGRPCClient) UpdateSlate(ctx context.Context, req *stitcher
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.UpdateSlate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.UpdateSlate, req, settings.GRPC, c.logger, "UpdateSlate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1158,7 +1162,7 @@ func (c *videoStitcherGRPCClient) DeleteSlate(ctx context.Context, req *stitcher
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.DeleteSlate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.DeleteSlate, req, settings.GRPC, c.logger, "DeleteSlate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1178,7 +1182,7 @@ func (c *videoStitcherGRPCClient) CreateLiveSession(ctx context.Context, req *st
 	var resp *stitcherpb.LiveSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.CreateLiveSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.CreateLiveSession, req, settings.GRPC, c.logger, "CreateLiveSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1196,7 +1200,7 @@ func (c *videoStitcherGRPCClient) GetLiveSession(ctx context.Context, req *stitc
 	var resp *stitcherpb.LiveSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetLiveSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetLiveSession, req, settings.GRPC, c.logger, "GetLiveSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1214,7 +1218,7 @@ func (c *videoStitcherGRPCClient) CreateLiveConfig(ctx context.Context, req *sti
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.CreateLiveConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.CreateLiveConfig, req, settings.GRPC, c.logger, "CreateLiveConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1245,7 +1249,7 @@ func (c *videoStitcherGRPCClient) ListLiveConfigs(ctx context.Context, req *stit
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.videoStitcherClient.ListLiveConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.videoStitcherClient.ListLiveConfigs, req, settings.GRPC, c.logger, "ListLiveConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1280,7 +1284,7 @@ func (c *videoStitcherGRPCClient) GetLiveConfig(ctx context.Context, req *stitch
 	var resp *stitcherpb.LiveConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetLiveConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetLiveConfig, req, settings.GRPC, c.logger, "GetLiveConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1298,7 +1302,7 @@ func (c *videoStitcherGRPCClient) DeleteLiveConfig(ctx context.Context, req *sti
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.DeleteLiveConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.DeleteLiveConfig, req, settings.GRPC, c.logger, "DeleteLiveConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1318,7 +1322,7 @@ func (c *videoStitcherGRPCClient) UpdateLiveConfig(ctx context.Context, req *sti
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.UpdateLiveConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.UpdateLiveConfig, req, settings.GRPC, c.logger, "UpdateLiveConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1338,7 +1342,7 @@ func (c *videoStitcherGRPCClient) CreateVodConfig(ctx context.Context, req *stit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.CreateVodConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.CreateVodConfig, req, settings.GRPC, c.logger, "CreateVodConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1369,7 +1373,7 @@ func (c *videoStitcherGRPCClient) ListVodConfigs(ctx context.Context, req *stitc
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.videoStitcherClient.ListVodConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.videoStitcherClient.ListVodConfigs, req, settings.GRPC, c.logger, "ListVodConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1404,7 +1408,7 @@ func (c *videoStitcherGRPCClient) GetVodConfig(ctx context.Context, req *stitche
 	var resp *stitcherpb.VodConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.GetVodConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.GetVodConfig, req, settings.GRPC, c.logger, "GetVodConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1422,7 +1426,7 @@ func (c *videoStitcherGRPCClient) DeleteVodConfig(ctx context.Context, req *stit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.DeleteVodConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.DeleteVodConfig, req, settings.GRPC, c.logger, "DeleteVodConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1442,7 +1446,7 @@ func (c *videoStitcherGRPCClient) UpdateVodConfig(ctx context.Context, req *stit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.UpdateVodConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.videoStitcherClient.UpdateVodConfig, req, settings.GRPC, c.logger, "UpdateVodConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1461,7 +1465,7 @@ func (c *videoStitcherGRPCClient) CancelOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1475,7 +1479,7 @@ func (c *videoStitcherGRPCClient) DeleteOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1490,7 +1494,7 @@ func (c *videoStitcherGRPCClient) GetOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1519,7 +1523,7 @@ func (c *videoStitcherGRPCClient) ListOperations(ctx context.Context, req *longr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

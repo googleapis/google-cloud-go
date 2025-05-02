@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ func (o *Operation) Name() string {
 }
 
 // Wait blocks until the operation is complete, polling regularly
-// after an intial period of backing off between attempts.
+// after an initial period of backing off between attempts.
 func (o *Operation) Wait(ctx context.Context, opts ...gax.CallOption) error {
 	bo := gax.Backoff{
 		Initial: time.Second,

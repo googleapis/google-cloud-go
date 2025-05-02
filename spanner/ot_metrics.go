@@ -33,12 +33,13 @@ const OtInstrumentationScope = "cloud.google.com/go"
 const metricsPrefix = "spanner/"
 
 var (
-	attributeKeyClientID   = attribute.Key("client_id")
-	attributeKeyDatabase   = attribute.Key("database")
-	attributeKeyInstance   = attribute.Key("instance_id")
-	attributeKeyLibVersion = attribute.Key("library_version")
-	attributeKeyType       = attribute.Key("type")
-	attributeKeyMethod     = attribute.Key("grpc_client_method")
+	attributeKeyClientID      = attribute.Key("client_id")
+	attributeKeyDatabase      = attribute.Key("database")
+	attributeKeyInstance      = attribute.Key("instance_id")
+	attributeKeyLibVersion    = attribute.Key("library_version")
+	attributeKeyType          = attribute.Key("type")
+	attributeKeyMethod        = attribute.Key("grpc_client_method")
+	attributeKeyIsMultiplexed = attribute.Key("is_multiplexed")
 
 	attributeNumInUseSessions = attributeKeyType.String("num_in_use_sessions")
 	attributeNumSessions      = attributeKeyType.String("num_sessions")
@@ -49,10 +50,15 @@ var (
 )
 
 func createOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sessionClientID string, db string) (*openTelemetryConfig, error) {
+	// Important: snapshot the value of the global variable to ensure a
+	// consistent value for the lifetime of this client.
+	enabled := IsOpenTelemetryMetricsEnabled()
+
 	config := &openTelemetryConfig{
+		enabled:      enabled,
 		attributeMap: []attribute.KeyValue{},
 	}
-	if !IsOpenTelemetryMetricsEnabled() {
+	if !enabled {
 		return config, nil
 	}
 	_, instance, database, err := parseDatabaseName(db)
@@ -69,6 +75,11 @@ func createOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sess
 	}
 	config.attributeMap = append(config.attributeMap, attributeMap...)
 
+	config.attributeMapWithMultiplexed = append(config.attributeMapWithMultiplexed, attributeMap...)
+	config.attributeMapWithMultiplexed = append(config.attributeMapWithMultiplexed, attributeKeyIsMultiplexed.String("true"))
+
+	config.attributeMapWithoutMultiplexed = append(config.attributeMapWithoutMultiplexed, attributeMap...)
+	config.attributeMapWithoutMultiplexed = append(config.attributeMapWithoutMultiplexed, attributeKeyIsMultiplexed.String("false"))
 	setOpenTelemetryMetricProvider(config, mp, logger)
 	return config, nil
 }
@@ -83,7 +94,7 @@ func setOpenTelemetryMetricProvider(config *openTelemetryConfig, mp metric.Meter
 }
 
 func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger) {
-	if !IsOpenTelemetryMetricsEnabled() {
+	if !config.enabled {
 		return
 	}
 	meter := config.meterProvider.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version))
@@ -185,7 +196,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 
 func registerSessionPoolOTMetrics(pool *sessionPool) error {
 	otConfig := pool.otConfig
-	if !IsOpenTelemetryMetricsEnabled() || otConfig == nil {
+	if otConfig == nil || !otConfig.enabled {
 		return nil
 	}
 
@@ -197,13 +208,14 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 		func(ctx context.Context, o metric.Observer) error {
 			pool.mu.Lock()
 			defer pool.mu.Unlock()
-
+			if pool.multiplexedSession != nil {
+				o.ObserveInt64(otConfig.openSessionCount, int64(1), metric.WithAttributes(otConfig.attributeMapWithMultiplexed...))
+			}
 			o.ObserveInt64(otConfig.openSessionCount, int64(pool.numOpened), metric.WithAttributes(attributes...))
 			o.ObserveInt64(otConfig.maxAllowedSessionsCount, int64(pool.SessionPoolConfig.MaxOpened), metric.WithAttributes(attributes...))
-			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numInUse), metric.WithAttributes(attributesInUseSessions...))
+			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numInUse), metric.WithAttributes(append(attributesInUseSessions, attribute.Key("is_multiplexed").String("false"))...))
 			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numSessions), metric.WithAttributes(attributesAvailableSessions...))
-			o.ObserveInt64(otConfig.maxInUseSessionsCount, int64(pool.maxNumInUse), metric.WithAttributes(attributes...))
-
+			o.ObserveInt64(otConfig.maxInUseSessionsCount, int64(pool.maxNumInUse), metric.WithAttributes(append(attributes, attribute.Key("is_multiplexed").String("false"))...))
 			return nil
 		},
 		otConfig.openSessionCount,
@@ -234,7 +246,7 @@ func setOpenTelemetryMetricsFlag(enable bool) {
 }
 
 func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod string, otConfig *openTelemetryConfig) error {
-	if !IsOpenTelemetryMetricsEnabled() || md == nil && otConfig == nil {
+	if otConfig == nil || !otConfig.enabled || md == nil {
 		return nil
 	}
 	attr := otConfig.attributeMap

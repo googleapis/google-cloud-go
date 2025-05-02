@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -543,6 +542,8 @@ type conversationModelsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewConversationModelsClient creates a new conversation models client based on gRPC.
@@ -569,6 +570,7 @@ func NewConversationModelsClient(ctx context.Context, opts ...option.ClientOptio
 		connPool:                 connPool,
 		conversationModelsClient: dialogflowpb.NewConversationModelsClient(connPool),
 		CallOptions:              &client.CallOptions,
+		logger:                   internaloption.GetLogger(opts),
 		operationsClient:         longrunningpb.NewOperationsClient(connPool),
 		locationsClient:          locationpb.NewLocationsClient(connPool),
 	}
@@ -633,6 +635,8 @@ type conversationModelsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ConversationModelsClient
 	CallOptions **ConversationModelsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewConversationModelsRESTClient creates a new conversation models rest client.
@@ -650,6 +654,7 @@ func NewConversationModelsRESTClient(ctx context.Context, opts ...option.ClientO
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -712,7 +717,7 @@ func (c *conversationModelsGRPCClient) CreateConversationModel(ctx context.Conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationModelsClient.CreateConversationModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationModelsClient.CreateConversationModel, req, settings.GRPC, c.logger, "CreateConversationModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -732,7 +737,7 @@ func (c *conversationModelsGRPCClient) GetConversationModel(ctx context.Context,
 	var resp *dialogflowpb.ConversationModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationModelsClient.GetConversationModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationModelsClient.GetConversationModel, req, settings.GRPC, c.logger, "GetConversationModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -761,7 +766,7 @@ func (c *conversationModelsGRPCClient) ListConversationModels(ctx context.Contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.conversationModelsClient.ListConversationModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.conversationModelsClient.ListConversationModels, req, settings.GRPC, c.logger, "ListConversationModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -796,7 +801,7 @@ func (c *conversationModelsGRPCClient) DeleteConversationModel(ctx context.Conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationModelsClient.DeleteConversationModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationModelsClient.DeleteConversationModel, req, settings.GRPC, c.logger, "DeleteConversationModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -816,7 +821,7 @@ func (c *conversationModelsGRPCClient) DeployConversationModel(ctx context.Conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationModelsClient.DeployConversationModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationModelsClient.DeployConversationModel, req, settings.GRPC, c.logger, "DeployConversationModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -836,7 +841,7 @@ func (c *conversationModelsGRPCClient) UndeployConversationModel(ctx context.Con
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationModelsClient.UndeployConversationModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationModelsClient.UndeployConversationModel, req, settings.GRPC, c.logger, "UndeployConversationModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -856,7 +861,7 @@ func (c *conversationModelsGRPCClient) GetConversationModelEvaluation(ctx contex
 	var resp *dialogflowpb.ConversationModelEvaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationModelsClient.GetConversationModelEvaluation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationModelsClient.GetConversationModelEvaluation, req, settings.GRPC, c.logger, "GetConversationModelEvaluation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -885,7 +890,7 @@ func (c *conversationModelsGRPCClient) ListConversationModelEvaluations(ctx cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.conversationModelsClient.ListConversationModelEvaluations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.conversationModelsClient.ListConversationModelEvaluations, req, settings.GRPC, c.logger, "ListConversationModelEvaluations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -920,7 +925,7 @@ func (c *conversationModelsGRPCClient) CreateConversationModelEvaluation(ctx con
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationModelsClient.CreateConversationModelEvaluation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationModelsClient.CreateConversationModelEvaluation, req, settings.GRPC, c.logger, "CreateConversationModelEvaluation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -940,7 +945,7 @@ func (c *conversationModelsGRPCClient) GetLocation(ctx context.Context, req *loc
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -969,7 +974,7 @@ func (c *conversationModelsGRPCClient) ListLocations(ctx context.Context, req *l
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1003,7 +1008,7 @@ func (c *conversationModelsGRPCClient) CancelOperation(ctx context.Context, req 
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1018,7 +1023,7 @@ func (c *conversationModelsGRPCClient) GetOperation(ctx context.Context, req *lo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1047,7 +1052,7 @@ func (c *conversationModelsGRPCClient) ListOperations(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1122,21 +1127,10 @@ func (c *conversationModelsRESTClient) CreateConversationModel(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConversationModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1187,17 +1181,7 @@ func (c *conversationModelsRESTClient) GetConversationModel(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConversationModel")
 		if err != nil {
 			return err
 		}
@@ -1259,21 +1243,10 @@ func (c *conversationModelsRESTClient) ListConversationModels(ctx context.Contex
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConversationModels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1345,21 +1318,10 @@ func (c *conversationModelsRESTClient) DeleteConversationModel(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConversationModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1428,21 +1390,10 @@ func (c *conversationModelsRESTClient) DeployConversationModel(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeployConversationModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1512,21 +1463,10 @@ func (c *conversationModelsRESTClient) UndeployConversationModel(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeployConversationModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1577,17 +1517,7 @@ func (c *conversationModelsRESTClient) GetConversationModelEvaluation(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConversationModelEvaluation")
 		if err != nil {
 			return err
 		}
@@ -1649,21 +1579,10 @@ func (c *conversationModelsRESTClient) ListConversationModelEvaluations(ctx cont
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConversationModelEvaluations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1731,21 +1650,10 @@ func (c *conversationModelsRESTClient) CreateConversationModelEvaluation(ctx con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConversationModelEvaluation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1796,17 +1704,7 @@ func (c *conversationModelsRESTClient) GetLocation(ctx context.Context, req *loc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1871,21 +1769,10 @@ func (c *conversationModelsRESTClient) ListLocations(ctx context.Context, req *l
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1945,15 +1832,8 @@ func (c *conversationModelsRESTClient) CancelOperation(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1990,17 +1870,7 @@ func (c *conversationModelsRESTClient) GetOperation(ctx context.Context, req *lo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2065,21 +1935,10 @@ func (c *conversationModelsRESTClient) ListOperations(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

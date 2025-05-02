@@ -1,5 +1,128 @@
 # Changes
 
+## [0.28.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.27.2...analytics/v0.28.0) (2025-04-22)
+
+
+### Features
+
+* **analytics/admin:** Add `key_event`, `reporting_data_annotation` fields to the `ChangeHistoryResource` resource ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Add the `CreateReportingDataAnnotation` method ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Add the `DeleteReportingDataAnnotation` method ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Add the `GetReportingDataAnnotation` method ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Add the `ListReportingDataAnnotations` method ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Add the `REPORTING_DATA_ANNOTATION` resource type to the `ChangeHistoryResourceType` enum ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Add the `ReportingDataAnnotation` type ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Add the `SubmitUserDeletion` method ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Add the `UpdateReportingDataAnnotation` method ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+
+### Bug Fixes
+
+* **analytics/admin:** Change an existing value KEY_EVENT = 32 to KEY_EVENT = 30 in enum `ChangeHistoryResourceType`. ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Rename an existing field `key_event` to `reporting_data_annotation` in `ChangeHistoryChange`. ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+
+### Documentation
+
+* **analytics/admin:** Announce the deprecation of the `sharing_with_google_any_sales_enabled` field of the `DataSharingSettings` type ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **analytics/admin:** Update the documentation of `sharing_with_google_support_enabled`, `sharing_with_google_assigned_sales_enabled`, 'sharing_with_google_products_enabled', 'sharing_with_others_enabled' fields of the `DataSharingSettings` type ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+## [0.27.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.27.1...analytics/v0.27.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **analytics:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.27.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.27.0...analytics/v0.27.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **analytics:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.27.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.26.0...analytics/v0.27.0) (2025-03-12)
+
+
+### Features
+
+* **analytics/admin:** Added support for KeyEvents AdminAPI ChangeHistory ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+## [0.26.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.3...analytics/v0.26.0) (2025-01-30)
+
+
+### Features
+
+* **analytics/admin:** Add `user_data_retention` field to `DataRetentionSettings` and mark as `REQUIRED` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Bug Fixes
+
+* **analytics/admin:** Mark `event_data_retention` field in `DataRetentionSettings` as `REQUIRED` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Documentation
+
+* **analytics/admin:** Replace "GA4" with "Google Analytics" or "GA" in all comments ([#11516](https://github.com/googleapis/google-cloud-go/issues/11516)) ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+## [0.25.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.2...analytics/v0.25.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **analytics:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [0.25.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.1...analytics/v0.25.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **analytics:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **analytics:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [0.25.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.0...analytics/v0.25.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **analytics:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [0.25.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.24.0...analytics/v0.25.0) (2024-08-20)
+
+
+### Features
+
+* **analytics:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [0.24.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.6...analytics/v0.24.0) (2024-08-08)
+
+
+### Features
+
+* **analytics/admin:** Add `CreateBigQueryLink`, `UpdateBigQueryLink`, and `DeleteBigQueryLink` methods ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add `GetEventEditRule`, `CreateEventEditRule`, `ListEventEditRules`, `UpdateEventEditRule`, `DeleteEventEditRule`, and `ReorderEventEditRules` methods to the Admin API v1 alpha ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add `GetKeyEvent`, `CreateKeyEvent`, `ListKeyEvents`, `UpdateKeyEvent`, and `DeleteKeyEvent` methods ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `BIGQUERY_LINK` option to the `ChangeHistoryResourceType` enum ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `create_time` field to the `Audience` resource ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `dataset_location` field to the `BigQueryLink` resource ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `gmp_organization` field to the `Account` resource ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `primary` field to the `ChannelGroup` resource ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Mark `GetConversionEvent`, `CreateConversionEvent`, `ListConversionEvents`, `UpdateConversionEvent`, and `DeleteConversionEvent` methods as deprecated ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+
+### Bug Fixes
+
+* **analytics/admin:** Rename custom method `CreateSubpropertyRequest` to `ProvisionSubpropertyRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **analytics/admin:** Add deprecation comment to `GetConversionEvent`, `CreateConversionEvent`, `ListConversionEvents`, `UpdateConversionEvent`, and `DeleteConversionEvent` methods ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Improve comment formatting of `account` and `property` fields in `SearchChangeHistoryEventsRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Improve comment formatting of the `name` field in `DeleteFirebaseLinkRequest`, `GetGlobalSiteTagRequest`, and `GetDataSharingSettingsRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Improve comment formatting of the `parent` field in `CreateFirebaseLinkRequest` and `ListFirebaseLinksRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
 ## [0.23.6](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.5...analytics/v0.23.6) (2024-07-24)
 
 

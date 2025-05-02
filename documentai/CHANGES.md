@@ -1,6 +1,110 @@
 # Changes
 
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.36.1...documentai/v1.37.0) (2025-04-30)
+
+
+### Features
+
+* **documentai:** Add image block and blob asset in Document proto ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **documentai:** Added a field for enabling returning images and bounding boxes from layout parser processor ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **documentai:** Added config options to enable image annotation ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **documentai:** Added config options to enable table annotation and image extraction ([#12070](https://github.com/googleapis/google-cloud-go/issues/12070)) ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.36.0...documentai/v1.36.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **documentai:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.3...documentai/v1.36.0) (2025-03-19)
+
+
+### Features
+
+* **documentai:** Added config options to enable LLM layout parsing ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
+## [1.35.3](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.2...documentai/v1.35.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.35.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.1...documentai/v1.35.2) (2025-02-12)
+
+
+### Documentation
+
+* **documentai:** Mark fields as unused ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
+## [1.35.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.0...documentai/v1.35.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.34.0...documentai/v1.35.0) (2024-10-23)
+
+
+### Features
+
+* **documentai:** Add RESOURCE_EXHAUSTED to retryable status codes for ProcessDocument method ([6e69d2e](https://github.com/googleapis/google-cloud-go/commit/6e69d2e85849002bad227ea5bebcde9199605bef))
+* **documentai:** Added an url for issue reporting and api short name ([6e69d2e](https://github.com/googleapis/google-cloud-go/commit/6e69d2e85849002bad227ea5bebcde9199605bef))
+* **documentai:** Updated the exponential backoff settings for the Document AI ProcessDocument and BatchProcessDocuments methods ([6e69d2e](https://github.com/googleapis/google-cloud-go/commit/6e69d2e85849002bad227ea5bebcde9199605bef))
+
+
+### Bug Fixes
+
+* **documentai:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **documentai:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.33.0...documentai/v1.34.0) (2024-09-12)
+
+
+### Features
+
+* **documentai:** Add API fields for the descriptions of entity type and property in the document schema ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+
+
+### Bug Fixes
+
+* **documentai:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.32.0...documentai/v1.33.0) (2024-08-20)
+
+
+### Features
+
+* **documentai:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.31.0...documentai/v1.32.0) (2024-08-08)
+
+
+### Features
+
+* **documentai:** A new field `gen_ai_model_info` is added to message `.google.cloud.documentai.v1.ProcessorVersion` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **documentai:** A new field `imageless_mode` is added to message `.google.cloud.documentai.v1.ProcessRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+
+### Bug Fixes
+
+* **documentai:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.5...documentai/v1.31.0) (2024-08-01)
+
+
+### Features
+
+* **documentai:** A new field `imageless_mode` is added to message `.google.cloud.documentai.v1.ProcessRequest` ([#10615](https://github.com/googleapis/google-cloud-go/issues/10615)) ([97fa560](https://github.com/googleapis/google-cloud-go/commit/97fa56008a30857fc6d835517fc2d9a2959b19a5))
+
+
+### Documentation
+
+* **documentai:** Keep the API doc up-to-date with recent changes ([97fa560](https://github.com/googleapis/google-cloud-go/commit/97fa56008a30857fc6d835517fc2d9a2959b19a5))
+
 ## [1.30.5](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.4...documentai/v1.30.5) (2024-07-24)
 
 

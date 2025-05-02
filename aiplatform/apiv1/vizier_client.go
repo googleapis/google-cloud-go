@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -77,6 +78,7 @@ func defaultVizierGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -378,6 +380,8 @@ type vizierGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewVizierClient creates a new vizier service client based on gRPC.
@@ -408,6 +412,7 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 		connPool:         connPool,
 		vizierClient:     aiplatformpb.NewVizierServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -464,7 +469,7 @@ func (c *vizierGRPCClient) CreateStudy(ctx context.Context, req *aiplatformpb.Cr
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.CreateStudy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.CreateStudy, req, settings.GRPC, c.logger, "CreateStudy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -482,7 +487,7 @@ func (c *vizierGRPCClient) GetStudy(ctx context.Context, req *aiplatformpb.GetSt
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.GetStudy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.GetStudy, req, settings.GRPC, c.logger, "GetStudy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -511,7 +516,7 @@ func (c *vizierGRPCClient) ListStudies(ctx context.Context, req *aiplatformpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.vizierClient.ListStudies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.vizierClient.ListStudies, req, settings.GRPC, c.logger, "ListStudies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -545,7 +550,7 @@ func (c *vizierGRPCClient) DeleteStudy(ctx context.Context, req *aiplatformpb.De
 	opts = append((*c.CallOptions).DeleteStudy[0:len((*c.CallOptions).DeleteStudy):len((*c.CallOptions).DeleteStudy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.vizierClient.DeleteStudy(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.vizierClient.DeleteStudy, req, settings.GRPC, c.logger, "DeleteStudy")
 		return err
 	}, opts...)
 	return err
@@ -560,7 +565,7 @@ func (c *vizierGRPCClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lo
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.LookupStudy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.LookupStudy, req, settings.GRPC, c.logger, "LookupStudy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -578,7 +583,7 @@ func (c *vizierGRPCClient) SuggestTrials(ctx context.Context, req *aiplatformpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.SuggestTrials(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.SuggestTrials, req, settings.GRPC, c.logger, "SuggestTrials")
 		return err
 	}, opts...)
 	if err != nil {
@@ -598,7 +603,7 @@ func (c *vizierGRPCClient) CreateTrial(ctx context.Context, req *aiplatformpb.Cr
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.CreateTrial(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.CreateTrial, req, settings.GRPC, c.logger, "CreateTrial")
 		return err
 	}, opts...)
 	if err != nil {
@@ -616,7 +621,7 @@ func (c *vizierGRPCClient) GetTrial(ctx context.Context, req *aiplatformpb.GetTr
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.GetTrial(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.GetTrial, req, settings.GRPC, c.logger, "GetTrial")
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,7 +650,7 @@ func (c *vizierGRPCClient) ListTrials(ctx context.Context, req *aiplatformpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.vizierClient.ListTrials(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.vizierClient.ListTrials, req, settings.GRPC, c.logger, "ListTrials")
 			return err
 		}, opts...)
 		if err != nil {
@@ -680,7 +685,7 @@ func (c *vizierGRPCClient) AddTrialMeasurement(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.AddTrialMeasurement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.AddTrialMeasurement, req, settings.GRPC, c.logger, "AddTrialMeasurement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -698,7 +703,7 @@ func (c *vizierGRPCClient) CompleteTrial(ctx context.Context, req *aiplatformpb.
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.CompleteTrial(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.CompleteTrial, req, settings.GRPC, c.logger, "CompleteTrial")
 		return err
 	}, opts...)
 	if err != nil {
@@ -715,7 +720,7 @@ func (c *vizierGRPCClient) DeleteTrial(ctx context.Context, req *aiplatformpb.De
 	opts = append((*c.CallOptions).DeleteTrial[0:len((*c.CallOptions).DeleteTrial):len((*c.CallOptions).DeleteTrial)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.vizierClient.DeleteTrial(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.vizierClient.DeleteTrial, req, settings.GRPC, c.logger, "DeleteTrial")
 		return err
 	}, opts...)
 	return err
@@ -730,7 +735,7 @@ func (c *vizierGRPCClient) CheckTrialEarlyStoppingState(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.CheckTrialEarlyStoppingState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.CheckTrialEarlyStoppingState, req, settings.GRPC, c.logger, "CheckTrialEarlyStoppingState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -750,7 +755,7 @@ func (c *vizierGRPCClient) StopTrial(ctx context.Context, req *aiplatformpb.Stop
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.StopTrial(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.StopTrial, req, settings.GRPC, c.logger, "StopTrial")
 		return err
 	}, opts...)
 	if err != nil {
@@ -768,7 +773,7 @@ func (c *vizierGRPCClient) ListOptimalTrials(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.ListOptimalTrialsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.ListOptimalTrials(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.ListOptimalTrials, req, settings.GRPC, c.logger, "ListOptimalTrials")
 		return err
 	}, opts...)
 	if err != nil {
@@ -786,7 +791,7 @@ func (c *vizierGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetL
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -815,7 +820,7 @@ func (c *vizierGRPCClient) ListLocations(ctx context.Context, req *locationpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -850,7 +855,7 @@ func (c *vizierGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPo
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -868,7 +873,7 @@ func (c *vizierGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPo
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -886,7 +891,7 @@ func (c *vizierGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.Te
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -903,7 +908,7 @@ func (c *vizierGRPCClient) CancelOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -917,7 +922,7 @@ func (c *vizierGRPCClient) DeleteOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -932,7 +937,7 @@ func (c *vizierGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -961,7 +966,7 @@ func (c *vizierGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -996,7 +1001,7 @@ func (c *vizierGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

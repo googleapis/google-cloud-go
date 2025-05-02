@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -176,6 +175,9 @@ func (c *JobsV1Beta3Client) Connection() *grpc.ClientConn {
 // (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
 // projects.jobs.create is not recommended, as your job will always start
 // in us-central1.
+//
+// Do not enter confidential information when you supply string values using
+// the API.
 func (c *JobsV1Beta3Client) CreateJob(ctx context.Context, req *dataflowpb.CreateJobRequest, opts ...gax.CallOption) (*dataflowpb.Job, error) {
 	return c.internalClient.CreateJob(ctx, req, opts...)
 }
@@ -208,13 +210,20 @@ func (c *JobsV1Beta3Client) UpdateJob(ctx context.Context, req *dataflowpb.Updat
 // projects.locations.jobs.list with a [regional endpoint]
 // (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). To
 // list the all jobs across all regions, use projects.jobs.aggregated. Using
-// projects.jobs.list is not recommended, as you can only get the list of
-// jobs that are running in us-central1.
+// projects.jobs.list is not recommended, because you can only get the list
+// of jobs that are running in us-central1.
+//
+// projects.locations.jobs.list and projects.jobs.list support filtering
+// the list of jobs by name. Filtering by name isn’t supported by
+// projects.jobs.aggregated.
 func (c *JobsV1Beta3Client) ListJobs(ctx context.Context, req *dataflowpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
 
 // AggregatedListJobs list the jobs of a project across all regions.
+//
+// Note: This method doesn’t support filtering the list of
+// jobs by name.
 func (c *JobsV1Beta3Client) AggregatedListJobs(ctx context.Context, req *dataflowpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	return c.internalClient.AggregatedListJobs(ctx, req, opts...)
 }
@@ -244,6 +253,8 @@ type jobsV1Beta3GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewJobsV1Beta3Client creates a new jobs v1 beta3 client based on gRPC.
@@ -271,6 +282,7 @@ func NewJobsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*Jo
 		connPool:          connPool,
 		jobsV1Beta3Client: dataflowpb.NewJobsV1Beta3Client(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -317,6 +329,8 @@ type jobsV1Beta3RESTClient struct {
 
 	// Points back to the CallOptions field of the containing JobsV1Beta3Client
 	CallOptions **JobsV1Beta3CallOptions
+
+	logger *slog.Logger
 }
 
 // NewJobsV1Beta3RESTClient creates a new jobs v1 beta3 rest client.
@@ -335,6 +349,7 @@ func NewJobsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -387,7 +402,7 @@ func (c *jobsV1Beta3GRPCClient) CreateJob(ctx context.Context, req *dataflowpb.C
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.CreateJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.CreateJob, req, settings.GRPC, c.logger, "CreateJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -405,7 +420,7 @@ func (c *jobsV1Beta3GRPCClient) GetJob(ctx context.Context, req *dataflowpb.GetJ
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.GetJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.GetJob, req, settings.GRPC, c.logger, "GetJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -423,7 +438,7 @@ func (c *jobsV1Beta3GRPCClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.UpdateJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.UpdateJob, req, settings.GRPC, c.logger, "UpdateJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -452,7 +467,7 @@ func (c *jobsV1Beta3GRPCClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobsV1Beta3Client.ListJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobsV1Beta3Client.ListJobs, req, settings.GRPC, c.logger, "ListJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -498,7 +513,7 @@ func (c *jobsV1Beta3GRPCClient) AggregatedListJobs(ctx context.Context, req *dat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobsV1Beta3Client.AggregatedListJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobsV1Beta3Client.AggregatedListJobs, req, settings.GRPC, c.logger, "AggregatedListJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -530,7 +545,7 @@ func (c *jobsV1Beta3GRPCClient) CheckActiveJobs(ctx context.Context, req *datafl
 	var resp *dataflowpb.CheckActiveJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.CheckActiveJobs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.CheckActiveJobs, req, settings.GRPC, c.logger, "CheckActiveJobs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -548,7 +563,7 @@ func (c *jobsV1Beta3GRPCClient) SnapshotJob(ctx context.Context, req *dataflowpb
 	var resp *dataflowpb.Snapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.SnapshotJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.SnapshotJob, req, settings.GRPC, c.logger, "SnapshotJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -564,6 +579,9 @@ func (c *jobsV1Beta3GRPCClient) SnapshotJob(ctx context.Context, req *dataflowpb
 // (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
 // projects.jobs.create is not recommended, as your job will always start
 // in us-central1.
+//
+// Do not enter confidential information when you supply string values using
+// the API.
 func (c *jobsV1Beta3RESTClient) CreateJob(ctx context.Context, req *dataflowpb.CreateJobRequest, opts ...gax.CallOption) (*dataflowpb.Job, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetJob()
@@ -609,17 +627,7 @@ func (c *jobsV1Beta3RESTClient) CreateJob(ctx context.Context, req *dataflowpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateJob")
 		if err != nil {
 			return err
 		}
@@ -678,17 +686,7 @@ func (c *jobsV1Beta3RESTClient) GetJob(ctx context.Context, req *dataflowpb.GetJ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJob")
 		if err != nil {
 			return err
 		}
@@ -728,6 +726,13 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req != nil && req.UpdateMask != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -751,17 +756,7 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateJob")
 		if err != nil {
 			return err
 		}
@@ -784,8 +779,12 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 // projects.locations.jobs.list with a [regional endpoint]
 // (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). To
 // list the all jobs across all regions, use projects.jobs.aggregated. Using
-// projects.jobs.list is not recommended, as you can only get the list of
-// jobs that are running in us-central1.
+// projects.jobs.list is not recommended, because you can only get the list
+// of jobs that are running in us-central1.
+//
+// projects.locations.jobs.list and projects.jobs.list support filtering
+// the list of jobs by name. Filtering by name isn’t supported by
+// projects.jobs.aggregated.
 func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobsRequest)
@@ -810,6 +809,9 @@ func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != 0 {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.Name != nil {
+			params.Add("name", fmt.Sprintf("%v", req.GetName()))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -836,21 +838,10 @@ func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -881,6 +872,9 @@ func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 }
 
 // AggregatedListJobs list the jobs of a project across all regions.
+//
+// Note: This method doesn’t support filtering the list of
+// jobs by name.
 func (c *jobsV1Beta3RESTClient) AggregatedListJobs(ctx context.Context, req *dataflowpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobsRequest)
@@ -909,6 +903,9 @@ func (c *jobsV1Beta3RESTClient) AggregatedListJobs(ctx context.Context, req *dat
 		if req.GetLocation() != "" {
 			params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
 		}
+		if req != nil && req.Name != nil {
+			params.Add("name", fmt.Sprintf("%v", req.GetName()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -934,21 +931,10 @@ func (c *jobsV1Beta3RESTClient) AggregatedListJobs(ctx context.Context, req *dat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AggregatedListJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1011,17 +997,7 @@ func (c *jobsV1Beta3RESTClient) CheckActiveJobs(ctx context.Context, req *datafl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CheckActiveJobs")
 		if err != nil {
 			return err
 		}
@@ -1077,17 +1053,7 @@ func (c *jobsV1Beta3RESTClient) SnapshotJob(ctx context.Context, req *dataflowpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SnapshotJob")
 		if err != nil {
 			return err
 		}

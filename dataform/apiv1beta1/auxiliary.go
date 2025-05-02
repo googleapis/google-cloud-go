@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ type CommitLogEntryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.CommitLogEntry, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CommitLogEntryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -89,7 +89,7 @@ type CompilationResultActionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.CompilationResultAction, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CompilationResultActionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -136,7 +136,7 @@ type CompilationResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.CompilationResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CompilationResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -183,7 +183,7 @@ type DirectoryEntryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.DirectoryEntry, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DirectoryEntryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -230,7 +230,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -277,7 +277,7 @@ type ReleaseConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.ReleaseConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ReleaseConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -324,7 +324,7 @@ type RepositoryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.Repository, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RepositoryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -351,6 +351,53 @@ func (it *RepositoryIterator) takeBuf() interface{} {
 	return b
 }
 
+// SearchResultIterator manages a stream of *dataformpb.SearchResult.
+type SearchResultIterator struct {
+	items    []*dataformpb.SearchResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.SearchResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SearchResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SearchResultIterator) Next() (*dataformpb.SearchResult, error) {
+	var item *dataformpb.SearchResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SearchResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SearchResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // WorkflowConfigIterator manages a stream of *dataformpb.WorkflowConfig.
 type WorkflowConfigIterator struct {
 	items    []*dataformpb.WorkflowConfig
@@ -371,7 +418,7 @@ type WorkflowConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.WorkflowConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *WorkflowConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -418,7 +465,7 @@ type WorkflowInvocationActionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.WorkflowInvocationAction, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *WorkflowInvocationActionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -465,7 +512,7 @@ type WorkflowInvocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.WorkflowInvocation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *WorkflowInvocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -512,7 +559,7 @@ type WorkspaceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.Workspace, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *WorkspaceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

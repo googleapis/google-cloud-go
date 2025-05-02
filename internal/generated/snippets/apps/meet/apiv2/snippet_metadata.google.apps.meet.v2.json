@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apps/meet/apiv2",
-    "version": "0.4.6",
+    "version": "0.7.2",
     "language": "GO",
     "apis": [
       {
@@ -612,7 +612,7 @@
     {
       "regionTag": "meet_v2_generated_SpacesService_EndActiveConference_sync",
       "title": "meet EndActiveConference Sample",
-      "description": "EndActiveConference ends an active conference (if there's one).",
+      "description": "EndActiveConference ends an active conference (if there's one).\n\nFor an example, see [End active\nconference](https: //developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).",
       "file": "SpacesClient/EndActiveConference/main.go",
       "language": "GO",
       "clientMethod": {
@@ -657,7 +657,7 @@
     {
       "regionTag": "meet_v2_generated_SpacesService_GetSpace_sync",
       "title": "meet GetSpace Sample",
-      "description": "GetSpace gets a space by `space_id` or `meeting_code`.",
+      "description": "GetSpace gets details about a meeting space.\n\nFor an example, see [Get a meeting\nspace](https: //developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).",
       "file": "SpacesClient/GetSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -703,7 +703,7 @@
     {
       "regionTag": "meet_v2_generated_SpacesService_UpdateSpace_sync",
       "title": "meet UpdateSpace Sample",
-      "description": "UpdateSpace updates a space.",
+      "description": "UpdateSpace updates details about a meeting space.\n\nFor an example, see [Update a meeting\nspace](https: //developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).",
       "file": "SpacesClient/UpdateSpace/main.go",
       "language": "GO",
       "clientMethod": {

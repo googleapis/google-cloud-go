@@ -124,7 +124,7 @@ func TestAPIErrorBackwardCompatibility(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var got *apierror.APIError
-			ok := errorAs(tc.clientError, &got)
+			ok := errors.As(tc.clientError, &got)
 			if !ok {
 				t.Error("error unwrapping spanner.Error to apierror.APIError")
 			}

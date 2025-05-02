@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package retail
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -152,7 +151,7 @@ func defaultBranchRESTCallOptions() *BranchCallOptions {
 	}
 }
 
-// internalBranchClient is an interface that defines the methods available from Vertex AI Search for Retail API.
+// internalBranchClient is an interface that defines the methods available from Vertex AI Search for commerce API.
 type internalBranchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -163,7 +162,7 @@ type internalBranchClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// BranchClient is a client for interacting with Vertex AI Search for Retail API.
+// BranchClient is a client for interacting with Vertex AI Search for commerce API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // # Service for Branch Management
@@ -204,8 +203,8 @@ func (c *BranchClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListBranches lists all Branchs under the specified
-// parent Catalog.
+// ListBranches lists all instances of Branch under
+// the specified parent Catalog.
 func (c *BranchClient) ListBranches(ctx context.Context, req *retailpb.ListBranchesRequest, opts ...gax.CallOption) (*retailpb.ListBranchesResponse, error) {
 	return c.internalClient.ListBranches(ctx, req, opts...)
 }
@@ -225,7 +224,7 @@ func (c *BranchClient) ListOperations(ctx context.Context, req *longrunningpb.Li
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// branchGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
+// branchGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type branchGRPCClient struct {
@@ -242,6 +241,8 @@ type branchGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBranchClient creates a new branch service client based on gRPC.
@@ -274,6 +275,7 @@ func NewBranchClient(ctx context.Context, opts ...option.ClientOption) (*BranchC
 		connPool:         connPool,
 		branchClient:     retailpb.NewBranchServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -321,6 +323,8 @@ type branchRESTClient struct {
 
 	// Points back to the CallOptions field of the containing BranchClient
 	CallOptions **BranchCallOptions
+
+	logger *slog.Logger
 }
 
 // NewBranchRESTClient creates a new branch service rest client.
@@ -344,6 +348,7 @@ func NewBranchRESTClient(ctx context.Context, opts ...option.ClientOption) (*Bra
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -396,7 +401,7 @@ func (c *branchGRPCClient) ListBranches(ctx context.Context, req *retailpb.ListB
 	var resp *retailpb.ListBranchesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.branchClient.ListBranches(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.branchClient.ListBranches, req, settings.GRPC, c.logger, "ListBranches")
 		return err
 	}, opts...)
 	if err != nil {
@@ -414,7 +419,7 @@ func (c *branchGRPCClient) GetBranch(ctx context.Context, req *retailpb.GetBranc
 	var resp *retailpb.Branch
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.branchClient.GetBranch(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.branchClient.GetBranch, req, settings.GRPC, c.logger, "GetBranch")
 		return err
 	}, opts...)
 	if err != nil {
@@ -432,7 +437,7 @@ func (c *branchGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -461,7 +466,7 @@ func (c *branchGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -487,8 +492,8 @@ func (c *branchGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	return it
 }
 
-// ListBranches lists all Branchs under the specified
-// parent Catalog.
+// ListBranches lists all instances of Branch under
+// the specified parent Catalog.
 func (c *branchRESTClient) ListBranches(ctx context.Context, req *retailpb.ListBranchesRequest, opts ...gax.CallOption) (*retailpb.ListBranchesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -524,17 +529,7 @@ func (c *branchRESTClient) ListBranches(ctx context.Context, req *retailpb.ListB
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBranches")
 		if err != nil {
 			return err
 		}
@@ -587,17 +582,7 @@ func (c *branchRESTClient) GetBranch(ctx context.Context, req *retailpb.GetBranc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBranch")
 		if err != nil {
 			return err
 		}
@@ -647,17 +632,7 @@ func (c *branchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -722,21 +697,10 @@ func (c *branchRESTClient) ListOperations(ctx context.Context, req *longrunningp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

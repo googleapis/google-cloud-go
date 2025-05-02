@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package gkemulticloud
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -216,7 +217,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 	}
 }
 
-// internalAwsClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
+// internalAwsClustersClient is an interface that defines the methods available from GKE Multi-Cloud API.
 type internalAwsClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -250,7 +251,7 @@ type internalAwsClustersClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AwsClustersClient is a client for interacting with Anthos Multi-Cloud API.
+// AwsClustersClient is a client for interacting with GKE Multi-Cloud API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AwsClusters API provides a single centrally managed service
@@ -473,7 +474,7 @@ func (c *AwsClustersClient) ListOperations(ctx context.Context, req *longrunning
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// awsClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
+// awsClustersGRPCClient is a client for interacting with GKE Multi-Cloud API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type awsClustersGRPCClient struct {
@@ -495,6 +496,8 @@ type awsClustersGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAwsClustersClient creates a new aws clusters client based on gRPC.
@@ -522,6 +525,7 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 		connPool:          connPool,
 		awsClustersClient: gkemulticloudpb.NewAwsClustersClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -576,7 +580,7 @@ func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemu
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.CreateAwsCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.CreateAwsCluster, req, settings.GRPC, c.logger, "CreateAwsCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -596,7 +600,7 @@ func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemu
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.UpdateAwsCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.UpdateAwsCluster, req, settings.GRPC, c.logger, "UpdateAwsCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -616,7 +620,7 @@ func (c *awsClustersGRPCClient) GetAwsCluster(ctx context.Context, req *gkemulti
 	var resp *gkemulticloudpb.AwsCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.GetAwsCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.GetAwsCluster, req, settings.GRPC, c.logger, "GetAwsCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,7 +649,7 @@ func (c *awsClustersGRPCClient) ListAwsClusters(ctx context.Context, req *gkemul
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.awsClustersClient.ListAwsClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.awsClustersClient.ListAwsClusters, req, settings.GRPC, c.logger, "ListAwsClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -680,7 +684,7 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.DeleteAwsCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.DeleteAwsCluster, req, settings.GRPC, c.logger, "DeleteAwsCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -700,7 +704,7 @@ func (c *awsClustersGRPCClient) GenerateAwsClusterAgentToken(ctx context.Context
 	var resp *gkemulticloudpb.GenerateAwsClusterAgentTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.GenerateAwsClusterAgentToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.GenerateAwsClusterAgentToken, req, settings.GRPC, c.logger, "GenerateAwsClusterAgentToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -718,7 +722,7 @@ func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req 
 	var resp *gkemulticloudpb.GenerateAwsAccessTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.GenerateAwsAccessToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.GenerateAwsAccessToken, req, settings.GRPC, c.logger, "GenerateAwsAccessToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -736,7 +740,7 @@ func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.CreateAwsNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.CreateAwsNodePool, req, settings.GRPC, c.logger, "CreateAwsNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -756,7 +760,7 @@ func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.UpdateAwsNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.UpdateAwsNodePool, req, settings.GRPC, c.logger, "UpdateAwsNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -776,7 +780,7 @@ func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdate(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.RollbackAwsNodePoolUpdate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.RollbackAwsNodePoolUpdate, req, settings.GRPC, c.logger, "RollbackAwsNodePoolUpdate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -796,7 +800,7 @@ func (c *awsClustersGRPCClient) GetAwsNodePool(ctx context.Context, req *gkemult
 	var resp *gkemulticloudpb.AwsNodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.GetAwsNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.GetAwsNodePool, req, settings.GRPC, c.logger, "GetAwsNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -825,7 +829,7 @@ func (c *awsClustersGRPCClient) ListAwsNodePools(ctx context.Context, req *gkemu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.awsClustersClient.ListAwsNodePools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.awsClustersClient.ListAwsNodePools, req, settings.GRPC, c.logger, "ListAwsNodePools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -860,7 +864,7 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.DeleteAwsNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.DeleteAwsNodePool, req, settings.GRPC, c.logger, "DeleteAwsNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -880,7 +884,7 @@ func (c *awsClustersGRPCClient) GetAwsOpenIdConfig(ctx context.Context, req *gke
 	var resp *gkemulticloudpb.AwsOpenIdConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.GetAwsOpenIdConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.GetAwsOpenIdConfig, req, settings.GRPC, c.logger, "GetAwsOpenIdConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -898,7 +902,7 @@ func (c *awsClustersGRPCClient) GetAwsJsonWebKeys(ctx context.Context, req *gkem
 	var resp *gkemulticloudpb.AwsJsonWebKeys
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.GetAwsJsonWebKeys(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.GetAwsJsonWebKeys, req, settings.GRPC, c.logger, "GetAwsJsonWebKeys")
 		return err
 	}, opts...)
 	if err != nil {
@@ -916,7 +920,7 @@ func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gke
 	var resp *gkemulticloudpb.AwsServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.awsClustersClient.GetAwsServerConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.awsClustersClient.GetAwsServerConfig, req, settings.GRPC, c.logger, "GetAwsServerConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -933,7 +937,7 @@ func (c *awsClustersGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -947,7 +951,7 @@ func (c *awsClustersGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -962,7 +966,7 @@ func (c *awsClustersGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -991,7 +995,7 @@ func (c *awsClustersGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

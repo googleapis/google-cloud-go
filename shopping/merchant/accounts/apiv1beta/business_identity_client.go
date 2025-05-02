@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,19 +20,20 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -61,15 +62,57 @@ func defaultBusinessIdentityGRPCClientOptions() []option.ClientOption {
 
 func defaultBusinessIdentityCallOptions() *BusinessIdentityCallOptions {
 	return &BusinessIdentityCallOptions{
-		GetBusinessIdentity:    []gax.CallOption{},
-		UpdateBusinessIdentity: []gax.CallOption{},
+		GetBusinessIdentity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateBusinessIdentity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultBusinessIdentityRESTCallOptions() *BusinessIdentityCallOptions {
 	return &BusinessIdentityCallOptions{
-		GetBusinessIdentity:    []gax.CallOption{},
-		UpdateBusinessIdentity: []gax.CallOption{},
+		GetBusinessIdentity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateBusinessIdentity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -144,6 +187,8 @@ type businessIdentityGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBusinessIdentityClient creates a new business identity service client based on gRPC.
@@ -171,6 +216,7 @@ func NewBusinessIdentityClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		businessIdentityClient: accountspb.NewBusinessIdentityServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -217,6 +263,8 @@ type businessIdentityRESTClient struct {
 
 	// Points back to the CallOptions field of the containing BusinessIdentityClient
 	CallOptions **BusinessIdentityCallOptions
+
+	logger *slog.Logger
 }
 
 // NewBusinessIdentityRESTClient creates a new business identity service rest client.
@@ -235,6 +283,7 @@ func NewBusinessIdentityRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -287,7 +336,7 @@ func (c *businessIdentityGRPCClient) GetBusinessIdentity(ctx context.Context, re
 	var resp *accountspb.BusinessIdentity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.businessIdentityClient.GetBusinessIdentity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.businessIdentityClient.GetBusinessIdentity, req, settings.GRPC, c.logger, "GetBusinessIdentity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -305,7 +354,7 @@ func (c *businessIdentityGRPCClient) UpdateBusinessIdentity(ctx context.Context,
 	var resp *accountspb.BusinessIdentity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.businessIdentityClient.UpdateBusinessIdentity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.businessIdentityClient.UpdateBusinessIdentity, req, settings.GRPC, c.logger, "UpdateBusinessIdentity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -347,17 +396,7 @@ func (c *businessIdentityRESTClient) GetBusinessIdentity(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBusinessIdentity")
 		if err != nil {
 			return err
 		}
@@ -393,11 +432,11 @@ func (c *businessIdentityRESTClient) UpdateBusinessIdentity(ctx context.Context,
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -422,17 +461,7 @@ func (c *businessIdentityRESTClient) UpdateBusinessIdentity(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBusinessIdentity")
 		if err != nil {
 			return err
 		}

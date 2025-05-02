@@ -1,5 +1,76 @@
 # Changes
 
+## [1.19.5](https://github.com/googleapis/google-cloud-go/compare/channel/v1.19.4...channel/v1.19.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **channel:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.19.4](https://github.com/googleapis/google-cloud-go/compare/channel/v1.19.3...channel/v1.19.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **channel:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/channel/v1.19.2...channel/v1.19.3) (2025-03-06)
+
+
+### Bug Fixes
+
+* **channel:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/channel/v1.19.1...channel/v1.19.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **channel:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/channel/v1.19.0...channel/v1.19.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **channel:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **channel:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.18.1...channel/v1.19.0) (2024-10-09)
+
+
+### Features
+
+* **channel:** Add support for importing team customer from a different reseller ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **channel:** Add support for primary_admin_email as customer_identity for ImportCustomer ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **channel:** Add support to look up team customer Cloud Identity information ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **channel:** Clarify the expected value of the domain field for team type customers ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/channel/v1.18.0...channel/v1.18.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **channel:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.12...channel/v1.18.0) (2024-08-20)
+
+
+### Features
+
+* **channel:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.17.12](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.11...channel/v1.17.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **channel:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.17.11](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.10...channel/v1.17.11) (2024-07-24)
 
 

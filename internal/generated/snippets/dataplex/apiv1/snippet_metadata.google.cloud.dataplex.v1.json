@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.18.2",
+    "version": "1.25.2",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_CancelMetadataJob_sync",
+      "title": "dataplex CancelMetadataJob Sample",
+      "description": "CancelMetadataJob cancels a metadata job.\n\nIf you cancel a metadata import job that is in progress, the changes in the\njob might be partially applied. We recommend that you reset the state of\nthe entry groups in your project by running another metadata job that\nreverts the changes from the canceled job.",
+      "file": "CatalogClient/CancelMetadataJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelMetadataJob",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CancelMetadataJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CancelMetadataJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CancelMetadataJob",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CancelMetadataJob",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CancelOperation_sync",
       "title": "dataplex CancelOperation Sample",
@@ -59,7 +104,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateAspectType_sync",
       "title": "dataplex CreateAspectType Sample",
-      "description": "CreateAspectType creates an AspectType",
+      "description": "CreateAspectType creates an AspectType.",
       "file": "CatalogClient/CreateAspectType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -151,7 +196,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateEntryGroup_sync",
       "title": "dataplex CreateEntryGroup Sample",
-      "description": "CreateEntryGroup creates an EntryGroup",
+      "description": "CreateEntryGroup creates an EntryGroup.",
       "file": "CatalogClient/CreateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -197,7 +242,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateEntryType_sync",
       "title": "dataplex CreateEntryType Sample",
-      "description": "CreateEntryType creates an EntryType",
+      "description": "CreateEntryType creates an EntryType.",
       "file": "CatalogClient/CreateEntryType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -241,9 +286,55 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_CreateMetadataJob_sync",
+      "title": "dataplex CreateMetadataJob Sample",
+      "description": "CreateMetadataJob creates a metadata job. For example, use a metadata job to import Dataplex\nCatalog entries and aspects from a third-party system into Dataplex.",
+      "file": "CatalogClient/CreateMetadataJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMetadataJob",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CreateMetadataJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateMetadataJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMetadataJobOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CreateMetadataJob",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CreateMetadataJob",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_DeleteAspectType_sync",
       "title": "dataplex DeleteAspectType Sample",
-      "description": "DeleteAspectType deletes a AspectType resource.",
+      "description": "DeleteAspectType deletes an AspectType.",
       "file": "CatalogClient/DeleteAspectType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -335,7 +426,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_DeleteEntryGroup_sync",
       "title": "dataplex DeleteEntryGroup Sample",
-      "description": "DeleteEntryGroup deletes a EntryGroup resource.",
+      "description": "DeleteEntryGroup deletes an EntryGroup.",
       "file": "CatalogClient/DeleteEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -381,7 +472,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_DeleteEntryType_sync",
       "title": "dataplex DeleteEntryType Sample",
-      "description": "DeleteEntryType deletes a EntryType resource.",
+      "description": "DeleteEntryType deletes an EntryType.",
       "file": "CatalogClient/DeleteEntryType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -472,7 +563,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetAspectType_sync",
       "title": "dataplex GetAspectType Sample",
-      "description": "GetAspectType retrieves a AspectType resource.",
+      "description": "GetAspectType gets an AspectType.",
       "file": "CatalogClient/GetAspectType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -518,7 +609,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntry_sync",
       "title": "dataplex GetEntry Sample",
-      "description": "GetEntry gets a single entry.",
+      "description": "GetEntry gets an Entry.",
       "file": "CatalogClient/GetEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -564,7 +655,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntryGroup_sync",
       "title": "dataplex GetEntryGroup Sample",
-      "description": "GetEntryGroup retrieves a EntryGroup resource.",
+      "description": "GetEntryGroup gets an EntryGroup.",
       "file": "CatalogClient/GetEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -610,7 +701,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntryType_sync",
       "title": "dataplex GetEntryType Sample",
-      "description": "GetEntryType retrieves a EntryType resource.",
+      "description": "GetEntryType gets an EntryType.",
       "file": "CatalogClient/GetEntryType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -687,6 +778,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetMetadataJob_sync",
+      "title": "dataplex GetMetadataJob Sample",
+      "description": "GetMetadataJob gets a metadata job.",
+      "file": "CatalogClient/GetMetadataJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMetadataJob",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetMetadataJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetMetadataJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.MetadataJob",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetMetadataJob",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.GetMetadataJob",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
           }
         }
       },
@@ -794,7 +931,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_ListEntries_sync",
       "title": "dataplex ListEntries Sample",
-      "description": "ListEntries lists entries within an entry group.",
+      "description": "ListEntries lists Entries within an EntryGroup.",
       "file": "CatalogClient/ListEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -976,6 +1113,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListMetadataJobs_sync",
+      "title": "dataplex ListMetadataJobs Sample",
+      "description": "ListMetadataJobs lists metadata jobs.",
+      "file": "CatalogClient/ListMetadataJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMetadataJobs",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListMetadataJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListMetadataJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MetadataJobIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListMetadataJobs",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.ListMetadataJobs",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_ListOperations_sync",
       "title": "dataplex ListOperations Sample",
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
@@ -1024,7 +1207,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_LookupEntry_sync",
       "title": "dataplex LookupEntry Sample",
-      "description": "LookupEntry looks up a single entry.",
+      "description": "LookupEntry looks up an entry by name using the permission on the source system.",
       "file": "CatalogClient/LookupEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1070,7 +1253,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_SearchEntries_sync",
       "title": "dataplex SearchEntries Sample",
-      "description": "SearchEntries searches for entries matching given query and scope.",
+      "description": "SearchEntries searches for Entries matching the given query and scope.",
       "file": "CatalogClient/SearchEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1116,7 +1299,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_UpdateAspectType_sync",
       "title": "dataplex UpdateAspectType Sample",
-      "description": "UpdateAspectType updates a AspectType resource.",
+      "description": "UpdateAspectType updates an AspectType.",
       "file": "CatalogClient/UpdateAspectType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1208,7 +1391,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntryGroup_sync",
       "title": "dataplex UpdateEntryGroup Sample",
-      "description": "UpdateEntryGroup updates a EntryGroup resource.",
+      "description": "UpdateEntryGroup updates an EntryGroup.",
       "file": "CatalogClient/UpdateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1254,7 +1437,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntryType_sync",
       "title": "dataplex UpdateEntryType Sample",
-      "description": "UpdateEntryType updates a EntryType resource.",
+      "description": "UpdateEntryType updates an EntryType.",
       "file": "CatalogClient/UpdateEntryType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1285,6 +1468,510 @@
           "service": {
             "shortName": "CatalogService",
             "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmekClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_CreateEncryptionConfig_sync",
+      "title": "dataplex CreateEncryptionConfig Sample",
+      "description": "CreateEncryptionConfig create an EncryptionConfig.",
+      "file": "CmekClient/CreateEncryptionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEncryptionConfig",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.CreateEncryptionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateEncryptionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEncryptionConfigOperation",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "CreateEncryptionConfig",
+          "fullName": "google.cloud.dataplex.v1.CmekService.CreateEncryptionConfig",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_DeleteEncryptionConfig_sync",
+      "title": "dataplex DeleteEncryptionConfig Sample",
+      "description": "DeleteEncryptionConfig delete an EncryptionConfig.",
+      "file": "CmekClient/DeleteEncryptionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEncryptionConfig",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.DeleteEncryptionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteEncryptionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEncryptionConfigOperation",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "DeleteEncryptionConfig",
+          "fullName": "google.cloud.dataplex.v1.CmekService.DeleteEncryptionConfig",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmekClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_GetEncryptionConfig_sync",
+      "title": "dataplex GetEncryptionConfig Sample",
+      "description": "GetEncryptionConfig get an EncryptionConfig.",
+      "file": "CmekClient/GetEncryptionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEncryptionConfig",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.GetEncryptionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetEncryptionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.EncryptionConfig",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "GetEncryptionConfig",
+          "fullName": "google.cloud.dataplex.v1.CmekService.GetEncryptionConfig",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CmekClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmekClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_ListEncryptionConfigs_sync",
+      "title": "dataplex ListEncryptionConfigs Sample",
+      "description": "ListEncryptionConfigs list EncryptionConfigs.",
+      "file": "CmekClient/ListEncryptionConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEncryptionConfigs",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.ListEncryptionConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListEncryptionConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EncryptionConfigIterator",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "ListEncryptionConfigs",
+          "fullName": "google.cloud.dataplex.v1.CmekService.ListEncryptionConfigs",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CmekClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CmekClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_UpdateEncryptionConfig_sync",
+      "title": "dataplex UpdateEncryptionConfig Sample",
+      "description": "UpdateEncryptionConfig update an EncryptionConfig.",
+      "file": "CmekClient/UpdateEncryptionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEncryptionConfig",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.UpdateEncryptionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateEncryptionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEncryptionConfigOperation",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "UpdateEncryptionConfig",
+          "fullName": "google.cloud.dataplex.v1.CmekService.UpdateEncryptionConfig",
+          "service": {
+            "shortName": "CmekService",
+            "fullName": "google.cloud.dataplex.v1.CmekService"
           }
         }
       },
@@ -2674,7 +3361,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataAttribute_sync",
       "title": "dataplex CreateDataAttribute Sample",
-      "description": "CreateDataAttribute create a DataAttribute resource.",
+      "description": "CreateDataAttribute create a DataAttribute resource.\n\n\nDeprecated: CreateDataAttribute may be removed in a future version.",
       "file": "DataTaxonomyClient/CreateDataAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2720,7 +3407,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataAttributeBinding_sync",
       "title": "dataplex CreateDataAttributeBinding Sample",
-      "description": "CreateDataAttributeBinding create a DataAttributeBinding resource.",
+      "description": "CreateDataAttributeBinding create a DataAttributeBinding resource.\n\n\nDeprecated: CreateDataAttributeBinding may be removed in a future version.",
       "file": "DataTaxonomyClient/CreateDataAttributeBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2766,7 +3453,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataTaxonomy_sync",
       "title": "dataplex CreateDataTaxonomy Sample",
-      "description": "CreateDataTaxonomy create a DataTaxonomy resource.",
+      "description": "CreateDataTaxonomy create a DataTaxonomy resource.\n\n\nDeprecated: CreateDataTaxonomy may be removed in a future version.",
       "file": "DataTaxonomyClient/CreateDataTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2812,7 +3499,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataAttribute_sync",
       "title": "dataplex DeleteDataAttribute Sample",
-      "description": "DeleteDataAttribute deletes a Data Attribute resource.",
+      "description": "DeleteDataAttribute deletes a Data Attribute resource.\n\n\nDeprecated: DeleteDataAttribute may be removed in a future version.",
       "file": "DataTaxonomyClient/DeleteDataAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2858,7 +3545,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataAttributeBinding_sync",
       "title": "dataplex DeleteDataAttributeBinding Sample",
-      "description": "DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the\nDataAttributeBinding must be deleted before the DataAttributeBinding can be\ndeleted.",
+      "description": "DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the\nDataAttributeBinding must be deleted before the DataAttributeBinding can be\ndeleted.\n\n\nDeprecated: DeleteDataAttributeBinding may be removed in a future version.",
       "file": "DataTaxonomyClient/DeleteDataAttributeBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2904,7 +3591,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataTaxonomy_sync",
       "title": "dataplex DeleteDataTaxonomy Sample",
-      "description": "DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy\nmust be deleted before the DataTaxonomy can be deleted.",
+      "description": "DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy\nmust be deleted before the DataTaxonomy can be deleted.\n\n\nDeprecated: DeleteDataTaxonomy may be removed in a future version.",
       "file": "DataTaxonomyClient/DeleteDataTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2995,7 +3682,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataAttribute_sync",
       "title": "dataplex GetDataAttribute Sample",
-      "description": "GetDataAttribute retrieves a Data Attribute resource.",
+      "description": "GetDataAttribute retrieves a Data Attribute resource.\n\n\nDeprecated: GetDataAttribute may be removed in a future version.",
       "file": "DataTaxonomyClient/GetDataAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3041,7 +3728,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataAttributeBinding_sync",
       "title": "dataplex GetDataAttributeBinding Sample",
-      "description": "GetDataAttributeBinding retrieves a DataAttributeBinding resource.",
+      "description": "GetDataAttributeBinding retrieves a DataAttributeBinding resource.\n\n\nDeprecated: GetDataAttributeBinding may be removed in a future version.",
       "file": "DataTaxonomyClient/GetDataAttributeBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3087,7 +3774,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataTaxonomy_sync",
       "title": "dataplex GetDataTaxonomy Sample",
-      "description": "GetDataTaxonomy retrieves a DataTaxonomy resource.",
+      "description": "GetDataTaxonomy retrieves a DataTaxonomy resource.\n\n\nDeprecated: GetDataTaxonomy may be removed in a future version.",
       "file": "DataTaxonomyClient/GetDataTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3225,7 +3912,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataAttributeBindings_sync",
       "title": "dataplex ListDataAttributeBindings Sample",
-      "description": "ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.",
+      "description": "ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.\n\n\nDeprecated: ListDataAttributeBindings may be removed in a future version.",
       "file": "DataTaxonomyClient/ListDataAttributeBindings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3271,7 +3958,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataAttributes_sync",
       "title": "dataplex ListDataAttributes Sample",
-      "description": "ListDataAttributes lists Data Attribute resources in a DataTaxonomy.",
+      "description": "ListDataAttributes lists Data Attribute resources in a DataTaxonomy.\n\n\nDeprecated: ListDataAttributes may be removed in a future version.",
       "file": "DataTaxonomyClient/ListDataAttributes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3317,7 +4004,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataTaxonomies_sync",
       "title": "dataplex ListDataTaxonomies Sample",
-      "description": "ListDataTaxonomies lists DataTaxonomy resources in a project and location.",
+      "description": "ListDataTaxonomies lists DataTaxonomy resources in a project and location.\n\n\nDeprecated: ListDataTaxonomies may be removed in a future version.",
       "file": "DataTaxonomyClient/ListDataTaxonomies/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3455,7 +4142,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataAttribute_sync",
       "title": "dataplex UpdateDataAttribute Sample",
-      "description": "UpdateDataAttribute updates a DataAttribute resource.",
+      "description": "UpdateDataAttribute updates a DataAttribute resource.\n\n\nDeprecated: UpdateDataAttribute may be removed in a future version.",
       "file": "DataTaxonomyClient/UpdateDataAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3501,7 +4188,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataAttributeBinding_sync",
       "title": "dataplex UpdateDataAttributeBinding Sample",
-      "description": "UpdateDataAttributeBinding updates a DataAttributeBinding resource.",
+      "description": "UpdateDataAttributeBinding updates a DataAttributeBinding resource.\n\n\nDeprecated: UpdateDataAttributeBinding may be removed in a future version.",
       "file": "DataTaxonomyClient/UpdateDataAttributeBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3547,7 +4234,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataTaxonomy_sync",
       "title": "dataplex UpdateDataTaxonomy Sample",
-      "description": "UpdateDataTaxonomy updates a DataTaxonomy resource.",
+      "description": "UpdateDataTaxonomy updates a DataTaxonomy resource.\n\n\nDeprecated: UpdateDataTaxonomy may be removed in a future version.",
       "file": "DataTaxonomyClient/UpdateDataTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {

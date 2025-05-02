@@ -81,17 +81,18 @@ func init() {
 
 // IntegrationTestConfig contains parameters to pick and setup a IntegrationEnv for testing
 type IntegrationTestConfig struct {
-	UseProd            bool
-	AdminEndpoint      string
-	DataEndpoint       string
-	Project            string
-	Project2           string
-	Instance           string
-	Cluster            string
-	Cluster2           string
-	Table              string
-	AttemptDirectPath  bool
-	DirectPathIPV4Only bool
+	UseProd               bool
+	AdminEndpoint         string
+	DataEndpoint          string
+	Project               string
+	Project2              string
+	Instance              string
+	Cluster               string
+	Cluster2              string
+	Table                 string
+	AttemptDirectPath     bool
+	DirectPathIPV4Only    bool
+	EmulatedServerOptions []grpc.ServerOption
 }
 
 // IntegrationEnv represents a testing environment.
@@ -160,7 +161,9 @@ type EmulatedEnv struct {
 
 // NewEmulatedEnv builds and starts the emulator based environment
 func NewEmulatedEnv(config IntegrationTestConfig) (*EmulatedEnv, error) {
-	srv, err := bttest.NewServer("localhost:0", grpc.MaxRecvMsgSize(200<<20), grpc.MaxSendMsgSize(100<<20))
+	serverOptions := []grpc.ServerOption{grpc.MaxRecvMsgSize(200 << 20), grpc.MaxSendMsgSize(100 << 20)}
+	serverOptions = append(serverOptions, config.EmulatedServerOptions...)
+	srv, err := bttest.NewServer("localhost:0", serverOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +244,7 @@ func (e *EmulatedEnv) NewInstanceAdminClient() (*InstanceAdminClient, error) {
 
 // NewClient builds a new connected data client for this environment
 func (e *EmulatedEnv) NewClient() (*Client, error) {
-	return e.newEmulatedClient(ClientConfig{})
+	return e.newEmulatedClient(ClientConfig{MetricsProvider: NoopMetricsProvider{}})
 }
 
 // NewClient builds a new connected data client with provided config for this environment

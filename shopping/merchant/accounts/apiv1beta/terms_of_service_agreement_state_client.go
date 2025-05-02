@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,19 +19,20 @@ package accounts
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -60,15 +61,57 @@ func defaultTermsOfServiceAgreementStateGRPCClientOptions() []option.ClientOptio
 
 func defaultTermsOfServiceAgreementStateCallOptions() *TermsOfServiceAgreementStateCallOptions {
 	return &TermsOfServiceAgreementStateCallOptions{
-		GetTermsOfServiceAgreementState:                    []gax.CallOption{},
-		RetrieveForApplicationTermsOfServiceAgreementState: []gax.CallOption{},
+		GetTermsOfServiceAgreementState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RetrieveForApplicationTermsOfServiceAgreementState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultTermsOfServiceAgreementStateRESTCallOptions() *TermsOfServiceAgreementStateCallOptions {
 	return &TermsOfServiceAgreementStateCallOptions{
-		GetTermsOfServiceAgreementState:                    []gax.CallOption{},
-		RetrieveForApplicationTermsOfServiceAgreementState: []gax.CallOption{},
+		GetTermsOfServiceAgreementState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		RetrieveForApplicationTermsOfServiceAgreementState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -141,6 +184,8 @@ type termsOfServiceAgreementStateGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTermsOfServiceAgreementStateClient creates a new terms of service agreement state service client based on gRPC.
@@ -167,6 +212,7 @@ func NewTermsOfServiceAgreementStateClient(ctx context.Context, opts ...option.C
 		connPool:                           connPool,
 		termsOfServiceAgreementStateClient: accountspb.NewTermsOfServiceAgreementStateServiceClient(connPool),
 		CallOptions:                        &client.CallOptions,
+		logger:                             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -213,6 +259,8 @@ type termsOfServiceAgreementStateRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TermsOfServiceAgreementStateClient
 	CallOptions **TermsOfServiceAgreementStateCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTermsOfServiceAgreementStateRESTClient creates a new terms of service agreement state service rest client.
@@ -230,6 +278,7 @@ func NewTermsOfServiceAgreementStateRESTClient(ctx context.Context, opts ...opti
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -282,7 +331,7 @@ func (c *termsOfServiceAgreementStateGRPCClient) GetTermsOfServiceAgreementState
 	var resp *accountspb.TermsOfServiceAgreementState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.termsOfServiceAgreementStateClient.GetTermsOfServiceAgreementState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.termsOfServiceAgreementStateClient.GetTermsOfServiceAgreementState, req, settings.GRPC, c.logger, "GetTermsOfServiceAgreementState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -300,7 +349,7 @@ func (c *termsOfServiceAgreementStateGRPCClient) RetrieveForApplicationTermsOfSe
 	var resp *accountspb.TermsOfServiceAgreementState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.termsOfServiceAgreementStateClient.RetrieveForApplicationTermsOfServiceAgreementState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.termsOfServiceAgreementStateClient.RetrieveForApplicationTermsOfServiceAgreementState, req, settings.GRPC, c.logger, "RetrieveForApplicationTermsOfServiceAgreementState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -342,17 +391,7 @@ func (c *termsOfServiceAgreementStateRESTClient) GetTermsOfServiceAgreementState
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTermsOfServiceAgreementState")
 		if err != nil {
 			return err
 		}
@@ -402,17 +441,7 @@ func (c *termsOfServiceAgreementStateRESTClient) RetrieveForApplicationTermsOfSe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RetrieveForApplicationTermsOfServiceAgreementState")
 		if err != nil {
 			return err
 		}

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	datasourcespb "cloud.google.com/go/shopping/merchant/datasources/apiv1beta/datasourcespb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -315,6 +314,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new data sources service client based on gRPC.
@@ -343,6 +344,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      datasourcespb.NewDataSourcesServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -389,6 +391,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new data sources service rest client.
@@ -408,6 +412,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -460,7 +465,7 @@ func (c *gRPCClient) GetDataSource(ctx context.Context, req *datasourcespb.GetDa
 	var resp *datasourcespb.DataSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDataSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDataSource, req, settings.GRPC, c.logger, "GetDataSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -489,7 +494,7 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *datasourcespb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDataSources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDataSources, req, settings.GRPC, c.logger, "ListDataSources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -524,7 +529,7 @@ func (c *gRPCClient) CreateDataSource(ctx context.Context, req *datasourcespb.Cr
 	var resp *datasourcespb.DataSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDataSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDataSource, req, settings.GRPC, c.logger, "CreateDataSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -542,7 +547,7 @@ func (c *gRPCClient) UpdateDataSource(ctx context.Context, req *datasourcespb.Up
 	var resp *datasourcespb.DataSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDataSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDataSource, req, settings.GRPC, c.logger, "UpdateDataSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -559,7 +564,7 @@ func (c *gRPCClient) DeleteDataSource(ctx context.Context, req *datasourcespb.De
 	opts = append((*c.CallOptions).DeleteDataSource[0:len((*c.CallOptions).DeleteDataSource):len((*c.CallOptions).DeleteDataSource)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteDataSource(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteDataSource, req, settings.GRPC, c.logger, "DeleteDataSource")
 		return err
 	}, opts...)
 	return err
@@ -573,7 +578,7 @@ func (c *gRPCClient) FetchDataSource(ctx context.Context, req *datasourcespb.Fet
 	opts = append((*c.CallOptions).FetchDataSource[0:len((*c.CallOptions).FetchDataSource):len((*c.CallOptions).FetchDataSource)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.FetchDataSource(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.FetchDataSource, req, settings.GRPC, c.logger, "FetchDataSource")
 		return err
 	}, opts...)
 	return err
@@ -612,17 +617,7 @@ func (c *restClient) GetDataSource(ctx context.Context, req *datasourcespb.GetDa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataSource")
 		if err != nil {
 			return err
 		}
@@ -684,21 +679,10 @@ func (c *restClient) ListDataSources(ctx context.Context, req *datasourcespb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataSources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -768,17 +752,7 @@ func (c *restClient) CreateDataSource(ctx context.Context, req *datasourcespb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataSource")
 		if err != nil {
 			return err
 		}
@@ -814,11 +788,11 @@ func (c *restClient) UpdateDataSource(ctx context.Context, req *datasourcespb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -843,17 +817,7 @@ func (c *restClient) UpdateDataSource(ctx context.Context, req *datasourcespb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataSource")
 		if err != nil {
 			return err
 		}
@@ -900,15 +864,8 @@ func (c *restClient) DeleteDataSource(ctx context.Context, req *datasourcespb.De
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataSource")
+		return err
 	}, opts...)
 }
 
@@ -952,14 +909,7 @@ func (c *restClient) FetchDataSource(ctx context.Context, req *datasourcespb.Fet
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchDataSource")
+		return err
 	}, opts...)
 }

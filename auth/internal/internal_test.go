@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"errors"
+	"net/http"
 	"testing"
 
 	"cloud.google.com/go/compute/metadata"
@@ -27,13 +28,13 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 	notDefinedError := metadata.NotDefinedError("universe/universe_domain")
 	testCases := []struct {
 		name    string
-		getFunc func(ctx context.Context) (string, error)
+		getFunc func(context.Context, *metadata.Client) (string, error)
 		want    string
 		wantErr error
 	}{
 		{
 			name: "test error",
-			getFunc: func(ctx context.Context) (string, error) {
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
 				return "", fatalErr
 			},
 			want:    "",
@@ -41,7 +42,7 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 		},
 		{
 			name: "test error 404",
-			getFunc: func(ctx context.Context) (string, error) {
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
 				return "", notDefinedError
 			},
 			want:    DefaultUniverseDomain,
@@ -49,7 +50,7 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 		},
 		{
 			name: "test valid",
-			getFunc: func(ctx context.Context) (string, error) {
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
 				return "example.com", nil
 			},
 			want:    "example.com",
@@ -73,5 +74,47 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 				t.Errorf("got %v; want %v", got, tc.want)
 			}
 		})
+	}
+}
+
+type fakeClonableTransport struct {
+	clone *http.Transport
+}
+
+func (t *fakeClonableTransport) Clone() *http.Transport {
+	return t.clone
+}
+
+func (t *fakeClonableTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return nil, errors.New("not implemented")
+}
+
+type fakeTransport struct{}
+
+func (t *fakeTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return nil, errors.New("not implemented")
+}
+
+func TestDefaultClient(t *testing.T) {
+	transportBeforeTest := http.DefaultTransport
+	defer func() { http.DefaultTransport = transportBeforeTest }()
+
+	got := DefaultClient()
+	if got.Transport == http.DefaultTransport {
+		t.Errorf("DefaultClient() = %v, expected a clone of http.DefaultTransport", got)
+	}
+
+	cloneTransport := &http.Transport{}
+	http.DefaultTransport = &fakeClonableTransport{clone: cloneTransport}
+	got = DefaultClient()
+	if got.Transport != cloneTransport {
+		t.Errorf("DefaultClient() = %v, want %v", got, cloneTransport)
+	}
+
+	fakeTransport := &fakeTransport{}
+	http.DefaultTransport = fakeTransport
+	got = DefaultClient()
+	if got.Transport != fakeTransport {
+		t.Errorf("DefaultClient() = %v, want %v", got, fakeTransport)
 	}
 }

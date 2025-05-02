@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networkconnectivity/apiv1",
-    "version": "1.14.10",
+    "version": "1.17.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,1246 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_CancelOperation_sync",
+      "title": "networkconnectivity CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CrossNetworkAutomationClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_CreateServiceConnectionMap_sync",
+      "title": "networkconnectivity CreateServiceConnectionMap Sample",
+      "description": "CreateServiceConnectionMap creates a new ServiceConnectionMap in a given project and location.",
+      "file": "CrossNetworkAutomationClient/CreateServiceConnectionMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceConnectionMap",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.CreateServiceConnectionMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.CreateServiceConnectionMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateServiceConnectionMapOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "CreateServiceConnectionMap",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.CreateServiceConnectionMap",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_CreateServiceConnectionPolicy_sync",
+      "title": "networkconnectivity CreateServiceConnectionPolicy Sample",
+      "description": "CreateServiceConnectionPolicy creates a new ServiceConnectionPolicy in a given project and location.",
+      "file": "CrossNetworkAutomationClient/CreateServiceConnectionPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceConnectionPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.CreateServiceConnectionPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.CreateServiceConnectionPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateServiceConnectionPolicyOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "CreateServiceConnectionPolicy",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.CreateServiceConnectionPolicy",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_CreateServiceConnectionToken_sync",
+      "title": "networkconnectivity CreateServiceConnectionToken Sample",
+      "description": "CreateServiceConnectionToken creates a new ServiceConnectionToken in a given project and location.",
+      "file": "CrossNetworkAutomationClient/CreateServiceConnectionToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceConnectionToken",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.CreateServiceConnectionToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.CreateServiceConnectionTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateServiceConnectionTokenOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "CreateServiceConnectionToken",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.CreateServiceConnectionToken",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_DeleteOperation_sync",
+      "title": "networkconnectivity DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CrossNetworkAutomationClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_DeleteServiceClass_sync",
+      "title": "networkconnectivity DeleteServiceClass Sample",
+      "description": "DeleteServiceClass deletes a single ServiceClass.",
+      "file": "CrossNetworkAutomationClient/DeleteServiceClass/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteServiceClass",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.DeleteServiceClass",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.DeleteServiceClassRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteServiceClassOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "DeleteServiceClass",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.DeleteServiceClass",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_DeleteServiceConnectionMap_sync",
+      "title": "networkconnectivity DeleteServiceConnectionMap Sample",
+      "description": "DeleteServiceConnectionMap deletes a single ServiceConnectionMap.",
+      "file": "CrossNetworkAutomationClient/DeleteServiceConnectionMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteServiceConnectionMap",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.DeleteServiceConnectionMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.DeleteServiceConnectionMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteServiceConnectionMapOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "DeleteServiceConnectionMap",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.DeleteServiceConnectionMap",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_DeleteServiceConnectionPolicy_sync",
+      "title": "networkconnectivity DeleteServiceConnectionPolicy Sample",
+      "description": "DeleteServiceConnectionPolicy deletes a single ServiceConnectionPolicy.",
+      "file": "CrossNetworkAutomationClient/DeleteServiceConnectionPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteServiceConnectionPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.DeleteServiceConnectionPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.DeleteServiceConnectionPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteServiceConnectionPolicyOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "DeleteServiceConnectionPolicy",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.DeleteServiceConnectionPolicy",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_DeleteServiceConnectionToken_sync",
+      "title": "networkconnectivity DeleteServiceConnectionToken Sample",
+      "description": "DeleteServiceConnectionToken deletes a single ServiceConnectionToken.",
+      "file": "CrossNetworkAutomationClient/DeleteServiceConnectionToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteServiceConnectionToken",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.DeleteServiceConnectionToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.DeleteServiceConnectionTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteServiceConnectionTokenOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "DeleteServiceConnectionToken",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.DeleteServiceConnectionToken",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_GetIamPolicy_sync",
+      "title": "networkconnectivity GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "CrossNetworkAutomationClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_GetLocation_sync",
+      "title": "networkconnectivity GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CrossNetworkAutomationClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_GetOperation_sync",
+      "title": "networkconnectivity GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CrossNetworkAutomationClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_GetServiceClass_sync",
+      "title": "networkconnectivity GetServiceClass Sample",
+      "description": "GetServiceClass gets details of a single ServiceClass.",
+      "file": "CrossNetworkAutomationClient/GetServiceClass/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceClass",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.GetServiceClass",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetServiceClassRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.ServiceClass",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "GetServiceClass",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.GetServiceClass",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_GetServiceConnectionMap_sync",
+      "title": "networkconnectivity GetServiceConnectionMap Sample",
+      "description": "GetServiceConnectionMap gets details of a single ServiceConnectionMap.",
+      "file": "CrossNetworkAutomationClient/GetServiceConnectionMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceConnectionMap",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.GetServiceConnectionMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetServiceConnectionMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.ServiceConnectionMap",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "GetServiceConnectionMap",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.GetServiceConnectionMap",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_GetServiceConnectionPolicy_sync",
+      "title": "networkconnectivity GetServiceConnectionPolicy Sample",
+      "description": "GetServiceConnectionPolicy gets details of a single ServiceConnectionPolicy.",
+      "file": "CrossNetworkAutomationClient/GetServiceConnectionPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceConnectionPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.GetServiceConnectionPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetServiceConnectionPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.ServiceConnectionPolicy",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "GetServiceConnectionPolicy",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.GetServiceConnectionPolicy",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_GetServiceConnectionToken_sync",
+      "title": "networkconnectivity GetServiceConnectionToken Sample",
+      "description": "GetServiceConnectionToken gets details of a single ServiceConnectionToken.",
+      "file": "CrossNetworkAutomationClient/GetServiceConnectionToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceConnectionToken",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.GetServiceConnectionToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetServiceConnectionTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.ServiceConnectionToken",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "GetServiceConnectionToken",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.GetServiceConnectionToken",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_ListLocations_sync",
+      "title": "networkconnectivity ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CrossNetworkAutomationClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_ListOperations_sync",
+      "title": "networkconnectivity ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CrossNetworkAutomationClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_ListServiceClasses_sync",
+      "title": "networkconnectivity ListServiceClasses Sample",
+      "description": "ListServiceClasses lists ServiceClasses in a given project and location.",
+      "file": "CrossNetworkAutomationClient/ListServiceClasses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceClasses",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.ListServiceClasses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListServiceClassesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceClassIterator",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "ListServiceClasses",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.ListServiceClasses",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_ListServiceConnectionMaps_sync",
+      "title": "networkconnectivity ListServiceConnectionMaps Sample",
+      "description": "ListServiceConnectionMaps lists ServiceConnectionMaps in a given project and location.",
+      "file": "CrossNetworkAutomationClient/ListServiceConnectionMaps/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceConnectionMaps",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.ListServiceConnectionMaps",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListServiceConnectionMapsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceConnectionMapIterator",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "ListServiceConnectionMaps",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.ListServiceConnectionMaps",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_ListServiceConnectionPolicies_sync",
+      "title": "networkconnectivity ListServiceConnectionPolicies Sample",
+      "description": "ListServiceConnectionPolicies lists ServiceConnectionPolicies in a given project and location.",
+      "file": "CrossNetworkAutomationClient/ListServiceConnectionPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceConnectionPolicies",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.ListServiceConnectionPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListServiceConnectionPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceConnectionPolicyIterator",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "ListServiceConnectionPolicies",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.ListServiceConnectionPolicies",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_ListServiceConnectionTokens_sync",
+      "title": "networkconnectivity ListServiceConnectionTokens Sample",
+      "description": "ListServiceConnectionTokens lists ServiceConnectionTokens in a given project and location.",
+      "file": "CrossNetworkAutomationClient/ListServiceConnectionTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceConnectionTokens",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.ListServiceConnectionTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListServiceConnectionTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceConnectionTokenIterator",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "ListServiceConnectionTokens",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.ListServiceConnectionTokens",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_SetIamPolicy_sync",
+      "title": "networkconnectivity SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "CrossNetworkAutomationClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_TestIamPermissions_sync",
+      "title": "networkconnectivity TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "CrossNetworkAutomationClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_UpdateServiceClass_sync",
+      "title": "networkconnectivity UpdateServiceClass Sample",
+      "description": "UpdateServiceClass updates the parameters of a single ServiceClass.",
+      "file": "CrossNetworkAutomationClient/UpdateServiceClass/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateServiceClass",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.UpdateServiceClass",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.UpdateServiceClassRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateServiceClassOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "UpdateServiceClass",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.UpdateServiceClass",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_UpdateServiceConnectionMap_sync",
+      "title": "networkconnectivity UpdateServiceConnectionMap Sample",
+      "description": "UpdateServiceConnectionMap updates the parameters of a single ServiceConnectionMap.",
+      "file": "CrossNetworkAutomationClient/UpdateServiceConnectionMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateServiceConnectionMap",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.UpdateServiceConnectionMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.UpdateServiceConnectionMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateServiceConnectionMapOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "UpdateServiceConnectionMap",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.UpdateServiceConnectionMap",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_CrossNetworkAutomationService_UpdateServiceConnectionPolicy_sync",
+      "title": "networkconnectivity UpdateServiceConnectionPolicy Sample",
+      "description": "UpdateServiceConnectionPolicy updates the parameters of a single ServiceConnectionPolicy.",
+      "file": "CrossNetworkAutomationClient/UpdateServiceConnectionPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateServiceConnectionPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient.UpdateServiceConnectionPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.UpdateServiceConnectionPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateServiceConnectionPolicyOperation",
+        "client": {
+          "shortName": "CrossNetworkAutomationClient",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationClient"
+        },
+        "method": {
+          "shortName": "UpdateServiceConnectionPolicy",
+          "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService.UpdateServiceConnectionPolicy",
+          "service": {
+            "shortName": "CrossNetworkAutomationService",
+            "fullName": "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "networkconnectivity_v1_generated_HubService_AcceptHubSpoke_sync",
       "title": "networkconnectivity AcceptHubSpoke Sample",
@@ -42,6 +1282,52 @@
         "method": {
           "shortName": "AcceptHubSpoke",
           "fullName": "google.cloud.networkconnectivity.v1.HubService.AcceptHubSpoke",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_AcceptSpokeUpdate_sync",
+      "title": "networkconnectivity AcceptSpokeUpdate Sample",
+      "description": "AcceptSpokeUpdate accepts a proposal to update a Network Connectivity Center spoke in a hub.",
+      "file": "HubClient/AcceptSpokeUpdate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AcceptSpokeUpdate",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.AcceptSpokeUpdate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.AcceptSpokeUpdateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AcceptSpokeUpdateOperation",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "AcceptSpokeUpdate",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.AcceptSpokeUpdate",
           "service": {
             "shortName": "HubService",
             "fullName": "google.cloud.networkconnectivity.v1.HubService"
@@ -932,7 +2218,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_HubService_ListRouteTables_sync",
       "title": "networkconnectivity ListRouteTables Sample",
-      "description": "ListRouteTables lists route tables in a given project.",
+      "description": "ListRouteTables lists route tables in a given hub.",
       "file": "HubClient/ListRouteTables/main.go",
       "language": "GO",
       "clientMethod": {
@@ -978,7 +2264,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_HubService_ListRoutes_sync",
       "title": "networkconnectivity ListRoutes Sample",
-      "description": "ListRoutes lists routes in a given project.",
+      "description": "ListRoutes lists routes in a given route table.",
       "file": "HubClient/ListRoutes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1068,6 +2354,52 @@
       ]
     },
     {
+      "regionTag": "networkconnectivity_v1_generated_HubService_QueryHubStatus_sync",
+      "title": "networkconnectivity QueryHubStatus Sample",
+      "description": "QueryHubStatus query the Private Service Connect propagation status of a Network\nConnectivity Center hub.",
+      "file": "HubClient/QueryHubStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryHubStatus",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.QueryHubStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.QueryHubStatusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HubStatusEntryIterator",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "QueryHubStatus",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.QueryHubStatus",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "networkconnectivity_v1_generated_HubService_RejectHubSpoke_sync",
       "title": "networkconnectivity RejectHubSpoke Sample",
       "description": "RejectHubSpoke rejects a Network Connectivity Center spoke from being attached to a hub.\nIf the spoke was previously in the `ACTIVE` state, it\ntransitions to the `INACTIVE` state and is no longer able to\nconnect to other spokes that are attached to the hub.",
@@ -1098,6 +2430,52 @@
         "method": {
           "shortName": "RejectHubSpoke",
           "fullName": "google.cloud.networkconnectivity.v1.HubService.RejectHubSpoke",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_RejectSpokeUpdate_sync",
+      "title": "networkconnectivity RejectSpokeUpdate Sample",
+      "description": "RejectSpokeUpdate rejects a proposal to update a Network Connectivity Center spoke in a hub.",
+      "file": "HubClient/RejectSpokeUpdate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RejectSpokeUpdate",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.RejectSpokeUpdate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.RejectSpokeUpdateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RejectSpokeUpdateOperation",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "RejectSpokeUpdate",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.RejectSpokeUpdate",
           "service": {
             "shortName": "HubService",
             "fullName": "google.cloud.networkconnectivity.v1.HubService"
@@ -1201,6 +2579,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_UpdateGroup_sync",
+      "title": "networkconnectivity UpdateGroup Sample",
+      "description": "UpdateGroup updates the parameters of a Network Connectivity Center group.",
+      "file": "HubClient/UpdateGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGroup",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.UpdateGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.UpdateGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateGroupOperation",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "UpdateGroup",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.UpdateGroup",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1345,7 +2769,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_CreatePolicyBasedRoute_sync",
       "title": "networkconnectivity CreatePolicyBasedRoute Sample",
-      "description": "CreatePolicyBasedRoute creates a new PolicyBasedRoute in a given project and location.",
+      "description": "CreatePolicyBasedRoute creates a new policy-based route in a given project and location.",
       "file": "PolicyBasedRoutingClient/CreatePolicyBasedRoute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1436,7 +2860,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_DeletePolicyBasedRoute_sync",
       "title": "networkconnectivity DeletePolicyBasedRoute Sample",
-      "description": "DeletePolicyBasedRoute deletes a single PolicyBasedRoute.",
+      "description": "DeletePolicyBasedRoute deletes a single policy-based route.",
       "file": "PolicyBasedRoutingClient/DeletePolicyBasedRoute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1620,7 +3044,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetPolicyBasedRoute_sync",
       "title": "networkconnectivity GetPolicyBasedRoute Sample",
-      "description": "GetPolicyBasedRoute gets details of a single PolicyBasedRoute.",
+      "description": "GetPolicyBasedRoute gets details of a single policy-based route.",
       "file": "PolicyBasedRoutingClient/GetPolicyBasedRoute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1758,7 +3182,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_ListPolicyBasedRoutes_sync",
       "title": "networkconnectivity ListPolicyBasedRoutes Sample",
-      "description": "ListPolicyBasedRoutes lists PolicyBasedRoutes in a given project and location.",
+      "description": "ListPolicyBasedRoutes lists policy-based routes in a given project and location.",
       "file": "PolicyBasedRoutingClient/ListPolicyBasedRoutes/main.go",
       "language": "GO",
       "clientMethod": {

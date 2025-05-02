@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -879,6 +879,70 @@ func (op *EstimateDataSizeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// ImportCompletionSuggestionsOperation manages a long-running operation from ImportCompletionSuggestions.
+type ImportCompletionSuggestionsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportCompletionSuggestionsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.ImportCompletionSuggestionsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.ImportCompletionSuggestionsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportCompletionSuggestionsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.ImportCompletionSuggestionsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.ImportCompletionSuggestionsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportCompletionSuggestionsOperation) Metadata() (*discoveryenginepb.ImportCompletionSuggestionsMetadata, error) {
+	var meta discoveryenginepb.ImportCompletionSuggestionsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportCompletionSuggestionsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportCompletionSuggestionsOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ImportDocumentsOperation manages a long-running operation from ImportDocuments.
 type ImportDocumentsOperation struct {
 	lro      *longrunning.Operation
@@ -1199,6 +1263,70 @@ func (op *ProvisionProjectOperation) Name() string {
 	return op.lro.Name()
 }
 
+// PurgeCompletionSuggestionsOperation manages a long-running operation from PurgeCompletionSuggestions.
+type PurgeCompletionSuggestionsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *PurgeCompletionSuggestionsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeCompletionSuggestionsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.PurgeCompletionSuggestionsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *PurgeCompletionSuggestionsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeCompletionSuggestionsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.PurgeCompletionSuggestionsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *PurgeCompletionSuggestionsOperation) Metadata() (*discoveryenginepb.PurgeCompletionSuggestionsMetadata, error) {
+	var meta discoveryenginepb.PurgeCompletionSuggestionsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *PurgeCompletionSuggestionsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *PurgeCompletionSuggestionsOperation) Name() string {
+	return op.lro.Name()
+}
+
 // PurgeDocumentsOperation manages a long-running operation from PurgeDocuments.
 type PurgeDocumentsOperation struct {
 	lro      *longrunning.Operation
@@ -1452,6 +1580,70 @@ func (op *RecrawlUrisOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RecrawlUrisOperation) Name() string {
+	return op.lro.Name()
+}
+
+// SetUriPatternDocumentDataOperation manages a long-running operation from SetUriPatternDocumentData.
+type SetUriPatternDocumentDataOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SetUriPatternDocumentDataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.SetUriPatternDocumentDataResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.SetUriPatternDocumentDataResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SetUriPatternDocumentDataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.SetUriPatternDocumentDataResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.SetUriPatternDocumentDataResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SetUriPatternDocumentDataOperation) Metadata() (*discoveryenginepb.SetUriPatternDocumentDataMetadata, error) {
+	var meta discoveryenginepb.SetUriPatternDocumentDataMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SetUriPatternDocumentDataOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SetUriPatternDocumentDataOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1731,7 +1923,7 @@ type ChunkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Chunk, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ChunkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1778,7 +1970,7 @@ type ControlIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Control, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ControlIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1825,7 +2017,7 @@ type ConversationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Conversation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1872,7 +2064,7 @@ type DataStoreIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.DataStore, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DataStoreIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1919,7 +2111,7 @@ type DocumentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Document, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DocumentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1966,7 +2158,7 @@ type EngineIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Engine, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EngineIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2013,7 +2205,7 @@ type EvaluationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Evaluation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EvaluationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2060,7 +2252,7 @@ type ListEvaluationResultsResponse_EvaluationResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.ListEvaluationResultsResponse_EvaluationResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ListEvaluationResultsResponse_EvaluationResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2107,7 +2299,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2154,7 +2346,7 @@ type SampleQueryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.SampleQuery, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SampleQueryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2201,7 +2393,7 @@ type SampleQuerySetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.SampleQuerySet, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SampleQuerySetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2248,7 +2440,7 @@ type SchemaIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Schema, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SchemaIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2295,7 +2487,7 @@ type SearchResponse_SearchResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.SearchResponse_SearchResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SearchResponse_SearchResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2342,7 +2534,7 @@ type ServingConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.ServingConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ServingConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2389,7 +2581,7 @@ type SessionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Session, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SessionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2436,7 +2628,7 @@ type TargetSiteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.TargetSite, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetSiteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

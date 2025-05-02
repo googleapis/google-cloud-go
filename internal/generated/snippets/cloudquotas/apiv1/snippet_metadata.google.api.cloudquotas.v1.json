@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudquotas/apiv1",
-    "version": "1.0.3",
+    "version": "1.3.3",
     "language": "GO",
     "apis": [
       {

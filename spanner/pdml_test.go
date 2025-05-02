@@ -17,9 +17,11 @@ package spanner
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"errors"
+	"io"
 	"log"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -57,7 +59,7 @@ func TestMockPartitionedUpdateWithQuery(t *testing.T) {
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	wantCode := codes.InvalidArgument
 	var serr *Error
-	if !errorAs(err, &serr) {
+	if !errors.As(err, &serr) {
 		t.Errorf("got error %v, want spanner.Error", err)
 	}
 	if ErrCode(serr) != wantCode {
@@ -101,8 +103,12 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	id1 := gotReqs[2].(*sppb.ExecuteSqlRequest).Transaction.GetId()
-	id2 := gotReqs[4].(*sppb.ExecuteSqlRequest).Transaction.GetId()
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	id1 := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetId()
+	id2 := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetId()
 	if bytes.Equal(id1, id2) {
 		t.Errorf("same transaction used twice, expected two different transactions\ngot tx1: %q\ngot tx2: %q", id1, id2)
 	}
@@ -114,8 +120,9 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	t.Parallel()
 	logger := log.New(os.Stderr, "", log.LstdFlags)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: DefaultSessionPoolConfig,
-		Logger:            logger,
+		DisableNativeMetrics: true,
+		SessionPoolConfig:    DefaultSessionPoolConfig,
+		Logger:               logger,
 	})
 	defer teardown()
 
@@ -130,7 +137,7 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	// The following update will cause a 'Failed to delete session' warning to
 	// be logged. This is expected. To avoid spamming the log, we temporarily
 	// set the output to be discarded.
-	logger.SetOutput(ioutil.Discard)
+	logger.SetOutput(io.Discard)
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	logger.SetOutput(os.Stderr)
 	if err == nil {
@@ -151,7 +158,7 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client, Compression: gzip.Name})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: tt.client, Compression: gzip.Name})
 			defer teardown()
 
 			var err error
@@ -196,8 +203,102 @@ func TestPartitionedUpdate_ExcludeTxnFromChangeStreams(t *testing.T) {
 		&sppb.ExecuteSqlRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
 
-	if !requests[1].(*sppb.BeginTransactionRequest).GetOptions().GetExcludeTxnFromChangeStreams() {
+	if !requests[1+muxCreateBuffer].(*sppb.BeginTransactionRequest).GetOptions().GetExcludeTxnFromChangeStreams() {
 		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
+}
+
+func TestPartitionedUpdateWithMultiplexedSession(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:              1,
+			MaxOpened:              1,
+			enableMultiplexSession: true,
+			enableMultiplexedSessionForPartitionedOps: true,
+		},
+	})
+	defer teardown()
+
+	_, err := client.PartitionedUpdate(ctx, NewStatement(UpdateBarSetFoo))
+	if err != nil {
+		t.Fatalf("got error from PartitionedUpdate: %v", err)
+	}
+
+	// Verify the sequence of requests
+	requests := drainRequestsFromServer(server.TestSpanner)
+	for _, req := range requests {
+		if sqlReq, ok := req.(*sppb.BeginTransactionRequest); ok {
+			if !strings.Contains(sqlReq.Session, "multiplexed") {
+				t.Fatalf("Expected begin transaction request to use a multiplexed session, but it used a non-multiplexed session")
+			}
+		}
+		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			if !strings.Contains(sqlReq.Session, "multiplexed") {
+				t.Fatalf("Expected execute request to use a multiplexed session, but it used a non-multiplexed session")
+			}
+		}
+	}
+}
+
+func TestPDMLFallbackWithMultiplexedSession(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:              1,
+			MaxOpened:              1,
+			enableMultiplexSession: true,
+			enableMultiplexedSessionForPartitionedOps: true,
+		},
+	})
+	defer teardown()
+
+	// Set up mock server behavior
+	server.TestSpanner.PutExecutionTime(
+		MethodBeginTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{
+				status.Error(codes.Unimplemented, "Transaction type partitioned_dml not supported with multiplexed sessions"),
+			},
+		})
+
+	_, err := client.PartitionedUpdate(ctx, NewStatement(UpdateBarSetFoo))
+	if err != nil {
+		t.Fatalf("got error from PartitionedUpdate: %v", err)
+	}
+
+	// Verify that multiplexed sessions were disabled after the unimplemented error
+	if client.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
+		t.Error("multiplexed sessions for partitioned ops should be disabled after unimplemented error")
+	}
+
+	// Verify the sequence of requests
+	requests := drainRequestsFromServer(server.TestSpanner)
+	foundMultiplexedSession := false
+	for _, req := range requests {
+		if sqlReq, ok := req.(*sppb.BeginTransactionRequest); ok {
+			if strings.Contains(sqlReq.Session, "multiplexed") {
+				foundMultiplexedSession = true
+			}
+		}
+		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			if strings.Contains(sqlReq.Session, "multiplexed") {
+				t.Fatalf("Expected execute request to use a non-multiplexed session, but it used a multiplexed session")
+			}
+		}
+	}
+	if !foundMultiplexedSession {
+		t.Fatalf("Expected first attempt to use a multiplexed session, but it did not")
 	}
 }

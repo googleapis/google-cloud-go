@@ -1,5 +1,87 @@
 # Changes
 
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.14.1...workflows/v1.14.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **workflows:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.14.0...workflows/v1.14.1) (2025-04-15)
+
+
+### Documentation
+
+* **workflows:** A comment for field `revision_id` in message `.google.cloud.workflows.v1beta.Workflow` is changed ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **workflows:** A comment for field `service_account` in message `.google.cloud.workflows.v1beta.Workflow` is changed ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **workflows:** A comment for field `source_contents` in message `.google.cloud.workflows.v1beta.Workflow` is changed ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.5...workflows/v1.14.0) (2025-03-19)
+
+
+### Features
+
+* **workflows:** Add crypto key config to Workflow ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **workflows:** Add ExecutionHistoryLevel enum ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **workflows:** Add ExecutionHistoryLevel to Workflow ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **workflows:** Add ListWorkflowRevisions method ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+* **workflows:** Add tags to Workflow ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+
+
+### Documentation
+
+* **workflows:** Update Workflow some standard field docs ([8e05420](https://github.com/googleapis/google-cloud-go/commit/8e054201c78ab8f96e370f5119838004839de1ba))
+
+## [1.13.5](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.4...workflows/v1.13.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **workflows:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.13.4](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.3...workflows/v1.13.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* **workflows:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.2...workflows/v1.13.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **workflows:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.1...workflows/v1.13.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **workflows:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **workflows:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.0...workflows/v1.13.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **workflows:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.12.11...workflows/v1.13.0) (2024-08-20)
+
+
+### Features
+
+* **workflows:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.12.11](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.12.10...workflows/v1.12.11) (2024-08-08)
+
+
+### Bug Fixes
+
+* **workflows:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.12.10](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.12.9...workflows/v1.12.10) (2024-07-24)
 
 

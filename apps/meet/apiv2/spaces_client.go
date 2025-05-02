@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	meetpb "cloud.google.com/go/apps/meet/apiv2/meetpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -165,17 +164,26 @@ func (c *SpacesClient) CreateSpace(ctx context.Context, req *meetpb.CreateSpaceR
 	return c.internalClient.CreateSpace(ctx, req, opts...)
 }
 
-// GetSpace gets a space by space_id or meeting_code.
+// GetSpace gets details about a meeting space.
+//
+// For an example, see Get a meeting
+// space (at https://developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).
 func (c *SpacesClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	return c.internalClient.GetSpace(ctx, req, opts...)
 }
 
-// UpdateSpace updates a space.
+// UpdateSpace updates details about a meeting space.
+//
+// For an example, see Update a meeting
+// space (at https://developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).
 func (c *SpacesClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	return c.internalClient.UpdateSpace(ctx, req, opts...)
 }
 
 // EndActiveConference ends an active conference (if there’s one).
+//
+// For an example, see End active
+// conference (at https://developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).
 func (c *SpacesClient) EndActiveConference(ctx context.Context, req *meetpb.EndActiveConferenceRequest, opts ...gax.CallOption) error {
 	return c.internalClient.EndActiveConference(ctx, req, opts...)
 }
@@ -195,6 +203,8 @@ type spacesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSpacesClient creates a new spaces service client based on gRPC.
@@ -221,6 +231,7 @@ func NewSpacesClient(ctx context.Context, opts ...option.ClientOption) (*SpacesC
 		connPool:     connPool,
 		spacesClient: meetpb.NewSpacesServiceClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -267,6 +278,8 @@ type spacesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing SpacesClient
 	CallOptions **SpacesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewSpacesRESTClient creates a new spaces service rest client.
@@ -284,6 +297,7 @@ func NewSpacesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Spa
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -333,7 +347,7 @@ func (c *spacesGRPCClient) CreateSpace(ctx context.Context, req *meetpb.CreateSp
 	var resp *meetpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.spacesClient.CreateSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.spacesClient.CreateSpace, req, settings.GRPC, c.logger, "CreateSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -351,7 +365,7 @@ func (c *spacesGRPCClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceReq
 	var resp *meetpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.spacesClient.GetSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.spacesClient.GetSpace, req, settings.GRPC, c.logger, "GetSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -369,7 +383,7 @@ func (c *spacesGRPCClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 	var resp *meetpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.spacesClient.UpdateSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.spacesClient.UpdateSpace, req, settings.GRPC, c.logger, "UpdateSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -386,7 +400,7 @@ func (c *spacesGRPCClient) EndActiveConference(ctx context.Context, req *meetpb.
 	opts = append((*c.CallOptions).EndActiveConference[0:len((*c.CallOptions).EndActiveConference):len((*c.CallOptions).EndActiveConference)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.spacesClient.EndActiveConference(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.spacesClient.EndActiveConference, req, settings.GRPC, c.logger, "EndActiveConference")
 		return err
 	}, opts...)
 	return err
@@ -429,17 +443,7 @@ func (c *spacesRESTClient) CreateSpace(ctx context.Context, req *meetpb.CreateSp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSpace")
 		if err != nil {
 			return err
 		}
@@ -456,7 +460,10 @@ func (c *spacesRESTClient) CreateSpace(ctx context.Context, req *meetpb.CreateSp
 	return resp, nil
 }
 
-// GetSpace gets a space by space_id or meeting_code.
+// GetSpace gets details about a meeting space.
+//
+// For an example, see Get a meeting
+// space (at https://developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).
 func (c *spacesRESTClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -489,17 +496,7 @@ func (c *spacesRESTClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpace")
 		if err != nil {
 			return err
 		}
@@ -516,7 +513,10 @@ func (c *spacesRESTClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceReq
 	return resp, nil
 }
 
-// UpdateSpace updates a space.
+// UpdateSpace updates details about a meeting space.
+//
+// For an example, see Update a meeting
+// space (at https://developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).
 func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSpace()
@@ -534,11 +534,11 @@ func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -563,17 +563,7 @@ func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpace")
 		if err != nil {
 			return err
 		}
@@ -591,6 +581,9 @@ func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 }
 
 // EndActiveConference ends an active conference (if there’s one).
+//
+// For an example, see End active
+// conference (at https://developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).
 func (c *spacesRESTClient) EndActiveConference(ctx context.Context, req *meetpb.EndActiveConferenceRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -626,14 +619,7 @@ func (c *spacesRESTClient) EndActiveConference(ctx context.Context, req *meetpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EndActiveConference")
+		return err
 	}, opts...)
 }

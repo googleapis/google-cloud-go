@@ -1,4 +1,4 @@
-go 1.20
+go 1.23.0
 
 use (
 	.
@@ -12,6 +12,7 @@ use (
 	./apigateway
 	./apigeeconnect
 	./apigeeregistry
+	./apihub
 	./apikeys
 	./appengine
 	./apphub
@@ -35,6 +36,7 @@ use (
 	./certificatemanager
 	./channel
 	./chat
+	./chronicle
 	./cloudbuild
 	./cloudcontrolspartner
 	./clouddms
@@ -61,6 +63,7 @@ use (
 	./datastream
 	./deploy
 	./developerconnect
+	./devicestreaming
 	./dialogflow
 	./discoveryengine
 	./dlp
@@ -72,6 +75,7 @@ use (
 	./essentialcontacts
 	./eventarc
 	./filestore
+	./financialservices
 	./firestore
 	./functions
 	./gkebackup
@@ -101,13 +105,16 @@ use (
 	./lifesciences
 	./logging
 	./longrunning
+	./lustre
 	./managedidentities
 	./managedkafka
 	./maps
 	./mediatranslation
 	./memcache
+	./memorystore
 	./metastore
 	./migrationcenter
+	./modelarmor
 	./monitoring
 	./netapp
 	./networkconnectivity
@@ -116,11 +123,13 @@ use (
 	./networkservices
 	./notebooks
 	./optimization
+	./oracledatabase
 	./orchestration
 	./orgpolicy
 	./osconfig
 	./oslogin
 	./parallelstore
+	./parametermanager
 	./phishingprotection
 	./policysimulator
 	./policytroubleshooter
@@ -135,7 +144,6 @@ use (
 	./recommender
 	./redis
 	./resourcemanager
-	./resourcesettings
 	./retail
 	./run
 	./scheduler
@@ -153,6 +161,7 @@ use (
 	./shell
 	./shopping
 	./spanner
+	./spanner/benchmarks
 	./spanner/test/opentelemetry/test
 	./speech
 	./storage

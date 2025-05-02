@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -133,12 +133,24 @@ func ExampleAutokeyClient_ListKeyHandles() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListKeyHandlesRequest.
 	}
-	resp, err := c.ListKeyHandles(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListKeyHandles(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*kmspb.ListKeyHandlesResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleAutokeyClient_GetLocation() {

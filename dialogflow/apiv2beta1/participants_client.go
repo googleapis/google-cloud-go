@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -56,6 +55,7 @@ type ParticipantsCallOptions struct {
 	SuggestArticles         []gax.CallOption
 	SuggestFaqAnswers       []gax.CallOption
 	SuggestSmartReplies     []gax.CallOption
+	SuggestKnowledgeAssist  []gax.CallOption
 	ListSuggestions         []gax.CallOption
 	CompileSuggestion       []gax.CallOption
 	GetLocation             []gax.CallOption
@@ -168,6 +168,18 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		SuggestSmartReplies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SuggestKnowledgeAssist: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -304,6 +316,17 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SuggestKnowledgeAssist: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListSuggestions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -348,6 +371,7 @@ type internalParticipantsClient interface {
 	SuggestArticles(context.Context, *dialogflowpb.SuggestArticlesRequest, ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error)
 	SuggestFaqAnswers(context.Context, *dialogflowpb.SuggestFaqAnswersRequest, ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error)
 	SuggestSmartReplies(context.Context, *dialogflowpb.SuggestSmartRepliesRequest, ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error)
+	SuggestKnowledgeAssist(context.Context, *dialogflowpb.SuggestKnowledgeAssistRequest, ...gax.CallOption) (*dialogflowpb.SuggestKnowledgeAssistResponse, error)
 	ListSuggestions(context.Context, *dialogflowpb.ListSuggestionsRequest, ...gax.CallOption) *SuggestionIterator
 	CompileSuggestion(context.Context, *dialogflowpb.CompileSuggestionRequest, ...gax.CallOption) (*dialogflowpb.CompileSuggestionResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -469,6 +493,11 @@ func (c *ParticipantsClient) SuggestSmartReplies(ctx context.Context, req *dialo
 	return c.internalClient.SuggestSmartReplies(ctx, req, opts...)
 }
 
+// SuggestKnowledgeAssist gets knowledge assist suggestions based on historical messages.
+func (c *ParticipantsClient) SuggestKnowledgeAssist(ctx context.Context, req *dialogflowpb.SuggestKnowledgeAssistRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestKnowledgeAssistResponse, error) {
+	return c.internalClient.SuggestKnowledgeAssist(ctx, req, opts...)
+}
+
 // ListSuggestions deprecated: Use inline suggestion, event based suggestion or
 // Suggestion* API instead.
 // See
@@ -559,6 +588,8 @@ type participantsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewParticipantsClient creates a new participants client based on gRPC.
@@ -586,6 +617,7 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 		connPool:           connPool,
 		participantsClient: dialogflowpb.NewParticipantsClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
@@ -634,6 +666,8 @@ type participantsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ParticipantsClient
 	CallOptions **ParticipantsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewParticipantsRESTClient creates a new participants rest client.
@@ -652,6 +686,7 @@ func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -704,7 +739,7 @@ func (c *participantsGRPCClient) CreateParticipant(ctx context.Context, req *dia
 	var resp *dialogflowpb.Participant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.participantsClient.CreateParticipant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.participantsClient.CreateParticipant, req, settings.GRPC, c.logger, "CreateParticipant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -722,7 +757,7 @@ func (c *participantsGRPCClient) GetParticipant(ctx context.Context, req *dialog
 	var resp *dialogflowpb.Participant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.participantsClient.GetParticipant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.participantsClient.GetParticipant, req, settings.GRPC, c.logger, "GetParticipant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -751,7 +786,7 @@ func (c *participantsGRPCClient) ListParticipants(ctx context.Context, req *dial
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.participantsClient.ListParticipants(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.participantsClient.ListParticipants, req, settings.GRPC, c.logger, "ListParticipants")
 			return err
 		}, opts...)
 		if err != nil {
@@ -786,7 +821,7 @@ func (c *participantsGRPCClient) UpdateParticipant(ctx context.Context, req *dia
 	var resp *dialogflowpb.Participant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.participantsClient.UpdateParticipant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.participantsClient.UpdateParticipant, req, settings.GRPC, c.logger, "UpdateParticipant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -804,7 +839,7 @@ func (c *participantsGRPCClient) AnalyzeContent(ctx context.Context, req *dialog
 	var resp *dialogflowpb.AnalyzeContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.participantsClient.AnalyzeContent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.participantsClient.AnalyzeContent, req, settings.GRPC, c.logger, "AnalyzeContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -819,7 +854,9 @@ func (c *participantsGRPCClient) StreamingAnalyzeContent(ctx context.Context, op
 	opts = append((*c.CallOptions).StreamingAnalyzeContent[0:len((*c.CallOptions).StreamingAnalyzeContent):len((*c.CallOptions).StreamingAnalyzeContent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingAnalyzeContent")
 		resp, err = c.participantsClient.StreamingAnalyzeContent(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingAnalyzeContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -837,7 +874,7 @@ func (c *participantsGRPCClient) SuggestArticles(ctx context.Context, req *dialo
 	var resp *dialogflowpb.SuggestArticlesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.participantsClient.SuggestArticles(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.participantsClient.SuggestArticles, req, settings.GRPC, c.logger, "SuggestArticles")
 		return err
 	}, opts...)
 	if err != nil {
@@ -855,7 +892,7 @@ func (c *participantsGRPCClient) SuggestFaqAnswers(ctx context.Context, req *dia
 	var resp *dialogflowpb.SuggestFaqAnswersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.participantsClient.SuggestFaqAnswers(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.participantsClient.SuggestFaqAnswers, req, settings.GRPC, c.logger, "SuggestFaqAnswers")
 		return err
 	}, opts...)
 	if err != nil {
@@ -873,7 +910,25 @@ func (c *participantsGRPCClient) SuggestSmartReplies(ctx context.Context, req *d
 	var resp *dialogflowpb.SuggestSmartRepliesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.participantsClient.SuggestSmartReplies(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.participantsClient.SuggestSmartReplies, req, settings.GRPC, c.logger, "SuggestSmartReplies")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) SuggestKnowledgeAssist(ctx context.Context, req *dialogflowpb.SuggestKnowledgeAssistRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestKnowledgeAssistResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SuggestKnowledgeAssist[0:len((*c.CallOptions).SuggestKnowledgeAssist):len((*c.CallOptions).SuggestKnowledgeAssist)], opts...)
+	var resp *dialogflowpb.SuggestKnowledgeAssistResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.participantsClient.SuggestKnowledgeAssist, req, settings.GRPC, c.logger, "SuggestKnowledgeAssist")
 		return err
 	}, opts...)
 	if err != nil {
@@ -902,7 +957,7 @@ func (c *participantsGRPCClient) ListSuggestions(ctx context.Context, req *dialo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.participantsClient.ListSuggestions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.participantsClient.ListSuggestions, req, settings.GRPC, c.logger, "ListSuggestions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -937,7 +992,7 @@ func (c *participantsGRPCClient) CompileSuggestion(ctx context.Context, req *dia
 	var resp *dialogflowpb.CompileSuggestionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.participantsClient.CompileSuggestion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.participantsClient.CompileSuggestion, req, settings.GRPC, c.logger, "CompileSuggestion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -955,7 +1010,7 @@ func (c *participantsGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -984,7 +1039,7 @@ func (c *participantsGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1018,7 +1073,7 @@ func (c *participantsGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1033,7 +1088,7 @@ func (c *participantsGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1062,7 +1117,7 @@ func (c *participantsGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1128,17 +1183,7 @@ func (c *participantsRESTClient) CreateParticipant(ctx context.Context, req *dia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateParticipant")
 		if err != nil {
 			return err
 		}
@@ -1188,17 +1233,7 @@ func (c *participantsRESTClient) GetParticipant(ctx context.Context, req *dialog
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetParticipant")
 		if err != nil {
 			return err
 		}
@@ -1260,21 +1295,10 @@ func (c *participantsRESTClient) ListParticipants(ctx context.Context, req *dial
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListParticipants")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1322,11 +1346,11 @@ func (c *participantsRESTClient) UpdateParticipant(ctx context.Context, req *dia
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1351,17 +1375,7 @@ func (c *participantsRESTClient) UpdateParticipant(ctx context.Context, req *dia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateParticipant")
 		if err != nil {
 			return err
 		}
@@ -1422,17 +1436,7 @@ func (c *participantsRESTClient) AnalyzeContent(ctx context.Context, req *dialog
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnalyzeContent")
 		if err != nil {
 			return err
 		}
@@ -1517,17 +1521,7 @@ func (c *participantsRESTClient) SuggestArticles(ctx context.Context, req *dialo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SuggestArticles")
 		if err != nil {
 			return err
 		}
@@ -1584,17 +1578,7 @@ func (c *participantsRESTClient) SuggestFaqAnswers(ctx context.Context, req *dia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SuggestFaqAnswers")
 		if err != nil {
 			return err
 		}
@@ -1651,17 +1635,63 @@ func (c *participantsRESTClient) SuggestSmartReplies(ctx context.Context, req *d
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SuggestSmartReplies")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SuggestKnowledgeAssist gets knowledge assist suggestions based on historical messages.
+func (c *participantsRESTClient) SuggestKnowledgeAssist(ctx context.Context, req *dialogflowpb.SuggestKnowledgeAssistRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestKnowledgeAssistResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions:suggestKnowledgeAssist", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SuggestKnowledgeAssist[0:len((*c.CallOptions).SuggestKnowledgeAssist):len((*c.CallOptions).SuggestKnowledgeAssist)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dialogflowpb.SuggestKnowledgeAssistResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SuggestKnowledgeAssist")
 		if err != nil {
 			return err
 		}
@@ -1746,21 +1776,10 @@ func (c *participantsRESTClient) ListSuggestions(ctx context.Context, req *dialo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSuggestions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1845,17 +1864,7 @@ func (c *participantsRESTClient) CompileSuggestion(ctx context.Context, req *dia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CompileSuggestion")
 		if err != nil {
 			return err
 		}
@@ -1905,17 +1914,7 @@ func (c *participantsRESTClient) GetLocation(ctx context.Context, req *locationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1980,21 +1979,10 @@ func (c *participantsRESTClient) ListLocations(ctx context.Context, req *locatio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2054,15 +2042,8 @@ func (c *participantsRESTClient) CancelOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2099,17 +2080,7 @@ func (c *participantsRESTClient) GetOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2174,21 +2145,10 @@ func (c *participantsRESTClient) ListOperations(ctx context.Context, req *longru
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

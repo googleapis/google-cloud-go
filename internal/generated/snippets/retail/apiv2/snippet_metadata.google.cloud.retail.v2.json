@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/retail/apiv2",
-    "version": "1.17.4",
+    "version": "1.20.0",
     "language": "GO",
     "apis": [
       {
@@ -566,7 +566,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_SetDefaultBranch_sync",
       "title": "retail SetDefaultBranch Sample",
-      "description": "SetDefaultBranch set a specified branch id as default branch. API methods such as\n[SearchService.Search][google.cloud.retail.v2.SearchService.Search],\n[ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct],\n[ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts]\nwill treat requests using \"default_branch\" to the actual branch id set as\ndefault.\n\nFor example, if `projects/*/locations/*/catalogs/*/branches/1` is set as\ndefault, setting\n[SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\n`projects/*/locations/*/catalogs/*/branches/default_branch` is equivalent\nto setting\n[SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\n`projects/*/locations/*/catalogs/*/branches/1`.\n\nUsing multiple branches can be useful when developers would like\nto have a staging branch to test and verify for future usage. When it\nbecomes ready, developers switch on the staging branch using this API while\nkeeping using `projects/*/locations/*/catalogs/*/branches/default_branch`\nas [SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\nroute the traffic to this staging branch.\n\nCAUTION: If you have live predict/search traffic, switching the default\nbranch could potentially cause outages if the ID space of the new branch is\nvery different from the old one.\n\nMore specifically: \n\n* PredictionService will only return product IDs from branch {newBranch}.\n* SearchService will only return product IDs from branch {newBranch}\n(if branch is not explicitly set).\n* UserEventService will only join events with products from branch\n{newBranch}.",
+      "description": "SetDefaultBranch set a specified branch id as default branch. API methods such as\n[SearchService.Search][google.cloud.retail.v2.SearchService.Search],\n[ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct],\n[ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts]\nwill treat requests using \"default_branch\" to the actual branch id set as\ndefault.\n\nFor example, if `projects/*/locations/*/catalogs/*/branches/1` is set as\ndefault, setting\n[SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\n`projects/*/locations/*/catalogs/*/branches/default_branch` is equivalent\nto setting\n[SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\n`projects/*/locations/*/catalogs/*/branches/1`.\n\nUsing multiple branches can be useful when developers would like\nto have a staging branch to test and verify for future usage. When it\nbecomes ready, developers switch on the staging branch using this API\nwhile keeping using\n`projects/*/locations/*/catalogs/*/branches/default_branch` as\n[SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\nroute the traffic to this staging branch.\n\nCAUTION: If you have live predict/search traffic, switching the default\nbranch could potentially cause outages if the ID space of the new branch\nis very different from the old one.\n\nMore specifically: \n\n* PredictionService will only return product IDs from branch {newBranch}.\n* SearchService will only return product IDs from branch {newBranch}\n(if branch is not explicitly set).\n* UserEventService will only join events with products from branch\n{newBranch}.",
       "file": "CatalogClient/SetDefaultBranch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1239,6 +1239,328 @@
           "service": {
             "shortName": "ControlService",
             "fullName": "google.cloud.retail.v2.ControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_GenerativeQuestionService_BatchUpdateGenerativeQuestionConfigs_sync",
+      "title": "retail BatchUpdateGenerativeQuestionConfigs Sample",
+      "description": "BatchUpdateGenerativeQuestionConfigs allows management of multiple questions.",
+      "file": "GenerativeQuestionClient/BatchUpdateGenerativeQuestionConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateGenerativeQuestionConfigs",
+        "fullName": "google.cloud.retail.v2.GenerativeQuestionClient.BatchUpdateGenerativeQuestionConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.BatchUpdateGenerativeQuestionConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.BatchUpdateGenerativeQuestionConfigsResponse",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "BatchUpdateGenerativeQuestionConfigs",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionService.BatchUpdateGenerativeQuestionConfigs",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_GenerativeQuestionService_GetGenerativeQuestionsFeatureConfig_sync",
+      "title": "retail GetGenerativeQuestionsFeatureConfig Sample",
+      "description": "GetGenerativeQuestionsFeatureConfig manages overal generative question feature state -- enables toggling\nfeature on and off.",
+      "file": "GenerativeQuestionClient/GetGenerativeQuestionsFeatureConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGenerativeQuestionsFeatureConfig",
+        "fullName": "google.cloud.retail.v2.GenerativeQuestionClient.GetGenerativeQuestionsFeatureConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.GetGenerativeQuestionsFeatureConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.GenerativeQuestionsFeatureConfig",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "GetGenerativeQuestionsFeatureConfig",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionService.GetGenerativeQuestionsFeatureConfig",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_GenerativeQuestionService_GetOperation_sync",
+      "title": "retail GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "GenerativeQuestionClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.retail.v2.GenerativeQuestionClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_GenerativeQuestionService_ListGenerativeQuestionConfigs_sync",
+      "title": "retail ListGenerativeQuestionConfigs Sample",
+      "description": "ListGenerativeQuestionConfigs returns all questions for a given catalog.",
+      "file": "GenerativeQuestionClient/ListGenerativeQuestionConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGenerativeQuestionConfigs",
+        "fullName": "google.cloud.retail.v2.GenerativeQuestionClient.ListGenerativeQuestionConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ListGenerativeQuestionConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.ListGenerativeQuestionConfigsResponse",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "ListGenerativeQuestionConfigs",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionService.ListGenerativeQuestionConfigs",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_GenerativeQuestionService_ListOperations_sync",
+      "title": "retail ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "GenerativeQuestionClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.retail.v2.GenerativeQuestionClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_GenerativeQuestionService_UpdateGenerativeQuestionConfig_sync",
+      "title": "retail UpdateGenerativeQuestionConfig Sample",
+      "description": "UpdateGenerativeQuestionConfig allows management of individual questions.",
+      "file": "GenerativeQuestionClient/UpdateGenerativeQuestionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGenerativeQuestionConfig",
+        "fullName": "google.cloud.retail.v2.GenerativeQuestionClient.UpdateGenerativeQuestionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.UpdateGenerativeQuestionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.GenerativeQuestionConfig",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "UpdateGenerativeQuestionConfig",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionService.UpdateGenerativeQuestionConfig",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_GenerativeQuestionService_UpdateGenerativeQuestionsFeatureConfig_sync",
+      "title": "retail UpdateGenerativeQuestionsFeatureConfig Sample",
+      "description": "UpdateGenerativeQuestionsFeatureConfig manages overal generative question feature state -- enables toggling\nfeature on and off.",
+      "file": "GenerativeQuestionClient/UpdateGenerativeQuestionsFeatureConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGenerativeQuestionsFeatureConfig",
+        "fullName": "google.cloud.retail.v2.GenerativeQuestionClient.UpdateGenerativeQuestionsFeatureConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.UpdateGenerativeQuestionsFeatureConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.GenerativeQuestionsFeatureConfig",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "UpdateGenerativeQuestionsFeatureConfig",
+          "fullName": "google.cloud.retail.v2.GenerativeQuestionService.UpdateGenerativeQuestionsFeatureConfig",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2.GenerativeQuestionService"
           }
         }
       },
@@ -3045,7 +3367,7 @@
     {
       "regionTag": "retail_v2_generated_UserEventService_CollectUserEvent_sync",
       "title": "retail CollectUserEvent Sample",
-      "description": "CollectUserEvent writes a single user event from the browser. This uses a GET request to\ndue to browser restriction of POST-ing to a 3rd party domain.\n\nThis method is used only by the Retail API JavaScript pixel and Google Tag\nManager. Users should not call this method directly.",
+      "description": "CollectUserEvent writes a single user event from the browser.\n\nFor larger user event payload over 16 KB, the POST method should be used\ninstead, otherwise a 400 Bad Request error is returned.\n\nThis method is used only by the Retail API JavaScript pixel and Google Tag\nManager. Users should not call this method directly.",
       "file": "UserEventClient/CollectUserEvent/main.go",
       "language": "GO",
       "clientMethod": {

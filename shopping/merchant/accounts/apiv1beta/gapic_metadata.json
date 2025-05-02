@@ -147,6 +147,74 @@
         }
       }
     },
+    "AutofeedSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AutofeedSettingsClient",
+          "rpcs": {
+            "GetAutofeedSettings": {
+              "methods": [
+                "GetAutofeedSettings"
+              ]
+            },
+            "UpdateAutofeedSettings": {
+              "methods": [
+                "UpdateAutofeedSettings"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AutofeedSettingsClient",
+          "rpcs": {
+            "GetAutofeedSettings": {
+              "methods": [
+                "GetAutofeedSettings"
+              ]
+            },
+            "UpdateAutofeedSettings": {
+              "methods": [
+                "UpdateAutofeedSettings"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AutomaticImprovementsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AutomaticImprovementsClient",
+          "rpcs": {
+            "GetAutomaticImprovements": {
+              "methods": [
+                "GetAutomaticImprovements"
+              ]
+            },
+            "UpdateAutomaticImprovements": {
+              "methods": [
+                "UpdateAutomaticImprovements"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AutomaticImprovementsClient",
+          "rpcs": {
+            "GetAutomaticImprovements": {
+              "methods": [
+                "GetAutomaticImprovements"
+              ]
+            },
+            "UpdateAutomaticImprovements": {
+              "methods": [
+                "UpdateAutomaticImprovements"
+              ]
+            }
+          }
+        }
+      }
+    },
     "BusinessIdentityService": {
       "clients": {
         "grpc": {

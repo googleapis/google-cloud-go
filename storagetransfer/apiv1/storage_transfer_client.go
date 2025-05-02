@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	storagetransferpb "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -684,6 +683,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new storage transfer service client based on gRPC.
@@ -712,6 +713,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           storagetransferpb.NewStorageTransferServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -775,6 +777,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new storage transfer service rest client.
@@ -794,6 +798,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -856,7 +861,7 @@ func (c *gRPCClient) GetGoogleServiceAccount(ctx context.Context, req *storagetr
 	var resp *storagetransferpb.GoogleServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetGoogleServiceAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetGoogleServiceAccount, req, settings.GRPC, c.logger, "GetGoogleServiceAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -871,7 +876,7 @@ func (c *gRPCClient) CreateTransferJob(ctx context.Context, req *storagetransfer
 	var resp *storagetransferpb.TransferJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateTransferJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateTransferJob, req, settings.GRPC, c.logger, "CreateTransferJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -889,7 +894,7 @@ func (c *gRPCClient) UpdateTransferJob(ctx context.Context, req *storagetransfer
 	var resp *storagetransferpb.TransferJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTransferJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTransferJob, req, settings.GRPC, c.logger, "UpdateTransferJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -907,7 +912,7 @@ func (c *gRPCClient) GetTransferJob(ctx context.Context, req *storagetransferpb.
 	var resp *storagetransferpb.TransferJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTransferJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTransferJob, req, settings.GRPC, c.logger, "GetTransferJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -933,7 +938,7 @@ func (c *gRPCClient) ListTransferJobs(ctx context.Context, req *storagetransferp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTransferJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTransferJobs, req, settings.GRPC, c.logger, "ListTransferJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -967,7 +972,7 @@ func (c *gRPCClient) PauseTransferOperation(ctx context.Context, req *storagetra
 	opts = append((*c.CallOptions).PauseTransferOperation[0:len((*c.CallOptions).PauseTransferOperation):len((*c.CallOptions).PauseTransferOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.PauseTransferOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.PauseTransferOperation, req, settings.GRPC, c.logger, "PauseTransferOperation")
 		return err
 	}, opts...)
 	return err
@@ -981,7 +986,7 @@ func (c *gRPCClient) ResumeTransferOperation(ctx context.Context, req *storagetr
 	opts = append((*c.CallOptions).ResumeTransferOperation[0:len((*c.CallOptions).ResumeTransferOperation):len((*c.CallOptions).ResumeTransferOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.ResumeTransferOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.ResumeTransferOperation, req, settings.GRPC, c.logger, "ResumeTransferOperation")
 		return err
 	}, opts...)
 	return err
@@ -996,7 +1001,7 @@ func (c *gRPCClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RunTransferJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RunTransferJob, req, settings.GRPC, c.logger, "RunTransferJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1015,7 +1020,7 @@ func (c *gRPCClient) DeleteTransferJob(ctx context.Context, req *storagetransfer
 	opts = append((*c.CallOptions).DeleteTransferJob[0:len((*c.CallOptions).DeleteTransferJob):len((*c.CallOptions).DeleteTransferJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteTransferJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteTransferJob, req, settings.GRPC, c.logger, "DeleteTransferJob")
 		return err
 	}, opts...)
 	return err
@@ -1030,7 +1035,7 @@ func (c *gRPCClient) CreateAgentPool(ctx context.Context, req *storagetransferpb
 	var resp *storagetransferpb.AgentPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateAgentPool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateAgentPool, req, settings.GRPC, c.logger, "CreateAgentPool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1048,7 +1053,7 @@ func (c *gRPCClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb
 	var resp *storagetransferpb.AgentPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateAgentPool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateAgentPool, req, settings.GRPC, c.logger, "UpdateAgentPool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1066,7 +1071,7 @@ func (c *gRPCClient) GetAgentPool(ctx context.Context, req *storagetransferpb.Ge
 	var resp *storagetransferpb.AgentPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAgentPool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAgentPool, req, settings.GRPC, c.logger, "GetAgentPool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1095,7 +1100,7 @@ func (c *gRPCClient) ListAgentPools(ctx context.Context, req *storagetransferpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAgentPools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAgentPools, req, settings.GRPC, c.logger, "ListAgentPools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1129,7 +1134,7 @@ func (c *gRPCClient) DeleteAgentPool(ctx context.Context, req *storagetransferpb
 	opts = append((*c.CallOptions).DeleteAgentPool[0:len((*c.CallOptions).DeleteAgentPool):len((*c.CallOptions).DeleteAgentPool)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteAgentPool(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteAgentPool, req, settings.GRPC, c.logger, "DeleteAgentPool")
 		return err
 	}, opts...)
 	return err
@@ -1143,7 +1148,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1158,7 +1163,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1187,7 +1192,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1253,17 +1258,7 @@ func (c *restClient) GetGoogleServiceAccount(ctx context.Context, req *storagetr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoogleServiceAccount")
 		if err != nil {
 			return err
 		}
@@ -1317,17 +1312,7 @@ func (c *restClient) CreateTransferJob(ctx context.Context, req *storagetransfer
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTransferJob")
 		if err != nil {
 			return err
 		}
@@ -1390,17 +1375,7 @@ func (c *restClient) UpdateTransferJob(ctx context.Context, req *storagetransfer
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTransferJob")
 		if err != nil {
 			return err
 		}
@@ -1451,17 +1426,7 @@ func (c *restClient) GetTransferJob(ctx context.Context, req *storagetransferpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTransferJob")
 		if err != nil {
 			return err
 		}
@@ -1524,21 +1489,10 @@ func (c *restClient) ListTransferJobs(ctx context.Context, req *storagetransferp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTransferJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1604,15 +1558,8 @@ func (c *restClient) PauseTransferOperation(ctx context.Context, req *storagetra
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PauseTransferOperation")
+		return err
 	}, opts...)
 }
 
@@ -1652,15 +1599,8 @@ func (c *restClient) ResumeTransferOperation(ctx context.Context, req *storagetr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumeTransferOperation")
+		return err
 	}, opts...)
 }
 
@@ -1705,21 +1645,10 @@ func (c *restClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RunTransferJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1769,15 +1698,8 @@ func (c *restClient) DeleteTransferJob(ctx context.Context, req *storagetransfer
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTransferJob")
+		return err
 	}, opts...)
 }
 
@@ -1822,17 +1744,7 @@ func (c *restClient) CreateAgentPool(ctx context.Context, req *storagetransferpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAgentPool")
 		if err != nil {
 			return err
 		}
@@ -1867,11 +1779,11 @@ func (c *restClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1896,17 +1808,7 @@ func (c *restClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAgentPool")
 		if err != nil {
 			return err
 		}
@@ -1956,17 +1858,7 @@ func (c *restClient) GetAgentPool(ctx context.Context, req *storagetransferpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAgentPool")
 		if err != nil {
 			return err
 		}
@@ -2031,21 +1923,10 @@ func (c *restClient) ListAgentPools(ctx context.Context, req *storagetransferpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAgentPools")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2105,15 +1986,8 @@ func (c *restClient) DeleteAgentPool(ctx context.Context, req *storagetransferpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAgentPool")
+		return err
 	}, opts...)
 }
 
@@ -2173,15 +2047,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2218,17 +2085,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2294,21 +2151,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

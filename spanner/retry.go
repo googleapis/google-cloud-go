@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -64,7 +65,8 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 		!strings.Contains(err.Error(), "HTTP/2 error code: INTERNAL_ERROR") &&
 		// See b/27794742.
 		!strings.Contains(err.Error(), "Connection closed with unknown cause") &&
-		!strings.Contains(err.Error(), "Received unexpected EOS on DATA frame from server") {
+		!strings.Contains(err.Error(), "Received unexpected EOS on DATA frame from server") &&
+		!strings.Contains(err.Error(), "Authentication backend internal server error. Please retry") {
 		return 0, false
 	}
 
@@ -98,7 +100,7 @@ func runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx context.Conte
 			// interface.
 			var retryErr error
 			var se *Error
-			if errorAs(err, &se) {
+			if errors.As(err, &se) {
 				// It is a (wrapped) Spanner error. Use that to check whether
 				// we should retry.
 				retryErr = se
@@ -136,7 +138,7 @@ func ExtractRetryDelay(err error) (time.Duration, bool) {
 	var se *Error
 	var s *status.Status
 	// Unwrap status error.
-	if errorAs(err, &se) {
+	if errors.As(err, &se) {
 		s = status.Convert(se.Unwrap())
 	} else {
 		s = status.Convert(err)

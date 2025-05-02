@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -413,7 +412,7 @@ func defaultCatalogRESTCallOptions() *CatalogCallOptions {
 	}
 }
 
-// internalCatalogClient is an interface that defines the methods available from Vertex AI Search for Retail API.
+// internalCatalogClient is an interface that defines the methods available from Vertex AI Search for commerce API.
 type internalCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -434,7 +433,7 @@ type internalCatalogClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// CatalogClient is a client for interacting with Vertex AI Search for Retail API.
+// CatalogClient is a client for interacting with Vertex AI Search for commerce API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for managing catalog configuration.
@@ -489,22 +488,23 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 // For example, if projects/*/locations/*/catalogs/*/branches/1 is set as
 // default, setting
-// SearchRequest.branch to
-// projects/*/locations/*/catalogs/*/branches/default_branch is equivalent
-// to setting
-// SearchRequest.branch to
-// projects/*/locations/*/catalogs/*/branches/1.
+// SearchRequest.branch
+// to projects/*/locations/*/catalogs/*/branches/default_branch is
+// equivalent to setting
+// SearchRequest.branch
+// to projects/*/locations/*/catalogs/*/branches/1.
 //
 // Using multiple branches can be useful when developers would like
 // to have a staging branch to test and verify for future usage. When it
-// becomes ready, developers switch on the staging branch using this API while
-// keeping using projects/*/locations/*/catalogs/*/branches/default_branch
-// as SearchRequest.branch
+// becomes ready, developers switch on the staging branch using this API
+// while keeping using
+// projects/*/locations/*/catalogs/*/branches/default_branch as
+// SearchRequest.branch
 // to route the traffic to this staging branch.
 //
 // CAUTION: If you have live predict/search traffic, switching the default
-// branch could potentially cause outages if the ID space of the new branch is
-// very different from the old one.
+// branch could potentially cause outages if the ID space of the new branch
+// is very different from the old one.
 //
 // More specifically:
 //
@@ -604,7 +604,7 @@ func (c *CatalogClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// catalogGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
+// catalogGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type catalogGRPCClient struct {
@@ -621,6 +621,8 @@ type catalogGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCatalogClient creates a new catalog service client based on gRPC.
@@ -647,6 +649,7 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		connPool:         connPool,
 		catalogClient:    retailpb.NewCatalogServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -694,6 +697,8 @@ type catalogRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CatalogClient
 	CallOptions **CatalogCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCatalogRESTClient creates a new catalog service rest client.
@@ -711,6 +716,7 @@ func NewCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ca
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -774,7 +780,7 @@ func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.catalogClient.ListCatalogs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.catalogClient.ListCatalogs, req, settings.GRPC, c.logger, "ListCatalogs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -809,7 +815,7 @@ func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 	var resp *retailpb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.UpdateCatalog(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateCatalog, req, settings.GRPC, c.logger, "UpdateCatalog")
 		return err
 	}, opts...)
 	if err != nil {
@@ -826,7 +832,7 @@ func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 	opts = append((*c.CallOptions).SetDefaultBranch[0:len((*c.CallOptions).SetDefaultBranch):len((*c.CallOptions).SetDefaultBranch)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.catalogClient.SetDefaultBranch(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.catalogClient.SetDefaultBranch, req, settings.GRPC, c.logger, "SetDefaultBranch")
 		return err
 	}, opts...)
 	return err
@@ -841,7 +847,7 @@ func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 	var resp *retailpb.GetDefaultBranchResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetDefaultBranch(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetDefaultBranch, req, settings.GRPC, c.logger, "GetDefaultBranch")
 		return err
 	}, opts...)
 	if err != nil {
@@ -859,7 +865,7 @@ func (c *catalogGRPCClient) GetCompletionConfig(ctx context.Context, req *retail
 	var resp *retailpb.CompletionConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetCompletionConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetCompletionConfig, req, settings.GRPC, c.logger, "GetCompletionConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -877,7 +883,7 @@ func (c *catalogGRPCClient) UpdateCompletionConfig(ctx context.Context, req *ret
 	var resp *retailpb.CompletionConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.UpdateCompletionConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateCompletionConfig, req, settings.GRPC, c.logger, "UpdateCompletionConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -895,7 +901,7 @@ func (c *catalogGRPCClient) GetAttributesConfig(ctx context.Context, req *retail
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetAttributesConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetAttributesConfig, req, settings.GRPC, c.logger, "GetAttributesConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -913,7 +919,7 @@ func (c *catalogGRPCClient) UpdateAttributesConfig(ctx context.Context, req *ret
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.UpdateAttributesConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateAttributesConfig, req, settings.GRPC, c.logger, "UpdateAttributesConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -931,7 +937,7 @@ func (c *catalogGRPCClient) AddCatalogAttribute(ctx context.Context, req *retail
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.AddCatalogAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.AddCatalogAttribute, req, settings.GRPC, c.logger, "AddCatalogAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -949,7 +955,7 @@ func (c *catalogGRPCClient) RemoveCatalogAttribute(ctx context.Context, req *ret
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.RemoveCatalogAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.RemoveCatalogAttribute, req, settings.GRPC, c.logger, "RemoveCatalogAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -967,7 +973,7 @@ func (c *catalogGRPCClient) BatchRemoveCatalogAttributes(ctx context.Context, re
 	var resp *retailpb.BatchRemoveCatalogAttributesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.BatchRemoveCatalogAttributes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.BatchRemoveCatalogAttributes, req, settings.GRPC, c.logger, "BatchRemoveCatalogAttributes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -985,7 +991,7 @@ func (c *catalogGRPCClient) ReplaceCatalogAttribute(ctx context.Context, req *re
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.ReplaceCatalogAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.ReplaceCatalogAttribute, req, settings.GRPC, c.logger, "ReplaceCatalogAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1003,7 +1009,7 @@ func (c *catalogGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1032,7 +1038,7 @@ func (c *catalogGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1104,21 +1110,10 @@ func (c *catalogRESTClient) ListCatalogs(ctx context.Context, req *retailpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCatalogs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1166,11 +1161,11 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1195,17 +1190,7 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCatalog")
 		if err != nil {
 			return err
 		}
@@ -1231,22 +1216,23 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 //
 // For example, if projects/*/locations/*/catalogs/*/branches/1 is set as
 // default, setting
-// SearchRequest.branch to
-// projects/*/locations/*/catalogs/*/branches/default_branch is equivalent
-// to setting
-// SearchRequest.branch to
-// projects/*/locations/*/catalogs/*/branches/1.
+// SearchRequest.branch
+// to projects/*/locations/*/catalogs/*/branches/default_branch is
+// equivalent to setting
+// SearchRequest.branch
+// to projects/*/locations/*/catalogs/*/branches/1.
 //
 // Using multiple branches can be useful when developers would like
 // to have a staging branch to test and verify for future usage. When it
-// becomes ready, developers switch on the staging branch using this API while
-// keeping using projects/*/locations/*/catalogs/*/branches/default_branch
-// as SearchRequest.branch
+// becomes ready, developers switch on the staging branch using this API
+// while keeping using
+// projects/*/locations/*/catalogs/*/branches/default_branch as
+// SearchRequest.branch
 // to route the traffic to this staging branch.
 //
 // CAUTION: If you have live predict/search traffic, switching the default
-// branch could potentially cause outages if the ID space of the new branch is
-// very different from the old one.
+// branch could potentially cause outages if the ID space of the new branch
+// is very different from the old one.
 //
 // More specifically:
 //
@@ -1292,15 +1278,8 @@ func (c *catalogRESTClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetDefaultBranch")
+		return err
 	}, opts...)
 }
 
@@ -1339,17 +1318,7 @@ func (c *catalogRESTClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDefaultBranch")
 		if err != nil {
 			return err
 		}
@@ -1399,17 +1368,7 @@ func (c *catalogRESTClient) GetCompletionConfig(ctx context.Context, req *retail
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCompletionConfig")
 		if err != nil {
 			return err
 		}
@@ -1445,11 +1404,11 @@ func (c *catalogRESTClient) UpdateCompletionConfig(ctx context.Context, req *ret
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1474,17 +1433,7 @@ func (c *catalogRESTClient) UpdateCompletionConfig(ctx context.Context, req *ret
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCompletionConfig")
 		if err != nil {
 			return err
 		}
@@ -1534,17 +1483,7 @@ func (c *catalogRESTClient) GetAttributesConfig(ctx context.Context, req *retail
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAttributesConfig")
 		if err != nil {
 			return err
 		}
@@ -1587,11 +1526,11 @@ func (c *catalogRESTClient) UpdateAttributesConfig(ctx context.Context, req *ret
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1616,17 +1555,7 @@ func (c *catalogRESTClient) UpdateAttributesConfig(ctx context.Context, req *ret
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAttributesConfig")
 		if err != nil {
 			return err
 		}
@@ -1687,17 +1616,7 @@ func (c *catalogRESTClient) AddCatalogAttribute(ctx context.Context, req *retail
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddCatalogAttribute")
 		if err != nil {
 			return err
 		}
@@ -1758,17 +1677,7 @@ func (c *catalogRESTClient) RemoveCatalogAttribute(ctx context.Context, req *ret
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveCatalogAttribute")
 		if err != nil {
 			return err
 		}
@@ -1826,17 +1735,7 @@ func (c *catalogRESTClient) BatchRemoveCatalogAttributes(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchRemoveCatalogAttributes")
 		if err != nil {
 			return err
 		}
@@ -1899,17 +1798,7 @@ func (c *catalogRESTClient) ReplaceCatalogAttribute(ctx context.Context, req *re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReplaceCatalogAttribute")
 		if err != nil {
 			return err
 		}
@@ -1959,17 +1848,7 @@ func (c *catalogRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2034,21 +1913,10 @@ func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunning
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -24,7 +24,7 @@
 # Nightly/$MODULE: Runs tests in a specified module. Triggered nightly.
 ##
 
-export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
+export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-service-account"
 # Removing the GCLOUD_TESTS_GOLANG_PROJECT_ID setting may make some integration
 # tests (like profiler's) silently skipped, so make sure you know what you are
 # doing when changing / removing the next line.
@@ -34,8 +34,10 @@ export GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID=gcloud-golang-firestore
 export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=database-01
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
+# TODO(codyoss): Update this
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
 export GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES=database-02
+# TODO(codyoss): Update this
 export GCLOUD_TESTS_API_KEY=$(cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key)
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
 export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
@@ -73,6 +75,7 @@ set -x
 
 # cd to project dir on Kokoro instance
 cd github/google-cloud-go
+git config --global --add safe.directory "$(pwd)/./.git"
 
 go version
 
@@ -94,6 +97,14 @@ try3 go mod download
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
+  if [[ $PWD == *"/aliasshim" ]]; then
+    # aliasshim: build constraints exclude all Go files
+    return
+  fi
+  if [[ $PWD == *"bigquery/benchmarks" ]]; then
+    # bigquery/benchmarks: build constraints exclude all Go files
+    return
+  fi
   if { [[ $PWD == *"/internal/"* ]] ||
     [[ $PWD == *"/third_party/"* ]]; } &&
     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
@@ -156,7 +167,7 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR.
   SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' || true)
 
-  if [ -z $SIGNIFICANT_CHANGES ]; then
+  if [[ -z $SIGNIFICANT_CHANGES ]]; then
     echo "No changes detected, skipping tests"
     exit 0
   fi

@@ -1,5 +1,108 @@
 # Changes
 
+## [1.22.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.1...cloudbuild/v1.22.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.0...cloudbuild/v1.22.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.21.0...cloudbuild/v1.22.0) (2025-02-14)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Support for git proxy setup ([#11590](https://github.com/googleapis/google-cloud-go/issues/11590)) ([c6a6dc7](https://github.com/googleapis/google-cloud-go/commit/c6a6dc7c6e63740ec25fc1eb34990f4550a6a1f3))
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Updates to proto message comments ([c6a6dc7](https://github.com/googleapis/google-cloud-go/commit/c6a6dc7c6e63740ec25fc1eb34990f4550a6a1f3))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.20.0...cloudbuild/v1.21.0) (2025-02-12)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add option to enable fetching dependencies ([#11589](https://github.com/googleapis/google-cloud-go/issues/11589)) ([e99577b](https://github.com/googleapis/google-cloud-go/commit/e99577bf3b280c5e4affe5657c8d43823a976d3c))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.2...cloudbuild/v1.20.0) (2025-01-15)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add GoModule to Artifact and Results messages and new GO_MODULE_H1 hash type ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **cloudbuild/apiv1:** Add option to enable structured logging ([#11435](https://github.com/googleapis/google-cloud-go/issues/11435)) ([8c6ed3d](https://github.com/googleapis/google-cloud-go/commit/8c6ed3d3c9677ab1b6e1e5651995b9be1856c7ac))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.1...cloudbuild/v1.19.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.0...cloudbuild/v1.19.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Deprecate apiv1 client ([#11225](https://github.com/googleapis/google-cloud-go/issues/11225)) ([ba9412a](https://github.com/googleapis/google-cloud-go/commit/ba9412a07cc3b31278c204759c343c5e0c60663f))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.18.1...cloudbuild/v1.19.0) (2024-11-06)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add PrivateServiceConnect option to WorkerPool ([#11034](https://github.com/googleapis/google-cloud-go/issues/11034)) ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.18.0...cloudbuild/v1.18.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **cloudbuild:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.17.1...cloudbuild/v1.18.0) (2024-09-25)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add LEGACY_BUCKET option to DefaultLogsBucketBehavior ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Sanitize docs ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.17.0...cloudbuild/v1.17.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.16.6...cloudbuild/v1.17.0) (2024-08-20)
+
+
+### Features
+
+* **cloudbuild:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.16.6](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.16.5...cloudbuild/v1.16.6) (2024-08-08)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.16.5](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.16.4...cloudbuild/v1.16.5) (2024-07-24)
 
 

@@ -46,6 +46,7 @@ This file is structured as follows:
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -937,15 +938,30 @@ func (p *parser) sniff(want ...string) bool {
 	return true
 }
 
+// sniffAhead reports whether the next N+skip tokens are as specified.
+func (p *parser) sniffAhead(skip int, want ...string) bool {
+	// Store current parser state and restore on the way out.
+	orig := *p
+	defer func() { *p = orig }()
+
+	for i := 0; i < skip; i++ {
+		p.next()
+	}
+
+	for _, w := range want {
+		if !p.next().caseEqual(w) {
+			return false
+		}
+	}
+	return true
+}
+
 // sniffTokenType reports whether the next token type is as specified.
 func (p *parser) sniffTokenType(want tokenType) bool {
 	orig := *p
 	defer func() { *p = orig }()
 
-	if p.next().typ == want {
-		return true
-	}
-	return false
+	return p.next().typ == want
 }
 
 // eat reports whether the next N tokens are as specified,
@@ -982,7 +998,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 
 	/*
 		statement:
-			{ create_database | create_table | create_index | alter_table | drop_table | rename_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
+			{ create_database | create_table | create_index | create_search_index | alter_table | drop_table | rename_table | drop_index | drop_search_index | create_change_stream | alter_change_stream | drop_change_stream }
 	*/
 
 	// TODO: support create_database
@@ -992,6 +1008,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		return ct, err
 	} else if p.sniff("CREATE", "INDEX") || p.sniff("CREATE", "UNIQUE", "INDEX") || p.sniff("CREATE", "NULL_FILTERED", "INDEX") || p.sniff("CREATE", "UNIQUE", "NULL_FILTERED", "INDEX") {
 		ci, err := p.parseCreateIndex()
+		return ci, err
+	} else if p.sniff("CREATE", "SEARCH", "INDEX") {
+		ci, err := p.parseCreateSearchIndex()
 		return ci, err
 	} else if p.sniff("CREATE", "VIEW") || p.sniff("CREATE", "OR", "REPLACE", "VIEW") {
 		cv, err := p.parseCreateView()
@@ -1007,9 +1026,11 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		// These statements are simple.
 		// DROP TABLE [ IF EXISTS ] table_name
 		// DROP INDEX [ IF EXISTS ] index_name
+		// DROP SEARCH INDEX [ IF EXISTS ] index_name
 		// DROP VIEW view_name
 		// DROP ROLE role_name
 		// DROP CHANGE STREAM change_stream_name
+		// DROP PROTO BUNDLE
 		tok := p.next()
 		if tok.err != nil {
 			return nil, tok.err
@@ -1037,6 +1058,19 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropIndex{Name: name, IfExists: ifExists, Position: pos}, nil
+		case tok.caseEqual("SEARCH"):
+			if err := p.expect("INDEX"); err != nil {
+				return nil, err
+			}
+			var ifExists bool
+			if p.eat("IF", "EXISTS") {
+				ifExists = true
+			}
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			return &DropSearchIndex{Name: name, IfExists: ifExists, Position: pos}, nil
 		case tok.caseEqual("VIEW"):
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
@@ -1068,6 +1102,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropSequence{Name: name, IfExists: ifExists, Position: pos}, nil
+		case tok.caseEqual("PROTO"):
+			// the syntax for this is dead simple: DROP PROTO BUNDLE
+			if bundleErr := p.expect("BUNDLE"); bundleErr != nil {
+				return nil, bundleErr
+			}
+			return &DropProtoBundle{Position: pos}, nil
 		}
 	} else if p.sniff("RENAME", "TABLE") {
 		a, err := p.parseRenameTable()
@@ -1093,12 +1133,21 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("ALTER", "INDEX") {
 		ai, err := p.parseAlterIndex()
 		return ai, err
+	} else if p.sniff("ALTER", "SEARCH", "INDEX") {
+		ai, err := p.parseAlterSearchIndex()
+		return ai, err
 	} else if p.sniff("CREATE", "SEQUENCE") {
 		cs, err := p.parseCreateSequence()
 		return cs, err
 	} else if p.sniff("ALTER", "SEQUENCE") {
 		as, err := p.parseAlterSequence()
 		return as, err
+	} else if p.sniff("CREATE", "PROTO", "BUNDLE") {
+		cp, err := p.parseCreateProtoBundle()
+		return cp, err
+	} else if p.sniff("ALTER", "PROTO", "BUNDLE") {
+		ap, err := p.parseAlterProtoBundle()
+		return ap, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -1350,6 +1399,144 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	return ci, nil
 }
 
+func (p *parser) parseCreateSearchIndex() (*CreateSearchIndex, *parseError) {
+	debugf("parseCreateSearchIndex: %v", p)
+
+	/*
+		CREATE SEARCH INDEX index_name
+			ON table_name ( token_column_list )
+			[ storing_clause ] [ partition_clause ]
+			[ orderby_clause ] [ where_clause ]
+			[ interleave_clause ] [ options_clause ]
+
+		where index_name is:
+			{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
+
+		and token_column_list is:
+		    column_name [, ...]
+
+		and storing_clause is:
+		    STORING ( column_name [, ...] )
+
+		and partition_clause is:
+		    PARTITION BY column_name [, ...]
+
+		and orderby_clause is:
+		    ORDER BY column_name [ {ASC | DESC} ] [, column_name [ {ASC | DESC} ]]
+
+		and where_clause is:
+		    WHERE column_name IS NOT NULL [AND ...]
+
+		and interleave_clause is:
+		    , INTERLEAVE IN table_name
+
+		and options_clause is:
+		    OPTIONS ( option_name=option_value [, ...] )
+
+	*/
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("SEARCH", "INDEX"); err != nil {
+		return nil, err
+	}
+
+	// Parse the index name
+	iname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the table name
+	if err := p.expect("ON"); err != nil {
+		return nil, err
+	}
+	tname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+	ci := &CreateSearchIndex{
+		Name:     iname,
+		Table:    tname,
+		Position: pos,
+	}
+	ci.Columns, err = p.parseKeyPartList()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.eat("STORING") {
+		ci.Storing, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if p.eat("PARTITION", "BY") {
+		ci.PartitionBy, err = p.parseIDList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if p.eat("ORDER", "BY") {
+		for {
+			o, err := p.parseOrder()
+			if err != nil {
+				return nil, err
+			}
+			ci.OrderBy = append(ci.OrderBy, o)
+
+			if p.sniff(",", "INTERLEAVE", "IN") {
+				break
+			}
+
+			if !p.eat(",") {
+				break
+			}
+
+		}
+	}
+
+	if p.eat("WHERE") {
+		for {
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			if err := p.expect("IS", "NOT", "NULL"); err != nil {
+				return nil, err
+			}
+			ci.WhereIsNotNull = append(ci.WhereIsNotNull, name)
+
+			if !p.sniff("AND") {
+				break
+			}
+			if err := p.expect("AND"); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if p.eat(",", "INTERLEAVE", "IN") {
+		ci.Interleave, err = p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if p.sniff("OPTIONS") {
+		ci.Options, err = p.parseSearchIndexOptions()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return ci, nil
+}
+
 func (p *parser) parseCreateView() (*CreateView, *parseError) {
 	debugf("parseCreateView: %v", p)
 
@@ -1553,6 +1740,7 @@ func (p *parser) parseRevokeRole() (*RevokeRole, *parseError) {
 
 	return r, nil
 }
+
 func (p *parser) parseGrantOrRevokeRoleList(end string) ([]ID, *parseError) {
 	var roleList []ID
 	f := func(p *parser) *parseError {
@@ -1615,6 +1803,7 @@ func (p *parser) parsePrivileges() ([]Privilege, *parseError) {
 	}
 	return privs, nil
 }
+
 func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	debugf("parseAlterTable: %v", p)
 
@@ -2043,7 +2232,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	/*
 		column_def:
-			column_name {scalar_type | array_type} [NOT NULL] [{DEFAULT ( expression ) | AS ( expression ) STORED}] [options_def]
+			column_name {scalar_type | array_type} [NOT NULL] [{DEFAULT ( expression ) | AS ( expression ) {STORED | HIDDEN}}] [options_def]
 	*/
 
 	name, err := p.parseTableOrIndexOrColumnName()
@@ -2080,8 +2269,12 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 		if err := p.expect(")"); err != nil {
 			return ColumnDef{}, err
 		}
-		if err := p.expect("STORED"); err != nil {
-			return ColumnDef{}, err
+		if p.eat("HIDDEN") {
+			cd.Hidden = true
+		} else {
+			if err := p.expect("STORED"); err != nil {
+				return ColumnDef{}, err
+			}
 		}
 	}
 
@@ -2150,6 +2343,70 @@ func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
 	}
 
 	return sct, nil
+}
+
+func (p *parser) parseSearchIndexOptions() (SearchIndexOptions, *parseError) {
+	debugf("parseSearchIndexOptions: %v", p)
+	/*
+		options_def:
+			OPTIONS (sort_order_sharding  = { true | false }, disable_automatic_uid_column = { true | false })
+	*/
+
+	if err := p.expect("OPTIONS"); err != nil {
+		return SearchIndexOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return SearchIndexOptions{}, err
+	}
+
+	// TODO: Figure out if column options are case insensitive.
+	// We ignore case for the key (because it is easier) but not the value.
+	var opts SearchIndexOptions
+	for {
+		if p.eat("sort_order_sharding", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SearchIndexOptions{}, tok.err
+			}
+			sortOrderSharding := new(bool)
+			switch tok.value {
+			case "true":
+				*sortOrderSharding = true
+			case "false":
+				*sortOrderSharding = false
+			default:
+				return SearchIndexOptions{}, p.errorf("got %q, want true or false", tok.value)
+			}
+			opts.SortOrderSharding = sortOrderSharding
+		} else if p.eat("disable_automatic_uid_column", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SearchIndexOptions{}, tok.err
+			}
+			disableAutomaticUIDColumn := new(bool)
+			switch tok.value {
+			case "true":
+				*disableAutomaticUIDColumn = true
+			case "false":
+				*disableAutomaticUIDColumn = false
+			default:
+				return SearchIndexOptions{}, p.errorf("got %q, want true or false", tok.value)
+			}
+			opts.DisableAutomaticUIDColumn = disableAutomaticUIDColumn
+		}
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return SearchIndexOptions{}, p.errorf("missing ',' in options list")
+		}
+	}
+
+	if err := p.expect(")"); err != nil {
+		return SearchIndexOptions{}, err
+	}
+
+	return opts, nil
 }
 
 func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
@@ -2844,6 +3101,55 @@ func (p *parser) parseAlterIndex() (*AlterIndex, *parseError) {
 	return nil, p.errorf("got %q, expected ADD or DROP", tok.value)
 }
 
+func (p *parser) parseAlterSearchIndex() (*AlterSearchIndex, *parseError) {
+	debugf("parseAlterSearchIndex: %v", p)
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("SEARCH"); err != nil {
+		return nil, err
+	}
+	if err := p.expect("INDEX"); err != nil {
+		return nil, err
+	}
+	iname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	a := &AlterSearchIndex{Name: iname, Position: pos}
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	switch {
+	case tok.caseEqual("ADD"):
+		if err := p.expect("STORED", "COLUMN"); err != nil {
+			return nil, err
+		}
+		cname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = AddStoredColumn{Name: cname}
+		return a, nil
+	case tok.caseEqual("DROP"):
+		if err := p.expect("STORED", "COLUMN"); err != nil {
+			return nil, err
+		}
+		cname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = DropStoredColumn{Name: cname}
+		return a, nil
+	}
+
+	return nil, p.errorf("got %q, expected ADD or DROP", tok.value)
+}
+
 func (p *parser) parseCreateSequence() (*CreateSequence, *parseError) {
 	debugf("parseCreateSequence: %v", p)
 
@@ -2879,6 +3185,94 @@ func (p *parser) parseCreateSequence() (*CreateSequence, *parseError) {
 	}
 
 	return cs, nil
+}
+
+func (p *parser) parseCreateProtoBundle() (*CreateProtoBundle, *parseError) {
+	debugf("parseCreateProtoBundle: %v", p)
+
+	/*
+		CREATE PROTO BUNDLE (
+		  [proto_type_name"," ...]
+		)
+	*/
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("PROTO", "BUNDLE"); err != nil {
+		return nil, err
+	}
+
+	typeNames, listErr := p.parseProtobufTypeNameList()
+	if listErr != nil {
+		return nil, listErr
+	}
+
+	return &CreateProtoBundle{Types: typeNames, Position: pos}, nil
+}
+
+func (p *parser) parseAlterProtoBundle() (*AlterProtoBundle, *parseError) {
+	debugf("parseAlterProtoBundle: %v", p)
+
+	/*
+		ALTER PROTO BUNDLE
+		  INSERT (
+		    [proto_type_name"," ...]
+		  )
+		  UPDATE (
+		    [proto_type_name"," ...]
+		  )
+		  DELETE (
+		    [proto_type_name"," ...]
+		  )
+	*/
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("PROTO", "BUNDLE"); err != nil {
+		return nil, err
+	}
+	alter := AlterProtoBundle{Position: pos}
+	for {
+		var typeSlice *[]string
+		switch {
+		case p.eat("INSERT"):
+			if alter.AddTypes != nil {
+				return nil, p.errorf("multiple INSERTs in ALTER PROTO BUNDLE")
+			}
+			typeSlice = &alter.AddTypes
+		case p.eat("UPDATE"):
+			if alter.UpdateTypes != nil {
+				return nil, p.errorf("multiple UPDATEs in ALTER PROTO BUNDLE")
+			}
+			typeSlice = &alter.UpdateTypes
+		case p.eat("DELETE"):
+			if alter.DeleteTypes != nil {
+				return nil, p.errorf("multiple DELETEs in ALTER PROTO BUNDLE")
+			}
+			typeSlice = &alter.DeleteTypes
+		default:
+			tok := p.next()
+			if tok.err == eof {
+				return &alter, nil
+			} else if tok.err != nil {
+				return nil, tok.err
+			} else if tok.typ == unknownToken && tok.value == ";" {
+				p.back()
+				return &alter, nil
+			}
+			return nil, p.errorf("invalid clause in ALTER PROTO BUNDLE %q", tok.value)
+		}
+
+		typeNames, listErr := p.parseProtobufTypeNameList()
+		if listErr != nil {
+			return nil, listErr
+		}
+		*typeSlice = typeNames
+	}
 }
 
 func (p *parser) parseAlterSequence() (*AlterSequence, *parseError) {
@@ -3007,6 +3401,9 @@ var baseTypes = map[string]TypeBase{
 	"DATE":      Date,
 	"TIMESTAMP": Timestamp,
 	"JSON":      JSON,
+	"PROTO":     Proto, // for use in CAST
+	"ENUM":      Enum,  // for use in CAST
+	"TOKENLIST": Tokenlist,
 }
 
 func (p *parser) parseBaseType() (Type, *parseError) {
@@ -3038,6 +3435,78 @@ func (p *parser) parseExtractType() (Type, string, *parseError) {
 	return t, strings.ToUpper(tok.value), nil
 }
 
+// protobuf identifiers allow one letter-class character followed by any number of alphanumeric characters or an
+// underscore (which matches the [:word:] class in RE2/go regexp).
+// Fully qualified protobuf type names (enums or messages) include a dot-separated namespace, where each component is
+// also an identifier.
+// https://github.com/protocolbuffers/protobuf/blob/eeb7dc88f286df558d933214fff829205ffa5506/src/google/protobuf/io/tokenizer.cc#L653-L655
+// https://github.com/protocolbuffers/protobuf/blob/eeb7dc88f286df558d933214fff829205ffa5506/src/google/protobuf/io/tokenizer.cc#L115-L120
+var fqProtoMsgName = regexp.MustCompile(`^(?:[[:alpha:]][[:word:]]*)(?:\.(?:[[:alpha:]][[:word:]]*))*$`)
+
+func (p *parser) parseProtobufTypeName(consumed string) (string, *parseError) {
+	// Whether it's quoted or not, we might have multiple namespace components (with `.` separation)
+	possibleProtoTypeName := strings.Builder{}
+	possibleProtoTypeName.WriteString(consumed)
+	ntok := p.next()
+	// Pretend the last token was a dot if either the "consumed" portion we
+	// were given was either empty, or it actually ended in a dot.
+	lastTokIsDot := len(consumed) == 0 || consumed[len(consumed)-1] == '.'
+PROTO_TOK_CONSUME:
+	for ; ntok.err == nil; ntok = p.next() {
+		appendVal := ntok.value
+		switch ntok.typ {
+		case unquotedID:
+			// only consume an unquoted token if the last one was a dot
+			if !lastTokIsDot {
+				p.back()
+				break PROTO_TOK_CONSUME
+			}
+			lastTokIsDot = false
+		case quotedID:
+			// It isn't valid to only quote part of a protobuf
+			// type-name, back out if we encounter another quoted
+			// value.
+			if possibleProtoTypeName.Len() > 0 {
+				p.back()
+				break PROTO_TOK_CONSUME
+			}
+			if !fqProtoMsgName.MatchString(ntok.string) {
+				return "", p.errorf("got %q, want fully qualified protobuf type", ntok.string)
+			}
+			// Once we've encountered a quoted type-name, we can't consume anything else for this type-name
+			possibleProtoTypeName.WriteString(ntok.string)
+			break PROTO_TOK_CONSUME
+		case unknownToken:
+			if ntok.value != "." {
+				p.back()
+				break PROTO_TOK_CONSUME
+			}
+			lastTokIsDot = true
+		default:
+			p.back()
+			break PROTO_TOK_CONSUME
+		}
+		possibleProtoTypeName.WriteString(appendVal)
+	}
+	if ntok.err != nil {
+		return "", ntok.err
+	}
+	return possibleProtoTypeName.String(), nil
+}
+
+func (p *parser) parseProtobufTypeNameList() ([]string, *parseError) {
+	var list []string
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
+		tn, err := p.parseProtobufTypeName("")
+		if err != nil {
+			return err
+		}
+		list = append(list, tn)
+		return nil
+	})
+	return list, err
+}
+
 func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError) {
 	debugf("parseBaseOrParameterizedType: %v", p)
 
@@ -3067,12 +3536,38 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 			return Type{}, tok.err
 		}
 	}
-	base, ok := baseTypes[strings.ToUpper(tok.value)] // baseTypes is keyed by upper case strings.
-	if !ok {
-		return Type{}, p.errorf("got %q, want scalar type", tok.value)
-	}
-	t.Base = base
+	switch tok.typ {
+	case unquotedID:
+		base, ok := baseTypes[strings.ToUpper(tok.value)] // baseTypes is keyed by upper case strings.
+		if ok {
+			t.Base = base
+			break
+		}
 
+		// Likely a protobuf type; make sure its value matches the regexp
+		// protobuf types can be either quoted or unquoted, so we need to handle both.
+		// Fortunately, the identifier tokenization rules match between protobuf and SQL, so we only need to
+		// verify quoted identifiers.
+		pbTypeName, pbParseErr := p.parseProtobufTypeName(tok.value)
+		if pbParseErr != nil {
+			return Type{}, pbParseErr
+		}
+		t.ProtoRef = pbTypeName
+		t.Base = Proto
+		return t, nil
+	case quotedID:
+		if !fqProtoMsgName.MatchString(tok.string) {
+			return Type{}, p.errorf("got %q, want fully qualified protobuf type", tok.value)
+		}
+		pbTypeName, pbParseErr := p.parseProtobufTypeName(tok.string)
+		if pbParseErr != nil {
+			return Type{}, pbParseErr
+		}
+		t.ProtoRef = pbTypeName
+		t.Base = Proto
+		return t, nil
+	default:
+	}
 	if withParam && (t.Base == String || t.Base == Bytes) {
 		if err := p.expect("("); err != nil {
 			return Type{}, err
@@ -3717,6 +4212,28 @@ var sequenceArgParser = func(p *parser) (Expr, *parseError) {
 			return nil, err
 		}
 		return SequenceExpr{Name: name}, nil
+	}
+	return p.parseExpr()
+}
+
+var tokenDefinitionArgParser = func(p *parser) (Expr, *parseError) {
+	if p.sniffAhead(1, "=", ">") {
+		tok := p.next()
+		if tok.err != nil {
+			return DefinitionExpr{}, tok.err
+		}
+		definition := tok.value
+		if err := p.expect("=", ">"); err != nil {
+			return DefinitionExpr{}, err
+		}
+		value, err := p.parseExpr()
+		if err != nil {
+			return DefinitionExpr{}, err
+		}
+		return DefinitionExpr{
+			Key:   definition,
+			Value: value,
+		}, nil
 	}
 	return p.parseExpr()
 }

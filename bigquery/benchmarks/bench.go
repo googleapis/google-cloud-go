@@ -23,7 +23,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -181,7 +180,7 @@ func measureSelectQuery(ctx context.Context, q *bigquery.Query) *timingInfo {
 // It currently instruments queries serially to reduce variance due to concurrent execution on either the backend or in this client.
 func runBenchmarks(ctx context.Context, client *bigquery.Client, filename string, tags *tags, reruns int) (profiles []*profiledQuery, err error) {
 
-	queriesJSON, err := ioutil.ReadFile(filename)
+	queriesJSON, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read queries files: %v", err)
 	}
@@ -288,7 +287,7 @@ func main() {
 	var createTable = flag.Bool("create_table", false, "create result table if it does not exist")
 
 	var tags tags
-	flag.Var(&tags, "tag", "an optional key and value seperated by colon (:) character")
+	flag.Var(&tags, "tag", "an optional key and value separated by colon (:) character")
 	flag.Parse()
 
 	// Validate flags.

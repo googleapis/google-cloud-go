@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -893,6 +892,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new asset service client based on gRPC.
@@ -919,6 +920,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           assetpb.NewAssetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -982,6 +984,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new asset service rest client.
@@ -999,6 +1003,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1061,7 +1066,7 @@ func (c *gRPCClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExportAssets(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExportAssets, req, settings.GRPC, c.logger, "ExportAssets")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1092,7 +1097,7 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAssets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAssets, req, settings.GRPC, c.logger, "ListAssets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1127,7 +1132,7 @@ func (c *gRPCClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 	var resp *assetpb.BatchGetAssetsHistoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchGetAssetsHistory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchGetAssetsHistory, req, settings.GRPC, c.logger, "BatchGetAssetsHistory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1145,7 +1150,7 @@ func (c *gRPCClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateFeed(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateFeed, req, settings.GRPC, c.logger, "CreateFeed")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1163,7 +1168,7 @@ func (c *gRPCClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetFeed(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetFeed, req, settings.GRPC, c.logger, "GetFeed")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1181,7 +1186,7 @@ func (c *gRPCClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 	var resp *assetpb.ListFeedsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ListFeeds(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ListFeeds, req, settings.GRPC, c.logger, "ListFeeds")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1199,7 +1204,7 @@ func (c *gRPCClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateFeed(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateFeed, req, settings.GRPC, c.logger, "UpdateFeed")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1216,7 +1221,7 @@ func (c *gRPCClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 	opts = append((*c.CallOptions).DeleteFeed[0:len((*c.CallOptions).DeleteFeed):len((*c.CallOptions).DeleteFeed)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteFeed(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteFeed, req, settings.GRPC, c.logger, "DeleteFeed")
 		return err
 	}, opts...)
 	return err
@@ -1242,7 +1247,7 @@ func (c *gRPCClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchAllResources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchAllResources, req, settings.GRPC, c.logger, "SearchAllResources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1288,7 +1293,7 @@ func (c *gRPCClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchAllIamPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchAllIamPolicies, req, settings.GRPC, c.logger, "SearchAllIamPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1323,7 +1328,7 @@ func (c *gRPCClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 	var resp *assetpb.AnalyzeIamPolicyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnalyzeIamPolicy, req, settings.GRPC, c.logger, "AnalyzeIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1341,7 +1346,7 @@ func (c *gRPCClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeIamPolicyLongrunning(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnalyzeIamPolicyLongrunning, req, settings.GRPC, c.logger, "AnalyzeIamPolicyLongrunning")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1361,7 +1366,7 @@ func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 	var resp *assetpb.AnalyzeMoveResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeMove(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnalyzeMove, req, settings.GRPC, c.logger, "AnalyzeMove")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1379,7 +1384,7 @@ func (c *gRPCClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 	var resp *assetpb.QueryAssetsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.QueryAssets(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.QueryAssets, req, settings.GRPC, c.logger, "QueryAssets")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1397,7 +1402,7 @@ func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 	var resp *assetpb.SavedQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSavedQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSavedQuery, req, settings.GRPC, c.logger, "CreateSavedQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1415,7 +1420,7 @@ func (c *gRPCClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 	var resp *assetpb.SavedQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSavedQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSavedQuery, req, settings.GRPC, c.logger, "GetSavedQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1444,7 +1449,7 @@ func (c *gRPCClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSavedQueries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSavedQueries, req, settings.GRPC, c.logger, "ListSavedQueries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1479,7 +1484,7 @@ func (c *gRPCClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 	var resp *assetpb.SavedQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSavedQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSavedQuery, req, settings.GRPC, c.logger, "UpdateSavedQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1496,7 +1501,7 @@ func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 	opts = append((*c.CallOptions).DeleteSavedQuery[0:len((*c.CallOptions).DeleteSavedQuery):len((*c.CallOptions).DeleteSavedQuery)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSavedQuery(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSavedQuery, req, settings.GRPC, c.logger, "DeleteSavedQuery")
 		return err
 	}, opts...)
 	return err
@@ -1511,7 +1516,7 @@ func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 	var resp *assetpb.BatchGetEffectiveIamPoliciesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchGetEffectiveIamPolicies(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchGetEffectiveIamPolicies, req, settings.GRPC, c.logger, "BatchGetEffectiveIamPolicies")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1534,13 +1539,13 @@ func (c *gRPCClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.AnalyzeOrgPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.AnalyzeOrgPolicies, req, settings.GRPC, c.logger, "AnalyzeOrgPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1580,13 +1585,13 @@ func (c *gRPCClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.AnalyzeOrgPolicyGovernedContainers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.AnalyzeOrgPolicyGovernedContainers, req, settings.GRPC, c.logger, "AnalyzeOrgPolicyGovernedContainers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1626,13 +1631,13 @@ func (c *gRPCClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.AnalyzeOrgPolicyGovernedAssets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.AnalyzeOrgPolicyGovernedAssets, req, settings.GRPC, c.logger, "AnalyzeOrgPolicyGovernedAssets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1667,7 +1672,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1724,21 +1729,10 @@ func (c *restClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportAssets")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1795,11 +1789,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadTime() != nil {
-			readTime, err := protojson.Marshal(req.GetReadTime())
+			field, err := protojson.Marshal(req.GetReadTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime[1:len(readTime)-1]))
+			params.Add("readTime", string(field[1:len(field)-1]))
 		}
 		if items := req.GetRelationshipTypes(); len(items) > 0 {
 			for _, item := range items {
@@ -1822,21 +1816,10 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAssets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1891,18 +1874,18 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 		params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
 	}
 	if req.GetReadTimeWindow().GetEndTime() != nil {
-		endTime, err := protojson.Marshal(req.GetReadTimeWindow().GetEndTime())
+		field, err := protojson.Marshal(req.GetReadTimeWindow().GetEndTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTimeWindow.endTime", string(endTime[1:len(endTime)-1]))
+		params.Add("readTimeWindow.endTime", string(field[1:len(field)-1]))
 	}
 	if req.GetReadTimeWindow().GetStartTime() != nil {
-		startTime, err := protojson.Marshal(req.GetReadTimeWindow().GetStartTime())
+		field, err := protojson.Marshal(req.GetReadTimeWindow().GetStartTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTimeWindow.startTime", string(startTime[1:len(startTime)-1]))
+		params.Add("readTimeWindow.startTime", string(field[1:len(field)-1]))
 	}
 	if items := req.GetRelationshipTypes(); len(items) > 0 {
 		for _, item := range items {
@@ -1932,17 +1915,7 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchGetAssetsHistory")
 		if err != nil {
 			return err
 		}
@@ -1999,17 +1972,7 @@ func (c *restClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFeed")
 		if err != nil {
 			return err
 		}
@@ -2059,17 +2022,7 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFeed")
 		if err != nil {
 			return err
 		}
@@ -2119,17 +2072,7 @@ func (c *restClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFeeds")
 		if err != nil {
 			return err
 		}
@@ -2185,17 +2128,7 @@ func (c *restClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFeed")
 		if err != nil {
 			return err
 		}
@@ -2242,15 +2175,8 @@ func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFeed")
+		return err
 	}, opts...)
 }
 
@@ -2298,11 +2224,11 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 			params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2320,21 +2246,10 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchAllResources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2423,21 +2338,10 @@ func (c *restClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchAllIamPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2489,11 +2393,11 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 		}
 	}
 	if req.GetAnalysisQuery().GetConditionContext().GetAccessTime() != nil {
-		accessTime, err := protojson.Marshal(req.GetAnalysisQuery().GetConditionContext().GetAccessTime())
+		field, err := protojson.Marshal(req.GetAnalysisQuery().GetConditionContext().GetAccessTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("analysisQuery.conditionContext.accessTime", string(accessTime[1:len(accessTime)-1]))
+		params.Add("analysisQuery.conditionContext.accessTime", string(field[1:len(field)-1]))
 	}
 	params.Add("analysisQuery.identitySelector.identity", fmt.Sprintf("%v", req.GetAnalysisQuery().GetIdentitySelector().GetIdentity()))
 	if req.GetAnalysisQuery().GetOptions().GetAnalyzeServiceAccountImpersonation() {
@@ -2516,11 +2420,11 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 	}
 	params.Add("analysisQuery.resourceSelector.fullResourceName", fmt.Sprintf("%v", req.GetAnalysisQuery().GetResourceSelector().GetFullResourceName()))
 	if req.GetExecutionTimeout() != nil {
-		executionTimeout, err := protojson.Marshal(req.GetExecutionTimeout())
+		field, err := protojson.Marshal(req.GetExecutionTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("executionTimeout", string(executionTimeout[1:len(executionTimeout)-1]))
+		params.Add("executionTimeout", string(field[1:len(field)-1]))
 	}
 	if req.GetSavedAnalysisQuery() != "" {
 		params.Add("savedAnalysisQuery", fmt.Sprintf("%v", req.GetSavedAnalysisQuery()))
@@ -2548,17 +2452,7 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2622,21 +2516,10 @@ func (c *restClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnalyzeIamPolicyLongrunning")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2695,17 +2578,7 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeMove")
 		if err != nil {
 			return err
 		}
@@ -2772,17 +2645,7 @@ func (c *restClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "QueryAssets")
 		if err != nil {
 			return err
 		}
@@ -2840,17 +2703,7 @@ func (c *restClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSavedQuery")
 		if err != nil {
 			return err
 		}
@@ -2900,17 +2753,7 @@ func (c *restClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSavedQuery")
 		if err != nil {
 			return err
 		}
@@ -2975,21 +2818,10 @@ func (c *restClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSavedQueries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3037,11 +2869,11 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3066,17 +2898,7 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSavedQuery")
 		if err != nil {
 			return err
 		}
@@ -3123,15 +2945,8 @@ func (c *restClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSavedQuery")
+		return err
 	}, opts...)
 }
 
@@ -3173,17 +2988,7 @@ func (c *restClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchGetEffectiveIamPolicies")
 		if err != nil {
 			return err
 		}
@@ -3211,7 +3016,7 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -3249,21 +3054,10 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeOrgPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3305,7 +3099,7 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -3343,21 +3137,10 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeOrgPolicyGovernedContainers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3486,7 +3269,7 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -3524,21 +3307,10 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeOrgPolicyGovernedAssets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3601,17 +3373,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

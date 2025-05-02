@@ -22,12 +22,14 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -723,15 +725,28 @@ func TestNamespaceQuery(t *testing.T) {
 	}
 }
 
-func TestReadOptions(t *testing.T) {
+func TestToRunQueryRequest(t *testing.T) {
+	clientReadTime := time.Now()
 	tid := []byte{1}
 	for _, test := range []struct {
 		q    *Query
+		crs  *readSettings
 		want *pb.ReadOptions
 	}{
 		{
 			q:    NewQuery(""),
 			want: nil,
+		},
+		{
+			q: NewQuery(""),
+			crs: &readSettings{
+				readTime: clientReadTime,
+			},
+			want: &pb.ReadOptions{
+				ConsistencyType: &pb.ReadOptions_ReadTime{
+					ReadTime: timestamppb.New(clientReadTime),
+				},
+			},
 		},
 		{
 			q:    NewQuery("").Transaction(nil),
@@ -755,18 +770,8 @@ func TestReadOptions(t *testing.T) {
 		},
 	} {
 		req := &pb.RunQueryRequest{}
-		if err := test.q.toRunQueryRequest(req); err != nil {
+		if err := test.q.toRunQueryRequest(req, test.crs); err != nil {
 			t.Fatalf("%+v: got %v, want no error", test.q, err)
-		}
-	}
-	// Test errors.
-	for _, q := range []*Query{
-		NewQuery("").Transaction(&Transaction{id: nil, state: transactionStateExpired}),
-		NewQuery("").Transaction(&Transaction{id: tid, state: transactionStateInProgress}).EventualConsistency(),
-	} {
-		req := &pb.RunQueryRequest{}
-		if err := q.toRunQueryRequest(req); err == nil {
-			t.Errorf("%+v: got nil, wanted error", q)
 		}
 	}
 }
@@ -956,6 +961,7 @@ func TestValidateReadOptions(t *testing.T) {
 		desc     string
 		eventual bool
 		trans    *Transaction
+		crs      *readSettings
 		wantErr  error
 	}{
 		{
@@ -991,8 +997,39 @@ func TestValidateReadOptions(t *testing.T) {
 			desc:     "No transaction in eventual query",
 			eventual: true,
 		},
+		{
+			desc:     "Eventual query with client read time",
+			eventual: true,
+			crs: &readSettings{
+				readTime: time.Now(),
+			},
+			wantErr: errEventualConsistencyTxnClientReadTime,
+		},
+		{
+			desc:     "Eventual query and transaction with client read time",
+			eventual: true,
+			crs: &readSettings{
+				readTime: time.Now(),
+			},
+			trans: &Transaction{
+				id:    []byte("test id"),
+				state: transactionStateInProgress,
+			},
+			wantErr: errEventualConsistencyTxnClientReadTime,
+		},
+		{
+			desc: "Transaction with client read time",
+			crs: &readSettings{
+				readTime: time.Now(),
+			},
+			trans: &Transaction{
+				id:    []byte("test id"),
+				state: transactionStateInProgress,
+			},
+			wantErr: errEventualConsistencyTxnClientReadTime,
+		},
 	} {
-		gotErr := validateReadOptions(test.eventual, test.trans)
+		gotErr := validateReadOptions(test.eventual, test.trans, test.crs)
 		gotErrMsg := ""
 		if gotErr != nil {
 			gotErrMsg = gotErr.Error()

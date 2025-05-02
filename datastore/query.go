@@ -25,10 +25,11 @@ import (
 	"strings"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -501,13 +502,13 @@ func (q *Query) End(c Cursor) *Query {
 }
 
 // toRunQueryRequest converts the query to a protocol buffer.
-func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
+func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest, clientReadSettings *readSettings) error {
 	dst, err := q.toProto()
 	if err != nil {
 		return err
 	}
 
-	req.ReadOptions, err = parseQueryReadOptions(q.eventual, q.trans)
+	req.ReadOptions, err = parseQueryReadOptions(q.eventual, q.trans, clientReadSettings)
 	if err != nil {
 		return err
 	}
@@ -825,7 +826,7 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 		}
 		res.Keys = append(res.Keys, k)
 	}
-	return res, errFieldMismatch
+	return res, c.processFieldMismatchError(errFieldMismatch)
 }
 
 // Run runs the given query in the given context
@@ -879,7 +880,7 @@ func (c *Client) run(ctx context.Context, q *Query, opts ...RunOption) *Iterator
 		t.req.ExplainOptions = runSettings.explainOptions
 	}
 
-	if err := q.toRunQueryRequest(t.req); err != nil {
+	if err := q.toRunQueryRequest(t.req, c.readSettings); err != nil {
 		t.err = err
 	}
 	return t
@@ -948,7 +949,7 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 		defer txn.stateLockDeferUnlock()()
 	}
 
-	req.ReadOptions, err = parseQueryReadOptions(aq.query.eventual, txn)
+	req.ReadOptions, err = parseQueryReadOptions(aq.query.eventual, txn, c.readSettings)
 	if err != nil {
 		return ar, err
 	}
@@ -976,22 +977,30 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 	return ar, nil
 }
 
-func validateReadOptions(eventual bool, t *Transaction) error {
-	if t == nil {
+func validateReadOptions(eventual bool, t *Transaction, clientReadSettings *readSettings) error {
+	if !clientReadSettings.readTimeExists() {
+		if t == nil {
+			return nil
+		}
+		if eventual {
+			return errEventualConsistencyTransaction
+		}
+		if t.state == transactionStateExpired {
+			return errExpiredTransaction
+		}
 		return nil
 	}
-	if eventual {
-		return errEventualConsistencyTransaction
+
+	if t != nil || eventual {
+		return errEventualConsistencyTxnClientReadTime
 	}
-	if t.state == transactionStateExpired {
-		return errExpiredTransaction
-	}
+
 	return nil
 }
 
 // parseQueryReadOptions translates Query read options into protobuf format.
-func parseQueryReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, error) {
-	err := validateReadOptions(eventual, t)
+func parseQueryReadOptions(eventual bool, t *Transaction, clientReadSettings *readSettings) (*pb.ReadOptions, error) {
+	err := validateReadOptions(eventual, t, clientReadSettings)
 	if err != nil {
 		return nil, err
 	}
@@ -1004,6 +1013,13 @@ func parseQueryReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, erro
 		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
 	}
 
+	if clientReadSettings.readTimeExists() {
+		return &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				ReadTime: timestamppb.New(clientReadSettings.readTime),
+			},
+		}, nil
+	}
 	return nil, nil
 }
 
@@ -1061,7 +1077,7 @@ func (t *Iterator) Next(dst interface{}) (k *Key, err error) {
 	if dst != nil && !t.keysOnly {
 		err = loadEntityProto(dst, e)
 	}
-	return k, err
+	return k, t.client.processFieldMismatchError(err)
 }
 
 func (t *Iterator) next() (*Key, *pb.Entity, error) {
@@ -1117,7 +1133,7 @@ func (t *Iterator) nextBatch() error {
 	}
 
 	var err error
-	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, txn)
+	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, txn, t.client.readSettings)
 	if err != nil {
 		return err
 	}

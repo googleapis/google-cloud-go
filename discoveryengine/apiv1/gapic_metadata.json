@@ -268,6 +268,11 @@
                 "ListSessions"
               ]
             },
+            "StreamAnswerQuery": {
+              "methods": [
+                "StreamAnswerQuery"
+              ]
+            },
             "UpdateConversation": {
               "methods": [
                 "UpdateConversation"
@@ -351,6 +356,11 @@
             "ListSessions": {
               "methods": [
                 "ListSessions"
+              ]
+            },
+            "StreamAnswerQuery": {
+              "methods": [
+                "StreamAnswerQuery"
               ]
             },
             "UpdateConversation": {
@@ -466,6 +476,11 @@
         "grpc": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchGetDocumentsMetadata": {
+              "methods": [
+                "BatchGetDocumentsMetadata"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -521,6 +536,11 @@
         "rest": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchGetDocumentsMetadata": {
+              "methods": [
+                "BatchGetDocumentsMetadata"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -684,6 +704,11 @@
                 "CheckGrounding"
               ]
             },
+            "GenerateGroundedContent": {
+              "methods": [
+                "GenerateGroundedContent"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -692,6 +717,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "StreamGenerateGroundedContent": {
+              "methods": [
+                "StreamGenerateGroundedContent"
               ]
             }
           }
@@ -709,6 +739,11 @@
                 "CheckGrounding"
               ]
             },
+            "GenerateGroundedContent": {
+              "methods": [
+                "GenerateGroundedContent"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -717,6 +752,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "StreamGenerateGroundedContent": {
+              "methods": [
+                "StreamGenerateGroundedContent"
               ]
             }
           }
@@ -1003,6 +1043,11 @@
               "methods": [
                 "Search"
               ]
+            },
+            "SearchLite": {
+              "methods": [
+                "SearchLite"
+              ]
             }
           }
         },
@@ -1027,6 +1072,129 @@
             "Search": {
               "methods": [
                 "Search"
+              ]
+            },
+            "SearchLite": {
+              "methods": [
+                "SearchLite"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SearchTuningService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SearchTuningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCustomModels": {
+              "methods": [
+                "ListCustomModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "TrainCustomModel": {
+              "methods": [
+                "TrainCustomModel"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SearchTuningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCustomModels": {
+              "methods": [
+                "ListCustomModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "TrainCustomModel": {
+              "methods": [
+                "TrainCustomModel"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ServingConfigService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ServingConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateServingConfig": {
+              "methods": [
+                "UpdateServingConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ServingConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateServingConfig": {
+              "methods": [
+                "UpdateServingConfig"
               ]
             }
           }
@@ -1053,9 +1221,19 @@
                 "CancelOperation"
               ]
             },
+            "CreateSitemap": {
+              "methods": [
+                "CreateSitemap"
+              ]
+            },
             "CreateTargetSite": {
               "methods": [
                 "CreateTargetSite"
+              ]
+            },
+            "DeleteSitemap": {
+              "methods": [
+                "DeleteSitemap"
               ]
             },
             "DeleteTargetSite": {
@@ -1076,6 +1254,11 @@
             "FetchDomainVerificationStatus": {
               "methods": [
                 "FetchDomainVerificationStatus"
+              ]
+            },
+            "FetchSitemaps": {
+              "methods": [
+                "FetchSitemaps"
               ]
             },
             "GetOperation": {
@@ -1133,9 +1316,19 @@
                 "CancelOperation"
               ]
             },
+            "CreateSitemap": {
+              "methods": [
+                "CreateSitemap"
+              ]
+            },
             "CreateTargetSite": {
               "methods": [
                 "CreateTargetSite"
+              ]
+            },
+            "DeleteSitemap": {
+              "methods": [
+                "DeleteSitemap"
               ]
             },
             "DeleteTargetSite": {
@@ -1156,6 +1349,11 @@
             "FetchDomainVerificationStatus": {
               "methods": [
                 "FetchDomainVerificationStatus"
+              ]
+            },
+            "FetchSitemaps": {
+              "methods": [
+                "FetchSitemaps"
               ]
             },
             "GetOperation": {
@@ -1227,6 +1425,11 @@
                 "ListOperations"
               ]
             },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
+              ]
+            },
             "WriteUserEvent": {
               "methods": [
                 "WriteUserEvent"
@@ -1260,6 +1463,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
               ]
             },
             "WriteUserEvent": {

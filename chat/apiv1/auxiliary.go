@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,53 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+// CustomEmojiIterator manages a stream of *chatpb.CustomEmoji.
+type CustomEmojiIterator struct {
+	items    []*chatpb.CustomEmoji
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chatpb.CustomEmoji, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *CustomEmojiIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *CustomEmojiIterator) Next() (*chatpb.CustomEmoji, error) {
+	var item *chatpb.CustomEmoji
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *CustomEmojiIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *CustomEmojiIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // MembershipIterator manages a stream of *chatpb.Membership.
 type MembershipIterator struct {
 	items    []*chatpb.Membership
@@ -41,7 +88,7 @@ type MembershipIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*chatpb.Membership, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MembershipIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +135,7 @@ type MessageIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*chatpb.Message, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MessageIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +182,7 @@ type ReactionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*chatpb.Reaction, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ReactionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -182,7 +229,7 @@ type SpaceEventIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*chatpb.SpaceEvent, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SpaceEventIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -229,7 +276,7 @@ type SpaceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*chatpb.Space, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SpaceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

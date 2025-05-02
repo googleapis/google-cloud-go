@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/security/publicca/apiv1",
-    "version": "1.17.4",
+    "version": "1.18.5",
     "language": "GO",
     "apis": [
       {

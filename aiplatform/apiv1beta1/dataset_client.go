@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -67,6 +66,8 @@ type DatasetCallOptions struct {
 	DeleteSavedQuery      []gax.CallOption
 	GetAnnotationSpec     []gax.CallOption
 	ListAnnotations       []gax.CallOption
+	AssessData            []gax.CallOption
+	AssembleData          []gax.CallOption
 	GetLocation           []gax.CallOption
 	ListLocations         []gax.CallOption
 	GetIamPolicy          []gax.CallOption
@@ -88,6 +89,7 @@ func defaultDatasetGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -134,6 +136,8 @@ func defaultDatasetCallOptions() *DatasetCallOptions {
 		ListAnnotations: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		AssessData:         []gax.CallOption{},
+		AssembleData:       []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -188,6 +192,8 @@ func defaultDatasetRESTCallOptions() *DatasetCallOptions {
 		ListAnnotations: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		AssessData:         []gax.CallOption{},
+		AssembleData:       []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -233,6 +239,10 @@ type internalDatasetClient interface {
 	DeleteSavedQueryOperation(name string) *DeleteSavedQueryOperation
 	GetAnnotationSpec(context.Context, *aiplatformpb.GetAnnotationSpecRequest, ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error)
 	ListAnnotations(context.Context, *aiplatformpb.ListAnnotationsRequest, ...gax.CallOption) *AnnotationIterator
+	AssessData(context.Context, *aiplatformpb.AssessDataRequest, ...gax.CallOption) (*AssessDataOperation, error)
+	AssessDataOperation(name string) *AssessDataOperation
+	AssembleData(context.Context, *aiplatformpb.AssembleDataRequest, ...gax.CallOption) (*AssembleDataOperation, error)
+	AssembleDataOperation(name string) *AssembleDataOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -423,9 +433,33 @@ func (c *DatasetClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb
 	return c.internalClient.GetAnnotationSpec(ctx, req, opts...)
 }
 
-// ListAnnotations lists Annotations belongs to a dataitem
+// ListAnnotations lists Annotations belongs to a dataitem.
 func (c *DatasetClient) ListAnnotations(ctx context.Context, req *aiplatformpb.ListAnnotationsRequest, opts ...gax.CallOption) *AnnotationIterator {
 	return c.internalClient.ListAnnotations(ctx, req, opts...)
+}
+
+// AssessData assesses the state or validity of the dataset with respect to a given use
+// case.
+func (c *DatasetClient) AssessData(ctx context.Context, req *aiplatformpb.AssessDataRequest, opts ...gax.CallOption) (*AssessDataOperation, error) {
+	return c.internalClient.AssessData(ctx, req, opts...)
+}
+
+// AssessDataOperation returns a new AssessDataOperation from a given name.
+// The name must be that of a previously created AssessDataOperation, possibly from a different process.
+func (c *DatasetClient) AssessDataOperation(name string) *AssessDataOperation {
+	return c.internalClient.AssessDataOperation(name)
+}
+
+// AssembleData assembles each row of a multimodal dataset and writes the result into a
+// BigQuery table.
+func (c *DatasetClient) AssembleData(ctx context.Context, req *aiplatformpb.AssembleDataRequest, opts ...gax.CallOption) (*AssembleDataOperation, error) {
+	return c.internalClient.AssembleData(ctx, req, opts...)
+}
+
+// AssembleDataOperation returns a new AssembleDataOperation from a given name.
+// The name must be that of a previously created AssembleDataOperation, possibly from a different process.
+func (c *DatasetClient) AssembleDataOperation(name string) *AssembleDataOperation {
+	return c.internalClient.AssembleDataOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -515,6 +549,8 @@ type datasetGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDatasetClient creates a new dataset service client based on gRPC.
@@ -541,6 +577,7 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 		connPool:         connPool,
 		datasetClient:    aiplatformpb.NewDatasetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -606,6 +643,8 @@ type datasetRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DatasetClient
 	CallOptions **DatasetCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDatasetRESTClient creates a new dataset service rest client.
@@ -623,6 +662,7 @@ func NewDatasetRESTClient(ctx context.Context, opts ...option.ClientOption) (*Da
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -647,6 +687,7 @@ func defaultDatasetRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -684,7 +725,7 @@ func (c *datasetGRPCClient) CreateDataset(ctx context.Context, req *aiplatformpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.CreateDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.CreateDataset, req, settings.GRPC, c.logger, "CreateDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -704,7 +745,7 @@ func (c *datasetGRPCClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 	var resp *aiplatformpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.GetDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.GetDataset, req, settings.GRPC, c.logger, "GetDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -722,7 +763,7 @@ func (c *datasetGRPCClient) UpdateDataset(ctx context.Context, req *aiplatformpb
 	var resp *aiplatformpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.UpdateDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.UpdateDataset, req, settings.GRPC, c.logger, "UpdateDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -751,7 +792,7 @@ func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.datasetClient.ListDatasets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.datasetClient.ListDatasets, req, settings.GRPC, c.logger, "ListDatasets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -786,7 +827,7 @@ func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *aiplatformpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.DeleteDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.DeleteDataset, req, settings.GRPC, c.logger, "DeleteDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -806,7 +847,7 @@ func (c *datasetGRPCClient) ImportData(ctx context.Context, req *aiplatformpb.Im
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.ImportData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.ImportData, req, settings.GRPC, c.logger, "ImportData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -826,7 +867,7 @@ func (c *datasetGRPCClient) ExportData(ctx context.Context, req *aiplatformpb.Ex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.ExportData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.ExportData, req, settings.GRPC, c.logger, "ExportData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -846,7 +887,7 @@ func (c *datasetGRPCClient) CreateDatasetVersion(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.CreateDatasetVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.CreateDatasetVersion, req, settings.GRPC, c.logger, "CreateDatasetVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -866,7 +907,7 @@ func (c *datasetGRPCClient) UpdateDatasetVersion(ctx context.Context, req *aipla
 	var resp *aiplatformpb.DatasetVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.UpdateDatasetVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.UpdateDatasetVersion, req, settings.GRPC, c.logger, "UpdateDatasetVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -884,7 +925,7 @@ func (c *datasetGRPCClient) DeleteDatasetVersion(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.DeleteDatasetVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.DeleteDatasetVersion, req, settings.GRPC, c.logger, "DeleteDatasetVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -904,7 +945,7 @@ func (c *datasetGRPCClient) GetDatasetVersion(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.DatasetVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.GetDatasetVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.GetDatasetVersion, req, settings.GRPC, c.logger, "GetDatasetVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -933,7 +974,7 @@ func (c *datasetGRPCClient) ListDatasetVersions(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.datasetClient.ListDatasetVersions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.datasetClient.ListDatasetVersions, req, settings.GRPC, c.logger, "ListDatasetVersions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -968,7 +1009,7 @@ func (c *datasetGRPCClient) RestoreDatasetVersion(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.RestoreDatasetVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.RestoreDatasetVersion, req, settings.GRPC, c.logger, "RestoreDatasetVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -999,7 +1040,7 @@ func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.datasetClient.ListDataItems(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.datasetClient.ListDataItems, req, settings.GRPC, c.logger, "ListDataItems")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1045,7 +1086,7 @@ func (c *datasetGRPCClient) SearchDataItems(ctx context.Context, req *aiplatform
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.datasetClient.SearchDataItems(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.datasetClient.SearchDataItems, req, settings.GRPC, c.logger, "SearchDataItems")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1091,7 +1132,7 @@ func (c *datasetGRPCClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.datasetClient.ListSavedQueries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.datasetClient.ListSavedQueries, req, settings.GRPC, c.logger, "ListSavedQueries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1126,7 +1167,7 @@ func (c *datasetGRPCClient) DeleteSavedQuery(ctx context.Context, req *aiplatfor
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.DeleteSavedQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.DeleteSavedQuery, req, settings.GRPC, c.logger, "DeleteSavedQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1146,7 +1187,7 @@ func (c *datasetGRPCClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.AnnotationSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.datasetClient.GetAnnotationSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.datasetClient.GetAnnotationSpec, req, settings.GRPC, c.logger, "GetAnnotationSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1175,7 +1216,7 @@ func (c *datasetGRPCClient) ListAnnotations(ctx context.Context, req *aiplatform
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.datasetClient.ListAnnotations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.datasetClient.ListAnnotations, req, settings.GRPC, c.logger, "ListAnnotations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1201,6 +1242,46 @@ func (c *datasetGRPCClient) ListAnnotations(ctx context.Context, req *aiplatform
 	return it
 }
 
+func (c *datasetGRPCClient) AssessData(ctx context.Context, req *aiplatformpb.AssessDataRequest, opts ...gax.CallOption) (*AssessDataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AssessData[0:len((*c.CallOptions).AssessData):len((*c.CallOptions).AssessData)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.datasetClient.AssessData, req, settings.GRPC, c.logger, "AssessData")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AssessDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *datasetGRPCClient) AssembleData(ctx context.Context, req *aiplatformpb.AssembleDataRequest, opts ...gax.CallOption) (*AssembleDataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AssembleData[0:len((*c.CallOptions).AssembleData):len((*c.CallOptions).AssembleData)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.datasetClient.AssembleData, req, settings.GRPC, c.logger, "AssembleData")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AssembleDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *datasetGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1210,7 +1291,7 @@ func (c *datasetGRPCClient) GetLocation(ctx context.Context, req *locationpb.Get
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1239,7 +1320,7 @@ func (c *datasetGRPCClient) ListLocations(ctx context.Context, req *locationpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1274,7 +1355,7 @@ func (c *datasetGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1292,7 +1373,7 @@ func (c *datasetGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1310,7 +1391,7 @@ func (c *datasetGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1327,7 +1408,7 @@ func (c *datasetGRPCClient) CancelOperation(ctx context.Context, req *longrunnin
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1341,7 +1422,7 @@ func (c *datasetGRPCClient) DeleteOperation(ctx context.Context, req *longrunnin
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1356,7 +1437,7 @@ func (c *datasetGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1385,7 +1466,7 @@ func (c *datasetGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1420,7 +1501,7 @@ func (c *datasetGRPCClient) WaitOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1468,21 +1549,10 @@ func (c *datasetRESTClient) CreateDataset(ctx context.Context, req *aiplatformpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1511,11 +1581,11 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1540,17 +1610,7 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataset")
 		if err != nil {
 			return err
 		}
@@ -1585,11 +1645,11 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *aiplatformpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1614,17 +1674,7 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *aiplatformpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataset")
 		if err != nil {
 			return err
 		}
@@ -1677,11 +1727,11 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1699,21 +1749,10 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatasets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1775,21 +1814,10 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *aiplatformpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1845,21 +1873,10 @@ func (c *datasetRESTClient) ImportData(ctx context.Context, req *aiplatformpb.Im
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1915,21 +1932,10 @@ func (c *datasetRESTClient) ExportData(ctx context.Context, req *aiplatformpb.Ex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1986,21 +1992,10 @@ func (c *datasetRESTClient) CreateDatasetVersion(ctx context.Context, req *aipla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDatasetVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2036,11 +2031,11 @@ func (c *datasetRESTClient) UpdateDatasetVersion(ctx context.Context, req *aipla
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2065,17 +2060,7 @@ func (c *datasetRESTClient) UpdateDatasetVersion(ctx context.Context, req *aipla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDatasetVersion")
 		if err != nil {
 			return err
 		}
@@ -2124,21 +2109,10 @@ func (c *datasetRESTClient) DeleteDatasetVersion(ctx context.Context, req *aipla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDatasetVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2167,11 +2141,11 @@ func (c *datasetRESTClient) GetDatasetVersion(ctx context.Context, req *aiplatfo
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2196,17 +2170,7 @@ func (c *datasetRESTClient) GetDatasetVersion(ctx context.Context, req *aiplatfo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDatasetVersion")
 		if err != nil {
 			return err
 		}
@@ -2259,11 +2223,11 @@ func (c *datasetRESTClient) ListDatasetVersions(ctx context.Context, req *aiplat
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2281,21 +2245,10 @@ func (c *datasetRESTClient) ListDatasetVersions(ctx context.Context, req *aiplat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatasetVersions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2357,21 +2310,10 @@ func (c *datasetRESTClient) RestoreDatasetVersion(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RestoreDatasetVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2425,11 +2367,11 @@ func (c *datasetRESTClient) ListDataItems(ctx context.Context, req *aiplatformpb
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2447,21 +2389,10 @@ func (c *datasetRESTClient) ListDataItems(ctx context.Context, req *aiplatformpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataItems")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2532,11 +2463,11 @@ func (c *datasetRESTClient) SearchDataItems(ctx context.Context, req *aiplatform
 			params.Add("dataLabelingJob", fmt.Sprintf("%v", req.GetDataLabelingJob()))
 		}
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
@@ -2573,21 +2504,10 @@ func (c *datasetRESTClient) SearchDataItems(ctx context.Context, req *aiplatform
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchDataItems")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2653,11 +2573,11 @@ func (c *datasetRESTClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2675,21 +2595,10 @@ func (c *datasetRESTClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSavedQueries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2751,21 +2660,10 @@ func (c *datasetRESTClient) DeleteSavedQuery(ctx context.Context, req *aiplatfor
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSavedQuery")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2794,11 +2692,11 @@ func (c *datasetRESTClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2823,17 +2721,7 @@ func (c *datasetRESTClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnnotationSpec")
 		if err != nil {
 			return err
 		}
@@ -2850,7 +2738,7 @@ func (c *datasetRESTClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 	return resp, nil
 }
 
-// ListAnnotations lists Annotations belongs to a dataitem
+// ListAnnotations lists Annotations belongs to a dataitem.
 func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatformpb.ListAnnotationsRequest, opts ...gax.CallOption) *AnnotationIterator {
 	it := &AnnotationIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListAnnotationsRequest)
@@ -2886,11 +2774,11 @@ func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatform
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2908,21 +2796,10 @@ func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatform
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAnnotations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2950,6 +2827,126 @@ func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatform
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// AssessData assesses the state or validity of the dataset with respect to a given use
+// case.
+func (c *datasetRESTClient) AssessData(ctx context.Context, req *aiplatformpb.AssessDataRequest, opts ...gax.CallOption) (*AssessDataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:assess", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AssessData")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &AssessDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// AssembleData assembles each row of a multimodal dataset and writes the result into a
+// BigQuery table.
+func (c *datasetRESTClient) AssembleData(ctx context.Context, req *aiplatformpb.AssembleDataRequest, opts ...gax.CallOption) (*AssembleDataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:assemble", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AssembleData")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &AssembleDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -2985,17 +2982,7 @@ func (c *datasetRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -3060,21 +3047,10 @@ func (c *datasetRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3144,17 +3120,7 @@ func (c *datasetRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -3214,17 +3180,7 @@ func (c *datasetRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -3286,17 +3242,7 @@ func (c *datasetRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -3343,15 +3289,8 @@ func (c *datasetRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -3385,15 +3324,8 @@ func (c *datasetRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -3430,17 +3362,7 @@ func (c *datasetRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3505,21 +3427,10 @@ func (c *datasetRESTClient) ListOperations(ctx context.Context, req *longrunning
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3560,11 +3471,11 @@ func (c *datasetRESTClient) WaitOperation(ctx context.Context, req *longrunningp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3589,17 +3500,7 @@ func (c *datasetRESTClient) WaitOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "WaitOperation")
 		if err != nil {
 			return err
 		}
@@ -3614,6 +3515,42 @@ func (c *datasetRESTClient) WaitOperation(ctx context.Context, req *longrunningp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// AssembleDataOperation returns a new AssembleDataOperation from a given name.
+// The name must be that of a previously created AssembleDataOperation, possibly from a different process.
+func (c *datasetGRPCClient) AssembleDataOperation(name string) *AssembleDataOperation {
+	return &AssembleDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// AssembleDataOperation returns a new AssembleDataOperation from a given name.
+// The name must be that of a previously created AssembleDataOperation, possibly from a different process.
+func (c *datasetRESTClient) AssembleDataOperation(name string) *AssembleDataOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &AssembleDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// AssessDataOperation returns a new AssessDataOperation from a given name.
+// The name must be that of a previously created AssessDataOperation, possibly from a different process.
+func (c *datasetGRPCClient) AssessDataOperation(name string) *AssessDataOperation {
+	return &AssessDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// AssessDataOperation returns a new AssessDataOperation from a given name.
+// The name must be that of a previously created AssessDataOperation, possibly from a different process.
+func (c *datasetRESTClient) AssessDataOperation(name string) *AssessDataOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &AssessDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateDatasetOperation returns a new CreateDatasetOperation from a given name.

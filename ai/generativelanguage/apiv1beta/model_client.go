@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -54,6 +53,8 @@ type ModelCallOptions struct {
 	CreateTunedModel []gax.CallOption
 	UpdateTunedModel []gax.CallOption
 	DeleteTunedModel []gax.CallOption
+	GetOperation     []gax.CallOption
+	ListOperations   []gax.CallOption
 }
 
 func defaultModelGRPCClientOptions() []option.ClientOption {
@@ -65,6 +66,7 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://generativelanguage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -156,6 +158,8 @@ func defaultModelCallOptions() *ModelCallOptions {
 				})
 			}),
 		},
+		GetOperation:   []gax.CallOption{},
+		ListOperations: []gax.CallOption{},
 	}
 }
 
@@ -238,6 +242,8 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetOperation:   []gax.CallOption{},
+		ListOperations: []gax.CallOption{},
 	}
 }
 
@@ -254,6 +260,8 @@ type internalModelClient interface {
 	CreateTunedModelOperation(name string) *CreateTunedModelOperation
 	UpdateTunedModel(context.Context, *generativelanguagepb.UpdateTunedModelRequest, ...gax.CallOption) (*generativelanguagepb.TunedModel, error)
 	DeleteTunedModel(context.Context, *generativelanguagepb.DeleteTunedModelRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // ModelClient is a client for interacting with Generative Language API.
@@ -296,12 +304,18 @@ func (c *ModelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetModel gets information about a specific Model.
+// GetModel gets information about a specific Model such as its version number, token
+// limits,
+// parameters (at https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+// and other metadata. Refer to the Gemini models
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+// model information.
 func (c *ModelClient) GetModel(ctx context.Context, req *generativelanguagepb.GetModelRequest, opts ...gax.CallOption) (*generativelanguagepb.Model, error) {
 	return c.internalClient.GetModel(ctx, req, opts...)
 }
 
-// ListModels lists models available through the API.
+// ListModels lists the Models (at https://ai.google.dev/gemini-api/docs/models/gemini)
+// available through the Gemini API.
 func (c *ModelClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	return c.internalClient.ListModels(ctx, req, opts...)
 }
@@ -311,16 +325,16 @@ func (c *ModelClient) GetTunedModel(ctx context.Context, req *generativelanguage
 	return c.internalClient.GetTunedModel(ctx, req, opts...)
 }
 
-// ListTunedModels lists tuned models owned by the user.
+// ListTunedModels lists created tuned models.
 func (c *ModelClient) ListTunedModels(ctx context.Context, req *generativelanguagepb.ListTunedModelsRequest, opts ...gax.CallOption) *TunedModelIterator {
 	return c.internalClient.ListTunedModels(ctx, req, opts...)
 }
 
 // CreateTunedModel creates a tuned model.
-// Intermediate tuning progress (if any) is accessed through the
+// Check intermediate tuning progress (if any) through the
 // [google.longrunning.Operations] service.
 //
-// Status and results can be accessed through the Operations service.
+// Access status and results through the Operations service.
 // Example:
 // GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
 func (c *ModelClient) CreateTunedModel(ctx context.Context, req *generativelanguagepb.CreateTunedModelRequest, opts ...gax.CallOption) (*CreateTunedModelOperation, error) {
@@ -343,6 +357,16 @@ func (c *ModelClient) DeleteTunedModel(ctx context.Context, req *generativelangu
 	return c.internalClient.DeleteTunedModel(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *ModelClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *ModelClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // modelGRPCClient is a client for interacting with Generative Language API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -361,8 +385,12 @@ type modelGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewModelClient creates a new model service client based on gRPC.
@@ -386,9 +414,11 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 	client := ModelClient{CallOptions: defaultModelCallOptions()}
 
 	c := &modelGRPCClient{
-		connPool:    connPool,
-		modelClient: generativelanguagepb.NewModelServiceClient(connPool),
-		CallOptions: &client.CallOptions,
+		connPool:         connPool,
+		modelClient:      generativelanguagepb.NewModelServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -451,6 +481,8 @@ type modelRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ModelClient
 	CallOptions **ModelCallOptions
+
+	logger *slog.Logger
 }
 
 // NewModelRESTClient creates a new model service rest client.
@@ -468,6 +500,7 @@ func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*Mode
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -492,6 +525,7 @@ func defaultModelRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://generativelanguage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -529,7 +563,7 @@ func (c *modelGRPCClient) GetModel(ctx context.Context, req *generativelanguagep
 	var resp *generativelanguagepb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.GetModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.GetModel, req, settings.GRPC, c.logger, "GetModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -555,7 +589,7 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *generativelanguag
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.modelClient.ListModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.modelClient.ListModels, req, settings.GRPC, c.logger, "ListModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -590,7 +624,7 @@ func (c *modelGRPCClient) GetTunedModel(ctx context.Context, req *generativelang
 	var resp *generativelanguagepb.TunedModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.GetTunedModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.GetTunedModel, req, settings.GRPC, c.logger, "GetTunedModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -616,7 +650,7 @@ func (c *modelGRPCClient) ListTunedModels(ctx context.Context, req *generativela
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.modelClient.ListTunedModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.modelClient.ListTunedModels, req, settings.GRPC, c.logger, "ListTunedModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -648,7 +682,7 @@ func (c *modelGRPCClient) CreateTunedModel(ctx context.Context, req *generativel
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.CreateTunedModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.CreateTunedModel, req, settings.GRPC, c.logger, "CreateTunedModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -668,7 +702,7 @@ func (c *modelGRPCClient) UpdateTunedModel(ctx context.Context, req *generativel
 	var resp *generativelanguagepb.TunedModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.UpdateTunedModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.UpdateTunedModel, req, settings.GRPC, c.logger, "UpdateTunedModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -685,13 +719,82 @@ func (c *modelGRPCClient) DeleteTunedModel(ctx context.Context, req *generativel
 	opts = append((*c.CallOptions).DeleteTunedModel[0:len((*c.CallOptions).DeleteTunedModel):len((*c.CallOptions).DeleteTunedModel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.modelClient.DeleteTunedModel(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.modelClient.DeleteTunedModel, req, settings.GRPC, c.logger, "DeleteTunedModel")
 		return err
 	}, opts...)
 	return err
 }
 
-// GetModel gets information about a specific Model.
+func (c *modelGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *modelGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetModel gets information about a specific Model such as its version number, token
+// limits,
+// parameters (at https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+// and other metadata. Refer to the Gemini models
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+// model information.
 func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagepb.GetModelRequest, opts ...gax.CallOption) (*generativelanguagepb.Model, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -724,17 +827,7 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetModel")
 		if err != nil {
 			return err
 		}
@@ -751,7 +844,8 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 	return resp, nil
 }
 
-// ListModels lists models available through the API.
+// ListModels lists the Models (at https://ai.google.dev/gemini-api/docs/models/gemini)
+// available through the Gemini API.
 func (c *modelRESTClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
 	req = proto.Clone(req).(*generativelanguagepb.ListModelsRequest)
@@ -796,21 +890,10 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *generativelanguag
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListModels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -873,17 +956,7 @@ func (c *modelRESTClient) GetTunedModel(ctx context.Context, req *generativelang
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTunedModel")
 		if err != nil {
 			return err
 		}
@@ -900,7 +973,7 @@ func (c *modelRESTClient) GetTunedModel(ctx context.Context, req *generativelang
 	return resp, nil
 }
 
-// ListTunedModels lists tuned models owned by the user.
+// ListTunedModels lists created tuned models.
 func (c *modelRESTClient) ListTunedModels(ctx context.Context, req *generativelanguagepb.ListTunedModelsRequest, opts ...gax.CallOption) *TunedModelIterator {
 	it := &TunedModelIterator{}
 	req = proto.Clone(req).(*generativelanguagepb.ListTunedModelsRequest)
@@ -948,21 +1021,10 @@ func (c *modelRESTClient) ListTunedModels(ctx context.Context, req *generativela
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTunedModels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -993,10 +1055,10 @@ func (c *modelRESTClient) ListTunedModels(ctx context.Context, req *generativela
 }
 
 // CreateTunedModel creates a tuned model.
-// Intermediate tuning progress (if any) is accessed through the
+// Check intermediate tuning progress (if any) through the
 // [google.longrunning.Operations] service.
 //
-// Status and results can be accessed through the Operations service.
+// Access status and results through the Operations service.
 // Example:
 // GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
 func (c *modelRESTClient) CreateTunedModel(ctx context.Context, req *generativelanguagepb.CreateTunedModelRequest, opts ...gax.CallOption) (*CreateTunedModelOperation, error) {
@@ -1037,21 +1099,10 @@ func (c *modelRESTClient) CreateTunedModel(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTunedModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1087,11 +1138,11 @@ func (c *modelRESTClient) UpdateTunedModel(ctx context.Context, req *generativel
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1116,17 +1167,7 @@ func (c *modelRESTClient) UpdateTunedModel(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTunedModel")
 		if err != nil {
 			return err
 		}
@@ -1173,16 +1214,140 @@ func (c *modelRESTClient) DeleteTunedModel(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTunedModel")
+		return err
+	}, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateTunedModelOperation returns a new CreateTunedModelOperation from a given name.

@@ -1175,6 +1175,7 @@ type TestStruct struct {
 	RangeDate      *RangeValue `bigquery:"rangedate"` //TODO: remove tags when field normalization works
 	RangeDateTime  *RangeValue `bigquery:"rangedatetime"`
 	RangeTimestamp *RangeValue `bigquery:"rangetimestamp"`
+	RangeArray     []*RangeValue
 	StringArray    []string
 	IntegerArray   []int64
 	FloatArray     []float64
@@ -1208,6 +1209,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		11: DateFieldType,
 		12: DateTimeFieldType,
 		13: TimestampFieldType,
+		14: DateFieldType,
 	} {
 		if schema[idx].Type != RangeFieldType {
 			t.Fatalf("mismatch in expected RANGE element in schema field %d", idx)
@@ -1258,6 +1260,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			rangedate,
 			rangedatetime,
 			rangetimestamp,
+			[]*RangeValue{rangedate},
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -1296,6 +1299,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			RangeDate:      rangedate,
 			RangeDateTime:  rangedatetime,
 			RangeTimestamp: rangetimestamp,
+			RangeArray:     []*RangeValue{rangedate},
 		},
 	}
 	var savers []*StructSaver
@@ -2163,6 +2167,7 @@ func initQueryParameterTestCases() {
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
+	nrat := big.NewRat(-13, 10)
 	bigRat := big.NewRat(12345, 10e10)
 	rangeTimestamp1 := &RangeValue{
 		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
@@ -2203,6 +2208,13 @@ func initQueryParameterTestCases() {
 			[]QueryParameter{{Name: "val", Value: rat}},
 			[]Value{rat},
 			rat,
+		},
+		{
+			"NegativeBigRatParam",
+			"SELECT @val",
+			[]QueryParameter{{Name: "val", Value: nrat}},
+			[]Value{nrat},
+			nrat,
 		},
 		{
 			"BoolParam",
@@ -2316,6 +2328,31 @@ func initQueryParameterTestCases() {
 			},
 			[]Value{rangeTimestamp2},
 			rangeTimestamp2,
+		},
+		{
+			"RangeArray",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							ArrayElementType: &StandardSQLDataType{
+								TypeKind: "RANGE",
+								RangeElementType: &StandardSQLDataType{
+									TypeKind: "TIMESTAMP",
+								},
+							},
+						},
+						ArrayValue: []QueryParameterValue{
+							{Value: rangeTimestamp1},
+							{Value: rangeTimestamp2},
+						},
+					},
+				},
+			},
+			[]Value{[]Value{rangeTimestamp1, rangeTimestamp2}},
+			[]interface{}{rangeTimestamp1, rangeTimestamp2},
 		},
 		{
 			"NestedStructParam",
@@ -2566,7 +2603,8 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	ts := time.Date(2020, 10, 15, 15, 04, 05, 0, time.UTC)
+	ts := time.Date(2020, 1, 2, 15, 04, 05, 0, time.UTC)
+	cdt := civil.DateOf(ts)
 
 	testCases := []struct {
 		name       string
@@ -2637,6 +2675,40 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 					},
 					ParameterValue: &bq.QueryParameterValue{
 						Value: ts.Format(time.RFC3339),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"Date with optional leading zero",
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "DATE",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format("2006-1-2"),
+					},
+				},
+			},
+			[]Value{cdt},
+			cdt,
+		},
+		{
+			"Datetime with TZ",
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP", // TODO: confirm if DATETIME or TIMESTAMP
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format("2006-01-02 15:04:05 MST"),
 					},
 				},
 			},
@@ -3299,11 +3371,12 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 	`, qualified)
 
 	// Create materialized view
-
 	wantRefresh := 6 * time.Hour
+	maxStaleness := IntervalValueFromDuration(30 * time.Minute)
 	matViewID := tableIDs.New()
 	view := dataset.Table(matViewID)
 	if err := view.Create(ctx, &TableMetadata{
+		MaxStaleness: maxStaleness,
 		MaterializedView: &MaterializedViewDefinition{
 			Query:           sql,
 			RefreshInterval: wantRefresh,
@@ -3329,6 +3402,10 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 		t.Errorf("mismatch on refresh time: got %d usec want %d usec", 1000*curMeta.MaterializedView.RefreshInterval.Nanoseconds(), 1000*wantRefresh.Nanoseconds())
 	}
 
+	if curMeta.MaxStaleness.String() != maxStaleness.String() {
+		t.Errorf("mismatch on max staleness: got %s want %s", curMeta.MaxStaleness, maxStaleness)
+	}
+
 	// MaterializedView is a TableType constant
 	want := MaterializedView
 	if curMeta.Type != want {
@@ -3337,7 +3414,9 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 
 	// Update metadata
 	wantRefresh = time.Hour // 6hr -> 1hr
+	maxStaleness = IntervalValueFromDuration(5 * time.Hour)
 	upd := TableMetadataToUpdate{
+		MaxStaleness: maxStaleness,
 		MaterializedView: &MaterializedViewDefinition{
 			Query:           sql,
 			RefreshInterval: wantRefresh,
@@ -3355,6 +3434,10 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 
 	if newMeta.MaterializedView.RefreshInterval != wantRefresh {
 		t.Errorf("mismatch on updated refresh time: got %d usec want %d usec", 1000*curMeta.MaterializedView.RefreshInterval.Nanoseconds(), 1000*wantRefresh.Nanoseconds())
+	}
+
+	if newMeta.MaxStaleness.String() != maxStaleness.String() {
+		t.Errorf("mismatch on max staleness: got %s want %s", newMeta.MaxStaleness, maxStaleness)
 	}
 
 	// verify implicit setting of false due to partial population of update.
@@ -3551,6 +3634,9 @@ func compareRead(it *RowIterator, want [][]Value, compareTotalRows bool) (msg st
 	}
 	if err != nil {
 		return err.Error(), false
+	}
+	if want != nil && len(it.Schema) == 0 {
+		return "missing schema", false
 	}
 	if len(got) != len(want) {
 		return fmt.Sprintf("%s got %d rows, want %d", jobStr, len(got), len(want)), false

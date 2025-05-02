@@ -23,10 +23,7 @@ cd github/google-cloud-go/internal/godocfx
 go install -buildvcs=false
 cd -
 
-# Use the google-cloud-go service account to store godocfx state.
-export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
-# Keep GCLOUD_TESTS_GOLANG_PROJECT_ID in sync with continuous.sh.
-export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
+export RELEASE_PROJECT_ID=cloud-sdk-go-releases
 
 if [[ -n "$FORCE_GENERATE_ALL" ]]; then
   for m in $(find . -name go.mod -execdir go list -m \; | grep -v internal); do
@@ -35,15 +32,12 @@ if [[ -n "$FORCE_GENERATE_ALL" ]]; then
 elif [[ -n "$MODULE" ]]; then
   godocfx "$MODULE"
 else
-  godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go google.golang.org/appengine
+  godocfx -project $RELEASE_PROJECT_ID -new-modules cloud.google.com/go google.golang.org/appengine
 fi
-
-# Use the docuploader service account to upload docs.
-gcloud auth activate-service-account --key-file "$KOKORO_KEYSTORE_DIR/73713_docuploader_service_account"
 
 for f in $(find obj/api -name docs.metadata); do
   # Extract the module name and version from the docs.metadata file.
-  module=$(cat $f  | grep name    | sed 's/.*"\(.*\)"/\1/')
+  module=$(cat $f | grep name | sed 's/.*"\(.*\)"/\1/')
   version=$(cat $f | grep version | sed 's/.*"\(.*\)"/\1/')
   name="docfx-go-$module-$version.tar.gz"
   tar_dir=$(dirname $name)

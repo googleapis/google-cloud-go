@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -206,6 +205,8 @@ type servicesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewServicesClient creates a new services client based on gRPC.
@@ -232,6 +233,7 @@ func NewServicesClient(ctx context.Context, opts ...option.ClientOption) (*Servi
 		connPool:       connPool,
 		servicesClient: appenginepb.NewServicesClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -294,6 +296,8 @@ type servicesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ServicesClient
 	CallOptions **ServicesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewServicesRESTClient creates a new services rest client.
@@ -311,6 +315,7 @@ func NewServicesRESTClient(ctx context.Context, opts ...option.ClientOption) (*S
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -384,7 +389,7 @@ func (c *servicesGRPCClient) ListServices(ctx context.Context, req *appenginepb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.servicesClient.ListServices(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.servicesClient.ListServices, req, settings.GRPC, c.logger, "ListServices")
 			return err
 		}, opts...)
 		if err != nil {
@@ -419,7 +424,7 @@ func (c *servicesGRPCClient) GetService(ctx context.Context, req *appenginepb.Ge
 	var resp *appenginepb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servicesClient.GetService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.servicesClient.GetService, req, settings.GRPC, c.logger, "GetService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -437,7 +442,7 @@ func (c *servicesGRPCClient) UpdateService(ctx context.Context, req *appenginepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servicesClient.UpdateService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.servicesClient.UpdateService, req, settings.GRPC, c.logger, "UpdateService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -457,7 +462,7 @@ func (c *servicesGRPCClient) DeleteService(ctx context.Context, req *appenginepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servicesClient.DeleteService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.servicesClient.DeleteService, req, settings.GRPC, c.logger, "DeleteService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -513,21 +518,10 @@ func (c *servicesRESTClient) ListServices(ctx context.Context, req *appenginepb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServices")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -590,17 +584,7 @@ func (c *servicesRESTClient) GetService(ctx context.Context, req *appenginepb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetService")
 		if err != nil {
 			return err
 		}
@@ -638,11 +622,11 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *appenginepb
 		params.Add("migrateTraffic", fmt.Sprintf("%v", req.GetMigrateTraffic()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -666,21 +650,10 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *appenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateService")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -730,21 +703,10 @@ func (c *servicesRESTClient) DeleteService(ctx context.Context, req *appenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteService")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

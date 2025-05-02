@@ -46,6 +46,7 @@ import (
 	v1 "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
+	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
 	"go.opencensus.io/stats/view"
@@ -55,6 +56,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -62,15 +64,13 @@ import (
 )
 
 const (
-	directPathIPV6Prefix = "[2001:4860:8040"
-	directPathIPV4Prefix = "34.126"
-
 	singerDDLStatements               = "SINGER_DDL_STATEMENTS"
 	simpleDDLStatements               = "SIMPLE_DDL_STATEMENTS"
 	readDDLStatements                 = "READ_DDL_STATEMENTS"
 	backupDDLStatements               = "BACKUP_DDL_STATEMENTS"
 	testTableDDLStatements            = "TEST_TABLE_DDL_STATEMENTS"
 	fkdcDDLStatements                 = "FKDC_DDL_STATEMENTS"
+	intervalDDLStatements             = "INTERVAL_DDL_STATEMENTS"
 	testTableBitReversedSeqStatements = "TEST_TABLE_BIT_REVERSED_SEQUENCE_STATEMENTS"
 )
 
@@ -90,6 +90,8 @@ var (
 	// It can be changed by setting the environment variable
 	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
 	instanceConfig = getInstanceConfig()
+
+	isMultiplexEnabled = getMultiplexEnableFlag()
 
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
@@ -324,6 +326,25 @@ var (
 		)`,
 	}
 
+	intervalDBStatements = []string{
+		`CREATE TABLE IntervalTable (
+			key STRING(MAX),
+			create_time TIMESTAMP,
+			expiry_time TIMESTAMP,
+			expiry_within_month bool AS (expiry_time - create_time < INTERVAL 30 DAY),
+			interval_array_len INT64 AS (ARRAY_LENGTH(ARRAY<INTERVAL>[INTERVAL '1-2 3 4:5:6' YEAR TO SECOND]))
+		) PRIMARY KEY (key)`,
+	}
+	intervalDBPGStatements = []string{
+		`CREATE TABLE IntervalTable (
+		    key text primary key,
+		    create_time timestamptz,
+		    expiry_time timestamptz,
+		    expiry_within_month bool GENERATED ALWAYS AS (expiry_time - create_time < INTERVAL '30' DAY) STORED,
+		    interval_array_len bigint GENERATED ALWAYS AS (ARRAY_LENGTH(ARRAY[INTERVAL '1-2 3 4:5:6'], 1)) STORED
+    	)`,
+	}
+
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
 			singerDDLStatements:               singerDBStatements,
@@ -333,6 +354,7 @@ var (
 			testTableDDLStatements:            readDBStatements,
 			fkdcDDLStatements:                 fkdcDBStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBStatments,
+			intervalDDLStatements:             intervalDBStatements,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
 			singerDDLStatements:               singerDBPGStatements,
@@ -342,6 +364,7 @@ var (
 			testTableDDLStatements:            readDBPGStatements,
 			fkdcDDLStatements:                 fkdcDBPGStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBPGStatments,
+			intervalDDLStatements:             intervalDBPGStatements,
 		},
 	}
 
@@ -384,6 +407,10 @@ func getSpannerHost() string {
 
 func getInstanceConfig() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
+}
+
+func getMultiplexEnableFlag() bool {
+	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true"
 }
 
 const (
@@ -562,7 +589,6 @@ loop:
 // Test SingleUse transaction.
 func TestIntegration_SingleUse(t *testing.T) {
 	t.Parallel()
-	skipEmulatorTestForPG(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -854,8 +880,199 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 	}
 }
 
+func TestIntegration_Interval(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][intervalDDLStatements])
+	defer cleanup()
+
+	m := InsertOrUpdate("IntervalTable", []string{"key", "create_time", "expiry_time"},
+		[]interface{}{
+			"test1",
+			time.Date(2004, 11, 30, 4, 53, 54, 0, time.UTC),
+			time.Date(2004, 12, 15, 4, 53, 54, 0, time.UTC),
+		})
+	_, err := client.Apply(ctx, []*Mutation{m})
+	if err != nil {
+		t.Fatal(err)
+	}
+	placeHolder := "@p1"
+	timestampQuery := `TIMESTAMP('2004-11-30T10:23:54+0530')`
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		placeHolder = "$1"
+		timestampQuery = `TIMESTAMPTZ '2004-11-30T10:23:54+0530'`
+	}
+	stmt := Statement{
+		SQL: `SELECT expiry_within_month, interval_array_len FROM IntervalTable WHERE key = ` + placeHolder,
+		Params: map[string]interface{}{
+			"p1": "test1",
+		},
+	}
+	iter := client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var expiryWithinMonth bool
+	var intervalArrayLen int64
+	if err := row.Columns(&expiryWithinMonth, &intervalArrayLen); err != nil {
+		t.Fatal(err)
+	}
+
+	if !expiryWithinMonth {
+		t.Error("expected expiry_within_month to be true")
+	}
+	if intervalArrayLen != 1 {
+		t.Errorf("expected interval_array_len to be 1, got %d", intervalArrayLen)
+	}
+
+	stmt = Statement{SQL: "SELECT INTERVAL '1' DAY + INTERVAL '1' MONTH AS Col1"}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var interval Interval
+	if err := row.Column(0, &interval); err != nil {
+		t.Fatal(err)
+	}
+
+	wantInterval := Interval{
+		Months: 1,
+		Days:   1,
+		Nanos:  big.NewInt(0),
+	}
+
+	if interval.Months != wantInterval.Months || interval.Days != wantInterval.Days || interval.Nanos.Cmp(wantInterval.Nanos) != 0 {
+		t.Errorf("got interval %+v, want %+v", interval, wantInterval)
+	}
+
+	m = InsertOrUpdate("IntervalTable", []string{"key", "create_time", "expiry_time"},
+		[]interface{}{
+			"test2",
+			time.Date(2004, 8, 30, 4, 53, 54, 0, time.UTC),
+			time.Date(2004, 12, 15, 4, 53, 54, 0, time.UTC),
+		})
+	_, err = client.Apply(ctx, []*Mutation{m})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stmt = Statement{
+		SQL: `SELECT COUNT(*) FROM IntervalTable WHERE create_time < ` + timestampQuery + ` - ` + placeHolder,
+		Params: map[string]interface{}{
+			"p1": Interval{Days: 30},
+		},
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var count int64
+	if err := row.Column(0, &count); err != nil {
+		t.Fatal(err)
+	}
+
+	if count != 1 {
+		t.Errorf("got count %d, want 1", count)
+	}
+
+	stmt = Statement{
+		SQL: "SELECT " + placeHolder,
+		Params: map[string]interface{}{
+			"p1": []Interval{
+				{Months: 14, Days: 3, Nanos: big.NewInt(14706000000000)},
+				{},
+				{Months: -14, Days: -3, Nanos: big.NewInt(-14706000000000)},
+				{},
+			},
+		},
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var intervals []NullInterval
+	if err := row.Column(0, &intervals); err != nil {
+		t.Fatal(err)
+	}
+
+	wantIntervals := []NullInterval{
+		{Interval: Interval{Months: 14, Days: 3, Nanos: big.NewInt(14706000000000)}, Valid: true},
+		{Valid: true},
+		{Interval: Interval{Months: -14, Days: -3, Nanos: big.NewInt(-14706000000000)}, Valid: true},
+		{Valid: true},
+	}
+
+	if len(intervals) != len(wantIntervals) {
+		t.Fatalf("got %d intervals, want %d", len(intervals), len(wantIntervals))
+	}
+
+	for i := range intervals {
+		if intervals[i].Valid != wantIntervals[i].Valid || intervals[i].Interval.Months != wantIntervals[i].Interval.Months ||
+			intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
+			(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
+			t.Errorf("interval %d: got %+v, want %+v", i, intervals[i], wantIntervals[i])
+		}
+	}
+
+	stmt = Statement{
+		SQL: `SELECT ARRAY[CAST('P1Y2M3DT4H5M6.789123S' AS INTERVAL), 
+		                   null, 
+		                   CAST('P-1Y-2M-3DT-4H-5M-6.789123S' AS INTERVAL)] AS Col1`,
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := row.Column(0, &intervals); err != nil {
+		t.Fatal(err)
+	}
+
+	wantIntervals = []NullInterval{
+		{Interval: Interval{Months: 14, Days: 3, Nanos: big.NewInt(14706789123000)}, Valid: true},
+		{Valid: false},
+		{Interval: Interval{Months: -14, Days: -3, Nanos: big.NewInt(-14706789123000)}, Valid: true},
+	}
+
+	if len(intervals) != len(wantIntervals) {
+		t.Fatalf("got %d intervals, want %d", len(intervals), len(wantIntervals))
+	}
+
+	for i := range intervals {
+		if intervals[i].Valid != wantIntervals[i].Valid || intervals[i].Interval.Months != wantIntervals[i].Interval.Months ||
+			intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
+			(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
+			t.Errorf("interval %d: got %+v, want %+v", i, intervals[i], wantIntervals[i])
+		}
+	}
+}
+
 func TestIntegration_TransactionWasStartedInDifferentSession(t *testing.T) {
 	t.Parallel()
+	// TODO: unskip once https://b.corp.google.com/issues/309745482 is fixed
+	skipOnNonProd(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -887,7 +1104,7 @@ func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
 		emulatorOpts := []option.ClientOption{
 			option.WithEndpoint(emulatorAddr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
 		}
@@ -1492,7 +1709,11 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+	duration, err := time.ParseDuration("100ms")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce(), ApplyCommitOptions(CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration})); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1899,6 +2120,23 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	// from repeatedly trying to create sessions for the invalid database.
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, SessionPoolConfig{}, statements[testDialect][singerDDLStatements])
 	defer cleanup()
+	if isMultiplexEnabled {
+		// TODO: confirm that this is the valid scenario for multiplexed sessions, and what's expected behavior.
+		// wait for the multiplexed session to be created.
+		waitFor(t, func() error {
+			client.idleSessions.mu.Lock()
+			defer client.idleSessions.mu.Unlock()
+			if client.idleSessions.multiplexedSession == nil {
+				return errInvalidSessionPool
+			}
+			return nil
+		})
+		// Close the multiplexed session to prevent the session pool maintainer
+		// from repeatedly trying to use sessions for the invalid database.
+		client.idleSessions.mu.Lock()
+		client.idleSessions.multiplexedSession = nil
+		client.idleSessions.mu.Unlock()
+	}
 
 	// Drop the testing database.
 	if err := databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
@@ -2181,90 +2419,96 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	}
 
 	for _, withNumberConfigOption := range []bool{false, true} {
+		name := "without_number_option"
 		if withNumberConfigOption {
-			UseNumberWithJSONDecoderEncoder(withNumberConfigOption)
-			defer UseNumberWithJSONDecoderEncoder(!withNumberConfigOption)
+			name = "with_number_option"
 		}
-		// Write rows into table first using DML.
-		statements := make([]Statement, 0)
-		for i, test := range tests {
-			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
-			// Note: We are not setting the parameter type here to ensure that it
-			// can be automatically recognized when it is actually needed.
-			stmt.Params["id"] = i
-			stmt.Params["value"] = test.val
-			statements = append(statements, stmt)
-		}
-		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			rowCounts, err := tx.BatchUpdate(ctx, statements)
+		t.Run(name, func(t *testing.T) {
+			if withNumberConfigOption {
+				UseNumberWithJSONDecoderEncoder(withNumberConfigOption)
+				defer UseNumberWithJSONDecoderEncoder(!withNumberConfigOption)
+			}
+			// Write rows into table first using DML.
+			statements := make([]Statement, 0)
+			for i, test := range tests {
+				stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+				// Note: We are not setting the parameter type here to ensure that it
+				// can be automatically recognized when it is actually needed.
+				stmt.Params["id"] = i
+				stmt.Params["value"] = test.val
+				statements = append(statements, stmt)
+			}
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				rowCounts, err := tx.BatchUpdate(ctx, statements)
+				if err != nil {
+					return err
+				}
+				if len(rowCounts) != len(tests) {
+					return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+				}
+				for i, c := range rowCounts {
+					if c != 1 {
+						return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+					}
+				}
+				return nil
+			})
 			if err != nil {
-				return err
+				t.Fatalf("failed to insert values using DML: %v", err)
 			}
-			if len(rowCounts) != len(tests) {
-				return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+			// Delete all the rows so we can insert them using mutations as well.
+			_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+			if err != nil {
+				t.Fatalf("failed to delete all rows: %v", err)
 			}
-			for i, c := range rowCounts {
-				if c != 1 {
-					return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+
+			// Verify that we can insert the rows using mutations.
+			var muts []*Mutation
+			for i, test := range tests {
+				muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
+			}
+			if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
+				t.Fatal(err)
+			}
+
+			for i, test := range tests {
+				row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+				if err != nil {
+					t.Fatalf("Unable to fetch row %v: %v", i, err)
+				}
+				verifyDirectPathRemoteAddress(t)
+				want := test.wantWithDefaultConfig
+				if withNumberConfigOption {
+					want = test.wantWithNumber
+				}
+				if want == nil {
+					want = test.val
+				}
+				gotp := reflect.New(reflect.TypeOf(want))
+				if err := row.Column(0, gotp.Interface()); err != nil {
+					t.Errorf("%v-%d: col:%v val:%#v, %v", withNumberConfigOption, i, test.col, test.val, err)
+					continue
+				}
+				got := reflect.Indirect(gotp).Interface()
+
+				// One of the test cases is checking NaN handling.  Given
+				// NaN!=NaN, we can't use reflect to test for it.
+				if isNaN(got) && isNaN(want) {
+					continue
+				}
+
+				// Check non-NaN cases.
+				if !testEqual(got, want) {
+					t.Errorf("%v-%d: col:%v val:%#v, got %#v, want %#v", withNumberConfigOption, i, test.col, test.val, got, want)
+					continue
 				}
 			}
-			return nil
-		})
-		if err != nil {
-			t.Fatalf("failed to insert values using DML: %v", err)
-		}
-		// Delete all the rows so we can insert them using mutations as well.
-		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-		if err != nil {
-			t.Fatalf("failed to delete all rows: %v", err)
-		}
-
-		// Verify that we can insert the rows using mutations.
-		var muts []*Mutation
-		for i, test := range tests {
-			muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
-		}
-		if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
-			t.Fatal(err)
-		}
-
-		for i, test := range tests {
-			row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+			// cleanup
+			_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
 			if err != nil {
-				t.Fatalf("Unable to fetch row %v: %v", i, err)
+				t.Fatal(err)
 			}
-			verifyDirectPathRemoteAddress(t)
-			want := test.wantWithDefaultConfig
-			if withNumberConfigOption {
-				want = test.wantWithNumber
-			}
-			if want == nil {
-				want = test.val
-			}
-			gotp := reflect.New(reflect.TypeOf(want))
-			if err := row.Column(0, gotp.Interface()); err != nil {
-				t.Errorf("%v-%d: col:%v val:%#v, %v", withNumberConfigOption, i, test.col, test.val, err)
-				continue
-			}
-			got := reflect.Indirect(gotp).Interface()
-
-			// One of the test cases is checking NaN handling.  Given
-			// NaN!=NaN, we can't use reflect to test for it.
-			if isNaN(got) && isNaN(want) {
-				continue
-			}
-
-			// Check non-NaN cases.
-			if !testEqual(got, want) {
-				t.Errorf("%v-%d: col:%v val:%#v, got %#v, want %#v", withNumberConfigOption, i, test.col, test.val, got, want)
-				continue
-			}
-		}
-		// cleanup
-		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-		if err != nil {
-			t.Fatal(err)
-		}
+		})
 	}
 }
 
@@ -2810,7 +3054,7 @@ func TestIntegration_StructTypes(t *testing.T) {
 					return fmt.Errorf("len(rows) = %d; want 1", len(rows))
 				}
 				if !rows[0].Valid {
-					return fmt.Errorf("rows[0] is NULL")
+					return errors.New("rows[0] is NULL")
 				}
 				var i, j int64
 				if err := rows[0].Row.Columns(&i, &j); err != nil {
@@ -2859,17 +3103,19 @@ func TestIntegration_StructTypes(t *testing.T) {
 		},
 	}
 	for i, test := range tests {
-		iter := client.Single().Query(ctx, test.q)
-		defer iter.Stop()
-		row, err := iter.Next()
-		if err != nil {
-			t.Errorf("%d: %v", i, err)
-			continue
-		}
-		if err := test.want(row); err != nil {
-			t.Errorf("%d: %v", i, err)
-			continue
-		}
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			iter := client.Single().Query(ctx, test.q)
+			defer iter.Stop()
+			row, err := iter.Next()
+			if err != nil {
+				t.Errorf("%v", err)
+				return
+			}
+			if err := test.want(row); err != nil {
+				t.Errorf("%v", err)
+				return
+			}
+		})
 	}
 }
 
@@ -2953,27 +3199,29 @@ func TestIntegration_QueryExpressions(t *testing.T) {
 		{"ARRAY(SELECT STRUCT(1, 2))", []NullRow{{Row: *newRow([]interface{}{1, 2}), Valid: true}}},
 	}
 	for _, test := range tests {
-		iter := client.Single().Query(ctx, Statement{SQL: "SELECT " + test.expr})
-		defer iter.Stop()
-		row, err := iter.Next()
-		if err != nil {
-			t.Errorf("%q: %v", test.expr, err)
-			continue
-		}
-		// Create new instance of type of test.want.
-		gotp := reflect.New(reflect.TypeOf(test.want))
-		if err := row.Column(0, gotp.Interface()); err != nil {
-			t.Errorf("%q: Column returned error %v", test.expr, err)
-			continue
-		}
-		got := reflect.Indirect(gotp).Interface()
-		// TODO(jba): remove isNaN special case when we have a better equality predicate.
-		if isNaN(got) && isNaN(test.want) {
-			continue
-		}
-		if !testEqual(got, test.want) {
-			t.Errorf("%q\n got  %#v\nwant %#v", test.expr, got, test.want)
-		}
+		t.Run(test.expr, func(t *testing.T) {
+			iter := client.Single().Query(ctx, Statement{SQL: "SELECT " + test.expr})
+			defer iter.Stop()
+			row, err := iter.Next()
+			if err != nil {
+				t.Errorf("%v", err)
+				return
+			}
+			// Create new instance of type of test.want.
+			gotp := reflect.New(reflect.TypeOf(test.want))
+			if err := row.Column(0, gotp.Interface()); err != nil {
+				t.Errorf("Column returned error %v", err)
+				return
+			}
+			got := reflect.Indirect(gotp).Interface()
+			// TODO(jba): remove isNaN special case when we have a better equality predicate.
+			if isNaN(got) && isNaN(test.want) {
+				return
+			}
+			if !testEqual(got, test.want) {
+				t.Errorf("wrong result\n got  %#v\nwant %#v", got, test.want)
+			}
+		})
 	}
 }
 
@@ -3312,28 +3560,31 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 		"",
 		"singers_reader",
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		iter = clientWithRole.Single().Query(ctx, queryStmt)
-		defer iter.Stop()
+		t.Run("role:"+dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
 
-		row, err = iter.Next()
-		if err != nil {
-			t.Fatalf("Could not read row. Got error %v", err)
-		}
-		if err = row.Columns(&id, &firstName, &lastName); err != nil {
-			t.Fatalf("failed to parse row %v", err)
-		}
-		if id != 1 || firstName != "Marc" || lastName != "Richards" {
-			t.Fatalf("execution didn't return expected values")
-		}
+			iter = clientWithRole.Single().Query(ctx, queryStmt)
+			defer iter.Stop()
 
-		_, err = iter.Next()
-		if err != iterator.Done {
-			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
-		}
+			row, err = iter.Next()
+			if err != nil {
+				t.Fatalf("Could not read row. Got error %v", err)
+			}
+			if err = row.Columns(&id, &firstName, &lastName); err != nil {
+				t.Fatalf("failed to parse row %v", err)
+			}
+			if id != 1 || firstName != "Marc" || lastName != "Richards" {
+				t.Fatalf("execution didn't return expected values")
+			}
+
+			_, err = iter.Next()
+			if err != iterator.Done {
+				t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
+			}
+		})
 	}
 
 	// A request with insufficient privileges should return permission denied
@@ -3358,20 +3609,22 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 			"Role not found: dropped.",
 		},
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		iter = clientWithRole.Single().Query(ctx, queryStmt)
-		defer iter.Stop()
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			iter = clientWithRole.Single().Query(ctx, queryStmt)
+			defer iter.Stop()
 
-		_, err = iter.Next()
-		if err == nil {
-			t.Fatal("expected err, got nil")
-		}
-		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
-			t.Fatal(msg)
-		}
+			_, err = iter.Next()
+			if err == nil {
+				t.Fatal("expected err, got nil")
+			}
+			if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+				t.Fatal(msg)
+			}
+		})
 	}
 }
 
@@ -3440,28 +3693,31 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 		"",
 		"singers_reader",
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		iter = clientWithRole.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
-		defer iter.Stop()
+		t.Run("role:"+dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
 
-		row, err = iter.Next()
-		if err != nil {
-			t.Fatalf("Could not read row. Got error %v", err)
-		}
-		if err = row.Columns(&id, &firstName, &lastName); err != nil {
-			t.Fatalf("failed to parse row %v", err)
-		}
-		if id != 1 || firstName != "Marc" || lastName != "Richards" {
-			t.Fatalf("execution didn't return expected values")
-		}
+			iter = clientWithRole.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
+			defer iter.Stop()
 
-		_, err = iter.Next()
-		if err != iterator.Done {
-			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
-		}
+			row, err = iter.Next()
+			if err != nil {
+				t.Fatalf("Could not read row. Got error %v", err)
+			}
+			if err = row.Columns(&id, &firstName, &lastName); err != nil {
+				t.Fatalf("failed to parse row %v", err)
+			}
+			if id != 1 || firstName != "Marc" || lastName != "Richards" {
+				t.Fatalf("execution didn't return expected values")
+			}
+
+			_, err = iter.Next()
+			if err != iterator.Done {
+				t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
+			}
+		})
 	}
 
 	// A request with insufficient privileges should return permission denied
@@ -3486,20 +3742,22 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 			"Role not found: dropped.",
 		},
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		iter = clientWithRole.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
-		defer iter.Stop()
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			iter = clientWithRole.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
+			defer iter.Stop()
 
-		_, err = iter.Next()
-		if err == nil {
-			t.Fatal("expected err, got nil")
-		}
-		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
-			t.Fatal(msg)
-		}
+			_, err = iter.Next()
+			if err == nil {
+				t.Fatal("expected err, got nil")
+			}
+			if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+				t.Fatal(msg)
+			}
+		})
 	}
 }
 
@@ -3564,17 +3822,19 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 		"",
 		"singers_updater",
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
-			_, err := txn.Update(ctx, updateStmt)
-			return err
+		t.Run("role:"+dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+				_, err := txn.Update(ctx, updateStmt)
+				return err
+			})
+			if err != nil {
+				t.Fatalf("Could not update row. Got error %v", err)
+			}
 		})
-		if err != nil {
-			t.Fatalf("Could not update row. Got error %v", err)
-		}
 	}
 
 	// A request with insufficient privileges should return permission denied
@@ -3591,21 +3851,23 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			"Role not found: nonexistent.",
 		},
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
-			_, err := txn.Update(ctx, updateStmt)
-			return err
-		})
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+				_, err := txn.Update(ctx, updateStmt)
+				return err
+			})
 
-		if err == nil {
-			t.Fatal("expected err, got nil")
-		}
-		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
-			t.Fatal(msg)
-		}
+			if err == nil {
+				t.Fatal("expected err, got nil")
+			}
+			if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+				t.Fatal(msg)
+			}
+		})
 	}
 
 	// A request with sufficient privileges should insert the row
@@ -3626,17 +3888,19 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			[]interface{}{3, "Alice", "Trentor"},
 		},
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
-			_, err := txn.Update(ctx, getInsertStmt(test.vals))
-			return err
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+				_, err := txn.Update(ctx, getInsertStmt(test.vals))
+				return err
+			})
+			if err != nil {
+				t.Fatalf("Could not insert row. Got error %v", err)
+			}
 		})
-		if err != nil {
-			t.Fatalf("Could not insert row. Got error %v", err)
-		}
 	}
 
 	// A request with sufficient privileges should delete the row
@@ -3645,17 +3909,19 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 		"",
 		"singers_deleter",
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
-			_, err := txn.Update(ctx, deleteStmt)
-			return err
+		t.Run("role:"+dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+				_, err := txn.Update(ctx, deleteStmt)
+				return err
+			})
+			if err != nil {
+				t.Fatalf("Could not delete row. Got error %v", err)
+			}
 		})
-		if err != nil {
-			t.Fatalf("Could not delete row. Got error %v", err)
-		}
 	}
 }
 
@@ -3719,16 +3985,18 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 		"",
 		"singers_updater",
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		_, err = clientWithRole.Apply(ctx, []*Mutation{
-			Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
+		t.Run("role:"+dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			_, err = clientWithRole.Apply(ctx, []*Mutation{
+				Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
+			})
+			if err != nil {
+				t.Fatalf("Could not update row. Got error %v", err)
+			}
 		})
-		if err != nil {
-			t.Fatalf("Could not update row. Got error %v", err)
-		}
 	}
 
 	// A request with insufficient privileges should return permission denied
@@ -3745,20 +4013,22 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			"Role not found: nonexistent.",
 		},
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		_, err = clientWithRole.Apply(ctx, []*Mutation{
-			Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
-		})
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			_, err = clientWithRole.Apply(ctx, []*Mutation{
+				Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
+			})
 
-		if err == nil {
-			t.Fatal("expected err, got nil")
-		}
-		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
-			t.Fatal(msg)
-		}
+			if err == nil {
+				t.Fatal("expected err, got nil")
+			}
+			if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+				t.Fatal(msg)
+			}
+		})
 	}
 
 	// A request with sufficient privileges should insert the row
@@ -3775,16 +4045,18 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			[]interface{}{3, "Alice", "Trentor"},
 		},
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		_, err = clientWithRole.Apply(ctx, []*Mutation{
-			Insert("Singers", singerColumns, test.vals),
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			_, err = clientWithRole.Apply(ctx, []*Mutation{
+				Insert("Singers", singerColumns, test.vals),
+			})
+			if err != nil {
+				t.Fatalf("Could not insert row. Got error %v", err)
+			}
 		})
-		if err != nil {
-			t.Fatalf("Could not insert row. Got error %v", err)
-		}
 	}
 
 	// A request with sufficient privileges should delete the row
@@ -3792,16 +4064,18 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 		"",
 		"singers_deleter",
 	} {
-		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
-			t.Fatal(err)
-		}
-		defer clientWithRole.Close()
-		_, err = clientWithRole.Apply(ctx, []*Mutation{
-			Delete("Singers", Key{1}),
+		t.Run("role:"+dbRole, func(t *testing.T) {
+			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+				t.Fatal(err)
+			}
+			defer clientWithRole.Close()
+			_, err = clientWithRole.Apply(ctx, []*Mutation{
+				Delete("Singers", Key{1}),
+			})
+			if err != nil {
+				t.Fatalf("Could not delete row. Got error %v", err)
+			}
 		})
-		if err != nil {
-			t.Fatalf("Could not delete row. Got error %v", err)
-		}
 	}
 }
 
@@ -3914,30 +4188,33 @@ func TestIntegration_BatchQuery(t *testing.T) {
 
 	// Execute Partitions and compare results
 	for i, p := range partitions {
-		iter := txn.Execute(ctx, p)
-		defer iter.Stop()
-		p2 := serdesPartition(t, i, p)
-		iter2 := txn2.Execute(ctx, &p2)
-		defer iter2.Stop()
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			iter := txn.Execute(ctx, p)
+			defer iter.Stop()
 
-		row1, err1 := iter.Next()
-		row2, err2 := iter2.Next()
-		if err1 != err2 {
-			t.Fatalf("execution failed for different reasons: %v, %v", err1, err2)
-		}
-		if !testEqual(row1, row2) {
-			t.Fatalf("execution returned different values: %v, %v", row1, row2)
-		}
-		if row1 == nil {
-			continue
-		}
-		var a, b string
-		if err = row1.Columns(&a, &b); err != nil {
-			t.Fatalf("failed to parse row %v", err)
-		}
-		if a == str1 && b == str2 {
-			gotResult = true
-		}
+			p2 := serdesPartition(t, i, p)
+			iter2 := txn2.Execute(ctx, &p2)
+			defer iter2.Stop()
+
+			row1, err1 := iter.Next()
+			row2, err2 := iter2.Next()
+			if err1 != err2 {
+				t.Fatalf("execution failed for different reasons: %v, %v", err1, err2)
+			}
+			if !testEqual(row1, row2) {
+				t.Fatalf("execution returned different values: %v, %v", row1, row2)
+			}
+			if row1 == nil {
+				return
+			}
+			var a, b string
+			if err = row1.Columns(&a, &b); err != nil {
+				t.Fatalf("failed to parse row %v", err)
+			}
+			if a == str1 && b == str2 {
+				gotResult = true
+			}
+		})
 	}
 	if !gotResult {
 		t.Fatalf("execution didn't return expected values")
@@ -3997,31 +4274,33 @@ func TestIntegration_BatchRead(t *testing.T) {
 
 	// Execute Partitions and compare results.
 	for i, p := range partitions {
-		iter := txn.Execute(ctx, p)
-		defer iter.Stop()
-		p2 := serdesPartition(t, i, p)
-		iter2 := txn2.Execute(ctx, &p2)
-		defer iter2.Stop()
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			iter := txn.Execute(ctx, p)
+			defer iter.Stop()
+			p2 := serdesPartition(t, i, p)
+			iter2 := txn2.Execute(ctx, &p2)
+			defer iter2.Stop()
 
-		row1, err1 := iter.Next()
-		row2, err2 := iter2.Next()
-		if err1 != err2 {
-			t.Fatalf("execution failed for different reasons: %v, %v", err1, err2)
-			continue
-		}
-		if !testEqual(row1, row2) {
-			t.Fatalf("execution returned different values: %v, %v", row1, row2)
-		}
-		if row1 == nil {
-			continue
-		}
-		var a, b string
-		if err = row1.Columns(&a, &b); err != nil {
-			t.Fatalf("failed to parse row %v", err)
-		}
-		if a == str1 && b == str2 {
-			gotResult = true
-		}
+			row1, err1 := iter.Next()
+			row2, err2 := iter2.Next()
+			if err1 != err2 {
+				t.Fatalf("execution failed for different reasons: %v, %v", err1, err2)
+				return
+			}
+			if !testEqual(row1, row2) {
+				t.Fatalf("execution returned different values: %v, %v", row1, row2)
+			}
+			if row1 == nil {
+				return
+			}
+			var a, b string
+			if err = row1.Columns(&a, &b); err != nil {
+				t.Fatalf("failed to parse row %v", err)
+			}
+			if a == str1 && b == str2 {
+				gotResult = true
+			}
+		})
 	}
 	if !gotResult {
 		t.Fatalf("execution didn't return expected values")
@@ -5070,6 +5349,23 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
+func compareErrors(got, want error) bool {
+	if got == nil || want == nil {
+		return got == want
+	}
+	gotStr := got.Error()
+	wantStr := want.Error()
+	if idx := strings.Index(gotStr, "requestID"); idx != -1 {
+		gotStr = gotStr[:idx]
+	}
+	if idx := strings.Index(wantStr, "requestID"); idx != -1 {
+		wantStr = wantStr[:idx]
+	}
+	gotStr = strings.ReplaceAll(gotStr, `",`, ``)
+	wantStr = strings.ReplaceAll(gotStr, `",`, ``)
+	return strings.EqualFold(strings.TrimSpace(gotStr), strings.TrimSpace(wantStr))
+}
+
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	skipEmulatorTest(t)
 	t.Parallel()
@@ -5266,9 +5562,10 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
-			// convert the error to lower case because resource names are in lower case for PG dialect.
-			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
-				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+			if gotErr != nil {
+				if !compareErrors(gotErr, tt.wantErr) {
+					t.Errorf(`FKDC error=%v, wantErr: %v`, gotErr, tt.wantErr)
+				}
 			} else {
 				tt.validate()
 			}
@@ -5280,7 +5577,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
+	te := stestutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
 	setGFELatencyMetricsFlag(true)
 
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
@@ -5560,7 +5857,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
-			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+			if gotErr != nil && !strings.EqualFold(gotErr.Error(), tt.wantErr.Error()) {
 				t.Errorf("BIT REVERSED SEQUENECES error=%v, wantErr: %v", gotErr, tt.wantErr)
 			}
 		})
@@ -6149,27 +6446,22 @@ func skipEmulatorTest(t *testing.T) {
 	}
 }
 
-func skipEmulatorTestForPG(t *testing.T) {
-	if isEmulatorEnvSet() && testDialect == adminpb.DatabaseDialect_POSTGRESQL {
-		t.Skip("Skipping PG testing against the emulator.")
-	}
-}
-
 func skipUnsupportedPGTest(t *testing.T) {
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		t.Skip("Skipping testing of unsupported tests in Postgres dialect.")
 	}
 }
 
-func onlyRunForPGTest(t *testing.T) {
-	if testDialect != adminpb.DatabaseDialect_POSTGRESQL {
-		t.Skip("Skipping tests supported only in Postgres dialect.")
+func skipOnNonProd(t *testing.T) {
+	job := os.Getenv("JOB_TYPE")
+	if strings.Contains(job, "cloud-devel") || strings.Contains(job, "cloud-staging") {
+		t.Skip("Skipping test on non-production environment.")
 	}
 }
 
-func skipForPGTest(t *testing.T) {
-	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
-		t.Skip("Skipping tests non needed for Postgres dialect.")
+func onlyRunForPGTest(t *testing.T) {
+	if testDialect != adminpb.DatabaseDialect_POSTGRESQL {
+		t.Skip("Skipping tests supported only in Postgres dialect.")
 	}
 }
 
@@ -6224,11 +6516,11 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 		if blackholeDP {
 			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
 			out, _ := cmdRes.CombinedOutput()
-			t.Logf(string(out))
+			t.Log(string(out))
 		} else {
 			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
 			out, _ := cmdRes.CombinedOutput()
-			t.Logf(string(out))
+			t.Log(string(out))
 		}
 		return
 	}
@@ -6236,17 +6528,17 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 	if blackholeDP {
 		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
 		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 		cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 	} else {
 		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
 		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 	}
 }
 

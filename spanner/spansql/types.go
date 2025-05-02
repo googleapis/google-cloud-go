@@ -121,6 +121,35 @@ func (*CreateIndex) isDDLStmt()        {}
 func (ci *CreateIndex) Pos() Position  { return ci.Position }
 func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 
+// SearchIndexOptions represents options on a search index as part of a
+// CREATE SEARCH INDEX statement.
+type SearchIndexOptions struct {
+	SortOrderSharding         *bool
+	DisableAutomaticUIDColumn *bool
+}
+
+// CreateSearchIndex represents a CREATE SEARCH INDEX statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#create-search-index
+type CreateSearchIndex struct {
+	Name    ID
+	Table   ID
+	Columns []KeyPart
+
+	Storing        []ID
+	PartitionBy    []ID
+	OrderBy        []Order
+	WhereIsNotNull []ID
+	Interleave     ID
+	Options        SearchIndexOptions
+
+	Position Position // position of the "CREATE" token
+}
+
+func (ci *CreateSearchIndex) String() string { return fmt.Sprintf("%#v", ci) }
+func (*CreateSearchIndex) isDDLStmt()        {}
+func (ci *CreateSearchIndex) Pos() Position  { return ci.Position }
+func (ci *CreateSearchIndex) clearOffset()   { ci.Position.Offset = 0 }
+
 // CreateView represents a CREATE [OR REPLACE] VIEW statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#view_statements
 type CreateView struct {
@@ -170,6 +199,20 @@ func (dt *DropTable) String() string { return fmt.Sprintf("%#v", dt) }
 func (*DropTable) isDDLStmt()        {}
 func (dt *DropTable) Pos() Position  { return dt.Position }
 func (dt *DropTable) clearOffset()   { dt.Position.Offset = 0 }
+
+// DropSearchIndex represents a DROP SEARCH INDEX statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#drop-search-index
+type DropSearchIndex struct {
+	Name     ID
+	IfExists bool
+
+	Position Position // position of the "DROP" token
+}
+
+func (di *DropSearchIndex) String() string { return fmt.Sprintf("%#v", di) }
+func (*DropSearchIndex) isDDLStmt()        {}
+func (di *DropSearchIndex) Pos() Position  { return di.Position }
+func (di *DropSearchIndex) clearOffset()   { di.Position.Offset = 0 }
 
 // DropIndex represents a DROP INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop-index
@@ -472,6 +515,7 @@ type ColumnDef struct {
 	Name    ID
 	Type    Type
 	NotNull bool
+	Hidden  bool
 
 	Default   Expr // set if this column has a default value
 	Generated Expr // set of this is a generated column
@@ -526,6 +570,10 @@ type Type struct {
 	Array bool
 	Base  TypeBase // Bool, Int64, Float64, Numeric, String, Bytes, Date, Timestamp
 	Len   int64    // if Base is String or Bytes; may be MaxLen
+	// fully-qualified Protocol Buffer Message or Enum type-name (including
+	// leading dot-separated namespace)
+	// non-empty if Base is ProtoMessage or ProtoEnum
+	ProtoRef string
 }
 
 // MaxLen is a sentinel for Type's Len field, representing the MAX value.
@@ -543,6 +591,9 @@ const (
 	Date
 	Timestamp
 	JSON
+	Proto
+	Enum // Enum used in CAST expressions
+	Tokenlist
 )
 
 type PrivilegeType int
@@ -812,6 +863,13 @@ type TypedExpr struct {
 
 func (TypedExpr) isBoolExpr() {} // possibly bool
 func (TypedExpr) isExpr()     {}
+
+type DefinitionExpr struct {
+	Key   string
+	Value Expr
+}
+
+func (DefinitionExpr) isExpr() {}
 
 type ExtractExpr struct {
 	Part string
@@ -1308,6 +1366,20 @@ type StatisticsOptions struct {
 	AllowGC *bool
 }
 
+// AlterSearchIndex represents a ALTER SEARCH INDEX statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-search-index
+type AlterSearchIndex struct {
+	Name       ID
+	Alteration IndexAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterSearchIndex) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterSearchIndex) isDDLStmt()        {}
+func (as *AlterSearchIndex) Pos() Position  { return as.Position }
+func (as *AlterSearchIndex) clearOffset()   { as.Position.Offset = 0 }
+
 type AlterIndex struct {
 	Name       ID
 	Alteration IndexAlteration
@@ -1392,3 +1464,38 @@ func (ds *DropSequence) String() string { return fmt.Sprintf("%#v", ds) }
 func (*DropSequence) isDDLStmt()        {}
 func (ds *DropSequence) Pos() Position  { return ds.Position }
 func (ds *DropSequence) clearOffset()   { ds.Position.Offset = 0 }
+
+// CreateProtoBundle represents a CREATE PROTO BUNDLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create-proto-bundle
+type CreateProtoBundle struct {
+	Types    []string
+	Position Position
+}
+
+func (cp *CreateProtoBundle) String() string { return fmt.Sprintf("%#v", cp) }
+func (*CreateProtoBundle) isDDLStmt()        {}
+func (cp *CreateProtoBundle) Pos() Position  { return cp.Position }
+func (cp *CreateProtoBundle) clearOffset()   { cp.Position.Offset = 0 }
+
+// AlterProtoBundle represents a ALTER PROTO BUNDLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#alter-proto-bundle
+type AlterProtoBundle struct {
+	AddTypes, UpdateTypes, DeleteTypes []string
+	Position                           Position
+}
+
+func (ap *AlterProtoBundle) String() string { return fmt.Sprintf("%#v", ap) }
+func (*AlterProtoBundle) isDDLStmt()        {}
+func (ap *AlterProtoBundle) Pos() Position  { return ap.Position }
+func (ap *AlterProtoBundle) clearOffset()   { ap.Position.Offset = 0 }
+
+// DropProtoBundle represents a DROP PROTO BUNDLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#drop-proto-bundle
+type DropProtoBundle struct {
+	Position Position
+}
+
+func (dp *DropProtoBundle) String() string { return fmt.Sprintf("%#v", dp) }
+func (*DropProtoBundle) isDDLStmt()        {}
+func (dp *DropProtoBundle) Pos() Position  { return dp.Position }
+func (dp *DropProtoBundle) clearOffset()   { dp.Position.Offset = 0 }

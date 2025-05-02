@@ -15,6 +15,11 @@
                 "CompleteImportSpace"
               ]
             },
+            "CreateCustomEmoji": {
+              "methods": [
+                "CreateCustomEmoji"
+              ]
+            },
             "CreateMembership": {
               "methods": [
                 "CreateMembership"
@@ -33,6 +38,11 @@
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
+              ]
+            },
+            "DeleteCustomEmoji": {
+              "methods": [
+                "DeleteCustomEmoji"
               ]
             },
             "DeleteMembership": {
@@ -65,6 +75,11 @@
                 "GetAttachment"
               ]
             },
+            "GetCustomEmoji": {
+              "methods": [
+                "GetCustomEmoji"
+              ]
+            },
             "GetMembership": {
               "methods": [
                 "GetMembership"
@@ -85,6 +100,11 @@
                 "GetSpaceEvent"
               ]
             },
+            "GetSpaceNotificationSetting": {
+              "methods": [
+                "GetSpaceNotificationSetting"
+              ]
+            },
             "GetSpaceReadState": {
               "methods": [
                 "GetSpaceReadState"
@@ -93,6 +113,11 @@
             "GetThreadReadState": {
               "methods": [
                 "GetThreadReadState"
+              ]
+            },
+            "ListCustomEmojis": {
+              "methods": [
+                "ListCustomEmojis"
               ]
             },
             "ListMemberships": {
@@ -120,6 +145,11 @@
                 "ListSpaces"
               ]
             },
+            "SearchSpaces": {
+              "methods": [
+                "SearchSpaces"
+              ]
+            },
             "SetUpSpace": {
               "methods": [
                 "SetUpSpace"
@@ -138,6 +168,11 @@
             "UpdateSpace": {
               "methods": [
                 "UpdateSpace"
+              ]
+            },
+            "UpdateSpaceNotificationSetting": {
+              "methods": [
+                "UpdateSpaceNotificationSetting"
               ]
             },
             "UpdateSpaceReadState": {
@@ -160,6 +195,11 @@
                 "CompleteImportSpace"
               ]
             },
+            "CreateCustomEmoji": {
+              "methods": [
+                "CreateCustomEmoji"
+              ]
+            },
             "CreateMembership": {
               "methods": [
                 "CreateMembership"
@@ -178,6 +218,11 @@
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
+              ]
+            },
+            "DeleteCustomEmoji": {
+              "methods": [
+                "DeleteCustomEmoji"
               ]
             },
             "DeleteMembership": {
@@ -210,6 +255,11 @@
                 "GetAttachment"
               ]
             },
+            "GetCustomEmoji": {
+              "methods": [
+                "GetCustomEmoji"
+              ]
+            },
             "GetMembership": {
               "methods": [
                 "GetMembership"
@@ -230,6 +280,11 @@
                 "GetSpaceEvent"
               ]
             },
+            "GetSpaceNotificationSetting": {
+              "methods": [
+                "GetSpaceNotificationSetting"
+              ]
+            },
             "GetSpaceReadState": {
               "methods": [
                 "GetSpaceReadState"
@@ -238,6 +293,11 @@
             "GetThreadReadState": {
               "methods": [
                 "GetThreadReadState"
+              ]
+            },
+            "ListCustomEmojis": {
+              "methods": [
+                "ListCustomEmojis"
               ]
             },
             "ListMemberships": {
@@ -265,6 +325,11 @@
                 "ListSpaces"
               ]
             },
+            "SearchSpaces": {
+              "methods": [
+                "SearchSpaces"
+              ]
+            },
             "SetUpSpace": {
               "methods": [
                 "SetUpSpace"
@@ -283,6 +348,11 @@
             "UpdateSpace": {
               "methods": [
                 "UpdateSpace"
+              ]
+            },
+            "UpdateSpaceNotificationSetting": {
+              "methods": [
+                "UpdateSpaceNotificationSetting"
               ]
             },
             "UpdateSpaceReadState": {

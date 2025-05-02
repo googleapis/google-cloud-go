@@ -383,7 +383,7 @@ func cleanupTopic(ctx context.Context, client *pubsub.Client) error {
 	it := client.Topics(ctx)
 	for {
 		t, err := it.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {
@@ -424,7 +424,7 @@ func cleanupSubscription(ctx context.Context, client *pubsub.Client) error {
 	it := client.Subscriptions(ctx)
 	for {
 		s, err := it.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

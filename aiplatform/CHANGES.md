@@ -1,6 +1,676 @@
 # Changes
 
 
+## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.84.0...aiplatform/v1.85.0) (2025-04-30)
+
+
+### Features
+
+* **aiplatform:** Adding ThinkingConfig to v1 client library ([#12058](https://github.com/googleapis/google-cloud-go/issues/12058)) ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **aiplatform:** Adding ThinkingConfig to v1beta1 client library ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **aiplatform:** Allow customers to set encryption_spec for context caching ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **aiplatform:** Model Registry Model Checkpoint API ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **aiplatform:** New fields `ref` and `defs` are added to message `.google.cloud.aiplatform.v1.Schema` ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** New fields `ref` and `defs` are added to message `.google.cloud.aiplatform.v1beta1.Schema` ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
+
+### Documentation
+
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.83.0...aiplatform/v1.84.0) (2025-04-22)
+
+
+### Features
+
+* **aiplatform:** Deprecated EventActions.transfer_to_agent and replaced with EventActions.transfer_agent ([2551567](https://github.com/googleapis/google-cloud-go/commit/25515675379c6f0ff57cc18565293971d65d1bf2))
+* **aiplatform:** Model Registry Model Checkpoint API ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+
+### Bug Fixes
+
+* **aiplatform:** Removed support for session resource paths that do not include reasoning engine ([#12023](https://github.com/googleapis/google-cloud-go/issues/12023)) ([2551567](https://github.com/googleapis/google-cloud-go/commit/25515675379c6f0ff57cc18565293971d65d1bf2))
+
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.1...aiplatform/v1.83.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden EULA(End User License Agreement) related APIs ([#11982](https://github.com/googleapis/google-cloud-go/issues/11982)) ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
+## [1.82.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.0...aiplatform/v1.82.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **aiplatform:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.81.0...aiplatform/v1.82.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add FeatureViewDirectWrite API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add Gen AI logging public preview API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add global quota config to vertex rag engine api ([#11949](https://github.com/googleapis/google-cloud-go/issues/11949)) ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add rag_managed_db_config to RagEngineConfig for specifying Basic or Enterprise RagManagedDb tiers ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add RagEngineConfig to specify RAG project-level config ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add UpdateRagEngineConfig rpc ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+
+## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.80.0...aiplatform/v1.81.0) (2025-03-31)
+
+
+### Features
+
+* **aiplatform:** Add page spans in retrieved contexts from Vertex RAG Engine in aiplatform v1 ([#11917](https://github.com/googleapis/google-cloud-go/issues/11917)) ([28632c6](https://github.com/googleapis/google-cloud-go/commit/28632c6b7c8f0f9250c2dd6ab86d8cc19de84522))
+* **aiplatform:** Add page spans in retrieved contexts from Vertex RAG Engine in aiplatform v1beta1 ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `model_name` in message `.google.cloud.aiplatform.v1beta1.RagFileParsingConfig` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **aiplatform:** A comment for field `rag_files_count` in message `.google.cloud.aiplatform.v1beta1.RagCorpus` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+
+## [1.80.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.79.0...aiplatform/v1.80.0) (2025-03-27)
+
+
+### Features
+
+* **aiplatform:** Add batch prediction assessments to multimodal dataset RPCs ([#11906](https://github.com/googleapis/google-cloud-go/issues/11906)) ([12465b5](https://github.com/googleapis/google-cloud-go/commit/12465b5f3f70d49b19ee5e24dae0f731a24b894d))
+* **aiplatform:** Add example, example_store, and example_store_service protos ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **aiplatform:** Add session.proto and session_service.proto ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+* **aiplatform:** Add support for Vertex AI Search engine ([#11912](https://github.com/googleapis/google-cloud-go/issues/11912)) ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **aiplatform:** Enable force deletion in ReasoningEngine ([a21d596](https://github.com/googleapis/google-cloud-go/commit/a21d5965fa3f4322da9563425350ba1079279d5a))
+
+## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.78.0...aiplatform/v1.79.0) (2025-03-25)
+
+
+### Features
+
+* **aiplatform:** Add a ExportPublisherModel API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add AssessData and AssembleData RPCs to DatasetService ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add import result bq sink to the import files API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add import result gcs sink to the import files API ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** Add model_config field for model selection preference ([57a62c0](https://github.com/googleapis/google-cloud-go/commit/57a62c05a11b71b4c505061eb4b9469186adeda5))
+* **aiplatform:** Enable force deletion in ReasoningEngine v1beta1 ([#11901](https://github.com/googleapis/google-cloud-go/issues/11901)) ([57a62c0](https://github.com/googleapis/google-cloud-go/commit/57a62c05a11b71b4c505061eb4b9469186adeda5))
+* **aiplatform:** Update multimodal evaluation (content_map_instance), rubric generation (rubric_based_instance, etc) and raw_output(raw_output, custom_output, etc) proto change in online eval API ([#11876](https://github.com/googleapis/google-cloud-go/issues/11876)) ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `autorater_config` in message `.google.cloud.aiplatform.v1beta1.EvaluateDatasetRequest` is changed ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+* **aiplatform:** A comment for field `gcs_source` in message `.google.cloud.aiplatform.v1beta1.EvaluationDataset` is changed ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.77.0...aiplatform/v1.78.0) (2025-03-19)
+
+
+### Features
+
+* **aiplatform:** Add env variables and agent framework to ReasoningEngineSpec ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Add env variables and agent framework to ReasoningEngineSpec in v1beta1 ([#11867](https://github.com/googleapis/google-cloud-go/issues/11867)) ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+* **aiplatform:** Add VertexAISearch.engine option ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **aiplatform:** Add `deployment_spec` and `agent_framework` field to `ReasoningEngineSpec`. ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Add `deployment_spec` and `agent_framework` field to `ReasoningEngineSpec`. ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+* **aiplatform:** Update comment for `package_spec` from required to optional in `ReasoningEngineSpec`. ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+* **aiplatform:** Update comment for `package_spec` from required to optional in `ReasoningEngineSpec`. ([6618039](https://github.com/googleapis/google-cloud-go/commit/66180390ae6c87906a37b069c431e092010c8a28))
+
+## [1.77.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.76.0...aiplatform/v1.77.0) (2025-03-13)
+
+
+### Features
+
+* **aiplatform:** Add function_call.id and function_response.id ([#11820](https://github.com/googleapis/google-cloud-go/issues/11820)) ([1c7cc4b](https://github.com/googleapis/google-cloud-go/commit/1c7cc4b06d24a1af6c4df23f0417880b9629a3a7))
+
+
+### Bug Fixes
+
+* **aiplatform:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.76.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.75.0...aiplatform/v1.76.0) (2025-03-12)
+
+
+### Features
+
+* **aiplatform:** Add Layout Parser to RAG v1 API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Add multihost_gpu_node_count to Vertex SDK for multihost GPU support ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Add reranker config to RAG v1 API ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+* **aiplatform:** Allowing users to choose whether to use the hf model cache ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to choose whether to use the hf model cache ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to specify the version id of the Model Garden model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **aiplatform:** Allowing users to specify the version id of the Model Garden model ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+## [1.75.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.74.0...aiplatform/v1.75.0) (2025-03-06)
+
+
+### Features
+
+* **aiplatform:** A new field `include_equivalent_model_garden_model_deployment_configs` is added to message `.google.cloud.aiplatform.v1beta1.GetPublisherModelRequest` ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Add EnterpriseWebSearch tool option ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Add VertexAISearch.engine option ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+
+### Bug Fixes
+
+* **aiplatform:** An existing google.api.http annotation `http_uri` is changed for method `DeployPublisherModel` in service `ModelGardenService` ([#11670](https://github.com/googleapis/google-cloud-go/issues/11670)) ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+* **aiplatform:** Remove VertexAISearch.engine option ([#11681](https://github.com/googleapis/google-cloud-go/issues/11681)) ([60dc167](https://github.com/googleapis/google-cloud-go/commit/60dc167a3e9c2876fe55a4f50bd7e0682f953d67))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `model` in message `.google.cloud.aiplatform.v1beta1.DeployPublisherModelRequest` is changed ([3f23a91](https://github.com/googleapis/google-cloud-go/commit/3f23a9176f29a0a69b9d57b16f44b72eb3096d0c))
+
+## [1.74.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.73.0...aiplatform/v1.74.0) (2025-02-26)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden deploy API ([2c4fb44](https://github.com/googleapis/google-cloud-go/commit/2c4fb448a2207a6d9988ec3a7646ea6cbb6f65f9))
+
+## [1.73.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.72.0...aiplatform/v1.73.0) (2025-02-12)
+
+
+### Features
+
+* **aiplatform:** A new field `create_time` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+* **aiplatform:** A new field `create_time` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** A new field `response_id` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+* **aiplatform:** A new field `response_id` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** Add additional Probe options to v1 model.proto ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** Add Notebooks Runtime Software Configuration ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** Add Notebooks Runtime Software Configuration ([#11566](https://github.com/googleapis/google-cloud-go/issues/11566)) ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+* **aiplatform:** Add RolloutOptions to DeployedModel in v1beta1 endpoint.proto, add additional Probe options in v1beta1 model.proto ([#11574](https://github.com/googleapis/google-cloud-go/issues/11574)) ([1715e30](https://github.com/googleapis/google-cloud-go/commit/1715e30f6d9a383330e697672583a654562aae13))
+* **aiplatform:** EvaluateDataset API v1beta1 initial release ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `filter` in message `.google.cloud.aiplatform.v1.ListNotebookRuntimesRequest` is changed ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+* **aiplatform:** A comment for field `filter` in message `.google.cloud.aiplatform.v1.ListNotebookRuntimeTemplatesRequest` is changed ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+* **aiplatform:** A comment for field `filter` in message `.google.cloud.aiplatform.v1beta1.ListNotebookRuntimesRequest` is changed ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** A comment for field `filter` in message `.google.cloud.aiplatform.v1beta1.ListNotebookRuntimeTemplatesRequest` is changed ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
+## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.71.0...aiplatform/v1.72.0) (2025-02-05)
+
+
+### Features
+
+* **aiplatform:** Add rag_files_count to RagCorpus to count number of associated files ([678944b](https://github.com/googleapis/google-cloud-go/commit/678944b30e389781687209caf3e3b9d35739a6f0))
+
+## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.70.0...aiplatform/v1.71.0) (2025-01-30)
+
+
+### Features
+
+* **aiplatform:** Add Context Cache to v1 ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+* **aiplatform:** Add machine_spec, data_persistent_disk_spec, network_spec, euc_config, shielded_vm_config to `.google.cloud.aiplatform.v1beta1.NotebookRuntime` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Add machine_spec, data_persistent_disk_spec, network_spec, euc_config, shielded_vm_config to message `.google.cloud.aiplatform.v1.NotebookRuntime` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Add optimized config in v1 API ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **aiplatform:** Add per-modality token count break downs for GenAI APIs ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Add per-modality token count break downs for GenAI APIs ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Add retrieval_config to ToolConfig v1 ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+* **aiplatform:** Add retrieval_config to ToolConfig v1beta1 ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+* **aiplatform:** Add speculative decoding spec to DeployedModel proto ([#11469](https://github.com/googleapis/google-cloud-go/issues/11469)) ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Enable FeatureView Service Account in v1 API version ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Enable UpdateFeatureMonitor in v1beta1 API version ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Expose code execution tool API to v1 ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Model Registry Checkpoint API ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **aiplatform:** Model Registry Checkpoint API ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **aiplatform:** Reasoning Engine v1 GAPIC release ([#11456](https://github.com/googleapis/google-cloud-go/issues/11456)) ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **aiplatform:** Remove autorater config related visibility v1beta1 ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+
+
+### Documentation
+
+* **aiplatform:** Deprecate `is_default` in message `.google.cloud.aiplatform.v1.NotebookRuntimeTemplate` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `is_default` in message `.google.cloud.aiplatform.v1beta1.NotebookRuntimeTemplate` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `service_account` in message `.google.cloud.aiplatform.v1.NotebookRuntime` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `service_account` in message `.google.cloud.aiplatform.v1.NotebookRuntimeTemplate` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `service_account` in message `.google.cloud.aiplatform.v1beta1.NotebookRuntime` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `service_account` in message `.google.cloud.aiplatform.v1beta1.NotebookRuntimeTemplate` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Update comments for NumericFilter and Operator ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.69.0...aiplatform/v1.70.0) (2025-01-08)
+
+
+### Features
+
+* **aiplatform:** A new field `list_all_versions` to `ListPublisherModelsRequest` ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+* **aiplatform:** A new value `NVIDIA_H100_MEGA_80GB` is added to enum `AcceleratorType` ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+* **aiplatform:** A new value `NVIDIA_H100_MEGA_80GB` is added to enum `AcceleratorType` ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+* **aiplatform:** Add a `nfs_mounts` to RaySpec in PersistentResource API ([#11122](https://github.com/googleapis/google-cloud-go/issues/11122)) ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** Add a new thought field in content proto ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+* **aiplatform:** Add a v1 UpdateEndpointLongRunning API ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **aiplatform:** Add CustomEnvironmentSpec to NotebookExecutionJob ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **aiplatform:** Add CustomEnvironmentSpec to NotebookExecutionJob ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **aiplatform:** Add fast_tryout_enabled to FasterDeploymentConfig v1 proto ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** Add GenerationConfig.MediaResolution ([46fc993](https://github.com/googleapis/google-cloud-go/commit/46fc993a3195203a230e2831bee456baaa9f7b1c))
+* **aiplatform:** Add GenerationConfig.Modality ([46fc993](https://github.com/googleapis/google-cloud-go/commit/46fc993a3195203a230e2831bee456baaa9f7b1c))
+* **aiplatform:** Add GenerationConfig.SpeechConfig ([46fc993](https://github.com/googleapis/google-cloud-go/commit/46fc993a3195203a230e2831bee456baaa9f7b1c))
+* **aiplatform:** Add LLM parser proto to API ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+* **aiplatform:** Add Model Garden deploy API ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+* **aiplatform:** Add new `RequiredReplicaCount` field to DedicatedResources in MachineResources ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Add new `RequiredReplicaCount` field to DedicatedResources in MachineResources ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Add new `Status` field to DeployedModel in Endpoint ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Add new `Status` field to DeployedModel in Endpoint ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Add Tool.GoogleSearch ([#11266](https://github.com/googleapis/google-cloud-go/issues/11266)) ([46fc993](https://github.com/googleapis/google-cloud-go/commit/46fc993a3195203a230e2831bee456baaa9f7b1c))
+* **aiplatform:** Add Vertex RAG service proto to v1 ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **aiplatform:** Add workbench_runtime and kernel_name to NotebookExecutionJob ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+* **aiplatform:** Add workbench_runtime and kernel_name to NotebookExecutionJob ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+* **aiplatform:** COMET added to evaluation service proto ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** Enable FeatureGroup Service Account and IAM methods ([46fc993](https://github.com/googleapis/google-cloud-go/commit/46fc993a3195203a230e2831bee456baaa9f7b1c))
+* **aiplatform:** Introduce HybridSearch and Ranking configuration for RAG ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Introduce VertexAiSearch integration for RAG ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Support streaming and multi class methods in Reasoning Engine v1beta1 API ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Trajectory eval metrics added to evaluation service proto ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
+
+### Bug Fixes
+
+* **aiplatform:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `annotation_schema_uri` in message `.google.cloud.aiplatform.v1.ExportDataConfig` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `api_key_config` in message `.google.cloud.aiplatform.v1beta1.JiraSource` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** A comment for field `attributions` in message `.google.cloud.aiplatform.v1.Explanation` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `bool_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `bytes_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `class_method` in message `.google.cloud.aiplatform.v1beta1.StreamQueryReasoningEngineRequest` is changed (from steam_query to stream_query) ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** A comment for field `data_stats` in message `.google.cloud.aiplatform.v1.Model` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `deployed_index` in message `.google.cloud.aiplatform.v1.MutateDeployedIndexRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `double_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `enable_logging` in message `.google.cloud.aiplatform.v1.ModelMonitoringAlertConfig` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `encryption_spec` in message `.google.cloud.aiplatform.v1.NotebookExecutionJob` is changed ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+* **aiplatform:** A comment for field `encryption_spec` in message `.google.cloud.aiplatform.v1beta1.NotebookExecutionJob` is changed ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+* **aiplatform:** A comment for field `float_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `int_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `int64_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `labels` in message `.google.cloud.aiplatform.v1beta1.PublisherModel` is changed ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+* **aiplatform:** A comment for field `next_page_token` in message `.google.cloud.aiplatform.v1.ListNotebookExecutionJobsResponse` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `page_token` in message `.google.cloud.aiplatform.v1.ListFeatureGroupsRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `page_token` in message `.google.cloud.aiplatform.v1.ListNotebookExecutionJobsRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `page_token` in message `.google.cloud.aiplatform.v1.ListPersistentResourcesRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `page_token` in message `.google.cloud.aiplatform.v1.ListTuningJobsRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `partial_failure_bigquery_sink` in message `.google.cloud.aiplatform.v1beta1.ImportRagFilesConfig` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** A comment for field `partial_failure_gcs_sink` in message `.google.cloud.aiplatform.v1beta1.ImportRagFilesConfig` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** A comment for field `predictions` in message `.google.cloud.aiplatform.v1.EvaluatedAnnotation` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `rag_file_parsing_config` in message `.google.cloud.aiplatform.v1beta1.ImportRagFilesConfig` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** A comment for field `request` in message `.google.cloud.aiplatform.v1.BatchMigrateResourcesOperationMetadata` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `saved_query_id` in message `.google.cloud.aiplatform.v1.ExportDataConfig` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `source_uri` in message `.google.cloud.aiplatform.v1beta1.RagContexts` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** A comment for field `string_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `uint_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for field `uint64_val` in message `.google.cloud.aiplatform.v1.Tensor` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for message `DeleteEntityTypeRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for message `DeleteFeatureViewRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for message `ListPersistentResourcesRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for message `StreamingReadFeatureValuesRequest` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** A comment for method `ResumeSchedule` in service `ScheduleService` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **aiplatform:** Added support for multiple `class_methods` in QueryReasoningEngine ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Added support for StreamQueryReasoningEngine ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **aiplatform:** Fixed typo for field `use_strict_string_match` in message `.google.cloud.aiplatform.v1beta1.ToolParameterKVMatchSpec` ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
+## [1.69.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.68.0...aiplatform/v1.69.0) (2024-11-12)
+
+
+### Features
+
+* **aiplatform:** A new enum `NotebookExecutionJobView` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new enum `Strategy` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new enum `Strategy` is added ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `any_of` is added to message `.google.cloud.aiplatform.v1.Schema` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `any_of` is added to message `.google.cloud.aiplatform.v1beta1.Schema` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `avg_logprobs` is added to message `.google.cloud.aiplatform.v1.Candidate` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `avg_logprobs` is added to message `.google.cloud.aiplatform.v1beta1.Candidate` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `billable_sum` is added to message `.google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `billable_sum` is added to message `.google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `dedicated_endpoint_dns` is added to message `.google.cloud.aiplatform.v1.Endpoint` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `dedicated_endpoint_dns` is added to message `.google.cloud.aiplatform.v1beta1.Endpoint` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `dedicated_endpoint_enabled` is added to message `.google.cloud.aiplatform.v1.Endpoint` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `dedicated_endpoint_enabled` is added to message `.google.cloud.aiplatform.v1beta1.Endpoint` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `display_name` is added to message `.google.cloud.aiplatform.v1beta1.CachedContent` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `encryption_spec` is added to message `.google.cloud.aiplatform.v1.NotebookExecutionJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `encryption_spec` is added to message `.google.cloud.aiplatform.v1beta1.NotebookExecutionJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `generation_config` is added to message `.google.cloud.aiplatform.v1.CountTokensRequest` ([#10880](https://github.com/googleapis/google-cloud-go/issues/10880)) ([0b3c268](https://github.com/googleapis/google-cloud-go/commit/0b3c268c564ffe0d87b0efc716f08afaf064b4cc))
+* **aiplatform:** A new field `generation_config` is added to message `.google.cloud.aiplatform.v1beta1.CountTokensRequest` ([2f0aec8](https://github.com/googleapis/google-cloud-go/commit/2f0aec894179304d234be6c792d82cf4336b6d0a))
+* **aiplatform:** A new field `grounding_chunks` is added to message `.google.cloud.aiplatform.v1.GroundingMetadata` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `grounding_supports` is added to message `.google.cloud.aiplatform.v1.GroundingMetadata` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `hugging_face_token` is added to message `.google.cloud.aiplatform.v1.GetPublisherModelRequest` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `hugging_face_token` is added to message `.google.cloud.aiplatform.v1beta1.GetPublisherModelRequest` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `is_hugging_face_model` is added to message `.google.cloud.aiplatform.v1.GetPublisherModelRequest` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `is_hugging_face_model` is added to message `.google.cloud.aiplatform.v1beta1.GetPublisherModelRequest` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `jira_source` is added to message `.google.cloud.aiplatform.v1beta1.ImportRagFilesConfig` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `jira_source` is added to message `.google.cloud.aiplatform.v1beta1.RagFile` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `labels` is added to message `.google.cloud.aiplatform.v1.GenerateContentRequest` ([0b3c268](https://github.com/googleapis/google-cloud-go/commit/0b3c268c564ffe0d87b0efc716f08afaf064b4cc))
+* **aiplatform:** A new field `labels` is added to message `.google.cloud.aiplatform.v1beta1.GenerateContentRequest` ([2f0aec8](https://github.com/googleapis/google-cloud-go/commit/2f0aec894179304d234be6c792d82cf4336b6d0a))
+* **aiplatform:** A new field `logprbs` is added to message `.google.cloud.aiplatform.v1.GenerationConfig` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `logprbs` is added to message `.google.cloud.aiplatform.v1beta1.GenerationConfig` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `logprobs_result` is added to message `.google.cloud.aiplatform.v1.Candidate` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `logprobs_result` is added to message `.google.cloud.aiplatform.v1beta1.Candidate` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `model_version` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `model_version` is added to message `.google.cloud.aiplatform.v1beta1.GenerateContentResponse` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `numeric_filters` is added to message `.google.cloud.aiplatform.v1.NearestNeighborQuery` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `numeric_filters` is added to message `.google.cloud.aiplatform.v1beta1.NearestNeighborQuery` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `property_ordering` is added to message `.google.cloud.aiplatform.v1.Schema` ([#10868](https://github.com/googleapis/google-cloud-go/issues/10868)) ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+* **aiplatform:** A new field `property_ordering` is added to message `.google.cloud.aiplatform.v1beta1.Schema` ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+* **aiplatform:** A new field `psc_interface_config` is added to message `.google.cloud.aiplatform.v1beta1.PersistentResource` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `ray_logs_spec` is added to message `.google.cloud.aiplatform.v1.RaySpec` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `ray_logs_spec` is added to message `.google.cloud.aiplatform.v1beta1.RaySpec` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `response_logprbs` is added to message `.google.cloud.aiplatform.v1.GenerationConfig` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `response_logprbs` is added to message `.google.cloud.aiplatform.v1beta1.GenerationConfig` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** A new field `routing_config` is added to message `.google.cloud.aiplatform.v1.GenerationConfig` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `routing_config` is added to message `.google.cloud.aiplatform.v1beta1.GenerationConfig` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `sample_request` is added to message `.google.cloud.aiplatform.v1.PublisherModel` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `sample_request` is added to message `.google.cloud.aiplatform.v1beta1.PublisherModel` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.BatchPredictionJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.CustomJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.DataItem` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.Dataset` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.DatasetVersion` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.DeploymentResourcePool` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.Endpoint` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.EntityType` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.FeatureOnlineStore` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.Featurestore` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.FeatureView` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.FeatureViewSync` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.HyperparameterTuningJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.Index` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.IndexEndpoint` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.ModelDeploymentMonitoringJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1.NasJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.CustomJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.Endpoint` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.EntityType` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.FeatureOnlineStore` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.Featurestore` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.FeatureView` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.FeatureViewSync` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.HyperparameterTuningJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.Index` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.IndexEndpoint` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.ModelMonitor` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.NasJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzi` is added to message `.google.cloud.aiplatform.v1beta1.PipelineJob` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.BatchPredictionJob` ([#10663](https://github.com/googleapis/google-cloud-go/issues/10663)) ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.CustomJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.DataItem` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.Dataset` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.DatasetVersion` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.DeploymentResourcePool` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.Endpoint` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.EntityType` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.FeatureOnlineStore` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.Featurestore` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.FeatureView` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.FeatureViewSync` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.HyperparameterTuningJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.Index` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.IndexEndpoint` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.ModelDeploymentMonitoringJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1.NasJob` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.CustomJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.Endpoint` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.EntityType` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.FeatureOnlineStore` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.Featurestore` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.FeatureView` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.FeatureViewSync` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.HyperparameterTuningJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.Index` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.IndexEndpoint` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.ModelMonitor` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.NasJob` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `satisfies_pzs` is added to message `.google.cloud.aiplatform.v1beta1.PipelineJob` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `score` is added to message `.google.cloud.aiplatform.v1.Candidate` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `score` is added to message `.google.cloud.aiplatform.v1beta1.Candidate` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `seed` is added to message `.google.cloud.aiplatform.v1.GenerationConfig` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `seed` is added to message `.google.cloud.aiplatform.v1beta1.GenerationConfig` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `service_attachment` is added to message `.google.cloud.aiplatform.v1.PrivateServiceConnectConfig` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `service_attachment` is added to message `.google.cloud.aiplatform.v1beta1.PrivateServiceConnectConfig` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `slack_source` is added to message `.google.cloud.aiplatform.v1beta1.ImportRagFilesConfig` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `slack_source` is added to message `.google.cloud.aiplatform.v1beta1.RagFile` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `strategy` is added to message `.google.cloud.aiplatform.v1.Scheduling` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `strategy` is added to message `.google.cloud.aiplatform.v1beta1.Scheduling` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `system_instruction` is added to message `.google.cloud.aiplatform.v1.CountTokensRequest` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `system_instruction` is added to message `.google.cloud.aiplatform.v1beta1.CountTokensRequest` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `time_series` is added to message `.google.cloud.aiplatform.v1.FeatureGroup` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `time_series` is added to message `.google.cloud.aiplatform.v1beta1.FeatureGroup` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `tools` is added to message `.google.cloud.aiplatform.v1.CountTokensRequest` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `tools` is added to message `.google.cloud.aiplatform.v1beta1.CountTokensRequest` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `total_billable_token_count` is added to message `.google.cloud.aiplatform.v1.SupervisedTuningDataStats` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new field `total_billable_token_count` is added to message `.google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new field `total_truncated_example_count` is added to message `.google.cloud.aiplatform.v1.SupervisedTuningDataStats` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `total_truncated_example_count` is added to message `.google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new field `truncated_example_indices` is added to message `.google.cloud.aiplatform.v1.SupervisedTuningDataStats` ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new field `truncated_example_indices` is added to message `.google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new message `ApiAuth` is added ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new message `CreateNotebookExecutionJobOperationMetadata` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `CreateNotebookExecutionJobRequest` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `DeleteNotebookExecutionJobRequest` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `GetNotebookExecutionJobRequest` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `GroundingChunk` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `GroundingSupport` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `JiraSource` is added ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new message `ListNotebookExecutionJobsRequest` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `ListNotebookExecutionJobsResponse` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `NotebookExecutionJob` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `NumericFilter` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `NumericFilter` is added ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new message `PscInterfaceConfig` is added ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new message `RayLogsSpec` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `RayLogsSpec` is added ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new message `RoutingConfig` is added ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new message `RoutingConfig` is added ([#10653](https://github.com/googleapis/google-cloud-go/issues/10653)) ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new message `Segment` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new message `SlackSource` is added ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new message `TimeSeries` is added ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new message `TimeSeries` is added ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A new method `CreateNotebookExecutionJob` is added to service `NotebookService` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new method `DeleteNotebookExecutionJob` is added to service `NotebookService` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new method `GetNotebookExecutionJob` is added to service `NotebookService` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new method `ListNotebookExecutionJobs` is added to service `NotebookService` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new resource_definition `aiplatform.googleapis.com/NotebookExecutionJob` is added ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new resource_definition `compute.googleapis.com/NetworkAttachment` is added ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A new resource_definition `compute.googleapis.com/NetworkAttachment` is added ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A new value `ADAPTER_SIZE_THIRTY_TWO` is added to enum `AdapterSize` ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A new value `ADAPTER_SIZE_THIRTY_TWO` is added to enum `AdapterSize` ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** Add `text` field for Grounding metadata support chunk output ([6e69d2e](https://github.com/googleapis/google-cloud-go/commit/6e69d2e85849002bad227ea5bebcde9199605bef))
+* **aiplatform:** Add a dynamic retrieval API ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **aiplatform:** Add a dynamic retrieval API ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **aiplatform:** Add ApiKeyConfig field to ApiAuth ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **aiplatform:** Add BatchCreateFeatures rpc to feature_registry_service.proto ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **aiplatform:** Add BYOSA field to tuning_job ([380e7d2](https://github.com/googleapis/google-cloud-go/commit/380e7d23e69b22ab46cc6e3be58902accee2f26a))
+* **aiplatform:** Add BYOSA field to tuning_job ([380e7d2](https://github.com/googleapis/google-cloud-go/commit/380e7d23e69b22ab46cc6e3be58902accee2f26a))
+* **aiplatform:** Add CIVIC_INTEGRITY category to SafetySettings for prediction service ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **aiplatform:** Add CIVIC_INTEGRITY category to SafetySettings for prediction service ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **aiplatform:** Add client_id to SharePointSource ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add client_secret to SharePointSource ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add code execution tool API ([#11060](https://github.com/googleapis/google-cloud-go/issues/11060)) ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **aiplatform:** Add continuous sync option in feature_view.proto ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **aiplatform:** Add deploy_metadata to PublisherModel.Deploy v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add deploy_metadata to PublisherModel.Deploy v1beta1 ([b15d840](https://github.com/googleapis/google-cloud-go/commit/b15d8401d3ea7f2add1d0d93bc26ceb2edd9b9fc))
+* **aiplatform:** Add drive_id to SharePointSource ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add drive_name to SharePointSource ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add enable_secure_private_service_connect in service attachment ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **aiplatform:** Add encryption_spec to TuningJob ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **aiplatform:** Add enum value MALFORMED_FUNCTION_CALL to `.google.cloud.aiplatform.v1beta1.content.Candidate.FinishReason` ([#10400](https://github.com/googleapis/google-cloud-go/issues/10400)) ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Add evaluation service proto to v1 ([24616cc](https://github.com/googleapis/google-cloud-go/commit/24616cc136a1ba49a551aad6f76d4d2e062d267c))
+* **aiplatform:** Add fast_tryout_enabled to FasterDeploymentConfig message in aiplatform v1beta1 endpoint.proto ([#11042](https://github.com/googleapis/google-cloud-go/issues/11042)) ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **aiplatform:** Add Feature Monitoring API to Feature Store ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **aiplatform:** Add fields grounding_chunks and grounding_supports to GroundingMetadata ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Add file_id to SharePointSource ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **aiplatform:** Add FLEX_START to Scheduling.strategy ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add FLEX_START to Scheduling.strategy ([#10816](https://github.com/googleapis/google-cloud-go/issues/10816)) ([da8737e](https://github.com/googleapis/google-cloud-go/commit/da8737e2d955a1ca481e9df82c062dd075f86ad9))
+* **aiplatform:** Add MALFORMED_FUNCTION_CALL to FinishReason ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **aiplatform:** Add max_wait_duration to Scheduling ([b3ea577](https://github.com/googleapis/google-cloud-go/commit/b3ea5776b171fc60b4e96035d56d35dbd7505f3b))
+* **aiplatform:** Add max_wait_duration to Scheduling ([b3ea577](https://github.com/googleapis/google-cloud-go/commit/b3ea5776b171fc60b4e96035d56d35dbd7505f3b))
+* **aiplatform:** Add model and contents fields to ComputeTokensRequest v1 ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **aiplatform:** Add model and contents fields to ComputeTokensRequest v1beta1 ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **aiplatform:** Add more configurability to feature_group.proto ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add more configurability to feature_group.proto ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add new `PipelineTaskRerunConfig` field to `pipeline_job.proto` ([#10876](https://github.com/googleapis/google-cloud-go/issues/10876)) ([2f0aec8](https://github.com/googleapis/google-cloud-go/commit/2f0aec894179304d234be6c792d82cf4336b6d0a))
+* **aiplatform:** Add new `PscInterfaceConfig` field to `pipeline_job.proto` ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **aiplatform:** Add new PscInterfaceConfig field to custom_job.proto ([#11024](https://github.com/googleapis/google-cloud-go/issues/11024)) ([706ecb2](https://github.com/googleapis/google-cloud-go/commit/706ecb2c813da3109035b986a642ca891a33847f))
+* **aiplatform:** Add OFF to HarmBlockThreshold ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add OFF to HarmBlockThreshold ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add OptimizedConfig for feature_view ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **aiplatform:** Add partial_failure_bigquery_sink to ImportRagFilesConfig ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add partial_failure_gcs_sink tp ImportRagFilesConfig ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add partner_model_tuning_spec to TuningJob ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **aiplatform:** Add Pinecone and Vector Search integration for Vertex RAG ([b9dfce5](https://github.com/googleapis/google-cloud-go/commit/b9dfce5e509d0c795e89c66b7f6a6bb356e3a172))
+* **aiplatform:** Add pointwise and pairwise metrics to evaluation service ([#10627](https://github.com/googleapis/google-cloud-go/issues/10627)) ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **aiplatform:** Add preflight_validations to PipelineJob ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **aiplatform:** Add private_service_connect_config and service_attachment fields to DedicatedServingEndpoint v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add psc_automation_configs to DeployIndex v1 ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **aiplatform:** Add psc_automation_configs to DeployIndex v1beta1 ([0b3c268](https://github.com/googleapis/google-cloud-go/commit/0b3c268c564ffe0d87b0efc716f08afaf064b4cc))
+* **aiplatform:** Add ragSource to feature_view.proto ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add ragSource to feature_view.proto ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add reservation affinity proto ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **aiplatform:** Add reservation affinity proto ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **aiplatform:** Add role field to TokensInfo v1 ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **aiplatform:** Add role field to TokensInfo v1beta1 ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **aiplatform:** Add satisfies_pzs and satisfies_pzi fields to Model v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add satisfies_pzs and satisfies_pzi fields to Model v1beta1 ([b15d840](https://github.com/googleapis/google-cloud-go/commit/b15d8401d3ea7f2add1d0d93bc26ceb2edd9b9fc))
+* **aiplatform:** Add satisfies_pzs and satisfies_pzi fields to Tensorboard v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add satisfies_pzs and satisfies_pzi fields to Tensorboard v1beta1 ([b15d840](https://github.com/googleapis/google-cloud-go/commit/b15d8401d3ea7f2add1d0d93bc26ceb2edd9b9fc))
+* **aiplatform:** Add share_point_sources to ImportRagFilesConfig ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add share_point_sources to RagFile ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **aiplatform:** Add share_point_sources to SharePointSources ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add sharepoint_folder_id to SharePointSource ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add sharepoint_folder_path to SharePointSource ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add sharepoint_site_name to SharePointSource ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add spot field to Vertex Prediction's Dedicated Resources and Custom Training's Scheduling Strategy ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **aiplatform:** Add spot field to Vertex Prediction's Dedicated Resources and Custom Training's Scheduling Strategy ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **aiplatform:** Add StopNotebookRuntime method ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **aiplatform:** Add StopNotebookRuntime method ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **aiplatform:** Add streamRawPredict rpc to prediction service ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **aiplatform:** Add sync watermark to feature_view_sync.proto ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add sync watermark to feature_view_sync.proto ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add system labels field to model garden deployments ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **aiplatform:** Add tenant_id to SharePointSource ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Add text field in Segment ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Add TunedModelRef and RebaseTunedModel Api for Vertex GenAiTuningService ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** Add TunedModelRef and RebaseTunedModel Api for Vertex GenAiTuningService ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** Add UpdateDeploymentResourcePool method to DeploymentResourcePoolService v1 ([#10454](https://github.com/googleapis/google-cloud-go/issues/10454)) ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add UpdateDeploymentResourcePool method to DeploymentResourcePoolService v1beta1 ([#10475](https://github.com/googleapis/google-cloud-go/issues/10475)) ([b15d840](https://github.com/googleapis/google-cloud-go/commit/b15d8401d3ea7f2add1d0d93bc26ceb2edd9b9fc))
+* **aiplatform:** Add UpdateEndpointLongRunning API in v1beta1 version ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **aiplatform:** Add UpdateRagCorpus API for Vertex RAG ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **aiplatform:** Add use_effective_order field to BleuSpec v1beta1 ([b15d840](https://github.com/googleapis/google-cloud-go/commit/b15d8401d3ea7f2add1d0d93bc26ceb2edd9b9fc))
+* **aiplatform:** Add v1 NotebookExecutionJob to Schedule ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **aiplatform:** Add Vector DB config for Vertex RAG (Weaviate + FeatureStore) ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **aiplatform:** Added support for specifying function response type in `FunctionDeclaration` ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **aiplatform:** Allow v1 api calls for some dataset_service, llm_utility_service, and prediction_service apis without project and location ([#10643](https://github.com/googleapis/google-cloud-go/issues/10643)) ([24616cc](https://github.com/googleapis/google-cloud-go/commit/24616cc136a1ba49a551aad6f76d4d2e062d267c))
+* **aiplatform:** Allow v1beta1 api calls for some dataset_service, llm_utility_service, and prediction_service apis without project and location ([24616cc](https://github.com/googleapis/google-cloud-go/commit/24616cc136a1ba49a551aad6f76d4d2e062d267c))
+* **aiplatform:** Enable rest_numeric_enums for aiplatform v1 and v1beta1 ([#10524](https://github.com/googleapis/google-cloud-go/issues/10524)) ([f46b747](https://github.com/googleapis/google-cloud-go/commit/f46b747fe2b0f89085ee5745652db7a46b049074))
+* **aiplatform:** Expose `RuntimeArtifact` proto in `ui_pipeline_spec.proto` ([2f0aec8](https://github.com/googleapis/google-cloud-go/commit/2f0aec894179304d234be6c792d82cf4336b6d0a))
+* **aiplatform:** Introduce DefaultRuntime to PipelineJob ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+* **aiplatform:** MetricX added to evaluation service proto ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **aiplatform:** Release advanced parsing options for rag files ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** Returns usage metadata for context caching ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+
+
+### Bug Fixes
+
+* **aiplatform:** An existing field `disable_attribution` is removed from message `.google.cloud.aiplatform.v1beta1.GoogleSearchRetrieval` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** An existing field `grounding_attributions` is removed from message `.google.cloud.aiplatform.v1beta1.GroundingMetadata` ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** An existing message `GroundingAttribution` is removed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** Annotate PipelineJob and PipelineTaskRerunConfig fields as optional ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **aiplatform:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **aiplatform:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **aiplatform:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **aiplatform:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+* **aiplatform:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+* **aiplatform:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **aiplatform:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **aiplatform:** A comment for enum `Strategy` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum `Strategy` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `AUTO` in enum `Mode` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `AUTO` in enum `Mode` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `BLOCKLIST` in enum `FinishReason` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `BLOCKLIST` in enum `FinishReason` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `MAX_TOKENS` in enum `FinishReason` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `MAX_TOKENS` in enum `FinishReason` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `OTHER` in enum `FinishReason` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `OTHER` in enum `FinishReason` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `PROHIBITED_CONTENT` in enum `FinishReason` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `PROHIBITED_CONTENT` in enum `FinishReason` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `RECITATION` in enum `FinishReason` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `RECITATION` in enum `FinishReason` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `SAFETY` in enum `FinishReason` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `SAFETY` in enum `FinishReason` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `SPII` in enum `FinishReason` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `SPII` in enum `FinishReason` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `STOP` in enum `FinishReason` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `STOP` in enum `FinishReason` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for enum value `STRATEGY_UNSPECIFIED` in enum `Strategy` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for enum value `STRATEGY_UNSPECIFIED` in enum `Strategy` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for field `contents` in message `.google.cloud.aiplatform.v1.CountTokensRequest` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `contents` in message `.google.cloud.aiplatform.v1beta1.CountTokensRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `disable_attribution` in message `.google.cloud.aiplatform.v1.Retrieval` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `disable_attribution` in message `.google.cloud.aiplatform.v1beta1.Retrieval` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `distance` in message `.google.cloud.aiplatform.v1beta1.RagContexts` is changed ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **aiplatform:** A comment for field `distance` in message `.google.cloud.aiplatform.v1beta1.RagContexts` is changed ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+* **aiplatform:** A comment for field `distibution` in message `.google.cloud.aiplatform.v1beta1.model_monitoring_stats.ModelMonitoringStatsDataPoint` is changed. ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** A comment for field `instances` in message `.google.cloud.aiplatform.v1.CountTokensRequest` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `instances` in message `.google.cloud.aiplatform.v1beta1.CountTokensRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `language_code` in message `.google.cloud.aiplatform.v1.GetPublisherModelRequest` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `language_code` in message `.google.cloud.aiplatform.v1beta1.GetPublisherModelRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `language_code` in message `.google.cloud.aiplatform.v1beta1.ListPublisherModelsRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `model` in message `.google.cloud.aiplatform.v1.CountTokensRequest` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `model` in message `.google.cloud.aiplatform.v1.GenerateContentRequest` is changed ([0f25bf2](https://github.com/googleapis/google-cloud-go/commit/0f25bf264db64724af359f9e9c83c0acb8947dd5))
+* **aiplatform:** A comment for field `model` in message `.google.cloud.aiplatform.v1beta1.CountTokensRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `name` in message `.google.cloud.aiplatform.v1.Dataset` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `name` in message `.google.cloud.aiplatform.v1.DatasetVersion` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `name` in message `.google.cloud.aiplatform.v1beta1.cached_content.CachedContent` is changed ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** A comment for field `name` in message `.google.cloud.aiplatform.v1beta1.Dataset` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `name` in message `.google.cloud.aiplatform.v1beta1.DatasetVersion` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `partner_model_tuning_spec` in message `.google.cloud.aiplatform.v1beta1.TuningJob` is changed ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **aiplatform:** A comment for field `restart_job_on_worker_restart` in message `.google.cloud.aiplatform.v1.Scheduling` is changed ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **aiplatform:** A comment for field `source` in message `.google.cloud.aiplatform.v1beta1.tool.Retrieval` is added. ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** A comment for field `timeout` in message `.google.cloud.aiplatform.v1.Scheduling` is changed ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1.UpdateFeatureGroupRequest` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1.UpdateFeatureOnlineStoreRequest` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1.UpdateFeatureRequest` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1.UpdateFeatureViewRequest` is changed ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1.UpdateFeatureViewRequest` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1beta1.UpdateFeatureGroupRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1beta1.UpdateFeatureOnlineStoreRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1beta1.UpdateFeatureRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1beta1.UpdateFeatureViewRequest` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for field `vertex_prediction_endpoint` in message `.google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig` is changed ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **aiplatform:** A comment for message `GetDatasetRequest` is changed ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **aiplatform:** A comment for message `GetDatasetVersionRequest` is changed ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **aiplatform:** A comment for message `TrialContext` is changed ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **aiplatform:** A comment for message `TrialContext` is changed ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **aiplatform:** A comment for method `ListAnnotations` in service `DatasetService` is changed ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **aiplatform:** A comment for method `RebaseTunedModel` in service `GenAiTuningService` is changed ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **aiplatform:** Fix typo in feature_online_store_admin_service.proto ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Fix typo in feature_online_store_admin_service.proto ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **aiplatform:** Limit comment `SupervisedTuningSpec` for 1p tuning ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** Limit comment `SupervisedTuningSpec` for 1p tuning ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **aiplatform:** Update comments of AutoscalingSpec v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Update comments of AutoscalingSpec v1beta1 ([b15d840](https://github.com/googleapis/google-cloud-go/commit/b15d8401d3ea7f2add1d0d93bc26ceb2edd9b9fc))
+* **aiplatform:** Update feature creation message commentary ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **aiplatform:** Update the description for the deprecated GPU (K80) ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **aiplatform:** Update the description for the deprecated GPU (K80) ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **aiplatform:** Updated the maximum number of function declarations from 64 to 128 ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+
 ## [1.68.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.67.0...aiplatform/v1.68.0) (2024-06-11)
 
 

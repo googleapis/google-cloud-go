@@ -17,6 +17,7 @@ limitations under the License.
 package spannertest
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"sort"
@@ -445,7 +446,7 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 	// First stage is to identify the data source.
 	// If there's a FROM then that names a table to use.
 	if len(sel.From) > 1 {
-		return nil, fmt.Errorf("selecting with more than one FROM clause not yet supported")
+		return nil, errors.New("selecting with more than one FROM clause not yet supported")
 	}
 	if len(sel.From) == 1 {
 		var err error
@@ -751,11 +752,11 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 
 func newJoinIter(lhs, rhs *rawIter, lhsEC, rhsEC evalContext, sfj spansql.SelectFromJoin) (*joinIter, evalContext, error) {
 	if sfj.On != nil && len(sfj.Using) > 0 {
-		return nil, evalContext{}, fmt.Errorf("JOIN may not have both ON and USING clauses")
+		return nil, evalContext{}, errors.New("JOIN may not have both ON and USING clauses")
 	}
 	if sfj.On == nil && len(sfj.Using) == 0 && sfj.Type != spansql.CrossJoin {
 		// TODO: This isn't correct for joining against a non-table.
-		return nil, evalContext{}, fmt.Errorf("non-CROSS JOIN must have ON or USING clause")
+		return nil, evalContext{}, errors.New("non-CROSS JOIN must have ON or USING clause")
 	}
 
 	// Start with the context from the LHS (aliases and params should be the same on both sides).

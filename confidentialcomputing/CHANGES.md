@@ -1,6 +1,75 @@
 # Changelog
 
 
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.9.1...confidentialcomputing/v1.9.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.9.0...confidentialcomputing/v1.9.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.8.1...confidentialcomputing/v1.9.0) (2025-02-26)
+
+
+### Features
+
+* **confidentialcomputing:** A new field `attester` is added to message `.google.cloud.confidentialcomputing.v1.VerifyAttestationRequest` ([#11619](https://github.com/googleapis/google-cloud-go/issues/11619)) ([1898dff](https://github.com/googleapis/google-cloud-go/commit/1898dff85269cdc696a2d37440d8df854a9b1afa))
+
+
+### Documentation
+
+* **confidentialcomputing:** Fixed a typo in `VerifyAttestationRequest` comment ([1898dff](https://github.com/googleapis/google-cloud-go/commit/1898dff85269cdc696a2d37440d8df854a9b1afa))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.8.0...confidentialcomputing/v1.8.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.7.2...confidentialcomputing/v1.8.0) (2024-12-04)
+
+
+### Features
+
+* **confidentialcomputing:** Add a token_type options proto to allow for customization of specific token types. Added the first token type option to hold principal tag token options ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.7.1...confidentialcomputing/v1.7.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **confidentialcomputing:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.7.0...confidentialcomputing/v1.7.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.6.1...confidentialcomputing/v1.7.0) (2024-08-20)
+
+
+### Features
+
+* **confidentialcomputing:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.6.0...confidentialcomputing/v1.6.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.5.4...confidentialcomputing/v1.6.0) (2024-07-24)
 
 

@@ -94,6 +94,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
 					{Name: "Cn", Type: Type{Base: JSON}, Position: line(15)},
 					{Name: "Co", Type: Type{Base: Int64}, Default: IntegerLiteral(1), Position: line(16)},
+					{Name: "Cp", Type: Type{Base: Proto, ProtoRef: "a.b.c"}, Position: line(17)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -117,6 +118,7 @@ func TestSQL(t *testing.T) {
   Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
   Cn JSON,
   Co INT64 DEFAULT (1),
+  Cp ` + "`a.b.c`" + `,
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
@@ -745,6 +747,28 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterSearchIndex{
+				Name: "iname",
+				Alteration: AddStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER SEARCH INDEX iname ADD STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
+			&AlterSearchIndex{
+				Name: "iname",
+				Alteration: DropStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER SEARCH INDEX iname DROP STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
 			&CreateTable{
 				Name:        "tname",
 				IfNotExists: true,
@@ -761,6 +785,128 @@ func TestSQL(t *testing.T) {
   id INT64,
   name STRING(64),
 ) PRIMARY KEY(id)`,
+			reparseDDL,
+		},
+		{
+			&CreateTable{
+				Name: "TableTokens",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+					{
+						Name: "Name_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name")}},
+						Hidden:    true,
+						Position:  line(3),
+					},
+					{Name: "Value", Type: Type{Base: Int64}, NotNull: true, Position: line(4)},
+					{
+						Name: "Value_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{ID("Value")}},
+						Hidden:    true,
+						Position:  line(5),
+					},
+					{Name: "Values", Type: Type{Array: true, Base: String, Len: MaxLen}, NotNull: false, Position: line(6)},
+					{
+						Name: "Values_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKEN", Args: []Expr{ID("Values")}},
+						Hidden:    true,
+						Position:  line(7),
+					},
+					{Name: "ValueTwo", Type: Type{Base: Bool}, NotNull: true, Position: line(8)},
+					{
+						Name: "ValueTwo_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENIZE_BOOL", Args: []Expr{ID("ValueTwo")}},
+						Hidden:    true,
+						Position:  line(9),
+					},
+					{Name: "ValueThree", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(10)},
+					{
+						Name: "ValueThree_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENIZE_NGRAMS", Args: []Expr{ID("ValueThree")}},
+						Hidden:    true,
+						Position:  line(11),
+					},
+					{Name: "ValueFour", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(12)},
+					{
+						Name: "ValueFour_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("ValueFour")}},
+						Hidden:    true,
+						Position:  line(13),
+					},
+					{
+						Name: "Combined_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENLIST_CONCAT", Args: []Expr{Array{ID("Name_Tokens"), ID("ValueFour_Tokens")}}},
+						Hidden:    true,
+						Position:  line(14),
+					},
+					{
+						Name: "Argument_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name"), DefinitionExpr{
+							Key:   "token_category",
+							Value: StringLiteral("small"),
+						}}},
+						Hidden:   true,
+						Position: line(15),
+					},
+					{
+						Name: "ManyArgument_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{
+							ID("Value"),
+							DefinitionExpr{
+								Key:   "comparison_type",
+								Value: StringLiteral("all"),
+							},
+							DefinitionExpr{
+								Key:   "min",
+								Value: IntegerLiteral(1),
+							},
+							DefinitionExpr{
+								Key:   "max",
+								Value: IntegerLiteral(5),
+							},
+						}},
+						Hidden:   true,
+						Position: line(16),
+					},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(1),
+			},
+			`CREATE TABLE TableTokens (
+  Name STRING(MAX) NOT NULL,
+  Name_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name)) HIDDEN,
+  Value INT64 NOT NULL,
+  Value_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value)) HIDDEN,
+  Values ARRAY<STRING(MAX)>,
+  Values_Tokens TOKENLIST AS (TOKEN(Values)) HIDDEN,
+  ValueTwo BOOL NOT NULL,
+  ValueTwo_Tokens TOKENLIST AS (TOKENIZE_BOOL(ValueTwo)) HIDDEN,
+  ValueThree STRING(MAX) NOT NULL,
+  ValueThree_Tokens TOKENLIST AS (TOKENIZE_NGRAMS(ValueThree)) HIDDEN,
+  ValueFour STRING(MAX) NOT NULL,
+  ValueFour_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(ValueFour)) HIDDEN,
+  Combined_Tokens TOKENLIST AS (TOKENLIST_CONCAT([Name_Tokens, ValueFour_Tokens])) HIDDEN,
+  Argument_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name, token_category => "small")) HIDDEN,
+  ManyArgument_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value, comparison_type => "all", min => 1, max => 5)) HIDDEN,
+) PRIMARY KEY(Name)`,
+			reparseDDL,
+		},
+		{
+			&CreateSearchIndex{
+				Name:  "TableTokensSearch",
+				Table: "TableTokens",
+				Columns: []KeyPart{
+					{Column: "Name_Tokens"},
+					{Column: "Value_Tokens"},
+				},
+				Storing:     []ID{"ValueTwo"},
+				PartitionBy: []ID{"Value", "ValueTwo"},
+				OrderBy:     []Order{{Expr: ID("Value"), Desc: true}, {Expr: ID("ValueTwo"), Desc: false}},
+				Interleave:  ID("SomeTable"),
+				Options:     SearchIndexOptions{SortOrderSharding: func(b bool) *bool { return &b }(true)},
+				Position:    line(1),
+			},
+			`CREATE SEARCH INDEX TableTokensSearch ON TableTokens(Name_Tokens, Value_Tokens) STORING (ValueTwo) PARTITION BY Value, ValueTwo ORDER BY Value DESC, ValueTwo, INTERLEAVE IN SomeTable OPTIONS (sort_order_sharding=true)`,
 			reparseDDL,
 		},
 		{
@@ -804,6 +950,22 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"DROP INDEX IF EXISTS iname",
+			reparseDDL,
+		},
+		{
+			&DropSearchIndex{
+				Name:     "iname",
+				IfExists: true,
+				Position: line(1),
+			},
+			"DROP SEARCH INDEX IF EXISTS iname",
+			reparseDDL,
+		},
+		{
+			&DropProtoBundle{
+				Position: line(1),
+			},
+			"DROP PROTO BUNDLE",
 			reparseDDL,
 		},
 		{
@@ -918,6 +1080,78 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			`DROP SEQUENCE sname`,
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				Position: line(1),
+			},
+			"ALTER PROTO BUNDLE",
+			reparseDDL,
+		},
+		{
+			&CreateProtoBundle{
+				Types:    []string{"a.b.c", "b.d.e"},
+				Position: line(1),
+			},
+			"CREATE PROTO BUNDLE (`a.b.c`, `b.d.e`)",
+			reparseDDL,
+		},
+		{
+			&CreateProtoBundle{
+				Types:    []string(nil),
+				Position: line(1),
+			},
+			"CREATE PROTO BUNDLE ()",
+			reparseDDL,
+		},
+		{
+			&CreateProtoBundle{
+				Types:    []string{"a"},
+				Position: line(1),
+			},
+			"CREATE PROTO BUNDLE (`a`)",
+			reparseDDL,
+		},
+		{
+			&CreateProtoBundle{
+				Types:    []string{"a.b.c"},
+				Position: line(1),
+			},
+			"CREATE PROTO BUNDLE (`a.b.c`)",
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				AddTypes: []string{"a.b.c", "b.d.e"},
+				Position: line(1),
+			},
+			"ALTER PROTO BUNDLE INSERT (`a.b.c`, `b.d.e`)",
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				UpdateTypes: []string{"a.b.c", "b.d.e"},
+				Position:    line(1),
+			},
+			"ALTER PROTO BUNDLE UPDATE (`a.b.c`, `b.d.e`)",
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				DeleteTypes: []string{"a.b.c", "b.d.e"},
+				Position:    line(1),
+			},
+			"ALTER PROTO BUNDLE DELETE (`a.b.c`, `b.d.e`)",
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				AddTypes:    []string{"e.f.g"},
+				DeleteTypes: []string{"a.b.c", "b.d.e"},
+				Position:    line(1),
+			},
+			"ALTER PROTO BUNDLE INSERT (`e.f.g`) DELETE (`a.b.c`, `b.d.e`)",
 			reparseDDL,
 		},
 		{
@@ -1037,6 +1271,18 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			`SELECT CAST(7 AS STRING)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: Enum}}},
+					}},
+				},
+			},
+			`SELECT CAST(7 AS ENUM)`,
 			reparseQuery,
 		},
 		{

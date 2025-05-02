@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -237,6 +236,8 @@ type tagBindingsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTagBindingsClient creates a new tag bindings client based on gRPC.
@@ -264,6 +265,7 @@ func NewTagBindingsClient(ctx context.Context, opts ...option.ClientOption) (*Ta
 		connPool:          connPool,
 		tagBindingsClient: resourcemanagerpb.NewTagBindingsClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -327,6 +329,8 @@ type tagBindingsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TagBindingsClient
 	CallOptions **TagBindingsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTagBindingsRESTClient creates a new tag bindings rest client.
@@ -345,6 +349,7 @@ func NewTagBindingsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -415,7 +420,7 @@ func (c *tagBindingsGRPCClient) ListTagBindings(ctx context.Context, req *resour
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tagBindingsClient.ListTagBindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tagBindingsClient.ListTagBindings, req, settings.GRPC, c.logger, "ListTagBindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -447,7 +452,7 @@ func (c *tagBindingsGRPCClient) CreateTagBinding(ctx context.Context, req *resou
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagBindingsClient.CreateTagBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagBindingsClient.CreateTagBinding, req, settings.GRPC, c.logger, "CreateTagBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -467,7 +472,7 @@ func (c *tagBindingsGRPCClient) DeleteTagBinding(ctx context.Context, req *resou
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagBindingsClient.DeleteTagBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagBindingsClient.DeleteTagBinding, req, settings.GRPC, c.logger, "DeleteTagBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -495,7 +500,7 @@ func (c *tagBindingsGRPCClient) ListEffectiveTags(ctx context.Context, req *reso
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tagBindingsClient.ListEffectiveTags(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tagBindingsClient.ListEffectiveTags, req, settings.GRPC, c.logger, "ListEffectiveTags")
 			return err
 		}, opts...)
 		if err != nil {
@@ -530,7 +535,7 @@ func (c *tagBindingsGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -589,21 +594,10 @@ func (c *tagBindingsRESTClient) ListTagBindings(ctx context.Context, req *resour
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTagBindings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -672,21 +666,10 @@ func (c *tagBindingsRESTClient) CreateTagBinding(ctx context.Context, req *resou
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTagBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -736,21 +719,10 @@ func (c *tagBindingsRESTClient) DeleteTagBinding(ctx context.Context, req *resou
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTagBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -815,21 +787,10 @@ func (c *tagBindingsRESTClient) ListEffectiveTags(ctx context.Context, req *reso
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEffectiveTags")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -892,17 +853,7 @@ func (c *tagBindingsRESTClient) GetOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

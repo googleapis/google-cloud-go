@@ -21,6 +21,7 @@ import (
 	"io"
 	"reflect"
 	"sort"
+	"unicode/utf8"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -31,7 +32,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var errNilDocRef = errors.New("firestore: nil DocumentRef")
+var (
+	errNilDocRef         = errors.New("firestore: nil DocumentRef")
+	errInvalidUtf8DocRef = errors.New("firestore: ID in DocumentRef contains invalid UTF-8 characters")
+)
 
 // A DocumentRef is a reference to a Firestore document.
 type DocumentRef struct {
@@ -63,6 +67,16 @@ func newDocRef(parent *CollectionRef, id string) *DocumentRef {
 	}
 }
 
+func (d *DocumentRef) isValid() error {
+	if d == nil {
+		return errNilDocRef
+	}
+	if !utf8.ValidString(d.ID) {
+		return errInvalidUtf8DocRef
+	}
+	return nil
+}
+
 // Collection returns a reference to sub-collection of this document.
 func (d *DocumentRef) Collection(id string) *CollectionRef {
 	return newCollRefWithParent(d.Parent.c, d, id)
@@ -79,8 +93,8 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.DocumentRef.Get")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if d == nil {
-		return nil, errNilDocRef
+	if err := d.isValid(); err != nil {
+		return nil, err
 	}
 
 	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil, d.readSettings)
@@ -147,8 +161,8 @@ func (d *DocumentRef) Create(ctx context.Context, data interface{}) (_ *WriteRes
 }
 
 func (d *DocumentRef) newCreateWrites(data interface{}) ([]*pb.Write, error) {
-	if d == nil {
-		return nil, errNilDocRef
+	if err := d.isValid(); err != nil {
+		return nil, err
 	}
 	doc, transforms, err := toProtoDocument(data)
 	if err != nil {
@@ -179,8 +193,8 @@ func (d *DocumentRef) Set(ctx context.Context, data interface{}, opts ...SetOpti
 }
 
 func (d *DocumentRef) newSetWrites(data interface{}, opts []SetOption) ([]*pb.Write, error) {
-	if d == nil {
-		return nil, errNilDocRef
+	if err := d.isValid(); err != nil {
+		return nil, err
 	}
 	if data == nil {
 		return nil, errors.New("firestore: nil document contents")
@@ -259,8 +273,8 @@ func (d *DocumentRef) Delete(ctx context.Context, preconds ...Precondition) (_ *
 }
 
 func (d *DocumentRef) newDeleteWrites(preconds []Precondition) ([]*pb.Write, error) {
-	if d == nil {
-		return nil, errNilDocRef
+	if err := d.isValid(); err != nil {
+		return nil, err
 	}
 	pc, err := processPreconditionsForDelete(preconds)
 	if err != nil {
@@ -495,6 +509,13 @@ type transform struct {
 	err error
 }
 
+func (t transform) String() string {
+	if t.t == nil {
+		return "{t:nil}"
+	}
+	return fmt.Sprintf("{t:%v}", t.t.String())
+}
+
 // FieldTransformIncrement returns a special value that can be used with Set, Create, or
 // Update that tells the server to transform the field's current value
 // by the given value.
@@ -648,6 +669,15 @@ type Update struct {
 	Path      string // Will be split on dots, and must not contain any of "˜*/[]".
 	FieldPath FieldPath
 	Value     interface{}
+}
+
+// String returns string representation of firestore.Update
+func (u Update) String() string {
+	t, ok := u.Value.(transform)
+	if !ok {
+		return fmt.Sprintf("{Path:%s FieldPath:%s Value:%s}", u.Path, u.FieldPath, u.Value)
+	}
+	return fmt.Sprintf("{Path:%s FieldPath:%s Value:%s}", u.Path, u.FieldPath, t.String())
 }
 
 // An fpv is a pair of validated FieldPath and value.

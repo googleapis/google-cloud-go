@@ -96,7 +96,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ecs, err := newSubjectTokenProvider(&Options{
-				Client: internal.CloneDefaultClient(),
+				Client: internal.DefaultClient(),
 				CredentialSource: &credsfile.CredentialSource{
 					Executable: &tt.executableConfig,
 				},

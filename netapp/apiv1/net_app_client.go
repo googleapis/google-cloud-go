@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	netapppb "cloud.google.com/go/netapp/apiv1/netapppb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -53,6 +52,8 @@ type CallOptions struct {
 	GetStoragePool              []gax.CallOption
 	UpdateStoragePool           []gax.CallOption
 	DeleteStoragePool           []gax.CallOption
+	ValidateDirectoryService    []gax.CallOption
+	SwitchActiveReplicaZone     []gax.CallOption
 	ListVolumes                 []gax.CallOption
 	GetVolume                   []gax.CallOption
 	CreateVolume                []gax.CallOption
@@ -84,6 +85,8 @@ type CallOptions struct {
 	StopReplication             []gax.CallOption
 	ResumeReplication           []gax.CallOption
 	ReverseReplicationDirection []gax.CallOption
+	EstablishPeering            []gax.CallOption
+	SyncReplication             []gax.CallOption
 	CreateBackupVault           []gax.CallOption
 	GetBackupVault              []gax.CallOption
 	ListBackupVaults            []gax.CallOption
@@ -99,6 +102,11 @@ type CallOptions struct {
 	ListBackupPolicies          []gax.CallOption
 	UpdateBackupPolicy          []gax.CallOption
 	DeleteBackupPolicy          []gax.CallOption
+	ListQuotaRules              []gax.CallOption
+	GetQuotaRule                []gax.CallOption
+	CreateQuotaRule             []gax.CallOption
+	UpdateQuotaRule             []gax.CallOption
+	DeleteQuotaRule             []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -157,6 +165,8 @@ func defaultCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ValidateDirectoryService: []gax.CallOption{},
+		SwitchActiveReplicaZone:  []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -340,6 +350,8 @@ func defaultCallOptions() *CallOptions {
 		ReverseReplicationDirection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishPeering: []gax.CallOption{},
+		SyncReplication:  []gax.CallOption{},
 		CreateBackupVault: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -439,6 +451,11 @@ func defaultCallOptions() *CallOptions {
 		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListQuotaRules:  []gax.CallOption{},
+		GetQuotaRule:    []gax.CallOption{},
+		CreateQuotaRule: []gax.CallOption{},
+		UpdateQuotaRule: []gax.CallOption{},
+		DeleteQuotaRule: []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -481,6 +498,8 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ValidateDirectoryService: []gax.CallOption{},
+		SwitchActiveReplicaZone:  []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -654,6 +673,8 @@ func defaultRESTCallOptions() *CallOptions {
 		ReverseReplicationDirection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishPeering: []gax.CallOption{},
+		SyncReplication:  []gax.CallOption{},
 		CreateBackupVault: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -747,6 +768,11 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListQuotaRules:  []gax.CallOption{},
+		GetQuotaRule:    []gax.CallOption{},
+		CreateQuotaRule: []gax.CallOption{},
+		UpdateQuotaRule: []gax.CallOption{},
+		DeleteQuotaRule: []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -769,6 +795,10 @@ type internalClient interface {
 	UpdateStoragePoolOperation(name string) *UpdateStoragePoolOperation
 	DeleteStoragePool(context.Context, *netapppb.DeleteStoragePoolRequest, ...gax.CallOption) (*DeleteStoragePoolOperation, error)
 	DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation
+	ValidateDirectoryService(context.Context, *netapppb.ValidateDirectoryServiceRequest, ...gax.CallOption) (*ValidateDirectoryServiceOperation, error)
+	ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation
+	SwitchActiveReplicaZone(context.Context, *netapppb.SwitchActiveReplicaZoneRequest, ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error)
+	SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation
 	ListVolumes(context.Context, *netapppb.ListVolumesRequest, ...gax.CallOption) *VolumeIterator
 	GetVolume(context.Context, *netapppb.GetVolumeRequest, ...gax.CallOption) (*netapppb.Volume, error)
 	CreateVolume(context.Context, *netapppb.CreateVolumeRequest, ...gax.CallOption) (*CreateVolumeOperation, error)
@@ -820,6 +850,10 @@ type internalClient interface {
 	ResumeReplicationOperation(name string) *ResumeReplicationOperation
 	ReverseReplicationDirection(context.Context, *netapppb.ReverseReplicationDirectionRequest, ...gax.CallOption) (*ReverseReplicationDirectionOperation, error)
 	ReverseReplicationDirectionOperation(name string) *ReverseReplicationDirectionOperation
+	EstablishPeering(context.Context, *netapppb.EstablishPeeringRequest, ...gax.CallOption) (*EstablishPeeringOperation, error)
+	EstablishPeeringOperation(name string) *EstablishPeeringOperation
+	SyncReplication(context.Context, *netapppb.SyncReplicationRequest, ...gax.CallOption) (*SyncReplicationOperation, error)
+	SyncReplicationOperation(name string) *SyncReplicationOperation
 	CreateBackupVault(context.Context, *netapppb.CreateBackupVaultRequest, ...gax.CallOption) (*CreateBackupVaultOperation, error)
 	CreateBackupVaultOperation(name string) *CreateBackupVaultOperation
 	GetBackupVault(context.Context, *netapppb.GetBackupVaultRequest, ...gax.CallOption) (*netapppb.BackupVault, error)
@@ -844,6 +878,14 @@ type internalClient interface {
 	UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation
 	DeleteBackupPolicy(context.Context, *netapppb.DeleteBackupPolicyRequest, ...gax.CallOption) (*DeleteBackupPolicyOperation, error)
 	DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation
+	ListQuotaRules(context.Context, *netapppb.ListQuotaRulesRequest, ...gax.CallOption) *QuotaRuleIterator
+	GetQuotaRule(context.Context, *netapppb.GetQuotaRuleRequest, ...gax.CallOption) (*netapppb.QuotaRule, error)
+	CreateQuotaRule(context.Context, *netapppb.CreateQuotaRuleRequest, ...gax.CallOption) (*CreateQuotaRuleOperation, error)
+	CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation
+	UpdateQuotaRule(context.Context, *netapppb.UpdateQuotaRuleRequest, ...gax.CallOption) (*UpdateQuotaRuleOperation, error)
+	UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation
+	DeleteQuotaRule(context.Context, *netapppb.DeleteQuotaRuleRequest, ...gax.CallOption) (*DeleteQuotaRuleOperation, error)
+	DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -933,6 +975,30 @@ func (c *Client) DeleteStoragePool(ctx context.Context, req *netapppb.DeleteStor
 // The name must be that of a previously created DeleteStoragePoolOperation, possibly from a different process.
 func (c *Client) DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation {
 	return c.internalClient.DeleteStoragePoolOperation(name)
+}
+
+// ValidateDirectoryService validateDirectoryService does a connectivity check for a directory service
+// policy attached to the storage pool.
+func (c *Client) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	return c.internalClient.ValidateDirectoryService(ctx, req, opts...)
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *Client) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	return c.internalClient.ValidateDirectoryServiceOperation(name)
+}
+
+// SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional
+// storagePool.
+func (c *Client) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	return c.internalClient.SwitchActiveReplicaZone(ctx, req, opts...)
+}
+
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *Client) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	return c.internalClient.SwitchActiveReplicaZoneOperation(name)
 }
 
 // ListVolumes lists Volumes in a given project.
@@ -1215,6 +1281,29 @@ func (c *Client) ReverseReplicationDirectionOperation(name string) *ReverseRepli
 	return c.internalClient.ReverseReplicationDirectionOperation(name)
 }
 
+// EstablishPeering establish replication peering.
+func (c *Client) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	return c.internalClient.EstablishPeering(ctx, req, opts...)
+}
+
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *Client) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	return c.internalClient.EstablishPeeringOperation(name)
+}
+
+// SyncReplication syncs the replication. This will invoke one time volume data transfer from
+// source to destination.
+func (c *Client) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	return c.internalClient.SyncReplication(ctx, req, opts...)
+}
+
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *Client) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	return c.internalClient.SyncReplicationOperation(name)
+}
+
 // CreateBackupVault creates new backup vault
 func (c *Client) CreateBackupVault(ctx context.Context, req *netapppb.CreateBackupVaultRequest, opts ...gax.CallOption) (*CreateBackupVaultOperation, error) {
 	return c.internalClient.CreateBackupVault(ctx, req, opts...)
@@ -1347,6 +1436,49 @@ func (c *Client) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOpe
 	return c.internalClient.DeleteBackupPolicyOperation(name)
 }
 
+// ListQuotaRules returns list of all quota rules in a location.
+func (c *Client) ListQuotaRules(ctx context.Context, req *netapppb.ListQuotaRulesRequest, opts ...gax.CallOption) *QuotaRuleIterator {
+	return c.internalClient.ListQuotaRules(ctx, req, opts...)
+}
+
+// GetQuotaRule returns details of the specified quota rule.
+func (c *Client) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRuleRequest, opts ...gax.CallOption) (*netapppb.QuotaRule, error) {
+	return c.internalClient.GetQuotaRule(ctx, req, opts...)
+}
+
+// CreateQuotaRule creates a new quota rule.
+func (c *Client) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQuotaRuleRequest, opts ...gax.CallOption) (*CreateQuotaRuleOperation, error) {
+	return c.internalClient.CreateQuotaRule(ctx, req, opts...)
+}
+
+// CreateQuotaRuleOperation returns a new CreateQuotaRuleOperation from a given name.
+// The name must be that of a previously created CreateQuotaRuleOperation, possibly from a different process.
+func (c *Client) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation {
+	return c.internalClient.CreateQuotaRuleOperation(name)
+}
+
+// UpdateQuotaRule updates a quota rule.
+func (c *Client) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQuotaRuleRequest, opts ...gax.CallOption) (*UpdateQuotaRuleOperation, error) {
+	return c.internalClient.UpdateQuotaRule(ctx, req, opts...)
+}
+
+// UpdateQuotaRuleOperation returns a new UpdateQuotaRuleOperation from a given name.
+// The name must be that of a previously created UpdateQuotaRuleOperation, possibly from a different process.
+func (c *Client) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation {
+	return c.internalClient.UpdateQuotaRuleOperation(name)
+}
+
+// DeleteQuotaRule deletes a quota rule.
+func (c *Client) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQuotaRuleRequest, opts ...gax.CallOption) (*DeleteQuotaRuleOperation, error) {
+	return c.internalClient.DeleteQuotaRule(ctx, req, opts...)
+}
+
+// DeleteQuotaRuleOperation returns a new DeleteQuotaRuleOperation from a given name.
+// The name must be that of a previously created DeleteQuotaRuleOperation, possibly from a different process.
+func (c *Client) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
+	return c.internalClient.DeleteQuotaRuleOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -1401,6 +1533,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new net app client based on gRPC.
@@ -1427,6 +1561,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           netapppb.NewNetAppClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -1491,6 +1626,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new net app rest client.
@@ -1508,6 +1645,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1581,7 +1719,7 @@ func (c *gRPCClient) ListStoragePools(ctx context.Context, req *netapppb.ListSto
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListStoragePools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListStoragePools, req, settings.GRPC, c.logger, "ListStoragePools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1616,7 +1754,7 @@ func (c *gRPCClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateStoragePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateStoragePool, req, settings.GRPC, c.logger, "CreateStoragePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1636,7 +1774,7 @@ func (c *gRPCClient) GetStoragePool(ctx context.Context, req *netapppb.GetStorag
 	var resp *netapppb.StoragePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetStoragePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetStoragePool, req, settings.GRPC, c.logger, "GetStoragePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1654,7 +1792,7 @@ func (c *gRPCClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateStoragePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateStoragePool, req, settings.GRPC, c.logger, "UpdateStoragePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1674,13 +1812,53 @@ func (c *gRPCClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteStoragePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteStoragePool, req, settings.GRPC, c.logger, "DeleteStoragePool")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &DeleteStoragePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ValidateDirectoryService[0:len((*c.CallOptions).ValidateDirectoryService):len((*c.CallOptions).ValidateDirectoryService)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ValidateDirectoryService, req, settings.GRPC, c.logger, "ValidateDirectoryService")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ValidateDirectoryServiceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SwitchActiveReplicaZone[0:len((*c.CallOptions).SwitchActiveReplicaZone):len((*c.CallOptions).SwitchActiveReplicaZone)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.SwitchActiveReplicaZone, req, settings.GRPC, c.logger, "SwitchActiveReplicaZone")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SwitchActiveReplicaZoneOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1705,7 +1883,7 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListVolumes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListVolumes, req, settings.GRPC, c.logger, "ListVolumes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1740,7 +1918,7 @@ func (c *gRPCClient) GetVolume(ctx context.Context, req *netapppb.GetVolumeReque
 	var resp *netapppb.Volume
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetVolume, req, settings.GRPC, c.logger, "GetVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1758,7 +1936,7 @@ func (c *gRPCClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateVolume, req, settings.GRPC, c.logger, "CreateVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1778,7 +1956,7 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateVolume, req, settings.GRPC, c.logger, "UpdateVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1798,7 +1976,7 @@ func (c *gRPCClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteVolume, req, settings.GRPC, c.logger, "DeleteVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1818,7 +1996,7 @@ func (c *gRPCClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RevertVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RevertVolume, req, settings.GRPC, c.logger, "RevertVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1849,7 +2027,7 @@ func (c *gRPCClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapsh
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSnapshots(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSnapshots, req, settings.GRPC, c.logger, "ListSnapshots")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1884,7 +2062,7 @@ func (c *gRPCClient) GetSnapshot(ctx context.Context, req *netapppb.GetSnapshotR
 	var resp *netapppb.Snapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSnapshot, req, settings.GRPC, c.logger, "GetSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1902,7 +2080,7 @@ func (c *gRPCClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSnapshot, req, settings.GRPC, c.logger, "CreateSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1922,7 +2100,7 @@ func (c *gRPCClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteSnapshot, req, settings.GRPC, c.logger, "DeleteSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1942,7 +2120,7 @@ func (c *gRPCClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSnapshot, req, settings.GRPC, c.logger, "UpdateSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1973,7 +2151,7 @@ func (c *gRPCClient) ListActiveDirectories(ctx context.Context, req *netapppb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListActiveDirectories(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListActiveDirectories, req, settings.GRPC, c.logger, "ListActiveDirectories")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2008,7 +2186,7 @@ func (c *gRPCClient) GetActiveDirectory(ctx context.Context, req *netapppb.GetAc
 	var resp *netapppb.ActiveDirectory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetActiveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetActiveDirectory, req, settings.GRPC, c.logger, "GetActiveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2026,7 +2204,7 @@ func (c *gRPCClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateActiveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateActiveDirectory, req, settings.GRPC, c.logger, "CreateActiveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2046,7 +2224,7 @@ func (c *gRPCClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateActiveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateActiveDirectory, req, settings.GRPC, c.logger, "UpdateActiveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2066,7 +2244,7 @@ func (c *gRPCClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteActiveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteActiveDirectory, req, settings.GRPC, c.logger, "DeleteActiveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2097,7 +2275,7 @@ func (c *gRPCClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsCo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListKmsConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListKmsConfigs, req, settings.GRPC, c.logger, "ListKmsConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2132,7 +2310,7 @@ func (c *gRPCClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateKmsConfig, req, settings.GRPC, c.logger, "CreateKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2152,7 +2330,7 @@ func (c *gRPCClient) GetKmsConfig(ctx context.Context, req *netapppb.GetKmsConfi
 	var resp *netapppb.KmsConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetKmsConfig, req, settings.GRPC, c.logger, "GetKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2170,7 +2348,7 @@ func (c *gRPCClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateKmsConfig, req, settings.GRPC, c.logger, "UpdateKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2190,7 +2368,7 @@ func (c *gRPCClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.EncryptVolumes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.EncryptVolumes, req, settings.GRPC, c.logger, "EncryptVolumes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2210,7 +2388,7 @@ func (c *gRPCClient) VerifyKmsConfig(ctx context.Context, req *netapppb.VerifyKm
 	var resp *netapppb.VerifyKmsConfigResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.VerifyKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.VerifyKmsConfig, req, settings.GRPC, c.logger, "VerifyKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2228,7 +2406,7 @@ func (c *gRPCClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteKmsConfig, req, settings.GRPC, c.logger, "DeleteKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2259,7 +2437,7 @@ func (c *gRPCClient) ListReplications(ctx context.Context, req *netapppb.ListRep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListReplications(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListReplications, req, settings.GRPC, c.logger, "ListReplications")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2294,7 +2472,7 @@ func (c *gRPCClient) GetReplication(ctx context.Context, req *netapppb.GetReplic
 	var resp *netapppb.Replication
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetReplication, req, settings.GRPC, c.logger, "GetReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2312,7 +2490,7 @@ func (c *gRPCClient) CreateReplication(ctx context.Context, req *netapppb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateReplication, req, settings.GRPC, c.logger, "CreateReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2332,7 +2510,7 @@ func (c *gRPCClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteReplication, req, settings.GRPC, c.logger, "DeleteReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2352,7 +2530,7 @@ func (c *gRPCClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateReplication, req, settings.GRPC, c.logger, "UpdateReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2372,7 +2550,7 @@ func (c *gRPCClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StopReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StopReplication, req, settings.GRPC, c.logger, "StopReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2392,7 +2570,7 @@ func (c *gRPCClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResumeReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResumeReplication, req, settings.GRPC, c.logger, "ResumeReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2412,13 +2590,53 @@ func (c *gRPCClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReverseReplicationDirection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReverseReplicationDirection, req, settings.GRPC, c.logger, "ReverseReplicationDirection")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &ReverseReplicationDirectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EstablishPeering[0:len((*c.CallOptions).EstablishPeering):len((*c.CallOptions).EstablishPeering)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.EstablishPeering, req, settings.GRPC, c.logger, "EstablishPeering")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EstablishPeeringOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SyncReplication[0:len((*c.CallOptions).SyncReplication):len((*c.CallOptions).SyncReplication)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.SyncReplication, req, settings.GRPC, c.logger, "SyncReplication")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SyncReplicationOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2432,7 +2650,7 @@ func (c *gRPCClient) CreateBackupVault(ctx context.Context, req *netapppb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateBackupVault(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateBackupVault, req, settings.GRPC, c.logger, "CreateBackupVault")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2452,7 +2670,7 @@ func (c *gRPCClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackup
 	var resp *netapppb.BackupVault
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetBackupVault(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetBackupVault, req, settings.GRPC, c.logger, "GetBackupVault")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2481,7 +2699,7 @@ func (c *gRPCClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBac
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListBackupVaults(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListBackupVaults, req, settings.GRPC, c.logger, "ListBackupVaults")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2516,7 +2734,7 @@ func (c *gRPCClient) UpdateBackupVault(ctx context.Context, req *netapppb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateBackupVault(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateBackupVault, req, settings.GRPC, c.logger, "UpdateBackupVault")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2536,7 +2754,7 @@ func (c *gRPCClient) DeleteBackupVault(ctx context.Context, req *netapppb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteBackupVault(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteBackupVault, req, settings.GRPC, c.logger, "DeleteBackupVault")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2556,7 +2774,7 @@ func (c *gRPCClient) CreateBackup(ctx context.Context, req *netapppb.CreateBacku
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateBackup, req, settings.GRPC, c.logger, "CreateBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2576,7 +2794,7 @@ func (c *gRPCClient) GetBackup(ctx context.Context, req *netapppb.GetBackupReque
 	var resp *netapppb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetBackup, req, settings.GRPC, c.logger, "GetBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2605,7 +2823,7 @@ func (c *gRPCClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListBackups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListBackups, req, settings.GRPC, c.logger, "ListBackups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2640,7 +2858,7 @@ func (c *gRPCClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBacku
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteBackup, req, settings.GRPC, c.logger, "DeleteBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2660,7 +2878,7 @@ func (c *gRPCClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBacku
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateBackup, req, settings.GRPC, c.logger, "UpdateBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2680,7 +2898,7 @@ func (c *gRPCClient) CreateBackupPolicy(ctx context.Context, req *netapppb.Creat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateBackupPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateBackupPolicy, req, settings.GRPC, c.logger, "CreateBackupPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2700,7 +2918,7 @@ func (c *gRPCClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBacku
 	var resp *netapppb.BackupPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetBackupPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetBackupPolicy, req, settings.GRPC, c.logger, "GetBackupPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2729,7 +2947,7 @@ func (c *gRPCClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListB
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListBackupPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListBackupPolicies, req, settings.GRPC, c.logger, "ListBackupPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2764,7 +2982,7 @@ func (c *gRPCClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.Updat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateBackupPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateBackupPolicy, req, settings.GRPC, c.logger, "UpdateBackupPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2784,13 +3002,137 @@ func (c *gRPCClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteBackupPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteBackupPolicy, req, settings.GRPC, c.logger, "DeleteBackupPolicy")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &DeleteBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuotaRulesRequest, opts ...gax.CallOption) *QuotaRuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListQuotaRules[0:len((*c.CallOptions).ListQuotaRules):len((*c.CallOptions).ListQuotaRules)], opts...)
+	it := &QuotaRuleIterator{}
+	req = proto.Clone(req).(*netapppb.ListQuotaRulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.QuotaRule, string, error) {
+		resp := &netapppb.ListQuotaRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListQuotaRules, req, settings.GRPC, c.logger, "ListQuotaRules")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetQuotaRules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRuleRequest, opts ...gax.CallOption) (*netapppb.QuotaRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetQuotaRule[0:len((*c.CallOptions).GetQuotaRule):len((*c.CallOptions).GetQuotaRule)], opts...)
+	var resp *netapppb.QuotaRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetQuotaRule, req, settings.GRPC, c.logger, "GetQuotaRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQuotaRuleRequest, opts ...gax.CallOption) (*CreateQuotaRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateQuotaRule[0:len((*c.CallOptions).CreateQuotaRule):len((*c.CallOptions).CreateQuotaRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateQuotaRule, req, settings.GRPC, c.logger, "CreateQuotaRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQuotaRuleRequest, opts ...gax.CallOption) (*UpdateQuotaRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "quota_rule.name", url.QueryEscape(req.GetQuotaRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateQuotaRule[0:len((*c.CallOptions).UpdateQuotaRule):len((*c.CallOptions).UpdateQuotaRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateQuotaRule, req, settings.GRPC, c.logger, "UpdateQuotaRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQuotaRuleRequest, opts ...gax.CallOption) (*DeleteQuotaRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteQuotaRule[0:len((*c.CallOptions).DeleteQuotaRule):len((*c.CallOptions).DeleteQuotaRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteQuotaRule, req, settings.GRPC, c.logger, "DeleteQuotaRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteQuotaRuleOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2804,7 +3146,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2833,7 +3175,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2867,7 +3209,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2881,7 +3223,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2896,7 +3238,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2925,7 +3267,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3002,21 +3344,10 @@ func (c *restClient) ListStoragePools(ctx context.Context, req *netapppb.ListSto
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListStoragePools")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3086,21 +3417,10 @@ func (c *restClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateStoragePool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3151,17 +3471,7 @@ func (c *restClient) GetStoragePool(ctx context.Context, req *netapppb.GetStorag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetStoragePool")
 		if err != nil {
 			return err
 		}
@@ -3196,11 +3506,11 @@ func (c *restClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3224,21 +3534,10 @@ func (c *restClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateStoragePool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3288,21 +3587,10 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteStoragePool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3315,6 +3603,126 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteStoragePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ValidateDirectoryService validateDirectoryService does a connectivity check for a directory service
+// policy attached to the storage pool.
+func (c *restClient) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:validateDirectoryService", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ValidateDirectoryService")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ValidateDirectoryServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional
+// storagePool.
+func (c *restClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:switch", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SwitchActiveReplicaZone")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SwitchActiveReplicaZoneOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3371,21 +3779,10 @@ func (c *restClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVolumes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3448,17 +3845,7 @@ func (c *restClient) GetVolume(ctx context.Context, req *netapppb.GetVolumeReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVolume")
 		if err != nil {
 			return err
 		}
@@ -3515,21 +3902,10 @@ func (c *restClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3565,11 +3941,11 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3593,21 +3969,10 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3660,21 +4025,10 @@ func (c *restClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3732,21 +4086,10 @@ func (c *restClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RevertVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3815,21 +4158,10 @@ func (c *restClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapsh
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSnapshots")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3892,17 +4224,7 @@ func (c *restClient) GetSnapshot(ctx context.Context, req *netapppb.GetSnapshotR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSnapshot")
 		if err != nil {
 			return err
 		}
@@ -3959,21 +4281,10 @@ func (c *restClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4023,21 +4334,10 @@ func (c *restClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4073,11 +4373,11 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4101,21 +4401,10 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4184,21 +4473,10 @@ func (c *restClient) ListActiveDirectories(ctx context.Context, req *netapppb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListActiveDirectories")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4261,17 +4539,7 @@ func (c *restClient) GetActiveDirectory(ctx context.Context, req *netapppb.GetAc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetActiveDirectory")
 		if err != nil {
 			return err
 		}
@@ -4329,21 +4597,10 @@ func (c *restClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateActiveDirectory")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4379,11 +4636,11 @@ func (c *restClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4407,21 +4664,10 @@ func (c *restClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateActiveDirectory")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4471,21 +4717,10 @@ func (c *restClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteActiveDirectory")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4554,21 +4789,10 @@ func (c *restClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsCo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListKmsConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4638,21 +4862,10 @@ func (c *restClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateKmsConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4703,17 +4916,7 @@ func (c *restClient) GetKmsConfig(ctx context.Context, req *netapppb.GetKmsConfi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetKmsConfig")
 		if err != nil {
 			return err
 		}
@@ -4748,11 +4951,11 @@ func (c *restClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4776,21 +4979,10 @@ func (c *restClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKmsConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4847,21 +5039,10 @@ func (c *restClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EncryptVolumes")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4918,17 +5099,7 @@ func (c *restClient) VerifyKmsConfig(ctx context.Context, req *netapppb.VerifyKm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "VerifyKmsConfig")
 		if err != nil {
 			return err
 		}
@@ -4977,21 +5148,10 @@ func (c *restClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteKmsConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5060,21 +5220,10 @@ func (c *restClient) ListReplications(ctx context.Context, req *netapppb.ListRep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReplications")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5137,17 +5286,7 @@ func (c *restClient) GetReplication(ctx context.Context, req *netapppb.GetReplic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReplication")
 		if err != nil {
 			return err
 		}
@@ -5204,21 +5343,10 @@ func (c *restClient) CreateReplication(ctx context.Context, req *netapppb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5268,21 +5396,10 @@ func (c *restClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5318,11 +5435,11 @@ func (c *restClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5346,21 +5463,10 @@ func (c *restClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5416,21 +5522,10 @@ func (c *restClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StopReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5486,21 +5581,10 @@ func (c *restClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumeReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5557,21 +5641,10 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReverseReplicationDirection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5584,6 +5657,125 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &ReverseReplicationDirectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// EstablishPeering establish replication peering.
+func (c *restClient) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:establishPeering", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EstablishPeering")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &EstablishPeeringOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SyncReplication syncs the replication. This will invoke one time volume data transfer from
+// source to destination.
+func (c *restClient) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:sync", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SyncReplication")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SyncReplicationOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -5629,21 +5821,10 @@ func (c *restClient) CreateBackupVault(ctx context.Context, req *netapppb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackupVault")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5694,17 +5875,7 @@ func (c *restClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackup
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupVault")
 		if err != nil {
 			return err
 		}
@@ -5772,21 +5943,10 @@ func (c *restClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBac
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupVaults")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5834,11 +5994,11 @@ func (c *restClient) UpdateBackupVault(ctx context.Context, req *netapppb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5862,21 +6022,10 @@ func (c *restClient) UpdateBackupVault(ctx context.Context, req *netapppb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupVault")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5926,21 +6075,10 @@ func (c *restClient) DeleteBackupVault(ctx context.Context, req *netapppb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackupVault")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6001,21 +6139,10 @@ func (c *restClient) CreateBackup(ctx context.Context, req *netapppb.CreateBacku
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6066,17 +6193,7 @@ func (c *restClient) GetBackup(ctx context.Context, req *netapppb.GetBackupReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackup")
 		if err != nil {
 			return err
 		}
@@ -6144,21 +6261,10 @@ func (c *restClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6220,21 +6326,10 @@ func (c *restClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBacku
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6270,11 +6365,11 @@ func (c *restClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBacku
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -6298,21 +6393,10 @@ func (c *restClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBacku
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6370,21 +6454,10 @@ func (c *restClient) CreateBackupPolicy(ctx context.Context, req *netapppb.Creat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackupPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6435,17 +6508,7 @@ func (c *restClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBacku
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupPolicy")
 		if err != nil {
 			return err
 		}
@@ -6513,21 +6576,10 @@ func (c *restClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListB
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6575,11 +6627,11 @@ func (c *restClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.Updat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -6603,21 +6655,10 @@ func (c *restClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.Updat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6667,17 +6708,145 @@ func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackupPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListQuotaRules returns list of all quota rules in a location.
+func (c *restClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuotaRulesRequest, opts ...gax.CallOption) *QuotaRuleIterator {
+	it := &QuotaRuleIterator{}
+	req = proto.Clone(req).(*netapppb.ListQuotaRulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.QuotaRule, string, error) {
+		resp := &netapppb.ListQuotaRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/quotaRules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListQuotaRules")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetQuotaRules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetQuotaRule returns details of the specified quota rule.
+func (c *restClient) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRuleRequest, opts ...gax.CallOption) (*netapppb.QuotaRule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetQuotaRule[0:len((*c.CallOptions).GetQuotaRule):len((*c.CallOptions).GetQuotaRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.QuotaRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetQuotaRule")
 		if err != nil {
 			return err
 		}
@@ -6691,9 +6860,185 @@ func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 	if e != nil {
 		return nil, e
 	}
+	return resp, nil
+}
+
+// CreateQuotaRule creates a new quota rule.
+func (c *restClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQuotaRuleRequest, opts ...gax.CallOption) (*CreateQuotaRuleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQuotaRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/quotaRules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("quotaRuleId", fmt.Sprintf("%v", req.GetQuotaRuleId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateQuotaRule")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	return &DeleteBackupPolicyOperation{
+	return &CreateQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateQuotaRule updates a quota rule.
+func (c *restClient) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQuotaRuleRequest, opts ...gax.CallOption) (*UpdateQuotaRuleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQuotaRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQuotaRule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "quota_rule.name", url.QueryEscape(req.GetQuotaRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateQuotaRule")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteQuotaRule deletes a quota rule.
+func (c *restClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQuotaRuleRequest, opts ...gax.CallOption) (*DeleteQuotaRuleOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteQuotaRule")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteQuotaRuleOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -6732,17 +7077,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -6807,21 +7142,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6887,15 +7211,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -6929,15 +7246,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -6974,17 +7284,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -7049,21 +7349,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7178,6 +7467,24 @@ func (c *gRPCClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOpera
 func (c *restClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateKmsConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateQuotaRuleOperation returns a new CreateQuotaRuleOperation from a given name.
+// The name must be that of a previously created CreateQuotaRuleOperation, possibly from a different process.
+func (c *gRPCClient) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation {
+	return &CreateQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateQuotaRuleOperation returns a new CreateQuotaRuleOperation from a given name.
+// The name must be that of a previously created CreateQuotaRuleOperation, possibly from a different process.
+func (c *restClient) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateQuotaRuleOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -7345,6 +7652,24 @@ func (c *restClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOpera
 	}
 }
 
+// DeleteQuotaRuleOperation returns a new DeleteQuotaRuleOperation from a given name.
+// The name must be that of a previously created DeleteQuotaRuleOperation, possibly from a different process.
+func (c *gRPCClient) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
+	return &DeleteQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteQuotaRuleOperation returns a new DeleteQuotaRuleOperation from a given name.
+// The name must be that of a previously created DeleteQuotaRuleOperation, possibly from a different process.
+func (c *restClient) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteReplicationOperation returns a new DeleteReplicationOperation from a given name.
 // The name must be that of a previously created DeleteReplicationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteReplicationOperation(name string) *DeleteReplicationOperation {
@@ -7435,6 +7760,24 @@ func (c *restClient) EncryptVolumesOperation(name string) *EncryptVolumesOperati
 	}
 }
 
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *gRPCClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	return &EstablishPeeringOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *restClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &EstablishPeeringOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // ResumeReplicationOperation returns a new ResumeReplicationOperation from a given name.
 // The name must be that of a previously created ResumeReplicationOperation, possibly from a different process.
 func (c *gRPCClient) ResumeReplicationOperation(name string) *ResumeReplicationOperation {
@@ -7502,6 +7845,42 @@ func (c *gRPCClient) StopReplicationOperation(name string) *StopReplicationOpera
 func (c *restClient) StopReplicationOperation(name string) *StopReplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopReplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *gRPCClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	return &SwitchActiveReplicaZoneOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *restClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SwitchActiveReplicaZoneOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *gRPCClient) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	return &SyncReplicationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *restClient) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SyncReplicationOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -7597,6 +7976,24 @@ func (c *restClient) UpdateKmsConfigOperation(name string) *UpdateKmsConfigOpera
 	}
 }
 
+// UpdateQuotaRuleOperation returns a new UpdateQuotaRuleOperation from a given name.
+// The name must be that of a previously created UpdateQuotaRuleOperation, possibly from a different process.
+func (c *gRPCClient) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation {
+	return &UpdateQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateQuotaRuleOperation returns a new UpdateQuotaRuleOperation from a given name.
+// The name must be that of a previously created UpdateQuotaRuleOperation, possibly from a different process.
+func (c *restClient) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateQuotaRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // UpdateReplicationOperation returns a new UpdateReplicationOperation from a given name.
 // The name must be that of a previously created UpdateReplicationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateReplicationOperation(name string) *UpdateReplicationOperation {
@@ -7664,6 +8061,24 @@ func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVolumeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *gRPCClient) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	return &ValidateDirectoryServiceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *restClient) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ValidateDirectoryServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
