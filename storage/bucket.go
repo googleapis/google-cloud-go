@@ -832,7 +832,7 @@ type HierarchicalNamespace struct {
 	Enabled bool
 }
 
-// IpFilter specifies the network sources that are allowed to access
+// IPFilter specifies the network sources that are allowed to access
 // operations on the bucket, as well as its underlying objects.
 // Only enforced when mode is set to 'Enabled'.
 // Wrapper type for raw.BucketIpFilter.
