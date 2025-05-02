@@ -70,6 +70,7 @@ import (
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -5295,6 +5296,53 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		// We should be able to delete the object as normal since retention was removed
 		if err := objectWithRetentionOnUpdate.Delete(ctx); err != nil {
 			t.Errorf("object.Delete:%v", err)
+		}
+	})
+}
+
+func TestIntegration_BucketIPFilter(t *testing.T) {
+	ctx := skipGRPC("IPFilter not yet supported in gRPC transport")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		projID := testutil.ProjID()
+
+		// Create bucket with initial IPFilter configuration.
+		bucketName := prefix + uidSpace.New()
+		fmt.Printf("Creating bucket %q\n", bucketName)
+		bucket := client.Bucket(bucketName)
+		want := &IPFilter{
+			Mode: "Disabled",
+		}
+
+		h.mustCreate(bucket, projID, &BucketAttrs{
+			IPFilter: want,
+		})
+		defer h.mustDeleteBucket(bucket)
+
+		// Verify initial configuration.
+		attrs := h.mustBucketAttrs(bucket)
+		if !testutil.Equal(attrs.IPFilter, want) {
+			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
+		}
+
+		// Update IPFilter configuration.
+		want = &IPFilter{
+			Mode: "Disabled",
+			VpcNetworkSources: []*raw.BucketIpFilterVpcNetworkSources{
+				{
+					Network:             fmt.Sprintf("projects/%s/global/networks/default", projID),
+					AllowedIpCidrRanges: []string{"0.0.0.0/0"},
+				},
+			},
+		}
+
+		ua := BucketAttrsToUpdate{
+			IPFilter: want,
+		}
+		// Verify updated configuration.
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.IPFilter, want) {
+			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
 		}
 	})
 }

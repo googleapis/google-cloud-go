@@ -309,6 +309,9 @@ func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	if uattrs != nil && uattrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(uattrs.PredefinedDefaultObjectACL)
 	}
+	if uattrs != nil && uattrs.IPFilter != nil {
+		// req.Header().Set("X-Goog-IP-Filter", uattrs.IPFilter)
+	}
 
 	var rawBucket *raw.Bucket
 	err = run(ctx, func(ctx context.Context) error {
