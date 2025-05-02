@@ -26,20 +26,18 @@ connection pooling and similar aspects of this package.
 
 # Publishing
 
-Pub/Sub messages are published to topics. A [Topic] may be created
-like so:
+Pub/Sub messages are published to topics via publishers.
+A [Topic] may be created like so:
 
-	adminClient := pubsubClient.TopicAdminClient
-	topic, err := adminClient.CreateTopic(context.Background(), &pubsubpb.Topic{
+	ctx := context.Background()
+	client, _ := pubsub.NewClient(ctx, "my-project")
+	topic, err := client.TopicAdminClient.CreateTopic(ctx, &pubsubpb.Topic{
 		Name: "projects/my-project/topics/my-topic",
 	})
 
-A [Publisher] client can then be instantiated.
+A [Publisher] client can then be instantiated and used to publish messages.
 
 	publisher := pubsubClient.Publisher(topic.GetName())
-
-Messages may then be published to a topic using the [Publisher]:
-
 	res := publisher.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
 
 [Publisher.Publish] queues the message for publishing and returns immediately. When enough
@@ -56,16 +54,17 @@ background. To clean up these goroutines, call [Publisher.Stop]:
 
 # Receiving
 
-To receive messages published to a [Publisher], clients create a subscription
-for the topic. There may be more than one subscription per topic ; each message
+To receive messages published to a topic, clients create a subscription
+for the topic. There may be more than one subscription per topic; each message
 that is published to the topic will be delivered to all associated subscriptions.
 
 You then need to create a [Subscriber] client to pull messages from a subscription.
 
-A Subscription may be created like so:
+A subscription may be created like so:
 
-	adminClient := pubsubClient.SubscriptionAdminClient
-	subscription, err := adminClient.CreateSubscription(context.Background(),
+	ctx := context.Background()
+	client, _ := pubsub.NewClient(ctx, "my-project")
+	subscription, err := client.SubscriptionAdminClient.CreateSubscription(ctx,
 		&pubsubpb.Subscription{
 			Name: "projects/my-project/subscriptions/my-sub",
 			Topic: "projects/my-project/topics/my-topic"}
@@ -76,15 +75,15 @@ A [Subscriber] client can be instantiated like so:
 
 	sub := pubsubClient.Subscriber(subscription.GetName())
 
-Messages are then consumed from a [Subscriber] via callback.
+You then provide a callback to [Subscriber] which processes the messages.
 
-	 err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
+	err := sub.Receive(ctx, func(ctx context.Context, m *Message) {
 		log.Printf("Got message: %s", m.Data)
 		m.Ack()
-	 })
-	 if err != nil && !errors.Is(err, context.Canceled) {
+	})
+	if err != nil && !errors.Is(err, context.Canceled) {
 		// Handle error.
-	 }
+	}
 
 The callback is invoked concurrently by multiple goroutines, maximizing
 throughput. To terminate a call to [Subscriber.Receive], cancel its context.
@@ -121,10 +120,10 @@ which is already excessive for most use cases.
 If you want to change the limits on the number of streams, you can change the number of connections
 in the gRPC connection pool as shown below:
 
-	 opts := []option.ClientOption{
+	opts := []option.ClientOption{
 		option.WithGRPCConnectionPool(2),
-	 }
-	 client, err := pubsub.NewClient(ctx, projID, opts...)
+	}
+	client, err := pubsub.NewClient(ctx, projID, opts...)
 
 # Ack Deadlines
 
@@ -164,9 +163,9 @@ AckDeadline for the MaxExtension value.
 
 # Slow Message Processing
 
-For use cases where message processing exceeds 30 minutes, we recommend using
-the base client in a pull model, since long-lived streams are periodically killed
-by firewalls. See the example at https://godoc.org/cloud.google.com/go/pubsub/apiv1#example-SubscriberClient-Pull-LengthyClientProcessing
+Since long-lived streams are periodically killed by firewalls, we recommend
+avoiding message processing that takes longer than 30 minutes. Otherwise,
+you are more likely to experience message redeliveries.
 
 # Emulator
 
