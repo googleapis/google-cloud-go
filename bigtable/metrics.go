@@ -29,6 +29,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/stats"
 )
 
 const (
@@ -56,11 +57,14 @@ const (
 	metricLabelKeyClientUID          = "client_uid"
 
 	// Metric names
-	metricNameOperationLatencies = "operation_latencies"
-	metricNameAttemptLatencies   = "attempt_latencies"
-	metricNameServerLatencies    = "server_latencies"
-	metricNameRetryCount         = "retry_count"
-	metricNameDebugTags          = "debug_tags"
+	metricNameOperationLatencies      = "operation_latencies"
+	metricNameAttemptLatencies        = "attempt_latencies"
+	metricNameServerLatencies         = "server_latencies"
+	metricNameFirstRespLatencies      = "first_response_latencies"
+	metricNameClientBlockingLatencies = "client_blocking_latencies"
+	metricNameRetryCount              = "retry_count"
+	metricNameConnErrCount            = "connectivity_error_count"
+	metricNameDebugTags               = "debug_tags"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -105,7 +109,22 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
+		metricNameFirstRespLatencies: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: false,
+		},
+		metricNameClientBlockingLatencies: {
+			recordedPerAttempt: true,
+		},
 		metricNameRetryCount: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: true,
+		},
+		metricNameConnErrCount: {
 			additionalAttrs: []string{
 				metricLabelKeyStatus,
 			},
@@ -146,11 +165,15 @@ type builtinMetricsTracerFactory struct {
 	// do not change across different function calls on client
 	clientAttributes []attribute.KeyValue
 
-	operationLatencies metric.Float64Histogram
-	serverLatencies    metric.Float64Histogram
-	attemptLatencies   metric.Float64Histogram
-	retryCount         metric.Int64Counter
-	debugTags          metric.Int64Counter
+	operationLatencies      metric.Float64Histogram
+	serverLatencies         metric.Float64Histogram
+	attemptLatencies        metric.Float64Histogram
+	firstRespLatencies      metric.Float64Histogram
+	clientBlockingLatencies metric.Float64Histogram
+
+	retryCount   metric.Int64Counter
+	connErrCount metric.Int64Counter
+  debugTags    metric.Int64Counter
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -250,6 +273,28 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
+	// Create first_response_latencies
+	tf.firstRespLatencies, err = meter.Float64Histogram(
+		metricNameFirstRespLatencies,
+		metric.WithDescription("Latency from operation start until the response headers were received. The publishing of the measurement will be delayed until the attempt response has been received."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
+	}
+
+	// Create client_blocking_latencies
+	tf.clientBlockingLatencies, err = meter.Float64Histogram(
+		metricNameClientBlockingLatencies,
+		metric.WithDescription("The artificial latency introduced by the client to limit the number of outstanding requests. The publishing of the measurement will be delayed until the attempt trailers have been received."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
+	}
+
 	// Create retry_count
 	tf.retryCount, err = meter.Int64Counter(
 		metricNameRetryCount,
@@ -280,11 +325,15 @@ type builtinMetricsTracer struct {
 	// do not change across different operations on client
 	clientAttributes []attribute.KeyValue
 
-	instrumentOperationLatencies metric.Float64Histogram
-	instrumentServerLatencies    metric.Float64Histogram
-	instrumentAttemptLatencies   metric.Float64Histogram
-	instrumentRetryCount         metric.Int64Counter
-	instrumentDebugTags          metric.Int64Counter
+
+	instrumentOperationLatencies      metric.Float64Histogram
+	instrumentServerLatencies         metric.Float64Histogram
+	instrumentAttemptLatencies        metric.Float64Histogram
+	instrumentFirstRespLatencies      metric.Float64Histogram
+	instrumentClientBlockingLatencies metric.Float64Histogram
+	instrumentRetryCount              metric.Int64Counter
+	instrumentConnErrCount            metric.Int64Counter
+  instrumentDebugTags          metric.Int64Counter
 
 	tableName   string
 	method      string
@@ -305,6 +354,9 @@ type opTracer struct {
 
 	startTime time.Time
 
+	// Only for ReadRows. Time when the response headers are received in a streaming RPC.
+	firstRespTime time.Time
+
 	// gRPC status code of last completed attempt
 	status string
 
@@ -313,6 +365,10 @@ type opTracer struct {
 
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
+}
+
+func (o *opTracer) setFirstRespTime(t time.Time) {
+	o.firstRespTime = t
 }
 
 func (o *opTracer) setStatus(status string) {
@@ -377,11 +433,16 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		currOp:           currOpTracer,
 		clientAttributes: tf.clientAttributes,
 
-		instrumentOperationLatencies: tf.operationLatencies,
-		instrumentServerLatencies:    tf.serverLatencies,
-		instrumentAttemptLatencies:   tf.attemptLatencies,
-		instrumentRetryCount:         tf.retryCount,
-		instrumentDebugTags:          tf.debugTags,
+
+		instrumentOperationLatencies:      tf.operationLatencies,
+		instrumentServerLatencies:         tf.serverLatencies,
+		instrumentAttemptLatencies:        tf.attemptLatencies,
+		instrumentFirstRespLatencies:      tf.firstRespLatencies,
+		instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
+		instrumentRetryCount:              tf.retryCount,
+		instrumentConnErrCount:            tf.connErrCount,
+    instrumentDebugTags:          tf.debugTags,
+
 
 		tableName:   tableName,
 		isStreaming: isStreaming,
@@ -433,4 +494,65 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	}
 
 	return attrKeyValues, nil
+}
+
+// Implementation of https://pkg.go.dev/google.golang.org/grpc/stats#Handler
+type StatsHandler struct {
+}
+
+// TagRPC can attach some information to the given context.
+// The context used for the rest lifetime of the RPC will be derived from
+// the returned context.
+func (st *StatsHandler) TagRPC(ctx context.Context, tagInfo *stats.RPCTagInfo) context.Context {
+	return ctx
+}
+
+// HandleRPC processes the RPC stats.
+func (st *StatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	switch s.(type) {
+	case *stats.Begin:
+		// Record the start time when the RPC begins
+		beginTime := time.Now()
+		fmt.Printf("handlerRPC begin... beginTime: %v\n", beginTime)
+	case *stats.End:
+		fmt.Println("handlerRPC End...")
+	case *stats.InHeader:
+		fmt.Println("handlerRPC InHeader...")
+	case *stats.InPayload:
+		fmt.Println("handlerRPC InPayload...")
+	case *stats.InTrailer:
+		fmt.Println("handlerRPC InTrailer...")
+	case *stats.OutHeader:
+				// Measure the time spent in the queue when the headers are sent
+
+		fmt.Println("handlerRPC OutHeader...")
+	case *stats.OutPayload:
+		fmt.Println("handlerRPC OutPayload...")
+	default:
+		fmt.Println("handleRPC...")
+}
+
+// TagConn can attach some information to the given context.
+// The returned context will be used for stats handling.
+// For conn stats handling, the context used in HandleConn for this
+// connection will be derived from the context returned.
+// For RPC stats handling,
+//   - On server side, the context used in HandleRPC for all RPCs on this
+//
+// connection will be derived from the context returned.
+//   - On client side, the context is not derived from the context returned.
+func (st *StatsHandler) TagConn(ctx context.Context, tagInfo *stats.ConnTagInfo) context.Context {
+	return ctx
+}
+
+// HandleConn processes the Conn stats.
+func (st *StatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
+	switch s.(type) {
+	case *stats.ConnBegin:
+		fmt.Println("begin conn")
+	case *stats.ConnEnd:
+		fmt.Println("end conn")
+	default:
+		fmt.Println("handleConn...")
+	}
 }
