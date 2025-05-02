@@ -841,7 +841,7 @@ func (c *sessionsRESTClient) ServerStreamingDetectIntent(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *serverStreamingDetectIntentRESTClient
+	var streamClient *serverStreamingDetectIntentRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -858,7 +858,7 @@ func (c *sessionsRESTClient) ServerStreamingDetectIntent(ctx context.Context, re
 			return err
 		}
 
-		streamClient = &serverStreamingDetectIntentRESTClient{
+		streamClient = &serverStreamingDetectIntentRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&cxpb.DetectIntentResponse{}).ProtoReflect().Type()),
@@ -869,15 +869,15 @@ func (c *sessionsRESTClient) ServerStreamingDetectIntent(ctx context.Context, re
 	return streamClient, e
 }
 
-// serverStreamingDetectIntentRESTClient is the stream client used to consume the server stream created by
+// serverStreamingDetectIntentRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of ServerStreamingDetectIntent.
-type serverStreamingDetectIntentRESTClient struct {
+type serverStreamingDetectIntentRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *serverStreamingDetectIntentRESTClient) Recv() (*cxpb.DetectIntentResponse, error) {
+func (c *serverStreamingDetectIntentRESTStreamClient) Recv() (*cxpb.DetectIntentResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -891,29 +891,29 @@ func (c *serverStreamingDetectIntentRESTClient) Recv() (*cxpb.DetectIntentRespon
 	return res, nil
 }
 
-func (c *serverStreamingDetectIntentRESTClient) Header() (metadata.MD, error) {
+func (c *serverStreamingDetectIntentRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *serverStreamingDetectIntentRESTClient) Trailer() metadata.MD {
+func (c *serverStreamingDetectIntentRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *serverStreamingDetectIntentRESTClient) CloseSend() error {
+func (c *serverStreamingDetectIntentRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *serverStreamingDetectIntentRESTClient) Context() context.Context {
+func (c *serverStreamingDetectIntentRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *serverStreamingDetectIntentRESTClient) SendMsg(m interface{}) error {
+func (c *serverStreamingDetectIntentRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *serverStreamingDetectIntentRESTClient) RecvMsg(m interface{}) error {
+func (c *serverStreamingDetectIntentRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

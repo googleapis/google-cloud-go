@@ -671,6 +671,10 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	res, d.err = d.stream.Recv()
 	if d.err == nil {
 		d.q.push(res)
+		if res.GetLast() {
+			d.changeState(finished)
+			return
+		}
 		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
 			d.bytesBetweenResumeTokens += int32(proto.Size(res))
 		}

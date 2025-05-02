@@ -70,6 +70,7 @@ const (
 	backupDDLStatements               = "BACKUP_DDL_STATEMENTS"
 	testTableDDLStatements            = "TEST_TABLE_DDL_STATEMENTS"
 	fkdcDDLStatements                 = "FKDC_DDL_STATEMENTS"
+	intervalDDLStatements             = "INTERVAL_DDL_STATEMENTS"
 	testTableBitReversedSeqStatements = "TEST_TABLE_BIT_REVERSED_SEQUENCE_STATEMENTS"
 )
 
@@ -325,6 +326,25 @@ var (
 		)`,
 	}
 
+	intervalDBStatements = []string{
+		`CREATE TABLE IntervalTable (
+			key STRING(MAX),
+			create_time TIMESTAMP,
+			expiry_time TIMESTAMP,
+			expiry_within_month bool AS (expiry_time - create_time < INTERVAL 30 DAY),
+			interval_array_len INT64 AS (ARRAY_LENGTH(ARRAY<INTERVAL>[INTERVAL '1-2 3 4:5:6' YEAR TO SECOND]))
+		) PRIMARY KEY (key)`,
+	}
+	intervalDBPGStatements = []string{
+		`CREATE TABLE IntervalTable (
+		    key text primary key,
+		    create_time timestamptz,
+		    expiry_time timestamptz,
+		    expiry_within_month bool GENERATED ALWAYS AS (expiry_time - create_time < INTERVAL '30' DAY) STORED,
+		    interval_array_len bigint GENERATED ALWAYS AS (ARRAY_LENGTH(ARRAY[INTERVAL '1-2 3 4:5:6'], 1)) STORED
+    	)`,
+	}
+
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
 			singerDDLStatements:               singerDBStatements,
@@ -334,6 +354,7 @@ var (
 			testTableDDLStatements:            readDBStatements,
 			fkdcDDLStatements:                 fkdcDBStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBStatments,
+			intervalDDLStatements:             intervalDBStatements,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
 			singerDDLStatements:               singerDBPGStatements,
@@ -343,6 +364,7 @@ var (
 			testTableDDLStatements:            readDBPGStatements,
 			fkdcDDLStatements:                 fkdcDBPGStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBPGStatments,
+			intervalDDLStatements:             intervalDBPGStatements,
 		},
 	}
 
@@ -855,6 +877,195 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
 	if !testEqual(got, want) {
 		t.Errorf("got unexpected result from ReadOnlyTransaction.QueryWithOptions: %v, want %v", got, want)
+	}
+}
+
+func TestIntegration_Interval(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][intervalDDLStatements])
+	defer cleanup()
+
+	m := InsertOrUpdate("IntervalTable", []string{"key", "create_time", "expiry_time"},
+		[]interface{}{
+			"test1",
+			time.Date(2004, 11, 30, 4, 53, 54, 0, time.UTC),
+			time.Date(2004, 12, 15, 4, 53, 54, 0, time.UTC),
+		})
+	_, err := client.Apply(ctx, []*Mutation{m})
+	if err != nil {
+		t.Fatal(err)
+	}
+	placeHolder := "@p1"
+	timestampQuery := `TIMESTAMP('2004-11-30T10:23:54+0530')`
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		placeHolder = "$1"
+		timestampQuery = `TIMESTAMPTZ '2004-11-30T10:23:54+0530'`
+	}
+	stmt := Statement{
+		SQL: `SELECT expiry_within_month, interval_array_len FROM IntervalTable WHERE key = ` + placeHolder,
+		Params: map[string]interface{}{
+			"p1": "test1",
+		},
+	}
+	iter := client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var expiryWithinMonth bool
+	var intervalArrayLen int64
+	if err := row.Columns(&expiryWithinMonth, &intervalArrayLen); err != nil {
+		t.Fatal(err)
+	}
+
+	if !expiryWithinMonth {
+		t.Error("expected expiry_within_month to be true")
+	}
+	if intervalArrayLen != 1 {
+		t.Errorf("expected interval_array_len to be 1, got %d", intervalArrayLen)
+	}
+
+	stmt = Statement{SQL: "SELECT INTERVAL '1' DAY + INTERVAL '1' MONTH AS Col1"}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var interval Interval
+	if err := row.Column(0, &interval); err != nil {
+		t.Fatal(err)
+	}
+
+	wantInterval := Interval{
+		Months: 1,
+		Days:   1,
+		Nanos:  big.NewInt(0),
+	}
+
+	if interval.Months != wantInterval.Months || interval.Days != wantInterval.Days || interval.Nanos.Cmp(wantInterval.Nanos) != 0 {
+		t.Errorf("got interval %+v, want %+v", interval, wantInterval)
+	}
+
+	m = InsertOrUpdate("IntervalTable", []string{"key", "create_time", "expiry_time"},
+		[]interface{}{
+			"test2",
+			time.Date(2004, 8, 30, 4, 53, 54, 0, time.UTC),
+			time.Date(2004, 12, 15, 4, 53, 54, 0, time.UTC),
+		})
+	_, err = client.Apply(ctx, []*Mutation{m})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stmt = Statement{
+		SQL: `SELECT COUNT(*) FROM IntervalTable WHERE create_time < ` + timestampQuery + ` - ` + placeHolder,
+		Params: map[string]interface{}{
+			"p1": Interval{Days: 30},
+		},
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var count int64
+	if err := row.Column(0, &count); err != nil {
+		t.Fatal(err)
+	}
+
+	if count != 1 {
+		t.Errorf("got count %d, want 1", count)
+	}
+
+	stmt = Statement{
+		SQL: "SELECT " + placeHolder,
+		Params: map[string]interface{}{
+			"p1": []Interval{
+				{Months: 14, Days: 3, Nanos: big.NewInt(14706000000000)},
+				{},
+				{Months: -14, Days: -3, Nanos: big.NewInt(-14706000000000)},
+				{},
+			},
+		},
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var intervals []NullInterval
+	if err := row.Column(0, &intervals); err != nil {
+		t.Fatal(err)
+	}
+
+	wantIntervals := []NullInterval{
+		{Interval: Interval{Months: 14, Days: 3, Nanos: big.NewInt(14706000000000)}, Valid: true},
+		{Valid: true},
+		{Interval: Interval{Months: -14, Days: -3, Nanos: big.NewInt(-14706000000000)}, Valid: true},
+		{Valid: true},
+	}
+
+	if len(intervals) != len(wantIntervals) {
+		t.Fatalf("got %d intervals, want %d", len(intervals), len(wantIntervals))
+	}
+
+	for i := range intervals {
+		if intervals[i].Valid != wantIntervals[i].Valid || intervals[i].Interval.Months != wantIntervals[i].Interval.Months ||
+			intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
+			(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
+			t.Errorf("interval %d: got %+v, want %+v", i, intervals[i], wantIntervals[i])
+		}
+	}
+
+	stmt = Statement{
+		SQL: `SELECT ARRAY[CAST('P1Y2M3DT4H5M6.789123S' AS INTERVAL), 
+		                   null, 
+		                   CAST('P-1Y-2M-3DT-4H-5M-6.789123S' AS INTERVAL)] AS Col1`,
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := row.Column(0, &intervals); err != nil {
+		t.Fatal(err)
+	}
+
+	wantIntervals = []NullInterval{
+		{Interval: Interval{Months: 14, Days: 3, Nanos: big.NewInt(14706789123000)}, Valid: true},
+		{Valid: false},
+		{Interval: Interval{Months: -14, Days: -3, Nanos: big.NewInt(-14706789123000)}, Valid: true},
+	}
+
+	if len(intervals) != len(wantIntervals) {
+		t.Fatalf("got %d intervals, want %d", len(intervals), len(wantIntervals))
+	}
+
+	for i := range intervals {
+		if intervals[i].Valid != wantIntervals[i].Valid || intervals[i].Interval.Months != wantIntervals[i].Interval.Months ||
+			intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
+			(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
+			t.Errorf("interval %d: got %+v, want %+v", i, intervals[i], wantIntervals[i])
+		}
 	}
 }
 
@@ -5138,6 +5349,23 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
+func compareErrors(got, want error) bool {
+	if got == nil || want == nil {
+		return got == want
+	}
+	gotStr := got.Error()
+	wantStr := want.Error()
+	if idx := strings.Index(gotStr, "requestID"); idx != -1 {
+		gotStr = gotStr[:idx]
+	}
+	if idx := strings.Index(wantStr, "requestID"); idx != -1 {
+		wantStr = wantStr[:idx]
+	}
+	gotStr = strings.ReplaceAll(gotStr, `",`, ``)
+	wantStr = strings.ReplaceAll(gotStr, `",`, ``)
+	return strings.EqualFold(strings.TrimSpace(gotStr), strings.TrimSpace(wantStr))
+}
+
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	skipEmulatorTest(t)
 	t.Parallel()
@@ -5334,9 +5562,10 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
-			// convert the error to lower case because resource names are in lower case for PG dialect.
-			if gotErr != nil && !strings.Contains(gotErr.Error(), tt.wantErr.Error()) {
-				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+			if gotErr != nil {
+				if !compareErrors(gotErr, tt.wantErr) {
+					t.Errorf(`FKDC error=%v, wantErr: %v`, gotErr, tt.wantErr)
+				}
 			} else {
 				tt.validate()
 			}

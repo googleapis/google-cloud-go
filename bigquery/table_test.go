@@ -102,6 +102,12 @@ func TestBQToTableMetadata(t *testing.T) {
 					"key1": "val1",
 					"key2": "val2",
 				},
+				BiglakeConfiguration: &bq.BigLakeConfiguration{
+					ConnectionId: "bigconn",
+					StorageUri:   "biguri",
+					FileFormat:   "PARQUET",
+					TableFormat:  "ICEBERG",
+				},
 			},
 			&TableMetadata{
 				Description:        "desc",
@@ -168,6 +174,12 @@ func TestBQToTableMetadata(t *testing.T) {
 					"key1": "val1",
 					"key2": "val2",
 				},
+				BigLakeConfiguration: &BigLakeConfiguration{
+					ConnectionID: "bigconn",
+					StorageURI:   "biguri",
+					FileFormat:   ParquetBigLakeFileFormat,
+					TableFormat:  IcebergBigLakeTableFormat,
+				},
 			},
 		},
 	} {
@@ -208,6 +220,12 @@ func TestTableMetadataToBQ(t *testing.T) {
 					"key1": "val1",
 					"key2": "val2",
 				},
+				BigLakeConfiguration: &BigLakeConfiguration{
+					ConnectionID: "bigconn",
+					StorageURI:   "biguri",
+					FileFormat:   ParquetBigLakeFileFormat,
+					TableFormat:  IcebergBigLakeTableFormat,
+				},
 			},
 			&bq.Table{
 				FriendlyName: "n",
@@ -227,6 +245,12 @@ func TestTableMetadataToBQ(t *testing.T) {
 				ResourceTags: map[string]string{
 					"key1": "val1",
 					"key2": "val2",
+				},
+				BiglakeConfiguration: &bq.BigLakeConfiguration{
+					ConnectionId: "bigconn",
+					StorageUri:   "biguri",
+					FileFormat:   "PARQUET",
+					TableFormat:  "ICEBERG",
 				},
 			},
 		},

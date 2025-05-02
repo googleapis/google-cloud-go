@@ -2381,7 +2381,7 @@ func (x *DiagnoseInterconnectResponse) GetResult() *InterconnectDiagnostics {
 	return nil
 }
 
-// Message for requesting diagnositcs of a router within a specific zone.
+// Message for requesting diagnostics of a router within a specific zone.
 type DiagnoseRouterRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

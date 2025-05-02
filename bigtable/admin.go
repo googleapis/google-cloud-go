@@ -38,7 +38,9 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -47,7 +49,42 @@ import (
 const adminAddr = "bigtableadmin.googleapis.com:443"
 const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
-var errExpiryMissing = errors.New("WithExpiry is a required option")
+var (
+	errExpiryMissing  = errors.New("WithExpiry is a required option")
+	adminRetryOptions = []gax.CallOption{
+		gax.WithRetry(func() gax.Retryer {
+			return &bigtableAdminRetryer{
+				Backoff: defaultBackoff,
+			}
+		}),
+	}
+)
+
+// bigtableAdminRetryer extends the generic gax Retryer, but also checks
+// error messages to check if operation can be retried
+//
+// Retry is made if :
+// - error code is one of the `idempotentRetryCodes` OR
+// - error code is internal and error message is one of the `retryableInternalErrMsgs`
+type bigtableAdminRetryer struct {
+	gax.Backoff
+}
+
+func (r *bigtableAdminRetryer) Retry(err error) (time.Duration, bool) {
+	// Similar to gax.OnCodes but shares the backoff with INTERNAL retry messages check
+	st, ok := grpcstatus.FromError(err)
+	if !ok {
+		return 0, false
+	}
+	c := st.Code()
+	_, isIdempotent := isIdempotentRetryCode[c]
+	if isIdempotent ||
+		(grpcstatus.Code(err) == codes.Internal && containsAny(err.Error(), retryableInternalErrMsgs)) {
+		pause := r.Backoff.Pause()
+		return pause, true
+	}
+	return 0, false
+}
 
 // ErrPartiallyUnavailable is returned when some locations (clusters) are
 // unavailable. Both partial results (retrieved from available locations)
@@ -138,6 +175,10 @@ func materializedlViewPath(project, instance, materializedView string) string {
 	return fmt.Sprintf("%s/materializedViews/%s", instancePrefix(project, instance), materializedView)
 }
 
+func appProfilePath(project, instance, appProfile string) string {
+	return fmt.Sprintf("%s/appProfiles/%s", instancePrefix(project, instance), appProfile)
+}
+
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	Status        *Status
@@ -217,7 +258,7 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 		var err error
 		res, err = ac.tClient.ListTables(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -377,8 +418,7 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 	}
 
 	if conf.RowKeySchema != nil {
-		proto := conf.RowKeySchema.proto()
-		tbl.RowKeySchema = proto.GetStructType()
+		tbl.RowKeySchema = conf.RowKeySchema.proto().GetStructType()
 	}
 
 	if conf.Families != nil && conf.ColumnFamilies != nil {
@@ -632,6 +672,7 @@ type TableInfo struct {
 	DeletionProtection    DeletionProtection
 	ChangeStreamRetention ChangeStreamRetention
 	AutomatedBackupConfig TableAutomatedBackupConfig
+	RowKeySchema          *StructType
 }
 
 // FamilyInfo represents information about a column family.
@@ -656,7 +697,7 @@ func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Ta
 		var err error
 		res, err = ac.tClient.GetTable(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -702,6 +743,10 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 		default:
 			return nil, fmt.Errorf("error: Unknown type of automated backup configuration")
 		}
+	}
+	if res.RowKeySchema != nil {
+		structType := structProtoToType(res.RowKeySchema).(StructType)
+		ti.RowKeySchema = &structType
 	}
 
 	return ti, nil
@@ -905,7 +950,7 @@ func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotI
 			var err error
 			resp, err = ac.tClient.ListSnapshots(ctx, req)
 			return err
-		}, retryOptions...)
+		}, adminRetryOptions...)
 		if err != nil {
 			return "", err
 		}
@@ -1010,7 +1055,7 @@ func (ac *AdminClient) SnapshotInfo(ctx context.Context, cluster, snapshot strin
 		var err error
 		resp, err = ac.tClient.GetSnapshot(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1062,7 +1107,7 @@ func (ac *AdminClient) isConsistent(ctx context.Context, tableName, token string
 		var err error
 		resp, err = ac.tClient.CheckConsistency(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return false, err
 	}
@@ -1238,6 +1283,12 @@ type InstanceConf struct {
 	// AutoscalingConfig configures the autoscaling properties on the cluster
 	// created with the instance. It is optional.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+	// increment in which NumNodes can be set). Node scaling delivers better
+	// latency and more throughput by removing node boundaries. It is optional,
+	// with the default being 1X.
+	NodeScalingFactor NodeScalingFactor
 }
 
 // InstanceWithClustersConfig contains the information necessary to create an Instance
@@ -1267,6 +1318,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 				NumNodes:          conf.NumNodes,
 				StorageType:       conf.StorageType,
 				AutoscalingConfig: conf.AutoscalingConfig,
+				NodeScalingFactor: conf.NodeScalingFactor,
 			},
 		},
 	}
@@ -1415,7 +1467,7 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 		var err error
 		res, err = iac.iClient.ListInstances(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1453,7 +1505,7 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 		var err error
 		res, err = iac.iClient.GetInstance(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1507,6 +1559,44 @@ func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
 	}
 }
 
+// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+// increment in which NumNodes can be set). Node scaling delivers better
+// latency and more throughput by removing node boundaries.
+type NodeScalingFactor int32
+
+const (
+	// NodeScalingFactorUnspecified default to 1X.
+	NodeScalingFactorUnspecified NodeScalingFactor = iota
+	// NodeScalingFactor1X runs the cluster with a scaling factor of 1.
+	NodeScalingFactor1X
+	// NodeScalingFactor2X runs the cluster with a scaling factor of 2.
+	// All node count values must be in increments of 2 with this scaling
+	// factor enabled, otherwise an INVALID_ARGUMENT error will be returned.
+	NodeScalingFactor2X
+)
+
+func (nsf NodeScalingFactor) proto() btapb.Cluster_NodeScalingFactor {
+	switch nsf {
+	case NodeScalingFactor1X:
+		return btapb.Cluster_NODE_SCALING_FACTOR_1X
+	case NodeScalingFactor2X:
+		return btapb.Cluster_NODE_SCALING_FACTOR_2X
+	default:
+		return btapb.Cluster_NODE_SCALING_FACTOR_UNSPECIFIED
+	}
+}
+
+func nodeScalingFactorFromProto(nsf btapb.Cluster_NodeScalingFactor) NodeScalingFactor {
+	switch nsf {
+	case btapb.Cluster_NODE_SCALING_FACTOR_1X:
+		return NodeScalingFactor1X
+	case btapb.Cluster_NODE_SCALING_FACTOR_2X:
+		return NodeScalingFactor2X
+	default:
+		return NodeScalingFactorUnspecified
+	}
+}
+
 // ClusterConfig contains the information necessary to create a cluster
 type ClusterConfig struct {
 	// InstanceID specifies the unique name of the instance. Required.
@@ -1548,6 +1638,12 @@ type ClusterConfig struct {
 	// AutoscalingConfig configures the autoscaling properties on a cluster.
 	// One of NumNodes or AutoscalingConfig is required.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster (i.e. the
+	// increment in which NumNodes can be set). Node scaling delivers better
+	// latency and more throughput by removing node boundaries. It is optional,
+	// with the default being 1X.
+	NodeScalingFactor NodeScalingFactor
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
@@ -1558,6 +1654,7 @@ func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
 		EncryptionConfig: &btapb.Cluster_EncryptionConfig{
 			KmsKeyName: cc.KMSKeyName,
 		},
+		NodeScalingFactor: cc.NodeScalingFactor.proto(),
 	}
 
 	if asc := cc.AutoscalingConfig; asc != nil {
@@ -1592,6 +1689,9 @@ type ClusterInfo struct {
 
 	// AutoscalingConfig are the configured values for a cluster.
 	AutoscalingConfig *AutoscalingConfig
+
+	// NodeScalingFactor controls the scaling factor of the cluster.
+	NodeScalingFactor NodeScalingFactor
 }
 
 // CreateCluster creates a new cluster in an instance.
@@ -1681,7 +1781,7 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 		var err error
 		res, err = iac.iClient.ListClusters(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1695,12 +1795,13 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 			kmsKeyName = c.EncryptionConfig.KmsKeyName
 		}
 		ci := &ClusterInfo{
-			Name:        nameParts[len(nameParts)-1],
-			Zone:        locParts[len(locParts)-1],
-			ServeNodes:  int(c.ServeNodes),
-			State:       c.State.String(),
-			StorageType: storageTypeFromProto(c.DefaultStorageType),
-			KMSKeyName:  kmsKeyName,
+			Name:              nameParts[len(nameParts)-1],
+			Zone:              locParts[len(locParts)-1],
+			ServeNodes:        int(c.ServeNodes),
+			State:             c.State.String(),
+			StorageType:       storageTypeFromProto(c.DefaultStorageType),
+			KMSKeyName:        kmsKeyName,
+			NodeScalingFactor: nodeScalingFactorFromProto(c.NodeScalingFactor),
 		}
 		if cfg := c.GetClusterConfig(); cfg != nil {
 			if asc := fromClusterConfigProto(cfg); asc != nil {
@@ -1728,7 +1829,7 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		var err error
 		c, err = iac.iClient.GetCluster(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1740,12 +1841,13 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 	nameParts := strings.Split(c.Name, "/")
 	locParts := strings.Split(c.Location, "/")
 	ci := &ClusterInfo{
-		Name:        nameParts[len(nameParts)-1],
-		Zone:        locParts[len(locParts)-1],
-		ServeNodes:  int(c.ServeNodes),
-		State:       c.State.String(),
-		StorageType: storageTypeFromProto(c.DefaultStorageType),
-		KMSKeyName:  kmsKeyName,
+		Name:              nameParts[len(nameParts)-1],
+		Zone:              locParts[len(locParts)-1],
+		ServeNodes:        int(c.ServeNodes),
+		State:             c.State.String(),
+		StorageType:       storageTypeFromProto(c.DefaultStorageType),
+		KMSKeyName:        kmsKeyName,
+		NodeScalingFactor: nodeScalingFactorFromProto(c.NodeScalingFactor),
 	}
 	// Use type assertion to handle protobuf oneof type
 	if cfg := c.GetClusterConfig(); cfg != nil {
@@ -1782,31 +1884,123 @@ func (iac *InstanceAdminClient) InstanceIAM(instanceID string) *iam.Handle {
 
 // Routing policies.
 const (
+	// Deprecated: Use MultiClusterRoutingUseAnyConfig instead.
 	// MultiClusterRouting is a policy that allows read/write requests to be
 	// routed to any cluster in the instance. Requests will will fail over to
 	// another cluster in the event of transient errors or delays. Choosing
 	// this option sacrifices read-your-writes consistency to improve
 	// availability.
 	MultiClusterRouting = "multi_cluster_routing_use_any"
+	// Deprecated: Use SingleClusterRoutingConfig instead.
 	// SingleClusterRouting is a policy that unconditionally routes all
 	// read/write requests to a specific cluster. This option preserves
 	// read-your-writes consistency, but does not improve availability.
 	SingleClusterRouting = "single_cluster_routing"
 )
 
-// ProfileConf contains the information necessary to create an profile
+// ProfileConf contains the information necessary to create a profile
 type ProfileConf struct {
-	Name                     string
-	ProfileID                string
-	InstanceID               string
-	Etag                     string
-	Description              string
-	RoutingPolicy            string
-	ClusterID                string
+	Name        string
+	ProfileID   string
+	InstanceID  string
+	Etag        string
+	Description string
+
+	RoutingConfig RoutingPolicyConfig
+	Isolation     AppProfileIsolation
+
+	// Deprecated: Use RoutingConfig instead.
+	// Ignored when RoutingConfig is set.
+	RoutingPolicy string
+	// Deprecated: Use RoutingConfig with SingleClusterRoutingConfig instead.
+	// Ignored when RoutingConfig is set.
+	// To use with RoutingPolicy field while specifying SingleClusterRouting.
+	ClusterID string
+	// Deprecated: Use RoutingConfig with SingleClusterRoutingConfig instead.
+	// Ignored when RoutingConfig is set.
+	// To use with RoutingPolicy field while specifying SingleClusterRouting.
 	AllowTransactionalWrites bool
 
 	// If true, warnings are ignored
 	IgnoreWarnings bool
+}
+
+func setIsolation(profile *btapb.AppProfile, isolation AppProfileIsolation) error {
+	if isolation != nil {
+		switch cfg := isolation.(type) {
+		case *StandardIsolation:
+			profile.Isolation = &btapb.AppProfile_StandardIsolation_{
+				StandardIsolation: &btapb.AppProfile_StandardIsolation{
+					Priority: btapb.AppProfile_Priority(cfg.Priority),
+				},
+			}
+		case *DataBoostIsolationReadOnly:
+			dataBoostProto := &btapb.AppProfile_DataBoostIsolationReadOnly{}
+			cbo := btapb.AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner(cfg.ComputeBillingOwner)
+			dataBoostProto.ComputeBillingOwner = &cbo
+			profile.Isolation = &btapb.AppProfile_DataBoostIsolationReadOnly_{DataBoostIsolationReadOnly: dataBoostProto}
+		default:
+			return fmt.Errorf("bigtable: unknown isolation config type: %T", cfg)
+		}
+	}
+	return nil
+}
+
+func setRoutingPolicy(appProfile *btapb.AppProfile, rpc RoutingPolicyConfig, routingPolicy optional.String,
+	clusterID string, allowTransactionalWrites bool, allowNil bool) error {
+	if allowNil && routingPolicy == nil && rpc == nil {
+		return nil
+	}
+	if rpc != nil {
+		switch cfg := rpc.(type) {
+		case *MultiClusterRoutingUseAnyConfig:
+			appProfile.RoutingPolicy = &btapb.AppProfile_MultiClusterRoutingUseAny_{
+				MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+					ClusterIds: cfg.ClusterIDs,
+				},
+			}
+			if cfg.Affinity != nil {
+				switch cfg.Affinity.(type) {
+				case *RowAffinity:
+					appProfile.GetMultiClusterRoutingUseAny().Affinity = &btapb.AppProfile_MultiClusterRoutingUseAny_RowAffinity_{
+						RowAffinity: &btapb.AppProfile_MultiClusterRoutingUseAny_RowAffinity{},
+					}
+				default:
+					return errors.New("bigtable: invalid affinity in MultiClusterRoutingUseAnyConfig")
+				}
+			}
+		case *SingleClusterRoutingConfig:
+			appProfile.RoutingPolicy = &btapb.AppProfile_SingleClusterRouting_{
+				SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+					ClusterId:                cfg.ClusterID,
+					AllowTransactionalWrites: cfg.AllowTransactionalWrites,
+				},
+			}
+		default:
+			return fmt.Errorf("bigtable: unknown RoutingConfig type: %T", cfg)
+		}
+	} else { // Fallback to deprecated fields
+		if routingPolicy == nil {
+			return errors.New("bigtable: at least one of RoutingPolicy or RoutingConfig must be set")
+		}
+
+		switch routingPolicy {
+		case MultiClusterRouting:
+			appProfile.RoutingPolicy = &btapb.AppProfile_MultiClusterRoutingUseAny_{
+				MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{},
+			}
+		case SingleClusterRouting:
+			appProfile.RoutingPolicy = &btapb.AppProfile_SingleClusterRouting_{
+				SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+					ClusterId:                clusterID,
+					AllowTransactionalWrites: allowTransactionalWrites,
+				},
+			}
+		default:
+			return errors.New("bigtable: invalid RoutingPolicy " + optional.ToString(routingPolicy))
+		}
+	}
+	return nil
 }
 
 // ProfileIterator iterates over profiles.
@@ -1821,11 +2015,22 @@ type ProfileAttrsToUpdate struct {
 	// If set, updates the description.
 	Description optional.String
 
-	//If set, updates the routing policy.
+	// If set, updates the routing policy.
+	// Takes precedence over deprecated RoutingPolicy, ClusterID and AllowTransactionalWrites.
+	RoutingConfig RoutingPolicyConfig
+
+	// If set, updates the isolation options.
+	Isolation AppProfileIsolation
+
+	// If set, updates the routing policy.
+	// Deprecated: Use RoutingConfig instead.
 	RoutingPolicy optional.String
 
-	//If RoutingPolicy is updated to SingleClusterRouting, set these fields as well.
-	ClusterID                string
+	// If RoutingPolicy is updated to SingleClusterRouting, set this field as well.
+	// Deprecated: Use RoutingConfig with SingleClusterRoutingConfig instead
+	ClusterID string
+	// If RoutingPolicy is updated to SingleClusterRouting, set this field as well.
+	// Deprecated: Use RoutingConfig with SingleClusterRoutingConfig instead
 	AllowTransactionalWrites bool
 
 	// If true, warnings are ignored
@@ -1839,11 +2044,130 @@ func (p *ProfileAttrsToUpdate) GetFieldMaskPath() []string {
 		path = append(path, "description")
 	}
 
-	if p.RoutingPolicy != nil {
+	if p.RoutingConfig != nil {
+		path = append(path, p.RoutingConfig.getFieldMaskPath())
+	} else if p.RoutingPolicy != nil {
 		path = append(path, optional.ToString(p.RoutingPolicy))
 	}
+	if p.Isolation != nil {
+		path = append(path, p.Isolation.getFieldMaskPath())
+	}
+
 	return path
 }
+
+// RoutingPolicyConfig represents the configuration for a specific routing policy.
+type RoutingPolicyConfig interface {
+	isRoutingPolicyConfig()
+	getFieldMaskPath() string
+}
+
+// SingleClusterRoutingConfig is a policy that unconditionally routes all
+// read/write requests to a specific cluster. This option preserves
+// read-your-writes consistency, but does not improve availability.
+type SingleClusterRoutingConfig struct {
+	// The cluster to which read/write requests should be routed.
+	ClusterID string
+	// Whether or not `CheckAndMutateRow` and `ReadModifyWriteRow` requests are
+	// allowed by this app profile. It is unsafe to send these requests to
+	// the same table/row/column in multiple clusters.
+	AllowTransactionalWrites bool
+}
+
+func (*SingleClusterRoutingConfig) isRoutingPolicyConfig()   {}
+func (*SingleClusterRoutingConfig) getFieldMaskPath() string { return "single_cluster_routing" }
+
+// MultiClusterRoutingUseAnyConfig is a policy whererin read/write requests are
+// routed to the nearest cluster in the instance, and
+// will fail over to the nearest cluster that is available in the event of
+// transient errors or delays. Clusters in a region are considered
+// equidistant. Choosing this option sacrifices read-your-writes consistency
+// to improve availability.
+type MultiClusterRoutingUseAnyConfig struct {
+	// The set of clusters to route to. The order is ignored; clusters will be
+	// tried in order of distance. If left empty, all clusters are eligible.
+	ClusterIDs []string
+
+	// Possible algorithms for routing affinity. If enabled, Bigtable will
+	// route between equidistant clusters in a deterministic order rather than
+	// choosing randomly.
+	Affinity MultiClusterRoutingUseAnyAffinity
+}
+
+func (*MultiClusterRoutingUseAnyConfig) isRoutingPolicyConfig() {}
+func (*MultiClusterRoutingUseAnyConfig) getFieldMaskPath() string {
+	return "multi_cluster_routing_use_any"
+}
+
+// MultiClusterRoutingUseAnyAffinity represents the configuration for a specific affinity strategy.
+type MultiClusterRoutingUseAnyAffinity interface {
+	isMultiClusterRoutingUseAnyAffinity()
+}
+
+// RowAffinity enables row-based affinity.
+// If enabled, Bigtable will route the request based on the row key of the
+// request, rather than randomly. Instead, each row key will be assigned
+// to a cluster, and will stick to that cluster.
+type RowAffinity struct{}
+
+func (*RowAffinity) isMultiClusterRoutingUseAnyAffinity() {}
+
+// AppProfileIsolation represents the configuration for a specific traffic isolation policy.
+type AppProfileIsolation interface {
+	isAppProfileIsolation()
+	getFieldMaskPath() string
+}
+
+// StandardIsolation configures standard traffic isolation.
+type StandardIsolation struct {
+	Priority AppProfilePriority
+}
+
+func (*StandardIsolation) isAppProfileIsolation()   {}
+func (*StandardIsolation) getFieldMaskPath() string { return "standard_isolation" }
+
+// AppProfilePriority represents possible priorities for an app profile.
+type AppProfilePriority int32
+
+const (
+	// AppProfilePriorityUnspecified is the default value. Mapped to PRIORITY_HIGH (the legacy behavior) on creation.
+	AppProfilePriorityUnspecified AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_UNSPECIFIED)
+	// AppProfilePriorityLow represents the lowest priority.
+	AppProfilePriorityLow AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_LOW)
+	// AppProfilePriorityMedium represents the medium priority.
+	AppProfilePriorityMedium AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_MEDIUM)
+	// AppProfilePriorityHigh represents the highest priority.
+	AppProfilePriorityHigh AppProfilePriority = AppProfilePriority(btapb.AppProfile_PRIORITY_HIGH)
+)
+
+// DataBoostIsolationReadOnly configures Data Boost isolation.
+// Data Boost is a serverless compute capability that lets you run
+// high-throughput read jobs and queries on your Bigtable data, without
+// impacting the performance of the clusters that handle your application
+// traffic. Data Boost supports read-only use cases with single-cluster
+// routing.
+type DataBoostIsolationReadOnly struct {
+	// Compute Billing Owner specifies how usage should be accounted when using
+	// Data Boost. Compute Billing Owner also configures which Cloud Project is
+	// charged for relevant quota.
+	ComputeBillingOwner IsolationComputeBillingOwner
+}
+
+func (*DataBoostIsolationReadOnly) isAppProfileIsolation()   {}
+func (*DataBoostIsolationReadOnly) getFieldMaskPath() string { return "data_boost_isolation_read_only" }
+
+// IsolationComputeBillingOwner specifies how usage should be accounted when using
+// Data Boost. Compute Billing Owner also configures which Cloud Project is
+// charged for relevant quota.
+type IsolationComputeBillingOwner int32
+
+const (
+	// ComputeBillingOwnerUnspecified is the default value.
+	ComputeBillingOwnerUnspecified IsolationComputeBillingOwner = IsolationComputeBillingOwner(btapb.AppProfile_DataBoostIsolationReadOnly_COMPUTE_BILLING_OWNER_UNSPECIFIED)
+	// HostPays indicates that the host Cloud Project containing the targeted Bigtable Instance /
+	// Table pays for compute.
+	HostPays IsolationComputeBillingOwner = IsolationComputeBillingOwner(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS)
+)
 
 // PageInfo supports pagination. See https://godoc.org/google.golang.org/api/iterator package for details.
 func (it *ProfileIterator) PageInfo() *iterator.PageInfo {
@@ -1871,24 +2195,14 @@ func (iac *InstanceAdminClient) CreateAppProfile(ctx context.Context, profile Pr
 		Description: profile.Description,
 	}
 
-	if profile.RoutingPolicy == "" {
-		return nil, errors.New("invalid routing policy")
+	err := setRoutingPolicy(appProfile, profile.RoutingConfig, optional.String(profile.RoutingPolicy), profile.ClusterID, profile.AllowTransactionalWrites, false)
+	if err != nil {
+		return nil, err
 	}
 
-	switch profile.RoutingPolicy {
-	case MultiClusterRouting:
-		appProfile.RoutingPolicy = &btapb.AppProfile_MultiClusterRoutingUseAny_{
-			MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{},
-		}
-	case SingleClusterRouting:
-		appProfile.RoutingPolicy = &btapb.AppProfile_SingleClusterRouting_{
-			SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
-				ClusterId:                profile.ClusterID,
-				AllowTransactionalWrites: profile.AllowTransactionalWrites,
-			},
-		}
-	default:
-		return nil, errors.New("invalid routing policy")
+	err = setIsolation(appProfile, profile.Isolation)
+	if err != nil {
+		return nil, err
 	}
 
 	return iac.iClient.CreateAppProfile(ctx, &btapb.CreateAppProfileRequest{
@@ -1910,7 +2224,7 @@ func (iac *InstanceAdminClient) GetAppProfile(ctx context.Context, instanceID, n
 		var err error
 		ap, err = iac.iClient.GetAppProfile(ctx, profileRequest)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -1932,7 +2246,7 @@ func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID 
 			var err error
 			profileRes, err = iac.iClient.ListAppProfiles(ctx, listRequest)
 			return err
-		}, retryOptions...)
+		}, adminRetryOptions...)
 		if err != nil {
 			return "", err
 		}
@@ -1954,29 +2268,24 @@ func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 
 	profile := &btapb.AppProfile{
-		Name: "projects/" + iac.project + "/instances/" + instanceID + "/appProfiles/" + profileID,
+		Name: appProfilePath(iac.project, instanceID, profileID),
 	}
 
 	if updateAttrs.Description != nil {
 		profile.Description = optional.ToString(updateAttrs.Description)
 	}
-	if updateAttrs.RoutingPolicy != nil {
-		switch optional.ToString(updateAttrs.RoutingPolicy) {
-		case MultiClusterRouting:
-			profile.RoutingPolicy = &btapb.AppProfile_MultiClusterRoutingUseAny_{
-				MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{},
-			}
-		case SingleClusterRouting:
-			profile.RoutingPolicy = &btapb.AppProfile_SingleClusterRouting_{
-				SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
-					ClusterId:                updateAttrs.ClusterID,
-					AllowTransactionalWrites: updateAttrs.AllowTransactionalWrites,
-				},
-			}
-		default:
-			return errors.New("invalid routing policy")
-		}
+
+	err := setRoutingPolicy(profile, updateAttrs.RoutingConfig, updateAttrs.RoutingPolicy,
+		updateAttrs.ClusterID, updateAttrs.AllowTransactionalWrites, true)
+	if err != nil {
+		return err
 	}
+
+	err = setIsolation(profile, updateAttrs.Isolation)
+	if err != nil {
+		return err
+	}
+
 	patchRequest := &btapb.UpdateAppProfileRequest{
 		AppProfile: profile,
 		UpdateMask: &field_mask.FieldMask{
@@ -2322,7 +2631,7 @@ func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupItera
 			var err error
 			resp, err = ac.tClient.ListBackups(ctx, req)
 			return err
-		}, retryOptions...)
+		}, adminRetryOptions...)
 		if err != nil {
 			return "", err
 		}
@@ -2471,7 +2780,7 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 		var err error
 		resp, err = ac.tClient.GetBackup(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -2710,7 +3019,7 @@ func (ac *AdminClient) AuthorizedViewInfo(ctx context.Context, tableID, authoriz
 		var err error
 		res, err = ac.tClient.GetAuthorizedView(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 
 	if err != nil {
 		return nil, err
@@ -2744,7 +3053,7 @@ func (ac *AdminClient) AuthorizedViews(ctx context.Context, tableID string) ([]s
 		var err error
 		res, err = ac.tClient.ListAuthorizedViews(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -2851,7 +3160,7 @@ func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID,
 		var err error
 		res, err = iac.iClient.GetLogicalView(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 
 	if err != nil {
 		return nil, err
@@ -2871,7 +3180,7 @@ func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID str
 		var err error
 		res, err = iac.iClient.ListLogicalViews(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -2896,6 +3205,7 @@ func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceI
 	}
 	if conf.Query != "" {
 		updateMask.Paths = append(updateMask.Paths, "query")
+		lv.Query = conf.Query
 	}
 	req := &btapb.UpdateLogicalViewRequest{
 		LogicalView: lv,
@@ -2979,7 +3289,7 @@ func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instan
 		var err error
 		res, err = iac.iClient.GetMaterializedView(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 
 	if err != nil {
 		return nil, err
@@ -3005,7 +3315,7 @@ func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceI
 		var err error
 		res, err = iac.iClient.ListMaterializedViews(ctx, req)
 		return err
-	}, retryOptions...)
+	}, adminRetryOptions...)
 	if err != nil {
 		return nil, err
 	}

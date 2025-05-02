@@ -52,6 +52,7 @@ type GenerativeCallOptions struct {
 	EmbedContent          []gax.CallOption
 	BatchEmbedContents    []gax.CallOption
 	CountTokens           []gax.CallOption
+	BidiGenerateContent   []gax.CallOption
 	GetOperation          []gax.CallOption
 	ListOperations        []gax.CallOption
 }
@@ -144,8 +145,9 @@ func defaultGenerativeCallOptions() *GenerativeCallOptions {
 				})
 			}),
 		},
-		GetOperation:   []gax.CallOption{},
-		ListOperations: []gax.CallOption{},
+		BidiGenerateContent: []gax.CallOption{},
+		GetOperation:        []gax.CallOption{},
+		ListOperations:      []gax.CallOption{},
 	}
 }
 
@@ -217,8 +219,9 @@ func defaultGenerativeRESTCallOptions() *GenerativeCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetOperation:   []gax.CallOption{},
-		ListOperations: []gax.CallOption{},
+		BidiGenerateContent: []gax.CallOption{},
+		GetOperation:        []gax.CallOption{},
+		ListOperations:      []gax.CallOption{},
 	}
 }
 
@@ -233,6 +236,7 @@ type internalGenerativeClient interface {
 	EmbedContent(context.Context, *generativelanguagepb.EmbedContentRequest, ...gax.CallOption) (*generativelanguagepb.EmbedContentResponse, error)
 	BatchEmbedContents(context.Context, *generativelanguagepb.BatchEmbedContentsRequest, ...gax.CallOption) (*generativelanguagepb.BatchEmbedContentsResponse, error)
 	CountTokens(context.Context, *generativelanguagepb.CountTokensRequest, ...gax.CallOption) (*generativelanguagepb.CountTokensResponse, error)
+	BidiGenerateContent(context.Context, ...gax.CallOption) (generativelanguagepb.GenerativeService_BidiGenerateContentClient, error)
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -316,6 +320,14 @@ func (c *GenerativeClient) BatchEmbedContents(ctx context.Context, req *generati
 // to learn more about tokens.
 func (c *GenerativeClient) CountTokens(ctx context.Context, req *generativelanguagepb.CountTokensRequest, opts ...gax.CallOption) (*generativelanguagepb.CountTokensResponse, error) {
 	return c.internalClient.CountTokens(ctx, req, opts...)
+}
+
+// BidiGenerateContent low-Latency bidirectional streaming API that supports audio and video
+// streaming inputs can produce multimodal output streams (audio and text).
+//
+// This method is not supported for the REST transport.
+func (c *GenerativeClient) BidiGenerateContent(ctx context.Context, opts ...gax.CallOption) (generativelanguagepb.GenerativeService_BidiGenerateContentClient, error) {
+	return c.internalClient.BidiGenerateContent(ctx, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -596,6 +608,23 @@ func (c *generativeGRPCClient) CountTokens(ctx context.Context, req *generativel
 	return resp, nil
 }
 
+func (c *generativeGRPCClient) BidiGenerateContent(ctx context.Context, opts ...gax.CallOption) (generativelanguagepb.GenerativeService_BidiGenerateContentClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp generativelanguagepb.GenerativeService_BidiGenerateContentClient
+	opts = append((*c.CallOptions).BidiGenerateContent[0:len((*c.CallOptions).BidiGenerateContent):len((*c.CallOptions).BidiGenerateContent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "BidiGenerateContent")
+		resp, err = c.generativeClient.BidiGenerateContent(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "BidiGenerateContent")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *generativeGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -806,7 +835,7 @@ func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *g
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *streamGenerateContentRESTClient
+	var streamClient *streamGenerateContentRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -823,7 +852,7 @@ func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *g
 			return err
 		}
 
-		streamClient = &streamGenerateContentRESTClient{
+		streamClient = &streamGenerateContentRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&generativelanguagepb.GenerateContentResponse{}).ProtoReflect().Type()),
@@ -834,15 +863,15 @@ func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *g
 	return streamClient, e
 }
 
-// streamGenerateContentRESTClient is the stream client used to consume the server stream created by
+// streamGenerateContentRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of StreamGenerateContent.
-type streamGenerateContentRESTClient struct {
+type streamGenerateContentRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *streamGenerateContentRESTClient) Recv() (*generativelanguagepb.GenerateContentResponse, error) {
+func (c *streamGenerateContentRESTStreamClient) Recv() (*generativelanguagepb.GenerateContentResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -856,29 +885,29 @@ func (c *streamGenerateContentRESTClient) Recv() (*generativelanguagepb.Generate
 	return res, nil
 }
 
-func (c *streamGenerateContentRESTClient) Header() (metadata.MD, error) {
+func (c *streamGenerateContentRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *streamGenerateContentRESTClient) Trailer() metadata.MD {
+func (c *streamGenerateContentRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *streamGenerateContentRESTClient) CloseSend() error {
+func (c *streamGenerateContentRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamGenerateContentRESTClient) Context() context.Context {
+func (c *streamGenerateContentRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *streamGenerateContentRESTClient) SendMsg(m interface{}) error {
+func (c *streamGenerateContentRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
+func (c *streamGenerateContentRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }
@@ -1055,6 +1084,14 @@ func (c *generativeRESTClient) CountTokens(ctx context.Context, req *generativel
 		return nil, e
 	}
 	return resp, nil
+}
+
+// BidiGenerateContent low-Latency bidirectional streaming API that supports audio and video
+// streaming inputs can produce multimodal output streams (audio and text).
+//
+// This method is not supported for the REST transport.
+func (c *generativeRESTClient) BidiGenerateContent(ctx context.Context, opts ...gax.CallOption) (generativelanguagepb.GenerativeService_BidiGenerateContentClient, error) {
+	return nil, errors.New("BidiGenerateContent not yet supported for REST clients")
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.

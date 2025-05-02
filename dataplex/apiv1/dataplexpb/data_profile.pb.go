@@ -379,6 +379,8 @@ type DataProfileSpec_PostScanActions_BigQueryExport struct {
 	// Optional. The BigQuery table to export DataProfileScan results to.
 	// Format:
 	// //bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID
+	// or
+	// projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID
 	ResultsTable string `protobuf:"bytes,1,opt,name=results_table,json=resultsTable,proto3" json:"results_table,omitempty"`
 }
 
