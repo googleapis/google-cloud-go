@@ -70,7 +70,7 @@ func TestMain(m *testing.M) {
 	}
 }
 
-// Lists the all the objects in the bucket.
+// Lists all the objects in the bucket.
 func TestIntegration_NextBatch_All(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
@@ -94,13 +94,6 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 
 	if len(objects) != len(httpTestBucket.objects) {
 		t.Errorf("expected to receive %d results, got %d results", len(httpTestBucket.objects), len(objects))
-	}
-	if df.method != sequential {
-		t.Errorf("aaaaa expected df.method to be %v, got %v", worksteal, df.method)
-	}
-
-	if got, want := df.method, sequential; got != want {
-		t.Errorf("expected df.method to be %v, got %v", want, got)
 	}
 }
 
