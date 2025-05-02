@@ -90,6 +90,9 @@
         "chat": {
             "component": "chat"
         },
+        "chronicle": {
+            "component": "chronicle"
+        },
         "cloudbuild": {
             "component": "cloudbuild"
         },
@@ -164,6 +167,9 @@
         },
         "developerconnect": {
             "component": "developerconnect"
+        },
+        "devicestreaming": {
+            "component": "devicestreaming"
         },
         "dialogflow": {
             "component": "dialogflow"
@@ -245,6 +251,9 @@
         },
         "longrunning": {
             "component": "longrunning"
+        },
+        "lustre": {
+            "component": "lustre"
         },
         "managedidentities": {
             "component": "managedidentities"
@@ -398,6 +407,9 @@
         },
         "shopping": {
             "component": "shopping"
+        },
+        "spanner/benchmarks": {
+            "component": "spanner/benchmarks"
         },
         "speech": {
             "component": "speech"

@@ -1,6 +1,28 @@
 # Changelog
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.3...netapp/v1.8.0) (2025-04-30)
+
+
+### Features
+
+* **netapp:** Add `source_region`, `backup_region`, `source_backup_vault`, `destination_backup_vault`, `backupVault_type` (of new enum type `BackupVaultType`) to `BackupVault` message ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **netapp:** Add `volume_region` and `backup_region` to backup `Backup` message ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.2...netapp/v1.7.3) (2025-04-22)
+
+
+### Documentation
+
+* **netapp:** A comment for field `cooling_threshold_days` in message `.google.cloud.netapp.v1.TieringPolicy` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.1...netapp/v1.7.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **netapp:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.0...netapp/v1.7.1) (2025-03-13)
 
 

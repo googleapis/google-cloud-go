@@ -123,6 +123,10 @@ func dateType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_DATE}
 }
 
+func intervalType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_INTERVAL}
+}
+
 func listProto(p ...*proto3.Value) *proto3.Value {
 	return &proto3.Value{Kind: &proto3.Value_ListValue{ListValue: &proto3.ListValue{Values: p}}}
 }

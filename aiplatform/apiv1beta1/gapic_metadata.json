@@ -4534,9 +4534,19 @@
         "grpc": {
           "libraryClient": "ModelGardenClient",
           "rpcs": {
+            "AcceptPublisherModelEula": {
+              "methods": [
+                "AcceptPublisherModelEula"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CheckPublisherModelEulaAcceptance": {
+              "methods": [
+                "CheckPublisherModelEulaAcceptance"
               ]
             },
             "DeleteOperation": {
@@ -4614,9 +4624,19 @@
         "rest": {
           "libraryClient": "ModelGardenClient",
           "rpcs": {
+            "AcceptPublisherModelEula": {
+              "methods": [
+                "AcceptPublisherModelEula"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CheckPublisherModelEulaAcceptance": {
+              "methods": [
+                "CheckPublisherModelEulaAcceptance"
               ]
             },
             "DeleteOperation": {
@@ -7461,6 +7481,11 @@
                 "GetRagCorpus"
               ]
             },
+            "GetRagEngineConfig": {
+              "methods": [
+                "GetRagEngineConfig"
+              ]
+            },
             "GetRagFile": {
               "methods": [
                 "GetRagFile"
@@ -7504,6 +7529,11 @@
             "UpdateRagCorpus": {
               "methods": [
                 "UpdateRagCorpus"
+              ]
+            },
+            "UpdateRagEngineConfig": {
+              "methods": [
+                "UpdateRagEngineConfig"
               ]
             },
             "UploadRagFile": {
@@ -7566,6 +7596,11 @@
                 "GetRagCorpus"
               ]
             },
+            "GetRagEngineConfig": {
+              "methods": [
+                "GetRagEngineConfig"
+              ]
+            },
             "GetRagFile": {
               "methods": [
                 "GetRagFile"
@@ -7609,6 +7644,11 @@
             "UpdateRagCorpus": {
               "methods": [
                 "UpdateRagCorpus"
+              ]
+            },
+            "UpdateRagEngineConfig": {
+              "methods": [
+                "UpdateRagEngineConfig"
               ]
             },
             "UploadRagFile": {
