@@ -17,6 +17,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
@@ -664,8 +665,11 @@ var methods = map[string][]retryFunc{
 				return fmt.Errorf("Reader.Read: %v", err)
 			}
 
-			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
-				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(randomBytes3MiB))
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(randomBytes3MiB)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(randomBytes3MiB), expectedMd5)
 			}
 			return nil
 		},
@@ -710,8 +714,11 @@ var methods = map[string][]retryFunc{
 				return fmt.Errorf("Reader.Read: %w", err)
 			}
 
-			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
-				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(randomBytes3MiB))
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(randomBytes3MiB)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(randomBytes3MiB), expectedMd5)
 			}
 			return nil
 		},
