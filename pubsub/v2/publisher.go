@@ -147,13 +147,13 @@ func (c *Client) Publisher(topicNameOrID string) *Publisher {
 	s := strings.Split(topicNameOrID, "/")
 	// The string looks like a properly formatted topic name, use it directly.
 	if len(s) == 4 {
-		return newTopic(c, topicNameOrID)
+		return newPublisher(c, topicNameOrID)
 	}
 	// In all other cases, treat the string as the topicID, even if misformatted.
-	return newTopic(c, fmt.Sprintf("projects/%s/topics/%s", c.projectID, topicNameOrID))
+	return newPublisher(c, fmt.Sprintf("projects/%s/topics/%s", c.projectID, topicNameOrID))
 }
 
-func newTopic(c *Client, name string) *Publisher {
+func newPublisher(c *Client, name string) *Publisher {
 	return &Publisher{
 		c:               c,
 		name:            name,
@@ -177,8 +177,8 @@ func (t *Publisher) String() string {
 	return t.name
 }
 
-// ErrTopicStopped indicates that topic has been stopped and further publishing will fail.
-var ErrTopicStopped = errors.New("pubsub: Stop has been called for this topic")
+// ErrPublisherStopped indicates that topic has been stopped and further publishing will fail.
+var ErrPublisherStopped = errors.New("pubsub: Stop has been called for this publisher")
 
 // A PublishResult holds the result from a call to Publish.
 //
@@ -191,7 +191,7 @@ var ErrTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 //	}
 type PublishResult = ipubsub.PublishResult
 
-var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")
+var errPublisherOrderingNotEnabled = errors.New("Publisher.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Publisher.EnableMessageOrdering")
 
 // Publish publishes msg to the topic asynchronously. Messages are batched and
 // sent according to the topic's PublishSettings. Publish never blocks.
@@ -216,8 +216,8 @@ func (t *Publisher) Publish(ctx context.Context, msg *Message) *PublishResult {
 
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		ipubsub.SetPublishResult(r, "", errTopicOrderingNotEnabled)
-		spanRecordError(createSpan, errTopicOrderingNotEnabled)
+		ipubsub.SetPublishResult(r, "", errPublisherOrderingNotEnabled)
+		spanRecordError(createSpan, errPublisherOrderingNotEnabled)
 		return r
 	}
 
@@ -236,8 +236,8 @@ func (t *Publisher) Publish(ctx context.Context, msg *Message) *PublishResult {
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 	if t.stopped {
-		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
-		spanRecordError(createSpan, ErrTopicStopped)
+		ipubsub.SetPublishResult(r, "", ErrPublisherStopped)
+		spanRecordError(createSpan, ErrPublisherStopped)
 		return r
 	}
 
@@ -377,7 +377,7 @@ func (t *Publisher) initBundler() {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
 	}
 
-	t.flowController = newTopicFlowController(fcs)
+	t.flowController = newPublisherFlowController(fcs)
 
 	// Calculate the max limit of a single bundle. 5 comes from the number of bytes
 	// needed to be reserved for encoding the PubsubMessage repeated field.

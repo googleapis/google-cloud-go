@@ -48,7 +48,7 @@ type Subscriber struct {
 	// This indicates to the server that any guarantees made for a stream that
 	// disconnected will be made for the stream that is created to replace it.
 	clientID string
-	// enableTracing enable otel tracing of Pub/Sub messages on this subscription.
+	// enableTracing enable otel tracing of Pub/Sub messages on this subscriber.
 	// This is configured at client instantiation, and allows
 	// disabling of tracing even when a tracer provider is detected.
 	enableTracing bool
@@ -59,13 +59,13 @@ func (c *Client) Subscriber(nameOrID string) *Subscriber {
 	s := strings.Split(nameOrID, "/")
 	// The string looks like a properly formatted topic name, use it directly.
 	if len(s) == 4 {
-		return newSubscription(c, nameOrID)
+		return newSubscriber(c, nameOrID)
 	}
 	// In all other cases, treat the arg as the topicID, even if misformatted.
-	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, nameOrID))
+	return newSubscriber(c, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, nameOrID))
 }
 
-func newSubscription(c *Client, name string) *Subscriber {
+func newSubscriber(c *Client, name string) *Subscriber {
 	return &Subscriber{
 		c:               c,
 		name:            name,
@@ -158,7 +158,7 @@ var DefaultReceiveSettings = ReceiveSettings{
 	NumGoroutines:              1,
 }
 
-var errReceiveInProgress = errors.New("pubsub: Receive already in progress for this subscription")
+var errReceiveInProgress = errors.New("pubsub: Receive already in progress for this subscriber")
 
 // Receive calls f with the outstanding messages from the subscription.
 // It blocks until ctx is done, or the service returns a non-retryable error.
@@ -186,7 +186,7 @@ var errReceiveInProgress = errors.New("pubsub: Receive already in progress for t
 // automatically extend the ack deadline of all fetched Messages up to the
 // period specified by s.ReceiveSettings.MaxExtension.
 //
-// Each Subscription may have only one invocation of Receive active at a time.
+// Each Subscriber may have only one invocation of Receive active at a time.
 func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Message)) error {
 	s.mu.Lock()
 	if s.receiveActive {
@@ -239,7 +239,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		maxOutstandingBytes:    maxBytes,
 		clientID:               s.clientID,
 	}
-	fc := newSubscriptionFlowController(FlowControlSettings{
+	fc := newSubscriberFlowController(FlowControlSettings{
 		MaxOutstandingMessages: maxCount,
 		MaxOutstandingBytes:    maxBytes,
 		LimitExceededBehavior:  FlowControlBlock,

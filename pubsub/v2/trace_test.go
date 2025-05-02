@@ -213,7 +213,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 			t.Fatal("expected err, got nil")
 		}
 
-		want := getPublishSpanStubsWithError(topicID, m, errTopicOrderingNotEnabled)
+		want := getPublishSpanStubsWithError(topicID, m, errPublisherOrderingNotEnabled)
 
 		got := getSpans(e)
 		opts := []cmp.Option{
@@ -238,7 +238,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 		}
 
 		got := getSpans(e)
-		want := getPublishSpanStubsWithError(topicID, m, ErrTopicStopped)
+		want := getPublishSpanStubsWithError(topicID, m, ErrPublisherStopped)
 		opts := []cmp.Option{
 			cmp.Comparer(spanStubComparer),
 		}

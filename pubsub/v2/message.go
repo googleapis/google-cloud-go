@@ -24,7 +24,7 @@ import (
 
 // Message represents a Pub/Sub message.
 //
-// Message can be passed to Topic.Publish for publishing.
+// Message can be passed to Publisher.Publish for publishing.
 //
 // If received in the callback passed to Subscription.Receive, client code must
 // call Message.Ack or Message.Nack when finished processing the Message. Calls
