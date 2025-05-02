@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.6](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.9.5...apigeeregistry/v0.9.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [0.9.5](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.9.4...apigeeregistry/v0.9.5) (2025-03-13)
 
 

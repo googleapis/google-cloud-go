@@ -34,7 +34,7 @@ func ExampleClient_ListAutonomousDatabaseBackups_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -60,7 +60,7 @@ func ExampleClient_ListAutonomousDatabaseCharacterSets_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -86,7 +86,7 @@ func ExampleClient_ListAutonomousDatabases_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -112,7 +112,7 @@ func ExampleClient_ListAutonomousDbVersions_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -138,7 +138,7 @@ func ExampleClient_ListCloudExadataInfrastructures_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -164,7 +164,7 @@ func ExampleClient_ListCloudVmClusters_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -190,7 +190,7 @@ func ExampleClient_ListDbNodes_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -216,7 +216,7 @@ func ExampleClient_ListDbServers_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -242,7 +242,7 @@ func ExampleClient_ListDbSystemShapes_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -268,7 +268,7 @@ func ExampleClient_ListEntitlements_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -294,7 +294,7 @@ func ExampleClient_ListGiVersions_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -320,7 +320,7 @@ func ExampleClient_ListLocations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -346,7 +346,7 @@ func ExampleClient_ListOperations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := oracledatabase.NewRESTClient(ctx)
+	c, err := oracledatabase.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

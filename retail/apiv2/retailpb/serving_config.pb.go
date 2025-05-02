@@ -113,7 +113,7 @@ type ServingConfig struct {
 	//
 	// Required when
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
+	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	ModelId string `protobuf:"bytes,3,opt,name=model_id,json=modelId,proto3" json:"model_id,omitempty"`
 	// How much price ranking we want in serving results.
 	// Price reranking causes product items with a similar
@@ -133,7 +133,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
+	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	PriceRerankingLevel string `protobuf:"bytes,4,opt,name=price_reranking_level,json=priceRerankingLevel,proto3" json:"price_reranking_level,omitempty"`
 	// Facet specifications for faceted search. If empty, no facets are returned.
 	// The ids refer to the ids of [Control][google.cloud.retail.v2.Control]
@@ -145,14 +145,14 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	FacetControlIds []string `protobuf:"bytes,5,rep,name=facet_control_ids,json=facetControlIds,proto3" json:"facet_control_ids,omitempty"`
 	// The specification for dynamically generated facets. Notice that only
 	// textual facets can be dynamically generated.
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	DynamicFacetSpec *SearchRequest_DynamicFacetSpec `protobuf:"bytes,6,opt,name=dynamic_facet_spec,json=dynamicFacetSpec,proto3" json:"dynamic_facet_spec,omitempty"`
 	// Condition boost specifications. If a product matches multiple conditions
 	// in the specifications, boost scores from these specifications are all
@@ -169,7 +169,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	BoostControlIds []string `protobuf:"bytes,7,rep,name=boost_control_ids,json=boostControlIds,proto3" json:"boost_control_ids,omitempty"`
 	// Condition filter specifications. If a product matches multiple conditions
 	// in the specifications, filters from these specifications are all
@@ -178,7 +178,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	FilterControlIds []string `protobuf:"bytes,9,rep,name=filter_control_ids,json=filterControlIds,proto3" json:"filter_control_ids,omitempty"`
 	// Condition redirect specifications. Only the first triggered redirect action
 	// is applied, even if multiple apply. Maximum number of specifications is
@@ -186,7 +186,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	RedirectControlIds []string `protobuf:"bytes,10,rep,name=redirect_control_ids,json=redirectControlIds,proto3" json:"redirect_control_ids,omitempty"`
 	// Condition synonyms specifications. If multiple syonyms conditions match,
 	// all matching synonyms control in the list will execute. Order of controls
@@ -195,7 +195,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	TwowaySynonymsControlIds []string `protobuf:"bytes,18,rep,name=twoway_synonyms_control_ids,json=twowaySynonymsControlIds,proto3" json:"twoway_synonyms_control_ids,omitempty"`
 	// Condition oneway synonyms specifications. If multiple oneway synonyms
 	// conditions match, all matching oneway synonyms controls in the list will
@@ -204,7 +204,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	OnewaySynonymsControlIds []string `protobuf:"bytes,12,rep,name=oneway_synonyms_control_ids,json=onewaySynonymsControlIds,proto3" json:"oneway_synonyms_control_ids,omitempty"`
 	// Condition do not associate specifications. If multiple do not associate
 	// conditions match, all matching do not associate controls in the list will
@@ -214,7 +214,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	DoNotAssociateControlIds []string `protobuf:"bytes,13,rep,name=do_not_associate_control_ids,json=doNotAssociateControlIds,proto3" json:"do_not_associate_control_ids,omitempty"`
 	// Condition replacement specifications.
 	// - Applied according to the order in the list.
@@ -223,7 +223,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	ReplacementControlIds []string `protobuf:"bytes,14,rep,name=replacement_control_ids,json=replacementControlIds,proto3" json:"replacement_control_ids,omitempty"`
 	// Condition ignore specifications. If multiple ignore
 	// conditions match, all matching ignore controls in the list will
@@ -233,7 +233,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	IgnoreControlIds []string `protobuf:"bytes,15,rep,name=ignore_control_ids,json=ignoreControlIds,proto3" json:"ignore_control_ids,omitempty"`
 	// How much diversity to use in recommendation model results e.g.
 	// `medium-diversity` or `high-diversity`. Currently supported values:
@@ -249,7 +249,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
+	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	DiversityLevel string `protobuf:"bytes,8,opt,name=diversity_level,json=diversityLevel,proto3" json:"diversity_level,omitempty"`
 	// What kind of diversity to use - data driven or rule based. If unset, the
 	// server behavior defaults to
@@ -269,7 +269,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
+	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	EnableCategoryFilterLevel string `protobuf:"bytes,16,opt,name=enable_category_filter_level,json=enableCategoryFilterLevel,proto3" json:"enable_category_filter_level,omitempty"`
 	// When the flag is enabled, the products in the denylist will not be filtered
 	// out in the recommendation filtering results.
@@ -278,7 +278,7 @@ type ServingConfig struct {
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2.ServingConfig.solution_types] is
-	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2main.SolutionType.SOLUTION_TYPE_SEARCH].
+	// [SOLUTION_TYPE_SEARCH][google.cloud.retail.v2.SolutionType.SOLUTION_TYPE_SEARCH].
 	//
 	// Notice that if both
 	// [ServingConfig.personalization_spec][google.cloud.retail.v2.ServingConfig.personalization_spec]

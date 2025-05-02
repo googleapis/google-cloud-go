@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.19.6](https://github.com/googleapis/google-cloud-go/compare/functions/v1.19.5...functions/v1.19.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **functions:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.19.5](https://github.com/googleapis/google-cloud-go/compare/functions/v1.19.4...functions/v1.19.5) (2025-04-15)
+
+
+### Documentation
+
+* **functions:** Fixed typo ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **functions:** Small fixes ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **functions:** Updated `docker_registry` proto to reflect its deprecated status ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **functions:** Updated `docker_registry` proto to reflect its deprecated status ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
 ## [1.19.4](https://github.com/googleapis/google-cloud-go/compare/functions/v1.19.3...functions/v1.19.4) (2025-03-13)
 
 

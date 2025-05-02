@@ -257,6 +257,9 @@ type openWriterParams struct {
 	// conds - see `Writer.o.conds`.
 	// Optional.
 	conds *Conditions
+	// appendGen -- object generation to write to.
+	// Optional; required for taking over appendable objects only
+	appendGen int64
 	// encryptionKey - see `Writer.o.encryptionKey`
 	// Optional.
 	encryptionKey []byte
@@ -285,11 +288,15 @@ type openWriterParams struct {
 	// setObj callback for reporting the resulting object - see `Writer.obj`.
 	// Required.
 	setObj func(*ObjectAttrs)
+	// setSize callback for updated the persisted size in Writer.obj.
+	setSize func(int64)
 	// setFlush callback for providing a Flush function implementation - see `Writer.Flush`.
 	// Required.
 	setFlush func(func() (int64, error))
 	// setPipeWriter callback for reseting `Writer.pw` if needed.
 	setPipeWriter func(*io.PipeWriter)
+	// setTakeoverOffset callback for returning offset to start writing from to Writer.
+	setTakeoverOffset func(int64)
 }
 
 type newMultiRangeDownloaderParams struct {

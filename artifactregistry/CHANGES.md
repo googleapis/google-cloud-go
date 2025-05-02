@@ -1,5 +1,24 @@
 # Changes
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.17.0...artifactregistry/v1.17.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.16.3...artifactregistry/v1.17.0) (2025-04-15)
+
+
+### Features
+
+* **artifactregistry:** Add the GoModule and KfpArtifact resources ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
+
+### Documentation
+
+* **artifactregistry:** Remove the restriction of the maximum numbers of versions that can be deleted in one BatchDeleteVersions call ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
 ## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.16.2...artifactregistry/v1.16.3) (2025-03-13)
 
 

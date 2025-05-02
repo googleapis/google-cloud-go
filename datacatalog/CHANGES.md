@@ -1,5 +1,32 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.2...datacatalog/v1.26.0) (2025-04-30)
+
+
+### Features
+
+* **datacatalog:** Add field `template_migration_enabled_time` to `.google.cloud.datacatalog.v1.MigrationConfig` ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Documentation
+
+* **datacatalog:** Update documentation URL ([#12080](https://github.com/googleapis/google-cloud-go/issues/12080)) ([2133634](https://github.com/googleapis/google-cloud-go/commit/2133634fa6f9b9523d95b3a4bda7e031fc33afed))
+
+## [1.25.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.1...datacatalog/v1.25.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.0...datacatalog/v1.25.1) (2025-04-15)
+
+
+### Documentation
+
+* **datacatalog:** A comment for field `sql_resource` in message `.google.cloud.datacatalog.v1.LookupEntryRequest` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **datacatalog:** Clarify sql variant in comment for v1beta1.LookupEntryRequest.sql_resource ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.5...datacatalog/v1.25.0) (2025-03-19)
 
 

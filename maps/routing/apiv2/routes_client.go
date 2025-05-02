@@ -532,7 +532,7 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *computeRouteMatrixRESTClient
+	var streamClient *computeRouteMatrixRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -549,7 +549,7 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 			return err
 		}
 
-		streamClient = &computeRouteMatrixRESTClient{
+		streamClient = &computeRouteMatrixRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&routingpb.RouteMatrixElement{}).ProtoReflect().Type()),
@@ -560,15 +560,15 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 	return streamClient, e
 }
 
-// computeRouteMatrixRESTClient is the stream client used to consume the server stream created by
+// computeRouteMatrixRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of ComputeRouteMatrix.
-type computeRouteMatrixRESTClient struct {
+type computeRouteMatrixRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *computeRouteMatrixRESTClient) Recv() (*routingpb.RouteMatrixElement, error) {
+func (c *computeRouteMatrixRESTStreamClient) Recv() (*routingpb.RouteMatrixElement, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -582,29 +582,29 @@ func (c *computeRouteMatrixRESTClient) Recv() (*routingpb.RouteMatrixElement, er
 	return res, nil
 }
 
-func (c *computeRouteMatrixRESTClient) Header() (metadata.MD, error) {
+func (c *computeRouteMatrixRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *computeRouteMatrixRESTClient) Trailer() metadata.MD {
+func (c *computeRouteMatrixRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *computeRouteMatrixRESTClient) CloseSend() error {
+func (c *computeRouteMatrixRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *computeRouteMatrixRESTClient) Context() context.Context {
+func (c *computeRouteMatrixRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *computeRouteMatrixRESTClient) SendMsg(m interface{}) error {
+func (c *computeRouteMatrixRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *computeRouteMatrixRESTClient) RecvMsg(m interface{}) error {
+func (c *computeRouteMatrixRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

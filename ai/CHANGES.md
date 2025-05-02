@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.10.2...ai/v0.11.0) (2025-04-30)
+
+
+### Features
+
+* **ai/generativelanguage:** Add CODE_RETRIEVAL_QUERY embedding task type ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **ai/generativelanguage:** Add CODE_RETRIEVAL_QUERY embedding task type ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add language_code to speech config ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add minimum, maximum, any_of, property_ordering, default and null type to Schema ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add seed to GenerationConfig ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **ai/generativelanguage:** Add support for live API (https ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add support for ModalityTokenCounts in UsageMetadata responses ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **ai/generativelanguage:** Add support for ModalityTokenCounts in UsageMetadata responses ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add support for Veo ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+* **ai/generativelanguage:** Add ThinkingConfig, MediaResolution, and seed to GenerationConfig ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+
+## [0.10.2](https://github.com/googleapis/google-cloud-go/compare/ai/v0.10.1...ai/v0.10.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **ai:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.10.0...ai/v0.10.1) (2025-03-13)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/storage/control/apiv2",
-    "version": "1.51.0",
+    "version": "1.52.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "storage_v2_generated_StorageControl_CreateAnywhereCache_sync",
+      "title": "storage CreateAnywhereCache Sample",
+      "description": "CreateAnywhereCache creates an Anywhere Cache instance.",
+      "file": "StorageControlClient/CreateAnywhereCache/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAnywhereCache",
+        "fullName": "google.storage.control.v2.StorageControlClient.CreateAnywhereCache",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.CreateAnywhereCacheRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAnywhereCacheOperation",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "CreateAnywhereCache",
+          "fullName": "google.storage.control.v2.StorageControl.CreateAnywhereCache",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "storage_v2_generated_StorageControl_CreateFolder_sync",
       "title": "storage CreateFolder Sample",
@@ -194,6 +240,98 @@
       ]
     },
     {
+      "regionTag": "storage_v2_generated_StorageControl_DisableAnywhereCache_sync",
+      "title": "storage DisableAnywhereCache Sample",
+      "description": "DisableAnywhereCache disables an Anywhere Cache instance. A disabled instance is read-only. The\ndisablement could be revoked by calling ResumeAnywhereCache. The cache\ninstance will be deleted automatically if it remains in the disabled state\nfor at least one hour.",
+      "file": "StorageControlClient/DisableAnywhereCache/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableAnywhereCache",
+        "fullName": "google.storage.control.v2.StorageControlClient.DisableAnywhereCache",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.DisableAnywhereCacheRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.AnywhereCache",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "DisableAnywhereCache",
+          "fullName": "google.storage.control.v2.StorageControl.DisableAnywhereCache",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_GetAnywhereCache_sync",
+      "title": "storage GetAnywhereCache Sample",
+      "description": "GetAnywhereCache gets an Anywhere Cache instance.",
+      "file": "StorageControlClient/GetAnywhereCache/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAnywhereCache",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetAnywhereCache",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.GetAnywhereCacheRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.AnywhereCache",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetAnywhereCache",
+          "fullName": "google.storage.control.v2.StorageControl.GetAnywhereCache",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "storage_v2_generated_StorageControl_GetFolder_sync",
       "title": "storage GetFolder Sample",
       "description": "GetFolder returns metadata for the specified folder. This operation is only\napplicable to a hierarchical namespace enabled bucket.",
@@ -332,6 +470,52 @@
       ]
     },
     {
+      "regionTag": "storage_v2_generated_StorageControl_ListAnywhereCaches_sync",
+      "title": "storage ListAnywhereCaches Sample",
+      "description": "ListAnywhereCaches lists Anywhere Cache instances for a given bucket.",
+      "file": "StorageControlClient/ListAnywhereCaches/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAnywhereCaches",
+        "fullName": "google.storage.control.v2.StorageControlClient.ListAnywhereCaches",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.ListAnywhereCachesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnywhereCacheIterator",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "ListAnywhereCaches",
+          "fullName": "google.storage.control.v2.StorageControl.ListAnywhereCaches",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "storage_v2_generated_StorageControl_ListFolders_sync",
       "title": "storage ListFolders Sample",
       "description": "ListFolders retrieves a list of folders. This operation is only applicable to a\nhierarchical namespace enabled bucket.",
@@ -424,6 +608,52 @@
       ]
     },
     {
+      "regionTag": "storage_v2_generated_StorageControl_PauseAnywhereCache_sync",
+      "title": "storage PauseAnywhereCache Sample",
+      "description": "PauseAnywhereCache pauses an Anywhere Cache instance.",
+      "file": "StorageControlClient/PauseAnywhereCache/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PauseAnywhereCache",
+        "fullName": "google.storage.control.v2.StorageControlClient.PauseAnywhereCache",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.PauseAnywhereCacheRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.AnywhereCache",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "PauseAnywhereCache",
+          "fullName": "google.storage.control.v2.StorageControl.PauseAnywhereCache",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "storage_v2_generated_StorageControl_RenameFolder_sync",
       "title": "storage RenameFolder Sample",
       "description": "RenameFolder renames a source folder to a destination folder. This operation is only\napplicable to a hierarchical namespace enabled bucket. During a rename, the\nsource and destination folders are locked until the long running operation\ncompletes.",
@@ -454,6 +684,98 @@
         "method": {
           "shortName": "RenameFolder",
           "fullName": "google.storage.control.v2.StorageControl.RenameFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_ResumeAnywhereCache_sync",
+      "title": "storage ResumeAnywhereCache Sample",
+      "description": "ResumeAnywhereCache resumes a disabled or paused Anywhere Cache instance.",
+      "file": "StorageControlClient/ResumeAnywhereCache/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeAnywhereCache",
+        "fullName": "google.storage.control.v2.StorageControlClient.ResumeAnywhereCache",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.ResumeAnywhereCacheRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.AnywhereCache",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "ResumeAnywhereCache",
+          "fullName": "google.storage.control.v2.StorageControl.ResumeAnywhereCache",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_UpdateAnywhereCache_sync",
+      "title": "storage UpdateAnywhereCache Sample",
+      "description": "UpdateAnywhereCache updates an Anywhere Cache instance. Mutable fields include `ttl` and\n`admission_policy`.",
+      "file": "StorageControlClient/UpdateAnywhereCache/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAnywhereCache",
+        "fullName": "google.storage.control.v2.StorageControlClient.UpdateAnywhereCache",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.UpdateAnywhereCacheRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAnywhereCacheOperation",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "UpdateAnywhereCache",
+          "fullName": "google.storage.control.v2.StorageControl.UpdateAnywhereCache",
           "service": {
             "shortName": "StorageControl",
             "fullName": "google.storage.control.v2.StorageControl"
