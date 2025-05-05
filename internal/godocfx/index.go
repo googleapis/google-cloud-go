@@ -20,19 +20,23 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
 
-// indexer gets a limited list of entries from index.golang.org.
-type indexer interface {
-	get(prefixes []string, since time.Time) (entries []indexEntry, last time.Time, err error)
+func mustParse(s string) *url.URL {
+	u, err := url.Parse(s)
+	if err != nil {
+		log.Fatalf("Failed to parse URL: %q", s)
+	}
+	return u
 }
 
 // indexClient is used to access index.golang.org.
-type indexClient struct{}
-
-var _ indexer = indexClient{}
+type indexClient struct {
+	indexURL string
+}
 
 // indexEntry represents a line in the output of index.golang.org/index.
 type indexEntry struct {
@@ -41,47 +45,45 @@ type indexEntry struct {
 	Timestamp time.Time
 }
 
-// newModules returns the new modules with the given prefix.
+// get returns modules with the given prefix that were published since the given timestamp.
 //
-// newModules uses index.golang.org/index?since=timestamp to find new module
-// versions since the given timestamp.
+// get uses index.golang.org/index?since=timestamp to find new module versions.
 //
-// newModules stores the timestamp of the last successful run with tSaver.
-func newModules(ctx context.Context, i indexer, tSaver timeSaver, prefixes []string) ([]indexEntry, error) {
-	since, err := tSaver.get(ctx)
-	if err != nil {
-		return nil, err
-	}
+// get returns the entries and the timestamp of the last seen entry, which may be later
+// than the timestamp of the last returned entry.
+func (ic indexClient) get(ctx context.Context, prefixes []string, since time.Time) ([]indexEntry, time.Time, error) {
 	fiveMinAgo := time.Now().Add(-5 * time.Minute).UTC() // When to stop processing.
 	entries := []indexEntry{}
 	log.Printf("Fetching index.golang.org entries since %s", since.Format(time.RFC3339))
-	count := 0
-	for {
-		count++
+	pages := 0
+	lastSeen := since
+	for !lastSeen.After(fiveMinAgo) {
+		log.Printf("last seen: %v", lastSeen.Format(time.RFC3339))
+		pages++
 		var cur []indexEntry
-		cur, since, err = i.get(prefixes, since)
+		var err error
+		cur, lastSeen, err = ic.getPage(prefixes, lastSeen)
 		if err != nil {
-			return nil, err
+			return nil, time.Time{}, err
 		}
 		entries = append(entries, cur...)
-		if since.After(fiveMinAgo) {
-			break
-		}
 	}
-	log.Printf("Parsed %d index.golang.org pages up to %s", count, since.Format(time.RFC3339))
-	if err := tSaver.put(ctx, since); err != nil {
-		return nil, err
-	}
+	log.Printf("Parsed %d index.golang.org pages from %s to %s", pages, since.Format(time.RFC3339), lastSeen.Format(time.RFC3339))
 
-	return entries, nil
+	return entries, lastSeen, nil
 }
 
 // get fetches a single chronological page of modules from
 // index.golang.org/index.
-func (indexClient) get(prefixes []string, since time.Time) ([]indexEntry, time.Time, error) {
+func (ic indexClient) getPage(prefixes []string, since time.Time) ([]indexEntry, time.Time, error) {
 	entries := []indexEntry{}
-	sinceString := since.Format(time.RFC3339)
-	resp, err := http.Get("https://index.golang.org/index?since=" + sinceString)
+
+	u := mustParse(ic.indexURL)
+	q := u.Query()
+	q.Set("since", since.Format(time.RFC3339))
+	u.RawQuery = q.Encode()
+	log.Printf("Fetching %s", u.String())
+	resp, err := http.Get(u.String())
 	if err != nil {
 		return nil, time.Time{}, err
 	}

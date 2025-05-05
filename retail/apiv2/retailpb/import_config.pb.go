@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -326,9 +326,6 @@ type isBigQuerySource_Partition interface {
 
 type BigQuerySource_PartitionDate struct {
 	// BigQuery time partitioned table's _PARTITIONDATE in YYYY-MM-DD format.
-	//
-	// Only supported in
-	// [ImportProductsRequest][google.cloud.retail.v2.ImportProductsRequest].
 	PartitionDate *date.Date `protobuf:"bytes,6,opt,name=partition_date,json=partitionDate,proto3,oneof"`
 }
 

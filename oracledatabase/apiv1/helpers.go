@@ -23,8 +23,11 @@ import (
 	"net/http"
 
 	"github.com/googleapis/gax-go/v2/internallog"
+	"github.com/googleapis/gax-go/v2/internallog/grpclog"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 const serviceName = "oracledatabase.googleapis.com"
@@ -62,7 +65,7 @@ func executeHTTPRequestWithResponse(ctx context.Context, client *http.Client, re
 		return nil, nil, err
 	}
 	logger.DebugContext(ctx, "api response", "serviceName", serviceName, "rpcName", rpc, "response", internallog.HTTPResponse(resp, buf))
-	if err = googleapi.CheckResponse(resp); err != nil {
+	if err = googleapi.CheckResponseWithBody(resp, buf); err != nil {
 		return nil, nil, err
 	}
 	return buf, resp, nil
@@ -84,4 +87,15 @@ func executeStreamingHTTPRequest(ctx context.Context, client *http.Client, req *
 		return nil, err
 	}
 	return resp, nil
+}
+
+func executeRPC[I proto.Message, O proto.Message](ctx context.Context, fn func(context.Context, I, ...grpc.CallOption) (O, error), req I, opts []grpc.CallOption, logger *slog.Logger, rpc string) (O, error) {
+	var zero O
+	logger.DebugContext(ctx, "api request", "serviceName", serviceName, "rpcName", rpc, "request", grpclog.ProtoMessageRequest(ctx, req))
+	resp, err := fn(ctx, req, opts...)
+	if err != nil {
+		return zero, err
+	}
+	logger.DebugContext(ctx, "api response", "serviceName", serviceName, "rpcName", rpc, "response", grpclog.ProtoMessageResponse(resp))
+	return resp, err
 }

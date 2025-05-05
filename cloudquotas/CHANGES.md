@@ -2,6 +2,27 @@
 
 
 
+## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.2...cloudquotas/v1.3.3) (2025-04-15)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.1...cloudquotas/v1.3.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.0...cloudquotas/v1.3.1) (2025-03-12)
+
+
+### Documentation
+
+* **cloudquotas:** Improved comment clarity ([#11805](https://github.com/googleapis/google-cloud-go/issues/11805)) ([30f8af9](https://github.com/googleapis/google-cloud-go/commit/30f8af98c23feec33fa1fe873833b7f4e7783119))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.2.1...cloudquotas/v1.3.0) (2025-01-08)
 
 

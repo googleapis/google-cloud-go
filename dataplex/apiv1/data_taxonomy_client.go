@@ -17,10 +17,12 @@
 package dataplex
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
 	"math"
+	"net/http"
 	"net/url"
 
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
@@ -32,8 +34,10 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -105,6 +109,32 @@ func defaultDataTaxonomyCallOptions() *DataTaxonomyCallOptions {
 	}
 }
 
+func defaultDataTaxonomyRESTCallOptions() *DataTaxonomyCallOptions {
+	return &DataTaxonomyCallOptions{
+		CreateDataTaxonomy:         []gax.CallOption{},
+		UpdateDataTaxonomy:         []gax.CallOption{},
+		DeleteDataTaxonomy:         []gax.CallOption{},
+		ListDataTaxonomies:         []gax.CallOption{},
+		GetDataTaxonomy:            []gax.CallOption{},
+		CreateDataAttributeBinding: []gax.CallOption{},
+		UpdateDataAttributeBinding: []gax.CallOption{},
+		DeleteDataAttributeBinding: []gax.CallOption{},
+		ListDataAttributeBindings:  []gax.CallOption{},
+		GetDataAttributeBinding:    []gax.CallOption{},
+		CreateDataAttribute:        []gax.CallOption{},
+		UpdateDataAttribute:        []gax.CallOption{},
+		DeleteDataAttribute:        []gax.CallOption{},
+		ListDataAttributes:         []gax.CallOption{},
+		GetDataAttribute:           []gax.CallOption{},
+		GetLocation:                []gax.CallOption{},
+		ListLocations:              []gax.CallOption{},
+		CancelOperation:            []gax.CallOption{},
+		DeleteOperation:            []gax.CallOption{},
+		GetOperation:               []gax.CallOption{},
+		ListOperations:             []gax.CallOption{},
+	}
+}
+
 // internalDataTaxonomyClient is an interface that defines the methods available from Cloud Dataplex API.
 type internalDataTaxonomyClient interface {
 	Close() error
@@ -147,6 +177,8 @@ type internalDataTaxonomyClient interface {
 //
 // DataTaxonomyService enables attribute-based governance. The resources
 // currently offered include DataTaxonomy and DataAttribute.
+//
+// Deprecated: DataTaxonomyService may be removed in a future version.
 type DataTaxonomyClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDataTaxonomyClient
@@ -184,6 +216,8 @@ func (c *DataTaxonomyClient) Connection() *grpc.ClientConn {
 }
 
 // CreateDataTaxonomy create a DataTaxonomy resource.
+//
+// Deprecated: CreateDataTaxonomy may be removed in a future version.
 func (c *DataTaxonomyClient) CreateDataTaxonomy(ctx context.Context, req *dataplexpb.CreateDataTaxonomyRequest, opts ...gax.CallOption) (*CreateDataTaxonomyOperation, error) {
 	return c.internalClient.CreateDataTaxonomy(ctx, req, opts...)
 }
@@ -195,6 +229,8 @@ func (c *DataTaxonomyClient) CreateDataTaxonomyOperation(name string) *CreateDat
 }
 
 // UpdateDataTaxonomy updates a DataTaxonomy resource.
+//
+// Deprecated: UpdateDataTaxonomy may be removed in a future version.
 func (c *DataTaxonomyClient) UpdateDataTaxonomy(ctx context.Context, req *dataplexpb.UpdateDataTaxonomyRequest, opts ...gax.CallOption) (*UpdateDataTaxonomyOperation, error) {
 	return c.internalClient.UpdateDataTaxonomy(ctx, req, opts...)
 }
@@ -207,6 +243,8 @@ func (c *DataTaxonomyClient) UpdateDataTaxonomyOperation(name string) *UpdateDat
 
 // DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy
 // must be deleted before the DataTaxonomy can be deleted.
+//
+// Deprecated: DeleteDataTaxonomy may be removed in a future version.
 func (c *DataTaxonomyClient) DeleteDataTaxonomy(ctx context.Context, req *dataplexpb.DeleteDataTaxonomyRequest, opts ...gax.CallOption) (*DeleteDataTaxonomyOperation, error) {
 	return c.internalClient.DeleteDataTaxonomy(ctx, req, opts...)
 }
@@ -218,16 +256,22 @@ func (c *DataTaxonomyClient) DeleteDataTaxonomyOperation(name string) *DeleteDat
 }
 
 // ListDataTaxonomies lists DataTaxonomy resources in a project and location.
+//
+// Deprecated: ListDataTaxonomies may be removed in a future version.
 func (c *DataTaxonomyClient) ListDataTaxonomies(ctx context.Context, req *dataplexpb.ListDataTaxonomiesRequest, opts ...gax.CallOption) *DataTaxonomyIterator {
 	return c.internalClient.ListDataTaxonomies(ctx, req, opts...)
 }
 
 // GetDataTaxonomy retrieves a DataTaxonomy resource.
+//
+// Deprecated: GetDataTaxonomy may be removed in a future version.
 func (c *DataTaxonomyClient) GetDataTaxonomy(ctx context.Context, req *dataplexpb.GetDataTaxonomyRequest, opts ...gax.CallOption) (*dataplexpb.DataTaxonomy, error) {
 	return c.internalClient.GetDataTaxonomy(ctx, req, opts...)
 }
 
 // CreateDataAttributeBinding create a DataAttributeBinding resource.
+//
+// Deprecated: CreateDataAttributeBinding may be removed in a future version.
 func (c *DataTaxonomyClient) CreateDataAttributeBinding(ctx context.Context, req *dataplexpb.CreateDataAttributeBindingRequest, opts ...gax.CallOption) (*CreateDataAttributeBindingOperation, error) {
 	return c.internalClient.CreateDataAttributeBinding(ctx, req, opts...)
 }
@@ -239,6 +283,8 @@ func (c *DataTaxonomyClient) CreateDataAttributeBindingOperation(name string) *C
 }
 
 // UpdateDataAttributeBinding updates a DataAttributeBinding resource.
+//
+// Deprecated: UpdateDataAttributeBinding may be removed in a future version.
 func (c *DataTaxonomyClient) UpdateDataAttributeBinding(ctx context.Context, req *dataplexpb.UpdateDataAttributeBindingRequest, opts ...gax.CallOption) (*UpdateDataAttributeBindingOperation, error) {
 	return c.internalClient.UpdateDataAttributeBinding(ctx, req, opts...)
 }
@@ -252,6 +298,8 @@ func (c *DataTaxonomyClient) UpdateDataAttributeBindingOperation(name string) *U
 // DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the
 // DataAttributeBinding must be deleted before the DataAttributeBinding can be
 // deleted.
+//
+// Deprecated: DeleteDataAttributeBinding may be removed in a future version.
 func (c *DataTaxonomyClient) DeleteDataAttributeBinding(ctx context.Context, req *dataplexpb.DeleteDataAttributeBindingRequest, opts ...gax.CallOption) (*DeleteDataAttributeBindingOperation, error) {
 	return c.internalClient.DeleteDataAttributeBinding(ctx, req, opts...)
 }
@@ -263,16 +311,22 @@ func (c *DataTaxonomyClient) DeleteDataAttributeBindingOperation(name string) *D
 }
 
 // ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.
+//
+// Deprecated: ListDataAttributeBindings may be removed in a future version.
 func (c *DataTaxonomyClient) ListDataAttributeBindings(ctx context.Context, req *dataplexpb.ListDataAttributeBindingsRequest, opts ...gax.CallOption) *DataAttributeBindingIterator {
 	return c.internalClient.ListDataAttributeBindings(ctx, req, opts...)
 }
 
 // GetDataAttributeBinding retrieves a DataAttributeBinding resource.
+//
+// Deprecated: GetDataAttributeBinding may be removed in a future version.
 func (c *DataTaxonomyClient) GetDataAttributeBinding(ctx context.Context, req *dataplexpb.GetDataAttributeBindingRequest, opts ...gax.CallOption) (*dataplexpb.DataAttributeBinding, error) {
 	return c.internalClient.GetDataAttributeBinding(ctx, req, opts...)
 }
 
 // CreateDataAttribute create a DataAttribute resource.
+//
+// Deprecated: CreateDataAttribute may be removed in a future version.
 func (c *DataTaxonomyClient) CreateDataAttribute(ctx context.Context, req *dataplexpb.CreateDataAttributeRequest, opts ...gax.CallOption) (*CreateDataAttributeOperation, error) {
 	return c.internalClient.CreateDataAttribute(ctx, req, opts...)
 }
@@ -284,6 +338,8 @@ func (c *DataTaxonomyClient) CreateDataAttributeOperation(name string) *CreateDa
 }
 
 // UpdateDataAttribute updates a DataAttribute resource.
+//
+// Deprecated: UpdateDataAttribute may be removed in a future version.
 func (c *DataTaxonomyClient) UpdateDataAttribute(ctx context.Context, req *dataplexpb.UpdateDataAttributeRequest, opts ...gax.CallOption) (*UpdateDataAttributeOperation, error) {
 	return c.internalClient.UpdateDataAttribute(ctx, req, opts...)
 }
@@ -295,6 +351,8 @@ func (c *DataTaxonomyClient) UpdateDataAttributeOperation(name string) *UpdateDa
 }
 
 // DeleteDataAttribute deletes a Data Attribute resource.
+//
+// Deprecated: DeleteDataAttribute may be removed in a future version.
 func (c *DataTaxonomyClient) DeleteDataAttribute(ctx context.Context, req *dataplexpb.DeleteDataAttributeRequest, opts ...gax.CallOption) (*DeleteDataAttributeOperation, error) {
 	return c.internalClient.DeleteDataAttribute(ctx, req, opts...)
 }
@@ -306,11 +364,15 @@ func (c *DataTaxonomyClient) DeleteDataAttributeOperation(name string) *DeleteDa
 }
 
 // ListDataAttributes lists Data Attribute resources in a DataTaxonomy.
+//
+// Deprecated: ListDataAttributes may be removed in a future version.
 func (c *DataTaxonomyClient) ListDataAttributes(ctx context.Context, req *dataplexpb.ListDataAttributesRequest, opts ...gax.CallOption) *DataAttributeIterator {
 	return c.internalClient.ListDataAttributes(ctx, req, opts...)
 }
 
 // GetDataAttribute retrieves a Data Attribute resource.
+//
+// Deprecated: GetDataAttribute may be removed in a future version.
 func (c *DataTaxonomyClient) GetDataAttribute(ctx context.Context, req *dataplexpb.GetDataAttributeRequest, opts ...gax.CallOption) (*dataplexpb.DataAttribute, error) {
 	return c.internalClient.GetDataAttribute(ctx, req, opts...)
 }
@@ -378,6 +440,8 @@ type dataTaxonomyGRPCClient struct {
 //
 // DataTaxonomyService enables attribute-based governance. The resources
 // currently offered include DataTaxonomy and DataAttribute.
+//
+// Deprecated: DataTaxonomyService may be removed in a future version.
 func NewDataTaxonomyClient(ctx context.Context, opts ...option.ClientOption) (*DataTaxonomyClient, error) {
 	clientOpts := defaultDataTaxonomyGRPCClientOptions()
 	if newDataTaxonomyClientHook != nil {
@@ -445,6 +509,100 @@ func (c *dataTaxonomyGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type dataTaxonomyRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing DataTaxonomyClient
+	CallOptions **DataTaxonomyCallOptions
+
+	logger *slog.Logger
+}
+
+// NewDataTaxonomyRESTClient creates a new data taxonomy service rest client.
+//
+// DataTaxonomyService enables attribute-based governance. The resources
+// currently offered include DataTaxonomy and DataAttribute.
+//
+// Deprecated: DataTaxonomyService may be removed in a future version.
+func NewDataTaxonomyRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataTaxonomyClient, error) {
+	clientOpts := append(defaultDataTaxonomyRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultDataTaxonomyRESTCallOptions()
+	c := &dataTaxonomyRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &DataTaxonomyClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultDataTaxonomyRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://dataplex.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dataplex.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://dataplex.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://dataplex.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *dataTaxonomyRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *dataTaxonomyRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *dataTaxonomyRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *dataTaxonomyGRPCClient) CreateDataTaxonomy(ctx context.Context, req *dataplexpb.CreateDataTaxonomyRequest, opts ...gax.CallOption) (*CreateDataTaxonomyOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -973,11 +1131,1362 @@ func (c *dataTaxonomyGRPCClient) ListOperations(ctx context.Context, req *longru
 	return it
 }
 
+// CreateDataTaxonomy create a DataTaxonomy resource.
+//
+// Deprecated: CreateDataTaxonomy may be removed in a future version.
+func (c *dataTaxonomyRESTClient) CreateDataTaxonomy(ctx context.Context, req *dataplexpb.CreateDataTaxonomyRequest, opts ...gax.CallOption) (*CreateDataTaxonomyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataTaxonomy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTaxonomies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("dataTaxonomyId", fmt.Sprintf("%v", req.GetDataTaxonomyId()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataTaxonomy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDataTaxonomyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateDataTaxonomy updates a DataTaxonomy resource.
+//
+// Deprecated: UpdateDataTaxonomy may be removed in a future version.
+func (c *dataTaxonomyRESTClient) UpdateDataTaxonomy(ctx context.Context, req *dataplexpb.UpdateDataTaxonomyRequest, opts ...gax.CallOption) (*UpdateDataTaxonomyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataTaxonomy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataTaxonomy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_taxonomy.name", url.QueryEscape(req.GetDataTaxonomy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataTaxonomy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDataTaxonomyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy
+// must be deleted before the DataTaxonomy can be deleted.
+//
+// Deprecated: DeleteDataTaxonomy may be removed in a future version.
+func (c *dataTaxonomyRESTClient) DeleteDataTaxonomy(ctx context.Context, req *dataplexpb.DeleteDataTaxonomyRequest, opts ...gax.CallOption) (*DeleteDataTaxonomyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataTaxonomy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDataTaxonomyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDataTaxonomies lists DataTaxonomy resources in a project and location.
+//
+// Deprecated: ListDataTaxonomies may be removed in a future version.
+func (c *dataTaxonomyRESTClient) ListDataTaxonomies(ctx context.Context, req *dataplexpb.ListDataTaxonomiesRequest, opts ...gax.CallOption) *DataTaxonomyIterator {
+	it := &DataTaxonomyIterator{}
+	req = proto.Clone(req).(*dataplexpb.ListDataTaxonomiesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataTaxonomy, string, error) {
+		resp := &dataplexpb.ListDataTaxonomiesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/dataTaxonomies", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataTaxonomies")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDataTaxonomies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDataTaxonomy retrieves a DataTaxonomy resource.
+//
+// Deprecated: GetDataTaxonomy may be removed in a future version.
+func (c *dataTaxonomyRESTClient) GetDataTaxonomy(ctx context.Context, req *dataplexpb.GetDataTaxonomyRequest, opts ...gax.CallOption) (*dataplexpb.DataTaxonomy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDataTaxonomy[0:len((*c.CallOptions).GetDataTaxonomy):len((*c.CallOptions).GetDataTaxonomy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.DataTaxonomy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataTaxonomy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateDataAttributeBinding create a DataAttributeBinding resource.
+//
+// Deprecated: CreateDataAttributeBinding may be removed in a future version.
+func (c *dataTaxonomyRESTClient) CreateDataAttributeBinding(ctx context.Context, req *dataplexpb.CreateDataAttributeBindingRequest, opts ...gax.CallOption) (*CreateDataAttributeBindingOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataAttributeBinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/dataAttributeBindings", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("dataAttributeBindingId", fmt.Sprintf("%v", req.GetDataAttributeBindingId()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataAttributeBinding")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDataAttributeBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateDataAttributeBinding updates a DataAttributeBinding resource.
+//
+// Deprecated: UpdateDataAttributeBinding may be removed in a future version.
+func (c *dataTaxonomyRESTClient) UpdateDataAttributeBinding(ctx context.Context, req *dataplexpb.UpdateDataAttributeBindingRequest, opts ...gax.CallOption) (*UpdateDataAttributeBindingOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataAttributeBinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAttributeBinding().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_attribute_binding.name", url.QueryEscape(req.GetDataAttributeBinding().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataAttributeBinding")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDataAttributeBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the
+// DataAttributeBinding must be deleted before the DataAttributeBinding can be
+// deleted.
+//
+// Deprecated: DeleteDataAttributeBinding may be removed in a future version.
+func (c *dataTaxonomyRESTClient) DeleteDataAttributeBinding(ctx context.Context, req *dataplexpb.DeleteDataAttributeBindingRequest, opts ...gax.CallOption) (*DeleteDataAttributeBindingOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataAttributeBinding")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDataAttributeBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.
+//
+// Deprecated: ListDataAttributeBindings may be removed in a future version.
+func (c *dataTaxonomyRESTClient) ListDataAttributeBindings(ctx context.Context, req *dataplexpb.ListDataAttributeBindingsRequest, opts ...gax.CallOption) *DataAttributeBindingIterator {
+	it := &DataAttributeBindingIterator{}
+	req = proto.Clone(req).(*dataplexpb.ListDataAttributeBindingsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataAttributeBinding, string, error) {
+		resp := &dataplexpb.ListDataAttributeBindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/dataAttributeBindings", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataAttributeBindings")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDataAttributeBindings(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDataAttributeBinding retrieves a DataAttributeBinding resource.
+//
+// Deprecated: GetDataAttributeBinding may be removed in a future version.
+func (c *dataTaxonomyRESTClient) GetDataAttributeBinding(ctx context.Context, req *dataplexpb.GetDataAttributeBindingRequest, opts ...gax.CallOption) (*dataplexpb.DataAttributeBinding, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDataAttributeBinding[0:len((*c.CallOptions).GetDataAttributeBinding):len((*c.CallOptions).GetDataAttributeBinding)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.DataAttributeBinding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataAttributeBinding")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateDataAttribute create a DataAttribute resource.
+//
+// Deprecated: CreateDataAttribute may be removed in a future version.
+func (c *dataTaxonomyRESTClient) CreateDataAttribute(ctx context.Context, req *dataplexpb.CreateDataAttributeRequest, opts ...gax.CallOption) (*CreateDataAttributeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataAttribute()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/attributes", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("dataAttributeId", fmt.Sprintf("%v", req.GetDataAttributeId()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataAttribute")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDataAttributeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateDataAttribute updates a DataAttribute resource.
+//
+// Deprecated: UpdateDataAttribute may be removed in a future version.
+func (c *dataTaxonomyRESTClient) UpdateDataAttribute(ctx context.Context, req *dataplexpb.UpdateDataAttributeRequest, opts ...gax.CallOption) (*UpdateDataAttributeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataAttribute()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAttribute().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_attribute.name", url.QueryEscape(req.GetDataAttribute().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataAttribute")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDataAttributeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteDataAttribute deletes a Data Attribute resource.
+//
+// Deprecated: DeleteDataAttribute may be removed in a future version.
+func (c *dataTaxonomyRESTClient) DeleteDataAttribute(ctx context.Context, req *dataplexpb.DeleteDataAttributeRequest, opts ...gax.CallOption) (*DeleteDataAttributeOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataAttribute")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDataAttributeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDataAttributes lists Data Attribute resources in a DataTaxonomy.
+//
+// Deprecated: ListDataAttributes may be removed in a future version.
+func (c *dataTaxonomyRESTClient) ListDataAttributes(ctx context.Context, req *dataplexpb.ListDataAttributesRequest, opts ...gax.CallOption) *DataAttributeIterator {
+	it := &DataAttributeIterator{}
+	req = proto.Clone(req).(*dataplexpb.ListDataAttributesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataAttribute, string, error) {
+		resp := &dataplexpb.ListDataAttributesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/attributes", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataAttributes")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDataAttributes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDataAttribute retrieves a Data Attribute resource.
+//
+// Deprecated: GetDataAttribute may be removed in a future version.
+func (c *dataTaxonomyRESTClient) GetDataAttribute(ctx context.Context, req *dataplexpb.GetDataAttributeRequest, opts ...gax.CallOption) (*dataplexpb.DataAttribute, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDataAttribute[0:len((*c.CallOptions).GetDataAttribute):len((*c.CallOptions).GetDataAttribute)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.DataAttribute{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataAttribute")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetLocation gets information about a location.
+func (c *dataTaxonomyRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &locationpb.Location{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *dataTaxonomyRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *dataTaxonomyRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
+	}, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *dataTaxonomyRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
+	}, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *dataTaxonomyRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *dataTaxonomyRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CreateDataAttributeOperation returns a new CreateDataAttributeOperation from a given name.
 // The name must be that of a previously created CreateDataAttributeOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) CreateDataAttributeOperation(name string) *CreateDataAttributeOperation {
 	return &CreateDataAttributeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateDataAttributeOperation returns a new CreateDataAttributeOperation from a given name.
+// The name must be that of a previously created CreateDataAttributeOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) CreateDataAttributeOperation(name string) *CreateDataAttributeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDataAttributeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -989,11 +2498,31 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttributeBindingOperation(name string
 	}
 }
 
+// CreateDataAttributeBindingOperation returns a new CreateDataAttributeBindingOperation from a given name.
+// The name must be that of a previously created CreateDataAttributeBindingOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) CreateDataAttributeBindingOperation(name string) *CreateDataAttributeBindingOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDataAttributeBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateDataTaxonomyOperation returns a new CreateDataTaxonomyOperation from a given name.
 // The name must be that of a previously created CreateDataTaxonomyOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) CreateDataTaxonomyOperation(name string) *CreateDataTaxonomyOperation {
 	return &CreateDataTaxonomyOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateDataTaxonomyOperation returns a new CreateDataTaxonomyOperation from a given name.
+// The name must be that of a previously created CreateDataTaxonomyOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) CreateDataTaxonomyOperation(name string) *CreateDataTaxonomyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDataTaxonomyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1005,11 +2534,31 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttributeOperation(name string) *Dele
 	}
 }
 
+// DeleteDataAttributeOperation returns a new DeleteDataAttributeOperation from a given name.
+// The name must be that of a previously created DeleteDataAttributeOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) DeleteDataAttributeOperation(name string) *DeleteDataAttributeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDataAttributeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteDataAttributeBindingOperation returns a new DeleteDataAttributeBindingOperation from a given name.
 // The name must be that of a previously created DeleteDataAttributeBindingOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBindingOperation(name string) *DeleteDataAttributeBindingOperation {
 	return &DeleteDataAttributeBindingOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteDataAttributeBindingOperation returns a new DeleteDataAttributeBindingOperation from a given name.
+// The name must be that of a previously created DeleteDataAttributeBindingOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) DeleteDataAttributeBindingOperation(name string) *DeleteDataAttributeBindingOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDataAttributeBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1021,11 +2570,31 @@ func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomyOperation(name string) *Delet
 	}
 }
 
+// DeleteDataTaxonomyOperation returns a new DeleteDataTaxonomyOperation from a given name.
+// The name must be that of a previously created DeleteDataTaxonomyOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) DeleteDataTaxonomyOperation(name string) *DeleteDataTaxonomyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDataTaxonomyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // UpdateDataAttributeOperation returns a new UpdateDataAttributeOperation from a given name.
 // The name must be that of a previously created UpdateDataAttributeOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) UpdateDataAttributeOperation(name string) *UpdateDataAttributeOperation {
 	return &UpdateDataAttributeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDataAttributeOperation returns a new UpdateDataAttributeOperation from a given name.
+// The name must be that of a previously created UpdateDataAttributeOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) UpdateDataAttributeOperation(name string) *UpdateDataAttributeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDataAttributeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1037,10 +2606,30 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBindingOperation(name string
 	}
 }
 
+// UpdateDataAttributeBindingOperation returns a new UpdateDataAttributeBindingOperation from a given name.
+// The name must be that of a previously created UpdateDataAttributeBindingOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) UpdateDataAttributeBindingOperation(name string) *UpdateDataAttributeBindingOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDataAttributeBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // UpdateDataTaxonomyOperation returns a new UpdateDataTaxonomyOperation from a given name.
 // The name must be that of a previously created UpdateDataTaxonomyOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomyOperation(name string) *UpdateDataTaxonomyOperation {
 	return &UpdateDataTaxonomyOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDataTaxonomyOperation returns a new UpdateDataTaxonomyOperation from a given name.
+// The name must be that of a previously created UpdateDataTaxonomyOperation, possibly from a different process.
+func (c *dataTaxonomyRESTClient) UpdateDataTaxonomyOperation(name string) *UpdateDataTaxonomyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDataTaxonomyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }

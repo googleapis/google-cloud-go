@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -192,7 +192,7 @@ type GcsSource struct {
 
 	// Required. Google Cloud Storage URI(-s) to the input file(s). May contain
 	// wildcards. For more information on wildcards, see
-	// https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames.
+	// https://cloud.google.com/storage/docs/wildcards.
 	Uris []string `protobuf:"bytes,1,rep,name=uris,proto3" json:"uris,omitempty"`
 }
 

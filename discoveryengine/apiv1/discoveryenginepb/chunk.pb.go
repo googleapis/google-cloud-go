@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,8 @@ type Chunk struct {
 	// Output only. Represents the relevance score based on similarity.
 	// Higher score indicates higher chunk relevance.
 	// The score is in range [-1.0, 1.0].
-	// Only populated on [SearchService.SearchResponse][].
+	// Only populated on
+	// [SearchResponse][google.cloud.discoveryengine.v1.SearchResponse].
 	RelevanceScore *float64 `protobuf:"fixed64,8,opt,name=relevance_score,json=relevanceScore,proto3,oneof" json:"relevance_score,omitempty"`
 	// Metadata of the document from the current chunk.
 	DocumentMetadata *Chunk_DocumentMetadata `protobuf:"bytes,5,opt,name=document_metadata,json=documentMetadata,proto3" json:"document_metadata,omitempty"`

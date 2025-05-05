@@ -193,6 +193,12 @@ type AnalyticsAdminCallOptions struct {
 	ListSubpropertyEventFilters                  []gax.CallOption
 	UpdateSubpropertyEventFilter                 []gax.CallOption
 	DeleteSubpropertyEventFilter                 []gax.CallOption
+	CreateReportingDataAnnotation                []gax.CallOption
+	GetReportingDataAnnotation                   []gax.CallOption
+	ListReportingDataAnnotations                 []gax.CallOption
+	UpdateReportingDataAnnotation                []gax.CallOption
+	DeleteReportingDataAnnotation                []gax.CallOption
+	SubmitUserDeletion                           []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -1962,6 +1968,84 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		CreateReportingDataAnnotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetReportingDataAnnotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListReportingDataAnnotations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateReportingDataAnnotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteReportingDataAnnotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SubmitUserDeletion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -3587,6 +3671,78 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		CreateReportingDataAnnotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetReportingDataAnnotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListReportingDataAnnotations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateReportingDataAnnotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteReportingDataAnnotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		SubmitUserDeletion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 	}
 }
 
@@ -3745,12 +3901,18 @@ type internalAnalyticsAdminClient interface {
 	ListSubpropertyEventFilters(context.Context, *adminpb.ListSubpropertyEventFiltersRequest, ...gax.CallOption) *SubpropertyEventFilterIterator
 	UpdateSubpropertyEventFilter(context.Context, *adminpb.UpdateSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
 	DeleteSubpropertyEventFilter(context.Context, *adminpb.DeleteSubpropertyEventFilterRequest, ...gax.CallOption) error
+	CreateReportingDataAnnotation(context.Context, *adminpb.CreateReportingDataAnnotationRequest, ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error)
+	GetReportingDataAnnotation(context.Context, *adminpb.GetReportingDataAnnotationRequest, ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error)
+	ListReportingDataAnnotations(context.Context, *adminpb.ListReportingDataAnnotationsRequest, ...gax.CallOption) *ReportingDataAnnotationIterator
+	UpdateReportingDataAnnotation(context.Context, *adminpb.UpdateReportingDataAnnotationRequest, ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error)
+	DeleteReportingDataAnnotation(context.Context, *adminpb.DeleteReportingDataAnnotationRequest, ...gax.CallOption) error
+	SubmitUserDeletion(context.Context, *adminpb.SubmitUserDeletionRequest, ...gax.CallOption) (*adminpb.SubmitUserDeletionResponse, error)
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 type AnalyticsAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAnalyticsAdminClient
@@ -3789,7 +3951,7 @@ func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetA
 
 // ListAccounts returns all accounts accessible by the caller.
 //
-// Note that these accounts might not currently have GA4 properties.
+// Note that these accounts might not currently have GA properties.
 // Soft-deleted (ie: “trashed”) accounts are excluded by default.
 // Returns an empty list if no relevant accounts are found.
 func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
@@ -3826,14 +3988,13 @@ func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *ad
 	return c.internalClient.ListAccountSummaries(ctx, req, opts...)
 }
 
-// GetProperty lookup for a single “GA4” Property.
+// GetProperty lookup for a single GA Property.
 func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.GetProperty(ctx, req, opts...)
 }
 
 // ListProperties returns child Properties under the specified parent Account.
 //
-// Only “GA4” properties will be returned.
 // Properties will be excluded if the caller does not have access.
 // Soft-deleted (ie: “trashed”) properties are excluded by default.
 // Returns an empty list if no relevant properties are found.
@@ -3841,7 +4002,8 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 	return c.internalClient.ListProperties(ctx, req, opts...)
 }
 
-// CreateProperty creates an “GA4” property with the specified location and attributes.
+// CreateProperty creates a Google Analytics property with the specified location and
+// attributes.
 func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.CreateProperty(ctx, req, opts...)
 }
@@ -3856,7 +4018,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not a GA4 Property.
+// Returns an error if the target is not found.
 func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.DeleteProperty(ctx, req, opts...)
 }
@@ -3916,7 +4078,7 @@ func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *
 	return c.internalClient.GetDataSharingSettings(ctx, req, opts...)
 }
 
-// GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.
+// GetMeasurementProtocolSecret lookup for a single MeasurementProtocolSecret.
 func (c *AnalyticsAdminClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
 	return c.internalClient.GetMeasurementProtocolSecret(ctx, req, opts...)
 }
@@ -3979,6 +4141,9 @@ func (c *AnalyticsAdminClient) ListSKAdNetworkConversionValueSchemas(ctx context
 
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
+//
+// Only returns the subset of changes supported by the API. The UI may return
+// additional changes.
 func (c *AnalyticsAdminClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	return c.internalClient.SearchChangeHistoryEvents(ctx, req, opts...)
 }
@@ -4287,12 +4452,17 @@ func (c *AnalyticsAdminClient) UpdateAttributionSettings(ctx context.Context, re
 // only be requested on Google Analytics 360 properties. This method is only
 // available to Administrators.
 //
-// These data access records include GA4 UI Reporting, GA4 UI Explorations,
-// GA4 Data API, and other products like Firebase & Admob that can retrieve
+// These data access records include GA UI Reporting, GA UI Explorations,
+// GA Data API, and other products like Firebase & Admob that can retrieve
 // data from Google Analytics through a linkage. These records don’t include
 // property configuration changes like adding a stream or changing a
 // property’s time zone. For configuration change history, see
 // searchChangeHistoryEvents (at https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+//
+// To give your feedback on this API, complete the Google Analytics Access
+// Reports
+// feedback (at https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+// form.
 func (c *AnalyticsAdminClient) RunAccessReport(ctx context.Context, req *adminpb.RunAccessReportRequest, opts ...gax.CallOption) (*adminpb.RunAccessReportResponse, error) {
 	return c.internalClient.RunAccessReport(ctx, req, opts...)
 }
@@ -4650,6 +4820,36 @@ func (c *AnalyticsAdminClient) DeleteSubpropertyEventFilter(ctx context.Context,
 	return c.internalClient.DeleteSubpropertyEventFilter(ctx, req, opts...)
 }
 
+// CreateReportingDataAnnotation creates a Reporting Data Annotation.
+func (c *AnalyticsAdminClient) CreateReportingDataAnnotation(ctx context.Context, req *adminpb.CreateReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	return c.internalClient.CreateReportingDataAnnotation(ctx, req, opts...)
+}
+
+// GetReportingDataAnnotation lookup a single Reporting Data Annotation.
+func (c *AnalyticsAdminClient) GetReportingDataAnnotation(ctx context.Context, req *adminpb.GetReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	return c.internalClient.GetReportingDataAnnotation(ctx, req, opts...)
+}
+
+// ListReportingDataAnnotations list all Reporting Data Annotations on a property.
+func (c *AnalyticsAdminClient) ListReportingDataAnnotations(ctx context.Context, req *adminpb.ListReportingDataAnnotationsRequest, opts ...gax.CallOption) *ReportingDataAnnotationIterator {
+	return c.internalClient.ListReportingDataAnnotations(ctx, req, opts...)
+}
+
+// UpdateReportingDataAnnotation updates a Reporting Data Annotation.
+func (c *AnalyticsAdminClient) UpdateReportingDataAnnotation(ctx context.Context, req *adminpb.UpdateReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	return c.internalClient.UpdateReportingDataAnnotation(ctx, req, opts...)
+}
+
+// DeleteReportingDataAnnotation deletes a Reporting Data Annotation.
+func (c *AnalyticsAdminClient) DeleteReportingDataAnnotation(ctx context.Context, req *adminpb.DeleteReportingDataAnnotationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteReportingDataAnnotation(ctx, req, opts...)
+}
+
+// SubmitUserDeletion submits a request for user deletion for a property.
+func (c *AnalyticsAdminClient) SubmitUserDeletion(ctx context.Context, req *adminpb.SubmitUserDeletionRequest, opts ...gax.CallOption) (*adminpb.SubmitUserDeletionResponse, error) {
+	return c.internalClient.SubmitUserDeletion(ctx, req, opts...)
+}
+
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -4672,7 +4872,7 @@ type analyticsAdminGRPCClient struct {
 // NewAnalyticsAdminClient creates a new analytics admin service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := defaultAnalyticsAdminGRPCClientOptions()
 	if newAnalyticsAdminClientHook != nil {
@@ -4746,7 +4946,7 @@ type analyticsAdminRESTClient struct {
 
 // NewAnalyticsAdminRESTClient creates a new analytics admin service rest client.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := append(defaultAnalyticsAdminRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -8112,6 +8312,138 @@ func (c *analyticsAdminGRPCClient) DeleteSubpropertyEventFilter(ctx context.Cont
 	return err
 }
 
+func (c *analyticsAdminGRPCClient) CreateReportingDataAnnotation(ctx context.Context, req *adminpb.CreateReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateReportingDataAnnotation[0:len((*c.CallOptions).CreateReportingDataAnnotation):len((*c.CallOptions).CreateReportingDataAnnotation)], opts...)
+	var resp *adminpb.ReportingDataAnnotation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateReportingDataAnnotation, req, settings.GRPC, c.logger, "CreateReportingDataAnnotation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetReportingDataAnnotation(ctx context.Context, req *adminpb.GetReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetReportingDataAnnotation[0:len((*c.CallOptions).GetReportingDataAnnotation):len((*c.CallOptions).GetReportingDataAnnotation)], opts...)
+	var resp *adminpb.ReportingDataAnnotation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetReportingDataAnnotation, req, settings.GRPC, c.logger, "GetReportingDataAnnotation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListReportingDataAnnotations(ctx context.Context, req *adminpb.ListReportingDataAnnotationsRequest, opts ...gax.CallOption) *ReportingDataAnnotationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListReportingDataAnnotations[0:len((*c.CallOptions).ListReportingDataAnnotations):len((*c.CallOptions).ListReportingDataAnnotations)], opts...)
+	it := &ReportingDataAnnotationIterator{}
+	req = proto.Clone(req).(*adminpb.ListReportingDataAnnotationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ReportingDataAnnotation, string, error) {
+		resp := &adminpb.ListReportingDataAnnotationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListReportingDataAnnotations, req, settings.GRPC, c.logger, "ListReportingDataAnnotations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetReportingDataAnnotations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) UpdateReportingDataAnnotation(ctx context.Context, req *adminpb.UpdateReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "reporting_data_annotation.name", url.QueryEscape(req.GetReportingDataAnnotation().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateReportingDataAnnotation[0:len((*c.CallOptions).UpdateReportingDataAnnotation):len((*c.CallOptions).UpdateReportingDataAnnotation)], opts...)
+	var resp *adminpb.ReportingDataAnnotation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateReportingDataAnnotation, req, settings.GRPC, c.logger, "UpdateReportingDataAnnotation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteReportingDataAnnotation(ctx context.Context, req *adminpb.DeleteReportingDataAnnotationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteReportingDataAnnotation[0:len((*c.CallOptions).DeleteReportingDataAnnotation):len((*c.CallOptions).DeleteReportingDataAnnotation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteReportingDataAnnotation, req, settings.GRPC, c.logger, "DeleteReportingDataAnnotation")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) SubmitUserDeletion(ctx context.Context, req *adminpb.SubmitUserDeletionRequest, opts ...gax.CallOption) (*adminpb.SubmitUserDeletionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SubmitUserDeletion[0:len((*c.CallOptions).SubmitUserDeletion):len((*c.CallOptions).SubmitUserDeletion)], opts...)
+	var resp *adminpb.SubmitUserDeletionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.SubmitUserDeletion, req, settings.GRPC, c.logger, "SubmitUserDeletion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // GetAccount lookup for a single Account.
 func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.GetAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -8164,7 +8496,7 @@ func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.
 
 // ListAccounts returns all accounts accessible by the caller.
 //
-// Note that these accounts might not currently have GA4 properties.
+// Note that these accounts might not currently have GA properties.
 // Soft-deleted (ie: “trashed”) accounts are excluded by default.
 // Returns an empty list if no relevant accounts are found.
 func (c *analyticsAdminRESTClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
@@ -8487,7 +8819,7 @@ func (c *analyticsAdminRESTClient) ListAccountSummaries(ctx context.Context, req
 	return it
 }
 
-// GetProperty lookup for a single “GA4” Property.
+// GetProperty lookup for a single GA Property.
 func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -8539,7 +8871,6 @@ func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb
 
 // ListProperties returns child Properties under the specified parent Account.
 //
-// Only “GA4” properties will be returned.
 // Properties will be excluded if the caller does not have access.
 // Soft-deleted (ie: “trashed”) properties are excluded by default.
 // Returns an empty list if no relevant properties are found.
@@ -8624,7 +8955,8 @@ func (c *analyticsAdminRESTClient) ListProperties(ctx context.Context, req *admi
 	return it
 }
 
-// CreateProperty creates an “GA4” property with the specified location and attributes.
+// CreateProperty creates a Google Analytics property with the specified location and
+// attributes.
 func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProperty()
@@ -8688,7 +9020,7 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not a GA4 Property.
+// Returns an error if the target is not found.
 func (c *analyticsAdminRESTClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9311,7 +9643,7 @@ func (c *analyticsAdminRESTClient) GetDataSharingSettings(ctx context.Context, r
 	return resp, nil
 }
 
-// GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.
+// GetMeasurementProtocolSecret lookup for a single MeasurementProtocolSecret.
 func (c *analyticsAdminRESTClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9943,6 +10275,9 @@ func (c *analyticsAdminRESTClient) ListSKAdNetworkConversionValueSchemas(ctx con
 
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
+//
+// Only returns the subset of changes supported by the API. The UI may return
+// additional changes.
 func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	it := &ChangeHistoryEventIterator{}
 	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
@@ -13028,12 +13363,17 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 // only be requested on Google Analytics 360 properties. This method is only
 // available to Administrators.
 //
-// These data access records include GA4 UI Reporting, GA4 UI Explorations,
-// GA4 Data API, and other products like Firebase & Admob that can retrieve
+// These data access records include GA UI Reporting, GA UI Explorations,
+// GA Data API, and other products like Firebase & Admob that can retrieve
 // data from Google Analytics through a linkage. These records don’t include
 // property configuration changes like adding a stream or changing a
 // property’s time zone. For configuration change history, see
 // searchChangeHistoryEvents (at https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+//
+// To give your feedback on this API, complete the Google Analytics Access
+// Reports
+// feedback (at https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+// form.
 func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adminpb.RunAccessReportRequest, opts ...gax.CallOption) (*adminpb.RunAccessReportResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -16702,4 +17042,347 @@ func (c *analyticsAdminRESTClient) DeleteSubpropertyEventFilter(ctx context.Cont
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSubpropertyEventFilter")
 		return err
 	}, opts...)
+}
+
+// CreateReportingDataAnnotation creates a Reporting Data Annotation.
+func (c *analyticsAdminRESTClient) CreateReportingDataAnnotation(ctx context.Context, req *adminpb.CreateReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetReportingDataAnnotation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/reportingDataAnnotations", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateReportingDataAnnotation[0:len((*c.CallOptions).CreateReportingDataAnnotation):len((*c.CallOptions).CreateReportingDataAnnotation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ReportingDataAnnotation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReportingDataAnnotation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetReportingDataAnnotation lookup a single Reporting Data Annotation.
+func (c *analyticsAdminRESTClient) GetReportingDataAnnotation(ctx context.Context, req *adminpb.GetReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetReportingDataAnnotation[0:len((*c.CallOptions).GetReportingDataAnnotation):len((*c.CallOptions).GetReportingDataAnnotation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ReportingDataAnnotation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReportingDataAnnotation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListReportingDataAnnotations list all Reporting Data Annotations on a property.
+func (c *analyticsAdminRESTClient) ListReportingDataAnnotations(ctx context.Context, req *adminpb.ListReportingDataAnnotationsRequest, opts ...gax.CallOption) *ReportingDataAnnotationIterator {
+	it := &ReportingDataAnnotationIterator{}
+	req = proto.Clone(req).(*adminpb.ListReportingDataAnnotationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ReportingDataAnnotation, string, error) {
+		resp := &adminpb.ListReportingDataAnnotationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/reportingDataAnnotations", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReportingDataAnnotations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetReportingDataAnnotations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateReportingDataAnnotation updates a Reporting Data Annotation.
+func (c *analyticsAdminRESTClient) UpdateReportingDataAnnotation(ctx context.Context, req *adminpb.UpdateReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetReportingDataAnnotation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetReportingDataAnnotation().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "reporting_data_annotation.name", url.QueryEscape(req.GetReportingDataAnnotation().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateReportingDataAnnotation[0:len((*c.CallOptions).UpdateReportingDataAnnotation):len((*c.CallOptions).UpdateReportingDataAnnotation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ReportingDataAnnotation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateReportingDataAnnotation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteReportingDataAnnotation deletes a Reporting Data Annotation.
+func (c *analyticsAdminRESTClient) DeleteReportingDataAnnotation(ctx context.Context, req *adminpb.DeleteReportingDataAnnotationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReportingDataAnnotation")
+		return err
+	}, opts...)
+}
+
+// SubmitUserDeletion submits a request for user deletion for a property.
+func (c *analyticsAdminRESTClient) SubmitUserDeletion(ctx context.Context, req *adminpb.SubmitUserDeletionRequest, opts ...gax.CallOption) (*adminpb.SubmitUserDeletionResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:submitUserDeletion", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SubmitUserDeletion[0:len((*c.CallOptions).SubmitUserDeletion):len((*c.CallOptions).SubmitUserDeletion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SubmitUserDeletionResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SubmitUserDeletion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

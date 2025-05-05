@@ -58,11 +58,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &meetpb.CreateSpaceRequest{
+//	req := &meetpb.ConnectActiveConferenceRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#CreateSpaceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#ConnectActiveConferenceRequest.
 //	}
-//	resp, err := c.CreateSpace(ctx, req)
+//	resp, err := c.ConnectActiveConference(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -259,7 +259,7 @@ func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 	}
 }
 
-// internalUserEventClient is an interface that defines the methods available from Vertex AI Search for Retail API.
+// internalUserEventClient is an interface that defines the methods available from Vertex AI Search for commerce API.
 type internalUserEventClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -278,7 +278,7 @@ type internalUserEventClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// UserEventClient is a client for interacting with Vertex AI Search for Retail API.
+// UserEventClient is a client for interacting with Vertex AI Search for commerce API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting end user actions on the customer website.
@@ -323,8 +323,10 @@ func (c *UserEventClient) WriteUserEvent(ctx context.Context, req *retailpb.Writ
 	return c.internalClient.WriteUserEvent(ctx, req, opts...)
 }
 
-// CollectUserEvent writes a single user event from the browser. This uses a GET request to
-// due to browser restriction of POST-ing to a 3rd party domain.
+// CollectUserEvent writes a single user event from the browser.
+//
+// For larger user event payload over 16 KB, the POST method should be used
+// instead, otherwise a 400 Bad Request error is returned.
 //
 // This method is used only by the Retail API JavaScript pixel and Google Tag
 // Manager. Users should not call this method directly.
@@ -405,7 +407,7 @@ func (c *UserEventClient) ListOperations(ctx context.Context, req *longrunningpb
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// userEventGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
+// userEventGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type userEventGRPCClient struct {
@@ -832,8 +834,10 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *retailpb.
 	return resp, nil
 }
 
-// CollectUserEvent writes a single user event from the browser. This uses a GET request to
-// due to browser restriction of POST-ing to a 3rd party domain.
+// CollectUserEvent writes a single user event from the browser.
+//
+// For larger user event payload over 16 KB, the POST method should be used
+// instead, otherwise a 400 Bad Request error is returned.
 //
 // This method is used only by the Retail API JavaScript pixel and Google Tag
 // Manager. Users should not call this method directly.

@@ -24,6 +24,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
@@ -147,6 +148,13 @@ func TestConvertParams(t *testing.T) {
 		{[]time.Time{}, listProto(), listType(timeType())},
 		{[]time.Time{t1, t2, t3}, listProto(timeProto(t1), timeProto(t2), timeProto(t3)), listType(timeType())},
 		{[]NullTime{{t2, true}, {}}, listProto(timeProto(t2), nullProto()), listType(timeType())},
+		// uuid
+		{uuid1, uuidProto(uuid1), uuidType()},
+		{NullUUID{uuid1, false}, nullProto(), uuidType()},
+		{[]uuid.UUID(nil), nullProto(), listType(uuidType())},
+		{[]uuid.UUID{}, listProto(), listType(uuidType())},
+		{[]uuid.UUID{uuid1, uuid2}, listProto(uuidProto(uuid1), uuidProto(uuid2)), listType(uuidType())},
+		{[]NullUUID{{uuid1, true}, {}}, listProto(uuidProto(uuid1), nullProto()), listType(uuidType())},
 		// Struct
 		{
 			s1,

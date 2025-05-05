@@ -789,7 +789,7 @@ func (c *featurestoreOnlineServingRESTClient) StreamingReadFeatureValues(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *streamingReadFeatureValuesRESTClient
+	var streamClient *streamingReadFeatureValuesRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -806,7 +806,7 @@ func (c *featurestoreOnlineServingRESTClient) StreamingReadFeatureValues(ctx con
 			return err
 		}
 
-		streamClient = &streamingReadFeatureValuesRESTClient{
+		streamClient = &streamingReadFeatureValuesRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&aiplatformpb.ReadFeatureValuesResponse{}).ProtoReflect().Type()),
@@ -817,15 +817,15 @@ func (c *featurestoreOnlineServingRESTClient) StreamingReadFeatureValues(ctx con
 	return streamClient, e
 }
 
-// streamingReadFeatureValuesRESTClient is the stream client used to consume the server stream created by
+// streamingReadFeatureValuesRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of StreamingReadFeatureValues.
-type streamingReadFeatureValuesRESTClient struct {
+type streamingReadFeatureValuesRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *streamingReadFeatureValuesRESTClient) Recv() (*aiplatformpb.ReadFeatureValuesResponse, error) {
+func (c *streamingReadFeatureValuesRESTStreamClient) Recv() (*aiplatformpb.ReadFeatureValuesResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -839,29 +839,29 @@ func (c *streamingReadFeatureValuesRESTClient) Recv() (*aiplatformpb.ReadFeature
 	return res, nil
 }
 
-func (c *streamingReadFeatureValuesRESTClient) Header() (metadata.MD, error) {
+func (c *streamingReadFeatureValuesRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *streamingReadFeatureValuesRESTClient) Trailer() metadata.MD {
+func (c *streamingReadFeatureValuesRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *streamingReadFeatureValuesRESTClient) CloseSend() error {
+func (c *streamingReadFeatureValuesRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamingReadFeatureValuesRESTClient) Context() context.Context {
+func (c *streamingReadFeatureValuesRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *streamingReadFeatureValuesRESTClient) SendMsg(m interface{}) error {
+func (c *streamingReadFeatureValuesRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamingReadFeatureValuesRESTClient) RecvMsg(m interface{}) error {
+func (c *streamingReadFeatureValuesRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

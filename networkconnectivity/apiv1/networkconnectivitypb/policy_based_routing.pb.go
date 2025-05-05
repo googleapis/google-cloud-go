@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,9 +50,9 @@ const (
 	// Default value.
 	PolicyBasedRoute_OTHER_ROUTES_UNSPECIFIED PolicyBasedRoute_OtherRoutes = 0
 	// Use the routes from the default routing tables (system-generated routes,
-	// custom routes, peering route) to determine the next hop. This will
-	// effectively exclude matching packets being applied on other PBRs with a
-	// lower priority.
+	// custom routes, peering route) to determine the next hop. This effectively
+	// excludes matching packets being applied on other PBRs with a lower
+	// priority.
 	PolicyBasedRoute_DEFAULT_ROUTING PolicyBasedRoute_OtherRoutes = 1
 )
 
@@ -144,18 +144,18 @@ func (PolicyBasedRoute_Filter_ProtocolVersion) EnumDescriptor() ([]byte, []int) 
 	return file_google_cloud_networkconnectivity_v1_policy_based_routing_proto_rawDescGZIP(), []int{0, 2, 0}
 }
 
-// Warning code for Policy Based Routing. Expect to add values in the
+// Warning code for policy-based routing. Expect to add values in the
 // future.
 type PolicyBasedRoute_Warnings_Code int32
 
 const (
 	// Default value.
 	PolicyBasedRoute_Warnings_WARNING_UNSPECIFIED PolicyBasedRoute_Warnings_Code = 0
-	// The policy based route is not active and functioning. Common causes are
-	// the dependent network was deleted or the resource project was turned
-	// off.
+	// The policy-based route is not active and functioning. Common causes are
+	// that the dependent network was deleted or the resource project was
+	// turned off.
 	PolicyBasedRoute_Warnings_RESOURCE_NOT_ACTIVE PolicyBasedRoute_Warnings_Code = 1
-	// The policy based route is being modified (e.g. created/deleted) at this
+	// The policy-based route is being modified (e.g. created/deleted) at this
 	// time.
 	PolicyBasedRoute_Warnings_RESOURCE_BEING_MODIFIED PolicyBasedRoute_Warnings_Code = 2
 )
@@ -201,19 +201,18 @@ func (PolicyBasedRoute_Warnings_Code) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_networkconnectivity_v1_policy_based_routing_proto_rawDescGZIP(), []int{0, 3, 0}
 }
 
-// Policy Based Routes (PBR) are more powerful routes that allows GCP customers
-// to route their L4 network traffic based on not just destination IP, but also
-// source IP, protocol and more. A PBR always take precedence when it conflicts
-// with other types of routes.
-// Next id: 22
+// Policy-based routes route L4 network traffic based on not just destination IP
+// address, but also source IP address, protocol, and more. If a policy-based
+// route conflicts with other types of routes, the policy-based route always
+// takes precedence.
 type PolicyBasedRoute struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Target specifies network endpoints to which this policy based route applies
-	// to. If none of the target is specified, the PBR will be installed on all
-	// network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.
+	// Target specifies network endpoints that this policy-based route applies to.
+	// If no target is specified, the PBR will be installed on all network
+	// endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.
 	//
 	// Types that are assignable to Target:
 	//
@@ -228,23 +227,23 @@ type PolicyBasedRoute struct {
 	// Immutable. A unique name of the resource in the form of
 	// `projects/{project_number}/locations/global/PolicyBasedRoutes/{policy_based_route_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. Time when the PolicyBasedRoute was created.
+	// Output only. Time when the policy-based route was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. Time when the PolicyBasedRoute was updated.
+	// Output only. Time when the policy-based route was updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// User-defined labels.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Optional. An optional description of this resource. Provide this field when
 	// you create the resource.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
-	// Required. Fully-qualified URL of the network that this route applies to.
-	// e.g. projects/my-project/global/networks/my-network.
+	// Required. Fully-qualified URL of the network that this route applies to,
+	// for example: projects/my-project/global/networks/my-network.
 	Network string `protobuf:"bytes,6,opt,name=network,proto3" json:"network,omitempty"`
 	// Required. The filter to match L4 traffic.
 	Filter *PolicyBasedRoute_Filter `protobuf:"bytes,10,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Optional. The priority of this policy based route. Priority is used to
-	// break ties in cases where there are more than one matching policy based
-	// routes found. In cases where multiple policy based routes are matched, the
+	// Optional. The priority of this policy-based route. Priority is used to
+	// break ties in cases where there are more than one matching policy-based
+	// routes found. In cases where multiple policy-based routes are matched, the
 	// one with the lowest-numbered priority value wins. The default value is
 	// 1000. The priority value must be from 1 to 65535, inclusive.
 	Priority int32 `protobuf:"varint,11,opt,name=priority,proto3" json:"priority,omitempty"`
@@ -254,7 +253,7 @@ type PolicyBasedRoute struct {
 	// Output only. Server-defined fully-qualified URL for this resource.
 	SelfLink string `protobuf:"bytes,15,opt,name=self_link,json=selfLink,proto3" json:"self_link,omitempty"`
 	// Output only. Type of this resource. Always
-	// networkconnectivity#policyBasedRoute for Policy Based Route resources.
+	// networkconnectivity#policyBasedRoute for policy-based Route resources.
 	Kind string `protobuf:"bytes,16,opt,name=kind,proto3" json:"kind,omitempty"`
 }
 
@@ -412,12 +411,13 @@ type isPolicyBasedRoute_Target interface {
 }
 
 type PolicyBasedRoute_VirtualMachine_ struct {
-	// Optional. VM instances to which this policy based route applies to.
+	// Optional. VM instances that this policy-based route applies to.
 	VirtualMachine *PolicyBasedRoute_VirtualMachine `protobuf:"bytes,18,opt,name=virtual_machine,json=virtualMachine,proto3,oneof"`
 }
 
 type PolicyBasedRoute_InterconnectAttachment_ struct {
-	// Optional. The interconnect attachments to which this route applies to.
+	// Optional. The interconnect attachments that this policy-based route
+	// applies to.
 	InterconnectAttachment *PolicyBasedRoute_InterconnectAttachment `protobuf:"bytes,9,opt,name=interconnect_attachment,json=interconnectAttachment,proto3,oneof"`
 }
 
@@ -430,9 +430,9 @@ type isPolicyBasedRoute_NextHop interface {
 }
 
 type PolicyBasedRoute_NextHopIlbIp struct {
-	// Optional. The IP of a global access enabled L4 ILB that should be the
-	// next hop to handle matching packets. For this version, only
-	// next_hop_ilb_ip is supported.
+	// Optional. The IP address of a global-access-enabled L4 ILB that is the
+	// next hop for matching packets. For this version, only nextHopIlbIp is
+	// supported.
 	NextHopIlbIp string `protobuf:"bytes,12,opt,name=next_hop_ilb_ip,json=nextHopIlbIp,proto3,oneof"`
 }
 
@@ -446,7 +446,9 @@ func (*PolicyBasedRoute_NextHopIlbIp) isPolicyBasedRoute_NextHop() {}
 
 func (*PolicyBasedRoute_NextHopOtherRoutes) isPolicyBasedRoute_NextHop() {}
 
-// Request for [PolicyBasedRouting.ListPolicyBasedRoutes][] method.
+// Request for
+// [PolicyBasedRoutingService.ListPolicyBasedRoutes][google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.ListPolicyBasedRoutes]
+// method.
 type ListPolicyBasedRoutesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -529,13 +531,15 @@ func (x *ListPolicyBasedRoutesRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response for [PolicyBasedRouting.ListPolicyBasedRoutes][] method.
+// Response for
+// [PolicyBasedRoutingService.ListPolicyBasedRoutes][google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.ListPolicyBasedRoutes]
+// method.
 type ListPolicyBasedRoutesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Policy based routes to be returned.
+	// Policy-based routes to be returned.
 	PolicyBasedRoutes []*PolicyBasedRoute `protobuf:"bytes,1,rep,name=policy_based_routes,json=policyBasedRoutes,proto3" json:"policy_based_routes,omitempty"`
 	// The next pagination token in the List response. It should be used as
 	// page_token for the following request. An empty value means no more result.
@@ -595,7 +599,9 @@ func (x *ListPolicyBasedRoutesResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Request for [PolicyBasedRouting.GetPolicyBasedRoute][] method.
+// Request for
+// [PolicyBasedRoutingService.GetPolicyBasedRoute][google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.GetPolicyBasedRoute]
+// method.
 type GetPolicyBasedRouteRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -642,7 +648,9 @@ func (x *GetPolicyBasedRouteRequest) GetName() string {
 	return ""
 }
 
-// Request for [PolicyBasedRouting.CreatePolicyBasedRoute][] method.
+// Request for
+// [PolicyBasedRoutingService.CreatePolicyBasedRoute][google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.CreatePolicyBasedRoute]
+// method.
 type CreatePolicyBasedRouteRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -650,20 +658,27 @@ type CreatePolicyBasedRouteRequest struct {
 
 	// Required. The parent resource's name of the PolicyBasedRoute.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. Unique id for the Policy Based Route to create.
+	// Required. Unique id for the policy-based route to create. Provided by the
+	// client when the resource is created. The name must comply with
+	// https://google.aip.dev/122#resource-id-segments. Specifically, the name
+	// must be 1-63 characters long and match the regular expression
+	// [a-z]([a-z0-9-]*[a-z0-9])?. The first character must be a lowercase letter,
+	// and all following characters (except for the last character) must be a
+	// dash, lowercase letter, or digit. The last character must be a lowercase
+	// letter or digit.
 	PolicyBasedRouteId string `protobuf:"bytes,2,opt,name=policy_based_route_id,json=policyBasedRouteId,proto3" json:"policy_based_route_id,omitempty"`
-	// Required. Initial values for a new Policy Based Route.
+	// Required. Initial values for a new policy-based route.
 	PolicyBasedRoute *PolicyBasedRoute `protobuf:"bytes,3,opt,name=policy_based_route,json=policyBasedRoute,proto3" json:"policy_based_route,omitempty"`
 	// Optional. An optional request ID to identify requests. Specify a unique
-	// request ID so that if you must retry your request, the server will know to
-	// ignore the request if it has already been completed. The server will
-	// guarantee that for at least 60 minutes since the first request.
+	// request ID so that if you must retry your request, the server knows to
+	// ignore the request if it has already been completed. The server guarantees
+	// that for at least 60 minutes since the first request.
 	//
 	// For example, consider a situation where you make an initial request and
 	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
-	// was received, and if so, will ignore the second request. This prevents
-	// clients from accidentally creating duplicate commitments.
+	// was received, and if so, ignores the second request. This prevents clients
+	// from accidentally creating duplicate commitments.
 	//
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
@@ -728,24 +743,26 @@ func (x *CreatePolicyBasedRouteRequest) GetRequestId() string {
 	return ""
 }
 
-// Request for [PolicyBasedRouting.DeletePolicyBasedRoute][] method.
+// Request for
+// [PolicyBasedRoutingService.DeletePolicyBasedRoute][google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.DeletePolicyBasedRoute]
+// method.
 type DeletePolicyBasedRouteRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the PolicyBasedRoute resource to delete.
+	// Required. Name of the policy-based route resource to delete.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. An optional request ID to identify requests. Specify a unique
-	// request ID so that if you must retry your request, the server will know to
-	// ignore the request if it has already been completed. The server will
-	// guarantee that for at least 60 minutes after the first request.
+	// request ID so that if you must retry your request, the server knows to
+	// ignore the request if it has already been completed. The server guarantees
+	// that for at least 60 minutes after the first request.
 	//
 	// For example, consider a situation where you make an initial request and
 	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
-	// was received, and if so, will ignore the second request. This prevents
-	// clients from accidentally creating duplicate commitments.
+	// was received, and if so, ignores the second request. This prevents clients
+	// from accidentally creating duplicate commitments.
 	//
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
@@ -796,15 +813,14 @@ func (x *DeletePolicyBasedRouteRequest) GetRequestId() string {
 	return ""
 }
 
-// VM instances to which this policy based route applies to.
+// VM instances that this policy-based route applies to.
 type PolicyBasedRoute_VirtualMachine struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. A list of VM instance tags to which this policy based route
-	// applies to. VM instances that have ANY of tags specified here will
-	// install this PBR.
+	// Optional. A list of VM instance tags that this policy-based route applies
+	// to. VM instances that have ANY of tags specified here installs this PBR.
 	Tags []string `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
 }
 
@@ -845,13 +861,13 @@ func (x *PolicyBasedRoute_VirtualMachine) GetTags() []string {
 	return nil
 }
 
-// InterconnectAttachment to which this route applies to.
+// InterconnectAttachment that this route applies to.
 type PolicyBasedRoute_InterconnectAttachment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Cloud region to install this policy based route on interconnect
+	// Optional. Cloud region to install this policy-based route on interconnect
 	// attachment. Use `all` to install it on all interconnect attachments.
 	Region string `protobuf:"bytes,1,opt,name=region,proto3" json:"region,omitempty"`
 }
@@ -899,18 +915,18 @@ type PolicyBasedRoute_Filter struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. The IP protocol that this policy based route applies to. Valid
+	// Optional. The IP protocol that this policy-based route applies to. Valid
 	// values are 'TCP', 'UDP', and 'ALL'. Default is 'ALL'.
 	IpProtocol string `protobuf:"bytes,1,opt,name=ip_protocol,json=ipProtocol,proto3" json:"ip_protocol,omitempty"`
-	// Optional. The source IP range of outgoing packets that this policy based
+	// Optional. The source IP range of outgoing packets that this policy-based
 	// route applies to. Default is "0.0.0.0/0" if protocol version is IPv4.
 	SrcRange string `protobuf:"bytes,2,opt,name=src_range,json=srcRange,proto3" json:"src_range,omitempty"`
-	// Optional. The destination IP range of outgoing packets that this policy
-	// based route applies to. Default is "0.0.0.0/0" if protocol version is
-	// IPv4.
+	// Optional. The destination IP range of outgoing packets that this
+	// policy-based route applies to. Default is "0.0.0.0/0" if protocol version
+	// is IPv4.
 	DestRange string `protobuf:"bytes,3,opt,name=dest_range,json=destRange,proto3" json:"dest_range,omitempty"`
-	// Required. Internet protocol versions this policy based route applies to.
-	// For this version, only IPV4 is supported.
+	// Required. Internet protocol versions this policy-based route applies to.
+	// For this version, only IPV4 is supported. IPV6 is supported in preview.
 	ProtocolVersion PolicyBasedRoute_Filter_ProtocolVersion `protobuf:"varint,6,opt,name=protocol_version,json=protocolVersion,proto3,enum=google.cloud.networkconnectivity.v1.PolicyBasedRoute_Filter_ProtocolVersion" json:"protocol_version,omitempty"`
 }
 
@@ -1463,13 +1479,13 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type PolicyBasedRoutingServiceClient interface {
-	// Lists PolicyBasedRoutes in a given project and location.
+	// Lists policy-based routes in a given project and location.
 	ListPolicyBasedRoutes(ctx context.Context, in *ListPolicyBasedRoutesRequest, opts ...grpc.CallOption) (*ListPolicyBasedRoutesResponse, error)
-	// Gets details of a single PolicyBasedRoute.
+	// Gets details of a single policy-based route.
 	GetPolicyBasedRoute(ctx context.Context, in *GetPolicyBasedRouteRequest, opts ...grpc.CallOption) (*PolicyBasedRoute, error)
-	// Creates a new PolicyBasedRoute in a given project and location.
+	// Creates a new policy-based route in a given project and location.
 	CreatePolicyBasedRoute(ctx context.Context, in *CreatePolicyBasedRouteRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Deletes a single PolicyBasedRoute.
+	// Deletes a single policy-based route.
 	DeletePolicyBasedRoute(ctx context.Context, in *DeletePolicyBasedRouteRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -1519,13 +1535,13 @@ func (c *policyBasedRoutingServiceClient) DeletePolicyBasedRoute(ctx context.Con
 
 // PolicyBasedRoutingServiceServer is the server API for PolicyBasedRoutingService service.
 type PolicyBasedRoutingServiceServer interface {
-	// Lists PolicyBasedRoutes in a given project and location.
+	// Lists policy-based routes in a given project and location.
 	ListPolicyBasedRoutes(context.Context, *ListPolicyBasedRoutesRequest) (*ListPolicyBasedRoutesResponse, error)
-	// Gets details of a single PolicyBasedRoute.
+	// Gets details of a single policy-based route.
 	GetPolicyBasedRoute(context.Context, *GetPolicyBasedRouteRequest) (*PolicyBasedRoute, error)
-	// Creates a new PolicyBasedRoute in a given project and location.
+	// Creates a new policy-based route in a given project and location.
 	CreatePolicyBasedRoute(context.Context, *CreatePolicyBasedRouteRequest) (*longrunningpb.Operation, error)
-	// Deletes a single PolicyBasedRoute.
+	// Deletes a single policy-based route.
 	DeletePolicyBasedRoute(context.Context, *DeletePolicyBasedRouteRequest) (*longrunningpb.Operation, error)
 }
 

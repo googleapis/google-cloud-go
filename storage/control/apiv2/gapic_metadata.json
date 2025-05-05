@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "StorageControlClient",
           "rpcs": {
+            "CreateAnywhereCache": {
+              "methods": [
+                "CreateAnywhereCache"
+              ]
+            },
             "CreateFolder": {
               "methods": [
                 "CreateFolder"
@@ -30,6 +35,16 @@
                 "DeleteManagedFolder"
               ]
             },
+            "DisableAnywhereCache": {
+              "methods": [
+                "DisableAnywhereCache"
+              ]
+            },
+            "GetAnywhereCache": {
+              "methods": [
+                "GetAnywhereCache"
+              ]
+            },
             "GetFolder": {
               "methods": [
                 "GetFolder"
@@ -45,6 +60,11 @@
                 "GetStorageLayout"
               ]
             },
+            "ListAnywhereCaches": {
+              "methods": [
+                "ListAnywhereCaches"
+              ]
+            },
             "ListFolders": {
               "methods": [
                 "ListFolders"
@@ -55,9 +75,24 @@
                 "ListManagedFolders"
               ]
             },
+            "PauseAnywhereCache": {
+              "methods": [
+                "PauseAnywhereCache"
+              ]
+            },
             "RenameFolder": {
               "methods": [
                 "RenameFolder"
+              ]
+            },
+            "ResumeAnywhereCache": {
+              "methods": [
+                "ResumeAnywhereCache"
+              ]
+            },
+            "UpdateAnywhereCache": {
+              "methods": [
+                "UpdateAnywhereCache"
               ]
             }
           }

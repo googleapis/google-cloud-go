@@ -82,6 +82,9 @@ type benchmarkOptions struct {
 	minChunkSize int64
 	maxChunkSize int64
 
+	appendWrites  bool
+	gRPCBidiReads bool
+
 	forceGC      bool
 	connPoolSize int
 
@@ -131,7 +134,7 @@ func (b *benchmarkOptions) String() string {
 
 	stringifiedOpts := []string{
 		fmt.Sprintf("api:\t\t\t%s", b.api),
-		fmt.Sprintf("interity check:\t\t%d", b.integrity),
+		fmt.Sprintf("interity check:\t\t%v", b.integrity),
 		fmt.Sprintf("region:\t\t\t%s", b.region),
 		fmt.Sprintf("timeout:\t\t%s", b.timeout),
 		fmt.Sprintf("number of samples:\t%d", b.numSamples),
@@ -142,6 +145,8 @@ func (b *benchmarkOptions) String() string {
 		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize/kib, b.maxChunkSize/kib),
 		fmt.Sprintf("range offset:\t\t%d - %d bytes ", b.minReadOffset, b.maxReadOffset),
 		fmt.Sprintf("range size:\t\t%d bytes (0 -> full object)", b.rangeSize),
+		fmt.Sprintf("append writes:\t\t%t", b.appendWrites),
+		fmt.Sprintf("gRPC bidi reads:\t%t", b.gRPCBidiReads),
 		fmt.Sprintf("connection pool size:\t%d (GRPC)", b.connPoolSize),
 		fmt.Sprintf("num workers:\t\t%d (max number of concurrent benchmark runs at a time)", b.numWorkers),
 		fmt.Sprintf("force garbage collection:%t", b.forceGC),
@@ -185,6 +190,9 @@ func parseFlags() {
 	flag.Int64Var(&opts.minChunkSize, "min_chunksize", useDefault, "min chunksize in bytes")
 	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", useDefault, "max chunksize in bytes")
 
+	flag.BoolVar(&opts.appendWrites, "append_writes", false, "use the append writer")
+	flag.BoolVar(&opts.gRPCBidiReads, "grpc_bidi_reads", false, "use BidiReadObject for gRPC reads")
+
 	flag.IntVar(&opts.connPoolSize, "connection_pool_size", 4, "GRPC connection pool size")
 
 	flag.BoolVar(&opts.forceGC, "force_garbage_collection", false, "force garbage collection at the beginning of each upload")
@@ -225,6 +233,16 @@ func parseFlags() {
 		opts.objectSize, err = strconv.ParseInt(min, 10, 64)
 		if err != nil {
 			log.Fatalln("Could not parse object size")
+		}
+	}
+
+	if opts.api != grpcAPI && opts.api != directPath {
+		if opts.appendWrites {
+			log.Fatalf("--append_writes requires GRPC or DirectPath; got %v", opts.api)
+		}
+
+		if opts.gRPCBidiReads {
+			log.Fatalf("--grpc_bidi_reads requires GRPC or DirectPath; got %v", opts.api)
 		}
 	}
 }

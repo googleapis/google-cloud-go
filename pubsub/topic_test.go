@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/pstest"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -227,6 +228,75 @@ func TestTopic_IngestionCloudStorage(t *testing.T) {
 	}
 	if config3.IngestionDataSourceSettings != nil {
 		t.Errorf("got: %+v, want nil", config3.IngestionDataSourceSettings)
+	}
+}
+
+func TestTopic_Ingestion(t *testing.T) {
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+	id := "test-topic-3p-ingestion"
+	gcpSA := "fake-service-account@fake-gcp-project.iam.gserviceaccount.com"
+	azureIngestion := &IngestionDataSourceAzureEventHubs{
+		ResourceGroup:     "fake-resource-group",
+		Namespace:         "fake-namespace",
+		EventHub:          "fake-event-hub",
+		ClientID:          "11111111-1111-1111-1111-111111111111",
+		TenantID:          "22222222-2222-2222-2222-222222222222",
+		SubscriptionID:    "33333333-3333-3333-3333-333333333333",
+		GCPServiceAccount: gcpSA,
+	}
+	mskIngestion := &IngestionDataSourceAmazonMSK{
+		ClusterARN:        "arn:aws:kafka:us-east-1:111111111111:cluster/fake-cluster-name/11111111-1111-1",
+		Topic:             "fake-msk-topic-name",
+		AWSRoleARN:        "arn:aws:iam::111111111111:role/fake-role-name",
+		GCPServiceAccount: gcpSA,
+	}
+	confluentCloud := &IngestionDataSourceConfluentCloud{
+		BootstrapServer:   "fake-bootstrap-server-id.us-south1.gcp.confluent.cloud:9092",
+		ClusterID:         "fake-cluster-id",
+		Topic:             "fake-confluent-topic-name",
+		IdentityPoolID:    "fake-pool-id",
+		GCPServiceAccount: gcpSA,
+	}
+	want := TopicConfig{
+		IngestionDataSourceSettings: &IngestionDataSourceSettings{
+			Source: azureIngestion,
+		},
+	}
+	topic := mustCreateTopicWithConfig(t, c, id, &want)
+	got, err := topic.Config(context.Background())
+	if err != nil {
+		t.Fatalf("error getting topic config: %v", err)
+	}
+	want.State = TopicStateActive
+	opt := cmpopts.IgnoreUnexported(TopicConfig{})
+	if !testutil.Equal(got, want, opt) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	// Update ingestion settings to use MSK
+	ctx := context.Background()
+	settings := &IngestionDataSourceSettings{
+		Source: mskIngestion,
+	}
+	config2, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(config2.IngestionDataSourceSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config2.IngestionDataSourceSettings, settings)
+	}
+
+	settings = &IngestionDataSourceSettings{
+		Source: confluentCloud,
+	}
+	config3, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(config3.IngestionDataSourceSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config3.IngestionDataSourceSettings, settings)
 	}
 }
 
@@ -466,6 +536,53 @@ func TestUpdateTopic_SchemaSettings(t *testing.T) {
 	}
 	if config3.SchemaSettings != nil {
 		t.Errorf("got: %+v, want nil", config3.SchemaSettings)
+	}
+}
+
+func TestTopicMessageTransform(t *testing.T) {
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	id := "test-topic"
+	want := TopicConfig{
+		MessageTransforms: []MessageTransform{
+			{
+				Transform: JavaScriptUDF{
+					FunctionName: "some-function",
+					Code:         "some-code",
+				},
+				Disabled: false,
+			},
+		},
+	}
+
+	topic := mustCreateTopicWithConfig(t, c, id, &want)
+	got, err := topic.Config(context.Background())
+	if err != nil {
+		t.Fatalf("error getting topic config: %v", err)
+	}
+	if diff := cmp.Diff(got.MessageTransforms, want.MessageTransforms); diff != "" {
+		t.Errorf("topic config mismatch: -got, +want:\n%s", diff)
+	}
+
+	update := TopicConfigToUpdate{
+		MessageTransforms: []MessageTransform{
+			{
+				Transform: JavaScriptUDF{
+					FunctionName: "some-function-2",
+					Code:         "some-code-2",
+				},
+				Disabled: false,
+			},
+		},
+	}
+	got, err = topic.Update(context.Background(), update)
+	if err != nil {
+		t.Errorf("failed to update topic: %v", err)
+	}
+	if diff := cmp.Diff(got.MessageTransforms, update.MessageTransforms); diff != "" {
+		t.Errorf("topic config mismatch: -got, +want:\n%s", diff)
 	}
 }
 

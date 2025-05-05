@@ -1,0 +1,599 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.chronicle.v1",
+  "libraryPackage": "cloud.google.com/go/chronicle/apiv1",
+  "services": {
+    "DataAccessControlService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataAccessControlClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataAccessLabel": {
+              "methods": [
+                "CreateDataAccessLabel"
+              ]
+            },
+            "CreateDataAccessScope": {
+              "methods": [
+                "CreateDataAccessScope"
+              ]
+            },
+            "DeleteDataAccessLabel": {
+              "methods": [
+                "DeleteDataAccessLabel"
+              ]
+            },
+            "DeleteDataAccessScope": {
+              "methods": [
+                "DeleteDataAccessScope"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataAccessLabel": {
+              "methods": [
+                "GetDataAccessLabel"
+              ]
+            },
+            "GetDataAccessScope": {
+              "methods": [
+                "GetDataAccessScope"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataAccessLabels": {
+              "methods": [
+                "ListDataAccessLabels"
+              ]
+            },
+            "ListDataAccessScopes": {
+              "methods": [
+                "ListDataAccessScopes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataAccessLabel": {
+              "methods": [
+                "UpdateDataAccessLabel"
+              ]
+            },
+            "UpdateDataAccessScope": {
+              "methods": [
+                "UpdateDataAccessScope"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataAccessControlClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataAccessLabel": {
+              "methods": [
+                "CreateDataAccessLabel"
+              ]
+            },
+            "CreateDataAccessScope": {
+              "methods": [
+                "CreateDataAccessScope"
+              ]
+            },
+            "DeleteDataAccessLabel": {
+              "methods": [
+                "DeleteDataAccessLabel"
+              ]
+            },
+            "DeleteDataAccessScope": {
+              "methods": [
+                "DeleteDataAccessScope"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataAccessLabel": {
+              "methods": [
+                "GetDataAccessLabel"
+              ]
+            },
+            "GetDataAccessScope": {
+              "methods": [
+                "GetDataAccessScope"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataAccessLabels": {
+              "methods": [
+                "ListDataAccessLabels"
+              ]
+            },
+            "ListDataAccessScopes": {
+              "methods": [
+                "ListDataAccessScopes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataAccessLabel": {
+              "methods": [
+                "UpdateDataAccessLabel"
+              ]
+            },
+            "UpdateDataAccessScope": {
+              "methods": [
+                "UpdateDataAccessScope"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "EntityService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EntityClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateWatchlist": {
+              "methods": [
+                "CreateWatchlist"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteWatchlist": {
+              "methods": [
+                "DeleteWatchlist"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetWatchlist": {
+              "methods": [
+                "GetWatchlist"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListWatchlists": {
+              "methods": [
+                "ListWatchlists"
+              ]
+            },
+            "UpdateWatchlist": {
+              "methods": [
+                "UpdateWatchlist"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "EntityClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateWatchlist": {
+              "methods": [
+                "CreateWatchlist"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteWatchlist": {
+              "methods": [
+                "DeleteWatchlist"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetWatchlist": {
+              "methods": [
+                "GetWatchlist"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListWatchlists": {
+              "methods": [
+                "ListWatchlists"
+              ]
+            },
+            "UpdateWatchlist": {
+              "methods": [
+                "UpdateWatchlist"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "InstanceService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "InstanceClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "InstanceClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ReferenceListService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ReferenceListClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateReferenceList": {
+              "methods": [
+                "CreateReferenceList"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReferenceList": {
+              "methods": [
+                "GetReferenceList"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReferenceLists": {
+              "methods": [
+                "ListReferenceLists"
+              ]
+            },
+            "UpdateReferenceList": {
+              "methods": [
+                "UpdateReferenceList"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ReferenceListClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateReferenceList": {
+              "methods": [
+                "CreateReferenceList"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReferenceList": {
+              "methods": [
+                "GetReferenceList"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReferenceLists": {
+              "methods": [
+                "ListReferenceLists"
+              ]
+            },
+            "UpdateReferenceList": {
+              "methods": [
+                "UpdateReferenceList"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RuleService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RuleClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateRetrohunt": {
+              "methods": [
+                "CreateRetrohunt"
+              ]
+            },
+            "CreateRule": {
+              "methods": [
+                "CreateRule"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRule": {
+              "methods": [
+                "DeleteRule"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRetrohunt": {
+              "methods": [
+                "GetRetrohunt"
+              ]
+            },
+            "GetRule": {
+              "methods": [
+                "GetRule"
+              ]
+            },
+            "GetRuleDeployment": {
+              "methods": [
+                "GetRuleDeployment"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRetrohunts": {
+              "methods": [
+                "ListRetrohunts"
+              ]
+            },
+            "ListRuleDeployments": {
+              "methods": [
+                "ListRuleDeployments"
+              ]
+            },
+            "ListRuleRevisions": {
+              "methods": [
+                "ListRuleRevisions"
+              ]
+            },
+            "ListRules": {
+              "methods": [
+                "ListRules"
+              ]
+            },
+            "UpdateRule": {
+              "methods": [
+                "UpdateRule"
+              ]
+            },
+            "UpdateRuleDeployment": {
+              "methods": [
+                "UpdateRuleDeployment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RuleClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateRetrohunt": {
+              "methods": [
+                "CreateRetrohunt"
+              ]
+            },
+            "CreateRule": {
+              "methods": [
+                "CreateRule"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRule": {
+              "methods": [
+                "DeleteRule"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRetrohunt": {
+              "methods": [
+                "GetRetrohunt"
+              ]
+            },
+            "GetRule": {
+              "methods": [
+                "GetRule"
+              ]
+            },
+            "GetRuleDeployment": {
+              "methods": [
+                "GetRuleDeployment"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRetrohunts": {
+              "methods": [
+                "ListRetrohunts"
+              ]
+            },
+            "ListRuleDeployments": {
+              "methods": [
+                "ListRuleDeployments"
+              ]
+            },
+            "ListRuleRevisions": {
+              "methods": [
+                "ListRuleRevisions"
+              ]
+            },
+            "ListRules": {
+              "methods": [
+                "ListRules"
+              ]
+            },
+            "UpdateRule": {
+              "methods": [
+                "UpdateRule"
+              ]
+            },
+            "UpdateRuleDeployment": {
+              "methods": [
+                "UpdateRuleDeployment"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

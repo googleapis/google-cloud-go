@@ -1,5 +1,31 @@
 # Changes
 
+## [1.24.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.24.1...monitoring/v1.24.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **monitoring:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.24.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.24.0...monitoring/v1.24.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **monitoring:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.23.0...monitoring/v1.24.0) (2025-02-05)
+
+
+### Features
+
+* **monitoring/apiv3:** Add filter field to snooze proto ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+
+
+### Documentation
+
+* **monitoring/apiv3:** Remove extra fenced code block markers ([#11535](https://github.com/googleapis/google-cloud-go/issues/11535)) ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.22.1...monitoring/v1.23.0) (2025-01-15)
 
 

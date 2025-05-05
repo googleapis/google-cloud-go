@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14775,7 +14775,7 @@ type NetworkConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The relative name of the Google Compute Engine
-	// [network][google.container.v1.NetworkConfig.network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks)
+	// [network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks)
 	// to which the cluster is connected. Example:
 	// projects/my-project/global/networks/my-network
 	Network string `protobuf:"bytes,1,opt,name=network,proto3" json:"network,omitempty"`

@@ -17,7 +17,6 @@
 
 //go:generate protoveneer -license license.txt config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
 
-// Package genai is a client for the generative VertexAI model.
 package genai
 
 import (
@@ -99,7 +98,17 @@ func setGAPICClient[ClientType sgci](ctx context.Context, pf *ClientType, conf c
 
 // Close closes the client.
 func (c *Client) Close() error {
-	return c.pc.Close()
+	pcErr := c.pc.Close()
+	ccErr := c.cc.Close()
+
+	switch {
+	case pcErr != nil:
+		return pcErr
+	case ccErr != nil:
+		return ccErr
+	default:
+		return nil
+	}
 }
 
 const defaultLocation = "us-central1"

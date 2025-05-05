@@ -19,6 +19,7 @@ package discoveryengine
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math"
@@ -36,6 +37,7 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -51,6 +53,7 @@ type ConversationalSearchCallOptions struct {
 	GetConversation      []gax.CallOption
 	ListConversations    []gax.CallOption
 	AnswerQuery          []gax.CallOption
+	StreamAnswerQuery    []gax.CallOption
 	GetAnswer            []gax.CallOption
 	CreateSession        []gax.CallOption
 	DeleteSession        []gax.CallOption
@@ -153,6 +156,17 @@ func defaultConversationalSearchCallOptions() *ConversationalSearchCallOptions {
 		},
 		AnswerQuery: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		StreamAnswerQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -353,6 +367,17 @@ func defaultConversationalSearchRESTCallOptions() *ConversationalSearchCallOptio
 					http.StatusServiceUnavailable)
 			}),
 		},
+		StreamAnswerQuery: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetAnswer: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -467,6 +492,7 @@ type internalConversationalSearchClient interface {
 	GetConversation(context.Context, *discoveryenginepb.GetConversationRequest, ...gax.CallOption) (*discoveryenginepb.Conversation, error)
 	ListConversations(context.Context, *discoveryenginepb.ListConversationsRequest, ...gax.CallOption) *ConversationIterator
 	AnswerQuery(context.Context, *discoveryenginepb.AnswerQueryRequest, ...gax.CallOption) (*discoveryenginepb.AnswerQueryResponse, error)
+	StreamAnswerQuery(context.Context, *discoveryenginepb.AnswerQueryRequest, ...gax.CallOption) (discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient, error)
 	GetAnswer(context.Context, *discoveryenginepb.GetAnswerRequest, ...gax.CallOption) (*discoveryenginepb.Answer, error)
 	CreateSession(context.Context, *discoveryenginepb.CreateSessionRequest, ...gax.CallOption) (*discoveryenginepb.Session, error)
 	DeleteSession(context.Context, *discoveryenginepb.DeleteSessionRequest, ...gax.CallOption) error
@@ -558,6 +584,17 @@ func (c *ConversationalSearchClient) ListConversations(ctx context.Context, req 
 // AnswerQuery answer query method.
 func (c *ConversationalSearchClient) AnswerQuery(ctx context.Context, req *discoveryenginepb.AnswerQueryRequest, opts ...gax.CallOption) (*discoveryenginepb.AnswerQueryResponse, error) {
 	return c.internalClient.AnswerQuery(ctx, req, opts...)
+}
+
+// StreamAnswerQuery answer query method (streaming).
+//
+// It takes one
+// AnswerQueryRequest
+// and returns multiple
+// AnswerQueryResponse
+// messages in a stream.
+func (c *ConversationalSearchClient) StreamAnswerQuery(ctx context.Context, req *discoveryenginepb.AnswerQueryRequest, opts ...gax.CallOption) (discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient, error) {
+	return c.internalClient.StreamAnswerQuery(ctx, req, opts...)
 }
 
 // GetAnswer gets a Answer.
@@ -914,6 +951,26 @@ func (c *conversationalSearchGRPCClient) AnswerQuery(ctx context.Context, req *d
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.conversationalSearchClient.AnswerQuery, req, settings.GRPC, c.logger, "AnswerQuery")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *conversationalSearchGRPCClient) StreamAnswerQuery(ctx context.Context, req *discoveryenginepb.AnswerQueryRequest, opts ...gax.CallOption) (discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config", url.QueryEscape(req.GetServingConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StreamAnswerQuery[0:len((*c.CallOptions).StreamAnswerQuery):len((*c.CallOptions).StreamAnswerQuery)], opts...)
+	var resp discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamAnswerQuery")
+		resp, err = c.conversationalSearchClient.StreamAnswerQuery(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamAnswerQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1546,6 +1603,114 @@ func (c *conversationalSearchRESTClient) AnswerQuery(ctx context.Context, req *d
 	return resp, nil
 }
 
+// StreamAnswerQuery answer query method (streaming).
+//
+// It takes one
+// AnswerQueryRequest
+// and returns multiple
+// AnswerQueryResponse
+// messages in a stream.
+func (c *conversationalSearchRESTClient) StreamAnswerQuery(ctx context.Context, req *discoveryenginepb.AnswerQueryRequest, opts ...gax.CallOption) (discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:streamAnswer", req.GetServingConfig())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config", url.QueryEscape(req.GetServingConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *streamAnswerQueryRESTStreamClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StreamAnswerQuery")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &streamAnswerQueryRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&discoveryenginepb.AnswerQueryResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// streamAnswerQueryRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of StreamAnswerQuery.
+type streamAnswerQueryRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *streamAnswerQueryRESTStreamClient) Recv() (*discoveryenginepb.AnswerQueryResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*discoveryenginepb.AnswerQueryResponse)
+	return res, nil
+}
+
+func (c *streamAnswerQueryRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *streamAnswerQueryRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *streamAnswerQueryRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamAnswerQueryRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *streamAnswerQueryRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamAnswerQueryRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
+}
+
 // GetAnswer gets a Answer.
 func (c *conversationalSearchRESTClient) GetAnswer(ctx context.Context, req *discoveryenginepb.GetAnswerRequest, opts ...gax.CallOption) (*discoveryenginepb.Answer, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1772,6 +1937,9 @@ func (c *conversationalSearchRESTClient) GetSession(ctx context.Context, req *di
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetIncludeAnswerDetails() {
+		params.Add("includeAnswerDetails", fmt.Sprintf("%v", req.GetIncludeAnswerDetails()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

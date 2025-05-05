@@ -1,6 +1,43 @@
 # Changelog
 
 
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/run/v1.9.2...run/v1.9.3) (2025-04-15)
+
+
+### Bug Fixes
+
+* **run:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/run/v1.9.1...run/v1.9.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **run:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.9.0...run/v1.9.1) (2025-03-06)
+
+
+### Bug Fixes
+
+* **run:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.8.1...run/v1.9.0) (2025-02-05)
+
+
+### Features
+
+* **run:** Add Base Image URI to Container ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+* **run:** Add BuildConfig to Services for configuring Run functions ([#11559](https://github.com/googleapis/google-cloud-go/issues/11559)) ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+* **run:** Add BuildInfo to Revision for displaying BuildConfig used for a specific revision deployment ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+* **run:** Add creator field to Execution ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+* **run:** Add project_descriptor to BuildspackBuild ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+
+
+### Documentation
+
+* **run:** Some typos were fixed and formatting changed ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.8.0...run/v1.8.1) (2025-01-02)
 
 

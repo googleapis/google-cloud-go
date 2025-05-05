@@ -23,12 +23,14 @@ import (
 	"time"
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -205,6 +207,32 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	}
 }
 
+func TestTableAdmin_CreateTableFromConf_WithRowKeySchema(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "my-table", RowKeySchema: &StructType{
+		Fields: []StructField{
+			{FieldName: "key1", FieldType: Int64Type{Encoding: Int64OrderedCodeBytesEncoding{}}},
+			{FieldName: "key2", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+		},
+		Encoding: StructDelimitedBytesEncoding{Delimiter: []byte{'#', '#'}},
+	}})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "my-table") {
+		t.Errorf("Unexpected tableID: %v, want: %v", createTableReq.TableId, "my-table")
+	}
+	if createTableReq.Table.RowKeySchema == nil {
+		t.Errorf("Unexpected nil RowKeySchema in request")
+	}
+	if len(createTableReq.Table.RowKeySchema.Fields) != 2 {
+		t.Errorf("Unexpected field length in row key schema: %v, want: %v", createTableReq.Table.RowKeySchema, 2)
+	}
+}
+
 func TestTableAdmin_CreateBackupWithOptions_NoExpiryTime(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
@@ -372,6 +400,59 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithRowKeySchema(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	rks := StructType{
+		Fields: []StructField{
+			{FieldName: "key1", FieldType: Int64Type{Encoding: Int64OrderedCodeBytesEncoding{}}},
+			{FieldName: "key2", FieldType: StringType{Encoding: StringUtf8BytesEncoding{}}},
+		},
+		Encoding: StructDelimitedBytesEncoding{Delimiter: []byte{'#', '#'}}}
+	err := c.UpdateTableWithRowKeySchema(context.Background(), "my-table", rks)
+	if err != nil {
+		t.Fatalf("UpdateTableWithRowKeySchema error: %v", err)
+	}
+	req := mock.updateTableReq
+
+	expectedTableName := "projects/my-cool-project/instances/my-cool-instance/tables/my-table"
+	if !cmp.Equal(req.Table.Name, expectedTableName) {
+		t.Errorf("Unexpected table name: %v, want: %v", req.Table.Name, expectedTableName)
+	}
+	if !cmp.Equal(len(req.UpdateMask.Paths), 1) {
+		t.Errorf("Unexpected mask size: %v, want: %v", len(req.UpdateMask.Paths), 1)
+	}
+	if !cmp.Equal(req.UpdateMask.Paths[0], "row_key_schema") {
+		t.Errorf("Unexpected mask path: %v, want: %v", req.UpdateMask.Paths[0], "row_key_schema")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithClearRowKeySchema(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	err := c.UpdateTableRemoveRowKeySchema(context.Background(), "my-table")
+	if err != nil {
+		t.Fatalf("UpdateTableWithRowKeySchema error: %v", err)
+	}
+	req := mock.updateTableReq
+	expectedTableName := "projects/my-cool-project/instances/my-cool-instance/tables/my-table"
+	if !cmp.Equal(req.Table.Name, expectedTableName) {
+		t.Errorf("Unexpected table name: %v, want: %v", req.Table.Name, expectedTableName)
+	}
+	if !cmp.Equal(len(req.UpdateMask.Paths), 1) {
+		t.Errorf("Unexpected mask size: %v, want: %v", len(req.UpdateMask.Paths), 1)
+	}
+	if !cmp.Equal(req.UpdateMask.Paths[0], "row_key_schema") {
+		t.Errorf("Unexpected mask path: %v, want: %v", req.UpdateMask.Paths[0], "row_key_schema")
+	}
+	if req.Table.RowKeySchema != nil {
+		t.Errorf("Unexpected row key schema in table during clear schema request: %v", req.Table.RowKeySchema)
+	}
+	if !req.IgnoreWarnings {
+		t.Errorf("Expect IgnoreWarnings set to true when clearing row key schema")
 	}
 }
 
@@ -684,6 +765,8 @@ type mockAdminClock struct {
 	createClusterReq        *btapb.CreateClusterRequest
 	partialUpdateClusterReq *btapb.PartialUpdateClusterRequest
 	getClusterResp          *btapb.Cluster
+	createAppProfileReq     *btapb.CreateAppProfileRequest
+	updateAppProfileReq     *btapb.UpdateAppProfileRequest
 }
 
 func (c *mockAdminClock) PartialUpdateCluster(
@@ -740,6 +823,23 @@ func (c *mockAdminClock) ListClusters(
 	return &btapb.ListClustersResponse{Clusters: []*btapb.Cluster{c.getClusterResp}}, nil
 }
 
+func (c *mockAdminClock) CreateAppProfile(
+	ctx context.Context, in *btapb.CreateAppProfileRequest, opts ...grpc.CallOption,
+) (*btapb.AppProfile, error) {
+	c.createAppProfileReq = in
+	return in.AppProfile, nil
+}
+
+func (c *mockAdminClock) UpdateAppProfile(
+	ctx context.Context, in *btapb.UpdateAppProfileRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.updateAppProfileReq = in
+	return &longrunning.Operation{
+		Done:   true,
+		Result: &longrunning.Operation_Response{},
+	}, nil
+}
+
 func setupClient(t *testing.T, ac btapb.BigtableInstanceAdminClient) *InstanceAdminClient {
 	ctx := context.Background()
 	c, err := NewInstanceAdminClient(ctx, "my-cool-project")
@@ -763,6 +863,7 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 				Location:           ".../us-central1-a",
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
+				NodeScalingFactor:  btapb.Cluster_NODE_SCALING_FACTOR_1X,
 			},
 			wantConfig: nil,
 		},
@@ -773,6 +874,7 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 				Location:           ".../us-central1-a",
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
+				NodeScalingFactor:  btapb.Cluster_NODE_SCALING_FACTOR_1X,
 				Config: &btapb.Cluster_ClusterConfig_{
 					ClusterConfig: &btapb.Cluster_ClusterConfig{
 						ClusterAutoscalingConfig: &btapb.Cluster_ClusterAutoscalingConfig{
@@ -821,6 +923,7 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 				Location:           ".../us-central1-a",
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
+				NodeScalingFactor:  btapb.Cluster_NODE_SCALING_FACTOR_1X,
 			},
 			wantConfig: nil,
 		},
@@ -831,6 +934,7 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 				Location:           ".../us-central1-a",
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
+				NodeScalingFactor:  btapb.Cluster_NODE_SCALING_FACTOR_1X,
 				Config: &btapb.Cluster_ClusterConfig_{
 					ClusterConfig: &btapb.Cluster_ClusterConfig{
 						ClusterAutoscalingConfig: &btapb.Cluster_ClusterAutoscalingConfig{
@@ -948,6 +1052,7 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 		ClusterId:         "mycluster",
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
+		NodeScalingFactor: NodeScalingFactor1X,
 		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 	})
 	if err != nil {
@@ -974,13 +1079,14 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 	}
 
 	err = c.CreateInstance(context.Background(), &InstanceConf{
-		InstanceId:   "myinst",
-		DisplayName:  "myinst",
-		InstanceType: PRODUCTION,
-		ClusterId:    "mycluster",
-		Zone:         "us-central1-a",
-		StorageType:  SSD,
-		NumNodes:     1,
+		InstanceId:        "myinst",
+		DisplayName:       "myinst",
+		InstanceType:      PRODUCTION,
+		ClusterId:         "mycluster",
+		Zone:              "us-central1-a",
+		StorageType:       SSD,
+		NodeScalingFactor: NodeScalingFactor1X,
+		NumNodes:          1,
 	})
 	if err != nil {
 		t.Fatalf("CreateInstance failed: %v", err)
@@ -1006,6 +1112,7 @@ func TestInstanceAdmin_CreateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
 				StorageType:       SSD,
+				NodeScalingFactor: NodeScalingFactor1X,
 				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 			},
 		},
@@ -1043,6 +1150,7 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
 		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
+		NodeScalingFactor: NodeScalingFactor1X,
 	})
 	if err != nil {
 		t.Fatalf("CreateCluster failed: %v", err)
@@ -1072,10 +1180,11 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 	}
 
 	err = c.CreateCluster(context.Background(), &ClusterConfig{
-		ClusterID:   "mycluster",
-		Zone:        "us-central1-a",
-		StorageType: SSD,
-		NumNodes:    1,
+		ClusterID:         "mycluster",
+		Zone:              "us-central1-a",
+		StorageType:       SSD,
+		NumNodes:          1,
+		NodeScalingFactor: NodeScalingFactor1X,
 	})
 	if err != nil {
 		t.Fatalf("CreateCluster failed: %v", err)
@@ -1257,5 +1366,228 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 	got := mock.partialUpdateClusterReq.Cluster.Config
 	if got != nil {
 		t.Fatalf("want autoscaling config = nil, got = %v", gotConfig)
+	}
+}
+
+func TestInstanceAdmin_CreateAppProfile(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+	ctx := context.Background()
+
+	tests := []struct {
+		desc        string
+		conf        ProfileConf
+		wantProfile *btapb.AppProfile
+		wantErrMsg  string
+	}{
+		{
+			desc: "SingleClusterRouting config and Deprecated SingleClusterRouting policy",
+			conf: ProfileConf{
+				ProfileID:   "prof1",
+				InstanceID:  "inst1",
+				Description: "desc1",
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID:                "cluster2",
+					AllowTransactionalWrites: false,
+				},
+				RoutingPolicy:            SingleClusterRouting,
+				ClusterID:                "cluster1",
+				AllowTransactionalWrites: true,
+				Isolation:                &StandardIsolation{Priority: AppProfilePriorityHigh},
+			},
+			wantProfile: &btapb.AppProfile{
+				Description: "desc1",
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId:                "cluster2",
+						AllowTransactionalWrites: false,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "MultiClusterRoutingUseAny config with affinity and Deprecated SingleClusterRouting policy",
+			conf: ProfileConf{
+				ProfileID:                "prof3",
+				InstanceID:               "inst1",
+				Description:              "desc3",
+				RoutingPolicy:            SingleClusterRouting,
+				ClusterID:                "cluster1",
+				AllowTransactionalWrites: true,
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{
+					ClusterIDs: []string{"cluster1"},
+					Affinity:   &RowAffinity{},
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				Description: "desc3",
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+						ClusterIds: []string{"cluster1"},
+						Affinity:   &btapb.AppProfile_MultiClusterRoutingUseAny_RowAffinity_{},
+					},
+				},
+			},
+		},
+		{
+			desc: "Error - No routing policy",
+			conf: ProfileConf{
+				ProfileID:  "prof_err",
+				InstanceID: "inst1",
+			},
+			wantErrMsg: "bigtable: invalid RoutingPolicy",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			mock.createAppProfileReq = nil // Reset mock request
+			_, gotErr := c.CreateAppProfile(ctx, tt.conf)
+			fmt.Println(gotErr)
+
+			if !((gotErr == nil && tt.wantErrMsg == "") ||
+				(gotErr != nil && tt.wantErrMsg != "" && strings.Contains(gotErr.Error(), tt.wantErrMsg))) {
+				t.Fatalf("CreateAppProfile error got: %v, want: %v", gotErr, tt.wantErrMsg)
+			}
+
+			if tt.wantErrMsg != "" {
+				return
+			}
+
+			// Verify the request sent to the mock
+			wantReq := &btapb.CreateAppProfileRequest{
+				Parent:         "projects/my-cool-project/instances/inst1",
+				AppProfileId:   tt.conf.ProfileID,
+				AppProfile:     tt.wantProfile,
+				IgnoreWarnings: tt.conf.IgnoreWarnings,
+			}
+			// The name field is set by the server, so we don't compare it in the request's AppProfile
+			mock.createAppProfileReq.AppProfile.Name = ""
+			if diff := testutil.Diff(mock.createAppProfileReq, wantReq); diff != "" {
+				t.Errorf("CreateAppProfileRequest mismatch (-got +want):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestInstanceAdmin_UpdateAppProfile(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+	ctx := context.Background()
+
+	tests := []struct {
+		desc        string
+		profileID   string
+		instanceID  string
+		updateAttrs ProfileAttrsToUpdate
+		wantReq     *btapb.UpdateAppProfileRequest
+		wantErr     bool
+	}{
+		{
+			desc:       "Update only routing to SingleClusterRoutingConfig",
+			profileID:  "prof2",
+			instanceID: "inst1",
+			updateAttrs: ProfileAttrsToUpdate{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID:                "cluster-new",
+					AllowTransactionalWrites: false,
+				},
+			},
+			wantReq: &btapb.UpdateAppProfileRequest{
+				AppProfile: &btapb.AppProfile{
+					Name: "projects/my-cool-project/instances/inst1/appProfiles/prof2",
+					RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+						SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+							ClusterId:                "cluster-new",
+							AllowTransactionalWrites: false,
+						},
+					},
+				},
+				UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"single_cluster_routing"}},
+			},
+		},
+		{
+			desc:       "Update isolation to DataBoost",
+			profileID:  "prof4",
+			instanceID: "inst1",
+			updateAttrs: ProfileAttrsToUpdate{
+				Isolation: &DataBoostIsolationReadOnly{ComputeBillingOwner: HostPays},
+			},
+			wantReq: &btapb.UpdateAppProfileRequest{
+				AppProfile: &btapb.AppProfile{
+					Name: "projects/my-cool-project/instances/inst1/appProfiles/prof4",
+					Isolation: &btapb.AppProfile_DataBoostIsolationReadOnly_{
+						DataBoostIsolationReadOnly: &btapb.AppProfile_DataBoostIsolationReadOnly{
+							ComputeBillingOwner: ptr(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS),
+						},
+					},
+				},
+				UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"data_boost_isolation_read_only"}},
+			},
+		},
+		{
+			desc:       "Update isolation to DataBoost without ComputeBillingOwner",
+			profileID:  "prof4",
+			instanceID: "inst1",
+			updateAttrs: ProfileAttrsToUpdate{
+				Isolation: &DataBoostIsolationReadOnly{},
+			},
+			wantReq: &btapb.UpdateAppProfileRequest{
+				AppProfile: &btapb.AppProfile{
+					Name: "projects/my-cool-project/instances/inst1/appProfiles/prof4",
+					Isolation: &btapb.AppProfile_DataBoostIsolationReadOnly_{
+						DataBoostIsolationReadOnly: &btapb.AppProfile_DataBoostIsolationReadOnly{
+							ComputeBillingOwner: ptr(btapb.AppProfile_DataBoostIsolationReadOnly_COMPUTE_BILLING_OWNER_UNSPECIFIED),
+						},
+					},
+				},
+				UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"data_boost_isolation_read_only"}},
+			},
+		},
+		{
+			desc:       "Update using both RoutingPolicy and MultiClusterRoutingUseAnyConfig",
+			profileID:  "prof_dep",
+			instanceID: "inst1",
+			updateAttrs: ProfileAttrsToUpdate{
+				RoutingPolicy: optional.String(SingleClusterRouting),
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{
+					ClusterIDs: []string{"c1", "c2"},
+					Affinity:   &RowAffinity{},
+				},
+			},
+			wantReq: &btapb.UpdateAppProfileRequest{
+				AppProfile: &btapb.AppProfile{
+					Name: "projects/my-cool-project/instances/inst1/appProfiles/prof_dep",
+					RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+						MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+							ClusterIds: []string{"c1", "c2"},
+							Affinity:   &btapb.AppProfile_MultiClusterRoutingUseAny_RowAffinity_{},
+						},
+					},
+				},
+				UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"multi_cluster_routing_use_any"}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			mock.updateAppProfileReq = nil // Reset mock request
+			err := c.UpdateAppProfile(ctx, tt.instanceID, tt.profileID, tt.updateAttrs)
+
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("UpdateAppProfile error got: %v, want: %v", err, tt.wantErr)
+			}
+
+			// Verify the request sent to the mock
+			if diff := testutil.Diff(mock.updateAppProfileReq, tt.wantReq); diff != "" {
+				t.Errorf("UpdateAppProfileRequest mismatch (-got +want):\n%s", diff)
+			}
+		})
 	}
 }

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.6](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.3.5...policysimulator/v0.3.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **policysimulator:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.3.5](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.3.4...policysimulator/v0.3.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **policysimulator:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.3.4](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.3.3...policysimulator/v0.3.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* **policysimulator:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [0.3.3](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.3.2...policysimulator/v0.3.3) (2025-01-02)
 
 

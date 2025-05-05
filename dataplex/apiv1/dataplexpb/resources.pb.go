@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1803,11 +1803,13 @@ type Zone_DiscoverySpec_Schedule struct {
 	// Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
 	// running discovery periodically. Successive discovery runs must be
 	// scheduled at least 60 minutes apart. The default value is to run
-	// discovery every 60 minutes. To explicitly set a timezone to the cron
-	// tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
-	// TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
-	// from IANA time zone database. For example, `CRON_TZ=America/New_York 1
-	// * * * *`, or `TZ=America/New_York 1 * * * *`.
+	// discovery every 60 minutes.
+	//
+	// To explicitly set a timezone to the cron tab, apply a prefix in the
+	// cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or TZ=${IANA_TIME_ZONE}".
+	// The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone
+	// database. For example, `CRON_TZ=America/New_York 1 * * * *`, or
+	// `TZ=America/New_York 1 * * * *`.
 	Schedule string `protobuf:"bytes,10,opt,name=schedule,proto3,oneof"`
 }
 
@@ -2533,11 +2535,13 @@ type Asset_DiscoverySpec_Schedule struct {
 	// Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
 	// running discovery periodically. Successive discovery runs must be
 	// scheduled at least 60 minutes apart. The default value is to run
-	// discovery every 60 minutes. To explicitly set a timezone to the cron
-	// tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
-	// TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
-	// from IANA time zone database. For example, `CRON_TZ=America/New_York 1
-	// * * * *`, or `TZ=America/New_York 1 * * * *`.
+	// discovery every 60 minutes.
+	//
+	// To explicitly set a timezone to the cron tab, apply a prefix in the
+	// cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or TZ=${IANA_TIME_ZONE}".
+	// The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone
+	// database. For example, `CRON_TZ=America/New_York 1 * * * *`, or
+	// `TZ=America/New_York 1 * * * *`.
 	Schedule string `protobuf:"bytes,10,opt,name=schedule,proto3,oneof"`
 }
 

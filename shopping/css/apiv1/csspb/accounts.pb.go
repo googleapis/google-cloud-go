@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -412,6 +412,9 @@ type Account struct {
 	// The CSS/MC account's parent resource. CSS group for CSS domains; CSS
 	// domain for MC accounts. Returned only if the user has access to the
 	// parent account.
+	// Note: For MC sub-accounts, this is also the CSS domain that is the parent
+	// resource of the MCA account, since we are effectively flattening the
+	// hierarchy."
 	Parent *string `protobuf:"bytes,5,opt,name=parent,proto3,oneof" json:"parent,omitempty"`
 	// Manually created label IDs assigned to the CSS/MC account by a CSS parent
 	// account.

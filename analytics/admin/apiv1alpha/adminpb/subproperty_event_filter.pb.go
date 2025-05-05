@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -460,7 +460,7 @@ func (x *SubpropertyEventFilterClause) GetFilterExpression() *SubpropertyEventFi
 	return nil
 }
 
-// A resource message representing a GA4 Subproperty event filter.
+// A resource message representing a Google Analytics subproperty event filter.
 type SubpropertyEventFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

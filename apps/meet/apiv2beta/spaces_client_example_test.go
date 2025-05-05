@@ -21,6 +21,7 @@ import (
 
 	meet "cloud.google.com/go/apps/meet/apiv2beta"
 	meetpb "cloud.google.com/go/apps/meet/apiv2beta/meetpb"
+	"google.golang.org/api/iterator"
 )
 
 func ExampleNewSpacesClient() {
@@ -57,6 +58,56 @@ func ExampleNewSpacesRESTClient() {
 	_ = c
 }
 
+func ExampleSpacesClient_ConnectActiveConference() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := meet.NewSpacesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &meetpb.ConnectActiveConferenceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#ConnectActiveConferenceRequest.
+	}
+	resp, err := c.ConnectActiveConference(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleSpacesClient_CreateMember() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := meet.NewSpacesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &meetpb.CreateMemberRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#CreateMemberRequest.
+	}
+	resp, err := c.CreateMember(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleSpacesClient_CreateSpace() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -82,6 +133,29 @@ func ExampleSpacesClient_CreateSpace() {
 	_ = resp
 }
 
+func ExampleSpacesClient_DeleteMember() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := meet.NewSpacesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &meetpb.DeleteMemberRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#DeleteMemberRequest.
+	}
+	err = c.DeleteMember(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleSpacesClient_EndActiveConference() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -103,6 +177,31 @@ func ExampleSpacesClient_EndActiveConference() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleSpacesClient_GetMember() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := meet.NewSpacesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &meetpb.GetMemberRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#GetMemberRequest.
+	}
+	resp, err := c.GetMember(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleSpacesClient_GetSpace() {
@@ -128,6 +227,43 @@ func ExampleSpacesClient_GetSpace() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleSpacesClient_ListMembers() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := meet.NewSpacesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &meetpb.ListMembersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#ListMembersRequest.
+	}
+	it := c.ListMembers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*meetpb.ListMembersResponse)
+	}
 }
 
 func ExampleSpacesClient_UpdateSpace() {

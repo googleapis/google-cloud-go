@@ -92,7 +92,7 @@ func TestIntegration_StorageReadClientProject(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 
 	table := storageOptimizedClient.Dataset("usa_names").Table("usa_1910_current")
