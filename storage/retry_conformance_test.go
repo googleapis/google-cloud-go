@@ -643,11 +643,13 @@ var methods = map[string][]retryFunc{
 			}
 
 			objW := obj.NewWriter(ctx)
-			objW.ChunkSize = MiB
+			// Force multiple messages per chunk, and multiple chunks in the object.
+			objW.ChunkSize = 2 * maxPerMessageWriteSize
+			toWrite := generateRandomBytes(objW.ChunkSize * 2)
 			objW.Append = true
 			objW.FinalizeOnClose = true
 
-			if _, err := objW.Write(randomBytes3MiB); err != nil {
+			if _, err := objW.Write(toWrite); err != nil {
 				return fmt.Errorf("Writer.Write: %v", err)
 			}
 			if err := objW.Close(); err != nil {
@@ -666,10 +668,10 @@ var methods = map[string][]retryFunc{
 			}
 
 			gotMd5 := md5.Sum(content)
-			expectedMd5 := md5.Sum(randomBytes3MiB)
+			expectedMd5 := md5.Sum(toWrite)
 			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
 				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
-					len(content), gotMd5, len(randomBytes3MiB), expectedMd5)
+					len(content), gotMd5, len(toWrite), expectedMd5)
 			}
 			return nil
 		},
@@ -688,10 +690,12 @@ var methods = map[string][]retryFunc{
 			}
 
 			objW := obj.NewWriter(ctx)
+			// Force multiple messages per chunk, and multiple chunks in the object.
+			objW.ChunkSize = 2 * maxPerMessageWriteSize
+			toWrite := generateRandomBytes(objW.ChunkSize * 2)
 			objW.Append = true
-			objW.ChunkSize = MiB
 
-			if _, err := objW.Write(randomBytes3MiB); err != nil {
+			if _, err := objW.Write(toWrite); err != nil {
 				return fmt.Errorf("Writer.Write: %w", err)
 			}
 			if _, err := objW.Flush(); err != nil {
@@ -715,10 +719,10 @@ var methods = map[string][]retryFunc{
 			}
 
 			gotMd5 := md5.Sum(content)
-			expectedMd5 := md5.Sum(randomBytes3MiB)
+			expectedMd5 := md5.Sum(toWrite)
 			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
 				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
-					len(content), gotMd5, len(randomBytes3MiB), expectedMd5)
+					len(content), gotMd5, len(toWrite), expectedMd5)
 			}
 			return nil
 		},
