@@ -21,16 +21,11 @@
 package dataqnapb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -605,88 +600,4 @@ func file_google_cloud_dataqna_v1alpha_auto_suggestion_service_proto_init() {
 	file_google_cloud_dataqna_v1alpha_auto_suggestion_service_proto_rawDesc = nil
 	file_google_cloud_dataqna_v1alpha_auto_suggestion_service_proto_goTypes = nil
 	file_google_cloud_dataqna_v1alpha_auto_suggestion_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// AutoSuggestionServiceClient is the client API for AutoSuggestionService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type AutoSuggestionServiceClient interface {
-	// Gets a list of suggestions based on a prefix string.
-	// AutoSuggestion tolerance should be less than 1 second.
-	SuggestQueries(ctx context.Context, in *SuggestQueriesRequest, opts ...grpc.CallOption) (*SuggestQueriesResponse, error)
-}
-
-type autoSuggestionServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAutoSuggestionServiceClient(cc grpc.ClientConnInterface) AutoSuggestionServiceClient {
-	return &autoSuggestionServiceClient{cc}
-}
-
-func (c *autoSuggestionServiceClient) SuggestQueries(ctx context.Context, in *SuggestQueriesRequest, opts ...grpc.CallOption) (*SuggestQueriesResponse, error) {
-	out := new(SuggestQueriesResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataqna.v1alpha.AutoSuggestionService/SuggestQueries", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AutoSuggestionServiceServer is the server API for AutoSuggestionService service.
-type AutoSuggestionServiceServer interface {
-	// Gets a list of suggestions based on a prefix string.
-	// AutoSuggestion tolerance should be less than 1 second.
-	SuggestQueries(context.Context, *SuggestQueriesRequest) (*SuggestQueriesResponse, error)
-}
-
-// UnimplementedAutoSuggestionServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedAutoSuggestionServiceServer struct {
-}
-
-func (*UnimplementedAutoSuggestionServiceServer) SuggestQueries(context.Context, *SuggestQueriesRequest) (*SuggestQueriesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SuggestQueries not implemented")
-}
-
-func RegisterAutoSuggestionServiceServer(s *grpc.Server, srv AutoSuggestionServiceServer) {
-	s.RegisterService(&_AutoSuggestionService_serviceDesc, srv)
-}
-
-func _AutoSuggestionService_SuggestQueries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SuggestQueriesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AutoSuggestionServiceServer).SuggestQueries(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataqna.v1alpha.AutoSuggestionService/SuggestQueries",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AutoSuggestionServiceServer).SuggestQueries(ctx, req.(*SuggestQueriesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _AutoSuggestionService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.dataqna.v1alpha.AutoSuggestionService",
-	HandlerType: (*AutoSuggestionServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "SuggestQueries",
-			Handler:    _AutoSuggestionService_SuggestQueries_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/dataqna/v1alpha/auto_suggestion_service.proto",
 }
