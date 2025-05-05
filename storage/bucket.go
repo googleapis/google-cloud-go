@@ -851,7 +851,7 @@ type PublicNetworkSource struct {
 	NullFields []string
 }
 
-// rVpcNetworkSources contains the VPC network source of the
+// VpcNetworkSources contains the VPC network source of the
 // bucket's IP filter. Wrapper type for raw.BucketIpFilterVpcNetworkSources.
 type VpcNetworkSources struct {
 	// AllowedIpCidrRanges: The list of IPv4, IPv6 cidr ranges subnetworks that are
