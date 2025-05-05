@@ -5327,10 +5327,10 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 		// Update IPFilter configuration.
 		want = &IPFilter{
 			Mode: "Disabled",
-			VpcNetworkSources: []*BucketIpFilterVpcNetworkSources{
+			VpcNetworkSources: []*VpcNetworkSources{
 				{
 					Network:             fmt.Sprintf("projects/%s/global/networks/default", projID),
-					AllowedIpCidrRanges: []string{"0.0.0.0/0"},
+					AllowedIPCidrRanges: []string{"0.0.0.0/0"},
 				},
 			},
 		}
