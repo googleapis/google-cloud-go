@@ -326,9 +326,6 @@ type isBigQuerySource_Partition interface {
 
 type BigQuerySource_PartitionDate struct {
 	// BigQuery time partitioned table's _PARTITIONDATE in YYYY-MM-DD format.
-	//
-	// Only supported in
-	// [ImportProductsRequest][google.cloud.retail.v2.ImportProductsRequest].
 	PartitionDate *date.Date `protobuf:"bytes,6,opt,name=partition_date,json=partitionDate,proto3,oneof"`
 }
 

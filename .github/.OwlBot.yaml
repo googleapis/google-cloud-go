@@ -72,6 +72,7 @@ deep-remove-regex:
   - /certificatemanager/apiv1/
   - /channel/apiv1/
   - /chat/apiv1/
+  - /chronicle/apiv1/
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /cloudcontrolspartner/apiv1/
@@ -212,6 +213,7 @@ deep-remove-regex:
   - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/channel/apiv1/
   - /internal/generated/snippets/chat/apiv1/
+  - /internal/generated/snippets/chronicle/apiv1/
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
   - /internal/generated/snippets/cloudcontrolspartner/apiv1/
@@ -394,6 +396,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/promotions/v1beta/
   - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/issueresolution/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reviews/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/lfp/apiv1beta/
@@ -552,6 +555,7 @@ deep-remove-regex:
   - /shopping/merchant/promotions/apiv1beta/
   - /shopping/merchant/quota/apiv1beta/
   - /shopping/merchant/inventories/apiv1beta/
+  - /shopping/merchant/issueresolution/apiv1beta/
   - /shopping/merchant/lfp/apiv1beta/
   - /shopping/merchant/reports/apiv1beta/
   - /shopping/merchant/reviews/apiv1beta/
@@ -784,6 +788,8 @@ deep-copy-regex:
   - source: /google/cloud/channel/v1/cloud.google.com/go
     dest: /
   - source: /google/chat/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/chronicle/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
     dest: /
@@ -1161,6 +1167,8 @@ deep-copy-regex:
   - source: /google/shopping/merchant/quota/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/issueresolution/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
     dest: /

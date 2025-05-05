@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.3...netapp/v1.8.0) (2025-04-30)
+
+
+### Features
+
+* **netapp:** Add `source_region`, `backup_region`, `source_backup_vault`, `destination_backup_vault`, `backupVault_type` (of new enum type `BackupVaultType`) to `BackupVault` message ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **netapp:** Add `volume_region` and `backup_region` to backup `Backup` message ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
 ## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.2...netapp/v1.7.3) (2025-04-22)
 
 

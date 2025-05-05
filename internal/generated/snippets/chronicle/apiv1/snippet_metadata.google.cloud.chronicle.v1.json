@@ -1,0 +1,2393 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/chronicle/apiv1",
+    "version": "0.1.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.chronicle.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_CancelOperation_sync",
+      "title": "chronicle CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataAccessControlClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_CreateDataAccessLabel_sync",
+      "title": "chronicle CreateDataAccessLabel Sample",
+      "description": "CreateDataAccessLabel creates a data access label.\nData access labels are applied to incoming event data and selected in data\naccess scopes (another resource), and only users with scopes containing the\nlabel can see data with that label. Currently, the data access label\nresource only includes custom labels, which are labels that correspond\nto UDM queries over event data.",
+      "file": "DataAccessControlClient/CreateDataAccessLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataAccessLabel",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.CreateDataAccessLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.CreateDataAccessLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.DataAccessLabel",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "CreateDataAccessLabel",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.CreateDataAccessLabel",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_CreateDataAccessScope_sync",
+      "title": "chronicle CreateDataAccessScope Sample",
+      "description": "CreateDataAccessScope creates a data access scope.\nData access scope is a combination of allowed and denied labels attached\nto a permission group. If a scope has allowed labels A and B and denied\nlabels C and D, then the group of people attached to the scope\nwill have permissions to see all events labeled with A or B (or both) and\nnot labeled with either C or D.",
+      "file": "DataAccessControlClient/CreateDataAccessScope/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataAccessScope",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.CreateDataAccessScope",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.CreateDataAccessScopeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.DataAccessScope",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "CreateDataAccessScope",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.CreateDataAccessScope",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_DeleteDataAccessLabel_sync",
+      "title": "chronicle DeleteDataAccessLabel Sample",
+      "description": "DeleteDataAccessLabel deletes a data access label. When a label is deleted, new\ndata that enters in the system will not receive the label, but the label\nwill not be removed from old data that still refers to it.",
+      "file": "DataAccessControlClient/DeleteDataAccessLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataAccessLabel",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.DeleteDataAccessLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.DeleteDataAccessLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "DeleteDataAccessLabel",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.DeleteDataAccessLabel",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_DeleteDataAccessScope_sync",
+      "title": "chronicle DeleteDataAccessScope Sample",
+      "description": "DeleteDataAccessScope deletes a data access scope.",
+      "file": "DataAccessControlClient/DeleteDataAccessScope/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataAccessScope",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.DeleteDataAccessScope",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.DeleteDataAccessScopeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "DeleteDataAccessScope",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.DeleteDataAccessScope",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_DeleteOperation_sync",
+      "title": "chronicle DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataAccessControlClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_GetDataAccessLabel_sync",
+      "title": "chronicle GetDataAccessLabel Sample",
+      "description": "GetDataAccessLabel gets a data access label.",
+      "file": "DataAccessControlClient/GetDataAccessLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataAccessLabel",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.GetDataAccessLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.GetDataAccessLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.DataAccessLabel",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "GetDataAccessLabel",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.GetDataAccessLabel",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_GetDataAccessScope_sync",
+      "title": "chronicle GetDataAccessScope Sample",
+      "description": "GetDataAccessScope retrieves an existing data access scope.",
+      "file": "DataAccessControlClient/GetDataAccessScope/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataAccessScope",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.GetDataAccessScope",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.GetDataAccessScopeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.DataAccessScope",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "GetDataAccessScope",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.GetDataAccessScope",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_GetOperation_sync",
+      "title": "chronicle GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataAccessControlClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_ListDataAccessLabels_sync",
+      "title": "chronicle ListDataAccessLabels Sample",
+      "description": "ListDataAccessLabels lists all data access labels for the customer.",
+      "file": "DataAccessControlClient/ListDataAccessLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataAccessLabels",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.ListDataAccessLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.ListDataAccessLabelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAccessLabelIterator",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "ListDataAccessLabels",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.ListDataAccessLabels",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_ListDataAccessScopes_sync",
+      "title": "chronicle ListDataAccessScopes Sample",
+      "description": "ListDataAccessScopes lists all existing data access scopes for the customer.",
+      "file": "DataAccessControlClient/ListDataAccessScopes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataAccessScopes",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.ListDataAccessScopes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.ListDataAccessScopesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAccessScopeIterator",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "ListDataAccessScopes",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.ListDataAccessScopes",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_ListOperations_sync",
+      "title": "chronicle ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataAccessControlClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_UpdateDataAccessLabel_sync",
+      "title": "chronicle UpdateDataAccessLabel Sample",
+      "description": "UpdateDataAccessLabel updates a data access label.",
+      "file": "DataAccessControlClient/UpdateDataAccessLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataAccessLabel",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.UpdateDataAccessLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.UpdateDataAccessLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.DataAccessLabel",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "UpdateDataAccessLabel",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.UpdateDataAccessLabel",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_DataAccessControlService_UpdateDataAccessScope_sync",
+      "title": "chronicle UpdateDataAccessScope Sample",
+      "description": "UpdateDataAccessScope updates a data access scope.",
+      "file": "DataAccessControlClient/UpdateDataAccessScope/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataAccessScope",
+        "fullName": "google.cloud.chronicle.v1.DataAccessControlClient.UpdateDataAccessScope",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.UpdateDataAccessScopeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.DataAccessScope",
+        "client": {
+          "shortName": "DataAccessControlClient",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlClient"
+        },
+        "method": {
+          "shortName": "UpdateDataAccessScope",
+          "fullName": "google.cloud.chronicle.v1.DataAccessControlService.UpdateDataAccessScope",
+          "service": {
+            "shortName": "DataAccessControlService",
+            "fullName": "google.cloud.chronicle.v1.DataAccessControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_CancelOperation_sync",
+      "title": "chronicle CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "EntityClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_CreateWatchlist_sync",
+      "title": "chronicle CreateWatchlist Sample",
+      "description": "CreateWatchlist creates a watchlist for the given instance.\nNote that there can be at most 200 watchlists per instance.",
+      "file": "EntityClient/CreateWatchlist/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWatchlist",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.CreateWatchlist",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.CreateWatchlistRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.Watchlist",
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "CreateWatchlist",
+          "fullName": "google.cloud.chronicle.v1.EntityService.CreateWatchlist",
+          "service": {
+            "shortName": "EntityService",
+            "fullName": "google.cloud.chronicle.v1.EntityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_DeleteOperation_sync",
+      "title": "chronicle DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "EntityClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_DeleteWatchlist_sync",
+      "title": "chronicle DeleteWatchlist Sample",
+      "description": "DeleteWatchlist deletes the watchlist for the given instance.",
+      "file": "EntityClient/DeleteWatchlist/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWatchlist",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.DeleteWatchlist",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.DeleteWatchlistRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "DeleteWatchlist",
+          "fullName": "google.cloud.chronicle.v1.EntityService.DeleteWatchlist",
+          "service": {
+            "shortName": "EntityService",
+            "fullName": "google.cloud.chronicle.v1.EntityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_GetOperation_sync",
+      "title": "chronicle GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "EntityClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_GetWatchlist_sync",
+      "title": "chronicle GetWatchlist Sample",
+      "description": "GetWatchlist gets watchlist details for the given watchlist ID.",
+      "file": "EntityClient/GetWatchlist/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWatchlist",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.GetWatchlist",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.GetWatchlistRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.Watchlist",
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "GetWatchlist",
+          "fullName": "google.cloud.chronicle.v1.EntityService.GetWatchlist",
+          "service": {
+            "shortName": "EntityService",
+            "fullName": "google.cloud.chronicle.v1.EntityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_ListOperations_sync",
+      "title": "chronicle ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "EntityClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_ListWatchlists_sync",
+      "title": "chronicle ListWatchlists Sample",
+      "description": "ListWatchlists lists all watchlists for the given instance.",
+      "file": "EntityClient/ListWatchlists/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWatchlists",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.ListWatchlists",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.ListWatchlistsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WatchlistIterator",
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "ListWatchlists",
+          "fullName": "google.cloud.chronicle.v1.EntityService.ListWatchlists",
+          "service": {
+            "shortName": "EntityService",
+            "fullName": "google.cloud.chronicle.v1.EntityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_EntityService_UpdateWatchlist_sync",
+      "title": "chronicle UpdateWatchlist Sample",
+      "description": "UpdateWatchlist updates the watchlist for the given instance.",
+      "file": "EntityClient/UpdateWatchlist/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWatchlist",
+        "fullName": "google.cloud.chronicle.v1.EntityClient.UpdateWatchlist",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.UpdateWatchlistRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.Watchlist",
+        "client": {
+          "shortName": "EntityClient",
+          "fullName": "google.cloud.chronicle.v1.EntityClient"
+        },
+        "method": {
+          "shortName": "UpdateWatchlist",
+          "fullName": "google.cloud.chronicle.v1.EntityService.UpdateWatchlist",
+          "service": {
+            "shortName": "EntityService",
+            "fullName": "google.cloud.chronicle.v1.EntityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_InstanceService_CancelOperation_sync",
+      "title": "chronicle CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "InstanceClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.chronicle.v1.InstanceClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InstanceClient",
+          "fullName": "google.cloud.chronicle.v1.InstanceClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_InstanceService_DeleteOperation_sync",
+      "title": "chronicle DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "InstanceClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.chronicle.v1.InstanceClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InstanceClient",
+          "fullName": "google.cloud.chronicle.v1.InstanceClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_InstanceService_GetInstance_sync",
+      "title": "chronicle GetInstance Sample",
+      "description": "GetInstance gets a Instance.",
+      "file": "InstanceClient/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.cloud.chronicle.v1.InstanceClient.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.Instance",
+        "client": {
+          "shortName": "InstanceClient",
+          "fullName": "google.cloud.chronicle.v1.InstanceClient"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.cloud.chronicle.v1.InstanceService.GetInstance",
+          "service": {
+            "shortName": "InstanceService",
+            "fullName": "google.cloud.chronicle.v1.InstanceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_InstanceService_GetOperation_sync",
+      "title": "chronicle GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "InstanceClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.chronicle.v1.InstanceClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "InstanceClient",
+          "fullName": "google.cloud.chronicle.v1.InstanceClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_InstanceService_ListOperations_sync",
+      "title": "chronicle ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "InstanceClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.chronicle.v1.InstanceClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "InstanceClient",
+          "fullName": "google.cloud.chronicle.v1.InstanceClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_ReferenceListService_CancelOperation_sync",
+      "title": "chronicle CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReferenceListClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ReferenceListClient",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_ReferenceListService_CreateReferenceList_sync",
+      "title": "chronicle CreateReferenceList Sample",
+      "description": "CreateReferenceList creates a new reference list.",
+      "file": "ReferenceListClient/CreateReferenceList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReferenceList",
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.CreateReferenceList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.CreateReferenceListRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.ReferenceList",
+        "client": {
+          "shortName": "ReferenceListClient",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient"
+        },
+        "method": {
+          "shortName": "CreateReferenceList",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListService.CreateReferenceList",
+          "service": {
+            "shortName": "ReferenceListService",
+            "fullName": "google.cloud.chronicle.v1.ReferenceListService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_ReferenceListService_DeleteOperation_sync",
+      "title": "chronicle DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReferenceListClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ReferenceListClient",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_ReferenceListService_GetOperation_sync",
+      "title": "chronicle GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReferenceListClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ReferenceListClient",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_ReferenceListService_GetReferenceList_sync",
+      "title": "chronicle GetReferenceList Sample",
+      "description": "GetReferenceList gets a single reference list.",
+      "file": "ReferenceListClient/GetReferenceList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetReferenceList",
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.GetReferenceList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.GetReferenceListRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.ReferenceList",
+        "client": {
+          "shortName": "ReferenceListClient",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient"
+        },
+        "method": {
+          "shortName": "GetReferenceList",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListService.GetReferenceList",
+          "service": {
+            "shortName": "ReferenceListService",
+            "fullName": "google.cloud.chronicle.v1.ReferenceListService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_ReferenceListService_ListOperations_sync",
+      "title": "chronicle ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ReferenceListClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ReferenceListClient",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_ReferenceListService_ListReferenceLists_sync",
+      "title": "chronicle ListReferenceLists Sample",
+      "description": "ListReferenceLists lists a collection of reference lists.",
+      "file": "ReferenceListClient/ListReferenceLists/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReferenceLists",
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.ListReferenceLists",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.ListReferenceListsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReferenceListIterator",
+        "client": {
+          "shortName": "ReferenceListClient",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient"
+        },
+        "method": {
+          "shortName": "ListReferenceLists",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListService.ListReferenceLists",
+          "service": {
+            "shortName": "ReferenceListService",
+            "fullName": "google.cloud.chronicle.v1.ReferenceListService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_ReferenceListService_UpdateReferenceList_sync",
+      "title": "chronicle UpdateReferenceList Sample",
+      "description": "UpdateReferenceList updates an existing reference list.",
+      "file": "ReferenceListClient/UpdateReferenceList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateReferenceList",
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.UpdateReferenceList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.UpdateReferenceListRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.ReferenceList",
+        "client": {
+          "shortName": "ReferenceListClient",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient"
+        },
+        "method": {
+          "shortName": "UpdateReferenceList",
+          "fullName": "google.cloud.chronicle.v1.ReferenceListService.UpdateReferenceList",
+          "service": {
+            "shortName": "ReferenceListService",
+            "fullName": "google.cloud.chronicle.v1.ReferenceListService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_CancelOperation_sync",
+      "title": "chronicle CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "RuleClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_CreateRetrohunt_sync",
+      "title": "chronicle CreateRetrohunt Sample",
+      "description": "CreateRetrohunt create a Retrohunt.",
+      "file": "RuleClient/CreateRetrohunt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRetrohunt",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.CreateRetrohunt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.CreateRetrohuntRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRetrohuntOperation",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "CreateRetrohunt",
+          "fullName": "google.cloud.chronicle.v1.RuleService.CreateRetrohunt",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_CreateRule_sync",
+      "title": "chronicle CreateRule Sample",
+      "description": "CreateRule creates a new Rule.",
+      "file": "RuleClient/CreateRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRule",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.CreateRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.CreateRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.Rule",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "CreateRule",
+          "fullName": "google.cloud.chronicle.v1.RuleService.CreateRule",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_DeleteOperation_sync",
+      "title": "chronicle DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "RuleClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_DeleteRule_sync",
+      "title": "chronicle DeleteRule Sample",
+      "description": "DeleteRule deletes a Rule.",
+      "file": "RuleClient/DeleteRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRule",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.DeleteRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.DeleteRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "DeleteRule",
+          "fullName": "google.cloud.chronicle.v1.RuleService.DeleteRule",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_GetOperation_sync",
+      "title": "chronicle GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "RuleClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_GetRetrohunt_sync",
+      "title": "chronicle GetRetrohunt Sample",
+      "description": "GetRetrohunt get a Retrohunt.",
+      "file": "RuleClient/GetRetrohunt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRetrohunt",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.GetRetrohunt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.GetRetrohuntRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.Retrohunt",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "GetRetrohunt",
+          "fullName": "google.cloud.chronicle.v1.RuleService.GetRetrohunt",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_GetRule_sync",
+      "title": "chronicle GetRule Sample",
+      "description": "GetRule gets a Rule.",
+      "file": "RuleClient/GetRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRule",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.GetRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.GetRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.Rule",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "GetRule",
+          "fullName": "google.cloud.chronicle.v1.RuleService.GetRule",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_GetRuleDeployment_sync",
+      "title": "chronicle GetRuleDeployment Sample",
+      "description": "GetRuleDeployment gets a RuleDeployment.",
+      "file": "RuleClient/GetRuleDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRuleDeployment",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.GetRuleDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.GetRuleDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.RuleDeployment",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "GetRuleDeployment",
+          "fullName": "google.cloud.chronicle.v1.RuleService.GetRuleDeployment",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_ListOperations_sync",
+      "title": "chronicle ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "RuleClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_ListRetrohunts_sync",
+      "title": "chronicle ListRetrohunts Sample",
+      "description": "ListRetrohunts list Retrohunts.",
+      "file": "RuleClient/ListRetrohunts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRetrohunts",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.ListRetrohunts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.ListRetrohuntsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RetrohuntIterator",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "ListRetrohunts",
+          "fullName": "google.cloud.chronicle.v1.RuleService.ListRetrohunts",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_ListRuleDeployments_sync",
+      "title": "chronicle ListRuleDeployments Sample",
+      "description": "ListRuleDeployments lists RuleDeployments across all Rules.",
+      "file": "RuleClient/ListRuleDeployments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRuleDeployments",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.ListRuleDeployments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.ListRuleDeploymentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuleDeploymentIterator",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "ListRuleDeployments",
+          "fullName": "google.cloud.chronicle.v1.RuleService.ListRuleDeployments",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_ListRuleRevisions_sync",
+      "title": "chronicle ListRuleRevisions Sample",
+      "description": "ListRuleRevisions lists all revisions of the rule.",
+      "file": "RuleClient/ListRuleRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRuleRevisions",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.ListRuleRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.ListRuleRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuleIterator",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "ListRuleRevisions",
+          "fullName": "google.cloud.chronicle.v1.RuleService.ListRuleRevisions",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_ListRules_sync",
+      "title": "chronicle ListRules Sample",
+      "description": "ListRules lists Rules.",
+      "file": "RuleClient/ListRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRules",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.ListRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.ListRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuleIterator",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "ListRules",
+          "fullName": "google.cloud.chronicle.v1.RuleService.ListRules",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_UpdateRule_sync",
+      "title": "chronicle UpdateRule Sample",
+      "description": "UpdateRule updates a Rule.",
+      "file": "RuleClient/UpdateRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRule",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.UpdateRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.UpdateRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.Rule",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "UpdateRule",
+          "fullName": "google.cloud.chronicle.v1.RuleService.UpdateRule",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chronicle_v1_generated_RuleService_UpdateRuleDeployment_sync",
+      "title": "chronicle UpdateRuleDeployment Sample",
+      "description": "UpdateRuleDeployment updates a RuleDeployment.\nFailures are not necessarily atomic. If there is a request to update\nmultiple fields, and any update to a single field fails, an error will be\nreturned, but other fields may remain successfully updated.",
+      "file": "RuleClient/UpdateRuleDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRuleDeployment",
+        "fullName": "google.cloud.chronicle.v1.RuleClient.UpdateRuleDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chroniclepb.UpdateRuleDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chroniclepb.RuleDeployment",
+        "client": {
+          "shortName": "RuleClient",
+          "fullName": "google.cloud.chronicle.v1.RuleClient"
+        },
+        "method": {
+          "shortName": "UpdateRuleDeployment",
+          "fullName": "google.cloud.chronicle.v1.RuleService.UpdateRuleDeployment",
+          "service": {
+            "shortName": "RuleService",
+            "fullName": "google.cloud.chronicle.v1.RuleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

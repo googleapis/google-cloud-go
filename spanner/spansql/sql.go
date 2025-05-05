@@ -248,6 +248,15 @@ func (di DropIndex) SQL() string {
 	return str
 }
 
+func (di DropSearchIndex) SQL() string {
+	str := "DROP SEARCH INDEX "
+	if di.IfExists {
+		str += "IF EXISTS "
+	}
+	str += di.Name.SQL()
+	return str
+}
+
 func (dv DropView) SQL() string {
 	return "DROP VIEW " + dv.Name.SQL()
 }
@@ -561,6 +570,10 @@ func (sa StatisticsOptions) SQL() string {
 
 func (ai AlterIndex) SQL() string {
 	return "ALTER INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
+}
+
+func (ai AlterSearchIndex) SQL() string {
+	return "ALTER SEARCH INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
 }
 
 func (asc AddStoredColumn) SQL() string {

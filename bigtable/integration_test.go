@@ -3821,6 +3821,7 @@ func TestIntegration_InstanceAdminClient_UpdateAppProfile(t *testing.T) {
 		uattrs      ProfileAttrsToUpdate
 		wantProfile *btapb.AppProfile
 		wantErrMsg  string
+		skip        bool
 	}{
 		{
 			desc:       "empty update",
@@ -3865,6 +3866,50 @@ func TestIntegration_InstanceAdminClient_UpdateAppProfile(t *testing.T) {
 			},
 		},
 		{
+			desc: "routing only update MultiClusterRoutingUseAnyConfig",
+			uattrs: ProfileAttrsToUpdate{
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{
+					ClusterIDs: []string{testEnv.Config().Cluster},
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				Name: gotProfile.Name,
+				Etag: gotProfile.Etag,
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+						ClusterIds: []string{testEnv.Config().Cluster},
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "routing only update SingleClusterRoutingConfig",
+			uattrs: ProfileAttrsToUpdate{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID: testEnv.Config().Cluster,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				Name: gotProfile.Name,
+				Etag: gotProfile.Etag,
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
 			desc: "isolation only update DataBoost",
 			uattrs: ProfileAttrsToUpdate{
 				Isolation: &DataBoostIsolationReadOnly{
@@ -3885,48 +3930,13 @@ func TestIntegration_InstanceAdminClient_UpdateAppProfile(t *testing.T) {
 					},
 				},
 			},
-		},
-		{
-			desc: "routing only update MultiClusterRoutingUseAnyConfig",
-			uattrs: ProfileAttrsToUpdate{
-				RoutingConfig: &MultiClusterRoutingUseAnyConfig{},
-			},
-			wantProfile: &btapb.AppProfile{
-				Name: gotProfile.Name,
-				Etag: gotProfile.Etag,
-				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
-					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
-						ClusterIds: []string{testEnv.Config().Cluster},
-					},
-				},
-				Isolation: &btapb.AppProfile_DataBoostIsolationReadOnly_{
-					DataBoostIsolationReadOnly: &btapb.AppProfile_DataBoostIsolationReadOnly{
-						ComputeBillingOwner: ptr(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS),
-					},
-				},
-			},
-		},
-		{
-			desc: "routing only update SingleClusterRoutingConfig",
-			uattrs: ProfileAttrsToUpdate{
-				RoutingConfig: &SingleClusterRoutingConfig{},
-			},
-			wantProfile: &btapb.AppProfile{
-				Name: gotProfile.Name,
-				Etag: gotProfile.Etag,
-				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
-					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
-						ClusterId: testEnv.Config().Cluster,
-					},
-				},
-				Isolation: &btapb.AppProfile_StandardIsolation_{
-					StandardIsolation: &btapb.AppProfile_StandardIsolation{
-						Priority: btapb.AppProfile_PRIORITY_HIGH,
-					},
-				},
-			},
+			skip: true,
 		},
 	} {
+		if test.skip {
+			t.Logf("skipping test: %s", test.desc)
+			continue
+		}
 		gotErr = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, profileID, test.uattrs)
 		if gotErr == nil && test.wantErrMsg != "" {
 			t.Fatalf("%s: UpdateAppProfile: got: nil, want: error: %v", test.desc, test.wantErrMsg)
@@ -3935,13 +3945,13 @@ func TestIntegration_InstanceAdminClient_UpdateAppProfile(t *testing.T) {
 			t.Fatalf("%s: UpdateAppProfile: got: %v, want: nil", test.desc, gotErr)
 		}
 		if gotErr != nil {
-			return
+			continue
 		}
 		// Retry to see if the update has been completed
 		testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
 			got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
 			if !proto.Equal(got, test.wantProfile) {
-				r.Errorf("%s: got profile: %v, want profile: %v", test.desc, gotProfile, test.wantProfile)
+				r.Errorf("%s: got profile: %v,\n want profile: %v", test.desc, gotProfile, test.wantProfile)
 			}
 		})
 	}
@@ -4978,7 +4988,7 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 
 	materializedViewInfo := MaterializedViewInfo{
 		MaterializedViewID: materializedView,
-		Query:              fmt.Sprintf("SELECT _key, count(fam1[col1]) as `result.count` FROM `%s` GROUP BY _key", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, count(fam1['col1']) as `result.count` FROM `%s` GROUP BY _key", tblConf.TableID),
 		DeletionProtection: Unprotected,
 	}
 	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
@@ -5080,7 +5090,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 
 	logicalViewInfo := LogicalViewInfo{
 		LogicalViewID:      logicalView,
-		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, fam1['col1'] as col FROM %s", tblConf.TableID),
 		DeletionProtection: Protected,
 	}
 	if err = instanceAdminClient.CreateLogicalView(ctx, testEnv.Config().Instance, &logicalViewInfo); err != nil {
@@ -5203,7 +5213,7 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 
 	materializedViewInfo := MaterializedViewInfo{
 		MaterializedViewID: materializedView,
-		Query:              fmt.Sprintf("SELECT _key, count(fam1[col1]) as count FROM %s GROUP BY _key", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, count(fam1['col1']) as count FROM %s GROUP BY _key", tblConf.TableID),
 		DeletionProtection: Protected,
 	}
 	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {

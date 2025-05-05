@@ -1107,7 +1107,9 @@ type ObjectAttrsToUpdate struct {
 }
 
 // Delete deletes the single specified object.
-func (o *ObjectHandle) Delete(ctx context.Context) error {
+func (o *ObjectHandle) Delete(ctx context.Context) (err error) {
+	ctx, _ = startSpan(ctx, "Object.Delete")
+	defer func() { endSpan(ctx, err) }()
 	if err := o.validate(); err != nil {
 		return err
 	}
@@ -1267,7 +1269,7 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 // This feature is in preview and is not yet available for general use.
 func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context, opts *AppendableWriterOpts) (*Writer, int64, error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Writer")
-	if o.gen == 0 {
+	if o.gen < 0 {
 		return nil, 0, errors.New("storage: ObjectHandle.Generation must be set to use NewWriterFromAppendableObject")
 	}
 	w := &Writer{

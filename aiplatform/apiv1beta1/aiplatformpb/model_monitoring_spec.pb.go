@@ -1054,7 +1054,7 @@ type ModelMonitoringInput_ModelMonitoringDataset_ModelMonitoringGcsSource struct
 
 	// Google Cloud Storage URI to the input file(s). May contain
 	// wildcards. For more information on wildcards, see
-	// https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames.
+	// https://cloud.google.com/storage/docs/wildcards.
 	GcsUri string `protobuf:"bytes,1,opt,name=gcs_uri,json=gcsUri,proto3" json:"gcs_uri,omitempty"`
 	// Data format of the dataset.
 	Format ModelMonitoringInput_ModelMonitoringDataset_ModelMonitoringGcsSource_DataFormat `protobuf:"varint,2,opt,name=format,proto3,enum=google.cloud.aiplatform.v1beta1.ModelMonitoringInput_ModelMonitoringDataset_ModelMonitoringGcsSource_DataFormat" json:"format,omitempty"`
