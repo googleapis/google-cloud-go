@@ -203,10 +203,10 @@ var (
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
-	clientOnlyRetryOption             = newRetryOption(clientOnlyRetry, true /* disableRetryInfo */)
-	clientOnlyExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry, true /* disableRetryInfo */)
-	defaultRetryOption                = newRetryOption(clientOnlyRetry, false /* disableRetryInfo */)
-	defaultExecuteQueryRetryOption    = newRetryOption(clientOnlyExecuteQueryRetry, false /* disableRetryInfo */)
+	clientOnlyRetryOption             = newRetryOption(clientOnlyRetry, true)
+	clientOnlyExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry, true)
+	defaultRetryOption                = newRetryOption(clientOnlyRetry, false)
+	defaultExecuteQueryRetryOption    = newRetryOption(clientOnlyExecuteQueryRetry, false)
 )
 
 func newRetryOption(retryFn func(*gax.Backoff, error) (time.Duration, bool), disableRetryInfo bool) gax.CallOption {
