@@ -21,15 +21,11 @@
 package discoveryenginepb
 
 import (
-	context "context"
 	reflect "reflect"
 	sync "sync"
 
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -661,86 +657,4 @@ func file_google_cloud_discoveryengine_v1alpha_estimate_billing_service_proto_in
 	file_google_cloud_discoveryengine_v1alpha_estimate_billing_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1alpha_estimate_billing_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1alpha_estimate_billing_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// EstimateBillingServiceClient is the client API for EstimateBillingService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type EstimateBillingServiceClient interface {
-	// Estimates the data size to be used by a customer.
-	EstimateDataSize(ctx context.Context, in *EstimateDataSizeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-}
-
-type estimateBillingServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewEstimateBillingServiceClient(cc grpc.ClientConnInterface) EstimateBillingServiceClient {
-	return &estimateBillingServiceClient{cc}
-}
-
-func (c *estimateBillingServiceClient) EstimateDataSize(ctx context.Context, in *EstimateDataSizeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1alpha.EstimateBillingService/EstimateDataSize", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// EstimateBillingServiceServer is the server API for EstimateBillingService service.
-type EstimateBillingServiceServer interface {
-	// Estimates the data size to be used by a customer.
-	EstimateDataSize(context.Context, *EstimateDataSizeRequest) (*longrunningpb.Operation, error)
-}
-
-// UnimplementedEstimateBillingServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedEstimateBillingServiceServer struct {
-}
-
-func (*UnimplementedEstimateBillingServiceServer) EstimateDataSize(context.Context, *EstimateDataSizeRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EstimateDataSize not implemented")
-}
-
-func RegisterEstimateBillingServiceServer(s *grpc.Server, srv EstimateBillingServiceServer) {
-	s.RegisterService(&_EstimateBillingService_serviceDesc, srv)
-}
-
-func _EstimateBillingService_EstimateDataSize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EstimateDataSizeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(EstimateBillingServiceServer).EstimateDataSize(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1alpha.EstimateBillingService/EstimateDataSize",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EstimateBillingServiceServer).EstimateDataSize(ctx, req.(*EstimateDataSizeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _EstimateBillingService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1alpha.EstimateBillingService",
-	HandlerType: (*EstimateBillingServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "EstimateDataSize",
-			Handler:    _EstimateBillingService_EstimateDataSize_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/discoveryengine/v1alpha/estimate_billing_service.proto",
 }
