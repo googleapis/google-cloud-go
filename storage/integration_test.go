@@ -70,7 +70,6 @@ import (
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
-	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -5328,7 +5327,7 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 		// Update IPFilter configuration.
 		want = &IPFilter{
 			Mode: "Disabled",
-			VpcNetworkSources: []*raw.BucketIpFilterVpcNetworkSources{
+			VpcNetworkSources: []*BucketIpFilterVpcNetworkSources{
 				{
 					Network:             fmt.Sprintf("projects/%s/global/networks/default", projID),
 					AllowedIpCidrRanges: []string{"0.0.0.0/0"},

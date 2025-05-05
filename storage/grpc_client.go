@@ -183,6 +183,9 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 		// TO-DO: implement ObjectRetention once available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
 	}
+	if attrs != nil && attrs.IPFilter != nil {
+		return nil, status.Errorf(codes.Unimplemented, "storage: IPFilter is not supported in gRPC")
+	}
 
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
@@ -305,6 +308,9 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	return battrs, formatBucketError(err)
 }
 func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
+	if uattrs != nil && uattrs.IPFilter != nil {
+		return nil, status.Errorf(codes.Unimplemented, "storage: IPFilter is not supported in gRPC")
+	}
 	s := callSettings(c.settings, opts...)
 	b := uattrs.toProtoBucket()
 	b.Name = bucketResourceName(globalProjectAlias, bucket)
