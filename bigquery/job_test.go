@@ -84,7 +84,7 @@ func TestCreateJobRef(t *testing.T) {
 // Ideally this would be covered by an integration test but simulating
 // performance issues in a dummy project is difficult and requires a lot of set
 // up.
-func Test_bqToPerformanceInsights(t *testing.T) {
+func Test_JobPerformanceInsights(t *testing.T) {
 	for _, test := range []struct {
 		name string
 		in   *bq.PerformanceInsights
