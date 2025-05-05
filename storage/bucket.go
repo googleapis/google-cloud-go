@@ -832,6 +832,45 @@ type HierarchicalNamespace struct {
 	Enabled bool
 }
 
+// BucketIpFilterPublicNetworkSource: The public network source of the bucket's
+// IP filter. Wrapper type for raw.BucketIpFilterPublicNetworkSource.
+type BucketIpFilterPublicNetworkSource struct {
+	// AllowedIpCidrRanges: The list of public IPv4, IPv6 cidr ranges that are
+	// allowed to access the bucket.
+	AllowedIpCidrRanges []string
+	// ForceSendFields is a list of field names (e.g. "AllowedIpCidrRanges") to
+	// unconditionally include in API requests. By default, fields with empty or
+	// default values are omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
+	// details.
+	ForceSendFields []string
+	// NullFields is a list of field names (e.g. "AllowedIpCidrRanges") to include
+	// in API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
+	NullFields []string
+}
+
+type BucketIpFilterVpcNetworkSources struct {
+	// AllowedIpCidrRanges: The list of IPv4, IPv6 cidr ranges subnetworks that are
+	// allowed to access the bucket.
+	AllowedIpCidrRanges []string
+	// Network: Name of the network. Format:
+	// projects/{PROJECT_ID}/global/networks/{NETWORK_NAME}
+	Network string
+	// ForceSendFields is a list of field names (e.g. "AllowedIpCidrRanges") to
+	// unconditionally include in API requests. By default, fields with empty or
+	// default values are omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
+	// details.
+	ForceSendFields []string
+	// NullFields is a list of field names (e.g. "AllowedIpCidrRanges") to include
+	// in API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
+	NullFields []string
+}
+
 // IPFilter specifies the network sources that are allowed to access
 // operations on the bucket, as well as its underlying objects.
 // Only enforced when mode is set to 'Enabled'.
@@ -841,10 +880,10 @@ type IPFilter struct {
 	// Mode: The mode of the IP filter. Valid values are 'Enabled' and 'Disabled'.
 	Mode string
 	// PublicNetworkSource: The public network source of the bucket's IP filter.
-	PublicNetworkSource *raw.BucketIpFilterPublicNetworkSource
+	PublicNetworkSource *BucketIpFilterPublicNetworkSource
 	// VpcNetworkSources: The list of VPC network
 	// (https://cloud.google.com/vpc/docs/vpc) sources of the bucket's IP filter.
-	VpcNetworkSources []*raw.BucketIpFilterVpcNetworkSources
+	VpcNetworkSources []*BucketIpFilterVpcNetworkSources
 }
 
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
@@ -1266,7 +1305,10 @@ type BucketAttrsToUpdate struct {
 	defaultObjectACL []ACLRule
 
 	// If set, updates the IP filtering configuration of the bucket.
-	// Only enforced when mode is set to 'Enabled'.
+	// When mode is set to 'Enabled', IP filtering rules are applied to the bucket.
+	// When mode is set to 'Disabled', IP filtering configuration is ignored.
+	// See https://cloud.google.com/storage/docs/ip-filtering-overview for more
+	// information.
 	IPFilter *IPFilter
 
 	setLabels    map[string]string
@@ -2258,14 +2300,73 @@ func toHierarchicalNamespaceFromRaw(r *raw.BucketHierarchicalNamespace) *Hierarc
 	}
 }
 
+// Converts a wrapper BucketIpFilterVpcNetworkSources to raw.BucketIpFilterVpcNetworkSources.
+func toRawVpcNetworkSources(src []*BucketIpFilterVpcNetworkSources) []*raw.BucketIpFilterVpcNetworkSources {
+	if src == nil {
+		return nil
+	}
+	var vpcNetworkSources []*raw.BucketIpFilterVpcNetworkSources
+	for _, v := range src {
+		vpcNetworkSources = append(vpcNetworkSources, &raw.BucketIpFilterVpcNetworkSources{
+			AllowedIpCidrRanges: v.AllowedIpCidrRanges,
+			Network:             v.Network,
+			ForceSendFields:     v.ForceSendFields,
+			NullFields:          v.NullFields,
+		})
+	}
+	return vpcNetworkSources
+}
+
+// Converts a raw.BucketIpFilterVpcNetworkSources to wrapper BucketIpFilterVpcNetworkSources.
+func vpcNetworkSourcesFromRaw(r []*raw.BucketIpFilterVpcNetworkSources) []*BucketIpFilterVpcNetworkSources {
+	if r == nil {
+		return nil
+	}
+	var vpcNetworkSources []*BucketIpFilterVpcNetworkSources
+	for _, v := range r {
+		vpcNetworkSources = append(vpcNetworkSources, &BucketIpFilterVpcNetworkSources{
+			AllowedIpCidrRanges: v.AllowedIpCidrRanges,
+			Network:             v.Network,
+			ForceSendFields:     v.ForceSendFields,
+			NullFields:          v.NullFields,
+		})
+	}
+	return vpcNetworkSources
+}
+
+// Converts a wrapper BucketIpFilterPublicNetworkSource to raw.BucketIpFilterPublicNetworkSource.
+func toRawPublicNetworkSource(src *BucketIpFilterPublicNetworkSource) *raw.BucketIpFilterPublicNetworkSource {
+	if src == nil {
+		return nil
+	}
+	return &raw.BucketIpFilterPublicNetworkSource{
+		AllowedIpCidrRanges: src.AllowedIpCidrRanges,
+		ForceSendFields:     src.ForceSendFields,
+		NullFields:          src.NullFields,
+	}
+}
+
+// Converts a raw.BucketIpFilterPublicNetworkSource to wrapper BucketIpFilterPublicNetworkSource.
+func publicNetworkSourceFromRaw(src *raw.BucketIpFilterPublicNetworkSource) *BucketIpFilterPublicNetworkSource {
+	if src == nil {
+		return nil
+	}
+	return &BucketIpFilterPublicNetworkSource{
+		AllowedIpCidrRanges: src.AllowedIpCidrRanges,
+		ForceSendFields:     src.ForceSendFields,
+		NullFields:          src.NullFields,
+	}
+}
+
+// Converts a raw.BucketIpFilter to wrapper IPFilter.
 func ipFilterFromRaw(r *raw.BucketIpFilter) *IPFilter {
 	if r == nil {
 		return nil
 	}
 	return &IPFilter{
 		Mode:                r.Mode,
-		PublicNetworkSource: r.PublicNetworkSource,
-		VpcNetworkSources:   r.VpcNetworkSources,
+		PublicNetworkSource: publicNetworkSourceFromRaw(r.PublicNetworkSource),
+		VpcNetworkSources:   vpcNetworkSourcesFromRaw(r.VpcNetworkSources),
 	}
 }
 
@@ -2275,8 +2376,8 @@ func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
 	}
 	return &raw.BucketIpFilter{
 		Mode:                p.Mode,
-		PublicNetworkSource: p.PublicNetworkSource,
-		VpcNetworkSources:   p.VpcNetworkSources,
+		PublicNetworkSource: toRawPublicNetworkSource(p.PublicNetworkSource),
+		VpcNetworkSources:   toRawVpcNetworkSources(p.VpcNetworkSources),
 	}
 }
 
