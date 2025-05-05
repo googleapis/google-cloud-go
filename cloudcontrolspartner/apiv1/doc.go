@@ -57,11 +57,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &cloudcontrolspartnerpb.GetCustomerRequest{
+//	req := &cloudcontrolspartnerpb.CreateCustomerRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/cloudcontrolspartner/apiv1/cloudcontrolspartnerpb#GetCustomerRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudcontrolspartner/apiv1/cloudcontrolspartnerpb#CreateCustomerRequest.
 //	}
-//	resp, err := c.GetCustomer(ctx, req)
+//	resp, err := c.CreateCustomer(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
