@@ -5090,7 +5090,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 
 	logicalViewInfo := LogicalViewInfo{
 		LogicalViewID: logicalView,
-		Query:         fmt.Sprintf("SELECT _key, fam1['col1'] as col FROM %s", tblConf.TableID),
+		Query:         fmt.Sprintf("SELECT _key, fam1['col1'] as col FROM `%s`", tblConf.TableID),
 	}
 	if err = instanceAdminClient.CreateLogicalView(ctx, testEnv.Config().Instance, &logicalViewInfo); err != nil {
 		t.Fatalf("Creating logical view: %v", err)
@@ -5123,7 +5123,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	// Update logical view
 	newLogicalViewInfo := LogicalViewInfo{
 		LogicalViewID: logicalView,
-		Query:         fmt.Sprintf("SELECT _key, fam2[col1] as col FROM %s", tblConf.TableID),
+		Query:         fmt.Sprintf("SELECT _key, fam2[col1] as col FROM `%s`", tblConf.TableID),
 	}
 	err = instanceAdminClient.UpdateLogicalView(ctx, testEnv.Config().Instance, newLogicalViewInfo)
 	if err != nil {
@@ -5202,7 +5202,7 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 
 	materializedViewInfo := MaterializedViewInfo{
 		MaterializedViewID: materializedView,
-		Query:              fmt.Sprintf("SELECT _key, count(fam1['col1']) as count FROM %s GROUP BY _key", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, count(fam1['col1']) as count FROM `%s` GROUP BY _key", tblConf.TableID),
 		DeletionProtection: Protected,
 	}
 	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
