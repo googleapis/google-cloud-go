@@ -32,6 +32,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"cloud.google.com/go/compute/metadata/internal"
 )
 
 const (
@@ -117,21 +119,28 @@ var (
 // NOTE: True returned from `OnGCE` does not guarantee that the metadata server
 // is accessible from this process and have all the metadata defined.
 func OnGCE() bool {
-	onGCEOnce.Do(initOnGCE)
+	return OnGCEWithContext(context.Background())
+}
+
+// OnGCEWithContext reports whether this process is running on Google Compute Platforms.
+// NOTE: True returned from `OnGCEWithContext` does not guarantee that the metadata server
+// is accessible from this process and have all the metadata defined.
+func OnGCEWithContext(ctx context.Context) bool {
+	onGCEOnce.Do(func() { initOnGCE(ctx) })
 	return onGCE
 }
 
-func initOnGCE() {
-	onGCE = testOnGCE()
+func initOnGCE(ctx context.Context) {
+	onGCE = testOnGCE(ctx)
 }
 
-func testOnGCE() bool {
+func testOnGCE(ctx context.Context) bool {
 	// The user explicitly said they're on GCE, so trust them.
 	if os.Getenv(metadataHostEnv) != "" {
 		return true
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	resc := make(chan bool, 2)
@@ -141,6 +150,7 @@ func testOnGCE() bool {
 	go func() {
 		req, _ := http.NewRequest("GET", "http://"+metadataIP, nil)
 		req.Header.Set("User-Agent", userAgent)
+		req.Header.Set("x-goog-api-client", getGoogHeaderOnGCE(ctx))
 		res, err := newDefaultHTTPClient().Do(req.WithContext(ctx))
 		if err != nil {
 			resc <- false
@@ -475,6 +485,7 @@ func (c *Client) getETag(ctx context.Context, suffix string) (value, etag string
 	}
 	req.Header.Set("Metadata-Flavor", "Google")
 	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("x-goog-api-client", getGoogHeaderToken(ctx))
 	var res *http.Response
 	var reqErr error
 	var body []byte
@@ -857,6 +868,38 @@ func (c *Client) SubscribeWithContext(ctx context.Context, suffix string, fn fun
 			return err
 		}
 	}
+}
+
+// key is an unexported type for context.Context keys defined in this package.
+// This prevents collisions with keys defined in other packages.
+type key int
+
+// authVersionKey is the key for metadata auth version values in Contexts. It is
+// unexported; clients use metadata.NewContext instead of using this key directly.
+var authVersionKey key
+
+// NewContext returns a new Context that carries the auth library version.
+func NewContext(ctx context.Context, authVersion string) context.Context {
+	return context.WithValue(ctx, authVersionKey, authVersion)
+}
+
+func getAuthVersion(ctx context.Context) string {
+	if s, ok := ctx.Value(authVersionKey).(string); ok && s != "" {
+		return s
+	}
+	return "UNKNOWN"
+}
+
+func getGoogHeaderOnGCE(ctx context.Context) string {
+	return fmt.Sprintf("gl-go/%s auth/%s auth-request-type/mds",
+		internal.GoVersion,
+		getAuthVersion(ctx))
+}
+
+func getGoogHeaderToken(ctx context.Context) string {
+	return fmt.Sprintf("gl-go/%s auth/%s auth-request-type/at cred-type/mds",
+		internal.GoVersion,
+		getAuthVersion(ctx))
 }
 
 // Error contains an error response from the server.
