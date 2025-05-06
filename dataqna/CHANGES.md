@@ -1,5 +1,12 @@
 # Changes
 
+## [0.9.7](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.9.6...dataqna/v0.9.7) (2025-05-06)
+
+
+### Bug Fixes
+
+* **dataqna:** Upgrade gRPC service registration func ([7c01015](https://github.com/googleapis/google-cloud-go/commit/7c01015f2aafb5eeb0237accced76b059bc7635d))
+
 ## [0.9.6](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.9.5...dataqna/v0.9.6) (2025-04-15)
 
 
@@ -194,4 +201,3 @@
 
 This is the first tag to carve out dataqna as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
