@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.11.0...ai/v0.11.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* **ai:** Upgrade gRPC service registration func ([7c01015](https://github.com/googleapis/google-cloud-go/commit/7c01015f2aafb5eeb0237accced76b059bc7635d))
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.10.2...ai/v0.11.0) (2025-04-30)
 
 
@@ -264,4 +271,3 @@
 * **ai/generativelanguage:** Start generating apiv1beta2 ([#8229](https://github.com/googleapis/google-cloud-go/issues/8229)) ([837f325](https://github.com/googleapis/google-cloud-go/commit/837f32596518d8154f43da1c70f57d1515e2ea8c))
 
 ## Changes
-
