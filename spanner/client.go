@@ -408,6 +408,15 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.NewClient")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	// Explicitly disable some gRPC experiments as they are not stable yet.
+	gRPCPickFirstEnvVarName := "GRPC_EXPERIMENTAL_ENABLE_NEW_PICK_FIRST"
+	if os.Getenv(gRPCPickFirstEnvVarName) == "" {
+		err := os.Setenv(gRPCPickFirstEnvVarName, "false")
+		if err != nil {
+			logf(config.Logger, "Error overriding GRPC_EXPERIMENTAL_ENABLE_NEW_PICK_FIRST to false: %v. Ignoring.", err)
+		}
+	}
+
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
 		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(emulatorAddr, "")
