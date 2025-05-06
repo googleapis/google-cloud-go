@@ -5130,7 +5130,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	// Update logical view
 	newLogicalViewInfo := LogicalViewInfo{
 		LogicalViewID:      logicalView,
-		Query:              fmt.Sprintf("SELECT _key, fam2[col1] as col FROM `%s`", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, fam2['col1'] as col FROM `%s`", tblConf.TableID),
 		DeletionProtection: Unprotected,
 	}
 	err = instanceAdminClient.UpdateLogicalView(ctx, testEnv.Config().Instance, newLogicalViewInfo)
