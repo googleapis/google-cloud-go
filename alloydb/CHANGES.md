@@ -2,6 +2,13 @@
 
 
 
+## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.15.1...alloydb/v1.15.2) (2025-05-06)
+
+
+### Bug Fixes
+
+* **alloydb:** Upgrade gRPC service registration func ([7c01015](https://github.com/googleapis/google-cloud-go/commit/7c01015f2aafb5eeb0237accced76b059bc7635d))
+
 ## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.15.0...alloydb/v1.15.1) (2025-04-15)
 
 
@@ -331,4 +338,3 @@
 * **alloydb:** Start generating apiv1, apiv1beta, apiv1alpha ([#7503](https://github.com/googleapis/google-cloud-go/issues/7503)) ([25e8426](https://github.com/googleapis/google-cloud-go/commit/25e842659ef5c3941717827459e6524f024e5a26))
 
 ## Changes
-

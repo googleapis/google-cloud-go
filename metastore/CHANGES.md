@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.14.6...metastore/v1.14.7) (2025-05-06)
+
+
+### Bug Fixes
+
+* **metastore:** Upgrade gRPC service registration func ([7c01015](https://github.com/googleapis/google-cloud-go/commit/7c01015f2aafb5eeb0237accced76b059bc7635d))
+
 ## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.14.5...metastore/v1.14.6) (2025-04-15)
 
 
@@ -255,4 +262,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out metastore as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
