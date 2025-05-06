@@ -55,7 +55,7 @@ func TestStopPublishOrder(t *testing.T) {
 	topic.Stop()
 	r := topic.Publish(ctx, &Message{})
 	_, err := r.Get(ctx)
-	if !errors.Is(err, ErrTopicStopped) {
+	if !errors.Is(err, ErrPublisherStopped) {
 		t.Errorf("got %v, want ErrTopicStopped", err)
 	}
 }
@@ -174,7 +174,7 @@ func TestFlushStopTopic(t *testing.T) {
 	r5 := publisher.Publish(ctx, &Message{
 		Data: []byte("this should fail"),
 	})
-	if _, err := r5.Get(ctx); !errors.Is(err, ErrTopicStopped) {
+	if _, err := r5.Get(ctx); !errors.Is(err, ErrPublisherStopped) {
 		t.Errorf("got %v, want ErrTopicStopped", err)
 	}
 }
@@ -386,7 +386,7 @@ func TestPublishOrderingNotEnabled(t *testing.T) {
 
 	publisher := mustCreateTopic(t, c, "test-topic")
 	res := publishSingleMessageWithKey(ctx, publisher, "test", "non-existent-key")
-	if _, err := res.Get(ctx); !errors.Is(err, errTopicOrderingNotEnabled) {
+	if _, err := res.Get(ctx); !errors.Is(err, errPublisherOrderingNotEnabled) {
 		t.Errorf("got %v, want errTopicOrderingNotEnabled", err)
 	}
 }
