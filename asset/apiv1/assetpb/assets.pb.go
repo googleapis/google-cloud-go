@@ -21,9 +21,6 @@
 package assetpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv1/orgpolicypb"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1986,7 +1985,7 @@ type IamPolicySearchResult struct {
 	// form of projects/{PROJECT_NUMBER}. If an IAM policy is set on a resource
 	// (like VM instance, Cloud Storage bucket), the project field will indicate
 	// the project that contains the resource. If an IAM policy is set on a folder
-	// or orgnization, this field will be empty.
+	// or organization, this field will be empty.
 	//
 	// To search against the `project`:
 	//
