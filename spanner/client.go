@@ -73,6 +73,11 @@ const (
 
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
+
+	// Server timing header constants
+	serverTimingHeaderKey = "server-timing"
+	gfeTimingHeader       = "gfet4t7"
+	afeTimingHeader       = "afe"
 )
 
 const (
@@ -84,7 +89,8 @@ const (
 )
 
 var (
-	validDBPattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)/databases/(?P<database>[^/]+)$")
+	validDBPattern      = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)/databases/(?P<database>[^/]+)$")
+	serverTimingPattern = regexp.MustCompile(`([a-zA-Z0-9_-]+);\s*dur=(\d+)`)
 )
 
 func validDatabaseName(db string) error {
@@ -426,6 +432,28 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.NumChannels = numChannels
 	}
 
+	var metricsProvider metric.MeterProvider
+	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
+		// Do not emit native metrics when emulator is being used
+		metricsProvider = noop.NewMeterProvider()
+	}
+	// Check if native metrics are disabled via env.
+	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
+		config.DisableNativeMetrics = true
+	}
+	if config.DisableNativeMetrics {
+		// Do not emit native metrics when DisableNativeMetrics is set
+		metricsProvider = noop.NewMeterProvider()
+	}
+
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider, config.Compression, opts...)
+	if err != nil {
+		return nil, err
+	}
+	if len(metricsTracerFactory.clientOpts) > 0 {
+		opts = append(opts, metricsTracerFactory.clientOpts...)
+	}
+
 	var pool gtransport.ConnPool
 
 	if gme != nil {
@@ -521,27 +549,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	// To prevent data race in unit tests (ex: TestClient_SessionNotFound)
 	sc.mu.Lock()
 	sc.otConfig = otConfig
-	sc.mu.Unlock()
-
-	var metricsProvider metric.MeterProvider
-	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		// Do not emit native metrics when emulator is being used
-		metricsProvider = noop.NewMeterProvider()
-	}
-	// Check if native metrics are disabled via env.
-	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
-		config.DisableNativeMetrics = true
-	}
-	if config.DisableNativeMetrics {
-		// Do not emit native metrics when DisableNativeMetrics is set
-		metricsProvider = noop.NewMeterProvider()
-	}
-
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider, config.Compression, opts...)
-	if err != nil {
-		return nil, err
-	}
-	sc.mu.Lock()
 	sc.metricsTracerFactory = metricsTracerFactory
 	sc.mu.Unlock()
 
@@ -660,8 +667,9 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 			mt.currOp.setDirectPathEnabled(true)
 		}
 
+		var md metadata.MD
 		peerInfo := &peer.Peer{}
-		opts = append(opts, grpc.Peer(peerInfo))
+		opts = append(opts, grpc.Header(&md), grpc.Peer(peerInfo))
 		err := invoker(ctx, method, req, reply, cc, opts...)
 
 		statusCode, _ := status.FromError(err)
@@ -676,6 +684,17 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		}
 
 		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+		metrics := parseServerTimingHeader(md)
+		if _, ok = metrics[gfeTimingHeader]; ok {
+			mt.recordGFELatency(metrics[gfeTimingHeader])
+		} else {
+			mt.recordGFEError()
+		}
+		if _, ok = metrics[afeTimingHeader]; ok {
+			mt.recordAFELatency(metrics[afeTimingHeader])
+		} else {
+			mt.recordAFEError()
+		}
 		recordAttemptCompletion(mt)
 		return err
 	}
@@ -712,6 +731,19 @@ func (w *wrappedStream) RecvMsg(m any) error {
 	}
 	if mt.currOp.currAttempt != nil {
 		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+	}
+	if header, err := w.ClientStream.Header(); err == nil {
+		metrics := parseServerTimingHeader(header)
+		if _, ok = metrics[gfeTimingHeader]; ok {
+			mt.recordGFELatency(metrics[gfeTimingHeader])
+		} else {
+			mt.recordGFEError()
+		}
+		if _, ok = metrics[afeTimingHeader]; ok {
+			mt.recordAFELatency(metrics[afeTimingHeader])
+		} else {
+			mt.recordAFEError()
+		}
 	}
 	return err
 }
@@ -1438,4 +1470,32 @@ func logf(logger *log.Logger, format string, v ...interface{}) {
 	} else {
 		logger.Printf(format, v...)
 	}
+}
+
+// parseServerTimingHeader extracts server timing metrics from gRPC metadata into a map
+func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
+	metrics := make(map[string]time.Duration)
+	if md == nil {
+		return metrics
+	}
+
+	serverTiming := md.Get(serverTimingHeaderKey)
+	if len(serverTiming) == 0 {
+		return metrics
+	}
+
+	for _, timing := range serverTiming {
+		matches := serverTimingPattern.FindAllStringSubmatch(timing, -1)
+		for _, match := range matches {
+			if len(match) == 3 { // full match + 2 capture groups
+				metricName := match[1]
+				duration, err := strconv.ParseInt(match[2], 10, 64)
+				if err == nil {
+					// Convert milliseconds to time.Duration
+					metrics[metricName] = time.Duration(duration) * time.Millisecond
+				}
+			}
+		}
+	}
+	return metrics
 }
