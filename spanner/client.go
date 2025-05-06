@@ -90,7 +90,7 @@ const (
 
 var (
 	validDBPattern      = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)/databases/(?P<database>[^/]+)$")
-	serverTimingPattern = regexp.MustCompile(`([a-zA-Z0-9_-]+);\s*dur=(\d+)`)
+	serverTimingPattern = regexp.MustCompile(`([a-zA-Z0-9_-]+);\s*dur=(\d*\.?\d+)`)
 )
 
 func validDatabaseName(db string) error {
@@ -685,16 +685,7 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 
 		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
 		metrics := parseServerTimingHeader(md)
-		if _, ok = metrics[gfeTimingHeader]; ok {
-			mt.recordGFELatency(metrics[gfeTimingHeader])
-		} else {
-			mt.recordGFEError()
-		}
-		if _, ok = metrics[afeTimingHeader]; ok {
-			mt.recordAFELatency(metrics[afeTimingHeader])
-		} else {
-			mt.recordAFEError()
-		}
+		mt.currOp.currAttempt.setServerTimingMetrics(metrics)
 		recordAttemptCompletion(mt)
 		return err
 	}
@@ -731,19 +722,6 @@ func (w *wrappedStream) RecvMsg(m any) error {
 	}
 	if mt.currOp.currAttempt != nil {
 		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
-	}
-	if header, err := w.ClientStream.Header(); err == nil {
-		metrics := parseServerTimingHeader(header)
-		if _, ok = metrics[gfeTimingHeader]; ok {
-			mt.recordGFELatency(metrics[gfeTimingHeader])
-		} else {
-			mt.recordGFEError()
-		}
-		if _, ok = metrics[afeTimingHeader]; ok {
-			mt.recordAFELatency(metrics[afeTimingHeader])
-		} else {
-			mt.recordAFEError()
-		}
 	}
 	return err
 }
@@ -1489,10 +1467,9 @@ func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
 		for _, match := range matches {
 			if len(match) == 3 { // full match + 2 capture groups
 				metricName := match[1]
-				duration, err := strconv.ParseInt(match[2], 10, 64)
+				duration, err := strconv.ParseFloat(match[2], 10)
 				if err == nil {
-					// Convert milliseconds to time.Duration
-					metrics[metricName] = time.Duration(duration) * time.Millisecond
+					metrics[metricName] = time.Duration(duration*1000) * time.Microsecond
 				}
 			}
 		}

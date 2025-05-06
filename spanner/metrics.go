@@ -244,12 +244,12 @@ type builtinMetricsTracerFactory struct {
 	// Metrics instruments
 	operationLatencies metric.Float64Histogram // Histogram for operation latencies.
 	attemptLatencies   metric.Float64Histogram // Histogram for attempt latencies.
-	gfeLatencies       metric.Float64Histogram
-	afeLatencies       metric.Float64Histogram
-	gfeErrorCount      metric.Int64Counter
-	afeErrorCount      metric.Int64Counter
-	operationCount     metric.Int64Counter // Counter for the number of operations.
-	attemptCount       metric.Int64Counter // Counter for the number of attempts.
+	gfeLatencies       metric.Float64Histogram // Latency between Google's network receiving an RPC and reading back the first byte of the response
+	afeLatencies       metric.Float64Histogram // Latency between Spanner API Frontend receiving an RPC and starting to write back the response.
+	gfeErrorCount      metric.Int64Counter     // Counter for the number of requests that failed to reach the Google network.
+	afeErrorCount      metric.Int64Counter     // Counter for the number of requests that failed to reach the Spanner API Frontend.
+	operationCount     metric.Int64Counter     // Counter for the number of operations.
+	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsProvider metric.MeterProvider, compression string, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -295,6 +295,11 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 				MeterProvider: meterProvider,
 				Metrics:       stats.NewMetrics(grpcMetricsToEnable...),
 			}
+
+			// Configure gRPC dial options to enable gRPC metrics collection and static method call option.
+			// The static method call option ensures consistent method names in metrics by preventing gRPC from
+			// automatically adding service prefixes to method names. This helps maintain consistent metric
+			// naming across different gRPC calls.
 			tracerFactory.clientOpts = []option.ClientOption{
 				option.WithGRPCDialOption(
 					opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})),
@@ -474,7 +479,8 @@ type attemptTracer struct {
 	startTime time.Time // The start time of the attempt.
 	status    string    // The gRPC status code of the attempt.
 
-	directPathUsed bool // Indicates if DirectPath was used for the attempt.
+	directPathUsed      bool // Indicates if DirectPath was used for the attempt.
+	serverTimingMetrics map[string]time.Duration
 }
 
 // setStartTime sets the start time for the operation.
@@ -505,6 +511,10 @@ func (o *opTracer) incrementAttemptCount() {
 // setDirectPathUsed sets whether DirectPath was used for the attempt.
 func (a *attemptTracer) setDirectPathUsed(used bool) {
 	a.directPathUsed = used
+}
+
+func (a *attemptTracer) setServerTimingMetrics(metrics map[string]time.Duration) {
+	a.serverTimingMetrics = metrics
 }
 
 // setDirectPathEnabled sets whether DirectPath is enabled for the operation.
@@ -628,6 +638,17 @@ func convertToGrpcStatusErr(err error) (codes.Code, error) {
 func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	if !mt.builtInEnabled {
 		return
+	}
+
+	if dur, ok := mt.currOp.currAttempt.serverTimingMetrics[gfeTimingHeader]; ok {
+		mt.recordGFELatency(dur)
+	} else {
+		mt.recordGFEError()
+	}
+	if dur, ok := mt.currOp.currAttempt.serverTimingMetrics[afeTimingHeader]; ok {
+		mt.recordAFELatency(dur)
+	} else {
+		mt.recordAFEError()
 	}
 
 	// Calculate elapsed time
