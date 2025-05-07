@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/binary"
 	"flag"
 	"fmt"
@@ -34,6 +35,8 @@ import (
 	"testing"
 	"time"
 
+	cryptorand "crypto/rand"
+
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/iam"
@@ -44,6 +47,7 @@ import (
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	grpc "google.golang.org/grpc"
@@ -3490,7 +3494,7 @@ func TestIntegration_Granularity(t *testing.T) {
 	}
 }
 
-func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
+func TestIntegration_InstanceAdminClient_CreateAppProfile(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -3519,6 +3523,229 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 
+	profileIDPrefix := "app_profile_id"
+	uniqueID := make([]byte, 4)
+	wantProfiles := map[string]struct{}{"default": {}}
+	gotProfiles := []*btapb.AppProfile{}
+	for _, testcase := range []struct {
+		desc        string
+		profileConf ProfileConf
+		wantProfile *btapb.AppProfile
+	}{
+		{
+			desc: "SingleClusterRouting",
+			profileConf: ProfileConf{
+				RoutingPolicy: SingleClusterRouting,
+				ClusterID:     testEnv.Config().Cluster,
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "MultiClusterRouting",
+			profileConf: ProfileConf{
+				RoutingPolicy: MultiClusterRouting,
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+
+		{
+			desc: "MultiClusterRoutingUseAnyConfig no affinity",
+			profileConf: ProfileConf{
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{
+					ClusterIDs: []string{testEnv.Config().Cluster},
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+						ClusterIds: []string{testEnv.Config().Cluster},
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "MultiClusterRoutingUseAnyConfig row affinity",
+			profileConf: ProfileConf{
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{
+					ClusterIDs: []string{testEnv.Config().Cluster},
+					Affinity:   &RowAffinity{},
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+						ClusterIds: []string{testEnv.Config().Cluster},
+						Affinity:   &btapb.AppProfile_MultiClusterRoutingUseAny_RowAffinity_{},
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "SingleClusterRoutingConfig no Isolation",
+			profileConf: ProfileConf{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID:                testEnv.Config().Cluster,
+					AllowTransactionalWrites: true,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId:                testEnv.Config().Cluster,
+						AllowTransactionalWrites: true,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "SingleClusterRoutingConfig and low priority standard Isolation",
+			profileConf: ProfileConf{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID:                testEnv.Config().Cluster,
+					AllowTransactionalWrites: true,
+				},
+				Isolation: &StandardIsolation{
+					Priority: AppProfilePriorityLow,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId:                testEnv.Config().Cluster,
+						AllowTransactionalWrites: true,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_LOW,
+					},
+				},
+			},
+		},
+		{
+			desc: "SingleClusterRoutingConfig and DataBoost Isolation HostPays ComputeBillingOwner",
+			profileConf: ProfileConf{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID: testEnv.Config().Cluster,
+				},
+				Isolation: &DataBoostIsolationReadOnly{
+					ComputeBillingOwner: HostPays,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_DataBoostIsolationReadOnly_{
+					DataBoostIsolationReadOnly: &btapb.AppProfile_DataBoostIsolationReadOnly{
+						ComputeBillingOwner: ptr(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS),
+					},
+				},
+			},
+		},
+	} {
+		t.Run(testcase.desc, func(t *testing.T) {
+			cryptorand.Read(uniqueID)
+			profileID := fmt.Sprintf("%s%x", profileIDPrefix, uniqueID)
+
+			testcase.profileConf.ProfileID = profileID
+			testcase.profileConf.InstanceID = adminClient.instance
+			testcase.profileConf.Description = testcase.desc
+
+			_, err := iAdminClient.CreateAppProfile(ctx, testcase.profileConf)
+			if err != nil {
+				t.Fatalf("Creating app profile: %v", err)
+			}
+
+			gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
+			if err != nil {
+				t.Fatalf("Get app profile: %v", err)
+			}
+			gotProfiles = append(gotProfiles, gotProfile)
+			defer func() {
+				err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+				if err != nil {
+					t.Fatalf("Delete app profile: %v", err)
+				}
+			}()
+
+			testcase.wantProfile.Name = appProfilePath(testEnv.Config().Project, adminClient.instance, profileID)
+			testcase.wantProfile.Description = testcase.desc
+			if !proto.Equal(testcase.wantProfile, gotProfile) {
+				t.Fatalf("profile: got: %s, want: %s", gotProfile, testcase.wantProfile)
+			}
+
+			wantProfiles[profileID] = struct{}{}
+		})
+	}
+}
+
+func TestIntegration_InstanceAdminClient_UpdateAppProfile(t *testing.T) {
+	testEnv, gotErr := NewIntegrationEnv()
+	if gotErr != nil {
+		t.Fatalf("IntegrationEnv: %v", gotErr)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, gotErr := testEnv.NewAdminClient()
+	if gotErr != nil {
+		t.Fatalf("NewAdminClient: %v", gotErr)
+	}
+	defer adminClient.Close()
+
+	iAdminClient, gotErr := testEnv.NewInstanceAdminClient()
+	if gotErr != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", gotErr)
+	}
+	if iAdminClient == nil {
+		return
+	}
+	defer iAdminClient.Close()
+
 	uniqueID := make([]byte, 4)
 	rand.Read(uniqueID)
 	profileID := fmt.Sprintf("app_profile_id%x", uniqueID)
@@ -3531,20 +3758,20 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		RoutingPolicy: SingleClusterRouting,
 	}
 
-	createdProfile, err := iAdminClient.CreateAppProfile(ctx, profile)
-	if err != nil {
-		t.Fatalf("Creating app profile: %v", err)
+	createdProfile, gotErr := iAdminClient.CreateAppProfile(ctx, profile)
+	if gotErr != nil {
+		t.Fatalf("Creating app profile: %v", gotErr)
 	}
 
-	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
-	if err != nil {
-		t.Fatalf("Get app profile: %v", err)
+	gotProfile, gotErr := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
+	if gotErr != nil {
+		t.Fatalf("Get app profile: %v", gotErr)
 	}
 
 	defer func() {
-		err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
-		if err != nil {
-			t.Fatalf("Delete app profile: %v", err)
+		gotErr = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+		if gotErr != nil {
+			t.Fatalf("Delete app profile: %v", gotErr)
 		}
 	}()
 
@@ -3566,12 +3793,12 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			}
 			profiles = append(profiles, s)
 		}
-		return profiles, err
+		return profiles, gotErr
 	}
 
-	profiles, err := list(adminClient.instance)
-	if err != nil {
-		t.Fatalf("List app profile: %v", err)
+	profiles, gotErr := list(adminClient.instance)
+	if gotErr != nil {
+		t.Fatalf("List app profile: %v", gotErr)
 	}
 
 	// Ensure the profiles we require exist. profiles ⊂ allProfiles
@@ -3590,20 +3817,21 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	verifyProfilesSubset(profiles, wantProfiles)
 
 	for _, test := range []struct {
-		desc   string
-		uattrs ProfileAttrsToUpdate
-		want   *btapb.AppProfile // nil means error
+		desc        string
+		uattrs      ProfileAttrsToUpdate
+		wantProfile *btapb.AppProfile
+		wantErrMsg  string
+		skip        bool
 	}{
 		{
-			desc:   "empty update",
-			uattrs: ProfileAttrsToUpdate{},
-			want:   nil,
+			desc:       "empty update",
+			uattrs:     ProfileAttrsToUpdate{},
+			wantErrMsg: "A non-empty 'update_mask' must be specified",
 		},
-
 		{
 			desc:   "empty description update",
 			uattrs: ProfileAttrsToUpdate{Description: ""},
-			want: &btapb.AppProfile{
+			wantProfile: &btapb.AppProfile{
 				Name:          gotProfile.Name,
 				Description:   "",
 				RoutingPolicy: gotProfile.RoutingPolicy,
@@ -3616,12 +3844,12 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			},
 		},
 		{
-			desc: "routing update",
+			desc: "routing update SingleClusterRouting",
 			uattrs: ProfileAttrsToUpdate{
 				RoutingPolicy: SingleClusterRouting,
 				ClusterID:     testEnv.Config().Cluster,
 			},
-			want: &btapb.AppProfile{
+			wantProfile: &btapb.AppProfile{
 				Name:        gotProfile.Name,
 				Description: "",
 				Etag:        gotProfile.Etag,
@@ -3637,25 +3865,93 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "routing only update MultiClusterRoutingUseAnyConfig",
+			uattrs: ProfileAttrsToUpdate{
+				RoutingConfig: &MultiClusterRoutingUseAnyConfig{
+					ClusterIDs: []string{testEnv.Config().Cluster},
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				Name: gotProfile.Name,
+				Etag: gotProfile.Etag,
+				RoutingPolicy: &btapb.AppProfile_MultiClusterRoutingUseAny_{
+					MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{
+						ClusterIds: []string{testEnv.Config().Cluster},
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "routing only update SingleClusterRoutingConfig",
+			uattrs: ProfileAttrsToUpdate{
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID: testEnv.Config().Cluster,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				Name: gotProfile.Name,
+				Etag: gotProfile.Etag,
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "isolation only update DataBoost",
+			uattrs: ProfileAttrsToUpdate{
+				Isolation: &DataBoostIsolationReadOnly{
+					ComputeBillingOwner: HostPays,
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				Name: gotProfile.Name,
+				Etag: gotProfile.Etag,
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_DataBoostIsolationReadOnly_{
+					DataBoostIsolationReadOnly: &btapb.AppProfile_DataBoostIsolationReadOnly{
+						ComputeBillingOwner: ptr(btapb.AppProfile_DataBoostIsolationReadOnly_HOST_PAYS),
+					},
+				},
+			},
+			skip: true,
+		},
 	} {
-		err = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, profileID, test.uattrs)
-		if err != nil {
-			if test.want != nil {
-				t.Errorf("%s: %v", test.desc, err)
-			}
+		if test.skip {
+			t.Logf("skipping test: %s", test.desc)
 			continue
 		}
-		if err == nil && test.want == nil {
-			t.Errorf("%s: got nil, want error", test.desc)
+		gotErr = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, profileID, test.uattrs)
+		if gotErr == nil && test.wantErrMsg != "" {
+			t.Fatalf("%s: UpdateAppProfile: got: nil, want: error: %v", test.desc, test.wantErrMsg)
+		}
+		if gotErr != nil && test.wantErrMsg == "" {
+			t.Fatalf("%s: UpdateAppProfile: got: %v, want: nil", test.desc, gotErr)
+		}
+		if gotErr != nil {
 			continue
 		}
-
 		// Retry to see if the update has been completed
 		testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
 			got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
-
-			if !proto.Equal(got, test.want) {
-				r.Errorf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
+			if !proto.Equal(got, test.wantProfile) {
+				r.Errorf("%s: got profile: %v,\n want profile: %v", test.desc, gotProfile, test.wantProfile)
 			}
 		})
 	}
@@ -4632,7 +4928,6 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 }
 
 func TestIntegration_DataMaterializedView(t *testing.T) {
-	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -4673,6 +4968,19 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 	// in case the client fails
 	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
 
+	client, err := testEnv.NewClient()
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	// Populate table
+	tbl := client.OpenTable(tblConf.TableID)
+	mut := NewMutation()
+	mut.Set("fam1", "col1", 1000, []byte("1"))
+	if err := tbl.Apply(ctx, "r1", mut); err != nil {
+		t.Fatalf("Mutating row: %v", err)
+	}
 	// Create materialized view
 	materializedViewUUID := uid.NewSpace("materializedView-", &uid.Options{})
 	materializedView := materializedViewUUID.New()
@@ -4680,20 +4988,14 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 
 	materializedViewInfo := MaterializedViewInfo{
 		MaterializedViewID: materializedView,
-		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col, count(*) as count FROM %s", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, count(fam1['col1']) as `result.count` FROM `%s` GROUP BY _key", tblConf.TableID),
 		DeletionProtection: Unprotected,
 	}
 	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
 		t.Fatalf("Creating materialized view: %v", err)
 	}
 
-	client, err := testEnv.NewClient()
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	defer client.Close()
 	mv := client.OpenMaterializedView(materializedView)
-	tbl := client.OpenTable(tblConf.TableID)
 
 	// Test ReadRow
 	gotRow, err := mv.ReadRow(ctx, "r1")
@@ -4701,9 +5003,8 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 		t.Fatalf("Reading row from a materialized view: %v", err)
 	}
 	wantRow := Row{
-		"fam1": []ReadItem{
-			{Row: "r1", Column: "fam1:col1", Timestamp: 1000, Value: []byte("1")},
-			{Row: "r1", Column: "fam1:col2", Timestamp: 1000, Value: []byte("1")},
+		"result": []ReadItem{
+			{Row: "r1", Column: "result:count", Timestamp: 1000, Value: []byte("1")},
 		},
 	}
 	if !testutil.Equal(gotRow, wantRow) {
@@ -4730,17 +5031,9 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 	if err = mv.ReadRows(ctx, RowRange{}, f); err != nil {
 		t.Fatalf("Reading rows from an materialized view: %v", err)
 	}
-	want := "r1-col1-1,r1-col2-1"
+	want := "r1-col1-1"
 	if got := strings.Join(elt, ","); got != want {
 		t.Fatalf("Error bulk reading from materialized view.\n Got %v\n Want %v", got, want)
-	}
-	elt = nil
-	if err = tbl.ReadRows(ctx, RowRange{}, f); err != nil {
-		t.Fatalf("Reading rows from a table: %v", err)
-	}
-	want = "r1-col1-1,r1-col2-1,r2-col1-1"
-	if got := strings.Join(elt, ","); got != want {
-		t.Fatalf("Error bulk reading from table.\n Got %v\n Want %v", got, want)
 	}
 
 	// Test SampleRowKeys
@@ -4750,7 +5043,6 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 }
 
 func TestIntegration_AdminLogicalView(t *testing.T) {
-	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -4798,7 +5090,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 
 	logicalViewInfo := LogicalViewInfo{
 		LogicalViewID: logicalView,
-		Query:         fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+		Query:         fmt.Sprintf("SELECT _key, fam1['col1'] as col FROM `%s`", tblConf.TableID),
 	}
 	if err = instanceAdminClient.CreateLogicalView(ctx, testEnv.Config().Instance, &logicalViewInfo); err != nil {
 		t.Fatalf("Creating logical view: %v", err)
@@ -4831,7 +5123,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	// Update logical view
 	newLogicalViewInfo := LogicalViewInfo{
 		LogicalViewID: logicalView,
-		Query:         fmt.Sprintf("SELECT _key, fam2[col1] as col FROM %s", tblConf.TableID),
+		Query:         fmt.Sprintf("SELECT _key, fam2[col1] as col FROM `%s`", tblConf.TableID),
 	}
 	err = instanceAdminClient.UpdateLogicalView(ctx, testEnv.Config().Instance, newLogicalViewInfo)
 	if err != nil {
@@ -4863,7 +5155,6 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 }
 
 func TestIntegration_AdminMaterializedView(t *testing.T) {
-	t.Skip("Feature not out yet")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -4911,7 +5202,7 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 
 	materializedViewInfo := MaterializedViewInfo{
 		MaterializedViewID: materializedView,
-		Query:              fmt.Sprintf("SELECT _key, fam1[col1] as col FROM %s", tblConf.TableID),
+		Query:              fmt.Sprintf("SELECT _key, count(fam1['col1']) as count FROM `%s` GROUP BY _key", tblConf.TableID),
 		DeletionProtection: Protected,
 	}
 	if err = instanceAdminClient.CreateMaterializedView(ctx, testEnv.Config().Instance, &materializedViewInfo); err != nil {
@@ -5037,85 +5328,619 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
-func TestIntegration_PrepareAndBindStatement(t *testing.T) {
+func TestIntegration_Execute(t *testing.T) {
+	// Set up table and clients
 	ctx := context.Background()
-	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, client, adminClient, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer cleanup()
-
+	t.Cleanup(func() { cleanup() })
 	if !testEnv.Config().UseProd {
 		t.Skip("emulator doesn't support PrepareQuery")
 	}
-
-	ps, err := client.PrepareStatement(ctx,
-		"SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, "+
-			"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, "+
-			"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, "+
-			"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, "+
-			"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, "+
-			"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, "+
-			"@dateArrayParam AS dateArrayCol",
-		map[string]SQLType{
-			"bytesParam":   BytesSQLType{},
-			"stringParam":  StringSQLType{},
-			"int64Param":   Int64SQLType{},
-			"float32Param": Float32SQLType{},
-			"float64Param": Float64SQLType{},
-			"boolParam":    BoolSQLType{},
-			"tsParam":      TimestampSQLType{},
-			"dateParam":    DateSQLType{},
-			"bytesArrayParam": ArraySQLType{
-				ElemType: BytesSQLType{},
-			},
-			"stringArrayParam": ArraySQLType{
-				ElemType: StringSQLType{},
-			},
-			"int64ArrayParam": ArraySQLType{
-				ElemType: Int64SQLType{},
-			},
-			"float32ArrayParam": ArraySQLType{
-				ElemType: Float32SQLType{},
-			},
-			"float64ArrayParam": ArraySQLType{
-				ElemType: Float64SQLType{},
-			},
-			"boolArrayParam": ArraySQLType{
-				ElemType: BoolSQLType{},
-			},
-			"tsArrayParam": ArraySQLType{
-				ElemType: TimestampSQLType{},
-			},
-			"dateArrayParam": ArraySQLType{
-				ElemType: DateSQLType{},
-			},
-		},
-	)
+	colFam := "address"
+	err = createColumnFamily(ctx, t, adminClient, table.table, colFam, map[codes.Code]bool{codes.Unavailable: true})
 	if err != nil {
-		t.Fatal("PrepareStatement: " + err.Error())
+		t.Fatal("createColumnFamily: " + err.Error())
 	}
 
-	_, err = ps.Bind(map[string]any{
-		"bytesParam":        []byte("foo"),
-		"stringParam":       "stringVal",
-		"int64Param":        int64(1),
-		"float32Param":      float32(1.3),
-		"float64Param":      float64(1.4),
-		"boolParam":         true,
-		"tsParam":           time.Now(),
-		"dateParam":         civil.DateOf(time.Now()),
-		"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
-		"stringArrayParam":  []any{"foo", nil, "bar"},
-		"int64ArrayParam":   []any{int64(1), nil, int64(2)},
-		"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
-		"float64ArrayParam": []float64{1.4, 2.4, 3.4},
-		"boolArrayParam":    []any{true, nil, false},
-		"tsArrayParam":      []any{time.Now(), nil},
-		"dateArrayParam":    []civil.Date{civil.DateOf(time.Now())},
-	})
-	if err != nil {
-		t.Fatal("Bind: " + err.Error())
+	// Add data to table
+	v1Timestamp := Time(time.Now().Add(-time.Minute))
+	v2Timestamp := Time(time.Now())
+	populateAddresses(ctx, t, table, colFam, v1Timestamp, v2Timestamp)
+
+	base64City := base64.StdEncoding.EncodeToString([]byte("city"))
+	base64State := base64.StdEncoding.EncodeToString([]byte("state"))
+
+	// While writing, "timestamp": s"2025-03-31 03:26:33.489256 +0000 UTC"
+	// When reading back, "timestamp": s"2025-03-31 03:26:33.489 +0000 UTC"
+	ignoreMillisecondDiff := cmpopts.EquateApproxTime(time.Millisecond)
+	cmpOpts := []cmp.Option{ignoreMillisecondDiff, cmp.AllowUnexported(Struct{})}
+
+	tsParamValue := time.Now()
+	type col struct {
+		name     string
+		gotDest  any
+		wantDest any
+	}
+	// Run test cases
+	for _, tc := range []struct {
+		desc          string
+		psQuery       string
+		psParamTypes  map[string]SQLType
+		bsParamValues map[string]any
+		rows          [][]col
+	}{
+		{
+			desc:    "select *",
+			psQuery: "SELECT * FROM `" + table.table + "` ORDER BY _key LIMIT 5",
+			rows: [][]col{
+				{
+					{
+						name:     "_key",
+						gotDest:  []byte{},
+						wantDest: []byte("row-01"),
+					},
+					{
+						name:    "address",
+						gotDest: map[string][]byte{},
+						wantDest: map[string][]byte{
+							base64City:  []byte("San Francisco"),
+							base64State: []byte("CA"),
+						},
+					},
+					{
+						name:     "follows",
+						gotDest:  map[string][]byte{},
+						wantDest: map[string][]byte{},
+					},
+					{
+						name:     "sum",
+						gotDest:  map[string]int64{},
+						wantDest: map[string]int64{},
+					},
+				},
+				{
+					{
+						name:     "_key",
+						gotDest:  []byte{},
+						wantDest: []byte("row-02"),
+					},
+					{
+						name:    "address",
+						gotDest: map[string][]byte{},
+						wantDest: map[string][]byte{
+							base64City:  []byte("Phoenix"),
+							base64State: []byte("AZ"),
+						},
+					},
+					{
+						name:     "follows",
+						gotDest:  map[string][]byte{},
+						wantDest: map[string][]byte{},
+					},
+					{
+						name:     "sum",
+						gotDest:  map[string]int64{},
+						wantDest: map[string]int64{},
+					},
+				},
+			},
+		},
+		{
+			desc:    "WITH_HISTORY key and column",
+			psQuery: "SELECT _key, " + colFam + "['state'] AS state FROM `" + table.table + "`(WITH_HISTORY=>TRUE) LIMIT 5",
+			rows: [][]col{
+				{
+					{
+						name:     "_key",
+						gotDest:  []byte{},
+						wantDest: []byte("row-01"),
+					},
+					{
+						name:    "state",
+						gotDest: []Struct{},
+						wantDest: []Struct{
+							{
+								fields: []structFieldWithValue{
+									{
+										Name:  "timestamp",
+										Value: v2Timestamp.Time(),
+									},
+									{
+										Name:  "value",
+										Value: []byte("CA"),
+									},
+								},
+								nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+							},
+							{
+								fields: []structFieldWithValue{
+									{
+										Name:  "timestamp",
+										Value: v1Timestamp.Time(),
+									},
+									{
+										Name:  "value",
+										Value: []byte("WA"),
+									},
+								},
+								nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+							},
+						},
+					},
+				},
+				{
+					{
+						name:     "_key",
+						gotDest:  []byte{},
+						wantDest: []byte("row-02"),
+					},
+					{
+						name:    "state",
+						gotDest: []Struct{},
+						wantDest: []Struct{
+							{
+								fields: []structFieldWithValue{
+									{
+										Name:  "timestamp",
+										Value: v1Timestamp.Time(),
+									},
+									{
+										Name:  "value",
+										Value: []byte("AZ"),
+									},
+								},
+								nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc:    "WITH_HISTORY column family",
+			psQuery: "SELECT " + colFam + " FROM `" + table.table + "`(WITH_HISTORY=>TRUE) WHERE _key='row-01'",
+			rows: [][]col{
+				{
+					{
+						name:    "address",
+						gotDest: map[string][]Struct{},
+						wantDest: map[string][]Struct{
+							base64State: {
+								{
+									fields: []structFieldWithValue{
+										{
+											Name:  "timestamp",
+											Value: v2Timestamp.Time(),
+										},
+										{
+											Name:  "value",
+											Value: []byte("CA"),
+										},
+									},
+									nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+								},
+								{
+									fields: []structFieldWithValue{
+										{
+											Name:  "timestamp",
+											Value: v1Timestamp.Time(),
+										},
+										{
+											Name:  "value",
+											Value: []byte("WA"),
+										},
+									},
+									nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+								},
+							},
+							base64City: {
+								{
+									fields: []structFieldWithValue{
+										{
+											Name:  "timestamp",
+											Value: v2Timestamp.Time(),
+										},
+										{
+											Name:  "value",
+											Value: []byte("San Francisco"),
+										},
+									},
+									nameToIndex: map[string][]int{"timestamp": {0}, "value": {1}},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "all types in result set",
+			psQuery: "SELECT 'stringVal' AS strCol, b'foo' as bytesCol, 1 AS intCol, CAST(1.2 AS FLOAT32) as f32Col, " +
+				"CAST(1.3 AS FLOAT64) as f64Col, true as boolCol, TIMESTAMP_FROM_UNIX_MILLIS(1000) AS tsCol, " +
+				"DATE(2024, 06, 01) as dateCol, STRUCT(1 as a, \"foo\" as b) AS structCol, [1,2,3] AS arrCol, " +
+				colFam +
+				" as mapCol FROM `" +
+				table.table +
+				"` WHERE _key='row-01' LIMIT 1",
+			rows: [][]col{
+				{
+					{
+						name:     "strCol",
+						gotDest:  "",
+						wantDest: "stringVal",
+					},
+					{
+						name:     "bytesCol",
+						gotDest:  []byte{},
+						wantDest: []byte("foo"),
+					},
+					{
+						name:     "intCol",
+						gotDest:  int64(0),
+						wantDest: int64(1),
+					},
+					{
+						name:     "f32Col",
+						gotDest:  float32(0),
+						wantDest: float32(1.2),
+					},
+					{
+						name:     "f64Col",
+						gotDest:  float64(0),
+						wantDest: float64(1.3),
+					},
+					{
+						name:     "boolCol",
+						gotDest:  false,
+						wantDest: true,
+					},
+					{
+						name:     "tsCol",
+						gotDest:  time.Time{},
+						wantDest: time.Unix(1, 0),
+					},
+					{
+						name:     "dateCol",
+						gotDest:  civil.Date{},
+						wantDest: civil.Date{Year: 2024, Month: 06, Day: 01},
+					},
+					{
+						name:    "structCol",
+						gotDest: Struct{},
+						wantDest: Struct{
+							fields:      []structFieldWithValue{{Name: "a", Value: int64(1)}, {Name: "b", Value: string("foo")}},
+							nameToIndex: map[string][]int{"a": {0}, "b": {1}},
+						},
+					},
+					{
+						name:     "arrCol",
+						gotDest:  []int64{},
+						wantDest: []int64{1, 2, 3},
+					},
+					{
+						name:    "mapCol",
+						gotDest: map[string][]byte{},
+						wantDest: map[string][]byte{
+							base64City:  []byte("San Francisco"),
+							base64State: []byte("CA"),
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "all types in query parameters",
+			psQuery: "SELECT @bytesParam as bytesCol, @stringParam AS strCol,  @int64Param AS int64Col, " +
+				"@float32Param AS float32Col, @float64Param AS float64Col, @boolParam AS boolCol, " +
+				"@tsParam AS tsCol, @dateParam AS dateCol, @bytesArrayParam AS bytesArrayCol, " +
+				"@stringArrayParam AS stringArrayCol, @int64ArrayParam AS int64ArrayCol, " +
+				"@float32ArrayParam AS float32ArrayCol, @float64ArrayParam AS float64ArrayCol, " +
+				"@boolArrayParam AS boolArrayCol, @tsArrayParam AS tsArrayCol, " +
+				"@dateArrayParam AS dateArrayCol",
+			psParamTypes: map[string]SQLType{
+				"bytesParam":   BytesSQLType{},
+				"stringParam":  StringSQLType{},
+				"int64Param":   Int64SQLType{},
+				"float32Param": Float32SQLType{},
+				"float64Param": Float64SQLType{},
+				"boolParam":    BoolSQLType{},
+				"tsParam":      TimestampSQLType{},
+				"dateParam":    DateSQLType{},
+				"bytesArrayParam": ArraySQLType{
+					ElemType: BytesSQLType{},
+				},
+				"stringArrayParam": ArraySQLType{
+					ElemType: StringSQLType{},
+				},
+				"int64ArrayParam": ArraySQLType{
+					ElemType: Int64SQLType{},
+				},
+				"float32ArrayParam": ArraySQLType{
+					ElemType: Float32SQLType{},
+				},
+				"float64ArrayParam": ArraySQLType{
+					ElemType: Float64SQLType{},
+				},
+				"boolArrayParam": ArraySQLType{
+					ElemType: BoolSQLType{},
+				},
+				"tsArrayParam": ArraySQLType{
+					ElemType: TimestampSQLType{},
+				},
+				"dateArrayParam": ArraySQLType{
+					ElemType: DateSQLType{},
+				},
+			},
+			bsParamValues: map[string]any{
+				"bytesParam":        []byte("foo"),
+				"stringParam":       "stringVal",
+				"int64Param":        int64(1),
+				"float32Param":      float32(1.3),
+				"float64Param":      float64(1.4),
+				"boolParam":         true,
+				"tsParam":           tsParamValue,
+				"dateParam":         civil.DateOf(tsParamValue),
+				"bytesArrayParam":   [][]byte{[]byte("foo"), nil, []byte("bar")},
+				"stringArrayParam":  []string{"baz", "qux"},
+				"int64ArrayParam":   []any{int64(1), nil, int64(2)},
+				"float32ArrayParam": []any{float32(1.3), nil, float32(2.3)},
+				"float64ArrayParam": []float64{1.4, 2.4, 3.4},
+				"boolArrayParam":    []any{true, nil, false},
+				"tsArrayParam":      []any{tsParamValue, nil},
+				"dateArrayParam":    []civil.Date{civil.DateOf(tsParamValue), civil.DateOf(tsParamValue.Add(24 * time.Hour))},
+			},
+			rows: [][]col{
+				{
+					{
+						name:     "bytesCol",
+						gotDest:  []byte{},
+						wantDest: []byte("foo"),
+					},
+					{
+						name:     "strCol",
+						gotDest:  "",
+						wantDest: "stringVal",
+					},
+					{
+						name:     "int64Col",
+						gotDest:  int64(0),
+						wantDest: int64(1),
+					},
+					{
+						name:     "float32Col",
+						gotDest:  float32(0),
+						wantDest: float32(1.3),
+					},
+					{
+						name:     "float64Col",
+						gotDest:  float64(0),
+						wantDest: float64(1.4),
+					},
+					{
+						name:     "boolCol",
+						gotDest:  false,
+						wantDest: true,
+					},
+					{
+						name:     "tsCol",
+						gotDest:  time.Time{},
+						wantDest: tsParamValue,
+					},
+					{
+						name:     "dateCol",
+						gotDest:  civil.Date{},
+						wantDest: civil.DateOf(tsParamValue),
+					},
+					{
+						name:     "bytesArrayCol",
+						gotDest:  [][]byte{},
+						wantDest: [][]byte{[]byte("foo"), nil, []byte("bar")},
+					},
+					{
+						name:     "stringArrayCol",
+						gotDest:  []string{},
+						wantDest: []string{"baz", "qux"},
+					},
+					{
+						name:     "int64ArrayCol",
+						gotDest:  []any{},
+						wantDest: []any{int64(1), nil, int64(2)},
+					},
+					{
+						name:     "float32ArrayCol",
+						gotDest:  []any{},
+						wantDest: []any{float32(1.3), nil, float32(2.3)},
+					},
+					{
+						name:     "float64ArrayCol",
+						gotDest:  []float64{},
+						wantDest: []float64{1.4, 2.4, 3.4},
+					},
+					{
+						name:     "boolArrayCol",
+						gotDest:  []any{},
+						wantDest: []any{true, nil, false},
+					},
+					{
+						name:     "tsArrayCol",
+						gotDest:  []any{},
+						wantDest: []any{tsParamValue, nil},
+					},
+					{
+						name:     "dateArrayCol",
+						gotDest:  []civil.Date{civil.DateOf(tsParamValue), civil.DateOf(tsParamValue.Add(24 * time.Hour))},
+						wantDest: []civil.Date{civil.DateOf(tsParamValue), civil.DateOf(tsParamValue.Add(24 * time.Hour))},
+					},
+				},
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			ps, err := client.PrepareStatement(ctx, tc.psQuery, tc.psParamTypes)
+			if err != nil {
+				t.Fatal("PrepareStatement: " + err.Error())
+			}
+
+			bs, err := ps.Bind(tc.bsParamValues)
+			if err != nil {
+				t.Fatal("Bind: " + err.Error())
+			}
+
+			gotRowCount := 0
+			if err = bs.Execute(ctx, func(rr ResultRow) bool {
+				foundErr := false
+
+				// Assert that rr has correct values
+				if (tc.rows) != nil {
+					// more rows than expected
+					if gotRowCount >= len(tc.rows) {
+						t.Fatalf("#%v: Unexpected row returned from Execute. gotRow: %#v", gotRowCount, rr)
+					}
+
+					var wantColCount int
+					for wantColCount < len(tc.rows[gotRowCount]) {
+						gotCurrCol := tc.rows[gotRowCount][wantColCount]
+						destType := reflect.TypeOf(gotCurrCol.gotDest)
+
+						// Assert GetByName returns correct value
+						gotDestPtrReflectValue := reflect.New(destType)
+						gotDestPtrInterface := gotDestPtrReflectValue.Interface()
+						errGet := rr.GetByName(gotCurrCol.name, gotDestPtrInterface)
+						if errGet != nil {
+							t.Errorf("Row #%d: GetByName(name='%s', dest type='%T') failed: %v", gotRowCount, gotCurrCol.name, gotDestPtrInterface, errGet)
+							foundErr = true
+						}
+						gotDest := reflect.ValueOf(gotDestPtrInterface).Elem().Interface()
+
+						if diff := testutil.Diff(gotCurrCol.wantDest, gotDest, cmpOpts...); diff != "" {
+							t.Errorf("[Row:%v Column:%v] GetByName: got: %#v, want: %#v, diff (-want +got):\n %+v",
+								gotRowCount, wantColCount, gotDest, gotCurrCol.wantDest, diff)
+							foundErr = true
+						}
+
+						// Assert GetByIndex returns correct value
+						gotDestPtrReflectValue = reflect.New(destType)
+						gotDestPtrInterface = gotDestPtrReflectValue.Interface()
+						errGet = rr.GetByIndex(wantColCount, gotDestPtrInterface)
+						if errGet != nil {
+							t.Errorf("Row #%d: GetByIndex(index='%d', destType='%T') failed: %v", gotRowCount, wantColCount, gotDest, errGet)
+							foundErr = true
+						}
+						gotDest = reflect.ValueOf(gotDestPtrInterface).Elem().Interface()
+						if diff := testutil.Diff(gotCurrCol.wantDest, gotDest, cmpOpts...); diff != "" {
+							t.Errorf("[Row:%v Column:%v] GetByIndex: got: %#v, want: %#v, diff (-want +got):\n %+v",
+								gotRowCount, wantColCount, gotDest, gotCurrCol.wantDest, diff)
+							foundErr = true
+						}
+						wantColCount++
+					}
+					if len(rr.pbValues) != len(tc.rows[gotRowCount]) {
+						t.Errorf("[Row:%v] Number of columns: got: %v, want: %v", gotRowCount, len(rr.pbValues), len(tc.rows[gotRowCount]))
+
+						// more columns than expected
+						if len(rr.pbValues) > len(tc.rows[gotRowCount]) {
+							i := len(tc.rows[gotRowCount])
+							for i < len(rr.pbValues) {
+								t.Errorf("[Row:%v Column:%v]: Unexpected column with value: %v", gotRowCount, i, rr.pbValues[i])
+								i++
+							}
+							foundErr = true
+						}
+
+						// lesser columns than expected
+						if len(rr.pbValues) < len(tc.rows[gotRowCount]) {
+							i := len(rr.pbValues)
+							for i < len(tc.rows[gotRowCount]) {
+								t.Errorf("[Row:%v Column:%v]: Missing column with value: %v", gotRowCount, i, tc.rows[gotRowCount][i])
+								i++
+							}
+							foundErr = true
+						}
+					}
+
+					if foundErr {
+						return false // Stop processing on error
+					}
+				}
+				gotRowCount++
+				return true
+			}); err != nil {
+				t.Fatal("Execute: " + err.Error())
+			}
+
+			// lesser rows than expected
+			if gotRowCount < len(tc.rows) {
+				t.Errorf("Number of rows: got: %v, want: %v", gotRowCount, len(tc.rows))
+				i := gotRowCount
+				for i < len(tc.rows) {
+					t.Errorf("#%v: Row missing in Execute response: %#v", i, tc.rows[gotRowCount])
+					i++
+				}
+			}
+		})
+	}
+}
+
+func populateAddresses(ctx context.Context, t *testing.T, table *Table, colFam string, v1Timestamp, v2Timestamp Timestamp) {
+	type cell struct {
+		Ts    Timestamp
+		Value []byte
+	}
+	muts := []*Mutation{}
+	rowKeys := []string{}
+	for rowKey, mutData := range map[string]map[string]any{
+		"row-01": {
+			"state": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("WA"),
+				},
+				{
+					Ts:    v2Timestamp,
+					Value: []byte("CA"),
+				},
+			},
+			"city": []cell{
+				{
+					Ts:    v2Timestamp,
+					Value: []byte("San Francisco"),
+				},
+			},
+		},
+		"row-02": {
+			"state": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("AZ"),
+				},
+			},
+			"city": []cell{
+				{
+					Ts:    v1Timestamp,
+					Value: []byte("Phoenix"),
+				},
+			},
+		},
+	} {
+		mut := NewMutation()
+		for col, v := range mutData {
+			cells, ok := v.([]cell)
+			if ok {
+				for _, cell := range cells {
+					mut.Set(colFam, col, cell.Ts, cell.Value)
+				}
+			}
+		}
+		muts = append(muts, mut)
+		rowKeys = append(rowKeys, rowKey)
+	}
+
+	rowErrs, err := table.ApplyBulk(ctx, rowKeys, muts)
+	if err != nil || rowErrs != nil {
+		t.Fatal("ApplyBulk: ", err)
 	}
 }
 

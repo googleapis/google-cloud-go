@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.11.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.1...parallelstore/v0.11.2) (2025-04-15)
+
+
+### Documentation
+
+* **parallelstore:** A comment for field `bytes_failed` in message `.google.cloud.parallelstore.v1.TransferCounters` is changed ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+* **parallelstore:** A comment for field `daos_version` in message `.google.cloud.parallelstore.v1.Instance` is changed ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+* **parallelstore:** A comment for field `objects_failed` in message `.google.cloud.parallelstore.v1.TransferCounters` is changed ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
+## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.0...parallelstore/v0.11.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.10.1...parallelstore/v0.11.0) (2025-04-15)
+
+
+### Features
+
+* **parallelstore:** A new field `bytes_failed` is added to message `v1beta.TransferCounters` ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** A new field `error_summary` is added to message `v1beta.TransferOperationMetadata` ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** A new field `metadata_options` is added to message `v1beta.ExportDataRequest` ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** A new field `metadata_options` is added to message `v1beta.ImportDataRequest` ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** A new field `objects_failed` is added to message `v1beta.TransferCounters` ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** A new message `TransferErrorLogEntry` is added ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** A new message `TransferErrorSummary` is added ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** A new message `TransferMetadataOptions` is added ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** A new value `REPAIRING` is added to enum `State` ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **parallelstore:** Field `daos_version` in message `v1beta.Instance` is Deprecated ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
+
+### Documentation
+
+* **parallelstore:** Fields `directory_stripe_level` `deployment_type` `file_stripe_level` in message `v1beta.Instance` documented as immutable ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+
 ## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.10.0...parallelstore/v0.10.1) (2025-03-13)
 
 

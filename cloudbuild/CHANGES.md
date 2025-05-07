@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.1...cloudbuild/v1.22.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.0...cloudbuild/v1.22.1) (2025-03-13)
 
 

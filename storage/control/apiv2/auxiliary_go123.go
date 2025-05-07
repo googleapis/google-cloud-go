@@ -27,6 +27,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *AnywhereCacheIterator) All() iter.Seq2[*controlpb.AnywhereCache, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *FolderIterator) All() iter.Seq2[*controlpb.Folder, error] {
 	return iterator.RangeAdapter(it.Next)
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/oracledatabase/apiv1",
-    "version": "0.3.1",
+    "version": "0.5.0",
     "language": "GO",
     "apis": [
       {
@@ -1252,6 +1252,52 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_RestartAutonomousDatabase_sync",
+      "title": "oracledatabase RestartAutonomousDatabase Sample",
+      "description": "RestartAutonomousDatabase restarts an Autonomous Database.",
+      "file": "Client/RestartAutonomousDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestartAutonomousDatabase",
+        "fullName": "google.cloud.oracledatabase.v1.Client.RestartAutonomousDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.RestartAutonomousDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestartAutonomousDatabaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "RestartAutonomousDatabase",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.RestartAutonomousDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_RestoreAutonomousDatabase_sync",
       "title": "oracledatabase RestoreAutonomousDatabase Sample",
       "description": "RestoreAutonomousDatabase restores a single Autonomous Database.",
@@ -1282,6 +1328,98 @@
         "method": {
           "shortName": "RestoreAutonomousDatabase",
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.RestoreAutonomousDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_StartAutonomousDatabase_sync",
+      "title": "oracledatabase StartAutonomousDatabase Sample",
+      "description": "StartAutonomousDatabase starts an Autonomous Database.",
+      "file": "Client/StartAutonomousDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartAutonomousDatabase",
+        "fullName": "google.cloud.oracledatabase.v1.Client.StartAutonomousDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.StartAutonomousDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StartAutonomousDatabaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "StartAutonomousDatabase",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.StartAutonomousDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_StopAutonomousDatabase_sync",
+      "title": "oracledatabase StopAutonomousDatabase Sample",
+      "description": "StopAutonomousDatabase stops an Autonomous Database.",
+      "file": "Client/StopAutonomousDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopAutonomousDatabase",
+        "fullName": "google.cloud.oracledatabase.v1.Client.StopAutonomousDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.StopAutonomousDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopAutonomousDatabaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "StopAutonomousDatabase",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.StopAutonomousDatabase",
           "service": {
             "shortName": "OracleDatabase",
             "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"

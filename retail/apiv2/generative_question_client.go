@@ -115,7 +115,7 @@ func defaultGenerativeQuestionRESTCallOptions() *GenerativeQuestionCallOptions {
 	}
 }
 
-// internalGenerativeQuestionClient is an interface that defines the methods available from Vertex AI Search for Retail API.
+// internalGenerativeQuestionClient is an interface that defines the methods available from Vertex AI Search for commerce API.
 type internalGenerativeQuestionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -129,7 +129,7 @@ type internalGenerativeQuestionClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// GenerativeQuestionClient is a client for interacting with Vertex AI Search for Retail API.
+// GenerativeQuestionClient is a client for interacting with Vertex AI Search for commerce API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for managing LLM generated questions in search serving.
@@ -201,7 +201,7 @@ func (c *GenerativeQuestionClient) ListOperations(ctx context.Context, req *long
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// generativeQuestionGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
+// generativeQuestionGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type generativeQuestionGRPCClient struct {
