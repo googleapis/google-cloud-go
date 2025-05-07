@@ -145,6 +145,7 @@ modules:
   - spanner
   - speech
   - storage
+  - storagebatchoperations
   - storageinsights
   - storagetransfer
   - streetview
@@ -977,6 +978,9 @@ service-configs:
   - input-directory: google/cloud/speech/v2
     service-config: speech_v2.yaml
     import-path: cloud.google.com/go/speech/apiv2
+  - input-directory: google/cloud/storagebatchoperations/v1
+    service-config: storagebatchoperations_v1.yaml
+    import-path: cloud.google.com/go/storagebatchoperations/apiv1
   - input-directory: google/cloud/storageinsights/v1
     service-config: storageinsights_v1.yaml
     import-path: cloud.google.com/go/storageinsights/apiv1
