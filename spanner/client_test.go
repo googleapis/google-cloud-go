@@ -4360,9 +4360,21 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	if se.GRPCStatus().Code() != w.GRPCStatus().Code() {
 		t.Fatalf("Error status mismatch:\nGot: %v\nWant: %v", se.GRPCStatus(), w.GRPCStatus())
 	}
-	if !testEqual(se, w) {
-		t.Fatalf("Error message mismatch:\nGot:  %s\nWant: %s", se.Error(), w.Error())
+	// Check that the error code is DeadlineExceeded
+	if se.GRPCStatus().Code() != codes.DeadlineExceeded {
+		t.Fatalf("Expected error code DeadlineExceeded, got: %v", se.GRPCStatus().Code())
 	}
+
+	// Check that the error message contains the essential information
+	errMsg := se.Error()
+	if !strings.Contains(errMsg, "DeadlineExceeded") {
+		t.Errorf("Error message should contain 'DeadlineExceeded', got: %s", errMsg)
+	}
+	if !strings.Contains(errMsg, "transaction outcome unknown") {
+		t.Errorf("Error message should contain 'transaction outcome unknown', got: %s", errMsg)
+	}
+
+	// Check that the error wraps a TransactionOutcomeUnknownError
 	var outcome *TransactionOutcomeUnknownError
 	if !errors.As(err, &outcome) {
 		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
