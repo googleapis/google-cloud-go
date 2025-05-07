@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.5.2](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.5.1...managedkafka/v0.5.2) (2025-04-30)
+
+
+### Documentation
+
+* **managedkafka:** A comment for message `TaskRetryPolicy` is changed ([#12082](https://github.com/googleapis/google-cloud-go/issues/12082)) ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.5.0...managedkafka/v0.5.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **managedkafka:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.4.2...managedkafka/v0.5.0) (2025-03-19)
+
+
+### Features
+
+* **managedkafka:** Add Managed Kafka Connect API ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
 ## [0.4.2](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.4.1...managedkafka/v0.4.2) (2025-03-13)
 
 

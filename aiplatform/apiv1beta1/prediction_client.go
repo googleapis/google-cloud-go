@@ -1206,7 +1206,7 @@ func (c *predictionRESTClient) StreamRawPredict(ctx context.Context, req *aiplat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *streamRawPredictRESTClient
+	var streamClient *streamRawPredictRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1223,7 +1223,7 @@ func (c *predictionRESTClient) StreamRawPredict(ctx context.Context, req *aiplat
 			return err
 		}
 
-		streamClient = &streamRawPredictRESTClient{
+		streamClient = &streamRawPredictRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&httpbodypb.HttpBody{}).ProtoReflect().Type()),
@@ -1234,15 +1234,15 @@ func (c *predictionRESTClient) StreamRawPredict(ctx context.Context, req *aiplat
 	return streamClient, e
 }
 
-// streamRawPredictRESTClient is the stream client used to consume the server stream created by
+// streamRawPredictRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of StreamRawPredict.
-type streamRawPredictRESTClient struct {
+type streamRawPredictRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *streamRawPredictRESTClient) Recv() (*httpbodypb.HttpBody, error) {
+func (c *streamRawPredictRESTStreamClient) Recv() (*httpbodypb.HttpBody, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -1256,29 +1256,29 @@ func (c *streamRawPredictRESTClient) Recv() (*httpbodypb.HttpBody, error) {
 	return res, nil
 }
 
-func (c *streamRawPredictRESTClient) Header() (metadata.MD, error) {
+func (c *streamRawPredictRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *streamRawPredictRESTClient) Trailer() metadata.MD {
+func (c *streamRawPredictRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *streamRawPredictRESTClient) CloseSend() error {
+func (c *streamRawPredictRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamRawPredictRESTClient) Context() context.Context {
+func (c *streamRawPredictRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *streamRawPredictRESTClient) SendMsg(m interface{}) error {
+func (c *streamRawPredictRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamRawPredictRESTClient) RecvMsg(m interface{}) error {
+func (c *streamRawPredictRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }
@@ -1447,7 +1447,7 @@ func (c *predictionRESTClient) ServerStreamingPredict(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *serverStreamingPredictRESTClient
+	var streamClient *serverStreamingPredictRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1464,7 +1464,7 @@ func (c *predictionRESTClient) ServerStreamingPredict(ctx context.Context, req *
 			return err
 		}
 
-		streamClient = &serverStreamingPredictRESTClient{
+		streamClient = &serverStreamingPredictRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&aiplatformpb.StreamingPredictResponse{}).ProtoReflect().Type()),
@@ -1475,15 +1475,15 @@ func (c *predictionRESTClient) ServerStreamingPredict(ctx context.Context, req *
 	return streamClient, e
 }
 
-// serverStreamingPredictRESTClient is the stream client used to consume the server stream created by
+// serverStreamingPredictRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of ServerStreamingPredict.
-type serverStreamingPredictRESTClient struct {
+type serverStreamingPredictRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *serverStreamingPredictRESTClient) Recv() (*aiplatformpb.StreamingPredictResponse, error) {
+func (c *serverStreamingPredictRESTStreamClient) Recv() (*aiplatformpb.StreamingPredictResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -1497,29 +1497,29 @@ func (c *serverStreamingPredictRESTClient) Recv() (*aiplatformpb.StreamingPredic
 	return res, nil
 }
 
-func (c *serverStreamingPredictRESTClient) Header() (metadata.MD, error) {
+func (c *serverStreamingPredictRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *serverStreamingPredictRESTClient) Trailer() metadata.MD {
+func (c *serverStreamingPredictRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *serverStreamingPredictRESTClient) CloseSend() error {
+func (c *serverStreamingPredictRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *serverStreamingPredictRESTClient) Context() context.Context {
+func (c *serverStreamingPredictRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *serverStreamingPredictRESTClient) SendMsg(m interface{}) error {
+func (c *serverStreamingPredictRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *serverStreamingPredictRESTClient) RecvMsg(m interface{}) error {
+func (c *serverStreamingPredictRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }
@@ -1734,7 +1734,7 @@ func (c *predictionRESTClient) StreamGenerateContent(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *streamGenerateContentRESTClient
+	var streamClient *streamGenerateContentRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1751,7 +1751,7 @@ func (c *predictionRESTClient) StreamGenerateContent(ctx context.Context, req *a
 			return err
 		}
 
-		streamClient = &streamGenerateContentRESTClient{
+		streamClient = &streamGenerateContentRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&aiplatformpb.GenerateContentResponse{}).ProtoReflect().Type()),
@@ -1762,15 +1762,15 @@ func (c *predictionRESTClient) StreamGenerateContent(ctx context.Context, req *a
 	return streamClient, e
 }
 
-// streamGenerateContentRESTClient is the stream client used to consume the server stream created by
+// streamGenerateContentRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of StreamGenerateContent.
-type streamGenerateContentRESTClient struct {
+type streamGenerateContentRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *streamGenerateContentRESTClient) Recv() (*aiplatformpb.GenerateContentResponse, error) {
+func (c *streamGenerateContentRESTStreamClient) Recv() (*aiplatformpb.GenerateContentResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -1784,29 +1784,29 @@ func (c *streamGenerateContentRESTClient) Recv() (*aiplatformpb.GenerateContentR
 	return res, nil
 }
 
-func (c *streamGenerateContentRESTClient) Header() (metadata.MD, error) {
+func (c *streamGenerateContentRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *streamGenerateContentRESTClient) Trailer() metadata.MD {
+func (c *streamGenerateContentRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *streamGenerateContentRESTClient) CloseSend() error {
+func (c *streamGenerateContentRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamGenerateContentRESTClient) Context() context.Context {
+func (c *streamGenerateContentRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *streamGenerateContentRESTClient) SendMsg(m interface{}) error {
+func (c *streamGenerateContentRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
+func (c *streamGenerateContentRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }
@@ -1837,7 +1837,7 @@ func (c *predictionRESTClient) ChatCompletions(ctx context.Context, req *aiplatf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *chatCompletionsRESTClient
+	var streamClient *chatCompletionsRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1854,7 +1854,7 @@ func (c *predictionRESTClient) ChatCompletions(ctx context.Context, req *aiplatf
 			return err
 		}
 
-		streamClient = &chatCompletionsRESTClient{
+		streamClient = &chatCompletionsRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&httpbodypb.HttpBody{}).ProtoReflect().Type()),
@@ -1865,15 +1865,15 @@ func (c *predictionRESTClient) ChatCompletions(ctx context.Context, req *aiplatf
 	return streamClient, e
 }
 
-// chatCompletionsRESTClient is the stream client used to consume the server stream created by
+// chatCompletionsRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of ChatCompletions.
-type chatCompletionsRESTClient struct {
+type chatCompletionsRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *chatCompletionsRESTClient) Recv() (*httpbodypb.HttpBody, error) {
+func (c *chatCompletionsRESTStreamClient) Recv() (*httpbodypb.HttpBody, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -1887,29 +1887,29 @@ func (c *chatCompletionsRESTClient) Recv() (*httpbodypb.HttpBody, error) {
 	return res, nil
 }
 
-func (c *chatCompletionsRESTClient) Header() (metadata.MD, error) {
+func (c *chatCompletionsRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *chatCompletionsRESTClient) Trailer() metadata.MD {
+func (c *chatCompletionsRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *chatCompletionsRESTClient) CloseSend() error {
+func (c *chatCompletionsRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *chatCompletionsRESTClient) Context() context.Context {
+func (c *chatCompletionsRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *chatCompletionsRESTClient) SendMsg(m interface{}) error {
+func (c *chatCompletionsRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *chatCompletionsRESTClient) RecvMsg(m interface{}) error {
+func (c *chatCompletionsRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

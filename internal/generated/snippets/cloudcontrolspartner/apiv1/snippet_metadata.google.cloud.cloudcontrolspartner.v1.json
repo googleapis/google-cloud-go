@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudcontrolspartner/apiv1",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,97 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "cloudcontrolspartner_v1_generated_CloudControlsPartnerCore_CreateCustomer_sync",
+      "title": "cloudcontrolspartner CreateCustomer Sample",
+      "description": "CreateCustomer creates a new customer.",
+      "file": "CloudControlsPartnerCoreClient/CreateCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomer",
+        "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCoreClient.CreateCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.CreateCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.Customer",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "CreateCustomer",
+          "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCore.CreateCustomer",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1_generated_CloudControlsPartnerCore_DeleteCustomer_sync",
+      "title": "cloudcontrolspartner DeleteCustomer Sample",
+      "description": "DeleteCustomer delete details of a single customer",
+      "file": "CloudControlsPartnerCoreClient/DeleteCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCustomer",
+        "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCoreClient.DeleteCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.DeleteCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "DeleteCustomer",
+          "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCore.DeleteCustomer",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "cloudcontrolspartner_v1_generated_CloudControlsPartnerCore_GetCustomer_sync",
       "title": "cloudcontrolspartner GetCustomer Sample",
@@ -375,6 +466,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1_generated_CloudControlsPartnerCore_UpdateCustomer_sync",
+      "title": "cloudcontrolspartner UpdateCustomer Sample",
+      "description": "UpdateCustomer update details of a single customer",
+      "file": "CloudControlsPartnerCoreClient/UpdateCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCustomer",
+        "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCoreClient.UpdateCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.UpdateCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.Customer",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "UpdateCustomer",
+          "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCore.UpdateCustomer",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

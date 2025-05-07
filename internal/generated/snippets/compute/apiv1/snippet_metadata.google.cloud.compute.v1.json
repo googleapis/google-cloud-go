@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.34.1",
+    "version": "1.37.0",
     "language": "GO",
     "apis": [
       {
@@ -13628,6 +13628,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_MachineImages_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a machine image. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "MachineImagesClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.MachineImagesClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsMachineImageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "MachineImagesClient",
+          "fullName": "google.cloud.compute.v1.MachineImagesClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.MachineImages.SetLabels",
+          "service": {
+            "shortName": "MachineImages",
+            "fullName": "google.cloud.compute.v1.MachineImages"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_MachineImages_TestIamPermissions_sync",
       "title": "compute TestIamPermissions Sample",
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
@@ -27152,6 +27198,144 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_ReservationBlocks_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get retrieves information about the specified reservation block.",
+      "file": "ReservationBlocksClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.ReservationBlocksClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetReservationBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.ReservationBlocksGetResponse",
+        "client": {
+          "shortName": "ReservationBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationBlocksClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.ReservationBlocks.Get",
+          "service": {
+            "shortName": "ReservationBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationBlocks_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of reservation blocks under a single reservation.",
+      "file": "ReservationBlocksClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.ReservationBlocksClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListReservationBlocksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReservationBlockIterator",
+        "client": {
+          "shortName": "ReservationBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationBlocksClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.ReservationBlocks.List",
+          "service": {
+            "shortName": "ReservationBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationBlocks_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance allows customers to perform maintenance on a reservation block",
+      "file": "ReservationBlocksClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.ReservationBlocksClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceReservationBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationBlocksClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.ReservationBlocks.PerformMaintenance",
+          "service": {
+            "shortName": "ReservationBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Reservations_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
@@ -27423,6 +27607,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Reservations_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance perform maintenance on an extended reservation",
+      "file": "ReservationsClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.ReservationsClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceReservationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationsClient",
+          "fullName": "google.cloud.compute.v1.ReservationsClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.Reservations.PerformMaintenance",
+          "service": {
+            "shortName": "Reservations",
+            "fullName": "google.cloud.compute.v1.Reservations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]

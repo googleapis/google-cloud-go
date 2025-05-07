@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.3](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.5.2...gkemulticloud/v1.5.3) (2025-04-15)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.5.1...gkemulticloud/v1.5.2) (2025-03-13)
 
 

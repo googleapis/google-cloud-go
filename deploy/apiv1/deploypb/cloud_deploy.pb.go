@@ -559,8 +559,8 @@ const (
 	// configuration.
 	Release_TargetRender_VERIFICATION_CONFIG_NOT_FOUND Release_TargetRender_FailureCause = 4
 	// The render operation did not complete successfully because the custom
-	// action required for predeploy or postdeploy was not found in the
-	// Skaffold configuration. See failure_message for additional details.
+	// action(s) required for Rollout jobs were not found in the Skaffold
+	// configuration. See failure_message for additional details.
 	Release_TargetRender_CUSTOM_ACTION_NOT_FOUND Release_TargetRender_FailureCause = 5
 	// Release failed during rendering because the release configuration is
 	// not supported with the specified deployment strategy.
@@ -780,7 +780,7 @@ const (
 	// The deploy operation did not complete successfully; check Cloud Build
 	// logs.
 	Rollout_EXECUTION_FAILED Rollout_FailureCause = 2
-	// Deployment did not complete within the alloted time.
+	// Deployment did not complete within the allotted time.
 	Rollout_DEADLINE_EXCEEDED Rollout_FailureCause = 3
 	// Release is in a failed state.
 	Rollout_RELEASE_FAILED Rollout_FailureCause = 4
@@ -1072,7 +1072,7 @@ const (
 	// The deploy operation did not complete successfully; check Cloud Build
 	// logs.
 	DeployJobRun_EXECUTION_FAILED DeployJobRun_FailureCause = 2
-	// The deploy job run did not complete within the alloted time.
+	// The deploy job run did not complete within the allotted time.
 	DeployJobRun_DEADLINE_EXCEEDED DeployJobRun_FailureCause = 3
 	// There were missing resources in the runtime environment required for a
 	// canary deployment. Check the Cloud Build logs for more information.
@@ -1146,7 +1146,7 @@ const (
 	// The verify operation did not complete successfully; check Cloud Build
 	// logs.
 	VerifyJobRun_EXECUTION_FAILED VerifyJobRun_FailureCause = 2
-	// The verify job run did not complete within the alloted time.
+	// The verify job run did not complete within the allotted time.
 	VerifyJobRun_DEADLINE_EXCEEDED VerifyJobRun_FailureCause = 3
 	// No Skaffold verify configuration was found.
 	VerifyJobRun_VERIFICATION_CONFIG_NOT_FOUND VerifyJobRun_FailureCause = 4
@@ -1215,7 +1215,7 @@ const (
 	// The predeploy operation did not complete successfully; check Cloud Build
 	// logs.
 	PredeployJobRun_EXECUTION_FAILED PredeployJobRun_FailureCause = 2
-	// The predeploy job run did not complete within the alloted time.
+	// The predeploy job run did not complete within the allotted time.
 	PredeployJobRun_DEADLINE_EXCEEDED PredeployJobRun_FailureCause = 3
 	// Cloud Build failed to fulfill Cloud Deploy's request. See failure_message
 	// for additional details.
@@ -1280,7 +1280,7 @@ const (
 	// The postdeploy operation did not complete successfully; check Cloud Build
 	// logs.
 	PostdeployJobRun_EXECUTION_FAILED PostdeployJobRun_FailureCause = 2
-	// The postdeploy job run did not complete within the alloted time.
+	// The postdeploy job run did not complete within the allotted time.
 	PostdeployJobRun_DEADLINE_EXCEEDED PostdeployJobRun_FailureCause = 3
 	// Cloud Build failed to fulfill Cloud Deploy's request. See failure_message
 	// for additional details.
@@ -1956,13 +1956,13 @@ type Standard struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Whether to verify a deployment.
+	// Optional. Whether to verify a deployment via `skaffold verify`.
 	Verify bool `protobuf:"varint,1,opt,name=verify,proto3" json:"verify,omitempty"`
 	// Optional. Configuration for the predeploy job. If this is not configured,
-	// predeploy job will not be present.
+	// the predeploy job will not be present.
 	Predeploy *Predeploy `protobuf:"bytes,2,opt,name=predeploy,proto3" json:"predeploy,omitempty"`
 	// Optional. Configuration for the postdeploy job. If this is not configured,
-	// postdeploy job will not be present.
+	// the postdeploy job will not be present.
 	Postdeploy *Postdeploy `protobuf:"bytes,3,opt,name=postdeploy,proto3" json:"postdeploy,omitempty"`
 }
 
@@ -2126,7 +2126,8 @@ type CanaryDeployment struct {
 	// If the GatewayServiceMesh is configured for Kubernetes, then the range for
 	// n is 0 <= n <= 100.
 	Percentages []int32 `protobuf:"varint,1,rep,packed,name=percentages,proto3" json:"percentages,omitempty"`
-	// Optional. Whether to run verify tests after each percentage deployment.
+	// Optional. Whether to run verify tests after each percentage deployment via
+	// `skaffold verify`.
 	Verify bool `protobuf:"varint,2,opt,name=verify,proto3" json:"verify,omitempty"`
 	// Optional. Configuration for the predeploy job of the first phase. If this
 	// is not configured, there will be no predeploy job for this phase.
@@ -5799,7 +5800,7 @@ type DeployPolicy struct {
 	Selectors []*DeployPolicyResourceSelector `protobuf:"bytes,12,rep,name=selectors,proto3" json:"selectors,omitempty"`
 	// Required. Rules to apply. At least one rule must be present.
 	Rules []*PolicyRule `protobuf:"bytes,10,rep,name=rules,proto3" json:"rules,omitempty"`
-	// The weak etag of the `Automation` resource.
+	// The weak etag of the `DeployPolicy` resource.
 	// This checksum is computed by the server based on the value of other
 	// fields, and may be sent on update and delete requests to ensure the
 	// client has an up-to-date value before proceeding.
@@ -7406,10 +7407,11 @@ type TargetArtifact struct {
 	//
 	//	*TargetArtifact_ArtifactUri
 	Uri isTargetArtifact_Uri `protobuf_oneof:"uri"`
-	// Output only. File path of the resolved Skaffold configuration relative to
-	// the URI.
+	// Output only. File path of the resolved Skaffold configuration for the
+	// stable phase, relative to the URI.
 	SkaffoldConfigPath string `protobuf:"bytes,2,opt,name=skaffold_config_path,json=skaffoldConfigPath,proto3" json:"skaffold_config_path,omitempty"`
-	// Output only. File path of the rendered manifest relative to the URI.
+	// Output only. File path of the rendered manifest relative to the URI for the
+	// stable phase.
 	ManifestPath string `protobuf:"bytes,3,opt,name=manifest_path,json=manifestPath,proto3" json:"manifest_path,omitempty"`
 	// Output only. Map from the phase ID to the phase artifacts for the `Target`.
 	PhaseArtifacts map[string]*TargetArtifact_PhaseArtifact `protobuf:"bytes,5,rep,name=phase_artifacts,json=phaseArtifacts,proto3" json:"phase_artifacts,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -9379,7 +9381,7 @@ func (x *ListRolloutsRequest) GetOrderBy() string {
 	return ""
 }
 
-// ListRolloutsResponse is the response object reutrned by `ListRollouts`.
+// ListRolloutsResponse is the response object returned by `ListRollouts`.
 type ListRolloutsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -14237,7 +14239,8 @@ type CustomCanaryDeployment_PhaseConfig struct {
 	// phase. These are in addition to the profiles list specified in the
 	// `DeliveryPipeline` stage.
 	Profiles []string `protobuf:"bytes,3,rep,name=profiles,proto3" json:"profiles,omitempty"`
-	// Optional. Whether to run verify tests after the deployment.
+	// Optional. Whether to run verify tests after the deployment via `skaffold
+	// verify`.
 	Verify bool `protobuf:"varint,4,opt,name=verify,proto3" json:"verify,omitempty"`
 	// Optional. Configuration for the predeploy job of this phase. If this is
 	// not configured, there will be no predeploy job for this phase.
@@ -14524,8 +14527,8 @@ type KubernetesConfig_GatewayServiceMesh_RouteDestinations struct {
 	// Optional. Whether to propagate the Kubernetes Service to the route
 	// destination clusters. The Service will always be deployed to the Target
 	// cluster even if the HTTPRoute is not. This option may be used to
-	// facilitiate successful DNS lookup in the route destination clusters.
-	// Can only be set to true if destinations are specified.
+	// facilitate successful DNS lookup in the route destination clusters. Can
+	// only be set to true if destinations are specified.
 	PropagateService bool `protobuf:"varint,2,opt,name=propagate_service,json=propagateService,proto3" json:"propagate_service,omitempty"`
 }
 
@@ -18741,7 +18744,7 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = []byte{
 	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0xd2, 0x41, 0x2e, 0x68, 0x74, 0x74,
 	0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61,
 	0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f,
-	0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x42, 0x8d, 0x07, 0xea, 0x41,
+	0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x42, 0xfe, 0x07, 0xea, 0x41,
 	0x59, 0x0a, 0x1f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x42, 0x75, 0x69,
 	0x6c, 0x64, 0x12, 0x36, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72,
@@ -18792,14 +18795,21 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = []byte{
 	0x4a, 0x6f, 0x62, 0x12, 0x32, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70,
 	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x6a, 0x6f, 0x62,
-	0x73, 0x2f, 0x7b, 0x6a, 0x6f, 0x62, 0x7d, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79,
-	0x2e, 0x76, 0x31, 0x42, 0x10, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x32, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x65, 0x70,
-	0x6c, 0x6f, 0x79, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79,
-	0x70, 0x62, 0x3b, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x73, 0x2f, 0x7b, 0x6a, 0x6f, 0x62, 0x7d, 0xea, 0x41, 0x6e, 0x0a, 0x1b, 0x72, 0x75, 0x6e, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x52,
+	0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x4f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
+	0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d,
+	0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x7b, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x7d, 0x2f, 0x72, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x72,
+	0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x7d, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f,
+	0x79, 0x2e, 0x76, 0x31, 0x42, 0x10, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x44, 0x65, 0x70, 0x6c, 0x6f,
+	0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x32, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x65,
+	0x70, 0x6c, 0x6f, 0x79, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x64, 0x65, 0x70, 0x6c, 0x6f,
+	0x79, 0x70, 0x62, 0x3b, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

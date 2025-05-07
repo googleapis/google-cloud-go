@@ -102,6 +102,7 @@ type StatementResult struct {
 	ResultSet    *spannerpb.ResultSet
 	UpdateCount  int64
 	ResumeTokens [][]byte
+	SetLastFlag  bool
 }
 
 // PartialResultSetExecutionTime represents execution times and errors that
@@ -144,13 +145,15 @@ func (s *StatementResult) ToPartialResultSets(resumeToken []byte) (result []*spa
 			} else {
 				rt = s.ResumeTokens[startIndex]
 			}
+			startIndex += rowCount
 			result = append(result, &spannerpb.PartialResultSet{
 				Metadata:    s.ResultSet.Metadata,
 				Values:      values,
 				ResumeToken: rt,
+				// set the last flag only for last PartialResultSet
+				Last: s.SetLastFlag && startIndex == totalRows,
 			})
 
-			startIndex += rowCount
 			if startIndex == totalRows {
 				break
 			}
@@ -158,6 +161,7 @@ func (s *StatementResult) ToPartialResultSets(resumeToken []byte) (result []*spa
 	} else {
 		result = append(result, &spannerpb.PartialResultSet{
 			Metadata: s.ResultSet.Metadata,
+			Last:     s.SetLastFlag,
 		})
 	}
 	return result, nil
@@ -209,6 +213,7 @@ func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.Tran
 		Err:          s.Err,
 		UpdateCount:  s.UpdateCount,
 		ResumeTokens: s.ResumeTokens,
+		SetLastFlag:  s.SetLastFlag,
 	}
 	if s.ResultSet != nil {
 		p, err := deepCopy(s.ResultSet)

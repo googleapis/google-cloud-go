@@ -1,5 +1,44 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.12.1...texttospeech/v1.13.0) (2025-05-06)
+
+
+### Features
+
+* **texttospeech:** Support markup input for Cloud TTS Chirp 3 ([#12110](https://github.com/googleapis/google-cloud-go/issues/12110)) ([658d3d6](https://github.com/googleapis/google-cloud-go/commit/658d3d6cfb37bdf15ae40250fc1b9cb7b3b5ef80))
+* **texttospeech:** Support pinyin/yomigana custom pronunciation encodings for cmn-cn/ja-jp ([658d3d6](https://github.com/googleapis/google-cloud-go/commit/658d3d6cfb37bdf15ae40250fc1b9cb7b3b5ef80))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.12.0...texttospeech/v1.12.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **texttospeech:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.11.2...texttospeech/v1.12.0) (2025-03-31)
+
+
+### Features
+
+* **texttospeech:** Support HD voice custom pronunciations ([#11920](https://github.com/googleapis/google-cloud-go/issues/11920)) ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+
+
+### Documentation
+
+* **texttospeech:** A comment for enum value `OGG_OPUS` in enum `AudioEncoding` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for enum value `PCM` in enum `AudioEncoding` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for enum value `PHONETIC_ENCODING_IPA` in enum `PhoneticEncoding` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for enum value `PHONETIC_ENCODING_X_SAMPA` in enum `PhoneticEncoding` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for field `audio_encoding` in message `.google.cloud.texttospeech.v1.StreamingAudioConfig` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for field `custom_pronunciations` in message `.google.cloud.texttospeech.v1.SynthesisInput` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for field `low_latency_journey_synthesis` in message `.google.cloud.texttospeech.v1.AdvancedVoiceOptions` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for field `phrase` in message `.google.cloud.texttospeech.v1.CustomPronunciationParams` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for field `pronunciations` in message `.google.cloud.texttospeech.v1.CustomPronunciations` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for field `text` in message `.google.cloud.texttospeech.v1.StreamingSynthesisInput` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for field `voice_clone` in message `.google.cloud.texttospeech.v1.VoiceSelectionParams` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for message `MultiSpeakerMarkup` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+* **texttospeech:** A comment for method `StreamingSynthesize` in service `TextToSpeech` is changed ([f437f08](https://github.com/googleapis/google-cloud-go/commit/f437f0871a88abbeb918ce7364d0299a513cc311))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.11.1...texttospeech/v1.11.2) (2025-03-13)
 
 

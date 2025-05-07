@@ -21,14 +21,10 @@
 package discoveryenginepb
 
 import (
-	context "context"
 	reflect "reflect"
 	sync "sync"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -412,124 +408,4 @@ func file_google_cloud_discoveryengine_v1alpha_chunk_service_proto_init() {
 	file_google_cloud_discoveryengine_v1alpha_chunk_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1alpha_chunk_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1alpha_chunk_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ChunkServiceClient is the client API for ChunkService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ChunkServiceClient interface {
-	// Gets a [Document][google.cloud.discoveryengine.v1alpha.Document].
-	GetChunk(ctx context.Context, in *GetChunkRequest, opts ...grpc.CallOption) (*Chunk, error)
-	// Gets a list of [Chunk][google.cloud.discoveryengine.v1alpha.Chunk]s.
-	ListChunks(ctx context.Context, in *ListChunksRequest, opts ...grpc.CallOption) (*ListChunksResponse, error)
-}
-
-type chunkServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewChunkServiceClient(cc grpc.ClientConnInterface) ChunkServiceClient {
-	return &chunkServiceClient{cc}
-}
-
-func (c *chunkServiceClient) GetChunk(ctx context.Context, in *GetChunkRequest, opts ...grpc.CallOption) (*Chunk, error) {
-	out := new(Chunk)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1alpha.ChunkService/GetChunk", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *chunkServiceClient) ListChunks(ctx context.Context, in *ListChunksRequest, opts ...grpc.CallOption) (*ListChunksResponse, error) {
-	out := new(ListChunksResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1alpha.ChunkService/ListChunks", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ChunkServiceServer is the server API for ChunkService service.
-type ChunkServiceServer interface {
-	// Gets a [Document][google.cloud.discoveryengine.v1alpha.Document].
-	GetChunk(context.Context, *GetChunkRequest) (*Chunk, error)
-	// Gets a list of [Chunk][google.cloud.discoveryengine.v1alpha.Chunk]s.
-	ListChunks(context.Context, *ListChunksRequest) (*ListChunksResponse, error)
-}
-
-// UnimplementedChunkServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedChunkServiceServer struct {
-}
-
-func (*UnimplementedChunkServiceServer) GetChunk(context.Context, *GetChunkRequest) (*Chunk, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetChunk not implemented")
-}
-func (*UnimplementedChunkServiceServer) ListChunks(context.Context, *ListChunksRequest) (*ListChunksResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListChunks not implemented")
-}
-
-func RegisterChunkServiceServer(s *grpc.Server, srv ChunkServiceServer) {
-	s.RegisterService(&_ChunkService_serviceDesc, srv)
-}
-
-func _ChunkService_GetChunk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetChunkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ChunkServiceServer).GetChunk(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1alpha.ChunkService/GetChunk",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChunkServiceServer).GetChunk(ctx, req.(*GetChunkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ChunkService_ListChunks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListChunksRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ChunkServiceServer).ListChunks(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1alpha.ChunkService/ListChunks",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChunkServiceServer).ListChunks(ctx, req.(*ListChunksRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ChunkService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1alpha.ChunkService",
-	HandlerType: (*ChunkServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetChunk",
-			Handler:    _ChunkService_GetChunk_Handler,
-		},
-		{
-			MethodName: "ListChunks",
-			Handler:    _ChunkService_ListChunks_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/discoveryengine/v1alpha/chunk_service.proto",
 }

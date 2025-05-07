@@ -358,6 +358,7 @@ type ClientConfig struct {
 }
 
 type openTelemetryConfig struct {
+	enabled                        bool
 	meterProvider                  metric.MeterProvider
 	attributeMap                   []attribute.KeyValue
 	attributeMapWithMultiplexed    []attribute.KeyValue
@@ -406,6 +407,15 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.NewClient")
 	defer func() { trace.EndSpan(ctx, err) }()
+
+	// Explicitly disable some gRPC experiments as they are not stable yet.
+	gRPCPickFirstEnvVarName := "GRPC_EXPERIMENTAL_ENABLE_NEW_PICK_FIRST"
+	if os.Getenv(gRPCPickFirstEnvVarName) == "" {
+		err := os.Setenv(gRPCPickFirstEnvVarName, "false")
+		if err != nil {
+			logf(config.Logger, "Error overriding GRPC_EXPERIMENTAL_ENABLE_NEW_PICK_FIRST to false: %v. Ignoring.", err)
+		}
+	}
 
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
@@ -487,20 +497,20 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		md.Append(endToEndTracingHeader, "true")
 	}
 
-	if isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS")); isMultiplexed != "" {
-		config.SessionPoolConfig.enableMultiplexSession, err = strconv.ParseBool(isMultiplexed)
+	if isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS")); isMultiplexed != "" && !config.enableMultiplexSession {
+		config.enableMultiplexSession, err = strconv.ParseBool(isMultiplexed)
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
 		}
 	}
-	if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" {
+	if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" && !config.enableMultiplexedSessionForRW {
 		config.enableMultiplexedSessionForRW, err = strconv.ParseBool(isMultiplexForRW)
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
 		}
 		config.enableMultiplexedSessionForRW = config.enableMultiplexedSessionForRW && config.SessionPoolConfig.enableMultiplexSession
 	}
-	if isMultiplexForPartitionOps := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); isMultiplexForPartitionOps != "" {
+	if isMultiplexForPartitionOps := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); isMultiplexForPartitionOps != "" && !config.enableMultiplexedSessionForPartitionedOps {
 		config.enableMultiplexedSessionForPartitionedOps, err = strconv.ParseBool(isMultiplexForPartitionOps)
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS must be either true or false")

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/lfp/apiv1beta",
-    "version": "0.17.1",
+    "version": "0.20.0",
     "language": "GO",
     "apis": [
       {
@@ -45,6 +45,52 @@
           "service": {
             "shortName": "LfpInventoryService",
             "fullName": "google.shopping.merchant.lfp.v1beta.LfpInventoryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_LfpMerchantStateService_GetLfpMerchantState_sync",
+      "title": "merchantapi GetLfpMerchantState Sample",
+      "description": "GetLfpMerchantState gets the LFP state of a merchant",
+      "file": "LfpMerchantStateClient/GetLfpMerchantState/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLfpMerchantState",
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateClient.GetLfpMerchantState",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "lfppb.GetLfpMerchantStateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*lfppb.LfpMerchantState",
+        "client": {
+          "shortName": "LfpMerchantStateClient",
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateClient"
+        },
+        "method": {
+          "shortName": "GetLfpMerchantState",
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateService.GetLfpMerchantState",
+          "service": {
+            "shortName": "LfpMerchantStateService",
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateService"
           }
         }
       },

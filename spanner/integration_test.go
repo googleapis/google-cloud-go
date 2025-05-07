@@ -49,6 +49,7 @@ import (
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/uuid"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
@@ -70,6 +71,7 @@ const (
 	backupDDLStatements               = "BACKUP_DDL_STATEMENTS"
 	testTableDDLStatements            = "TEST_TABLE_DDL_STATEMENTS"
 	fkdcDDLStatements                 = "FKDC_DDL_STATEMENTS"
+	intervalDDLStatements             = "INTERVAL_DDL_STATEMENTS"
 	testTableBitReversedSeqStatements = "TEST_TABLE_BIT_REVERSED_SEQUENCE_STATEMENTS"
 )
 
@@ -325,6 +327,25 @@ var (
 		)`,
 	}
 
+	intervalDBStatements = []string{
+		`CREATE TABLE IntervalTable (
+			key STRING(MAX),
+			create_time TIMESTAMP,
+			expiry_time TIMESTAMP,
+			expiry_within_month bool AS (expiry_time - create_time < INTERVAL 30 DAY),
+			interval_array_len INT64 AS (ARRAY_LENGTH(ARRAY<INTERVAL>[INTERVAL '1-2 3 4:5:6' YEAR TO SECOND]))
+		) PRIMARY KEY (key)`,
+	}
+	intervalDBPGStatements = []string{
+		`CREATE TABLE IntervalTable (
+		    key text primary key,
+		    create_time timestamptz,
+		    expiry_time timestamptz,
+		    expiry_within_month bool GENERATED ALWAYS AS (expiry_time - create_time < INTERVAL '30' DAY) STORED,
+		    interval_array_len bigint GENERATED ALWAYS AS (ARRAY_LENGTH(ARRAY[INTERVAL '1-2 3 4:5:6'], 1)) STORED
+    	)`,
+	}
+
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
 			singerDDLStatements:               singerDBStatements,
@@ -334,6 +355,7 @@ var (
 			testTableDDLStatements:            readDBStatements,
 			fkdcDDLStatements:                 fkdcDBStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBStatments,
+			intervalDDLStatements:             intervalDBStatements,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
 			singerDDLStatements:               singerDBPGStatements,
@@ -343,6 +365,7 @@ var (
 			testTableDDLStatements:            readDBPGStatements,
 			fkdcDDLStatements:                 fkdcDBPGStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBPGStatments,
+			intervalDDLStatements:             intervalDBPGStatements,
 		},
 	}
 
@@ -855,6 +878,195 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
 	if !testEqual(got, want) {
 		t.Errorf("got unexpected result from ReadOnlyTransaction.QueryWithOptions: %v, want %v", got, want)
+	}
+}
+
+func TestIntegration_Interval(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][intervalDDLStatements])
+	defer cleanup()
+
+	m := InsertOrUpdate("IntervalTable", []string{"key", "create_time", "expiry_time"},
+		[]interface{}{
+			"test1",
+			time.Date(2004, 11, 30, 4, 53, 54, 0, time.UTC),
+			time.Date(2004, 12, 15, 4, 53, 54, 0, time.UTC),
+		})
+	_, err := client.Apply(ctx, []*Mutation{m})
+	if err != nil {
+		t.Fatal(err)
+	}
+	placeHolder := "@p1"
+	timestampQuery := `TIMESTAMP('2004-11-30T10:23:54+0530')`
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		placeHolder = "$1"
+		timestampQuery = `TIMESTAMPTZ '2004-11-30T10:23:54+0530'`
+	}
+	stmt := Statement{
+		SQL: `SELECT expiry_within_month, interval_array_len FROM IntervalTable WHERE key = ` + placeHolder,
+		Params: map[string]interface{}{
+			"p1": "test1",
+		},
+	}
+	iter := client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var expiryWithinMonth bool
+	var intervalArrayLen int64
+	if err := row.Columns(&expiryWithinMonth, &intervalArrayLen); err != nil {
+		t.Fatal(err)
+	}
+
+	if !expiryWithinMonth {
+		t.Error("expected expiry_within_month to be true")
+	}
+	if intervalArrayLen != 1 {
+		t.Errorf("expected interval_array_len to be 1, got %d", intervalArrayLen)
+	}
+
+	stmt = Statement{SQL: "SELECT INTERVAL '1' DAY + INTERVAL '1' MONTH AS Col1"}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var interval Interval
+	if err := row.Column(0, &interval); err != nil {
+		t.Fatal(err)
+	}
+
+	wantInterval := Interval{
+		Months: 1,
+		Days:   1,
+		Nanos:  big.NewInt(0),
+	}
+
+	if interval.Months != wantInterval.Months || interval.Days != wantInterval.Days || interval.Nanos.Cmp(wantInterval.Nanos) != 0 {
+		t.Errorf("got interval %+v, want %+v", interval, wantInterval)
+	}
+
+	m = InsertOrUpdate("IntervalTable", []string{"key", "create_time", "expiry_time"},
+		[]interface{}{
+			"test2",
+			time.Date(2004, 8, 30, 4, 53, 54, 0, time.UTC),
+			time.Date(2004, 12, 15, 4, 53, 54, 0, time.UTC),
+		})
+	_, err = client.Apply(ctx, []*Mutation{m})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stmt = Statement{
+		SQL: `SELECT COUNT(*) FROM IntervalTable WHERE create_time < ` + timestampQuery + ` - ` + placeHolder,
+		Params: map[string]interface{}{
+			"p1": Interval{Days: 30},
+		},
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var count int64
+	if err := row.Column(0, &count); err != nil {
+		t.Fatal(err)
+	}
+
+	if count != 1 {
+		t.Errorf("got count %d, want 1", count)
+	}
+
+	stmt = Statement{
+		SQL: "SELECT " + placeHolder,
+		Params: map[string]interface{}{
+			"p1": []Interval{
+				{Months: 14, Days: 3, Nanos: big.NewInt(14706000000000)},
+				{},
+				{Months: -14, Days: -3, Nanos: big.NewInt(-14706000000000)},
+				{},
+			},
+		},
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var intervals []NullInterval
+	if err := row.Column(0, &intervals); err != nil {
+		t.Fatal(err)
+	}
+
+	wantIntervals := []NullInterval{
+		{Interval: Interval{Months: 14, Days: 3, Nanos: big.NewInt(14706000000000)}, Valid: true},
+		{Valid: true},
+		{Interval: Interval{Months: -14, Days: -3, Nanos: big.NewInt(-14706000000000)}, Valid: true},
+		{Valid: true},
+	}
+
+	if len(intervals) != len(wantIntervals) {
+		t.Fatalf("got %d intervals, want %d", len(intervals), len(wantIntervals))
+	}
+
+	for i := range intervals {
+		if intervals[i].Valid != wantIntervals[i].Valid || intervals[i].Interval.Months != wantIntervals[i].Interval.Months ||
+			intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
+			(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
+			t.Errorf("interval %d: got %+v, want %+v", i, intervals[i], wantIntervals[i])
+		}
+	}
+
+	stmt = Statement{
+		SQL: `SELECT ARRAY[CAST('P1Y2M3DT4H5M6.789123S' AS INTERVAL), 
+		                   null, 
+		                   CAST('P-1Y-2M-3DT-4H-5M-6.789123S' AS INTERVAL)] AS Col1`,
+	}
+	iter = client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := row.Column(0, &intervals); err != nil {
+		t.Fatal(err)
+	}
+
+	wantIntervals = []NullInterval{
+		{Interval: Interval{Months: 14, Days: 3, Nanos: big.NewInt(14706789123000)}, Valid: true},
+		{Valid: false},
+		{Interval: Interval{Months: -14, Days: -3, Nanos: big.NewInt(-14706789123000)}, Valid: true},
+	}
+
+	if len(intervals) != len(wantIntervals) {
+		t.Fatalf("got %d intervals, want %d", len(intervals), len(wantIntervals))
+	}
+
+	for i := range intervals {
+		if intervals[i].Valid != wantIntervals[i].Valid || intervals[i].Interval.Months != wantIntervals[i].Interval.Months ||
+			intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
+			(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
+			t.Errorf("interval %d: got %+v, want %+v", i, intervals[i], wantIntervals[i])
+		}
 	}
 }
 
@@ -2035,7 +2247,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					Numeric		NUMERIC,
 					NumericArray	ARRAY<NUMERIC>,
 					JSON		JSON,
-					JSONArray	ARRAY<JSON>
+					JSONArray	ARRAY<JSON>,
 				) PRIMARY KEY (RowID)`,
 	}
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
@@ -2192,6 +2404,324 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "NumericArray", val: nil, wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
 		{col: "JSON", val: nil, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
 		{col: "JSONArray", val: nil, wantWithDefaultConfig: []NullJSON(nil), wantWithNumber: []NullJSON(nil)},
+	}
+
+	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31
+	if !isEmulatorEnvSet() {
+		tests = append(tests, []struct {
+			col                   string
+			val                   interface{}
+			wantWithDefaultConfig interface{}
+			wantWithNumber        interface{}
+		}{
+			{col: "Date", val: nil, wantWithDefaultConfig: NullDate{}, wantWithNumber: NullDate{}},
+			{col: "Timestamp", val: nil, wantWithDefaultConfig: NullTime{}, wantWithNumber: NullTime{}},
+		}...)
+	}
+
+	for _, withNumberConfigOption := range []bool{false, true} {
+		name := "without_number_option"
+		if withNumberConfigOption {
+			name = "with_number_option"
+		}
+		t.Run(name, func(t *testing.T) {
+			if withNumberConfigOption {
+				UseNumberWithJSONDecoderEncoder(withNumberConfigOption)
+				defer UseNumberWithJSONDecoderEncoder(!withNumberConfigOption)
+			}
+			// Write rows into table first using DML.
+			statements := make([]Statement, 0)
+			for i, test := range tests {
+				stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+				// Note: We are not setting the parameter type here to ensure that it
+				// can be automatically recognized when it is actually needed.
+				stmt.Params["id"] = i
+				stmt.Params["value"] = test.val
+				statements = append(statements, stmt)
+			}
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				rowCounts, err := tx.BatchUpdate(ctx, statements)
+				if err != nil {
+					return err
+				}
+				if len(rowCounts) != len(tests) {
+					return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+				}
+				for i, c := range rowCounts {
+					if c != 1 {
+						return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				t.Fatalf("failed to insert values using DML: %v", err)
+			}
+			// Delete all the rows so we can insert them using mutations as well.
+			_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+			if err != nil {
+				t.Fatalf("failed to delete all rows: %v", err)
+			}
+
+			// Verify that we can insert the rows using mutations.
+			var muts []*Mutation
+			for i, test := range tests {
+				muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
+			}
+			if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
+				t.Fatal(err)
+			}
+
+			for i, test := range tests {
+				row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+				if err != nil {
+					t.Fatalf("Unable to fetch row %v: %v", i, err)
+				}
+				verifyDirectPathRemoteAddress(t)
+				want := test.wantWithDefaultConfig
+				if withNumberConfigOption {
+					want = test.wantWithNumber
+				}
+				if want == nil {
+					want = test.val
+				}
+				gotp := reflect.New(reflect.TypeOf(want))
+				if err := row.Column(0, gotp.Interface()); err != nil {
+					t.Errorf("%v-%d: col:%v val:%#v, %v", withNumberConfigOption, i, test.col, test.val, err)
+					continue
+				}
+				got := reflect.Indirect(gotp).Interface()
+
+				// One of the test cases is checking NaN handling.  Given
+				// NaN!=NaN, we can't use reflect to test for it.
+				if isNaN(got) && isNaN(want) {
+					continue
+				}
+
+				// Check non-NaN cases.
+				if !testEqual(got, want) {
+					t.Errorf("%v-%d: col:%v val:%#v, got %#v, want %#v", withNumberConfigOption, i, test.col, test.val, got, want)
+					continue
+				}
+			}
+			// cleanup
+			_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+			if err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+// TODO: Rename it to `TestIntegration_BasicTypes` and remove the current one once UUID is enabled in production.
+// Test encoding/decoding non-struct Cloud Spanner types.
+func TestIntegration_UUID(t *testing.T) {
+	t.Parallel()
+	skipUnsupportedPGTest(t)
+	onlyRunOnCloudDevel(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE TABLE Singers (
+					SingerId	INT64 NOT NULL,
+					FirstName	STRING(1024),
+					LastName	STRING(1024),
+					SingerInfo	BYTES(MAX)
+				) PRIMARY KEY (SingerId)`,
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
+					AccountId	INT64 NOT NULL,
+					Nickname	STRING(100),
+					Balance		INT64 NOT NULL,
+				) PRIMARY KEY (AccountId)`,
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
+					RowID		INT64 NOT NULL,
+					String		STRING(MAX),
+					StringArray	ARRAY<STRING(MAX)>,
+					Bytes		BYTES(MAX),
+					BytesArray	ARRAY<BYTES(MAX)>,
+					Int64a		INT64,
+					Int64Array	ARRAY<INT64>,
+					Bool		BOOL,
+					BoolArray	ARRAY<BOOL>,
+					Float64		FLOAT64,
+					Float64Array	ARRAY<FLOAT64>,
+					Date		DATE,
+					DateArray	ARRAY<DATE>,
+					Timestamp	TIMESTAMP,
+					TimestampArray	ARRAY<TIMESTAMP>,
+					Numeric		NUMERIC,
+					NumericArray	ARRAY<NUMERIC>,
+					JSON		JSON,
+					JSONArray	ARRAY<JSON>,
+					UUID 		UUID,
+					UUIDArray	Array<UUID>,
+				) PRIMARY KEY (RowID)`,
+	}
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
+	// Boundaries
+	t2, _ := time.Parse(time.RFC3339Nano, "0001-01-01T00:00:00.000000000Z")
+	t3, _ := time.Parse(time.RFC3339Nano, "9999-12-31T23:59:59.999999999Z")
+	d1, _ := civil.ParseDate("2016-11-15")
+	// Boundaries
+	d2, _ := civil.ParseDate("0001-01-01")
+	d3, _ := civil.ParseDate("9999-12-31")
+
+	n0 := big.Rat{}
+	n1p, _ := (&big.Rat{}).SetString("123456789")
+	n2p, _ := (&big.Rat{}).SetString("123456789/1000000000")
+	n1 := *n1p
+	n2 := *n2p
+
+	type Message struct {
+		Name       string
+		Body       string
+		Time       int64
+		FloatValue interface{}
+	}
+	msg := Message{"Alice", "Hello", 145688415796432520, json.Number("0.39240506000000003")}
+	unmarshalledJSONStructUsingNumber := map[string]interface{}{
+		"Name":       "Alice",
+		"Body":       "Hello",
+		"Time":       json.Number("145688415796432520"),
+		"FloatValue": json.Number("0.39240506000000003"),
+	}
+	unmarshalledJSONStruct := map[string]interface{}{
+		"Name":       "Alice",
+		"Body":       "Hello",
+		"Time":       1.456884157964325e+17,
+		"FloatValue": 0.39240506,
+	}
+
+	tests := []struct {
+		col                   string
+		val                   interface{}
+		wantWithDefaultConfig interface{}
+		wantWithNumber        interface{}
+	}{
+		{col: "String", val: ""},
+		{col: "String", val: "", wantWithDefaultConfig: NullString{"", true}, wantWithNumber: NullString{"", true}},
+		{col: "String", val: "foo"},
+		{col: "String", val: "foo", wantWithDefaultConfig: NullString{"foo", true}, wantWithNumber: NullString{"foo", true}},
+		{col: "String", val: NullString{"bar", true}, wantWithDefaultConfig: "bar", wantWithNumber: "bar"},
+		{col: "String", val: NullString{"bar", false}, wantWithDefaultConfig: NullString{"", false}, wantWithNumber: NullString{"", false}},
+		{col: "StringArray", val: []string(nil), wantWithDefaultConfig: []NullString(nil), wantWithNumber: []NullString(nil)},
+		{col: "StringArray", val: []string{}, wantWithDefaultConfig: []NullString{}, wantWithNumber: []NullString{}},
+		{col: "StringArray", val: []string{"foo", "bar"}, wantWithDefaultConfig: []NullString{{"foo", true}, {"bar", true}}, wantWithNumber: []NullString{{"foo", true}, {"bar", true}}},
+		{col: "StringArray", val: []NullString(nil)},
+		{col: "StringArray", val: []NullString{}},
+		{col: "StringArray", val: []NullString{{"foo", true}, {}}},
+		{col: "Bytes", val: []byte{}},
+		{col: "Bytes", val: []byte{1, 2, 3}},
+		{col: "Bytes", val: []byte(nil)},
+		{col: "BytesArray", val: [][]byte(nil)},
+		{col: "BytesArray", val: [][]byte{}},
+		{col: "BytesArray", val: [][]byte{{1}, {2, 3}}},
+		{col: "Int64a", val: 0, wantWithDefaultConfig: int64(0), wantWithNumber: int64(0)},
+		{col: "Int64a", val: -1, wantWithDefaultConfig: int64(-1), wantWithNumber: int64(-1)},
+		{col: "Int64a", val: 2, wantWithDefaultConfig: int64(2), wantWithNumber: int64(2)},
+		{col: "Int64a", val: int64(3)},
+		{col: "Int64a", val: 4, wantWithDefaultConfig: NullInt64{4, true}, wantWithNumber: NullInt64{4, true}},
+		{col: "Int64a", val: NullInt64{5, true}, wantWithDefaultConfig: int64(5), wantWithNumber: int64(5)},
+		{col: "Int64a", val: NullInt64{6, true}, wantWithDefaultConfig: int64(6), wantWithNumber: int64(6)},
+		{col: "Int64a", val: NullInt64{7, false}, wantWithDefaultConfig: NullInt64{0, false}, wantWithNumber: NullInt64{0, false}},
+		{col: "Int64Array", val: []int(nil), wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Int64Array", val: []int{}, wantWithDefaultConfig: []NullInt64{}, wantWithNumber: []NullInt64{}},
+		{col: "Int64Array", val: []int{1, 2}, wantWithDefaultConfig: []NullInt64{{1, true}, {2, true}}, wantWithNumber: []NullInt64{{1, true}, {2, true}}},
+		{col: "Int64Array", val: []int64(nil), wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Int64Array", val: []int64{}, wantWithDefaultConfig: []NullInt64{}, wantWithNumber: []NullInt64{}},
+		{col: "Int64Array", val: []int64{1, 2}, wantWithDefaultConfig: []NullInt64{{1, true}, {2, true}}, wantWithNumber: []NullInt64{{1, true}, {2, true}}},
+		{col: "Int64Array", val: []NullInt64(nil)},
+		{col: "Int64Array", val: []NullInt64{}},
+		{col: "Int64Array", val: []NullInt64{{1, true}, {}}},
+		{col: "Bool", val: false},
+		{col: "Bool", val: true},
+		{col: "Bool", val: false, wantWithDefaultConfig: NullBool{false, true}, wantWithNumber: NullBool{false, true}},
+		{col: "Bool", val: true, wantWithDefaultConfig: NullBool{true, true}, wantWithNumber: NullBool{true, true}},
+		{col: "Bool", val: NullBool{true, true}},
+		{col: "Bool", val: NullBool{false, false}},
+		{col: "BoolArray", val: []bool(nil), wantWithDefaultConfig: []NullBool(nil), wantWithNumber: []NullBool(nil)},
+		{col: "BoolArray", val: []bool{}, wantWithDefaultConfig: []NullBool{}, wantWithNumber: []NullBool{}},
+		{col: "BoolArray", val: []bool{true, false}, wantWithDefaultConfig: []NullBool{{true, true}, {false, true}}, wantWithNumber: []NullBool{{true, true}, {false, true}}},
+		{col: "BoolArray", val: []NullBool(nil)},
+		{col: "BoolArray", val: []NullBool{}},
+		{col: "BoolArray", val: []NullBool{{false, true}, {true, true}, {}}},
+		{col: "Float64", val: 0.0},
+		{col: "Float64", val: 3.14},
+		{col: "Float64", val: math.NaN()},
+		{col: "Float64", val: math.Inf(1)},
+		{col: "Float64", val: math.Inf(-1)},
+		{col: "Float64", val: 2.78, wantWithDefaultConfig: NullFloat64{2.78, true}, wantWithNumber: NullFloat64{2.78, true}},
+		{col: "Float64", val: NullFloat64{2.71, true}, wantWithDefaultConfig: 2.71, wantWithNumber: 2.71},
+		{col: "Float64", val: NullFloat64{1.41, true}, wantWithDefaultConfig: NullFloat64{1.41, true}, wantWithNumber: NullFloat64{1.41, true}},
+		{col: "Float64", val: NullFloat64{0, false}},
+		{col: "Float64Array", val: []float64(nil), wantWithDefaultConfig: []NullFloat64(nil), wantWithNumber: []NullFloat64(nil)},
+		{col: "Float64Array", val: []float64{}, wantWithDefaultConfig: []NullFloat64{}, wantWithNumber: []NullFloat64{}},
+		{col: "Float64Array", val: []float64{2.72, 3.14, math.Inf(1)}, wantWithDefaultConfig: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}, wantWithNumber: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}},
+		{col: "Float64Array", val: []NullFloat64(nil)},
+		{col: "Float64Array", val: []NullFloat64{}},
+		{col: "Float64Array", val: []NullFloat64{{2.72, true}, {math.Inf(1), true}, {}}},
+		{col: "Date", val: d1},
+		{col: "Date", val: d1, wantWithDefaultConfig: NullDate{d1, true}, wantWithNumber: NullDate{d1, true}},
+		{col: "Date", val: NullDate{d1, true}},
+		{col: "Date", val: NullDate{d1, true}, wantWithDefaultConfig: d1, wantWithNumber: d1},
+		{col: "Date", val: NullDate{civil.Date{}, false}},
+		{col: "DateArray", val: []civil.Date(nil), wantWithDefaultConfig: []NullDate(nil), wantWithNumber: []NullDate(nil)},
+		{col: "DateArray", val: []civil.Date{}, wantWithDefaultConfig: []NullDate{}, wantWithNumber: []NullDate{}},
+		{col: "DateArray", val: []civil.Date{d1, d2, d3}, wantWithDefaultConfig: []NullDate{{d1, true}, {d2, true}, {d3, true}}, wantWithNumber: []NullDate{{d1, true}, {d2, true}, {d3, true}}},
+		{col: "Timestamp", val: t1},
+		{col: "Timestamp", val: t1, wantWithDefaultConfig: NullTime{t1, true}, wantWithNumber: NullTime{t1, true}},
+		{col: "Timestamp", val: NullTime{t1, true}},
+		{col: "Timestamp", val: NullTime{t1, true}, wantWithDefaultConfig: t1, wantWithNumber: t1},
+		{col: "Timestamp", val: NullTime{}},
+		{col: "TimestampArray", val: []time.Time(nil), wantWithDefaultConfig: []NullTime(nil), wantWithNumber: []NullTime(nil)},
+		{col: "TimestampArray", val: []time.Time{}, wantWithDefaultConfig: []NullTime{}, wantWithNumber: []NullTime{}},
+		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, wantWithDefaultConfig: []NullTime{{t1, true}, {t2, true}, {t3, true}}, wantWithNumber: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
+		{col: "Numeric", val: n1},
+		{col: "Numeric", val: n2},
+		{col: "Numeric", val: n1, wantWithDefaultConfig: NullNumeric{n1, true}, wantWithNumber: NullNumeric{n1, true}},
+		{col: "Numeric", val: n2, wantWithDefaultConfig: NullNumeric{n2, true}, wantWithNumber: NullNumeric{n2, true}},
+		{col: "Numeric", val: NullNumeric{n1, true}, wantWithDefaultConfig: n1, wantWithNumber: n1},
+		{col: "Numeric", val: NullNumeric{n1, true}, wantWithDefaultConfig: NullNumeric{n1, true}, wantWithNumber: NullNumeric{n1, true}},
+		{col: "Numeric", val: NullNumeric{n0, false}},
+		{col: "NumericArray", val: []big.Rat(nil), wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
+		{col: "NumericArray", val: []big.Rat{}, wantWithDefaultConfig: []NullNumeric{}, wantWithNumber: []NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat{n1, n2}, wantWithDefaultConfig: []NullNumeric{{n1, true}, {n2, true}}, wantWithNumber: []NullNumeric{{n1, true}, {n2, true}}},
+		{col: "NumericArray", val: []NullNumeric(nil)},
+		{col: "NumericArray", val: []NullNumeric{}},
+		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
+		{col: "JSON", val: NullJSON{msg, true}, wantWithDefaultConfig: NullJSON{unmarshalledJSONStruct, true}, wantWithNumber: NullJSON{unmarshalledJSONStructUsingNumber, true}},
+		{col: "JSON", val: NullJSON{msg, false}, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
+		{col: "JSONArray", val: []NullJSON(nil)},
+		{col: "JSONArray", val: []NullJSON{}},
+		{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, wantWithDefaultConfig: []NullJSON{{unmarshalledJSONStruct, true}, {unmarshalledJSONStruct, true}, {}}, wantWithNumber: []NullJSON{{unmarshalledJSONStructUsingNumber, true}, {unmarshalledJSONStructUsingNumber, true}, {}}},
+		{col: "String", val: nil, wantWithDefaultConfig: NullString{}, wantWithNumber: NullString{}},
+		{col: "StringArray", val: nil, wantWithDefaultConfig: []NullString(nil), wantWithNumber: []NullString(nil)},
+		{col: "Bytes", val: nil, wantWithDefaultConfig: []byte(nil), wantWithNumber: []byte(nil)},
+		{col: "BytesArray", val: nil, wantWithDefaultConfig: [][]byte(nil), wantWithNumber: [][]byte(nil)},
+		{col: "Int64a", val: nil, wantWithDefaultConfig: NullInt64{}, wantWithNumber: NullInt64{}},
+		{col: "Int64Array", val: nil, wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Bool", val: nil, wantWithDefaultConfig: NullBool{}, wantWithNumber: NullBool{}},
+		{col: "BoolArray", val: nil, wantWithDefaultConfig: []NullBool(nil), wantWithNumber: []NullBool(nil)},
+		{col: "Float64", val: nil, wantWithDefaultConfig: NullFloat64{}, wantWithNumber: NullFloat64{}},
+		{col: "Float64Array", val: nil, wantWithDefaultConfig: []NullFloat64(nil), wantWithNumber: []NullFloat64(nil)},
+		{col: "Numeric", val: nil, wantWithDefaultConfig: NullNumeric{}, wantWithNumber: NullNumeric{}},
+		{col: "NumericArray", val: nil, wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
+		{col: "JSON", val: nil, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
+		{col: "JSONArray", val: nil, wantWithDefaultConfig: []NullJSON(nil), wantWithNumber: []NullJSON(nil)},
+		{col: "UUID", val: uuid1},
+		{col: "UUID", val: uuid1, wantWithDefaultConfig: NullUUID{uuid1, true}, wantWithNumber: NullUUID{uuid1, true}},
+		{col: "UUID", val: NullUUID{uuid1, true}},
+		{col: "UUID", val: NullUUID{uuid1, true}, wantWithDefaultConfig: uuid1, wantWithNumber: uuid1},
+		{col: "UUID", val: NullUUID{uuid.UUID{}, false}},
+		{col: "UUIDArray", val: []uuid.UUID(nil), wantWithDefaultConfig: []NullUUID(nil), wantWithNumber: []NullUUID(nil)},
+		{col: "UUIDArray", val: []uuid.UUID{}, wantWithDefaultConfig: []NullUUID{}, wantWithNumber: []NullUUID{}},
+		{col: "UUIDArray", val: []uuid.UUID{uuid1, uuid2}, wantWithDefaultConfig: []NullUUID{{uuid1, true}, {uuid2, true}}, wantWithNumber: []NullUUID{{uuid1, true}, {uuid2, true}}},
 	}
 
 	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31
@@ -5138,6 +5668,23 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
+func compareErrors(got, want error) bool {
+	if got == nil || want == nil {
+		return got == want
+	}
+	gotStr := got.Error()
+	wantStr := want.Error()
+	if idx := strings.Index(gotStr, "requestID"); idx != -1 {
+		gotStr = gotStr[:idx]
+	}
+	if idx := strings.Index(wantStr, "requestID"); idx != -1 {
+		wantStr = wantStr[:idx]
+	}
+	gotStr = strings.ReplaceAll(gotStr, `",`, ``)
+	wantStr = strings.ReplaceAll(gotStr, `",`, ``)
+	return strings.EqualFold(strings.TrimSpace(gotStr), strings.TrimSpace(wantStr))
+}
+
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	skipEmulatorTest(t)
 	t.Parallel()
@@ -5334,9 +5881,10 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
-			// convert the error to lower case because resource names are in lower case for PG dialect.
-			if gotErr != nil && !strings.Contains(gotErr.Error(), tt.wantErr.Error()) {
-				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+			if gotErr != nil {
+				if !compareErrors(gotErr, tt.wantErr) {
+					t.Errorf(`FKDC error=%v, wantErr: %v`, gotErr, tt.wantErr)
+				}
 			} else {
 				tt.validate()
 			}
@@ -6227,6 +6775,13 @@ func skipOnNonProd(t *testing.T) {
 	job := os.Getenv("JOB_TYPE")
 	if strings.Contains(job, "cloud-devel") || strings.Contains(job, "cloud-staging") {
 		t.Skip("Skipping test on non-production environment.")
+	}
+}
+
+func onlyRunOnCloudDevel(t *testing.T) {
+	job := os.Getenv("JOB_TYPE")
+	if !strings.Contains(job, "cloud-devel") {
+		t.Skip("Skipping test on non cloud-devel environment")
 	}
 }
 

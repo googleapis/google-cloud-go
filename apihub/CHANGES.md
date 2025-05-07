@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/apihub/v0.1.4...apihub/v0.1.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **apihub:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/apihub/v0.1.3...apihub/v0.1.4) (2025-03-13)
 
 
