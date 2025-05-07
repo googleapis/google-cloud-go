@@ -155,16 +155,6 @@ func ShouldRetry(err error) bool {
 		return true
 	}
 
-	// TODO: remove when https://github.com/golang/go/issues/53472 is resolved.
-	// We don't want to retry io.EOF errors, since these can indicate normal
-	// functioning terminations such as internally in the case of Reader and
-	// externally in the case of iterator methods.
-	// However, the linked bug requires us to retry EOF it causes. We can distinguish
-	// EOFs caused by the bug because they are not wrapped correctly.
-	if !errors.Is(err, io.EOF) && strings.Contains(err.Error(), ": EOF") {
-		return true
-	}
-
 	switch e := err.(type) {
 	case *googleapi.Error:
 		// Retry on 408, 429, and 5xx, according to
@@ -179,6 +169,15 @@ func ShouldRetry(err error) bool {
 			if strings.Contains(e.Error(), s) {
 				return true
 			}
+		}
+		// TODO: remove when https://github.com/golang/go/issues/53472 is resolved.
+		// We don't want to retry io.EOF errors, since these can indicate normal
+		// functioning terminations such as internally in the case of Reader and
+		// externally in the case of iterator methods. However, the linked bug
+		// requires us to retry EOFs that it causes. We can distinguish
+		// EOFs caused by the bug because they are not wrapped correctly.
+		if !errors.Is(err, io.EOF) && strings.Contains(err.Error(), "EOF") {
+			return true
 		}
 	case *net.DNSError:
 		if e.IsTemporary {
