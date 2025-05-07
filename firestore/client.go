@@ -166,6 +166,11 @@ func withRequestParamsHeader(ctx context.Context, requestParams string) context.
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
+// Pipeline creates a PipelineSource to start building a Firestore pipeline.
+func (c *Client) Pipeline() *PipelineSource {
+	return &PipelineSource{client: c}
+}
+
 // Collection creates a reference to a collection with the given path.
 // A path is a sequence of IDs separated by slashes.
 //
