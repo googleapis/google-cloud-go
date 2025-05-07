@@ -23,15 +23,15 @@ import (
 
 // Pipeline class provides a flexible and expressive framework for building complex data
 // transformation and query pipelines for Firestore.
-
+//
 // A pipeline takes data sources, such as Firestore collections or collection groups, and applies
 // a series of stages that are chained together. Each stage takes the output from the previous stage
 // (or the data source) and produces an output for the next stage (or as the final output of the
 // pipeline).
-
+//
 // Expressions can be used within
 // each stages to filter and transform data through the stage.
-
+//
 // NOTE: The chained stages do not prescribe exactly how Firestore will execute the pipeline.
 // Instead, Firestore only guarantees that the result is the same as if the chained stages were
 // executed in order.
