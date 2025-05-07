@@ -85,6 +85,24 @@ You can also use a struct whose exported fields match the query:
 	    fmt.Println(c)
 	}
 
+Struct fields can also be tagged using the bigquery struct tag to match the source field name:
+
+	type Count struct {
+	    YearCount int `bigquery:"year"`
+	    NumCount  int `bigquery:"num"`
+	}
+	for {
+	    var c Count
+	    err := it.Next(&c)
+	    if err == iterator.Done {
+	        break
+	    }
+	    if err != nil {
+	        // TODO: Handle error.
+	    }
+	    fmt.Println(c)
+	}
+
 You can also start the query running and get the results later.
 Create the query as above, but call [Query.Run] instead of [Query.Read]. This returns a [Job],
 which represents an asynchronous operation.
