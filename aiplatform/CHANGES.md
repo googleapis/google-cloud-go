@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.85.0...aiplatform/v1.86.0) (2025-05-06)
+
+
+### Features
+
+* **aiplatform:** A new field `system_labels` is added to message `google.cloud.aiplatform.v1beta1.DeployRequest` ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+* **aiplatform:** Expose llm parser to public v1 proto to prepare for GA ([#12089](https://github.com/googleapis/google-cloud-go/issues/12089)) ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+
+
+### Documentation
+
+* **aiplatform:** Update an outdated URL ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+
 ## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.84.0...aiplatform/v1.85.0) (2025-04-30)
 
 
