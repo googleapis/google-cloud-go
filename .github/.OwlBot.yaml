@@ -408,6 +408,7 @@ deep-remove-regex:
   - /internal/generated/snippets/speech/apiv1p1beta1/
   - /internal/generated/snippets/speech/apiv2/
   - /internal/generated/snippets/storage/control/apiv2/
+  - /internal/generated/snippets/storagebatchoperations/apiv1/
   - /internal/generated/snippets/storageinsights/apiv1/
   - /internal/generated/snippets/storagetransfer/apiv1/
   - /internal/generated/snippets/streetview/publish/apiv1/
@@ -570,6 +571,7 @@ deep-remove-regex:
   - /speech/apiv2/
   - /storage/control/apiv2/
   - /storage/internal/apiv2/
+  - /storagebatchoperations/apiv1/
   - /storageinsights/apiv1/
   - /storagetransfer/apiv1/
   - /streetview/publish/apiv1/
@@ -1198,6 +1200,8 @@ deep-copy-regex:
     dest: /
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2
+  - source: /google/cloud/storagebatchoperations/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go
