@@ -542,3 +542,5 @@ replace cloud.google.com/go/devicestreaming => ../../../devicestreaming
 replace cloud.google.com/go/lustre => ../../../lustre
 
 replace cloud.google.com/go/chronicle => ../../../chronicle
+
+replace cloud.google.com/go/storagebatchoperations => ../../../storagebatchoperations
