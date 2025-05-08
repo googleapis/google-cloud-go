@@ -1478,7 +1478,7 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 		switch edition {
 		case ReservationEditionUnspecified, ReservationEditionStandard, ReservationEditionEnterprise, ReservationEditionEnterprisePlus:
 		default:
-			t.Errorf("expected known reservation edition, %s reported", status.Statistics.Edition)
+			t.Errorf("expected known reservation edition, %q reported", edition)
 		}
 	}
 
