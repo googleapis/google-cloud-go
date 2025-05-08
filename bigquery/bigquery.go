@@ -21,7 +21,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -61,8 +60,8 @@ type Client struct {
 	bqs       *bq.Service
 	rc        *readClient
 
-	// governs use of preview query features.
-	enableQueryPreview bool
+	// container for custom client options
+	customConfig *customClientConfig
 }
 
 // DetectProjectID is a sentinel value that instructs [NewClient] to detect the
@@ -79,12 +78,6 @@ const DetectProjectID = "*detect-project-id*"
 //
 // If the project ID is set to [DetectProjectID], NewClient will attempt to detect
 // the project ID from credentials.
-//
-// This client supports enabling query-related preview features via environmental
-// variables.  By setting the environment variable QUERY_PREVIEW_ENABLED to the string
-// "TRUE", the client will enable preview features, though behavior may still be
-// controlled via the bigquery service as well.  Currently, the feature(s) in scope
-// include: short mode queries (query execution without corresponding job metadata).
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	o := []option.ClientOption{
 		option.WithScopes(Scope),
@@ -102,17 +95,13 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, err
 	}
 
-	var preview bool
-	if v, ok := os.LookupEnv("QUERY_PREVIEW_ENABLED"); ok {
-		if strings.ToUpper(v) == "TRUE" {
-			preview = true
-		}
-	}
+	// gather any custom client options
+	custom := newCustomClientConfig(opts...)
 
 	c := &Client{
-		projectID:          projectID,
-		bqs:                bqs,
-		enableQueryPreview: preview,
+		projectID:    projectID,
+		bqs:          bqs,
+		customConfig: custom,
 	}
 	return c, nil
 }
