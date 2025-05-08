@@ -78,11 +78,11 @@ func TestNewClientWithDatabase(t *testing.T) {
 
 func loggingUnaryInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		for _, opt := range opts {
-			// if opt, ok := opt.(gax.WithRetry); ok {
-			// 	//
-			// }
-		}
+		// for _, opt := range opts {
+		// 	// if opt, ok := opt.(gax.WithRetry); ok {
+		// 	// 	//
+		// 	// }
+		// }
 		err := invoker(ctx, method, req, reply, cc, opts...)
 		log.Printf("Invoked method: %v", method)
 		md, ok := metadata.FromOutgoingContext(ctx)

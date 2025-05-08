@@ -20,7 +20,7 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	cloudOtelTrace "cloud.google.com/go/otel/trace"
+	cloudoteltrace "cloud.google.com/go/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -247,14 +247,14 @@ func (w *withTracingEnabledOption) applyFirestoreOpt(c *clientConfig) {
 // WithTracerProvider sets the tracer provider to use with the Firestore client.
 // If tracing is enabled but a TracerProvider is not provided, the Firestore SDK
 // will attempt to use the registered global trace provider.
-func WithTracerProvider(tracerProvider cloudOtelTrace.TracerProvider) option.ClientOption {
+func WithTracerProvider(tracerProvider cloudoteltrace.TracerProvider) option.ClientOption {
 	return &withTracerProviderOption{tracerProvider: tracerProvider}
 }
 
 type withTracerProviderOption struct {
 	internaloption.EmbeddableAdapter
 
-	tracerProvider cloudOtelTrace.TracerProvider
+	tracerProvider cloudoteltrace.TracerProvider
 }
 
 func (w *withTracerProviderOption) applyFirestoreOpt(c *clientConfig) {

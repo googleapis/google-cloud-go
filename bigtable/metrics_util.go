@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -69,13 +70,17 @@ func extractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, strin
 
 	// Check whether location metadata available in response header metadata
 	if headerMD != nil {
+		fmt.Println("Header exists")
 		locationMetadata = headerMD.Get(locationMDKey)
 	}
 
 	if locationMetadata == nil {
+		fmt.Println("Header does not have location metadat")
 		// Check whether location metadata available in response trailer metadata
 		// if none found in response header metadata
 		if trailerMD != nil {
+			fmt.Println("Trailer has metadata")
+
 			locationMetadata = trailerMD.Get(locationMDKey)
 		}
 	}

@@ -19,7 +19,7 @@ import (
 	"errors"
 	"fmt"
 
-	cloudOtelTrace "cloud.google.com/go/otel/trace"
+	cloudoteltrace "cloud.google.com/go/otel/trace"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
@@ -35,7 +35,7 @@ const (
 
 func (c *Client) getTracerProvider() trace.TracerProvider {
 	if c.config.tracerProvider != nil {
-		return cloudOtelTrace.OtelTracerProviderFromTracerProvider(c.config.tracerProvider)
+		return cloudoteltrace.OtelTracerProviderFromTracerProvider(c.config.tracerProvider)
 	}
 	return otel.GetTracerProvider()
 }

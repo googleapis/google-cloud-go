@@ -2,9 +2,14 @@ module cloud.google.com/go/firestore
 
 go 1.21
 
+replace cloud.google.com/go/otel/trace => /usr/local/google/home/bahaaiman/Documents/cfdb-workspace-01/google-cloud-go/otel/trace
+
+replace cloud.google.com/go/internal/trace => /usr/local/google/home/bahaaiman/Documents/cfdb-workspace-01/google-cloud-go/internal/trace
+
 require (
 	cloud.google.com/go v0.115.1
 	cloud.google.com/go/longrunning v0.6.1
+	cloud.google.com/go/otel/trace v0.0.0-00010101000000-000000000000
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.13.0
 	golang.org/x/time v0.6.0

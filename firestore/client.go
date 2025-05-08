@@ -27,7 +27,7 @@ import (
 	vkit "cloud.google.com/go/firestore/apiv1"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/firestore/internal"
-	cloudOtelTrace "cloud.google.com/go/otel/trace"
+	cloudoteltrace "cloud.google.com/go/otel/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -86,7 +86,7 @@ type Client struct {
 // set through firestoreClientOptions.
 type clientConfig struct {
 	enableTracing  bool
-	tracerProvider cloudOtelTrace.TracerProvider
+	tracerProvider cloudoteltrace.TracerProvider
 }
 
 // newClientConfig generates a new clientConfig with all the given
