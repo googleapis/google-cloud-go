@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"sort"
 	"testing"
-	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	. "cloud.google.com/go/spanner/internal/testutil"
@@ -59,18 +58,11 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 		attribute.String(monitoredResLabelKeyLocation, "global"),
 	}
-	wantMetricNamesStdout := []string{metricNameAttemptCount, metricNameAttemptLatencies, metricNameOperationCount, metricNameOperationLatencies}
+	wantMetricNamesStdout := []string{metricNameAttemptCount, metricNameAttemptLatencies, metricNameOperationCount, metricNameOperationLatencies, metricNameGFELatencies}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
 		wantMetricTypesGCM = append(wantMetricTypesGCM, nativeMetricsPrefix+wantMetricName)
 	}
-
-	// Reduce sampling period to reduce test run time
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 5 * time.Second
-	defer func() {
-		defaultSamplePeriod = origSamplePeriod
-	}()
 
 	// return constant client UID instead of random, so that attributes can be compared
 	origGenerateClientUID := generateClientUID
@@ -136,14 +128,28 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 					nativeMetricsPrefix + metricNameOperationCount: 1,
 				},
 				"Spanner.StreamingRead": {
-					nativeMetricsPrefix + metricNameAttemptCount:   2,
-					nativeMetricsPrefix + metricNameOperationCount: 1,
+					nativeMetricsPrefix + metricNameAttemptCount:              2,
+					nativeMetricsPrefix + metricNameOperationCount:            1,
+					nativeMetricsPrefix + metricNameGFEConnectivityErrorCount: 1,
 				},
 			},
 			wantOTELMetrics: map[string][]string{
-				createSessionRPC: wantMetricTypesGCM,
-				// since operation will be retries once we will have extra attempt latency for this operation
-				"Spanner.StreamingRead": append(wantMetricTypesGCM, nativeMetricsPrefix+metricNameAttemptLatencies),
+				createSessionRPC: {
+					nativeMetricsPrefix + metricNameAttemptCount,
+					nativeMetricsPrefix + metricNameAttemptLatencies,
+					nativeMetricsPrefix + metricNameGFELatencies,
+					nativeMetricsPrefix + metricNameOperationCount,
+					nativeMetricsPrefix + metricNameOperationLatencies,
+				},
+				"Spanner.StreamingRead": {
+					nativeMetricsPrefix + metricNameAttemptCount,
+					nativeMetricsPrefix + metricNameAttemptLatencies,
+					nativeMetricsPrefix + metricNameAttemptLatencies,
+					nativeMetricsPrefix + metricNameGFEConnectivityErrorCount,
+					nativeMetricsPrefix + metricNameGFELatencies,
+					nativeMetricsPrefix + metricNameOperationCount,
+					nativeMetricsPrefix + metricNameOperationLatencies,
+				},
 			},
 		},
 		{
@@ -153,6 +159,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			wantBuiltinEnabled: false,
 		},
 	}
+
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			if test.runOnlyInEmulator {
@@ -183,10 +190,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 
 			// pop out all old requests
-			// record start time
-			testStartTime := time.Now()
-
-			// pop out all old requests
 			monitoringServer.CreateServiceTimeSeriesRequests()
 
 			// Perform single use read-only transaction
@@ -195,13 +198,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				t.Fatalf("ReadRows failed: %v", err)
 			}
 
-			// Calculate elapsed time
-			elapsedTime := time.Since(testStartTime)
-			if elapsedTime < 3*defaultSamplePeriod {
-				// Ensure at least 2 datapoints are recorded
-				time.Sleep(3*defaultSamplePeriod - elapsedTime)
-			}
-
+			client.Close()
 			// Get new CreateServiceTimeSeriesRequests
 			gotCreateTSCalls := monitoringServer.CreateServiceTimeSeriesRequests()
 			var gotExpectedMethods []string
@@ -250,10 +247,14 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				// For StreamingRead, verify operation latency includes all attempt latencies
 				opLatency := gotOTELLatencyValues[method][nativeMetricsPrefix+metricNameOperationLatencies]
 				attemptLatency := gotOTELLatencyValues[method][nativeMetricsPrefix+metricNameAttemptLatencies]
+				gfeLatency := gotOTELLatencyValues[method][nativeMetricsPrefix+metricNameGFELatencies]
 				// expect opLatency and attemptLatency to be non-zero
 				if opLatency == 0 || attemptLatency == 0 {
 					t.Errorf("Operation and attempt latencies should be non-zero for %s: operation_latency=%v, attempt_latency=%v",
 						method, opLatency, attemptLatency)
+				}
+				if gfeLatency != 123 {
+					t.Errorf("GFE latency should be 123 for %s: gfe_latency=%v", method, gfeLatency)
 				}
 				if opLatency <= attemptLatency {
 					t.Errorf("Operation latency should be greater than attempt latency for %s: operation_latency=%v, attempt_latency=%v",

@@ -145,6 +145,7 @@ modules:
   - spanner
   - speech
   - storage
+  - storagebatchoperations
   - storageinsights
   - storagetransfer
   - streetview
@@ -456,6 +457,9 @@ service-configs:
   - input-directory: google/cloud/bigquery/storage/v1alpha
     service-config: bigquerystorage_v1alpha.yaml
     import-path: cloud.google.com/go/bigquery/storage/apiv1alpha
+  - input-directory: google/cloud/bigquery/storage/v1beta
+    service-config: bigquerystorage_v1beta.yaml
+    import-path: cloud.google.com/go/bigquery/storage/apiv1beta
   - input-directory: google/cloud/bigquery/storage/v1beta1
     service-config: bigquerystorage_v1beta1.yaml
     import-path: cloud.google.com/go/bigquery/storage/apiv1beta1
@@ -977,6 +981,9 @@ service-configs:
   - input-directory: google/cloud/speech/v2
     service-config: speech_v2.yaml
     import-path: cloud.google.com/go/speech/apiv2
+  - input-directory: google/cloud/storagebatchoperations/v1
+    service-config: storagebatchoperations_v1.yaml
+    import-path: cloud.google.com/go/storagebatchoperations/apiv1
   - input-directory: google/cloud/storageinsights/v1
     service-config: storageinsights_v1.yaml
     import-path: cloud.google.com/go/storageinsights/apiv1
