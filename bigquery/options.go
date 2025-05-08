@@ -41,6 +41,8 @@ func newCustomClientConfig(opts ...option.ClientOption) *customClientConfig {
 	return conf
 }
 
+// JobCreation mode controls how job creation is handled.  Some queries may
+// be run without creating a job to expedite fetching results.
 type JobCreationMode string
 
 var (
