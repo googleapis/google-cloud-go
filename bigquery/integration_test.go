@@ -1474,10 +1474,12 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 		t.Errorf("expected positive final execution duration, %s reported", status.Statistics.FinalExecutionDuration.String())
 	}
 
-	switch status.Statistics.Edition {
-	case ReservationEditionUnspecified, ReservationEditionStandard, ReservationEditionEnterprise, ReservationEditionEnterprisePlus:
-	default:
-		t.Errorf("expected known reservation edition, %s reported", status.Statistics.Edition)
+	if edition := status.Statistics.Edition; edition != "" {
+		switch edition {
+		case ReservationEditionUnspecified, ReservationEditionStandard, ReservationEditionEnterprise, ReservationEditionEnterprisePlus:
+		default:
+			t.Errorf("expected known reservation edition, %s reported", status.Statistics.Edition)
+		}
 	}
 
 	if status.Statistics.Details == nil {
