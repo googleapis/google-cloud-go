@@ -15,7 +15,9 @@
 package bigquery
 
 import (
+	"reflect"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	bq "google.golang.org/api/bigquery/v2"
@@ -76,6 +78,105 @@ func TestCreateJobRef(t *testing.T) {
 		if !testutil.Equal(got, test.want) {
 			t.Errorf("%+v: got %+v, want %+v", test.in, got, test.want)
 		}
+	}
+}
+
+// Ideally this would be covered by an integration test but simulating
+// performance issues in a dummy project is difficult and requires a lot of set
+// up.
+func Test_JobPerformanceInsights(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		in   *bq.PerformanceInsights
+		want *PerformanceInsights
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "time only",
+			in:   &bq.PerformanceInsights{AvgPreviousExecutionMs: 128},
+			want: &PerformanceInsights{AvgPreviousExecution: 128 * time.Millisecond},
+		},
+		{
+			name: "full",
+			in: &bq.PerformanceInsights{
+				AvgPreviousExecutionMs: 128,
+				StagePerformanceChangeInsights: []*bq.StagePerformanceChangeInsight{
+					{InputDataChange: &bq.InputDataChange{RecordsReadDiffPercentage: 1.23}, StageId: 123},
+					{InputDataChange: &bq.InputDataChange{RecordsReadDiffPercentage: 4.56}, StageId: 456},
+				},
+				StagePerformanceStandaloneInsights: []*bq.StagePerformanceStandaloneInsight{
+					{
+						BiEngineReasons: []*bq.BiEngineReason{
+							{Code: "bi-code-1", Message: "bi-message-1"},
+						},
+						HighCardinalityJoins: []*bq.HighCardinalityJoin{
+							{LeftRows: 11, OutputRows: 22, RightRows: 33, StepIndex: 112233},
+							{LeftRows: 44, OutputRows: 55, RightRows: 66, StepIndex: 445566},
+						},
+						InsufficientShuffleQuota: true,
+						PartitionSkew: &bq.PartitionSkew{SkewSources: []*bq.SkewSource{
+							{StageId: 321},
+							{StageId: 654},
+						}},
+						StageId: 123456,
+					},
+					{
+						BiEngineReasons: []*bq.BiEngineReason{
+							{Code: "bi-code-2", Message: "bi-message-2"},
+							{Code: "bi-code-3", Message: "bi-message-3"},
+						},
+						HighCardinalityJoins: []*bq.HighCardinalityJoin{
+							{LeftRows: 77, OutputRows: 88, RightRows: 99, StepIndex: 778899},
+						},
+						PartitionSkew:  &bq.PartitionSkew{SkewSources: []*bq.SkewSource{{StageId: 987}}},
+						SlotContention: true,
+						StageId:        654321,
+					},
+				},
+			},
+			want: &PerformanceInsights{
+				AvgPreviousExecution: 128 * time.Millisecond,
+				StagePerformanceChangeInsights: []*StagePerformanceChangeInsight{
+					{InputDataChange: &InputDataChange{RecordsReadDiffPercentage: 1.23}, StageID: 123},
+					{InputDataChange: &InputDataChange{RecordsReadDiffPercentage: 4.56}, StageID: 456},
+				},
+				StagePerformanceStandaloneInsights: []*StagePerformanceStandaloneInsight{
+					{
+						BIEngineReasons: []*BIEngineReason{
+							{Code: "bi-code-1", Message: "bi-message-1"},
+						},
+						HighCardinalityJoins: []*HighCardinalityJoin{
+							{LeftRows: 11, OutputRows: 22, RightRows: 33, StepIndex: 112233},
+							{LeftRows: 44, OutputRows: 55, RightRows: 66, StepIndex: 445566},
+						},
+						InsufficientShuffleQuota: true,
+						PartitionSkew:            &PartitionSkew{SkewSources: []*SkewSource{{StageID: 321}, {StageID: 654}}},
+						StageID:                  123456,
+					},
+					{
+						BIEngineReasons: []*BIEngineReason{
+							{Code: "bi-code-2", Message: "bi-message-2"},
+							{Code: "bi-code-3", Message: "bi-message-3"},
+						},
+						HighCardinalityJoins: []*HighCardinalityJoin{
+							{LeftRows: 77, OutputRows: 88, RightRows: 99, StepIndex: 778899},
+						},
+						PartitionSkew:  &PartitionSkew{SkewSources: []*SkewSource{{StageID: 987}}},
+						SlotContention: true,
+						StageID:        654321,
+					},
+				},
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			out := bqToPerformanceInsights(test.in)
+			if !reflect.DeepEqual(test.want, out) {
+				t.Error("out != want")
+			}
+		})
 	}
 }
 
