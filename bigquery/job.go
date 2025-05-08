@@ -381,12 +381,35 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint6
 
 // JobStatistics contains statistics about a job.
 type JobStatistics struct {
-	CreationTime        time.Time
-	StartTime           time.Time
-	EndTime             time.Time
+	// CreationTime is the creation time of this job.
+	// This field will be present on all jobs.
+	CreationTime time.Time
+
+	// StartTime is the start time of this job.
+	// This field will be present when the job transitions from the PENDING state to either RUNNING or DONE.
+	StartTime time.Time
+
+	// EndTime is the end time of this job.
+	// This field will be present whenever a job is in the DONE state.
+	EndTime time.Time
+
+	// TotalBytesProcessed is the total bytes processed for the job.
 	TotalBytesProcessed int64
 
+	// Details is the jobType-specific statistics for the job
 	Details Statistics
+
+	// TotalSlotDuration is the slot duration for the job.
+	TotalSlotDuration time.Duration
+
+	// ReservationUsage attributes slot consumption to reservations.
+	// This field reported misleading information and will no longer be populated.
+	ReservationUsage []*ReservationUsage
+
+	// ReservationID is the name of the primary reservation assigned to this job.
+	// Note that this could be different than reservations reported in the reservation
+	// usage field if parent reservations were used to execute this job.
+	ReservationID string
 
 	// NumChildJobs indicates the number of child jobs run as part of a script.
 	NumChildJobs int64
@@ -398,14 +421,19 @@ type JobStatistics struct {
 	// a script.
 	ScriptStatistics *ScriptStatistics
 
-	// ReservationUsage attributes slot consumption to reservations.
-	ReservationUsage []*ReservationUsage
-
 	// TransactionInfo indicates the transaction ID associated with the job, if any.
 	TransactionInfo *TransactionInfo
 
 	// SessionInfo contains information about the session if this job is part of one.
 	SessionInfo *SessionInfo
+
+	// FinalExecutionDuration is the duration of the execution of the final
+	// attempt of this job, as BigQuery may internally re-attempt to execute the job.
+	FinalExecutionDuration time.Duration
+
+	// Edition is the name of edition corresponding to the reservation for this job
+	// at the time of this update.
+	Edition ReservationEdition
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -696,6 +724,23 @@ type QueryTimelineSample struct {
 	// Cumulative slot-milliseconds consumed by the query.
 	SlotMillis int64
 }
+
+// ReservationEdition is used to specify the name of edition corresponding to the reservation.
+type ReservationEdition string
+
+var (
+	// ReservationEditionUnspecified is the default value, which will be treated as ReservationEditionEnterprise
+	ReservationEditionUnspecified ReservationEdition = "RESERVATION_EDITION_UNSPECIFIED"
+
+	// ReservationEditionStandard represents the Standard edition.
+	ReservationEditionStandard ReservationEdition = "STANDARD"
+
+	// ReservationEditionEnterprise represents the Enterprise edition.
+	ReservationEditionEnterprise ReservationEdition = "ENTERPRISE"
+
+	// ReservationEditionEnterprisePlus represents the Enterprise Plus edition.
+	ReservationEditionEnterprisePlus ReservationEdition = "ENTERPRISE_PLUS"
+)
 
 // ReservationUsage contains information about a job's usage of a single reservation.
 type ReservationUsage struct {
@@ -1014,16 +1059,20 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		return
 	}
 	js := &JobStatistics{
-		CreationTime:        unixMillisToTime(s.CreationTime),
-		StartTime:           unixMillisToTime(s.StartTime),
-		EndTime:             unixMillisToTime(s.EndTime),
-		TotalBytesProcessed: s.TotalBytesProcessed,
-		NumChildJobs:        s.NumChildJobs,
-		ParentJobID:         s.ParentJobId,
-		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
-		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
-		TransactionInfo:     bqToTransactionInfo(s.TransactionInfo),
-		SessionInfo:         bqToSessionInfo(s.SessionInfo),
+		CreationTime:           unixMillisToTime(s.CreationTime),
+		StartTime:              unixMillisToTime(s.StartTime),
+		EndTime:                unixMillisToTime(s.EndTime),
+		TotalBytesProcessed:    s.TotalBytesProcessed,
+		TotalSlotDuration:      time.Duration(s.TotalSlotMs) * time.Millisecond,
+		ReservationUsage:       bqToReservationUsage(s.ReservationUsage),
+		ReservationID:          s.ReservationId,
+		NumChildJobs:           s.NumChildJobs,
+		ParentJobID:            s.ParentJobId,
+		ScriptStatistics:       bqToScriptStatistics(s.ScriptStatistics),
+		TransactionInfo:        bqToTransactionInfo(s.TransactionInfo),
+		SessionInfo:            bqToSessionInfo(s.SessionInfo),
+		FinalExecutionDuration: time.Duration(s.FinalExecutionDurationMs) * time.Millisecond,
+		Edition:                ReservationEdition(s.Edition),
 	}
 	switch {
 	case s.Extract != nil:
