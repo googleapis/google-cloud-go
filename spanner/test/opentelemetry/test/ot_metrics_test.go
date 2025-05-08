@@ -321,7 +321,7 @@ func TestOTMetrics_GFELatency(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("could not add result: %v", err)
 	}
-	iter := client.Single().Read(context.Background(), "Users", spanner.AllKeys(), []string{"email"})
+	iter := client.Single().Query(ctx, spanner.NewStatement("SELECT email FROM Users"))
 	for {
 		_, err := iter.Next()
 		if err == iterator.Done {
