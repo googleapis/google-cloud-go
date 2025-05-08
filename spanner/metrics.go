@@ -231,7 +231,6 @@ type metricInfo struct {
 type builtinMetricsTracerFactory struct {
 	enabled             bool // Indicates if metrics tracing is enabled.
 	isDirectPathEnabled bool // Indicates if DirectPath is enabled.
-	isAFEMetricsEnabled bool
 
 	// shutdown is a function to be called on client close to clean up resources.
 	shutdown func(ctx context.Context)
@@ -277,7 +276,6 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 		},
 		shutdown: func(ctx context.Context) {},
 	}
-	tracerFactory.isAFEMetricsEnabled = strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING"))
 	tracerFactory.isDirectPathEnabled = false
 	tracerFactory.enabled = false
 	var meterProvider *sdkmetric.MeterProvider
@@ -437,9 +435,8 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 // builtinMetricsTracer is created one per operation.
 // It is used to store metric instruments, attribute values, and other data required to obtain and record them.
 type builtinMetricsTracer struct {
-	ctx                 context.Context // Context for the tracer.
-	builtInEnabled      bool            // Indicates if built-in metrics are enabled.
-	isAFEMetricsEnabled bool            // Indicates if AFE metrics are enabled.
+	ctx            context.Context // Context for the tracer.
+	builtInEnabled bool            // Indicates if built-in metrics are enabled.
 
 	// clientAttributes are attributes specific to a client instance that do not change across different operations on the client.
 	clientAttributes []attribute.KeyValue
@@ -530,11 +527,10 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 	currOpTracer.setDirectPathEnabled(tf.isDirectPathEnabled)
 
 	return builtinMetricsTracer{
-		ctx:                 ctx,
-		builtInEnabled:      tf.enabled,
-		isAFEMetricsEnabled: tf.isAFEMetricsEnabled,
-		currOp:              &currOpTracer,
-		clientAttributes:    tf.clientAttributes,
+		ctx:              ctx,
+		builtInEnabled:   tf.enabled,
+		currOp:           &currOpTracer,
+		clientAttributes: tf.clientAttributes,
 
 		instrumentOperationLatencies: tf.operationLatencies,
 		instrumentAttemptLatencies:   tf.attemptLatencies,
@@ -585,33 +581,27 @@ func (t *builtinMetricsTracer) recordGFELatency(latency time.Duration) {
 }
 
 func (t *builtinMetricsTracer) recordAFELatency(latency time.Duration) {
-	if t.builtInEnabled && t.isAFEMetricsEnabled {
-		attrs, err := t.toOtelMetricAttrs(metricNameAFELatencies)
-		if err != nil {
-			return
-		}
-		t.instrumentAFELatencies.Record(t.ctx, float64(latency.Milliseconds()), metric.WithAttributes(attrs...))
+	attrs, err := t.toOtelMetricAttrs(metricNameAFELatencies)
+	if err != nil {
+		return
 	}
+	t.instrumentAFELatencies.Record(t.ctx, float64(latency.Milliseconds()), metric.WithAttributes(attrs...))
 }
 
 func (t *builtinMetricsTracer) recordGFEError() {
-	if t.builtInEnabled {
-		attrs, err := t.toOtelMetricAttrs(metricNameGFEConnectivityErrorCount)
-		if err != nil {
-			return
-		}
-		t.instrumentGFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
+	attrs, err := t.toOtelMetricAttrs(metricNameGFEConnectivityErrorCount)
+	if err != nil {
+		return
 	}
+	t.instrumentGFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
 }
 
 func (t *builtinMetricsTracer) recordAFEError() {
-	if t.builtInEnabled && t.isAFEMetricsEnabled {
-		attrs, err := t.toOtelMetricAttrs(metricNameGFEConnectivityErrorCount)
-		if err != nil {
-			return
-		}
-		t.instrumentAFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
+	attrs, err := t.toOtelMetricAttrs(metricNameAFEConnectivityErrorCount)
+	if err != nil {
+		return
 	}
+	t.instrumentAFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
 }
 
 // Convert error to grpc status error
@@ -639,16 +629,19 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	if !mt.builtInEnabled {
 		return
 	}
-
-	if dur, ok := mt.currOp.currAttempt.serverTimingMetrics[gfeTimingHeader]; ok {
-		mt.recordGFELatency(dur)
+	// capture AFE metrics only if direct-path is enabled and used in current attempt
+	if mt.currOp.currAttempt.directPathUsed {
+		if dur, ok := mt.currOp.currAttempt.serverTimingMetrics[afeTimingHeader]; ok {
+			mt.recordAFELatency(dur)
+		} else {
+			mt.recordAFEError()
+		}
 	} else {
-		mt.recordGFEError()
-	}
-	if dur, ok := mt.currOp.currAttempt.serverTimingMetrics[afeTimingHeader]; ok {
-		mt.recordAFELatency(dur)
-	} else {
-		mt.recordAFEError()
+		if dur, ok := mt.currOp.currAttempt.serverTimingMetrics[gfeTimingHeader]; ok {
+			mt.recordGFELatency(dur)
+		} else {
+			mt.recordGFEError()
+		}
 	}
 
 	// Calculate elapsed time
