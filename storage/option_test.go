@@ -145,6 +145,14 @@ func TestApplyStorageOpt(t *testing.T) {
 				grpcBidiReads: true,
 			},
 		},
+		{
+			desc: "use gRPC zonal bucket APIs",
+			opts: []option.ClientOption{withZonalBucketAPIs()},
+			want: storageConfig{
+				grpcBidiReads:         true,
+				grpcAppendableUploads: true,
+			},
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig
