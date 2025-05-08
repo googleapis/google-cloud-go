@@ -129,13 +129,13 @@ const (
 	// Unspecified partition key. If used, it means using non-partitioned table.
 	PartitionSpec_PARTITION_KEY_UNSPECIFIED PartitionSpec_PartitionKey = 0
 	// The time when the snapshot is taken. If specified as partition key, the
-	// result table(s) is partitoned by the additional timestamp column,
+	// result table(s) is partitioned by the additional timestamp column,
 	// readTime. If [read_time] in ExportAssetsRequest is specified, the
 	// readTime column's value will be the same as it. Otherwise, its value will
 	// be the current time that is used to take the snapshot.
 	PartitionSpec_READ_TIME PartitionSpec_PartitionKey = 1
 	// The time when the request is received and started to be processed. If
-	// specified as partition key, the result table(s) is partitoned by the
+	// specified as partition key, the result table(s) is partitioned by the
 	// requestTime column, an additional timestamp column representing when the
 	// request was received.
 	PartitionSpec_REQUEST_TIME PartitionSpec_PartitionKey = 2
@@ -193,7 +193,7 @@ const (
 	// option.
 	IamPolicyAnalysisOutputConfig_BigQueryDestination_PARTITION_KEY_UNSPECIFIED IamPolicyAnalysisOutputConfig_BigQueryDestination_PartitionKey = 0
 	// The time when the request is received. If specified as partition key,
-	// the result table(s) is partitoned by the RequestTime column, an
+	// the result table(s) is partitioned by the RequestTime column, an
 	// additional timestamp column representing when the request was received.
 	IamPolicyAnalysisOutputConfig_BigQueryDestination_REQUEST_TIME IamPolicyAnalysisOutputConfig_BigQueryDestination_PartitionKey = 1
 )
@@ -3721,7 +3721,7 @@ type AnalyzeMoveRequest struct {
 	Resource string `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
 	// Required. Name of the Google Cloud folder or organization to reparent the
 	// target resource. The analysis will be performed against hypothetically
-	// moving the resource to this specified desitination parent. This can only be
+	// moving the resource to this specified destination parent. This can only be
 	// a folder number (such as "folders/123") or an organization number (such as
 	// "organizations/123").
 	DestinationParent string `protobuf:"bytes,2,opt,name=destination_parent,json=destinationParent,proto3" json:"destination_parent,omitempty"`
