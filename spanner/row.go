@@ -465,13 +465,24 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 	return rows.Do(func(row *Row) error {
 		sliceItem := reflect.New(itemType)
 		if !isPrimitive {
-			defer func() {
-				isFirstRow = false
-			}()
-			if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
-				return err
+			if isFirstRow {
+				defer func() {
+					isFirstRow = false
+				}()
+				if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
+					return err
+				}
 			}
-		} else {
+			defer func() {
+				for _, ptr := range pointers {
+					v := reflect.ValueOf(ptr)
+					if v.IsValid() && !(v.IsNil() || v.IsZero()) {
+						e := v.Elem()
+						e.Set(reflect.Zero(e.Type()))
+					}
+				}
+			}()
+		} else if isPrimitive {
 			if len(row.fields) > 1 && !s.Lenient {
 				return errTooManyColumns()
 			}
