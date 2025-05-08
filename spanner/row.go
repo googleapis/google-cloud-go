@@ -471,7 +471,7 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 			if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
 				return err
 			}
-		} else if isPrimitive {
+		} else {
 			if len(row.fields) > 1 && !s.Lenient {
 				return errTooManyColumns()
 			}
