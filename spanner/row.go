@@ -464,7 +464,7 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 	var err error
 	return rows.Do(func(row *Row) error {
 		sliceItem := reflect.New(itemType)
-		if isFirstRow && !isPrimitive {
+		if !isPrimitive {
 			defer func() {
 				isFirstRow = false
 			}()
