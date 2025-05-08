@@ -921,10 +921,15 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 				log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
 				cancel()
 				<-done
+
 				if res != nil && res.Body != nil {
-					res.Body.Close()
+					go func() {
+						// Read to EOF so the Roundtripper can re-use the connection.
+						io.Copy(io.Discard, res.Body)
+						res.Body.Close()
+					}()
 				}
-				return res, context.DeadlineExceeded
+				return nil, context.DeadlineExceeded
 			case <-done:
 				cancel = nil
 			}
