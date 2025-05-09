@@ -229,6 +229,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 	req2 := req.Clone(req.Context())
 	SetAuthHeader(token, req2)
+	setTrustBoundaryHeader(token, req2)
 	reqBodyClosed = true
 	return t.base.RoundTrip(req2)
 }
