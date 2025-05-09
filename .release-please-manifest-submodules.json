@@ -136,6 +136,7 @@
     "shopping": "0.20.0",
     "spanner/benchmarks": "0.1.0",
     "speech": "1.27.1",
+    "storagebatchoperations": "0.0.0",
     "storageinsights": "1.1.6",
     "storagetransfer": "1.12.4",
     "streetview": "0.2.5",
