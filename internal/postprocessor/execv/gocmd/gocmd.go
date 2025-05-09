@@ -105,18 +105,21 @@ func Build(dir string) error {
 	return nil
 }
 
-// Vet runs linters on all .go files recursively from the given directory.
-func Vet(dir string) error {
-	log.Println("vetting generated code")
+// Format runs goimports on all .go files recursively from the given directory.
+func Format(dir string) error {
+	log.Println("formatting generated code")
 	c := execv.Command("goimports", "-w", ".")
 	c.Dir = dir
 	if err := c.Run(); err != nil {
 		return err
 	}
-
-	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
-	c.Dir = dir
-	return c.Run()
+	// Undo formatting to pb.go files
+	c2 := execv.Command("git", "checkout", "--", "**/*.pb.go")
+	c2.Dir = dir
+	if err := c2.Run(); err != nil {
+		return err
+	}
+	return nil
 }
 
 // CurrentMod returns the module name of the provided directory.
