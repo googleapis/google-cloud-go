@@ -418,6 +418,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 			cachedRows:      resp.Rows,
 			cachedSchema:    resp.Schema,
 			cachedNextToken: resp.PageToken,
+			cachedTotalRows: resp.TotalRows,
 		}
 		return newRowIterator(ctx, rowSource, fetchPage), nil
 	}
