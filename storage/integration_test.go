@@ -3561,6 +3561,9 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		if _, err := w.Write(randomBytes3MiB); err != nil {
 			t.Fatalf("w.Write: %v", err)
 		}
+		if _, err := w.Flush(); err != nil {
+			t.Fatalf("w.Flush: %v", err)
+		}
 
 		tw, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, nil)
 		if err != nil {

@@ -124,18 +124,20 @@ func TestRetryApply(t *testing.T) {
 		t.Errorf("conditionally mutating row with no retries: no error")
 	}
 
-	errCount = 0
-	code = codes.Internal // Will be retried
-	errMsg = "stream terminated by RST_STREAM"
-	if err := tbl.Apply(ctx, "row", mut); err != nil {
-		t.Errorf("applying single mutation with retries: %v", err)
-	}
-	row, err = tbl.ReadRow(ctx, "row")
-	if err != nil {
-		t.Errorf("reading single value with retries: %v", err)
-	}
-	if row == nil {
-		t.Errorf("applying single mutation with retries: could not read back row")
+	for _, msg := range retryableInternalErrMsgs {
+		errCount = 0
+		code = codes.Internal // Will be retried
+		errMsg = msg
+		if err := tbl.Apply(ctx, "row", mut); err != nil {
+			t.Errorf("applying single mutation with retries: %v, errMsg: %v", err, errMsg)
+		}
+		row, err = tbl.ReadRow(ctx, "row")
+		if err != nil {
+			t.Errorf("reading single value with retries: %v, errMsg: %v", err, errMsg)
+		}
+		if row == nil {
+			t.Errorf("applying single mutation with retries: could not read back row. errMsg: %v", errMsg)
+		}
 	}
 
 	errCount = 0
