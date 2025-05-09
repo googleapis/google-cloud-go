@@ -1,5 +1,17 @@
 # Changes
 
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.37.0...bigtable/v1.38.0) (2025-05-09)
+
+
+### Features
+
+* **bigtable/admin:** Add deletion_protection support for LVs ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Bug Fixes
+
+* **bigtable:** Retry RST stream errors ([#11477](https://github.com/googleapis/google-cloud-go/issues/11477)) ([df43b4a](https://github.com/googleapis/google-cloud-go/commit/df43b4af7529ae91993361b485daff3f83234b2b))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.36.0...bigtable/v1.37.0) (2025-04-15)
 
 
