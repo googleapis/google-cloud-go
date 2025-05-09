@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
-    "version": "0.10.2",
+    "version": "0.11.1",
     "language": "GO",
     "apis": [
       {
@@ -608,6 +608,52 @@
       ]
     },
     {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_DownloadFile_sync",
+      "title": "generativelanguage DownloadFile Sample",
+      "description": "DownloadFile download the `File`.",
+      "file": "FileClient/DownloadFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DownloadFile",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.DownloadFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DownloadFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.DownloadFileResponse",
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "DownloadFile",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.DownloadFile",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "generativelanguage_v1beta_generated_FileService_GetFile_sync",
       "title": "generativelanguage GetFile Sample",
       "description": "GetFile gets the metadata for the given `File`.",
@@ -833,6 +879,48 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_GenerativeService_BidiGenerateContent_sync",
+      "title": "generativelanguage BidiGenerateContent Sample",
+      "description": "BidiGenerateContent low-Latency bidirectional streaming API that supports audio and video\nstreaming inputs can produce multimodal output streams (audio and text).\n\n\nThis method is not supported for the REST transport.",
+      "file": "GenerativeClient/BidiGenerateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BidiGenerateContent",
+        "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient.BidiGenerateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "generativelanguagepb.GenerativeService_BidiGenerateContentClient",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient"
+        },
+        "method": {
+          "shortName": "BidiGenerateContent",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1beta.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -2027,6 +2115,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_PredictionService_PredictLongRunning_sync",
+      "title": "generativelanguage PredictLongRunning Sample",
+      "description": "PredictLongRunning same as Predict but returns an LRO.",
+      "file": "PredictionClient/PredictLongRunning/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PredictLongRunning",
+        "fullName": "google.ai.generativelanguage.v1beta.PredictionClient.PredictLongRunning",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.PredictLongRunningRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PredictLongRunningOperation",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.ai.generativelanguage.v1beta.PredictionClient"
+        },
+        "method": {
+          "shortName": "PredictLongRunning",
+          "fullName": "google.ai.generativelanguage.v1beta.PredictionService.PredictLongRunning",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.ai.generativelanguage.v1beta.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

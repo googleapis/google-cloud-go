@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -62,6 +63,18 @@ var (
 		monitoredResLabelKeyClientHash:     true,
 	}
 
+	allowedMetricLabels = map[string]bool{
+		metricLabelKeyGRPCLBPickResult:      true,
+		metricLabelKeyGRPCLBDataPlaneTarget: true,
+		metricLabelKeyClientUID:             true,
+		metricLabelKeyClientName:            true,
+		metricLabelKeyDatabase:              true,
+		metricLabelKeyDirectPathEnabled:     true,
+		metricLabelKeyDirectPathUsed:        true,
+		metricLabelKeyMethod:                true,
+		metricLabelKeyStatus:                true,
+	}
+
 	errShutdown = fmt.Errorf("exporter is shutdown")
 )
 
@@ -77,23 +90,25 @@ func (e errUnexpectedAggregationKind) Error() string {
 // Google Cloud Monitoring.
 // Default exporter for built-in metrics
 type monitoringExporter struct {
-	shutdown     chan struct{}
-	client       *monitoring.MetricClient
-	shutdownOnce sync.Once
-	projectID    string
-	compression  string
+	projectID        string
+	compression      string
+	clientAttributes []attribute.KeyValue
+	shutdown         chan struct{}
+	client           *monitoring.MetricClient
+	shutdownOnce     sync.Once
 }
 
-func newMonitoringExporter(ctx context.Context, project, compression string, opts ...option.ClientOption) (*monitoringExporter, error) {
+func newMonitoringExporter(ctx context.Context, project, compression string, clientAttributes []attribute.KeyValue, opts ...option.ClientOption) (*monitoringExporter, error) {
 	client, err := monitoring.NewMetricClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &monitoringExporter{
-		client:      client,
-		shutdown:    make(chan struct{}),
-		projectID:   project,
-		compression: compression,
+		projectID:        project,
+		compression:      compression,
+		clientAttributes: clientAttributes,
+		client:           client,
+		shutdown:         make(chan struct{}),
 	}, nil
 }
 
@@ -138,7 +153,6 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 	if len(tss) == 0 {
 		return err
 	}
-
 	name := fmt.Sprintf("projects/%s", me.projectID)
 	ctx = callctx.SetHeaders(ctx, "x-goog-api-client", "gccl/"+internal.Version)
 	if me.compression == gzip.Name {
@@ -178,21 +192,32 @@ func (me *monitoringExporter) recordToMetricAndMonitoredResourcePbs(metrics otel
 		iter := attr.Iter()
 		for iter.Next() {
 			kv := iter.Attribute()
-			labelKey := string(kv.Key)
-
+			// Replace metric label names by converting "." to "_" since Cloud Monitoring does not
+			// support labels containing "."
+			labelKey := strings.Replace(string(kv.Key), ".", "_", -1)
 			if _, isResLabel := monitoredResLabelsSet[labelKey]; isResLabel {
-				// Add labels to monitored resource
 				mr.Labels[labelKey] = kv.Value.Emit()
 			} else {
-				// Add labels to metric
-				labels[labelKey] = kv.Value.Emit()
-
+				if _, ok := allowedMetricLabels[string(kv.Key)]; ok {
+					labels[labelKey] = kv.Value.Emit()
+				}
+			}
+		}
+		for _, label := range me.clientAttributes {
+			if _, isResLabel := monitoredResLabelsSet[string(label.Key)]; isResLabel {
+				mr.Labels[string(label.Key)] = label.Value.Emit()
+			} else {
+				labels[string(label.Key)] = label.Value.Emit()
 			}
 		}
 	}
+	metricName := metrics.Name
+	if !strings.HasPrefix(metricName, nativeMetricsPrefix) {
+		metricName = nativeMetricsPrefix + strings.Replace(metricName, ".", "/", -1)
+	}
 	addAttributes(&attributes)
 	return &googlemetricpb.Metric{
-		Type:   metrics.Name,
+		Type:   metricName,
 		Labels: labels,
 	}, mr
 }
@@ -203,8 +228,7 @@ func (me *monitoringExporter) recordsToTimeSeriesPbs(rm *otelmetricdata.Resource
 		errs []error
 	)
 	for _, scope := range rm.ScopeMetrics {
-		if scope.Scope.Name != builtInMetricsMeterName {
-			// Filter out metric data for instruments that are not part of the spanner builtin metrics
+		if !(scope.Scope.Name == builtInMetricsMeterName || scope.Scope.Name == grpcMetricMeterName) {
 			continue
 		}
 		for _, metrics := range scope.Metrics {

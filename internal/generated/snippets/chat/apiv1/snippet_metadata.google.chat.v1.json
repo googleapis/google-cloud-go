@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "0.12.2",
+    "version": "0.13.0",
     "language": "GO",
     "apis": [
       {
@@ -42,6 +42,52 @@
         "method": {
           "shortName": "CompleteImportSpace",
           "fullName": "google.chat.v1.ChatService.CompleteImportSpace",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_CreateCustomEmoji_sync",
+      "title": "chat CreateCustomEmoji Sample",
+      "description": "CreateCustomEmoji creates a custom emoji.\n\nCustom emojis are only available for Google Workspace accounts, and the\nadministrator must turn custom emojis on for the organization. For more\ninformation, see [Learn about custom emojis in Google\nChat](https: //support.google.com/chat/answer/12800149) and\n[Manage custom emoji\npermissions](https: //support.google.com/a/answer/12850085).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/CreateCustomEmoji/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomEmoji",
+        "fullName": "google.chat.v1.Client.CreateCustomEmoji",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.CreateCustomEmojiRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.CustomEmoji",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateCustomEmoji",
+          "fullName": "google.chat.v1.ChatService.CreateCustomEmoji",
           "service": {
             "shortName": "ChatService",
             "fullName": "google.chat.v1.ChatService"
@@ -237,6 +283,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_DeleteCustomEmoji_sync",
+      "title": "chat DeleteCustomEmoji Sample",
+      "description": "DeleteCustomEmoji deletes a custom emoji. By default, users can only delete custom emoji they\ncreated. [Emoji managers](https: //support.google.com/a/answer/12850085)\nassigned by the administrator can delete any custom emoji in the\norganization. See [Learn about custom emojis in Google\nChat](https: //support.google.com/chat/answer/12800149).\n\nCustom emojis are only available for Google Workspace accounts, and the\nadministrator must turn custom emojis on for the organization. For more\ninformation, see [Learn about custom emojis in Google\nChat](https: //support.google.com/chat/answer/12800149) and\n[Manage custom emoji\npermissions](https: //support.google.com/a/answer/12850085).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/DeleteCustomEmoji/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCustomEmoji",
+        "fullName": "google.chat.v1.Client.DeleteCustomEmoji",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.DeleteCustomEmojiRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteCustomEmoji",
+          "fullName": "google.chat.v1.ChatService.DeleteCustomEmoji",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -499,6 +590,52 @@
         "method": {
           "shortName": "GetAttachment",
           "fullName": "google.chat.v1.ChatService.GetAttachment",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_GetCustomEmoji_sync",
+      "title": "chat GetCustomEmoji Sample",
+      "description": "GetCustomEmoji returns details about a custom emoji.\n\nCustom emojis are only available for Google Workspace accounts, and the\nadministrator must turn custom emojis on for the organization. For more\ninformation, see [Learn about custom emojis in Google\nChat](https: //support.google.com/chat/answer/12800149) and\n[Manage custom emoji\npermissions](https: //support.google.com/a/answer/12850085).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/GetCustomEmoji/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCustomEmoji",
+        "fullName": "google.chat.v1.Client.GetCustomEmoji",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetCustomEmojiRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.CustomEmoji",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetCustomEmoji",
+          "fullName": "google.chat.v1.ChatService.GetCustomEmoji",
           "service": {
             "shortName": "ChatService",
             "fullName": "google.chat.v1.ChatService"
@@ -832,6 +969,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_ListCustomEmojis_sync",
+      "title": "chat ListCustomEmojis Sample",
+      "description": "ListCustomEmojis lists custom emojis visible to the authenticated user.\n\nCustom emojis are only available for Google Workspace accounts, and the\nadministrator must turn custom emojis on for the organization. For more\ninformation, see [Learn about custom emojis in Google\nChat](https: //support.google.com/chat/answer/12800149) and\n[Manage custom emoji\npermissions](https: //support.google.com/a/answer/12850085).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/ListCustomEmojis/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomEmojis",
+        "fullName": "google.chat.v1.Client.ListCustomEmojis",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.ListCustomEmojisRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CustomEmojiIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "ListCustomEmojis",
+          "fullName": "google.chat.v1.ChatService.ListCustomEmojis",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]

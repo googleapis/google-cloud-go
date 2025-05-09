@@ -17,6 +17,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
@@ -30,6 +31,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/storage/experimental"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
@@ -641,11 +643,13 @@ var methods = map[string][]retryFunc{
 			}
 
 			objW := obj.NewWriter(ctx)
-			objW.ChunkSize = MiB
+			// Force multiple messages per chunk, and multiple chunks in the object.
+			objW.ChunkSize = 2 * maxPerMessageWriteSize
+			toWrite := generateRandomBytes(objW.ChunkSize * 2)
 			objW.Append = true
 			objW.FinalizeOnClose = true
 
-			if _, err := objW.Write(randomBytes3MiB); err != nil {
+			if _, err := objW.Write(toWrite); err != nil {
 				return fmt.Errorf("Writer.Write: %v", err)
 			}
 			if err := objW.Close(); err != nil {
@@ -663,8 +667,62 @@ var methods = map[string][]retryFunc{
 				return fmt.Errorf("Reader.Read: %v", err)
 			}
 
-			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
-				return fmt.Errorf("content mismatch, got %v bytes, want %v bytes", len(content), len(randomBytes3MiB))
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(toWrite)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(toWrite), expectedMd5)
+			}
+			return nil
+		},
+		// Appendable upload using Flush() and FinalizeOnClose=false.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
+			b := c.Bucket(bucketName)
+			if err := b.Create(ctx, projectID, nil); err != nil {
+				return err
+			}
+			defer b.Delete(ctx)
+
+			obj := b.Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			// Force multiple messages per chunk, and multiple chunks in the object.
+			objW.ChunkSize = 2 * maxPerMessageWriteSize
+			toWrite := generateRandomBytes(objW.ChunkSize * 2)
+			objW.Append = true
+
+			if _, err := objW.Write(toWrite); err != nil {
+				return fmt.Errorf("Writer.Write: %w", err)
+			}
+			if _, err := objW.Flush(); err != nil {
+				return fmt.Errorf("Writer.Flush: %w", err)
+
+			}
+
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %w", err)
+			}
+
+			// Don't reuse obj, in case preconditions were set on the write request.
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			defer r.Close()
+			if err != nil {
+				return fmt.Errorf("obj.NewReader: %w", err)
+			}
+			content, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("Reader.Read: %w", err)
+			}
+
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(toWrite)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(toWrite), expectedMd5)
 			}
 			return nil
 		},
@@ -978,7 +1036,7 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 		et.Fatalf("HTTP transportClient: %v", err)
 	}
 	if transport == "grpc" {
-		transportClient, err = NewGRPCClient(ctx)
+		transportClient, err = NewGRPCClient(ctx, experimental.WithGRPCBidiReads())
 		if err != nil {
 			et.Fatalf("GRPC transportClient: %v", err)
 		}

@@ -83,6 +83,31 @@ func ExampleClient_CompleteImportSpace() {
 	_ = resp
 }
 
+func ExampleClient_CreateCustomEmoji() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := chat.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &chatpb.CreateCustomEmojiRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/chat/apiv1/chatpb#CreateCustomEmojiRequest.
+	}
+	resp, err := c.CreateCustomEmoji(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateMembership() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -181,6 +206,29 @@ func ExampleClient_CreateSpace() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_DeleteCustomEmoji() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := chat.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &chatpb.DeleteCustomEmojiRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/chat/apiv1/chatpb#DeleteCustomEmojiRequest.
+	}
+	err = c.DeleteCustomEmoji(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleClient_DeleteMembership() {
@@ -320,6 +368,31 @@ func ExampleClient_GetAttachment() {
 		// See https://pkg.go.dev/cloud.google.com/go/chat/apiv1/chatpb#GetAttachmentRequest.
 	}
 	resp, err := c.GetAttachment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetCustomEmoji() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := chat.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &chatpb.GetCustomEmojiRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/chat/apiv1/chatpb#GetCustomEmojiRequest.
+	}
+	resp, err := c.GetCustomEmoji(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -500,6 +573,43 @@ func ExampleClient_GetThreadReadState() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_ListCustomEmojis() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := chat.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &chatpb.ListCustomEmojisRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/chat/apiv1/chatpb#ListCustomEmojisRequest.
+	}
+	it := c.ListCustomEmojis(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*chatpb.ListCustomEmojisResponse)
+	}
 }
 
 func ExampleClient_ListMemberships() {

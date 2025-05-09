@@ -60,6 +60,7 @@ deep-remove-regex:
   - /bigquery/reservation/apiv1/
   - /bigquery/storage/apiv1/
   - /bigquery/storage/apiv1alpha/
+  - /bigquery/storage/apiv1beta/
   - /bigquery/storage/apiv1beta1/
   - /bigquery/storage/apiv1beta2/
   - /bigtable/admin/apiv2/
@@ -72,6 +73,7 @@ deep-remove-regex:
   - /certificatemanager/apiv1/
   - /channel/apiv1/
   - /chat/apiv1/
+  - /chronicle/apiv1/
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /cloudcontrolspartner/apiv1/
@@ -105,7 +107,6 @@ deep-remove-regex:
   - /datastore/apiv1/
   - /datastream/apiv1/
   - /datastream/apiv1alpha1/
-  # - /debugger/apiv2/
   - /deploy/apiv1/
   - /developerconnect/apiv1/
   - /devicestreaming/apiv1/
@@ -203,6 +204,7 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/reservation/apiv1/
   - /internal/generated/snippets/bigquery/storage/apiv1/
   - /internal/generated/snippets/bigquery/storage/apiv1alpha/
+  - /internal/generated/snippets/bigquery/storage/apiv1beta/
   - /internal/generated/snippets/bigquery/storage/apiv1beta1/
   - /internal/generated/snippets/bigquery/storage/apiv1beta2/
   - /internal/generated/snippets/billing/apiv1/
@@ -213,6 +215,7 @@ deep-remove-regex:
   - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/channel/apiv1/
   - /internal/generated/snippets/chat/apiv1/
+  - /internal/generated/snippets/chronicle/apiv1/
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
   - /internal/generated/snippets/cloudcontrolspartner/apiv1/
@@ -244,7 +247,6 @@ deep-remove-regex:
   - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets/datastream/apiv1/
   - /internal/generated/snippets/datastream/apiv1alpha1/
-  # - /internal/generated/snippets/debugger/apiv2/
   - /internal/generated/snippets/deploy/apiv1/
   - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets//devicestreaming/apiv1/
@@ -396,6 +398,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/promotions/v1beta/
   - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/issueresolution/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reviews/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/lfp/apiv1beta/
@@ -407,6 +410,7 @@ deep-remove-regex:
   - /internal/generated/snippets/speech/apiv1p1beta1/
   - /internal/generated/snippets/speech/apiv2/
   - /internal/generated/snippets/storage/control/apiv2/
+  - /internal/generated/snippets/storagebatchoperations/apiv1/
   - /internal/generated/snippets/storageinsights/apiv1/
   - /internal/generated/snippets/storagetransfer/apiv1/
   - /internal/generated/snippets/streetview/publish/apiv1/
@@ -505,7 +509,7 @@ deep-remove-regex:
   - /policytroubleshooter/iam/apiv3/
   - /privatecatalog/apiv1beta1/
   - /privilegedaccessmanager/apiv1/
-  - /pubsub/apiv1/
+  - /pubsub/v2/apiv1/
   - /pubsublite/apiv1/
   - /rapidmigrationassessment/apiv1/
   - /recaptchaenterprise/apiv1/
@@ -554,6 +558,7 @@ deep-remove-regex:
   - /shopping/merchant/promotions/apiv1beta/
   - /shopping/merchant/quota/apiv1beta/
   - /shopping/merchant/inventories/apiv1beta/
+  - /shopping/merchant/issueresolution/apiv1beta/
   - /shopping/merchant/lfp/apiv1beta/
   - /shopping/merchant/reports/apiv1beta/
   - /shopping/merchant/reviews/apiv1beta/
@@ -568,6 +573,7 @@ deep-remove-regex:
   - /speech/apiv2/
   - /storage/control/apiv2/
   - /storage/internal/apiv2/
+  - /storagebatchoperations/apiv1/
   - /storageinsights/apiv1/
   - /storagetransfer/apiv1/
   - /streetview/publish/apiv1/
@@ -614,9 +620,10 @@ deep-preserve-regex:
   - /networkconnectivity/apiv1/policy_based_routing_client.go
   - /networkconnectivity/apiv1/policy_based_routing_client_example_test.go
   - /networkconnectivity/apiv1/networkconnectivitypb/policy_based_routing.pb.go
-  - /pubsub/apiv1/iam.go
-  - /pubsub/apiv1/ListTopics_smoke_test.go
-  - /pubsub/apiv1/pubsub_pull_example_test.go
+  # Preserve pubsub apiv1 until deprecation date in a year even though it's not generated.
+  - /pubsub/apiv1/.*
+  - /pubsub/v2/apiv1/iam.go
+  - /pubsub/v2/apiv1/ListTopics_smoke_test.go
   - /secretmanager/apiv1/iam.go
   - /secretmanager/apiv1/iam_example_test.go
   - /spanner/admin/database/apiv1/backup.go
@@ -766,6 +773,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/storage/v1alpha/cloud.google.com/go
     dest: /
+  - source: /google/cloud/bigquery/storage/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/cloud/bigquery/storage/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/storage/v1beta2/cloud.google.com/go
@@ -785,6 +794,8 @@ deep-copy-regex:
   - source: /google/cloud/channel/v1/cloud.google.com/go
     dest: /
   - source: /google/chat/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/chronicle/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
     dest: /
@@ -851,8 +862,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go
     dest: /
-  # - source: /google/devtools/clouddebugger/v2/cloud.google.com/go
-  #   dest: /
   - source: /google/cloud/deploy/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/developerconnect/v1/cloud.google.com/go
@@ -1165,6 +1174,8 @@ deep-copy-regex:
     dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/issueresolution/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/reports/v1beta/cloud.google.com/go
@@ -1193,6 +1204,8 @@ deep-copy-regex:
     dest: /
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2
+  - source: /google/cloud/storagebatchoperations/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go

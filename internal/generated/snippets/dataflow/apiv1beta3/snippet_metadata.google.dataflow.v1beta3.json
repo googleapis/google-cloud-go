@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataflow/apiv1beta3",
-    "version": "0.10.6",
+    "version": "0.11.0",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_AggregatedListJobs_sync",
       "title": "dataflow AggregatedListJobs Sample",
-      "description": "AggregatedListJobs list the jobs of a project across all regions.",
+      "description": "AggregatedListJobs list the jobs of a project across all regions.\n\n**Note: ** This method doesn't support filtering the list of\njobs by name.",
       "file": "JobsV1Beta3Client/AggregatedListJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_CreateJob_sync",
       "title": "dataflow CreateJob Sample",
-      "description": "CreateJob creates a Cloud Dataflow job.\n\nTo create a job, we recommend using `projects.locations.jobs.create` with a\n[regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.create` is not recommended, as your job will always start\nin `us-central1`.",
+      "description": "CreateJob creates a Cloud Dataflow job.\n\nTo create a job, we recommend using `projects.locations.jobs.create` with a\n[regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.create` is not recommended, as your job will always start\nin `us-central1`.\n\nDo not enter confidential information when you supply string values using\nthe API.",
       "file": "JobsV1Beta3Client/CreateJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_ListJobs_sync",
       "title": "dataflow ListJobs Sample",
-      "description": "ListJobs list the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\n`projects.locations.jobs.list` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). To\nlist the all jobs across all regions, use `projects.jobs.aggregated`. Using\n`projects.jobs.list` is not recommended, as you can only get the list of\njobs that are running in `us-central1`.",
+      "description": "ListJobs list the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\n`projects.locations.jobs.list` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). To\nlist the all jobs across all regions, use `projects.jobs.aggregated`. Using\n`projects.jobs.list` is not recommended, because you can only get the list\nof jobs that are running in `us-central1`.\n\n`projects.locations.jobs.list` and `projects.jobs.list` support filtering\nthe list of jobs by name. Filtering by name isn't supported by\n`projects.jobs.aggregated`.",
       "file": "JobsV1Beta3Client/ListJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -704,7 +704,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_TemplatesService_CreateJobFromTemplate_sync",
       "title": "dataflow CreateJobFromTemplate Sample",
-      "description": "CreateJobFromTemplate creates a Cloud Dataflow job from a template.",
+      "description": "CreateJobFromTemplate creates a Cloud Dataflow job from a template. Do not enter confidential\ninformation when you supply string values using the API.\n\nTo create a job, we recommend using `projects.locations.templates.create`\nwith a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.templates.create` is not recommended, because your job will\nalways start in `us-central1`.",
       "file": "TemplatesClient/CreateJobFromTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -750,7 +750,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_TemplatesService_GetTemplate_sync",
       "title": "dataflow GetTemplate Sample",
-      "description": "GetTemplate get the template associated with a template.",
+      "description": "GetTemplate get the template associated with a template.\n\nTo get the template, we recommend using `projects.locations.templates.get`\nwith a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.templates.get` is not recommended, because only\ntemplates that are running in `us-central1` are retrieved.",
       "file": "TemplatesClient/GetTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -796,7 +796,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_TemplatesService_LaunchTemplate_sync",
       "title": "dataflow LaunchTemplate Sample",
-      "description": "LaunchTemplate launch a template.",
+      "description": "LaunchTemplate launches a template.\n\nTo launch a template, we recommend using\n`projects.locations.templates.launch` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.templates.launch` is not recommended, because jobs launched\nfrom the template will always start in `us-central1`.",
       "file": "TemplatesClient/LaunchTemplate/main.go",
       "language": "GO",
       "clientMethod": {

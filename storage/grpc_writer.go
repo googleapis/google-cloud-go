@@ -42,6 +42,40 @@ const (
 	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
 )
 
+func withBidiWriteObjectRedirectionErrorRetries(s *settings) (newr *retryConfig) {
+	oldr := s.retry
+	newr = oldr.clone()
+	if newr == nil {
+		newr = &retryConfig{}
+	}
+	if (oldr.policy == RetryIdempotent && !s.idempotent) || oldr.policy == RetryNever {
+		// We still retry redirection errors even when settings indicate not to
+		// retry.
+		//
+		// The protocol requires us to respect redirection errors, so RetryNever has
+		// to ignore them.
+		//
+		// Idempotency is always protected by redirection errors: they either
+		// contain a handle which can be used as idempotency information, or they do
+		// not contain a handle and are "affirmative failures" which indicate that
+		// no server-side action occurred.
+		newr.policy = RetryAlways
+		newr.shouldRetry = func(err error) bool {
+			return errors.Is(err, bidiWriteObjectRedirectionError{})
+		}
+		return newr
+	}
+	// If retry settings allow retries normally, fall back to that behavior.
+	newr.shouldRetry = func(err error) bool {
+		if errors.Is(err, bidiWriteObjectRedirectionError{}) {
+			return true
+		}
+		v := oldr.runShouldRetry(err)
+		return v
+	}
+	return newr
+}
+
 func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
 	var offset int64
 	errorf := params.setError
@@ -58,6 +92,9 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	if s.retry == nil {
 		s.retry = defaultRetry.clone()
 	}
+	if params.append {
+		s.retry = withBidiWriteObjectRedirectionErrorRetries(s)
+	}
 	s.retry.maxRetryDuration = retryDeadline
 
 	// Set Flush func for use by exported Writer.Flush.
@@ -65,7 +102,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	setFlush(func() (int64, error) {
 		return gw.flush()
 	})
-	gw, err := newGRPCWriter(c, s, params, pr, pw, params.setPipeWriter)
+	gw, err := newGRPCWriter(c, s, params, pr, pr, pw, params.setPipeWriter)
 	if err != nil {
 		errorf(err)
 		pr.CloseWithError(err)
@@ -127,11 +164,17 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					bctx = bucketContext(bctx, gw.bucket)
 				}
 				err = run(bctx, uploadBuff, gw.settings.retry, s.idempotent)
+				offset += int64(recvd)
+				// If this buffer upload was triggered by a flush, reset and
+				// communicate back the result.
+				if gw.flushInProgress {
+					gw.setSize(offset)
+					gw.flushInProgress = false
+					gw.flushComplete <- flushResult{offset: offset, err: err}
+				}
 				if err != nil {
 					return err
 				}
-				offset += int64(recvd)
-
 				// When we are done reading data without errors, set the object and
 				// finish.
 				if doneReading {
@@ -145,14 +188,14 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		// These calls are still valid if err is nil
 		err = checkCanceled(err)
 		errorf(err)
-		pr.CloseWithError(err)
+		gw.pr.CloseWithError(err)
 		close(params.donec)
 	}()
 
 	return pw, nil
 }
 
-func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pw *io.PipeWriter, setPipeWriter func(*io.PipeWriter)) (*gRPCWriter, error) {
+func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pr *io.PipeReader, pw *io.PipeWriter, setPipeWriter func(*io.PipeWriter)) (*gRPCWriter, error) {
 	if params.attrs.Retention != nil {
 		// TO-DO: remove once ObjectRetention is available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
@@ -198,6 +241,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		ctx:                   params.ctx,
 		reader:                r,
 		pw:                    pw,
+		pr:                    pr,
 		bucket:                params.bucket,
 		attrs:                 params.attrs,
 		conds:                 params.conds,
@@ -213,7 +257,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		append:                params.append,
 		finalizeOnClose:       params.finalizeOnClose,
 		setPipeWriter:         setPipeWriter,
-		flushComplete:         make(chan int64),
+		flushComplete:         make(chan flushResult),
 	}, nil
 }
 
@@ -223,6 +267,7 @@ type gRPCWriter struct {
 	c             *grpcStorageClient
 	buf           []byte
 	reader        io.Reader
+	pr            *io.PipeReader // Keep track of pr and pw to update post-flush
 	pw            *io.PipeWriter
 	setPipeWriter func(*io.PipeWriter) // used to set in parent storage.Writer
 
@@ -245,8 +290,13 @@ type gRPCWriter struct {
 	finalizeOnClose       bool
 
 	streamSender    gRPCBidiWriteBufferSender
-	flushInProgress bool       // true when the pipe is being recreated for a flush.
-	flushComplete   chan int64 // use to signal back to flush call that flush to server was completed.
+	flushInProgress bool             // true when the pipe is being recreated for a flush.
+	flushComplete   chan flushResult // use to signal back to flush call that flush to server was completed.
+}
+
+type flushResult struct {
+	err    error
+	offset int64
 }
 
 func bucketContext(ctx context.Context, bucket string) context.Context {
@@ -453,6 +503,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 			trim = int64(len(buf))
 		}
 		buf = buf[trim:]
+		offset += trim
 	}
 	if len(buf) == 0 && !flush && !finishWrite {
 		// no need to send anything
@@ -554,11 +605,6 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 			break
 		}
 	}
-	if w.flushInProgress {
-		w.setSize(offset)
-		w.flushInProgress = false
-		w.flushComplete <- offset
-	}
 	return
 }
 
@@ -584,6 +630,7 @@ func (w *gRPCWriter) read() (int, bool, error) {
 			pr, pw := io.Pipe()
 			w.reader = pr
 			w.pw = pw
+			w.pr = pr
 			w.setPipeWriter(pw)
 		} else {
 			done = true
@@ -604,8 +651,8 @@ func (w *gRPCWriter) flush() (int64, error) {
 	w.pw.Close()
 
 	// Wait for flush to complete
-	offset := <-w.flushComplete
-	return offset, nil
+	result := <-w.flushComplete
+	return result.offset, result.err
 }
 
 func checkCanceled(err error) error {
@@ -645,7 +692,7 @@ func (w *gRPCWriter) newGRPCAppendableObjectBufferSender() (*gRPCAppendBidiWrite
 	s := &gRPCAppendBidiWriteBufferSender{
 		bucket:   w.spec.GetResource().GetBucket(),
 		raw:      w.c.raw,
-		settings: w.c.settings,
+		settings: w.settings,
 		firstMessage: &storagepb.BidiWriteObjectRequest{
 			FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
 				WriteObjectSpec: w.spec,
@@ -667,7 +714,7 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 	s := &gRPCAppendBidiWriteBufferSender{
 		bucket:   w.spec.GetResource().GetBucket(),
 		raw:      w.c.raw,
-		settings: w.c.settings,
+		settings: w.settings,
 		firstMessage: &storagepb.BidiWriteObjectRequest{
 			FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
 				AppendObjectSpec: w.appendSpec,
@@ -686,6 +733,11 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender(ctx context.Context)
 		return nil, err
 	}
 	firstResp := <-s.recvs
+	// Check recvErr after getting the response.
+	if s.recvErr != nil {
+		return nil, s.recvErr
+	}
+
 	// Object resource is returned in the first response on takeover, so capture
 	// this now.
 	s.objResource = firstResp.GetResource()
@@ -709,6 +761,10 @@ func (s *gRPCAppendBidiWriteBufferSender) connect(ctx context.Context) (err erro
 		}
 		// Also always okay to reconnect if there is a generation.
 		if s.firstMessage.GetAppendObjectSpec().GetGeneration() != 0 {
+			return nil
+		}
+		// Also always ok to reconnect if we've seen a redirect token
+		if s.routingToken != nil {
 			return nil
 		}
 
@@ -793,7 +849,7 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeUpdateFirstMessage(resp *storagep
 type bidiWriteObjectRedirectionError struct{}
 
 func (e bidiWriteObjectRedirectionError) Error() string {
-	return "BidiWriteObjectRedirectedError"
+	return ""
 }
 
 func (s *gRPCAppendBidiWriteBufferSender) handleRedirectionError(e *storagepb.BidiWriteObjectRedirectedError) bool {
@@ -838,10 +894,10 @@ func (s *gRPCAppendBidiWriteBufferSender) receiveMessages(resps chan<- *storagep
 	if st, ok := status.FromError(err); ok && st.Code() == codes.Aborted {
 		for _, d := range st.Details() {
 			if e, ok := d.(*storagepb.BidiWriteObjectRedirectedError); ok {
-				// If we can handle this error, replace it with the sentinel. Otherwise,
-				// report it to the user.
+				// If we can handle this error, wrap it with the sentinel so it gets
+				// retried.
 				if ok := s.handleRedirectionError(e); ok {
-					err = bidiWriteObjectRedirectionError{}
+					err = fmt.Errorf("%w%w", bidiWriteObjectRedirectionError{}, err)
 				}
 			}
 		}
@@ -959,12 +1015,6 @@ func (s *gRPCAppendBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []
 			err = s.recvErr
 		}
 		s.stream = nil
-
-		// Retry transparently on a redirection error
-		if _, ok := err.(bidiWriteObjectRedirectionError); ok {
-			s.forceFirstMessage = true
-			continue
-		}
 		return
 	}
 }

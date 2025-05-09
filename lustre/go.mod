@@ -2,22 +2,20 @@ module cloud.google.com/go/lustre
 
 go 1.23.0
 
-toolchain go1.23.6
-
 require (
 	cloud.google.com/go/longrunning v0.6.7
 	github.com/googleapis/gax-go/v2 v2.14.1
-	google.golang.org/api v0.229.0
+	google.golang.org/api v0.231.0
 	google.golang.org/genproto v0.0.0-20250422160041-2d3770c4ea7f
-	google.golang.org/genproto/googleapis/api v0.0.0-20250422160041-2d3770c4ea7f
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250422160041-2d3770c4ea7f
+	google.golang.org/genproto/googleapis/api v0.0.0-20250428153025-10db94c68c34
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250428153025-10db94c68c34
 	google.golang.org/grpc v1.72.0
 	google.golang.org/protobuf v1.36.6
 )
 
 require (
 	cloud.google.com/go v0.120.1 // indirect
-	cloud.google.com/go/auth v0.16.0 // indirect
+	cloud.google.com/go/auth v0.16.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect

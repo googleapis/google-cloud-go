@@ -756,12 +756,7 @@ func TestObjectACLCRUDEmulated(t *testing.T) {
 
 func TestOpenReaderEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
-		if c, ok := client.(*grpcStorageClient); ok {
-			c.config.grpcBidiReads = true
-			defer func() {
-				c.config.grpcBidiReads = false
-			}()
-		}
+		setBidiReads(t, client)
 
 		// Populate test data.
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
@@ -1475,6 +1470,7 @@ type multiRangeDownloaderOutput struct {
 
 func TestMultiRangeDownloaderEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		setBidiReads(t, client)
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
@@ -1553,6 +1549,7 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 
 func TestMRDAddAfterCloseEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		setBidiReads(t, client)
 		content := make([]byte, 5000)
 		rand.New(rand.NewSource(0)).Read(content)
 		// Populate test data.
@@ -1601,6 +1598,7 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 
 func TestMRDAddSanityCheck(t *testing.T) {
 	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		setBidiReads(t, client)
 		content := make([]byte, 5000)
 		rand.New(rand.NewSource(0)).Read(content)
 		// Populate test data.
@@ -1662,6 +1660,7 @@ func TestMRDAddSanityCheck(t *testing.T) {
 
 func TestMultiRangeDownloaderSpecifyGenerationEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		setBidiReads(t, client)
 		content := make([]byte, 5000)
 		rand.New(rand.NewSource(0)).Read(content)
 		// Populate test data.
@@ -2229,8 +2228,8 @@ func TestRetryTimeoutEmulated(t *testing.T) {
 				t.Errorf("GetBucket: got unexpected error: %v; want 503", err)
 			}
 		}
-		// Error should be wrapped so it's also equivalent to a context timeout.
-		if !errors.Is(err, context.DeadlineExceeded) {
+		// Error may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
+		if !(errors.Is(err, context.DeadlineExceeded) || status.Code(err) == codes.DeadlineExceeded) {
 			t.Errorf("GetBucket: got unexpected error %v, want to match DeadlineExceeded.", err)
 		}
 	})
@@ -2488,7 +2487,8 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 						t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
 					}
 				} else {
-					if !errors.Is(err, context.DeadlineExceeded) {
+					// Deadlines may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
+					if !(errors.Is(err, context.DeadlineExceeded) || status.Code(err) == codes.DeadlineExceeded) {
 						t.Fatalf("expected context deadline exceeded found %v", err)
 					}
 				}
@@ -2701,4 +2701,15 @@ func checkEmulatorEnvironment(t *testing.T) {
 // isEmulatorEnvironmentSet checks if the emulator environment variables are set.
 func isEmulatorEnvironmentSet() bool {
 	return os.Getenv("STORAGE_EMULATOR_HOST_GRPC") != "" && os.Getenv("STORAGE_EMULATOR_HOST") != ""
+}
+
+// setBidiReads sets the WithGRPCBidiReads option on the client for the duration
+// of the test if applicable.
+func setBidiReads(t *testing.T, client storageClient) {
+	if c, ok := client.(*grpcStorageClient); ok {
+		c.config.grpcBidiReads = true
+		t.Cleanup(func() {
+			c.config.grpcBidiReads = false
+		})
+	}
 }

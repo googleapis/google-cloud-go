@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.19.1...shopping/v0.20.0) (2025-04-30)
+
+
+### Features
+
+* **shopping:** New clients ([#12056](https://github.com/googleapis/google-cloud-go/issues/12056)) ([3ab1dd8](https://github.com/googleapis/google-cloud-go/commit/3ab1dd8441c2f805f08cb32c1d6d98a76b63130f))
+* **shopping:** New clients ([#12068](https://github.com/googleapis/google-cloud-go/issues/12068)) ([25736fe](https://github.com/googleapis/google-cloud-go/commit/25736fe96434648091388e73c8ed58fa94e9deb8))
+
+
+### Documentation
+
+* **shopping/merchant/lfp:** Add clarification to GetLfpMerchantState documentation ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+
 ## [0.19.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.19.0...shopping/v0.19.1) (2025-04-15)
 
 

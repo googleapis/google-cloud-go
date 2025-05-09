@@ -178,29 +178,31 @@ func (c *Client) Close() error {
 var (
 	idempotentRetryCodes  = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
 	isIdempotentRetryCode = make(map[codes.Code]bool)
-	retryOptions          = []gax.CallOption{
+
+	defaultBackoff = gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        2 * time.Second,
+		Multiplier: 1.2,
+	}
+	retryOptions = []gax.CallOption{
 		gax.WithRetry(func() gax.Retryer {
-			backoff := gax.Backoff{
-				Initial:    100 * time.Millisecond,
-				Max:        2 * time.Second,
-				Multiplier: 1.2,
-			}
 			return &bigtableRetryer{
-				Backoff: backoff,
+				Backoff: defaultBackoff,
 			}
 		}),
 	}
 	retryableInternalErrMsgs = []string{
 		"stream terminated by RST_STREAM", // Retry similar to spanner client. Special case due to https://github.com/googleapis/google-cloud-go/issues/6476
+
+		// Special cases due to: https://github.com/googleapis/google-cloud-go/issues/10207#issuecomment-2307562026
+		"Received Rst stream",
+		"RST_STREAM closed stream",
+		"Received RST_STREAM",
 	}
 
 	executeQueryRetryOptions = []gax.CallOption{
 		gax.WithRetry(func() gax.Retryer {
-			backoff := gax.Backoff{
-				Initial:    100 * time.Millisecond,
-				Max:        2 * time.Second,
-				Multiplier: 1.2,
-			}
+			backoff := defaultBackoff
 			return &bigtableRetryer{
 				alternateRetryCondition: isQueryExpiredViolation,
 				Backoff:                 backoff,

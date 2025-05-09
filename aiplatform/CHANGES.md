@@ -1,6 +1,39 @@
 # Changes
 
 
+## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.85.0...aiplatform/v1.86.0) (2025-05-06)
+
+
+### Features
+
+* **aiplatform:** A new field `system_labels` is added to message `google.cloud.aiplatform.v1beta1.DeployRequest` ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+* **aiplatform:** Expose llm parser to public v1 proto to prepare for GA ([#12089](https://github.com/googleapis/google-cloud-go/issues/12089)) ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+
+
+### Documentation
+
+* **aiplatform:** Update an outdated URL ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+
+## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.84.0...aiplatform/v1.85.0) (2025-04-30)
+
+
+### Features
+
+* **aiplatform:** Adding ThinkingConfig to v1 client library ([#12058](https://github.com/googleapis/google-cloud-go/issues/12058)) ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **aiplatform:** Adding ThinkingConfig to v1beta1 client library ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **aiplatform:** Allow customers to set encryption_spec for context caching ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **aiplatform:** Model Registry Model Checkpoint API ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **aiplatform:** New fields `ref` and `defs` are added to message `.google.cloud.aiplatform.v1.Schema` ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** New fields `ref` and `defs` are added to message `.google.cloud.aiplatform.v1beta1.Schema` ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
+
+### Documentation
+
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
 ## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.83.0...aiplatform/v1.84.0) (2025-04-22)
 
 

@@ -149,7 +149,9 @@ type RestorePlan struct {
 	// during the Create operation.
 	State RestorePlan_State `protobuf:"varint,11,opt,name=state,proto3,enum=google.cloud.gkebackup.v1.RestorePlan_State" json:"state,omitempty"`
 	// Output only. Human-readable description of why RestorePlan is in the
-	// current `state`
+	// current `state`. This field is only meant for human readability and should
+	// not be used programmatically as this field is not guaranteed to be
+	// consistent.
 	StateReason string `protobuf:"bytes,12,opt,name=state_reason,json=stateReason,proto3" json:"state_reason,omitempty"`
 }
 
