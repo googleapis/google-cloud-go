@@ -424,6 +424,31 @@ func TestIntegration_QueryContextTimeout(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryCachedTotalRows(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("select * from unnest(generate_array(1,1000000))") // force multiple pages
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Errorf("Read() error: %v", err)
+	}
+	var values []Value
+	err = it.Next(&values)
+	if err == iterator.Done {
+		t.Error("Expected iterator to have values, but found iterator.Done")
+	}
+	if err != nil {
+		t.Errorf("Expected iterator to read a value without errors, but found: %v", err)
+	}
+	expectedTotal := uint64(1000000)
+	if it.TotalRows != expectedTotal {
+		t.Errorf("Expected total rows to be %d, but found: %d", expectedTotal, it.TotalRows)
+	}
+}
+
 func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 
 	if client == nil {

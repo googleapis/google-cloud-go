@@ -71,6 +71,10 @@ const (
 	// has opted-in for the creation of trace spans on the Spanner layer.
 	endToEndTracingHeader = "x-goog-spanner-end-to-end-tracing"
 
+	// afeMetricHeader is the name of the metadata header if client
+	// has opted-in for the receiving Spanner API Frontend server timing metrics.
+	afeMetricHeader = "x-goog-spanner-enable-afe-server-timing"
+
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
 
@@ -454,8 +458,23 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		// Do not emit native metrics when DisableNativeMetrics is set
 		metricsProvider = noop.NewMeterProvider()
 	}
+	isAFEBuiltInMetricEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING"))
+	isGRPCBuiltInMetricsEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS"))
+	// enable the AFE/GRPC built-in metrics if direct-path is enabled
+	isDirectPathEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"))
+	if isDirectPathEnabled {
+		isAFEBuiltInMetricEnabled = true
+		isGRPCBuiltInMetricsEnabled = true
+	}
+	// disable the AFE/GRPC built-in metrics if the env var is explicitly set
+	if ok, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING")); ok {
+		isAFEBuiltInMetricEnabled = false
+	}
+	if ok, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS")); ok {
+		isGRPCBuiltInMetricsEnabled = false
+	}
 
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider, config.Compression, opts...)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, config.Compression, isAFEBuiltInMetricEnabled, isGRPCBuiltInMetricsEnabled, metricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -523,6 +542,10 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	endToEndTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_END_TO_END_TRACING")
 	if config.EnableEndToEndTracing || endToEndTracingEnvironmentVariable == "true" {
 		md.Append(endToEndTracingHeader, "true")
+	}
+
+	if isAFEBuiltInMetricEnabled {
+		md.Append(afeMetricHeader, "true")
 	}
 
 	if isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS")); isMultiplexed != "" && !config.enableMultiplexSession {

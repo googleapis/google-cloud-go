@@ -414,6 +414,9 @@
         "speech": {
             "component": "speech"
         },
+        "storagebatchoperations": {
+            "component": "storagebatchoperations"
+        },
         "storageinsights": {
             "component": "storageinsights"
         },
