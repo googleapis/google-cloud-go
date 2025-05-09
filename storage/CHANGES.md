@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.53.0...storage/v1.54.0) (2025-05-09)
+
+
+### Features
+
+* **storage/dataflux:** Increase test coverage for fast-list ([#11184](https://github.com/googleapis/google-cloud-go/issues/11184)) ([fb77b93](https://github.com/googleapis/google-cloud-go/commit/fb77b937d8b634538f68095c9b25f88d87dcbac0))
+* **storage:** Add experimental ZB API option ([#12214](https://github.com/googleapis/google-cloud-go/issues/12214)) ([f669982](https://github.com/googleapis/google-cloud-go/commit/f669982de2abf64759eccf5c38bd669488b9cf6a))
+
+
+### Bug Fixes
+
+* **storage:** Fix append writer hang ([#12201](https://github.com/googleapis/google-cloud-go/issues/12201)) ([7ce2a2a](https://github.com/googleapis/google-cloud-go/commit/7ce2a2ad3ae9deff28c73c1bcc2e7001770464eb))
+
 ## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.52.0...storage/v1.53.0) (2025-05-02)
 
 
