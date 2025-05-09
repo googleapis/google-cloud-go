@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.87.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.86.0...aiplatform/v1.87.0) (2025-05-09)
+
+
+### Features
+
+* **aiplatform:** A new value `NVIDIA_B200 & NVIDIA_H200_141GB` is added to enum `AcceleratorType` ([#12216](https://github.com/googleapis/google-cloud-go/issues/12216)) ([f2b31a3](https://github.com/googleapis/google-cloud-go/commit/f2b31a31eb97db32ca7f19d5bb4f4c9cba73a806))
+
 ## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.85.0...aiplatform/v1.86.0) (2025-05-06)
 
 
