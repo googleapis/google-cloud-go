@@ -591,10 +591,23 @@ func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream sp
 	if err != nil {
 		return err
 	}
+
 	return s.readStream(stream.Context(), tx, stream.Send, ri)
 }
 
 func (s *server) executeQuery(req *spannerpb.ExecuteSqlRequest) (ri rowIter, err error) {
+	if stmt, ok := tryParseDML(req.Sql); ok {
+		params, err := parseQueryParams(req.GetParams(), req.ParamTypes)
+		if err != nil {
+			return nil, err
+		}
+		s.logf("Executing DML: %s", req.Sql)
+		if len(params) > 0 {
+			s.logf("        ▹ %v", params)
+		}
+		return s.executeDML(stmt, params)
+	}
+
 	q, err := spansql.ParseQuery(req.Sql)
 	if err != nil {
 		// TODO: check what code the real Spanner returns here.
