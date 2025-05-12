@@ -84,6 +84,10 @@ const (
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
 	grpcTestPrefix         = "golang-grpc-test"
+	testUniverseDomain     = "TEST_UNIVERSE_DOMAIN"
+	testUniverseProject    = "TEST_UNIVERSE_PROJECT_ID"
+	testUniverseLocation   = "TEST_UNIVERSE_LOCATION"
+	testUniverseCreds      = "TEST_UNIVERSE_DOMAIN_CREDENTIAL"
 )
 
 var (
@@ -3557,6 +3561,9 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		if _, err := w.Write(randomBytes3MiB); err != nil {
 			t.Fatalf("w.Write: %v", err)
 		}
+		if _, err := w.Flush(); err != nil {
+			t.Fatalf("w.Flush: %v", err)
+		}
 
 		tw, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, nil)
 		if err != nil {
@@ -6868,6 +6875,46 @@ func (te *openTelemetryTestExporter) Spans() tracetest.SpanStubs {
 // Unregister shuts down the underlying OpenTelemetry TracerProvider.
 func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 	te.tp.Shutdown(ctx)
+}
+
+func TestIntegration_UniverseDomains(t *testing.T) {
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+
+	universeDomain := os.Getenv(testUniverseDomain)
+	if universeDomain == "" {
+		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
+	}
+	credFile := os.Getenv(testUniverseCreds)
+	if credFile == "" {
+		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
+	}
+	project := os.Getenv(testUniverseProject)
+	if project == "" {
+		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
+	}
+	location := os.Getenv(testUniverseLocation)
+	if location == "" {
+		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	}
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		bucket := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bucket, project, &BucketAttrs{Location: location})
+		defer h.mustDeleteBucket(bucket)
+
+		obj := bucket.Object(uidSpaceObjects.New())
+		contents := generateRandomBytes(1024)
+		h.mustWrite(obj.NewWriter(ctx), contents)
+		defer h.mustDeleteObject(obj)
+
+		// Verify contents.
+		got := h.mustRead(obj)
+		if !bytes.Equal(got, contents) {
+			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
+		}
+	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(credFile))
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the

@@ -288,10 +288,10 @@
       "description": "appendable_handle_retries_after_first_response",
       "cases": [
         {
-          "instructions": ["return-503-after-2048K"]
+          "instructions": ["return-503-after-4097K"]
         },
         {
-          "instructions": ["return-503-after-2048K", "return-408"]
+          "instructions": ["return-503-after-4097K", "return-408"]
         }
       ],
       "methods": [
@@ -330,6 +330,34 @@
       ],
       "preconditionProvided": true,
       "expectSuccess": false
+    },
+    {
+      "id": 12,
+      "description": "appendable_retry_with_redirect_token",
+      "cases": [
+        {
+          "instructions": ["redirect-send-token-abc", "redirect-expect-token-abc"]
+        }
+      ],
+      "methods": [
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+      ],
+      "preconditionProvided": false,
+      "expectSuccess": true
+    },
+    {
+      "id": 13,
+      "description": "appendable_retry_with_handle_and_redirect_token",
+      "cases": [
+        {
+          "instructions": ["redirect-send-handle-and-token-abc", "redirect-expect-token-abc"]
+        }
+      ],
+      "methods": [
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+      ],
+      "preconditionProvided": false,
+      "expectSuccess": true
     }
   ]
 }
