@@ -175,7 +175,7 @@ const (
 	MetadataJob_TYPE_UNSPECIFIED MetadataJob_Type = 0
 	// Import job.
 	MetadataJob_IMPORT MetadataJob_Type = 1
-	// Export job type.
+	// Export job.
 	MetadataJob_EXPORT MetadataJob_Type = 2
 )
 
@@ -220,8 +220,8 @@ func (MetadataJob_Type) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{41, 0}
 }
 
-// Specifies how the entries and aspects in a metadata job are updated. For
-// more information, see [Sync
+// Specifies how the entries and aspects in a metadata import job are
+// updated. For more information, see [Sync
 // mode](https://cloud.google.com/dataplex/docs/import-metadata#sync-mode).
 type MetadataJob_ImportJobSpec_SyncMode int32
 
@@ -4707,16 +4707,17 @@ func (x *MetadataJob_ImportJobResult) GetUpdateTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// Export Job Results. The result is based on the snapshot at the time when
-// the job is created.
+// Summary results from a metadata export job. The results are a snapshot of
+// the metadata at the time when the job was created. The exported entries are
+// saved to a Cloud Storage bucket.
 type MetadataJob_ExportJobResult struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The number of entries that have been exported.
+	// Output only. The number of entries that were exported.
 	ExportedEntries int64 `protobuf:"varint,1,opt,name=exported_entries,json=exportedEntries,proto3" json:"exported_entries,omitempty"`
-	// Output only. The error message if the export job failed.
+	// Output only. The error message if the metadata export job failed.
 	ErrorMessage string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
 }
 
@@ -4784,8 +4785,9 @@ type MetadataJob_ImportJobSpec struct {
 	// this job.
 	//
 	// A metadata import file defines the values to set for each of the entries
-	// and aspects in a metadata job. For more information about how to create a
-	// metadata import file and the file requirements, see [Metadata import
+	// and aspects in a metadata import job. For more information about how to
+	// create a metadata import file and the file requirements, see [Metadata
+	// import
 	// file](https://cloud.google.com/dataplex/docs/import-metadata#metadata-import-file).
 	//
 	// You can provide multiple metadata import files in the same metadata job.
@@ -4891,20 +4893,23 @@ func (x *MetadataJob_ImportJobSpec) GetLogLevel() MetadataJob_ImportJobSpec_LogL
 	return MetadataJob_ImportJobSpec_LOG_LEVEL_UNSPECIFIED
 }
 
-// Export job specification.
+// Job specification for a metadata export job.
 type MetadataJob_ExportJobSpec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Selects the entries to be exported by this job.
+	// Required. The scope of the export job.
 	Scope *MetadataJob_ExportJobSpec_ExportJobScope `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
-	// Required. The root path of the exported metadata.
-	// Must be in the format: "gs://<bucket_id>"
-	// Or specify a customized prefix after the bucket:
-	// "gs://<bucket_id>/<folder1>/<folder2>/.../".
-	// The length limit of the customized prefix is 128 characters.
-	// The bucket must be in the same VPC-SC perimeter with the job.
+	// Required. The root path of the Cloud Storage bucket to export the
+	// metadata to, in the format `gs://{bucket}/`. You can optionally specify a
+	// custom prefix after the bucket name, in the format
+	// `gs://{bucket}/{prefix}/`. The maximum length of the custom prefix is 128
+	// characters. Dataplex constructs the object path for the exported files by
+	// using the bucket name and prefix that you provide, followed by a
+	// system-generated path.
+	//
+	// The bucket must be in the same VPC Service Controls perimeter as the job.
 	OutputPath string `protobuf:"bytes,3,opt,name=output_path,json=outputPath,proto3" json:"output_path,omitempty"`
 }
 
@@ -5121,47 +5126,57 @@ func (x *MetadataJob_ImportJobSpec_ImportJobScope) GetAspectTypes() []string {
 	return nil
 }
 
-// Scope of the export job.
+// The scope of the export job.
 type MetadataJob_ExportJobSpec_ExportJobScope struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Indicating if it is an organization level export job.
-	// - When set to true, exports all entries from entry groups and projects
-	// sharing the same organization id of the Metadata Job. Only projects and
-	// entry groups in the VPC-SC perimeter will be exported. The projects and
-	// entry groups are ignored.
-	// - When set to false, one of the projects or entry groups must be
-	// specified.
-	// - Default to false.
+	// Whether the metadata export job is an organization-level export job.
+	//
+	// - If `true`, the job exports the entries from the same organization and
+	// VPC Service Controls perimeter as the job. The project that the job
+	// belongs to determines the VPC Service Controls perimeter. If you set
+	// the job scope to be at the organization level, then don't provide a
+	// list of projects or entry groups.
+	// - If `false`, you must specify a list of projects or a list of entry
+	// groups whose entries you want to export.
+	//
+	// The default is `false`.
 	OrganizationLevel bool `protobuf:"varint,1,opt,name=organization_level,json=organizationLevel,proto3" json:"organization_level,omitempty"`
-	// The projects that are in the scope of the export job. Can either be
-	// project numbers or project IDs. If specified, only the entries from the
-	// specified projects will be exported. The projects must be in the same
-	// organization and in the VPC-SC perimeter. Either projects or
-	// entry_groups can be specified when organization_level_export is set to
-	// false.
-	// Must follow the format: "projects/<project_id_or_number>"
+	// The projects whose metadata you want to export, in the format
+	// `projects/{project_id_or_number}`. Only the entries from
+	// the specified projects are exported.
+	//
+	// The projects must be in the same organization and VPC Service Controls
+	// perimeter as the job.
+	//
+	// If you set the job scope to be a list of projects, then set the
+	// organization-level export flag to false and don't provide a list of
+	// entry groups.
 	Projects []string `protobuf:"bytes,2,rep,name=projects,proto3" json:"projects,omitempty"`
-	// The entry groups that are in scope for the export job. Optional. If
-	// specified, only entries in the specified entry groups will be exported
-	// by the job. Must be in the VPC-SC perimeter of the job. The location of
-	// the entry groups must be the same as the job. Either projects or
-	// entry_groups can be specified when organization_level_export is set to
-	// false. Must follow the format:
-	// "projects/<project_id_or_number>/locations/<location>/entryGroups/<entry_group_id>"
+	// The entry groups whose metadata you want to export, in the format
+	// `projects/{project_id_or_number}/locations/{location_id}/entryGroups/{entry_group_id}`.
+	// Only the entries in the specified entry groups are exported.
+	//
+	// The entry groups must be in the same location and the same VPC Service
+	// Controls perimeter as the job.
+	//
+	// If you set the job scope to be a list of entry groups, then set the
+	// organization-level export flag to false and don't provide a list of
+	// projects.
 	EntryGroups []string `protobuf:"bytes,3,rep,name=entry_groups,json=entryGroups,proto3" json:"entry_groups,omitempty"`
-	// If specified, only entries of the specified types will be
-	// affected by the job.
-	// Must follow the format:
-	// "projects/<project_id_or_number>/locations/<location>/entryTypes/<entry_type_id>"
+	// The entry types that are in scope for the export job, specified as
+	// relative resource names in the format
+	// `projects/{project_id_or_number}/locations/{location}/entryTypes/{entry_type_id}`.
+	// Only entries that belong to the specified entry types are affected by
+	// the job.
 	EntryTypes []string `protobuf:"bytes,4,rep,name=entry_types,json=entryTypes,proto3" json:"entry_types,omitempty"`
-	// The aspect types that are in scope for the export job.
-	// Optional. If specified, only aspects of the specified types will be
-	// affected by the job.
-	// Must follow the format:
-	// "projects/<project_id_or_number>/locations/<location>/aspectTypes/<aspect_type_id>"
+	// The aspect types that are in scope for the export job, specified as
+	// relative resource names in the format
+	// `projects/{project_id_or_number}/locations/{location}/aspectTypes/{aspect_type_id}`.
+	// Only aspects that belong to the specified aspect types are affected by
+	// the job.
 	AspectTypes []string `protobuf:"bytes,5,rep,name=aspect_types,json=aspectTypes,proto3" json:"aspect_types,omitempty"`
 }
 
