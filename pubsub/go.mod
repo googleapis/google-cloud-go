@@ -1,6 +1,6 @@
 module cloud.google.com/go/pubsub
 
-go 1.21.0
+go 1.23.0
 
 require (
 	cloud.google.com/go v0.121.0
