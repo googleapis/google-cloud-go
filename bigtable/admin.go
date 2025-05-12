@@ -275,9 +275,10 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 // disable change stream retention.
 type ChangeStreamRetention optional.Duration
 
-// DeletionProtection indicates whether the table is protected against data loss
-// i.e. when set to protected, deleting the table, the column families in the table,
-// and the instance containing the table would be prohibited.
+// DeletionProtection indicates whether the table, authorized view, logical view or
+// materialized view is protected against data loss i.e. when set to protected,
+// deleting the view, the table, the column families in the table,
+// and the instance containing the table or view would be prohibited.
 type DeletionProtection int
 
 // None indicates that deletion protection is unset
