@@ -237,7 +237,7 @@ google.golang.org/genproto/googleapis/bytestream v0.0.0-20240513163218-0867130af
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20250115164207-1a7da9e5054f h1:NtrhicUU5+S4TaE5AurusJUYfAo/QB8a+kbIXipuJeI=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20250303144028-a0af3efb3deb/go.mod h1:35wIojE/F1ptq1nfNDNjtowabHoMSA2qQs7+smpCO5s=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20250425173222-7b384671a197 h1:km2eaPKRd1ganBNsKcAd9YOCLvTBQe8iTaPhE2q9n24=
-google.golang.org/genproto/googleapis/bytestream v0.0.0-20250425173222-7b384671a197/go.mod h1:h6yxum/C2qRb4txaZRLDHK8RyS0H/o2oEDeKY4onY/Y=
+google.golang.org/genproto/googleapis/bytestream v0.0.0-20250428153025-10db94c68c34/go.mod h1:h6yxum/C2qRb4txaZRLDHK8RyS0H/o2oEDeKY4onY/Y=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20230725213213-b022f6e96895/go.mod h1:TUfxEVdsvPg18p6AslUXFoLdpED4oBnGwyqk3dV1XzM=
 google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0 h1:rNBFJjBCOgVr9pWD7rs/knKL4FRTKgpZmsRfV214zcA=
 google.golang.org/grpc/examples v0.0.0-20230224211313-3775f633ce20 h1:MLBCGN1O7GzIx+cBiwfYPwtmZ41U3Mn/cotLJciaArI=

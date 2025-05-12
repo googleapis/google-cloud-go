@@ -1,6 +1,6 @@
 module cloud.google.com/go/pubsub
 
-go 1.21
+go 1.21.0
 
 require (
 	cloud.google.com/go v0.121.0
@@ -8,8 +8,8 @@ require (
 	cloud.google.com/go/kms v1.21.2
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/gax-go/v2 v2.14.0
-	go.einride.tech/aip v0.68.0
+	github.com/googleapis/gax-go/v2 v2.14.1
+	go.einride.tech/aip v0.70.1
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/sdk v1.35.0
