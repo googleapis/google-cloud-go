@@ -112,7 +112,7 @@ type EncryptionConfig_FailureDetails_ErrorCode int32
 const (
 	// The error code is not specified
 	EncryptionConfig_FailureDetails_UNKNOWN EncryptionConfig_FailureDetails_ErrorCode = 0
-	// Error because of internal server error, will be retried automatically..
+	// Error because of internal server error, will be retried automatically.
 	EncryptionConfig_FailureDetails_INTERNAL_ERROR EncryptionConfig_FailureDetails_ErrorCode = 1
 	// User action is required to resolve the error.
 	EncryptionConfig_FailureDetails_REQUIRE_USER_ACTION EncryptionConfig_FailureDetails_ErrorCode = 2
@@ -274,12 +274,9 @@ type CreateEncryptionConfigRequest struct {
 
 	// Required. The location at which the EncryptionConfig is to be created.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The ID of the EncryptionConfig to create.
-	// The ID must contain only letters (a-z, A-Z), numbers (0-9),
-	// and hyphens (-).
-	// The maximum size is 63 characters.
-	// The first character must be a letter.
-	// The last character must be a letter or a number.
+	// Required. The ID of the
+	// [EncryptionConfig][google.cloud.dataplex.v1.EncryptionConfig] to create.
+	// Currently, only a value of "default" is supported.
 	EncryptionConfigId string `protobuf:"bytes,2,opt,name=encryption_config_id,json=encryptionConfigId,proto3" json:"encryption_config_id,omitempty"`
 	// Required. The EncryptionConfig to create.
 	EncryptionConfig *EncryptionConfig `protobuf:"bytes,3,opt,name=encryption_config,json=encryptionConfig,proto3" json:"encryption_config,omitempty"`
