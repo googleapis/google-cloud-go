@@ -7,11 +7,11 @@ replace cloud.google.com/go/spanner => ../
 exclude google.golang.org/grpc v1.71.0
 
 require (
-	cloud.google.com/go/spanner v1.80.0
+	cloud.google.com/go/spanner v1.81.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.27.0
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/sdk v1.35.0
-	google.golang.org/api v0.231.0
+	google.golang.org/api v0.232.0
 )
 
 require (
