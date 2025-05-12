@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/container/apiv1",
-    "version": "1.42.4",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
