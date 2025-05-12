@@ -2,8 +2,6 @@ module cloud.google.com/go/storagebatchoperations
 
 go 1.23.0
 
-toolchain go1.24.3
-
 require (
 	cloud.google.com/go/longrunning v0.6.7
 	github.com/googleapis/gax-go/v2 v2.14.1
