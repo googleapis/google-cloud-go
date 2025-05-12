@@ -413,6 +413,8 @@ replace cloud.google.com/go/logging => ../../../logging
 
 replace cloud.google.com/go/pubsub => ../../../pubsub
 
+replace cloud.google.com/go/pubsub/v2 => ../../../pubsub/v2
+
 replace cloud.google.com/go/pubsublite => ../../../pubsublite
 
 replace cloud.google.com/go/spanner => ../../../spanner
@@ -542,3 +544,5 @@ replace cloud.google.com/go/devicestreaming => ../../../devicestreaming
 replace cloud.google.com/go/lustre => ../../../lustre
 
 replace cloud.google.com/go/chronicle => ../../../chronicle
+
+replace cloud.google.com/go/storagebatchoperations => ../../../storagebatchoperations

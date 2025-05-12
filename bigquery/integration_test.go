@@ -424,6 +424,31 @@ func TestIntegration_QueryContextTimeout(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryCachedTotalRows(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("select * from unnest(generate_array(1,1000000))") // force multiple pages
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Errorf("Read() error: %v", err)
+	}
+	var values []Value
+	err = it.Next(&values)
+	if err == iterator.Done {
+		t.Error("Expected iterator to have values, but found iterator.Done")
+	}
+	if err != nil {
+		t.Errorf("Expected iterator to read a value without errors, but found: %v", err)
+	}
+	expectedTotal := uint64(1000000)
+	if it.TotalRows != expectedTotal {
+		t.Errorf("Expected total rows to be %d, but found: %d", expectedTotal, it.TotalRows)
+	}
+}
+
 func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 
 	if client == nil {
@@ -1458,12 +1483,28 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 		t.Fatal("expected job statistics, none found")
 	}
 
+	if status.Statistics.TotalSlotDuration <= 0 {
+		t.Errorf("expected positive total slot duration, %s reported", status.Statistics.TotalSlotDuration.String())
+	}
+
 	if status.Statistics.NumChildJobs != 0 {
 		t.Errorf("expected no children, %d reported", status.Statistics.NumChildJobs)
 	}
 
 	if status.Statistics.ParentJobID != "" {
 		t.Errorf("expected no parent, but parent present: %s", status.Statistics.ParentJobID)
+	}
+
+	if status.Statistics.FinalExecutionDuration <= 0 {
+		t.Errorf("expected positive final execution duration, %s reported", status.Statistics.FinalExecutionDuration.String())
+	}
+
+	if edition := status.Statistics.Edition; edition != "" {
+		switch edition {
+		case ReservationEditionUnspecified, ReservationEditionStandard, ReservationEditionEnterprise, ReservationEditionEnterprisePlus:
+		default:
+			t.Errorf("expected known reservation edition, %q reported", edition)
+		}
 	}
 
 	if status.Statistics.Details == nil {
