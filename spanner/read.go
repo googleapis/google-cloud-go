@@ -179,7 +179,7 @@ func (r *RowIterator) Next() (*Row, error) {
 		}
 	}()
 
-	for len(r.rows) == 0 && r.streamd.next(&mt) {
+	for len(r.rows) == 0 && r.streamd.next(&mt, r.cancel) {
 		prs := r.streamd.get()
 		if r.setTransactionID != nil {
 			// this is when Read/Query is executed using ReadWriteTransaction
@@ -235,6 +235,7 @@ func (r *RowIterator) Next() (*Row, error) {
 		r.err = errEarlyReadEnd()
 	} else {
 		r.err = iterator.Done
+		r.cancel = nil
 	}
 	return nil, r.err
 }
@@ -559,7 +560,7 @@ var (
 	maxBytesBetweenResumeTokens = int32(128 * 1024 * 1024)
 )
 
-func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
+func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer, cancel func()) bool {
 	retryer := onCodes(d.backoff, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
 
 	// Setup and track x-goog-request-id in the manual retries for ExecuteStreamingSql.
@@ -610,7 +611,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 				// Only the case that receiving queue is empty could cause
 				// peekLast to return error and in such case, we should try to
 				// receive from stream.
-				d.tryRecv(mt, retryer)
+				d.tryRecv(mt, retryer, cancel)
 				continue
 			}
 			if d.isNewResumeToken(last.ResumeToken) {
@@ -639,7 +640,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			}
 			// Needs to receive more from gRPC stream till a new resume token
 			// is observed.
-			d.tryRecv(mt, retryer)
+			d.tryRecv(mt, retryer, cancel)
 			continue
 		case aborted:
 			// Discard all pending items because none of them should be yield
@@ -666,12 +667,21 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 }
 
 // tryRecv attempts to receive a PartialResultSet from gRPC stream.
-func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.Retryer) {
+func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.Retryer, cancel func()) {
 	var res *sppb.PartialResultSet
 	res, d.err = d.stream.Recv()
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
+			go func() {
+				// Fetch the last row and then call cancel() to release resources.
+				// We should make sure that we call cancel() AFTER receiving the
+				// trailers, in order ot let gRPC consider the call successful.
+				_, _ = d.stream.Recv()
+				if cancel != nil {
+					cancel()
+				}
+			}()
 			d.changeState(finished)
 			return
 		}
