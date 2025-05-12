@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/accessapproval v1.8.6
 	cloud.google.com/go/accesscontextmanager v1.9.6
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/aiplatform v1.84.0
+	cloud.google.com/go/aiplatform v1.85.0
 	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/analytics v0.28.0
 	cloud.google.com/go/apigateway v1.7.6
@@ -17,7 +17,7 @@ require (
 	cloud.google.com/go/appengine v1.9.6
 	cloud.google.com/go/area120 v0.9.6
 	cloud.google.com/go/artifactregistry v1.17.1
-	cloud.google.com/go/asset v1.20.6
+	cloud.google.com/go/asset v1.21.0
 	cloud.google.com/go/assuredworkloads v1.12.6
 	cloud.google.com/go/automl v1.14.7
 	cloud.google.com/go/baremetalsolution v1.3.6
@@ -50,7 +50,7 @@ require (
 	cloud.google.com/go/dialogflow v1.68.2
 	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dlp v1.22.1
-	cloud.google.com/go/documentai v1.36.1
+	cloud.google.com/go/documentai v1.37.0
 	cloud.google.com/go/domains v0.10.6
 	cloud.google.com/go/edgecontainer v1.4.3
 	cloud.google.com/go/errorreporting v0.3.2
@@ -59,7 +59,7 @@ require (
 	cloud.google.com/go/filestore v1.10.2
 	cloud.google.com/go/firestore v1.18.0
 	cloud.google.com/go/functions v1.19.6
-	cloud.google.com/go/gkebackup v1.6.5
+	cloud.google.com/go/gkebackup v1.7.0
 	cloud.google.com/go/gkeconnect v0.12.4
 	cloud.google.com/go/gkehub v0.15.6
 	cloud.google.com/go/gkemulticloud v1.5.3
@@ -74,7 +74,7 @@ require (
 	cloud.google.com/go/logging v1.13.0
 	cloud.google.com/go/longrunning v0.6.7
 	cloud.google.com/go/managedidentities v1.7.6
-	cloud.google.com/go/maps v1.20.3
+	cloud.google.com/go/maps v1.20.4
 	cloud.google.com/go/mediatranslation v0.9.6
 	cloud.google.com/go/memcache v1.11.6
 	cloud.google.com/go/metastore v1.14.6
@@ -86,7 +86,7 @@ require (
 	cloud.google.com/go/optimization v1.7.6
 	cloud.google.com/go/orchestration v1.11.9
 	cloud.google.com/go/orgpolicy v1.15.0
-	cloud.google.com/go/osconfig v1.14.5
+	cloud.google.com/go/osconfig v1.14.6
 	cloud.google.com/go/oslogin v1.14.6
 	cloud.google.com/go/phishingprotection v0.9.6
 	cloud.google.com/go/policytroubleshooter v1.11.6
@@ -98,7 +98,7 @@ require (
 	cloud.google.com/go/recommender v1.13.5
 	cloud.google.com/go/redis v1.18.2
 	cloud.google.com/go/resourcemanager v1.10.6
-	cloud.google.com/go/retail v1.19.4
+	cloud.google.com/go/retail v1.20.0
 	cloud.google.com/go/run v1.9.3
 	cloud.google.com/go/scheduler v1.11.7
 	cloud.google.com/go/secretmanager v1.14.7
@@ -129,8 +129,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.6
 	cloud.google.com/go/workflows v1.14.2
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.231.0
-	google.golang.org/genproto v0.0.0-20250428153025-10db94c68c34
+	google.golang.org/api v0.232.0
+	google.golang.org/genproto v0.0.0-20250505200425-f936aa4a68b2
 )
 
 require (
@@ -170,6 +170,7 @@ require (
 	cloud.google.com/go/servicehealth v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/shopping v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/storage v1.53.0
+	cloud.google.com/go/storagebatchoperations v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/streetview v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/visionai v0.0.0-00010101000000-000000000000
@@ -198,10 +199,10 @@ require (
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sync v0.14.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.24.0 // indirect
+	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250428153025-10db94c68c34 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250428153025-10db94c68c34 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250505200425-f936aa4a68b2 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250505200425-f936aa4a68b2 // indirect
 	google.golang.org/grpc v1.72.0 // indirect
 )
 
