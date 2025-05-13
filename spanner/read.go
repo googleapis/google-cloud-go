@@ -95,7 +95,7 @@ func streamWithReplaceSessionFunc(
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
 		meterTracerFactory:   meterTracerFactory,
-		streamd:              newResumableStreamDecoder(ctx, logger, rpc, replaceSession, gsc),
+		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, replaceSession, gsc),
 		rowd:                 &partialResultSetDecoder{},
 		setTransactionID:     setTransactionID,
 		updatePrecommitToken: updatePrecommitToken,
@@ -179,7 +179,7 @@ func (r *RowIterator) Next() (*Row, error) {
 		}
 	}()
 
-	for len(r.rows) == 0 && r.streamd.next(&mt, r.cancel) {
+	for len(r.rows) == 0 && r.streamd.next(&mt) {
 		prs := r.streamd.get()
 		if r.setTransactionID != nil {
 			// this is when Read/Query is executed using ReadWriteTransaction
@@ -288,7 +288,7 @@ func (r *RowIterator) Stop() {
 			defer trace.EndSpan(r.streamd.ctx, nil)
 		}
 	}
-	if r.cancel != nil {
+	if r.cancel != nil && r.streamd != nil && r.streamd.state != ended {
 		r.cancel()
 	}
 	if r.release != nil {
@@ -402,6 +402,9 @@ type resumableStreamDecoder struct {
 	// ctx is the caller's context, used for cancel/timeout Next().
 	ctx context.Context
 
+	// cancel is the function to cancel the context
+	cancel func()
+
 	// rpc is a factory of streamingReceiver, which might resume
 	// a previous stream from the point encoded in restartToken.
 	// rpc is always a wrapper of a Cloud Spanner query which is
@@ -462,9 +465,10 @@ type resumableStreamDecoder struct {
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
 // Parameter rpc should be a function that creates a new stream beginning at the
 // restartToken if non-nil.
-func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), replaceSession func(ctx context.Context) error, gsc *grpcSpannerClient) *resumableStreamDecoder {
+func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), replaceSession func(ctx context.Context) error, gsc *grpcSpannerClient) *resumableStreamDecoder {
 	return &resumableStreamDecoder{
 		ctx:                         ctx,
+		cancel:                      cancel,
 		logger:                      logger,
 		rpc:                         rpc,
 		replaceSessionFunc:          replaceSession,
@@ -560,7 +564,7 @@ var (
 	maxBytesBetweenResumeTokens = int32(128 * 1024 * 1024)
 )
 
-func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer, cancel func()) bool {
+func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 	retryer := onCodes(d.backoff, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
 
 	// Setup and track x-goog-request-id in the manual retries for ExecuteStreamingSql.
@@ -648,9 +652,6 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer, cancel func()) b
 			d.q.clear()
 			return false
 		case finished, ended:
-			if d.state == ended {
-				cancel = nil
-			}
 			// If query has finished, check if there are still buffered messages.
 			d.reqIDInjector = nil
 			if d.q.empty() {
@@ -676,19 +677,14 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
-			d.changeState(ended)
 			go func(s streamingReceiver) {
-				for {
-					_, err := s.Recv()
-					if err == io.EOF {
-						break
-					}
-					if err != nil {
-						break
-					}
+				_, _ = s.Recv()
+				// Cancel the context after receiving trailers
+				if d.cancel != nil {
+					d.cancel()
 				}
-
 			}(d.stream)
+			d.changeState(ended)
 			return
 		}
 		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
