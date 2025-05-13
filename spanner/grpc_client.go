@@ -184,7 +184,16 @@ func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.Execu
 func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	// Note: This method does not add g.optsWithNextRequestID to inject x-goog-spanner-request-id
 	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
-	return g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
+	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
+	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	if !ok {
+		return client, err
+	}
+	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
+		md, _ := client.Header()
+		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+	}
+	return client, err
 }
 
 func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
@@ -210,7 +219,16 @@ func (g *grpcSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest
 func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
 	// Note: This method does not add g.optsWithNextRequestID, as it is already
 	// manually added when creating Stream iterators for StreamingRead.
-	return g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
+	client, err := g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
+	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	if !ok {
+		return client, err
+	}
+	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
+		md, _ := client.Header()
+		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+	}
+	return client, err
 }
 
 func (g *grpcSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
@@ -264,5 +282,14 @@ func (g *grpcSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.Pa
 }
 
 func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
-	return g.raw.BatchWrite(peer.NewContext(ctx, &peer.Peer{}), req, g.optsWithNextRequestID(opts)...)
+	client, err := g.raw.BatchWrite(peer.NewContext(ctx, &peer.Peer{}), req, g.optsWithNextRequestID(opts)...)
+	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	if !ok {
+		return client, err
+	}
+	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
+		md, _ := client.Header()
+		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+	}
+	return client, err
 }

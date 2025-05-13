@@ -21,17 +21,12 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -6096,86 +6091,4 @@ func file_google_cloud_discoveryengine_v1alpha_search_service_proto_init() {
 	file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1alpha_search_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1alpha_search_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// SearchServiceClient is the client API for SearchService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type SearchServiceClient interface {
-	// Performs a search.
-	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-}
-
-type searchServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSearchServiceClient(cc grpc.ClientConnInterface) SearchServiceClient {
-	return &searchServiceClient{cc}
-}
-
-func (c *searchServiceClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
-	out := new(SearchResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1alpha.SearchService/Search", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// SearchServiceServer is the server API for SearchService service.
-type SearchServiceServer interface {
-	// Performs a search.
-	Search(context.Context, *SearchRequest) (*SearchResponse, error)
-}
-
-// UnimplementedSearchServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedSearchServiceServer struct {
-}
-
-func (*UnimplementedSearchServiceServer) Search(context.Context, *SearchRequest) (*SearchResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
-}
-
-func RegisterSearchServiceServer(s *grpc.Server, srv SearchServiceServer) {
-	s.RegisterService(&_SearchService_serviceDesc, srv)
-}
-
-func _SearchService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SearchServiceServer).Search(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1alpha.SearchService/Search",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SearchServiceServer).Search(ctx, req.(*SearchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _SearchService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1alpha.SearchService",
-	HandlerType: (*SearchServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Search",
-			Handler:    _SearchService_Search_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/discoveryengine/v1alpha/search_service.proto",
 }

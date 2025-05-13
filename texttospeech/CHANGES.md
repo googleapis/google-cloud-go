@@ -1,5 +1,13 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.12.1...texttospeech/v1.13.0) (2025-05-06)
+
+
+### Features
+
+* **texttospeech:** Support markup input for Cloud TTS Chirp 3 ([#12110](https://github.com/googleapis/google-cloud-go/issues/12110)) ([658d3d6](https://github.com/googleapis/google-cloud-go/commit/658d3d6cfb37bdf15ae40250fc1b9cb7b3b5ef80))
+* **texttospeech:** Support pinyin/yomigana custom pronunciation encodings for cmn-cn/ja-jp ([658d3d6](https://github.com/googleapis/google-cloud-go/commit/658d3d6cfb37bdf15ae40250fc1b9cb7b3b5ef80))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.12.0...texttospeech/v1.12.1) (2025-04-15)
 
 
