@@ -1,6 +1,26 @@
 # Changes
 
 
+## [1.87.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.86.0...aiplatform/v1.87.0) (2025-05-13)
+
+
+### Features
+
+* **aiplatform:** A new value `NVIDIA_B200 & NVIDIA_H200_141GB` is added to enum `AcceleratorType` ([#12216](https://github.com/googleapis/google-cloud-go/issues/12216)) ([f2b31a3](https://github.com/googleapis/google-cloud-go/commit/f2b31a31eb97db32ca7f19d5bb4f4c9cba73a806))
+* **aiplatform:** A new value `NVIDIA_B200 & NVIDIA_H200_141GB` is added to enum `AcceleratorType` ([#12232](https://github.com/googleapis/google-cloud-go/issues/12232)) ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **aiplatform:** Add ANN feature for RagManagedDb ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Add EncryptionSpec for RagCorpus CMEK feature ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **aiplatform:** New field `additional_properties` is added to message `.google.cloud.aiplatform.v1.Schema` ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** New field `additional_properties` is added to message `.google.cloud.aiplatform.v1beta1.Schema` ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Tuning Checkpoints API ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Tuning Checkpoints API ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+
+
+### Documentation
+
+* **aiplatform:** Fix links and typos ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Remove comments for a non public feature ([#12243](https://github.com/googleapis/google-cloud-go/issues/12243)) ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+
 ## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.85.0...aiplatform/v1.86.0) (2025-05-06)
 
 
