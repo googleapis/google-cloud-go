@@ -1685,7 +1685,7 @@ func (s *GServer) RollbackSchema(_ context.Context, req *pb.RollbackSchemaReques
 	return nil, status.Errorf(codes.NotFound, "schema %q@%q not found", req.Name, req.RevisionId)
 }
 
-// DeleteSchema deletes a schema revision.
+// DeleteSchemaRevision deletes a schema revision.
 func (s *GServer) DeleteSchemaRevision(_ context.Context, req *pb.DeleteSchemaRevisionRequest) (*pb.Schema, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

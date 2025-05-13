@@ -19,9 +19,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/pubsub/pstest"
 	vkit "cloud.google.com/go/pubsub/v2/apiv1"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
-	"cloud.google.com/go/pubsub/v2/pstest"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
