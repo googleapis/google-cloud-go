@@ -504,7 +504,9 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 	}
 
 	if custCfg := q.client.customConfig; custCfg != nil {
-		qRequest.JobCreationMode = string(custCfg.jobCreationMode)
+		if custCfg.jobCreationMode != "" {
+			qRequest.JobCreationMode = string(custCfg.jobCreationMode)
+		}
 	}
 	return qRequest, nil
 }

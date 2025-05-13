@@ -30,7 +30,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "no options",
 			want: &customClientConfig{
-				jobCreationMode: JobCreationModeOptional,
+				jobCreationMode: "",
 			},
 		},
 		{
@@ -40,6 +40,15 @@ func TestCustomClientOptions(t *testing.T) {
 			},
 			want: &customClientConfig{
 				jobCreationMode: JobCreationModeRequired,
+			},
+		},
+		{
+			desc: "jobmode optional",
+			options: []option.ClientOption{
+				WithDefaultJobCreationMode(JobCreationModeOptional),
+			},
+			want: &customClientConfig{
+				jobCreationMode: JobCreationModeOptional,
 			},
 		},
 	}

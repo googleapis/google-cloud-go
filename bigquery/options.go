@@ -30,9 +30,7 @@ type customClientOption interface {
 }
 
 func newCustomClientConfig(opts ...option.ClientOption) *customClientConfig {
-	conf := &customClientConfig{
-		jobCreationMode: JobCreationModeOptional,
-	}
+	conf := &customClientConfig{}
 	for _, opt := range opts {
 		if cOpt, ok := opt.(customClientOption); ok {
 			cOpt.ApplyCustomClientOpt(conf)
@@ -58,7 +56,8 @@ var (
 
 // WithDefaultJobCreationMode is a ClientOption that governs the job creation
 // mode used when executing queries that can be accelerated via the jobs.Query
-// API.  If not specified, the client will use JOB_CREATION_OPTIONAL
+// API.  Users may experience performance improvements by leveraging the
+// JobCreationModeOptional mode.
 func WithDefaultJobCreationMode(mode JobCreationMode) option.ClientOption {
 	return &applierJobCreationMode{mode: mode}
 }
