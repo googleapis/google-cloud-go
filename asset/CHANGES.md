@@ -1,5 +1,12 @@
 # Changes
 
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.21.0...asset/v1.21.1) (2025-05-13)
+
+
+### Documentation
+
+* **asset:** Fix typos in documentation ([#12205](https://github.com/googleapis/google-cloud-go/issues/12205)) ([35b4f4a](https://github.com/googleapis/google-cloud-go/commit/35b4f4aced4a5dc79f1315c74feaac7d11657f8a))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.20.6...asset/v1.21.0) (2025-04-30)
 
 
