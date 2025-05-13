@@ -21,12 +21,11 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -179,7 +178,7 @@ type DataDiscoveryResult struct {
 
 	// Output only. Configuration for metadata publishing.
 	BigqueryPublishing *DataDiscoveryResult_BigQueryPublishing `protobuf:"bytes,1,opt,name=bigquery_publishing,json=bigqueryPublishing,proto3" json:"bigquery_publishing,omitempty"`
-	// Output only. Statistics of the DataDiscoveryScan.
+	// Output only. Describes result statistics of a data scan discovery job.
 	ScanStatistics *DataDiscoveryResult_ScanStatistics `protobuf:"bytes,2,opt,name=scan_statistics,json=scanStatistics,proto3" json:"scan_statistics,omitempty"`
 }
 
@@ -600,7 +599,7 @@ func (x *DataDiscoveryResult_BigQueryPublishing) GetLocation() string {
 	return ""
 }
 
-// Statistics of the DataDiscoveryScan.
+// Describes result statistics of a data scan discovery job.
 type DataDiscoveryResult_ScanStatistics struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
