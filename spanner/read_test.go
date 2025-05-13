@@ -889,7 +889,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 					startTime: time.Now(),
 				}
 				// Receive next decoded item.
-				if r.next(&mt) {
+				if r.next(&mt, cancel) {
 					rs = append(rs, r.get())
 				}
 			}
@@ -1158,7 +1158,7 @@ func TestRsdBlockingStates(t *testing.T) {
 					startTime: time.Now(),
 				}
 				for {
-					if !r.next(&mt) {
+					if !r.next(&mt, cancel) {
 						// Note that r.Next also exits on context cancel/timeout.
 						close(rowsFetched)
 						return
@@ -1298,24 +1298,24 @@ func TestQueueBytes(t *testing.T) {
 		ResumeToken: rt1,
 	})
 
-	decoder.next(&mt)
-	decoder.next(&mt)
-	decoder.next(&mt)
+	decoder.next(&mt, cancel)
+	decoder.next(&mt, cancel)
+	decoder.next(&mt, cancel)
 	if got, want := decoder.bytesBetweenResumeTokens, int32(2*sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next(&mt)
+	decoder.next(&mt, cancel)
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
 
-	decoder.next(&mt)
+	decoder.next(&mt, cancel)
 	if got, want := decoder.bytesBetweenResumeTokens, int32(sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next(&mt)
+	decoder.next(&mt, cancel)
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}

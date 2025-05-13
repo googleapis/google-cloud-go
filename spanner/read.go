@@ -179,7 +179,7 @@ func (r *RowIterator) Next() (*Row, error) {
 		}
 	}()
 
-	for len(r.rows) == 0 && r.streamd.next(&mt) {
+	for len(r.rows) == 0 && r.streamd.next(&mt, r.cancel) {
 		prs := r.streamd.get()
 		if r.setTransactionID != nil {
 			// this is when Read/Query is executed using ReadWriteTransaction
@@ -384,6 +384,7 @@ const (
 	queueingUnretryable                                    // 2
 	aborted                                                // 3
 	finished                                               // 4
+	ended                                                  // 5
 )
 
 // resumableStreamDecoder provides a resumable interface for receiving
@@ -559,7 +560,7 @@ var (
 	maxBytesBetweenResumeTokens = int32(128 * 1024 * 1024)
 )
 
-func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
+func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer, cancel func()) bool {
 	retryer := onCodes(d.backoff, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
 
 	// Setup and track x-goog-request-id in the manual retries for ExecuteStreamingSql.
@@ -646,7 +647,10 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			// to caller.
 			d.q.clear()
 			return false
-		case finished:
+		case finished, ended:
+			if d.state == ended {
+				cancel = nil
+			}
 			// If query has finished, check if there are still buffered messages.
 			d.reqIDInjector = nil
 			if d.q.empty() {
@@ -672,7 +676,19 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
-			d.changeState(finished)
+			d.changeState(ended)
+			go func(s streamingReceiver) {
+				for {
+					_, err := s.Recv()
+					if err == io.EOF {
+						break
+					}
+					if err != nil {
+						break
+					}
+				}
+
+			}(d.stream)
 			return
 		}
 		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
