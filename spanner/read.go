@@ -696,6 +696,10 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 
 	if d.err == io.EOF {
 		d.err = nil
+		// Cancel the context after receiving trailers
+		if d.cancel != nil {
+			d.cancel()
+		}
 		d.changeState(finished)
 		return
 	}
