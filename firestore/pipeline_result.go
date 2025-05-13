@@ -83,13 +83,6 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 	return pr, nil
 }
 
-// Exists reports whether the PipelineResult represents a document.
-// Even if Exists returns false, the ExecutionTime field of the PipelineResult
-// is valid.
-func (p *PipelineResult) Exists() bool {
-	return p.proto != nil
-}
-
 // Data returns the PipelineResult's fields as a map.
 // It is equivalent to
 //
