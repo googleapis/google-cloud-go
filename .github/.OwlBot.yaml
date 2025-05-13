@@ -97,6 +97,7 @@ deep-remove-regex:
   - /datacatalog/apiv1beta1/
   - /datacatalog/lineage/apiv1/
   - /dataflow/apiv1beta3/
+  - /dataform/apiv1/
   - /dataform/apiv1beta1/
   - /datafusion/apiv1/
   - /datalabeling/apiv1beta1/
@@ -238,6 +239,7 @@ deep-remove-regex:
   - /internal/generated/snippets/datacatalog/apiv1beta1/
   - /internal/generated/snippets/datacatalog/lineage/apiv1/
   - /internal/generated/snippets/dataflow/apiv1beta3/
+  - /internal/generated/snippets/dataform/apiv1/
   - /internal/generated/snippets/dataform/apiv1beta1/
   - /internal/generated/snippets/datafusion/apiv1/
   - /internal/generated/snippets/datalabeling/apiv1beta1/
@@ -839,8 +841,10 @@ deep-copy-regex:
     dest: /
   - source: /google/dataflow/v1beta3/cloud.google.com/go
     dest: /
-  - source: /google/cloud/dataform/v1beta1/cloud.google.com/go
+  - source: /google/cloud/dataform/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/dataform/v1beta1/cloud.google.com/go
+    dest: /    
   - source: /google/cloud/datafusion/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/datalabeling/v1beta1/cloud.google.com/go
