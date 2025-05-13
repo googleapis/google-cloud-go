@@ -135,7 +135,7 @@ var DefaultPublishSettings = PublishSettings{
 }
 
 // Publisher constructs a publisher client from either a topicID or a topic name, otherwise known as a full path.
-
+//
 // The client created is a reference and does not return any errors if the topic does not exist.
 // Errors will be returned when attempting to Publish instead.
 // If a Publisher's Publish method is called, it has background goroutines
