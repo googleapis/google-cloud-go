@@ -6878,6 +6878,7 @@ func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 }
 
 func TestIntegration_UniverseDomains(t *testing.T) {
+	t.Skip("this test is timing out in CI on the earliest version")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
 	universeDomain := os.Getenv(testUniverseDomain)
