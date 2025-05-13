@@ -234,6 +234,7 @@ func (r *RowIterator) Next() (*Row, error) {
 	} else if !r.rowd.done() {
 		r.err = errEarlyReadEnd()
 	} else {
+		r.cancel = nil
 		r.err = iterator.Done
 	}
 	return nil, r.err
@@ -288,7 +289,7 @@ func (r *RowIterator) Stop() {
 			defer trace.EndSpan(r.streamd.ctx, nil)
 		}
 	}
-	if r.cancel != nil && r.streamd != nil && r.streamd.state != ended {
+	if r.cancel != nil {
 		r.cancel()
 	}
 	if r.release != nil {
@@ -384,7 +385,6 @@ const (
 	queueingUnretryable                                    // 2
 	aborted                                                // 3
 	finished                                               // 4
-	ended                                                  // 5
 )
 
 // resumableStreamDecoder provides a resumable interface for receiving
@@ -651,7 +651,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			// to caller.
 			d.q.clear()
 			return false
-		case finished, ended:
+		case finished:
 			// If query has finished, check if there are still buffered messages.
 			d.reqIDInjector = nil
 			if d.q.empty() {
@@ -684,7 +684,7 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 					d.cancel()
 				}
 			}(d.stream)
-			d.changeState(ended)
+			d.changeState(finished)
 			return
 		}
 		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
