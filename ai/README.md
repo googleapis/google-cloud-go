@@ -4,6 +4,9 @@
 
 Go Client Library for Generative Language API.
 
+NOTE: New users are encouraged to use the Google GenAI Go SDK available at
+[google.golang.org/genai](google.golang.org/genai)
+
 ## Install
 
 ```bash

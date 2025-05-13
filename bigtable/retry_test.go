@@ -592,6 +592,38 @@ func TestRetryReverseReadRows(t *testing.T) {
 	}
 }
 
+func TestRetryOptionSelection(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+
+	t.Run("DefaultRetryLogic", func(t *testing.T) {
+		client, err := NewClientWithConfig(ctx, project, instance, disableMetricsConfig)
+		if err != nil {
+			t.Fatalf("NewClientWithConfig: %v", err)
+		}
+		defer client.Close()
+
+		if client.disableRetryInfo {
+			t.Errorf("client.disableRetryInfo got: true, want: false")
+		}
+	})
+
+	t.Run("ClientOnlyRetryLogic", func(t *testing.T) {
+		t.Setenv("DISABLE_RETRY_INFO", "1")
+
+		client, err := NewClientWithConfig(ctx, project, instance, disableMetricsConfig)
+		if err != nil {
+			t.Fatalf("NewClientWithConfig: %v", err)
+		}
+		defer client.Close()
+
+		if !client.disableRetryInfo {
+			t.Errorf("client.disableRetryInfo got: false, want: true")
+		}
+	})
+}
+
 func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {
 	var chunks []*btpb.ReadRowsResponse_CellChunk
 	for _, key := range rowKeys {
