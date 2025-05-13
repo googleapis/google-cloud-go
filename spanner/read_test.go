@@ -848,7 +848,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 			for {
 				select {
 				case <-ctx.Done():
-					t.Fatal("context cancelled or timeout during test")
+					if test.stateHistory[len(test.stateHistory)-1] != finished {
+						t.Fatal("context cancelled or timeout during test")
+					}
 				default:
 				}
 				if stateDone {

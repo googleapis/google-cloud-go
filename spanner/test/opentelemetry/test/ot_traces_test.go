@@ -80,13 +80,14 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 	if len(spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	spanName := "cloud.google.com/go/spanner.Query"
-	if !findSpan(spans, spanName) {
-		t.Errorf("Expected span %s not found", spanName)
-	}
-	span := getSpan(spans, "google.spanner.v1.Spanner/ExecuteStreamingSql")
-	if g, w := span.Status.Code, codes.Unset; g != w {
-		t.Errorf("span status code mismatch\n Got: %v\nWant: %v", g, w)
+	for _, spanName := range []string{"cloud.google.com/go/spanner.Query", "cloud.google.com/go/spanner.RowIterator", "google.spanner.v1.Spanner/ExecuteStreamingSql"} {
+		span := getSpan(spans, spanName)
+		if span == nil {
+			t.Fatalf("Failed to find span %q", spanName)
+		}
+		if g, w := span.Status.Code, codes.Unset; g != w {
+			t.Errorf("span %q status code mismatch\n Got: %v\nWant: %v", spanName, g, w)
+		}
 	}
 }
 
