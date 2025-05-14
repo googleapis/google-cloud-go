@@ -83,8 +83,8 @@ const (
 	serverTimingHeaderKey = "server-timing"
 	gfeTimingHeader       = "gfet4t7"
 	afeTimingHeader       = "afe"
-  
-        // MinSessions for Experimental Host connection
+
+	// MinSessions for Experimental Host connection
 	experimentalHostMinSessions = 0
 )
 
