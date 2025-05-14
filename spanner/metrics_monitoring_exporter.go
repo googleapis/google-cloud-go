@@ -118,11 +118,11 @@ func newMonitoringExporter(ctx context.Context, project, compression string, cli
 
 func (me *monitoringExporter) stop() {
 	// stop the exporter if last export happens within half-time of default sample period
+	me.mu.Lock()
 	if time.Since(me.lastExportedAt) <= (defaultSamplePeriod / 2) {
-		me.mu.Lock()
 		me.stopExport = true
-		me.mu.Unlock()
 	}
+	me.mu.Unlock()
 }
 
 // ForceFlush does nothing, the exporter holds no state.
@@ -146,9 +146,12 @@ func (me *monitoringExporter) Export(ctx context.Context, rm *otelmetricdata.Res
 	default:
 	}
 
+	me.mu.Lock()
 	if me.stopExport {
+		me.mu.Unlock()
 		return nil
 	}
+	me.mu.Unlock()
 	return me.exportTimeSeries(ctx, rm)
 }
 
