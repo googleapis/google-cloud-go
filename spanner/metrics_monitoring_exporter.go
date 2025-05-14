@@ -390,7 +390,7 @@ func histToDistribution[N int64 | float64](hist otelmetricdata.HistogramDataPoin
 }
 
 func numberDataPointToValue[N int64 | float64](
-		point otelmetricdata.DataPoint[N],
+	point otelmetricdata.DataPoint[N],
 ) (*monitoringpb.TypedValue, googlemetricpb.MetricDescriptor_ValueType) {
 	switch v := any(point.Value).(type) {
 	case int64:
