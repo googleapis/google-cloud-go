@@ -5036,6 +5036,7 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 		t.Fatalf("Reading rows from an materialized view: %v", err)
 	}
 	want := "r1--,r1-count-" + string(binary.BigEndian.AppendUint64([]byte{}, 1))
+	sort.Strings(elt)
 	if got := strings.Join(elt, ","); got != want {
 		t.Errorf("Error bulk reading from materialized view.\n Got %q\n Want %q", got, want)
 	}
