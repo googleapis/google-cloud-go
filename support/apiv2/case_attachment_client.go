@@ -104,7 +104,7 @@ type internalCaseAttachmentClient interface {
 // CaseAttachmentClient is a client for interacting with Google Cloud Support API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// A service to manage file attachment for Google Cloud support cases.
+// A service to manage file attachments for Google Cloud support cases.
 type CaseAttachmentClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCaseAttachmentClient
@@ -136,7 +136,13 @@ func (c *CaseAttachmentClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListAttachments retrieve all attachments associated with a support case.
+// ListAttachments list all the attachments associated with a support case.
+//
+// EXAMPLES:
+//
+// cURL:
+//
+// Python:
 func (c *CaseAttachmentClient) ListAttachments(ctx context.Context, req *supportpb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
 	return c.internalClient.ListAttachments(ctx, req, opts...)
 }
@@ -163,7 +169,7 @@ type caseAttachmentGRPCClient struct {
 // NewCaseAttachmentClient creates a new case attachment service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// A service to manage file attachment for Google Cloud support cases.
+// A service to manage file attachments for Google Cloud support cases.
 func NewCaseAttachmentClient(ctx context.Context, opts ...option.ClientOption) (*CaseAttachmentClient, error) {
 	clientOpts := defaultCaseAttachmentGRPCClientOptions()
 	if newCaseAttachmentClientHook != nil {
@@ -237,7 +243,7 @@ type caseAttachmentRESTClient struct {
 
 // NewCaseAttachmentRESTClient creates a new case attachment service rest client.
 //
-// A service to manage file attachment for Google Cloud support cases.
+// A service to manage file attachments for Google Cloud support cases.
 func NewCaseAttachmentRESTClient(ctx context.Context, opts ...option.ClientOption) (*CaseAttachmentClient, error) {
 	clientOpts := append(defaultCaseAttachmentRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -340,7 +346,13 @@ func (c *caseAttachmentGRPCClient) ListAttachments(ctx context.Context, req *sup
 	return it
 }
 
-// ListAttachments retrieve all attachments associated with a support case.
+// ListAttachments list all the attachments associated with a support case.
+//
+// EXAMPLES:
+//
+// cURL:
+//
+// Python:
 func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *supportpb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
 	it := &AttachmentIterator{}
 	req = proto.Clone(req).(*supportpb.ListAttachmentsRequest)

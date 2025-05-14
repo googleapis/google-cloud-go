@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/support/apiv2",
-    "version": "1.1.6",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseAttachmentService_ListAttachments_sync",
       "title": "cloudsupport ListAttachments Sample",
-      "description": "ListAttachments retrieve all attachments associated with a support case.",
+      "description": "ListAttachments list all the attachments associated with a support case.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncase=\"projects/some-project/cases/23598314\"\ncurl \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$case/attachments\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = (\nsupportApiService.cases()\n.attachments()\n.list(parent=\"projects/some-project/cases/43595344\")\n)\nprint(request.execute())\n```",
       "file": "CaseAttachmentClient/ListAttachments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_CloseCase_sync",
       "title": "cloudsupport CloseCase Sample",
-      "description": "CloseCase close the specified case.",
+      "description": "CloseCase close a case.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncase=\"projects/some-project/cases/43595344\"\ncurl \\\n--request POST \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$case: close\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = supportApiService.cases().close(\nname=\"projects/some-project/cases/43595344\"\n)\nprint(request.execute())\n```",
       "file": "CaseClient/CloseCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_CreateCase_sync",
       "title": "cloudsupport CreateCase Sample",
-      "description": "CreateCase create a new case and associate it with the given Google Cloud Resource.\nThe case object must have the following fields set: `display_name`,\n`description`, `classification`, and `priority`.",
+      "description": "CreateCase create a new case and associate it with a parent.\n\nIt must have the following fields set: `display_name`, `description`,\n`classification`, and `priority`. If you're just testing the API and don't\nwant to route your case to an agent, set `testCase=true`.\n\nEXAMPLES: \n\ncURL: \n\n```shell\nparent=\"projects/some-project\"\ncurl \\\n--request POST \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n--header 'Content-Type: application/json' \\\n--data '{\n\"display_name\": \"Test case created by me.\",\n\"description\": \"a random test case, feel free to close\",\n\"classification\": {\n\"id\": \n\"100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8\"\n},\n\"time_zone\": \"-07: 00\",\n\"subscriber_email_addresses\": [\n\"foo@domain.com\",\n\"bar@domain.com\"\n],\n\"testCase\": true,\n\"priority\": \"P3\"\n}' \\\n\"https: //cloudsupport.googleapis.com/v2/$parent/cases\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = supportApiService.cases().create(\nparent=\"projects/some-project\",\nbody={\n\"displayName\": \"A Test Case\",\n\"description\": \"This is a test case.\",\n\"testCase\": True,\n\"priority\": \"P2\",\n\"classification\": {\n\"id\": \n\"100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8\"\n},\n},\n)\nprint(request.execute())\n```",
       "file": "CaseClient/CreateCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_EscalateCase_sync",
       "title": "cloudsupport EscalateCase Sample",
-      "description": "EscalateCase escalate a case. Escalating a case will initiate the Google Cloud Support\nescalation management process.\n\nThis operation is only available to certain Customer Care tiers. Go to\nhttps: //cloud.google.com/support and look for 'Technical support\nescalations' in the feature list to find out which tiers are able to\nperform escalations.",
+      "description": "EscalateCase escalate a case, starting the Google Cloud Support escalation management\nprocess.\n\nThis operation is only available for some support services. Go to\nhttps: //cloud.google.com/support and look for 'Technical support\nescalations' in the feature list to find out which ones let you\ndo that.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncase=\"projects/some-project/cases/43595344\"\ncurl \\\n--request POST \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n--header \"Content-Type: application/json\" \\\n--data '{\n\"escalation\": {\n\"reason\": \"BUSINESS_IMPACT\",\n\"justification\": \"This is a test escalation.\"\n}\n}' \\\n\"https: //cloudsupport.googleapis.com/v2/$case: escalate\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = supportApiService.cases().escalate(\nname=\"projects/some-project/cases/43595344\",\nbody={\n\"escalation\": {\n\"reason\": \"BUSINESS_IMPACT\",\n\"justification\": \"This is a test escalation.\",\n},\n},\n)\nprint(request.execute())\n```",
       "file": "CaseClient/EscalateCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_GetCase_sync",
       "title": "cloudsupport GetCase Sample",
-      "description": "GetCase retrieve the specified case.",
+      "description": "GetCase retrieve a case.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncase=\"projects/some-project/cases/16033687\"\ncurl \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$case\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\n\nrequest = supportApiService.cases().get(\nname=\"projects/some-project/cases/43595344\",\n)\nprint(request.execute())\n```",
       "file": "CaseClient/GetCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_ListCases_sync",
       "title": "cloudsupport ListCases Sample",
-      "description": "ListCases retrieve all cases under the specified parent.\n\nNote: Listing cases under an Organization returns only the cases directly\nparented by that organization. To retrieve all cases under an organization,\nincluding cases parented by projects under that organization, use\n`cases.search`.",
+      "description": "ListCases retrieve all cases under a parent, but not its children.\n\nFor example, listing cases under an organization only returns the cases\nthat are directly parented by that organization. To retrieve cases\nunder an organization and its projects, use `cases.search`.\n\nEXAMPLES: \n\ncURL: \n\n```shell\nparent=\"projects/some-project\"\ncurl \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$parent/cases\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\n\nrequest =\nsupportApiService.cases().list(parent=\"projects/some-project\")\nprint(request.execute())\n```",
       "file": "CaseClient/ListCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -290,7 +290,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_SearchCaseClassifications_sync",
       "title": "cloudsupport SearchCaseClassifications Sample",
-      "description": "SearchCaseClassifications retrieve valid classifications to be used when creating a support case.\nThe classications are hierarchical, with each classification containing\nall levels of the hierarchy, separated by \" > \". For example \"Technical\nIssue > Compute > Compute Engine\".",
+      "description": "SearchCaseClassifications retrieve valid classifications to use when creating a support case.\n\nClassifications are hierarchical. Each classification is a string\ncontaining all levels of the hierarchy separated by `\" > \"`. For example,\n`\"Technical Issue > Compute > Compute Engine\"`.\n\nClassification IDs returned by this endpoint are valid for at least six\nmonths. When a classification is deactivated, this endpoint immediately\nstops returning it. After six months, `case.create` requests using the\nclassification will fail.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncurl \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n'https: //cloudsupport.googleapis.com/v2/caseClassifications: search?query=display_name: \"*Compute%20Engine*\"'\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=\"v2\",\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version=v2\",\n)\nrequest = supportApiService.caseClassifications().search(\nquery='display_name: \"*Compute Engine*\"'\n)\nprint(request.execute())\n```",
       "file": "CaseClient/SearchCaseClassifications/main.go",
       "language": "GO",
       "clientMethod": {
@@ -336,7 +336,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_SearchCases_sync",
       "title": "cloudsupport SearchCases Sample",
-      "description": "SearchCases search cases using the specified query.",
+      "description": "SearchCases search for cases using a query.\n\nEXAMPLES: \n\ncURL: \n\n```shell\nparent=\"projects/some-project\"\ncurl \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$parent/cases: search\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = supportApiService.cases().search(\nparent=\"projects/some-project\", query=\"state=OPEN\"\n)\nprint(request.execute())\n```",
       "file": "CaseClient/SearchCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -382,7 +382,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_UpdateCase_sync",
       "title": "cloudsupport UpdateCase Sample",
-      "description": "UpdateCase update the specified case. Only a subset of fields can be updated.",
+      "description": "UpdateCase update a case. Only some fields can be updated.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncase=\"projects/some-project/cases/43595344\"\ncurl \\\n--request PATCH \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n--header \"Content-Type: application/json\" \\\n--data '{\n\"priority\": \"P1\"\n}' \\\n\"https: //cloudsupport.googleapis.com/v2/$case?updateMask=priority\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = supportApiService.cases().patch(\nname=\"projects/some-project/cases/43112854\",\nbody={\n\"displayName\": \"This is Now a New Title\",\n\"priority\": \"P2\",\n},\n)\nprint(request.execute())\n```",
       "file": "CaseClient/UpdateCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -428,7 +428,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CommentService_CreateComment_sync",
       "title": "cloudsupport CreateComment Sample",
-      "description": "CreateComment add a new comment to the specified Case.\nThe comment object must have the following fields set: body.",
+      "description": "CreateComment add a new comment to a case.\n\nThe comment must have the following fields set: `body`.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncase=\"projects/some-project/cases/43591344\"\ncurl \\\n--request POST \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n--header 'Content-Type: application/json' \\\n--data '{\n\"body\": \"This is a test comment.\"\n}' \\\n\"https: //cloudsupport.googleapis.com/v2/$case/comments\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = (\nsupportApiService.cases()\n.comments()\n.create(\nparent=\"projects/some-project/cases/43595344\",\nbody={\"body\": \"This is a test comment.\"},\n)\n)\nprint(request.execute())\n```",
       "file": "CommentClient/CreateComment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -474,7 +474,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CommentService_ListComments_sync",
       "title": "cloudsupport ListComments Sample",
-      "description": "ListComments retrieve all Comments associated with the Case object.",
+      "description": "ListComments list all the comments associated with a case.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncase=\"projects/some-project/cases/43595344\"\ncurl \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$case/comments\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = (\nsupportApiService.cases()\n.comments()\n.list(parent=\"projects/some-project/cases/43595344\")\n)\nprint(request.execute())\n```",
       "file": "CommentClient/ListComments/main.go",
       "language": "GO",
       "clientMethod": {

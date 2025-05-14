@@ -45,13 +45,12 @@ type ListCommentsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of Case object for which comments should be
-	// listed.
+	// Required. The name of the case for which to list comments.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of comments fetched with each request. Defaults to 10.
+	// The maximum number of comments to fetch. Defaults to 10.
 	PageSize int32 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A token identifying the page of results to return. If unspecified, the
-	// first page is retrieved.
+	// first page is returned.
 	PageToken string `protobuf:"bytes,5,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -112,11 +111,11 @@ type ListCommentsResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of Comments associated with the given Case.
+	// List of the comments associated with the case.
 	Comments []*Comment `protobuf:"bytes,1,rep,name=comments,proto3" json:"comments,omitempty"`
-	// A token to retrieve the next page of results. This should be set in the
-	// `page_token` field of subsequent `ListCommentsRequest` message that is
-	// issued. If unspecified, there are no more results to retrieve.
+	// A token to retrieve the next page of results. Set this in the `page_token`
+	// field of subsequent `cases.comments.list` requests. If unspecified, there
+	// are no more results to retrieve.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -164,15 +163,15 @@ func (x *ListCommentsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for CreateComment endpoint.
+// The request message for the CreateComment endpoint.
 type CreateCommentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of Case to which this comment should be added.
+	// Required. The name of the case to which the comment should be added.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The Comment object to be added to this Case.
+	// Required. The comment to be added.
 	Comment *Comment `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment,omitempty"`
 }
 
@@ -385,10 +384,91 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CommentServiceClient interface {
-	// Retrieve all Comments associated with the Case object.
+	// List all the comments associated with a case.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43595344"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$case/comments"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = (
+	//
+	//	supportApiService.cases()
+	//	.comments()
+	//	.list(parent="projects/some-project/cases/43595344")
+	//
+	// )
+	// print(request.execute())
+	// ```
 	ListComments(ctx context.Context, in *ListCommentsRequest, opts ...grpc.CallOption) (*ListCommentsResponse, error)
-	// Add a new comment to the specified Case.
-	// The comment object must have the following fields set: body.
+	// Add a new comment to a case.
+	//
+	// The comment must have the following fields set: `body`.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43591344"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  --header 'Content-Type: application/json' \
+	//	  --data '{
+	//	    "body": "This is a test comment."
+	//	  }' \
+	//	  "https://cloudsupport.googleapis.com/v2/$case/comments"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = (
+	//
+	//	supportApiService.cases()
+	//	.comments()
+	//	.create(
+	//	    parent="projects/some-project/cases/43595344",
+	//	    body={"body": "This is a test comment."},
+	//	)
+	//
+	// )
+	// print(request.execute())
+	// ```
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*Comment, error)
 }
 
@@ -420,10 +500,91 @@ func (c *commentServiceClient) CreateComment(ctx context.Context, in *CreateComm
 
 // CommentServiceServer is the server API for CommentService service.
 type CommentServiceServer interface {
-	// Retrieve all Comments associated with the Case object.
+	// List all the comments associated with a case.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43595344"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$case/comments"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = (
+	//
+	//	supportApiService.cases()
+	//	.comments()
+	//	.list(parent="projects/some-project/cases/43595344")
+	//
+	// )
+	// print(request.execute())
+	// ```
 	ListComments(context.Context, *ListCommentsRequest) (*ListCommentsResponse, error)
-	// Add a new comment to the specified Case.
-	// The comment object must have the following fields set: body.
+	// Add a new comment to a case.
+	//
+	// The comment must have the following fields set: `body`.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43591344"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  --header 'Content-Type: application/json' \
+	//	  --data '{
+	//	    "body": "This is a test comment."
+	//	  }' \
+	//	  "https://cloudsupport.googleapis.com/v2/$case/comments"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = (
+	//
+	//	supportApiService.cases()
+	//	.comments()
+	//	.create(
+	//	    parent="projects/some-project/cases/43595344",
+	//	    body={"body": "This is a test comment."},
+	//	)
+	//
+	// )
+	// print(request.execute())
+	// ```
 	CreateComment(context.Context, *CreateCommentRequest) (*Comment, error)
 }
 
