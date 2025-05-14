@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.17.1...discoveryengine/v1.17.2) (2025-05-06)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Upgrade gRPC service registration func ([7c01015](https://github.com/googleapis/google-cloud-go/commit/7c01015f2aafb5eeb0237accced76b059bc7635d))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.17.0...discoveryengine/v1.17.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.16.2...discoveryengine/v1.17.0) (2025-03-27)
 
 

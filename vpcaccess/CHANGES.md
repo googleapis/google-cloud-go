@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.8.5...vpcaccess/v1.8.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **vpcaccess:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.8.4...vpcaccess/v1.8.5) (2025-03-13)
 
 

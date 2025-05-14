@@ -111,19 +111,22 @@ type Writer struct {
 	// when Writer.Close() is called; otherwise, the object is left unfinalized
 	// and can be appended to later.
 	//
+	// Defaults to false unless the experiemental WithZonalBucketAPIs option was
+	// set.
+	//
 	// Append is only supported for gRPC. This feature is in preview and is not
 	// yet available for general use.
 	Append bool
 
-	// FinalizeOnClose indicates whether the writer should finalize an object when
+	// FinalizeOnClose indicates whether the Writer should finalize an object when
 	// closing the write stream. This only applies to Writers where Append is
 	// true, since append semantics allow a prefix of the object to be durable and
 	// readable. By default, objects written with Append semantics will not be
-	// finalized, which means they can be appended to later.
+	// finalized, which means they can be appended to later. If Append is set
+	// to false, this parameter will be ignored; non-appendable objects will
+	// always be finalized when Writer.Close returns without error.
 	//
-	// FinalizeOnClose is supported only on gRPC clients where [Writer.Append] is
-	// set to true. This feature is in preview and is not yet available for
-	// general use.
+	// This feature is in preview and is not yet available for general use.
 	FinalizeOnClose bool
 
 	// ProgressFunc can be used to monitor the progress of a large write
@@ -146,9 +149,10 @@ type Writer struct {
 	donec chan struct{} // closed after err and obj are set.
 	obj   *ObjectAttrs
 
-	mu    sync.Mutex
-	err   error
-	flush func() (int64, error)
+	mu             sync.Mutex
+	err            error
+	flush          func() (int64, error)
+	takeoverOffset int64 // offset from which the writer started appending to the object.
 }
 
 // Write appends to w. It implements the io.Writer interface.
@@ -223,8 +227,10 @@ func (w *Writer) Flush() (int64, error) {
 	// at zero bytes. This will make the object visible with zero length data.
 	if !w.opened {
 		err := w.openWriter()
+		if err != nil {
+			return 0, err
+		}
 		w.progress(0)
-		return 0, err
 	}
 
 	return w.flush()
@@ -257,30 +263,37 @@ func (w *Writer) openWriter() (err error) {
 	if err := w.validateWriteAttrs(); err != nil {
 		return err
 	}
-	if w.o.gen != defaultGen {
-		return fmt.Errorf("storage: generation not supported on Writer, got %v", w.o.gen)
+	if w.o.gen != defaultGen && !w.Append {
+		return fmt.Errorf("storage: generation supported on Writer for appendable objects only, got %v", w.o.gen)
 	}
 
 	isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist)
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
 	params := &openWriterParams{
-		ctx:                   w.ctx,
-		chunkSize:             w.ChunkSize,
-		chunkRetryDeadline:    w.ChunkRetryDeadline,
-		chunkTransferTimeout:  w.ChunkTransferTimeout,
-		bucket:                w.o.bucket,
-		attrs:                 &w.ObjectAttrs,
-		conds:                 w.o.conds,
-		encryptionKey:         w.o.encryptionKey,
-		sendCRC32C:            w.SendCRC32C,
-		append:                w.Append,
-		finalizeOnClose:       w.FinalizeOnClose,
-		donec:                 w.donec,
-		setError:              w.error,
-		progress:              w.progress,
-		setObj:                func(o *ObjectAttrs) { w.obj = o },
-		setFlush:              func(f func() (int64, error)) { w.flush = f },
+		ctx:                  w.ctx,
+		chunkSize:            w.ChunkSize,
+		chunkRetryDeadline:   w.ChunkRetryDeadline,
+		chunkTransferTimeout: w.ChunkTransferTimeout,
+		bucket:               w.o.bucket,
+		attrs:                &w.ObjectAttrs,
+		conds:                w.o.conds,
+		appendGen:            w.o.gen,
+		encryptionKey:        w.o.encryptionKey,
+		sendCRC32C:           w.SendCRC32C,
+		append:               w.Append,
+		finalizeOnClose:      w.FinalizeOnClose,
+		donec:                w.donec,
+		setError:             w.error,
+		progress:             w.progress,
+		setObj:               func(o *ObjectAttrs) { w.obj = o },
+		setFlush:             func(f func() (int64, error)) { w.flush = f },
+		setSize: func(n int64) {
+			if w.obj != nil {
+				w.obj.Size = n
+			}
+		},
 		setPipeWriter:         func(pw *io.PipeWriter) { w.pw = pw },
+		setTakeoverOffset:     func(n int64) { w.takeoverOffset = n },
 		forceEmptyContentType: w.ForceEmptyContentType,
 	}
 	if err := w.ctx.Err(); err != nil {
@@ -345,9 +358,6 @@ func (w *Writer) validateWriteAttrs() error {
 	}
 	if w.ChunkSize < 0 {
 		return errors.New("storage: Writer.ChunkSize must be non-negative")
-	}
-	if w.FinalizeOnClose && !w.Append {
-		return errors.New("storage: Writer.FinalizeOnClose may only be true if Writer.Append is true")
 	}
 	return nil
 }

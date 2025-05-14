@@ -68,11 +68,14 @@ var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
 //
 // A Client is safe to use concurrently, except for its Close method.
 type Client struct {
-	connPool             gtransport.ConnPool
-	client               btpb.BigtableClient
-	project, instance    string
-	appProfile           string
-	metricsTracerFactory *builtinMetricsTracerFactory
+	connPool                gtransport.ConnPool
+	client                  btpb.BigtableClient
+	project, instance       string
+	appProfile              string
+	metricsTracerFactory    *builtinMetricsTracerFactory
+	disableRetryInfo        bool
+	retryOption             gax.CallOption
+	executeQueryRetryOption gax.CallOption
 }
 
 // ClientConfig has configurations for the client.
@@ -157,13 +160,27 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, err
 	}
 
+	disableRetryInfo := false
+
+	// If DISABLE_RETRY_INFO=1, library does not base retry decision and back off time on server returned RetryInfo value.
+	disableRetryInfoEnv := os.Getenv("DISABLE_RETRY_INFO")
+	disableRetryInfo = disableRetryInfoEnv == "1"
+	retryOption := defaultRetryOption
+	executeQueryRetryOption := defaultExecuteQueryRetryOption
+	if disableRetryInfo {
+		retryOption = clientOnlyRetryOption
+		executeQueryRetryOption = clientOnlyExecuteQueryRetryOption
+	}
 	return &Client{
-		connPool:             connPool,
-		client:               btpb.NewBigtableClient(connPool),
-		project:              project,
-		instance:             instance,
-		appProfile:           config.AppProfile,
-		metricsTracerFactory: metricsTracerFactory,
+		connPool:                connPool,
+		client:                  btpb.NewBigtableClient(connPool),
+		project:                 project,
+		instance:                instance,
+		appProfile:              config.AppProfile,
+		metricsTracerFactory:    metricsTracerFactory,
+		disableRetryInfo:        disableRetryInfo,
+		retryOption:             retryOption,
+		executeQueryRetryOption: executeQueryRetryOption,
 	}, nil
 }
 
@@ -176,44 +193,69 @@ func (c *Client) Close() error {
 }
 
 var (
-	idempotentRetryCodes  = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
-	isIdempotentRetryCode = make(map[codes.Code]bool)
-	retryOptions          = []gax.CallOption{
-		gax.WithRetry(func() gax.Retryer {
-			backoff := gax.Backoff{
-				Initial:    100 * time.Millisecond,
-				Max:        2 * time.Second,
-				Multiplier: 1.2,
-			}
-			return &bigtableRetryer{
-				Retryer: gax.OnCodes(idempotentRetryCodes, backoff),
-				Backoff: backoff,
-			}
-		}),
-	}
+	idempotentRetryCodes     = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
+	isIdempotentRetryCode    = make(map[codes.Code]bool)
 	retryableInternalErrMsgs = []string{
 		"stream terminated by RST_STREAM", // Retry similar to spanner client. Special case due to https://github.com/googleapis/google-cloud-go/issues/6476
-	}
 
-	executeQueryRetryOptions = []gax.CallOption{
-		gax.WithRetry(func() gax.Retryer {
-			backoff := gax.Backoff{
-				Initial:    100 * time.Millisecond,
-				Max:        2 * time.Second,
-				Multiplier: 1.2,
-			}
-			return &bigtableRetryer{
-				alternateRetryCondition: isQueryExpiredViolation,
-				Retryer:                 gax.OnCodes(idempotentRetryCodes, backoff),
-				Backoff:                 backoff,
-			}
-		}),
+		// Special cases due to: https://github.com/googleapis/google-cloud-go/issues/10207#issuecomment-2307562026
+		"Received Rst stream",
+		"RST_STREAM closed stream",
+		"Received RST_STREAM",
 	}
+	defaultBackoff = gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        2 * time.Second,
+		Multiplier: 1.2,
+	}
+	clientOnlyRetryOption             = newRetryOption(clientOnlyRetry, true)
+	clientOnlyExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry, true)
+	defaultRetryOption                = newRetryOption(clientOnlyRetry, false)
+	defaultExecuteQueryRetryOption    = newRetryOption(clientOnlyExecuteQueryRetry, false)
 )
+
+func newRetryOption(retryFn func(*gax.Backoff, error) (time.Duration, bool), disableRetryInfo bool) gax.CallOption {
+	return gax.WithRetry(func() gax.Retryer {
+		// Create a new Backoff instance for each retryer to ensure independent state.
+		newBackoffInstance := gax.Backoff{
+			Initial:    defaultBackoff.Initial,
+			Max:        defaultBackoff.Max,
+			Multiplier: defaultBackoff.Multiplier,
+		}
+		return &bigtableRetryer{
+			baseRetryFn:      retryFn,
+			backoff:          newBackoffInstance,
+			disableRetryInfo: disableRetryInfo,
+		}
+	})
+}
+
+func clientOnlyRetry(backoff *gax.Backoff, err error) (time.Duration, bool) {
+	// Similar to gax.OnCodes but shares the backoff with INTERNAL retry messages check
+	st, ok := status.FromError(err)
+	if !ok {
+		return 0, false
+	}
+	c := st.Code()
+	_, isIdempotent := isIdempotentRetryCode[c]
+	if isIdempotent ||
+		(status.Code(err) == codes.Internal && containsAny(err.Error(), retryableInternalErrMsgs)) {
+		pause := backoff.Pause()
+		return pause, true
+	}
+	return 0, false
+}
+
+func clientOnlyExecuteQueryRetry(backoff *gax.Backoff, err error) (time.Duration, bool) {
+	if isQueryExpiredViolation(err) {
+		return backoff.Pause(), true
+	}
+	return clientOnlyRetry(backoff, err)
+}
 
 func isQueryExpiredViolation(err error) bool {
 	apiErr, ok := apierror.FromError(err)
-	if ok && apiErr != nil && apiErr.Details().PreconditionFailure != nil {
+	if ok && apiErr != nil && apiErr.Details().PreconditionFailure != nil && status.Code(err) == codes.FailedPrecondition {
 		for _, violation := range apiErr.Details().PreconditionFailure.GetViolations() {
 			if violation != nil && violation.GetType() == queryExpiredViolationType {
 				return true
@@ -223,17 +265,39 @@ func isQueryExpiredViolation(err error) bool {
 	return false
 }
 
-// bigtableRetryer extends the generic gax Retryer, but also checks
-// error messages to check if operation can be retried
-//
-// Retry is made if :
-// - error code is one of the `idempotentRetryCodes` OR
-// - error code is internal and error message is one of the `retryableInternalErrMsgs` OR
-// - alternateRetryCondition returns true.
+// bigtableRetryer implements the gax.Retryer interface. It manages retry decisions,
+// incorporating server-sent RetryInfo if enabled, and client-side exponential backoff.
+// It specifically handles reseting the client-side backoff to its initial state if
+// RetryInfo was previously used for an operation and then stops being provided.
 type bigtableRetryer struct {
-	alternateRetryCondition func(error) bool
-	gax.Retryer
-	gax.Backoff
+	baseRetryFn               func(*gax.Backoff, error) (time.Duration, bool)
+	backoff                   gax.Backoff
+	disableRetryInfo          bool // If true, this retryer will process server-sent RetryInfo.
+	wasLastDelayFromRetryInfo bool // true if the previous retry delay for this operation was from RetryInfo.
+
+}
+
+// Retry determines if an operation should be retried and for how long to wait.
+func (r *bigtableRetryer) Retry(err error) (time.Duration, bool) {
+	if !r.disableRetryInfo {
+		apiErr, ok := apierror.FromError(err)
+		if ok && apiErr != nil && apiErr.Details().RetryInfo != nil {
+			// RetryInfo is present in the current error. Use its delay.
+			r.wasLastDelayFromRetryInfo = true
+			return apiErr.Details().RetryInfo.GetRetryDelay().AsDuration(), true
+		}
+
+		if r.wasLastDelayFromRetryInfo {
+			r.backoff = gax.Backoff{
+				Initial:    r.backoff.Initial,
+				Max:        r.backoff.Max,
+				Multiplier: r.backoff.Multiplier,
+			}
+		}
+		r.wasLastDelayFromRetryInfo = false
+	}
+
+	return r.baseRetryFn(&r.backoff, err)
 }
 
 func containsAny(str string, substrs []string) bool {
@@ -243,20 +307,6 @@ func containsAny(str string, substrs []string) bool {
 		}
 	}
 	return false
-}
-
-func (r *bigtableRetryer) Retry(err error) (time.Duration, bool) {
-	if (status.Code(err) == codes.Internal && containsAny(err.Error(), retryableInternalErrMsgs)) ||
-		(r.alternateRetryCondition != nil && r.alternateRetryCondition(err)) {
-		return r.Backoff.Pause(), true
-	}
-
-	delay, shouldRetry := r.Retryer.Retry(err)
-	if !shouldRetry {
-		return 0, false
-	}
-
-	return delay, true
 }
 
 func init() {
@@ -352,6 +402,7 @@ func (c *Client) newFeatureFlags() metadata.MD {
 		ReverseScans:             true,
 		LastScannedRowResponses:  true,
 		ClientSideMetricsEnabled: c.metricsTracerFactory.enabled,
+		RetryInfo:                !c.disableRetryInfo,
 	}
 
 	val := ""
@@ -515,7 +566,7 @@ func (c *Client) prepareStatement(ctx context.Context, mt *builtinMetricsTracer,
 		var err error
 		res, err = c.client.PrepareQuery(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
-	}, retryOptions...)
+	}, c.retryOption)
 	if err != nil {
 		return nil, err
 	}
@@ -573,12 +624,12 @@ func (ps *PreparedStatement) Bind(values map[string]any) (*BoundStatement, error
 
 func (ps *PreparedStatement) refreshIfInvalid(ctx context.Context) error {
 	/*
-		| valid | validEarly | behaviour            |
-		|-------|------------|----------------------|
-		| true  |   true     | nil                 |
-		| false |   true     | impossible condition |
-		| true  |   false    | async refresh token  |
-		| false |   false    | sync refresh token   |
+	   | valid | validEarly | behaviour            |
+	   |-------|------------|----------------------|
+	   | true  |   true     | nil                 |
+	   | false |   true     | impossible condition |
+	   | true  |   false    | async refresh token  |
+	   | false |   false    | sync refresh token   |
 	*/
 	valid, validEarly := ps.valid()
 	if validEarly {
@@ -857,7 +908,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool, m
 				}
 			}
 		}
-	}, executeQueryRetryOptions...)
+	}, bs.ps.c.executeQueryRetryOption)
 	if err != nil {
 		return err
 	}
@@ -1061,7 +1112,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 			}
 		}
 		return err
-	}, retryOptions...)
+	}, t.c.retryOption)
 
 	return err
 }
@@ -1614,7 +1665,7 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 			req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
 		}
 		if mutationsAreRetryable(m.ops) {
-			callOptions = retryOptions
+			callOptions = append(callOptions, t.c.retryOption)
 		}
 		var res *btpb.MutateRowResponse
 		err := gaxInvokeWithRecorder(ctx, mt, "MutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
@@ -1882,7 +1933,7 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 			return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
 		}
 		return nil
-	}, retryOptions...)
+	}, t.c.retryOption)
 
 	statusCode, statusErr := convertToGrpcStatusErr(err)
 	mt.currOp.setStatus(statusCode.String())
@@ -2159,7 +2210,7 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 			sampledRowKeys = append(sampledRowKeys, key)
 		}
 		return nil
-	}, retryOptions...)
+	}, t.c.retryOption)
 
 	return sampledRowKeys, err
 }

@@ -1,6 +1,98 @@
 # Changes
 
 
+## [1.87.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.86.0...aiplatform/v1.87.0) (2025-05-13)
+
+
+### Features
+
+* **aiplatform:** A new value `NVIDIA_B200 & NVIDIA_H200_141GB` is added to enum `AcceleratorType` ([#12216](https://github.com/googleapis/google-cloud-go/issues/12216)) ([f2b31a3](https://github.com/googleapis/google-cloud-go/commit/f2b31a31eb97db32ca7f19d5bb4f4c9cba73a806))
+* **aiplatform:** A new value `NVIDIA_B200 & NVIDIA_H200_141GB` is added to enum `AcceleratorType` ([#12232](https://github.com/googleapis/google-cloud-go/issues/12232)) ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **aiplatform:** Add ANN feature for RagManagedDb ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Add EncryptionSpec for RagCorpus CMEK feature ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **aiplatform:** New field `additional_properties` is added to message `.google.cloud.aiplatform.v1.Schema` ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** New field `additional_properties` is added to message `.google.cloud.aiplatform.v1beta1.Schema` ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Tuning Checkpoints API ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Tuning Checkpoints API ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+
+
+### Documentation
+
+* **aiplatform:** Fix links and typos ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Remove comments for a non public feature ([#12243](https://github.com/googleapis/google-cloud-go/issues/12243)) ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+
+## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.85.0...aiplatform/v1.86.0) (2025-05-06)
+
+
+### Features
+
+* **aiplatform:** A new field `system_labels` is added to message `google.cloud.aiplatform.v1beta1.DeployRequest` ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+* **aiplatform:** Expose llm parser to public v1 proto to prepare for GA ([#12089](https://github.com/googleapis/google-cloud-go/issues/12089)) ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+
+
+### Documentation
+
+* **aiplatform:** Update an outdated URL ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+
+## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.84.0...aiplatform/v1.85.0) (2025-04-30)
+
+
+### Features
+
+* **aiplatform:** Adding ThinkingConfig to v1 client library ([#12058](https://github.com/googleapis/google-cloud-go/issues/12058)) ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **aiplatform:** Adding ThinkingConfig to v1beta1 client library ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **aiplatform:** Allow customers to set encryption_spec for context caching ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+* **aiplatform:** Model Registry Model Checkpoint API ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **aiplatform:** New fields `ref` and `defs` are added to message `.google.cloud.aiplatform.v1.Schema` ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** New fields `ref` and `defs` are added to message `.google.cloud.aiplatform.v1beta1.Schema` ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
+
+### Documentation
+
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **aiplatform:** Deprecate election category HARM_CATEGORY_CIVIC_INTEGRITY ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.83.0...aiplatform/v1.84.0) (2025-04-22)
+
+
+### Features
+
+* **aiplatform:** Deprecated EventActions.transfer_to_agent and replaced with EventActions.transfer_agent ([2551567](https://github.com/googleapis/google-cloud-go/commit/25515675379c6f0ff57cc18565293971d65d1bf2))
+* **aiplatform:** Model Registry Model Checkpoint API ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+
+### Bug Fixes
+
+* **aiplatform:** Removed support for session resource paths that do not include reasoning engine ([#12023](https://github.com/googleapis/google-cloud-go/issues/12023)) ([2551567](https://github.com/googleapis/google-cloud-go/commit/25515675379c6f0ff57cc18565293971d65d1bf2))
+
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.1...aiplatform/v1.83.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add Model Garden EULA(End User License Agreement) related APIs ([#11982](https://github.com/googleapis/google-cloud-go/issues/11982)) ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
+## [1.82.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.82.0...aiplatform/v1.82.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **aiplatform:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.81.0...aiplatform/v1.82.0) (2025-04-15)
+
+
+### Features
+
+* **aiplatform:** Add FeatureViewDirectWrite API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add Gen AI logging public preview API ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add global quota config to vertex rag engine api ([#11949](https://github.com/googleapis/google-cloud-go/issues/11949)) ([dfdf404](https://github.com/googleapis/google-cloud-go/commit/dfdf404138728724aa6305c5c465ecc6fe5b1264))
+* **aiplatform:** Add rag_managed_db_config to RagEngineConfig for specifying Basic or Enterprise RagManagedDb tiers ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add RagEngineConfig to specify RAG project-level config ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **aiplatform:** Add UpdateRagEngineConfig rpc ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+
 ## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.80.0...aiplatform/v1.81.0) (2025-03-31)
 
 

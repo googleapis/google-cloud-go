@@ -21,12 +21,11 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -44,7 +43,7 @@ type GcsFilesetSpec struct {
 
 	// Required. Patterns to identify a set of files in Google Cloud Storage.
 	// See [Cloud Storage
-	// documentation](https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames)
+	// documentation](https://cloud.google.com/storage/docs/wildcards)
 	// for more information. Note that bucket wildcards are currently not
 	// supported.
 	//

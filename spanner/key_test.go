@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 	"testing"
 	"time"
@@ -25,6 +26,7 @@ import (
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	pb "cloud.google.com/go/spanner/testdata/protos"
+	"github.com/google/uuid"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -138,6 +140,36 @@ func TestKey(t *testing.T) {
 			k:         Key{*big.NewRat(1, 1)},
 			wantProto: listValueProto(stringProto("1.000000000")),
 			wantStr:   `(1.000000000)`,
+		},
+		{
+			k:         Key{uuid1},
+			wantProto: listValueProto(uuidProto(uuid1)),
+			wantStr:   fmt.Sprintf("(%s)", uuid1.String()),
+		},
+		{
+			k:         Key{uuid.NullUUID{UUID: uuid1, Valid: true}},
+			wantProto: listValueProto(uuidProto(uuid1)),
+			wantStr:   fmt.Sprintf("(%s)", uuid1.String()),
+		},
+		{
+			k:         Key{uuid.NullUUID{UUID: uuid1, Valid: false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   `(<null>)`,
+		},
+		{
+			k:         Key{NullUUID{uuid1, false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   `(<null>)`,
+		},
+		{
+			k:         Key{NullUUID{uuid1, true}},
+			wantProto: listValueProto(uuidProto(uuid1)),
+			wantStr:   fmt.Sprintf("(%s)", uuid1.String()),
+		},
+		{
+			k:         Key{NullUUID{uuid1, false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   `(<null>)`,
 		},
 		{
 			k:         Key{[]byte("value")},

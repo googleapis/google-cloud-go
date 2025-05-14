@@ -1,6 +1,37 @@
 # Changes
 
 
+## [1.27.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.27.1...deploy/v1.27.2) (2025-05-13)
+
+
+### Bug Fixes
+
+* **deploy:** Correct pattern of unused resource definition, Revision ([35b4f4a](https://github.com/googleapis/google-cloud-go/commit/35b4f4aced4a5dc79f1315c74feaac7d11657f8a))
+
+
+### Documentation
+
+* **deploy:** Comments updated for fields in several different resources ([35b4f4a](https://github.com/googleapis/google-cloud-go/commit/35b4f4aced4a5dc79f1315c74feaac7d11657f8a))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.27.0...deploy/v1.27.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **deploy:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.4...deploy/v1.27.0) (2025-04-15)
+
+
+### Features
+
+* **deploy:** Add resource definition for Revision ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
+
+### Documentation
+
+* **deploy:** Typos fixes and small improvements ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+
 ## [1.26.4](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.3...deploy/v1.26.4) (2025-03-25)
 
 

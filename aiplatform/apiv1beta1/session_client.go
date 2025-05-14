@@ -190,8 +190,7 @@ func (c *SessionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateSession creates a new Session in a given
-// project and location.
+// CreateSession creates a new Session.
 func (c *SessionClient) CreateSession(ctx context.Context, req *aiplatformpb.CreateSessionRequest, opts ...gax.CallOption) (*CreateSessionOperation, error) {
 	return c.internalClient.CreateSession(ctx, req, opts...)
 }
@@ -209,7 +208,7 @@ func (c *SessionClient) GetSession(ctx context.Context, req *aiplatformpb.GetSes
 }
 
 // ListSessions lists Sessions in a given
-// project and location.
+// reasoning engine.
 func (c *SessionClient) ListSessions(ctx context.Context, req *aiplatformpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
 	return c.internalClient.ListSessions(ctx, req, opts...)
 }
@@ -909,8 +908,7 @@ func (c *sessionGRPCClient) WaitOperation(ctx context.Context, req *longrunningp
 	return resp, nil
 }
 
-// CreateSession creates a new Session in a given
-// project and location.
+// CreateSession creates a new Session.
 func (c *sessionRESTClient) CreateSession(ctx context.Context, req *aiplatformpb.CreateSessionRequest, opts ...gax.CallOption) (*CreateSessionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSession()
@@ -1022,7 +1020,7 @@ func (c *sessionRESTClient) GetSession(ctx context.Context, req *aiplatformpb.Ge
 }
 
 // ListSessions lists Sessions in a given
-// project and location.
+// reasoning engine.
 func (c *sessionRESTClient) ListSessions(ctx context.Context, req *aiplatformpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
 	it := &SessionIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListSessionsRequest)

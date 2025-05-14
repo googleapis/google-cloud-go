@@ -448,7 +448,7 @@ func (c *restClient) AdaptMessage(ctx context.Context, req *adapterpb.AdaptMessa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *adaptMessageRESTClient
+	var streamClient *adaptMessageRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -465,7 +465,7 @@ func (c *restClient) AdaptMessage(ctx context.Context, req *adapterpb.AdaptMessa
 			return err
 		}
 
-		streamClient = &adaptMessageRESTClient{
+		streamClient = &adaptMessageRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&adapterpb.AdaptMessageResponse{}).ProtoReflect().Type()),
@@ -476,15 +476,15 @@ func (c *restClient) AdaptMessage(ctx context.Context, req *adapterpb.AdaptMessa
 	return streamClient, e
 }
 
-// adaptMessageRESTClient is the stream client used to consume the server stream created by
+// adaptMessageRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of AdaptMessage.
-type adaptMessageRESTClient struct {
+type adaptMessageRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *adaptMessageRESTClient) Recv() (*adapterpb.AdaptMessageResponse, error) {
+func (c *adaptMessageRESTStreamClient) Recv() (*adapterpb.AdaptMessageResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -498,29 +498,29 @@ func (c *adaptMessageRESTClient) Recv() (*adapterpb.AdaptMessageResponse, error)
 	return res, nil
 }
 
-func (c *adaptMessageRESTClient) Header() (metadata.MD, error) {
+func (c *adaptMessageRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *adaptMessageRESTClient) Trailer() metadata.MD {
+func (c *adaptMessageRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *adaptMessageRESTClient) CloseSend() error {
+func (c *adaptMessageRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *adaptMessageRESTClient) Context() context.Context {
+func (c *adaptMessageRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *adaptMessageRESTClient) SendMsg(m interface{}) error {
+func (c *adaptMessageRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *adaptMessageRESTClient) RecvMsg(m interface{}) error {
+func (c *adaptMessageRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

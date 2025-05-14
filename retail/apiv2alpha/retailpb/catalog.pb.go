@@ -21,13 +21,12 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -487,8 +486,7 @@ type CatalogAttribute struct {
 	//
 	// [CatalogAttribute][google.cloud.retail.v2alpha.CatalogAttribute] can be
 	// pre-loaded by using
-	// [CatalogService.AddCatalogAttribute][google.cloud.retail.v2alpha.CatalogService.AddCatalogAttribute],
-	// [CatalogService.ImportCatalogAttributes][google.cloud.retail.v2alpha.CatalogService.ImportCatalogAttributes],
+	// [CatalogService.AddCatalogAttribute][google.cloud.retail.v2alpha.CatalogService.AddCatalogAttribute]
 	// or
 	// [CatalogService.UpdateAttributesConfig][google.cloud.retail.v2alpha.CatalogService.UpdateAttributesConfig]
 	// APIs. This field is `False` for pre-loaded

@@ -718,10 +718,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb",
 		Status:     StatusMigrated,
 	},
-	"google.golang.org/genproto/googleapis/devtools/clouddebugger/v2": {
-		ImportPath: "cloud.google.com/go/debugger/apiv2/debuggerpb",
-		Status:     StatusMigrated,
-	},
 	"google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1": {
 		ImportPath: "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb",
 		Status:     StatusMigrated,

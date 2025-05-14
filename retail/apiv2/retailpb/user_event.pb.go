@@ -21,14 +21,13 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -53,8 +52,6 @@ type UserEvent struct {
 	//     viewed.
 	//   - `detail-page-view`: Products detail page viewed.
 	//   - `home-page-view`: Homepage viewed.
-	//   - `promotion-offered`: Promotion is offered to a user.
-	//   - `promotion-not-offered`: Promotion is not offered to a user.
 	//   - `purchase-complete`: User finishing a purchase.
 	//   - `search`: Product search.
 	//   - `shopping-cart-page-view`: User viewing a shopping cart.

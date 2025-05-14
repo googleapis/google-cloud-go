@@ -34,6 +34,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -50,6 +51,9 @@ var (
 	t4 = time.Now()
 	d1 = mustParseDate("2016-11-15")
 	d2 = mustParseDate("1678-01-01")
+	// UUID
+	uuid1 = uuid.MustParse("94dcd1d9-7582-464a-96d0-071effcc373c")
+	uuid2 = uuid.MustParse("a344e03b-5f8a-4cbf-87f3-482dc67abe78")
 )
 
 func mustParseTime(s string) time.Time {
@@ -272,6 +276,7 @@ func TestEncodeValue(t *testing.T) {
 	var fNilPtr *float64
 	f32Value := float32(3.14)
 	var f32NilPtr *float32
+	var uuidNilPtr *uuid.UUID
 	tValue := t1
 	var tNilPtr *time.Time
 	dValue := d1
@@ -315,6 +320,7 @@ func TestEncodeValue(t *testing.T) {
 		tPGJsonb      = pgJsonbType()
 		tProtoMessage = protoMessageType(protoMessagefqn)
 		tProtoEnum    = protoEnumType(protoEnumfqn)
+		tUUID         = uuidType()
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -381,6 +387,16 @@ func TestEncodeValue(t *testing.T) {
 		{[]float32{3.14, 0.618, float32(math.Inf(-1))}, listProto(float32Proto(3.14), float32Proto(0.618), float32Proto(float32(math.Inf(-1)))), listType(tFloat32), "[]float32"},
 		{[]NullFloat32{{3.14, true}, {0.618, false}}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat"},
 		{[]*float32{&f32Value, f32NilPtr}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat32"},
+		// UUID / UUID ARRAY
+		{uuid1, uuidProto(uuid1), tUUID, "uuid.UUID"},
+		{NullUUID{uuid1, true}, uuidProto(uuid1), tUUID, "NullUUID with value"},
+		{NullUUID{uuid1, false}, nullProto(), tUUID, "NullUUID with null"},
+		{&uuid1, uuidProto(uuid1), tUUID, "*uuid.UUID with value"},
+		{uuidNilPtr, nullProto(), tUUID, "*uuid.UUID with null"},
+		{[]uuid.UUID{uuid1, uuid2}, listProto(uuidProto(uuid1), uuidProto(uuid2)), listType(tUUID), "[]uuid.UUID"},
+		{[]uuid.UUID(nil), nullProto(), listType(tUUID), "null []uuid.UUID"},
+		{[]NullUUID{{uuid1, true}, {uuid2, false}}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]NullUUID"},
+		{[]*uuid.UUID{&uuid1, uuidNilPtr}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]*uuid.UUID"},
 		// NUMERIC / NUMERIC ARRAY
 		{*numValuePtr, numericProto(numValuePtr), tNumeric, "big.Rat"},
 		{numValuePtr, numericProto(numValuePtr), tNumeric, "*big.Rat"},
@@ -1000,6 +1016,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomFloat32 float32
 	type CustomTime time.Time
 	type CustomDate civil.Date
+	type CustomUUID uuid.UUID
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -1008,6 +1025,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomNullFloat32 NullFloat32
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
+	type CustomNullUUID NullUUID
 
 	sValue := "abc"
 	iValue := int64(300)
@@ -1016,6 +1034,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	f32Value := float32(3.14)
 	tValue := t1
 	dValue := d1
+	uuidValue := uuid1
 
 	StructTypeProto := structType(
 		mkField("Stringf", stringType()),
@@ -1025,7 +1044,9 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		mkField("Float32f", float32Type()),
 		mkField("Bytef", bytesType()),
 		mkField("Timef", timeType()),
-		mkField("Datef", dateType()))
+		mkField("Datef", dateType()),
+		mkField("Uuidf", uuidType()),
+	)
 
 	for _, test := range []encodeTest{
 		{
@@ -1039,7 +1060,8 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    time.Time
 				Datef    civil.Date
-			}{"abc", 300, false, 3.45, float32(3.14), []byte("foo"), t1, d1},
+				Uuidf    uuid.UUID
+			}{"abc", 300, false, 3.45, float32(3.14), []byte("foo"), t1, d1, uuid1},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
@@ -1048,7 +1070,8 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
-				dateProto(d1)),
+				dateProto(d1),
+				uuidProto(uuid1)),
 			StructTypeProto,
 		},
 		{
@@ -1062,7 +1085,8 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    *time.Time
 				Datef    *civil.Date
-			}{&sValue, &iValue, &bValue, &fValue, &f32Value, []byte("foo"), &tValue, &dValue},
+				Uuidf    *uuid.UUID
+			}{&sValue, &iValue, &bValue, &fValue, &f32Value, []byte("foo"), &tValue, &dValue, &uuidValue},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
@@ -1071,7 +1095,9 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
-				dateProto(d1)),
+				dateProto(d1),
+				uuidProto(uuid1),
+			),
 			StructTypeProto,
 		},
 		{
@@ -1085,8 +1111,10 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    *time.Time
 				Datef    *civil.Date
-			}{nil, nil, nil, nil, nil, nil, nil, nil},
+				Uuidf    *uuid.UUID
+			}{nil, nil, nil, nil, nil, nil, nil, nil, nil},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1108,7 +1136,8 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    CustomBytes
 				Timef    CustomTime
 				Datef    CustomDate
-			}{"abc", 300, false, 3.45, CustomFloat32(3.14), []byte("foo"), CustomTime(t1), CustomDate(d1)},
+				Uuidf    CustomUUID
+			}{"abc", 300, false, 3.45, CustomFloat32(3.14), []byte("foo"), CustomTime(t1), CustomDate(d1), CustomUUID(uuid1)},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
@@ -1117,7 +1146,9 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
-				dateProto(d1)),
+				dateProto(d1),
+				uuidProto(uuid1),
+			),
 			StructTypeProto,
 		},
 		{
@@ -1131,6 +1162,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    NullTime
 				Datef    NullDate
+				Uuidf    NullUUID
 			}{
 				NullString{"abc", false},
 				NullInt64{4, false},
@@ -1140,8 +1172,10 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				nil,
 				NullTime{t1, false},
 				NullDate{d1, false},
+				NullUUID{uuid1, false},
 			},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1163,6 +1197,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    CustomBytes
 				Timef    CustomNullTime
 				Datef    CustomNullDate
+				Uuidf    CustomNullUUID
 			}{
 				CustomNullString{"abc", false},
 				CustomNullInt64{4, false},
@@ -1172,8 +1207,10 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				nil,
 				CustomNullTime{t1, false},
 				CustomNullDate{d1, false},
+				CustomNullUUID{uuid1, false},
 			},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1544,6 +1581,8 @@ func TestDecodeValue(t *testing.T) {
 	protoMessagefqn := "examples.spanner.music.SingerInfo"
 	protoEnumfqn := "examples.spanner.music.Genre"
 
+	var uuidNilPtr *uuid.UUID
+
 	for _, test := range []struct {
 		desc      string
 		proto     *proto3.Value
@@ -1707,6 +1746,19 @@ func TestDecodeValue(t *testing.T) {
 		// DATE ARRAY with []NullDate
 		{desc: "decode ARRAY<DATE> to []*civil.Date", proto: listProto(dateProto(d1), nullProto(), dateProto(d2)), protoType: listType(dateType()), want: []*civil.Date{&dValue, nil, &d2Value}},
 		{desc: "decode NULL to []*civil.Date", proto: nullProto(), protoType: listType(dateType()), want: []*civil.Date(nil)},
+		// UUID
+		{desc: "decode UUID to uuid.UUID", proto: uuidProto(uuid1), protoType: uuidType(), want: uuid1},
+		{desc: "decode NULL to uuid.UUID", proto: nullProto(), protoType: uuidType(), want: "", wantErr: true},
+		{desc: "decode UUID to *uuid.UUID", proto: uuidProto(uuid1), protoType: uuidType(), want: &uuid1},
+		{desc: "decode NULL to *uuid.UUID", proto: nullProto(), protoType: uuidType(), want: uuidNilPtr},
+		{desc: "decode UUID to NullUUID", proto: uuidProto(uuid1), protoType: uuidType(), want: NullUUID{uuid1, true}},
+		{desc: "decode NULL to NullUUID", proto: nullProto(), protoType: uuidType(), want: NullUUID{}},
+		// UUID ARRAY with []NullUUID
+		{desc: "decode ARRAY<UUID> to []NullUUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []NullUUID{{uuid1, true}, {}, {uuid2, true}}},
+		{desc: "decode NULL to []NullUUID", proto: nullProto(), protoType: listType(uuidType()), want: []NullUUID(nil)},
+		{desc: "decode ARRAY<UUID> to []uuid.UUID", proto: listProto(uuidProto(uuid1), uuidProto(uuid2)), protoType: listType(uuidType()), want: []uuid.UUID{uuid1, uuid2}},
+		{desc: "decode ARRAY<UUID> to []*uuid.UUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []*uuid.UUID{&uuid1, nil, &uuid2}},
+		{desc: "decode NULL to []*uuid.UUID", proto: nullProto(), protoType: listType(uuidType()), want: []*uuid.UUID(nil)},
 		// STRUCT ARRAY
 		// STRUCT schema is equal to the following Go struct:
 		// type s struct {
@@ -2090,6 +2142,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomTime time.Time
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
+	type CustomUUID uuid.UUID
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -2099,6 +2152,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
+	type CustomNullUUID NullUUID
 
 	type StringEmbedded struct {
 		string
@@ -2120,6 +2174,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{float32(3.14), spannerTypeNonNullFloat32},
 		{time.Now(), spannerTypeNonNullTime},
 		{civil.DateOf(time.Now()), spannerTypeNonNullDate},
+		{uuid1, spannerTypeNonNullUUID},
 		{NullString{}, spannerTypeNullString},
 		{NullInt64{}, spannerTypeNullInt64},
 		{NullBool{}, spannerTypeNullBool},
@@ -2130,6 +2185,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{*big.NewRat(1234, 1000), spannerTypeNonNullNumeric},
 		{big.Rat{}, spannerTypeNonNullNumeric},
 		{NullNumeric{}, spannerTypeNullNumeric},
+		{NullUUID{}, spannerTypeNullUUID},
 
 		{[]string{"foo", "bar"}, spannerTypeArrayOfNonNullString},
 		{[][]byte{{1, 2, 3}, {3, 2, 1}}, spannerTypeArrayOfByteArray},
@@ -2140,6 +2196,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]float32{3.14}, spannerTypeArrayOfNonNullFloat32},
 		{[]time.Time{time.Now()}, spannerTypeArrayOfNonNullTime},
 		{[]civil.Date{civil.DateOf(time.Now())}, spannerTypeArrayOfNonNullDate},
+		{[]uuid.UUID{uuid1}, spannerTypeArrayOfNonNullUUID},
 		{[]NullString{}, spannerTypeArrayOfNullString},
 		{[]NullInt64{}, spannerTypeArrayOfNullInt64},
 		{[]NullBool{}, spannerTypeArrayOfNullBool},
@@ -2150,6 +2207,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]big.Rat{}, spannerTypeArrayOfNonNullNumeric},
 		{[]big.Rat{*big.NewRat(1234, 1000), *big.NewRat(1234, 100)}, spannerTypeArrayOfNonNullNumeric},
 		{[]NullNumeric{}, spannerTypeArrayOfNullNumeric},
+		{[]NullUUID{}, spannerTypeArrayOfNullUUID},
 
 		{CustomString("foo"), spannerTypeNonNullString},
 		{CustomInt64(-100), spannerTypeNonNullInt64},
@@ -2159,6 +2217,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomTime(time.Now()), spannerTypeNonNullTime},
 		{CustomDate(civil.DateOf(time.Now())), spannerTypeNonNullDate},
 		{CustomNumeric(*big.NewRat(1234, 1000)), spannerTypeNonNullNumeric},
+		{CustomUUID(uuid1), spannerTypeNonNullUUID},
 
 		{[]CustomString{}, spannerTypeArrayOfNonNullString},
 		{[]CustomInt64{}, spannerTypeArrayOfNonNullInt64},
@@ -2168,6 +2227,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomTime{}, spannerTypeArrayOfNonNullTime},
 		{[]CustomDate{}, spannerTypeArrayOfNonNullDate},
 		{[]CustomNumeric{}, spannerTypeArrayOfNonNullNumeric},
+		{[]CustomUUID{}, spannerTypeArrayOfNonNullUUID},
 
 		{CustomNullString{}, spannerTypeNullString},
 		{CustomNullInt64{}, spannerTypeNullInt64},
@@ -2177,6 +2237,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomNullTime{}, spannerTypeNullTime},
 		{CustomNullDate{}, spannerTypeNullDate},
 		{CustomNullNumeric{}, spannerTypeNullNumeric},
+		{CustomNullUUID{}, spannerTypeNullUUID},
 
 		{[]CustomNullString{}, spannerTypeArrayOfNullString},
 		{[]CustomNullInt64{}, spannerTypeArrayOfNullInt64},
@@ -2186,6 +2247,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomNullTime{}, spannerTypeArrayOfNullTime},
 		{[]CustomNullDate{}, spannerTypeArrayOfNullDate},
 		{[]CustomNullNumeric{}, spannerTypeArrayOfNullNumeric},
+		{[]CustomNullUUID{}, spannerTypeArrayOfNullUUID},
 
 		{StringEmbedded{}, spannerTypeUnknown},
 		{NullStringEmbedded{}, spannerTypeUnknown},
@@ -3055,6 +3117,15 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 				{input: NullProtoEnum{}, expect: "null"},
 			},
 		},
+		{
+			"NullUUID",
+			[]testcase{
+				{input: NullUUID{uuid1, true}, expect: fmt.Sprintf("%q", uuid1.String())},
+				{input: &NullUUID{uuid2, true}, expect: fmt.Sprintf("%q", uuid2.String())},
+				{input: &NullUUID{uuid1, false}, expect: "null"},
+				{input: NullUUID{}, expect: "null"},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -3215,6 +3286,16 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 				{input: []byte(`"hello`), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
 			},
 		},
+		{
+			"NullUUID",
+			[]testcase{
+				{input: []byte(fmt.Sprintf("%q", uuid1.String())), got: NullUUID{}, isNull: false, expect: uuid1.String(), expectError: false},
+				{input: []byte("null"), got: NullUUID{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -3253,6 +3334,9 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullProtoEnum:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullUUID:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				default:
@@ -3465,5 +3549,747 @@ func TestScanNullNumeric(t *testing.T) {
 		if g, w := n, want; !reflect.DeepEqual(g, w) {
 			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
 		}
+	}
+}
+
+func TestInterval(t *testing.T) {
+	tests := []struct {
+		name     string
+		interval Interval
+		want     *proto3.Value
+		wantType *sppb.Type
+	}{
+		{
+			name: "Basic interval",
+			interval: Interval{
+				Months: 14,
+				Days:   3,
+				Nanos:  big.NewInt(43926789000123),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P1Y2M3DT12H12M6.789000123S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Months only",
+			interval: Interval{
+				Months: 10,
+				Days:   0,
+				Nanos:  big.NewInt(0),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10M",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Days only",
+			interval: Interval{
+				Months: 0,
+				Days:   10,
+				Nanos:  big.NewInt(0),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10D",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Seconds only",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(10000000000),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "PT10S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Milliseconds only",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(10000000),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "PT0.010S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Microseconds only",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(10000),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "PT0.000010S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Nanoseconds only",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(10),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "PT0.000000010S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Mixed components",
+			interval: Interval{
+				Months: 10,
+				Days:   20,
+				Nanos:  big.NewInt(1030),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10M20DT0.000001030S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Mixed components with negative nanos",
+			interval: Interval{
+				Months: 10,
+				Days:   20,
+				Nanos:  big.NewInt(-1030),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10M20DT-0.000001030S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Negative interval",
+			interval: Interval{
+				Months: -14,
+				Days:   -3,
+				Nanos:  big.NewInt(-43926789000123),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P-1Y-2M-3DT-12H-12M-6.789000123S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Mixed signs",
+			interval: Interval{
+				Months: 10,
+				Days:   3,
+				Nanos:  big.NewInt(-41401234000000),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P10M3DT-11H-30M-1.234S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Large values",
+			interval: Interval{
+				Months: 25,
+				Days:   15,
+				Nanos:  func() *big.Int { n, _ := new(big.Int).SetString("316223999999999999999", 10); return n }(),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P2Y1M15DT87839999H59M59.999999999S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Zero interval",
+			interval: Interval{
+				Months: 0,
+				Days:   0,
+				Nanos:  big.NewInt(0),
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P0Y",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got, gotType, err := encodeValue(test.interval)
+			if err != nil {
+				t.Fatalf("encodeValue(%v) failed: %v", test.interval, err)
+			}
+			if !testEqual(got, test.want) {
+				t.Errorf("encodeValue(%v) = %v, want %v", test.interval, got, test.want)
+			}
+			if !testEqual(gotType, test.wantType) {
+				t.Errorf("encodeValue(%v) type = %v, want %v", test.interval, gotType, test.wantType)
+			}
+		})
+	}
+}
+
+// TestNullInterval tests the encoding and type checking of NullInterval values.
+// Note: Interval type is a preview feature only available in Cloud-Devel environment.
+// It is not yet supported in the emulator or production.
+func TestNullInterval(t *testing.T) {
+	tests := []struct {
+		name     string
+		interval NullInterval
+		want     *proto3.Value
+		wantType *sppb.Type
+	}{
+		{
+			name: "Valid interval",
+			interval: NullInterval{
+				Interval: Interval{
+					Months: 14,
+					Days:   3,
+					Nanos:  big.NewInt(14706000000000),
+				},
+				Valid: true,
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_StringValue{
+					StringValue: "P1Y2M3DT4H5M6S",
+				},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+		{
+			name: "Null interval",
+			interval: NullInterval{
+				Interval: Interval{},
+				Valid:    false,
+			},
+			want: &proto3.Value{
+				Kind: &proto3.Value_NullValue{},
+			},
+			wantType: &sppb.Type{
+				Code: sppb.TypeCode_INTERVAL,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got, gotType, err := encodeValue(test.interval)
+			if err != nil {
+				t.Fatalf("encodeValue(%v) failed: %v", test.interval, err)
+			}
+			if !testEqual(got, test.want) {
+				t.Errorf("encodeValue(%v) = %v, want %v", test.interval, got, test.want)
+			}
+			if !testEqual(gotType, test.wantType) {
+				t.Errorf("encodeValue(%v) type = %v, want %v", test.interval, gotType, test.wantType)
+			}
+		})
+	}
+}
+
+func mustParseBigInt(s string) *big.Int {
+	n, ok := new(big.Int).SetString(s, 10)
+	if !ok {
+		panic(fmt.Sprintf("failed to parse big.Int: %s", s))
+	}
+	return n
+}
+
+func TestDecodeInterval(t *testing.T) {
+	type testCase struct {
+		desc    string
+		input   string
+		months  int32
+		days    int32
+		nanos   *big.Int
+		wantErr bool
+	}
+
+	tests := []testCase{
+		// Regular cases
+		{
+			desc:    "full interval with all components",
+			input:   "P1Y2M3DT12H12M6.789000123S",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(43926789000123),
+			wantErr: false,
+		},
+		{
+			desc:    "interval with negative minutes",
+			input:   "P1Y2M3DT13H-48M6S",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(43926000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "date only interval",
+			input:   "P1Y2M3D",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "years and months only",
+			input:   "P1Y2M",
+			months:  14,
+			days:    0,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "years only",
+			input:   "P1Y",
+			months:  12,
+			days:    0,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "months only",
+			input:   "P2M",
+			months:  2,
+			days:    0,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "days only",
+			input:   "P3D",
+			months:  0,
+			days:    3,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "time components with fractional seconds",
+			input:   "PT4H25M6.7890001S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(15906789000100),
+			wantErr: false,
+		},
+		{
+			desc:    "time components without fractional seconds",
+			input:   "PT4H25M6S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(15906000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "hours and seconds only",
+			input:   "PT4H30S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(14430000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "hours and minutes only",
+			input:   "PT4H1M",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(14460000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "minutes only",
+			input:   "PT5M",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(300000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "fractional seconds only",
+			input:   "PT6.789S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(6789000000),
+			wantErr: false,
+		},
+		{
+			desc:    "small fractional seconds",
+			input:   "PT0.123S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(123000000),
+			wantErr: false,
+		},
+		{
+			desc:    "very small fractional seconds",
+			input:   "PT.000000123S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(123),
+			wantErr: false,
+		},
+		{
+			desc:    "zero years",
+			input:   "P0Y",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(0),
+			wantErr: false,
+		},
+		{
+			desc:    "all negative components",
+			input:   "P-1Y-2M-3DT-12H-12M-6.789000123S",
+			months:  -14,
+			days:    -3,
+			nanos:   big.NewInt(-43926789000123),
+			wantErr: false,
+		},
+		{
+			desc:    "mixed signs in components",
+			input:   "P1Y-2M3DT13H-51M6.789S",
+			months:  10,
+			days:    3,
+			nanos:   big.NewInt(43746789000000),
+			wantErr: false,
+		},
+		{
+			desc:    "negative years with mixed signs",
+			input:   "P-1Y2M-3DT-13H49M-6.789S",
+			months:  -10,
+			days:    -3,
+			nanos:   big.NewInt(-43866789000000),
+			wantErr: false,
+		},
+		{
+			desc:    "negative time components",
+			input:   "P1Y2M3DT-4H25M-6.7890001S",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(-12906789000100),
+			wantErr: false,
+		},
+		{
+			desc:    "large time values",
+			input:   "PT100H100M100.5S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(366100500000000),
+			wantErr: false,
+		},
+		{
+			desc:    "only time components, with seconds",
+			input:   "PT12H30M1S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(45001000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "date and time, no seconds",
+			input:   "P1Y2M3DT12H30M",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(45000000000000),
+			wantErr: false,
+		},
+		{
+			desc:    "fractional seconds with max digits",
+			input:   "PT0.123456789S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(123456789),
+			wantErr: false,
+		},
+		{
+			desc:    "hours and fractional seconds",
+			input:   "PT1H0.5S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(3600500000000),
+			wantErr: false,
+		},
+		{
+			desc:    "years and months to months with fractional seconds",
+			input:   "P1Y2M3DT12H30M1.23456789S",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(45001234567890),
+			wantErr: false,
+		},
+		{
+			desc:    "comma as decimal point",
+			input:   "P1Y2M3DT12H30M1,23456789S",
+			months:  14,
+			days:    3,
+			nanos:   big.NewInt(45001234567890),
+			wantErr: false,
+		},
+		{
+			desc:    "fractional seconds without 0 before decimal",
+			input:   "PT.5S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(500000000),
+			wantErr: false,
+		},
+		{
+			desc:    "mixed signs",
+			input:   "P-1Y2M3DT12H-30M1.234S",
+			months:  -10,
+			days:    3,
+			nanos:   big.NewInt(41401234000000),
+			wantErr: false,
+		},
+		{
+			desc:    "more mixed signs",
+			input:   "P1Y-2M3DT-12H30M-1.234S",
+			months:  10,
+			days:    3,
+			nanos:   big.NewInt(-41401234000000),
+			wantErr: false,
+		},
+		{
+			desc:    "trailing zeros after decimal",
+			input:   "PT1.234000S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(1234000000),
+			wantErr: false,
+		},
+		{
+			desc:    "all zeros after decimal",
+			input:   "PT1.000S",
+			months:  0,
+			days:    0,
+			nanos:   big.NewInt(1000000000),
+			wantErr: false,
+		},
+
+		// Invalid cases
+		{
+			desc:    "invalid format",
+			input:   "invalid",
+			wantErr: true,
+		},
+		{
+			desc:    "missing duration specifier",
+			input:   "P",
+			wantErr: true,
+		},
+		{
+			desc:    "missing time components",
+			input:   "PT",
+			wantErr: true,
+		},
+		{
+			desc:    "missing unit specifier",
+			input:   "P1YM",
+			wantErr: true,
+		},
+		{
+			desc:    "missing T separator",
+			input:   "P1Y2M3D4H5M6S",
+			wantErr: true,
+		},
+		{
+			desc:    "missing decimal value",
+			input:   "P1Y2M3DT4H5M6.S",
+			wantErr: true,
+		},
+		{
+			desc:    "extra unit specifier",
+			input:   "P1Y2M3DT4H5M6.789SS",
+			wantErr: true,
+		},
+		{
+			desc:    "missing value after decimal",
+			input:   "P1Y2M3DT4H5M6.",
+			wantErr: true,
+		},
+		{
+			desc:    "non-digit after decimal",
+			input:   "P1Y2M3DT4H5M6.ABC",
+			wantErr: true,
+		},
+		{
+			desc:    "missing unit",
+			input:   "P1Y2M3",
+			wantErr: true,
+		},
+		{
+			desc:    "missing time value",
+			input:   "P1Y2M3DT",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid negative sign position",
+			input:   "P-T1H",
+			wantErr: true,
+		},
+		{
+			desc:    "trailing negative sign",
+			input:   "PT1H-",
+			wantErr: true,
+		},
+		{
+			desc:    "too many decimal places",
+			input:   "P1Y2M3DT4H5M6.789123456789S",
+			wantErr: true,
+		},
+		{
+			desc:    "multiple decimal points",
+			input:   "P1Y2M3DT4H5M6.123.456S",
+			wantErr: true,
+		},
+		{
+			desc:    "both dot and comma decimals",
+			input:   "P1Y2M3DT4H5M6.,789S",
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			interval, err := ParseInterval(tc.input)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("ParseInterval(%q) succeeded, want error", tc.input)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("ParseInterval(%q) failed with %v", tc.input, err)
+				return
+			}
+
+			if interval.Months != tc.months {
+				t.Errorf("ParseInterval(%q).Months = %d, want %d", tc.input, interval.Months, tc.months)
+			}
+			if interval.Days != tc.days {
+				t.Errorf("ParseInterval(%q).Days = %d, want %d", tc.input, interval.Days, tc.days)
+			}
+			if interval.Nanos.Cmp(tc.nanos) != 0 {
+				t.Errorf("ParseInterval(%q).Nanos = %v, want %v", tc.input, interval.Nanos, tc.nanos)
+			}
+		})
+	}
+
+	// Test decoding large values
+	largeTests := []testCase{
+		{
+			desc:    "large positive hours",
+			input:   "PT87840000H",
+			months:  0,
+			days:    0,
+			nanos:   mustParseBigInt("316224000000000000000"),
+			wantErr: false,
+		},
+		{
+			desc:    "large negative hours",
+			input:   "PT-87840000H",
+			months:  0,
+			days:    0,
+			nanos:   mustParseBigInt("-316224000000000000000"),
+			wantErr: false,
+		},
+		{
+			desc:    "large mixed values with max precision",
+			input:   "P2Y1M15DT87839999H59M59.999999999S",
+			months:  25,
+			days:    15,
+			nanos:   mustParseBigInt("316223999999999999999"),
+			wantErr: false,
+		},
+		{
+			desc:    "large mixed negative values with max precision",
+			input:   "P2Y1M15DT-87839999H-59M-59.999999999S",
+			months:  25,
+			days:    15,
+			nanos:   mustParseBigInt("-316223999999999999999"),
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range largeTests {
+		t.Run(tc.desc, func(t *testing.T) {
+			interval, err := ParseInterval(tc.input)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("ParseInterval(%q) succeeded, want error", tc.input)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("ParseInterval(%q) failed with %v", tc.input, err)
+				return
+			}
+
+			if interval.Months != tc.months {
+				t.Errorf("ParseInterval(%q).Months = %d, want %d", tc.input, interval.Months, tc.months)
+			}
+			if interval.Days != tc.days {
+				t.Errorf("ParseInterval(%q).Days = %d, want %d", tc.input, interval.Days, tc.days)
+			}
+			if interval.Nanos.Cmp(tc.nanos) != 0 {
+				t.Errorf("ParseInterval(%q).Nanos = %v, want %v", tc.input, interval.Nanos, tc.nanos)
+			}
+		})
 	}
 }

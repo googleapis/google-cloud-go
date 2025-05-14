@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.19.1...shopping/v0.20.0) (2025-04-30)
+
+
+### Features
+
+* **shopping:** New clients ([#12056](https://github.com/googleapis/google-cloud-go/issues/12056)) ([3ab1dd8](https://github.com/googleapis/google-cloud-go/commit/3ab1dd8441c2f805f08cb32c1d6d98a76b63130f))
+* **shopping:** New clients ([#12068](https://github.com/googleapis/google-cloud-go/issues/12068)) ([25736fe](https://github.com/googleapis/google-cloud-go/commit/25736fe96434648091388e73c8ed58fa94e9deb8))
+
+
+### Documentation
+
+* **shopping/merchant/lfp:** Add clarification to GetLfpMerchantState documentation ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+
+## [0.19.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.19.0...shopping/v0.19.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **shopping:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.19.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.18.1...shopping/v0.19.0) (2025-04-15)
+
+
+### Features
+
+* **shopping/css:** Introduce QuotaService for CSS API ([#11962](https://github.com/googleapis/google-cloud-go/issues/11962)) ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/merchant/lfp:** Add GetLfpMerchantState method ([#11973](https://github.com/googleapis/google-cloud-go/issues/11973)) ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **shopping/merchant/products:** A new field `automated_discounts` is added to message `google.shopping.merchant.products.v1beta.Product` ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+
+
+### Documentation
+
+* **shopping/css:** A comment for field `name` in message `.google.shopping.css.v1.CssProductInput` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/css:** A comment for field `name` in message `.google.shopping.css.v1.DeleteCssProductInputRequest` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/merchant/products:** Modified several comments ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+
 ## [0.18.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.18.0...shopping/v0.18.1) (2025-03-25)
 
 

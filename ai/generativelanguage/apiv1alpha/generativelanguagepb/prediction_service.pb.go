@@ -21,17 +21,12 @@
 package generativelanguagepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -274,86 +269,4 @@ func file_google_ai_generativelanguage_v1alpha_prediction_service_proto_init() {
 	file_google_ai_generativelanguage_v1alpha_prediction_service_proto_rawDesc = nil
 	file_google_ai_generativelanguage_v1alpha_prediction_service_proto_goTypes = nil
 	file_google_ai_generativelanguage_v1alpha_prediction_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// PredictionServiceClient is the client API for PredictionService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type PredictionServiceClient interface {
-	// Performs a prediction request.
-	Predict(ctx context.Context, in *PredictRequest, opts ...grpc.CallOption) (*PredictResponse, error)
-}
-
-type predictionServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewPredictionServiceClient(cc grpc.ClientConnInterface) PredictionServiceClient {
-	return &predictionServiceClient{cc}
-}
-
-func (c *predictionServiceClient) Predict(ctx context.Context, in *PredictRequest, opts ...grpc.CallOption) (*PredictResponse, error) {
-	out := new(PredictResponse)
-	err := c.cc.Invoke(ctx, "/google.ai.generativelanguage.v1alpha.PredictionService/Predict", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// PredictionServiceServer is the server API for PredictionService service.
-type PredictionServiceServer interface {
-	// Performs a prediction request.
-	Predict(context.Context, *PredictRequest) (*PredictResponse, error)
-}
-
-// UnimplementedPredictionServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedPredictionServiceServer struct {
-}
-
-func (*UnimplementedPredictionServiceServer) Predict(context.Context, *PredictRequest) (*PredictResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Predict not implemented")
-}
-
-func RegisterPredictionServiceServer(s *grpc.Server, srv PredictionServiceServer) {
-	s.RegisterService(&_PredictionService_serviceDesc, srv)
-}
-
-func _PredictionService_Predict_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PredictRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PredictionServiceServer).Predict(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.ai.generativelanguage.v1alpha.PredictionService/Predict",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PredictionServiceServer).Predict(ctx, req.(*PredictRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _PredictionService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.ai.generativelanguage.v1alpha.PredictionService",
-	HandlerType: (*PredictionServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Predict",
-			Handler:    _PredictionService_Predict_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/ai/generativelanguage/v1alpha/prediction_service.proto",
 }
