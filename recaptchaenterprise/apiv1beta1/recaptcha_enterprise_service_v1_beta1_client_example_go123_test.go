@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package recaptchaenterprise_test
+
+import (
+	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1"
+)
