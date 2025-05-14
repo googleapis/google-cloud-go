@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/storage/control/apiv2",
-    "version": "1.54.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -378,6 +378,52 @@
       ]
     },
     {
+      "regionTag": "storage_v2_generated_StorageControl_GetFolderIntelligenceConfig_sync",
+      "title": "storage GetFolderIntelligenceConfig Sample",
+      "description": "GetFolderIntelligenceConfig returns the Folder scoped singleton IntelligenceConfig resource.",
+      "file": "StorageControlClient/GetFolderIntelligenceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFolderIntelligenceConfig",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetFolderIntelligenceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.GetFolderIntelligenceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetFolderIntelligenceConfig",
+          "fullName": "google.storage.control.v2.StorageControl.GetFolderIntelligenceConfig",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "storage_v2_generated_StorageControl_GetManagedFolder_sync",
       "title": "storage GetManagedFolder Sample",
       "description": "GetManagedFolder returns metadata for the specified managed folder.",
@@ -408,6 +454,98 @@
         "method": {
           "shortName": "GetManagedFolder",
           "fullName": "google.storage.control.v2.StorageControl.GetManagedFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_GetOrganizationIntelligenceConfig_sync",
+      "title": "storage GetOrganizationIntelligenceConfig Sample",
+      "description": "GetOrganizationIntelligenceConfig returns the Organization scoped singleton IntelligenceConfig resource.",
+      "file": "StorageControlClient/GetOrganizationIntelligenceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOrganizationIntelligenceConfig",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetOrganizationIntelligenceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.GetOrganizationIntelligenceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetOrganizationIntelligenceConfig",
+          "fullName": "google.storage.control.v2.StorageControl.GetOrganizationIntelligenceConfig",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_GetProjectIntelligenceConfig_sync",
+      "title": "storage GetProjectIntelligenceConfig Sample",
+      "description": "GetProjectIntelligenceConfig returns the Project scoped singleton IntelligenceConfig resource.",
+      "file": "StorageControlClient/GetProjectIntelligenceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProjectIntelligenceConfig",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetProjectIntelligenceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.GetProjectIntelligenceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetProjectIntelligenceConfig",
+          "fullName": "google.storage.control.v2.StorageControl.GetProjectIntelligenceConfig",
           "service": {
             "shortName": "StorageControl",
             "fullName": "google.storage.control.v2.StorageControl"
@@ -787,6 +925,144 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_UpdateFolderIntelligenceConfig_sync",
+      "title": "storage UpdateFolderIntelligenceConfig Sample",
+      "description": "UpdateFolderIntelligenceConfig updates the Folder scoped singleton IntelligenceConfig resource.",
+      "file": "StorageControlClient/UpdateFolderIntelligenceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFolderIntelligenceConfig",
+        "fullName": "google.storage.control.v2.StorageControlClient.UpdateFolderIntelligenceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.UpdateFolderIntelligenceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "UpdateFolderIntelligenceConfig",
+          "fullName": "google.storage.control.v2.StorageControl.UpdateFolderIntelligenceConfig",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_UpdateOrganizationIntelligenceConfig_sync",
+      "title": "storage UpdateOrganizationIntelligenceConfig Sample",
+      "description": "UpdateOrganizationIntelligenceConfig updates the Organization scoped singleton IntelligenceConfig resource.",
+      "file": "StorageControlClient/UpdateOrganizationIntelligenceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateOrganizationIntelligenceConfig",
+        "fullName": "google.storage.control.v2.StorageControlClient.UpdateOrganizationIntelligenceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.UpdateOrganizationIntelligenceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "UpdateOrganizationIntelligenceConfig",
+          "fullName": "google.storage.control.v2.StorageControl.UpdateOrganizationIntelligenceConfig",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_UpdateProjectIntelligenceConfig_sync",
+      "title": "storage UpdateProjectIntelligenceConfig Sample",
+      "description": "UpdateProjectIntelligenceConfig updates the Project scoped singleton IntelligenceConfig resource.",
+      "file": "StorageControlClient/UpdateProjectIntelligenceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateProjectIntelligenceConfig",
+        "fullName": "google.storage.control.v2.StorageControlClient.UpdateProjectIntelligenceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.UpdateProjectIntelligenceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "UpdateProjectIntelligenceConfig",
+          "fullName": "google.storage.control.v2.StorageControl.UpdateProjectIntelligenceConfig",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
