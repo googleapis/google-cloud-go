@@ -21,12 +21,11 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -36,18 +35,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Represents a notebook runtime post startup script behavior.
 type PostStartupScriptConfig_PostStartupScriptBehavior int32
 
 const (
-	// Unspecified post startup script behavior.
 	PostStartupScriptConfig_POST_STARTUP_SCRIPT_BEHAVIOR_UNSPECIFIED PostStartupScriptConfig_PostStartupScriptBehavior = 0
-	// Run post startup script after runtime is started.
-	PostStartupScriptConfig_RUN_ONCE PostStartupScriptConfig_PostStartupScriptBehavior = 1
-	// Run post startup script after runtime is stopped.
-	PostStartupScriptConfig_RUN_EVERY_START PostStartupScriptConfig_PostStartupScriptBehavior = 2
-	// Download and run post startup script every time runtime is started.
-	PostStartupScriptConfig_DOWNLOAD_AND_RUN_EVERY_START PostStartupScriptConfig_PostStartupScriptBehavior = 3
+	PostStartupScriptConfig_RUN_ONCE                                 PostStartupScriptConfig_PostStartupScriptBehavior = 1
+	PostStartupScriptConfig_RUN_EVERY_START                          PostStartupScriptConfig_PostStartupScriptBehavior = 2
+	PostStartupScriptConfig_DOWNLOAD_AND_RUN_EVERY_START             PostStartupScriptConfig_PostStartupScriptBehavior = 3
 )
 
 // Enum value maps for PostStartupScriptConfig_PostStartupScriptBehavior.
@@ -93,19 +87,13 @@ func (PostStartupScriptConfig_PostStartupScriptBehavior) EnumDescriptor() ([]byt
 	return file_google_cloud_aiplatform_v1beta1_notebook_software_config_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// Post startup script config.
 type PostStartupScriptConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Post startup script to run after runtime is started.
-	PostStartupScript string `protobuf:"bytes,1,opt,name=post_startup_script,json=postStartupScript,proto3" json:"post_startup_script,omitempty"`
-	// Optional. Post startup script url to download. Example:
-	// https://bucket/script.sh
-	PostStartupScriptUrl string `protobuf:"bytes,2,opt,name=post_startup_script_url,json=postStartupScriptUrl,proto3" json:"post_startup_script_url,omitempty"`
-	// Optional. Post startup script behavior that defines download and execution
-	// behavior.
+	PostStartupScript         string                                            `protobuf:"bytes,1,opt,name=post_startup_script,json=postStartupScript,proto3" json:"post_startup_script,omitempty"`
+	PostStartupScriptUrl      string                                            `protobuf:"bytes,2,opt,name=post_startup_script_url,json=postStartupScriptUrl,proto3" json:"post_startup_script_url,omitempty"`
 	PostStartupScriptBehavior PostStartupScriptConfig_PostStartupScriptBehavior `protobuf:"varint,3,opt,name=post_startup_script_behavior,json=postStartupScriptBehavior,proto3,enum=google.cloud.aiplatform.v1beta1.PostStartupScriptConfig_PostStartupScriptBehavior" json:"post_startup_script_behavior,omitempty"`
 }
 
@@ -160,7 +148,6 @@ func (x *PostStartupScriptConfig) GetPostStartupScriptBehavior() PostStartupScri
 	return PostStartupScriptConfig_POST_STARTUP_SCRIPT_BEHAVIOR_UNSPECIFIED
 }
 
-// Notebook Software Config.
 type NotebookSoftwareConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -168,8 +155,7 @@ type NotebookSoftwareConfig struct {
 
 	// Optional. Environment variables to be passed to the container.
 	// Maximum limit is 100.
-	Env []*EnvVar `protobuf:"bytes,1,rep,name=env,proto3" json:"env,omitempty"`
-	// Optional. Post startup script config.
+	Env                     []*EnvVar                `protobuf:"bytes,1,rep,name=env,proto3" json:"env,omitempty"`
 	PostStartupScriptConfig *PostStartupScriptConfig `protobuf:"bytes,2,opt,name=post_startup_script_config,json=postStartupScriptConfig,proto3" json:"post_startup_script_config,omitempty"`
 }
 

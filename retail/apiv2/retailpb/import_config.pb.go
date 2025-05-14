@@ -21,9 +21,6 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -31,6 +28,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -326,9 +325,6 @@ type isBigQuerySource_Partition interface {
 
 type BigQuerySource_PartitionDate struct {
 	// BigQuery time partitioned table's _PARTITIONDATE in YYYY-MM-DD format.
-	//
-	// Only supported in
-	// [ImportProductsRequest][google.cloud.retail.v2.ImportProductsRequest].
 	PartitionDate *date.Date `protobuf:"bytes,6,opt,name=partition_date,json=partitionDate,proto3,oneof"`
 }
 

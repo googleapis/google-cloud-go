@@ -21,12 +21,11 @@
 package gkebackuppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -85,13 +84,13 @@ func (VolumeTypeEnum_VolumeType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_gkebackup_v1_common_proto_rawDescGZIP(), []int{4, 0}
 }
 
-// A list of Kubernetes Namespaces
+// A list of Kubernetes Namespaces.
 type Namespaces struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. A list of Kubernetes Namespaces
+	// Optional. A list of Kubernetes Namespaces.
 	Namespaces []string `protobuf:"bytes,1,rep,name=namespaces,proto3" json:"namespaces,omitempty"`
 }
 

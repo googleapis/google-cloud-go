@@ -560,7 +560,7 @@ func (c *bigQueryReadRESTClient) ReadRows(ctx context.Context, req *storagepb.Re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *readRowsRESTClient
+	var streamClient *readRowsRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -577,7 +577,7 @@ func (c *bigQueryReadRESTClient) ReadRows(ctx context.Context, req *storagepb.Re
 			return err
 		}
 
-		streamClient = &readRowsRESTClient{
+		streamClient = &readRowsRESTStreamClient{
 			ctx:    ctx,
 			md:     metadata.MD(httpRsp.Header),
 			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&storagepb.ReadRowsResponse{}).ProtoReflect().Type()),
@@ -588,15 +588,15 @@ func (c *bigQueryReadRESTClient) ReadRows(ctx context.Context, req *storagepb.Re
 	return streamClient, e
 }
 
-// readRowsRESTClient is the stream client used to consume the server stream created by
+// readRowsRESTStreamClient is the stream client used to consume the server stream created by
 // the REST implementation of ReadRows.
-type readRowsRESTClient struct {
+type readRowsRESTStreamClient struct {
 	ctx    context.Context
 	md     metadata.MD
 	stream *gax.ProtoJSONStream
 }
 
-func (c *readRowsRESTClient) Recv() (*storagepb.ReadRowsResponse, error) {
+func (c *readRowsRESTStreamClient) Recv() (*storagepb.ReadRowsResponse, error) {
 	if err := c.ctx.Err(); err != nil {
 		defer c.stream.Close()
 		return nil, err
@@ -610,29 +610,29 @@ func (c *readRowsRESTClient) Recv() (*storagepb.ReadRowsResponse, error) {
 	return res, nil
 }
 
-func (c *readRowsRESTClient) Header() (metadata.MD, error) {
+func (c *readRowsRESTStreamClient) Header() (metadata.MD, error) {
 	return c.md, nil
 }
 
-func (c *readRowsRESTClient) Trailer() metadata.MD {
+func (c *readRowsRESTStreamClient) Trailer() metadata.MD {
 	return c.md
 }
 
-func (c *readRowsRESTClient) CloseSend() error {
+func (c *readRowsRESTStreamClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *readRowsRESTClient) Context() context.Context {
+func (c *readRowsRESTStreamClient) Context() context.Context {
 	return c.ctx
 }
 
-func (c *readRowsRESTClient) SendMsg(m interface{}) error {
+func (c *readRowsRESTStreamClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented for a server-stream")
 }
 
-func (c *readRowsRESTClient) RecvMsg(m interface{}) error {
+func (c *readRowsRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

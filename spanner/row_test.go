@@ -30,6 +30,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/uuid"
 	"google.golang.org/api/iterator"
 	proto "google.golang.org/protobuf/proto"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
@@ -81,6 +82,11 @@ var (
 			{Name: "NULL_DATE", Type: dateType()},
 			{Name: "DATE_ARRAY", Type: listType(dateType())},
 			{Name: "NULL_DATE_ARRAY", Type: listType(dateType())},
+			// UUID / UUID ARRAY
+			{Name: "UUID", Type: uuidType()},
+			{Name: "NULL_UUID", Type: uuidType()},
+			{Name: "UUID_ARRAY", Type: listType(uuidType())},
+			{Name: "NULL_UUID_ARRAY", Type: listType(uuidType())},
 
 			// STRUCT ARRAY
 			{
@@ -91,6 +97,7 @@ var (
 						mkField("Col2", floatType()),
 						mkField("Col3", float32Type()),
 						mkField("Col4", stringType()),
+						mkField("Col5", uuidType()),
 					),
 				),
 			},
@@ -102,6 +109,7 @@ var (
 						mkField("Col2", floatType()),
 						mkField("Col3", float32Type()),
 						mkField("Col4", stringType()),
+						mkField("Col5", uuidType()),
 					),
 				),
 			},
@@ -147,10 +155,15 @@ var (
 			nullProto(),
 			listProto(nullProto(), dateProto(dt)),
 			nullProto(),
+			// UUID / UUID ARRAY
+			uuidProto(uuid1),
+			nullProto(),
+			listProto(nullProto(), uuidProto(uuid1)),
+			nullProto(),
 			// STRUCT ARRAY
 			listProto(
 				nullProto(),
-				listProto(intProto(3), floatProto(33.3), float32Proto(0.3), stringProto("three")),
+				listProto(intProto(3), floatProto(33.3), float32Proto(0.3), stringProto("three"), uuidProto(uuid1)),
 				nullProto(),
 			),
 			nullProto(),
@@ -204,6 +217,11 @@ func TestColumnValues(t *testing.T) {
 		{NullDate{}},
 		{[]NullDate{{}, {dt, true}}},
 		{[]NullDate(nil)},
+		// UUID / UUID ARRAY
+		{uuid1, NullUUID{uuid1, true}},
+		{NullUUID{}},
+		{[]NullUUID{{}, {uuid1, true}}},
+		{[]NullUUID(nil)},
 		// STRUCT ARRAY
 		{
 			[]*struct {
@@ -211,6 +229,7 @@ func TestColumnValues(t *testing.T) {
 				Col2 NullFloat64
 				Col3 NullFloat32
 				Col4 string
+				Col5 NullUUID
 			}{
 				nil,
 
@@ -219,6 +238,7 @@ func TestColumnValues(t *testing.T) {
 					NullFloat64{33.3, true},
 					NullFloat32{0.3, true},
 					"three",
+					NullUUID{uuid1, true},
 				},
 				nil,
 			},
@@ -231,12 +251,14 @@ func TestColumnValues(t *testing.T) {
 							mkField("Col2", floatType()),
 							mkField("Col3", float32Type()),
 							mkField("Col4", stringType()),
+							mkField("Col5", uuidType()),
 						},
 						vals: []*proto3.Value{
 							intProto(3),
 							floatProto(33.3),
 							float32Proto(0.3),
 							stringProto("three"),
+							uuidProto(uuid1),
 						},
 					},
 					Valid: true,
@@ -250,6 +272,7 @@ func TestColumnValues(t *testing.T) {
 				Col2 NullFloat64
 				Col3 NullFloat32
 				Col4 string
+				Col5 NullUUID
 			}(nil),
 			[]NullRow(nil),
 		},
@@ -334,29 +357,33 @@ func TestNilDst(t *testing.T) {
 								mkField("Col1", intType()),
 								mkField("Col2", floatType()),
 								mkField("Col3", float32Type()),
+								mkField("Col4", uuidType()),
 							),
 						),
 					},
 				},
 				[]*proto3.Value{listProto(
-					listProto(intProto(3), floatProto(33.3), float32Proto(0.3)),
+					listProto(intProto(3), floatProto(33.3), float32Proto(0.3), uuidProto(uuid1)),
 				)},
 			},
 			(*[]*struct {
 				Col1 int
 				Col2 float64
 				Col3 float32
+				Col4 uuid.UUID
 			})(nil),
 			errDecodeColumn(0, errNilDst((*[]*struct {
 				Col1 int
 				Col2 float64
 				Col3 float32
+				Col4 uuid.UUID
 			})(nil))),
 			(*struct {
 				StructArray []*struct {
 					Col1 int
 					Col2 float64
 					Col3 float32
+					Col4 uuid.UUID
 				} `spanner:"STRUCT_ARRAY"`
 			})(nil),
 			errNilDst((*struct {
@@ -364,6 +391,7 @@ func TestNilDst(t *testing.T) {
 					Col1 int
 					Col2 float64
 					Col3 float32
+					Col4 uuid.UUID
 				} `spanner:"STRUCT_ARRAY"`
 			})(nil)),
 		},
@@ -437,6 +465,10 @@ func TestNullTypeErr(t *testing.T) {
 		{
 			"NULL_DATE",
 			&dt,
+		},
+		{
+			"NULL_UUID",
+			&uuid1,
 		},
 	} {
 		wantErr := errDecodeColumn(ntoi(test.colName), errDstNotForNull(test.dst))
@@ -1062,6 +1094,42 @@ func TestBrokenRow(t *testing.T) {
 				return err
 			}())),
 		},
+		{
+			// Field specifies UUID type, value is having a nil Kind.
+			&Row{
+				[]*sppb.StructType_Field{
+					{Name: "Col0", Type: uuidType()},
+				},
+				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+			},
+			&NullUUID{uuid1, true},
+			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
+		},
+		{
+			// Field specifies UUID type, but value is for BOOL type.
+			&Row{
+				[]*sppb.StructType_Field{
+					{Name: "Col0", Type: uuidType()},
+				},
+				[]*proto3.Value{boolProto(true)},
+			},
+			&NullUUID{uuid1, true},
+			errDecodeColumn(0, errSrcVal(boolProto(true), "String")),
+		},
+		{
+			// Field specifies UUID type, but value is incorrect UUID.
+			&Row{
+				[]*sppb.StructType_Field{
+					{Name: "Col0", Type: uuidType()},
+				},
+				[]*proto3.Value{stringProto("xyz")},
+			},
+			&NullUUID{},
+			errDecodeColumn(0, errBadEncoding(stringProto("xyz"), func() error {
+				_, err := uuid.Parse("xyz")
+				return err
+			}())),
+		},
 
 		{
 			// Field specifies ARRAY<INT64> type, value is having a nil Kind.
@@ -1379,6 +1447,51 @@ func TestBrokenRow(t *testing.T) {
 				"DATE", errSrcVal(floatProto(1.0), "String"))),
 		},
 		{
+			// Field specifies ARRAY<UUID> type, value is having a nil Kind.
+			&Row{
+				[]*sppb.StructType_Field{
+					{Name: "Col0", Type: listType(uuidType())},
+				},
+				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+			},
+			&[]NullUUID{},
+			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
+		},
+		{
+			// Field specifies ARRAY<UUID> type, value is having a nil ListValue.
+			&Row{
+				[]*sppb.StructType_Field{
+					{Name: "Col0", Type: listType(uuidType())},
+				},
+				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+			},
+			&[]NullUUID{},
+			errDecodeColumn(0, errNilListValue("UUID")),
+		},
+		{
+			// Field specifies ARRAY<UUID> type, but value is for FLOAT64 type.
+			&Row{
+				[]*sppb.StructType_Field{
+					{Name: "Col0", Type: listType(uuidType())},
+				},
+				[]*proto3.Value{floatProto(1.0)},
+			},
+			&[]NullUUID{},
+			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
+		},
+		{
+			// Field specifies ARRAY<UUID> type, but value is for ARRAY<FLOAT64> type.
+			&Row{
+				[]*sppb.StructType_Field{
+					{Name: "Col0", Type: listType(uuidType())},
+				},
+				[]*proto3.Value{listProto(floatProto(1.0))},
+			},
+			&[]NullUUID{},
+			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
+				"UUID", errSrcVal(floatProto(1.0), "String"))),
+		},
+		{
 			// Field specifies ARRAY<STRUCT> type, value is having a nil Kind.
 			&Row{
 				[]*sppb.StructType_Field{
@@ -1621,6 +1734,11 @@ func TestToStruct(t *testing.T) {
 			NullDate      NullDate   `spanner:"NULL_DATE"`
 			DateArray     []NullDate `spanner:"DATE_ARRAY"`
 			NullDateArray []NullDate `spanner:"NULL_DATE_ARRAY"`
+			// UUID / UUID ARRAY
+			UUID          uuid.UUID  `spanner:"UUID"`
+			NullUUID      NullUUID   `spanner:"NULL_UUID"`
+			UUIDArray     []NullUUID `spanner:"UUID_ARRAY"`
+			NullUUIDArray []NullUUID `spanner:"NULL_UUID_ARRAY"`
 
 			// STRUCT ARRAY
 			StructArray []*struct {
@@ -1628,12 +1746,14 @@ func TestToStruct(t *testing.T) {
 				Col2 float64
 				Col3 float32
 				Col4 string
+				Col5 uuid.UUID
 			} `spanner:"STRUCT_ARRAY"`
 			NullStructArray []*struct {
 				Col1 int64
 				Col2 float64
 				Col3 float32
 				Col4 string
+				Col5 uuid.UUID
 			} `spanner:"NULL_STRUCT_ARRAY"`
 		}{
 			{}, // got
@@ -1678,16 +1798,21 @@ func TestToStruct(t *testing.T) {
 				NullDate{},
 				[]NullDate{{}, {dt, true}},
 				[]NullDate(nil),
+				// UUID / UUID ARRAY
+				uuid1,
+				NullUUID{},
+				[]NullUUID{{}, {uuid1, true}},
+				[]NullUUID(nil),
 				// STRUCT ARRAY
 				[]*struct {
 					Col1 int64
 					Col2 float64
 					Col3 float32
 					Col4 string
+					Col5 uuid.UUID
 				}{
 					nil,
-
-					{3, 33.3, float32(0.3), "three"},
+					{3, 33.3, float32(0.3), "three", uuid1},
 					nil,
 				},
 				[]*struct {
@@ -1695,6 +1820,7 @@ func TestToStruct(t *testing.T) {
 					Col2 float64
 					Col3 float32
 					Col4 string
+					Col5 uuid.UUID
 				}(nil),
 			}, // want
 		}
@@ -1728,6 +1854,8 @@ func TestToStructWithCustomTypes(t *testing.T) {
 	type CustomNullTime NullTime
 	type CustomDate civil.Date
 	type CustomNullDate NullDate
+	type CustomUUID uuid.UUID
+	type CustomNullUUID NullUUID
 
 	for i, toStuct := range []func(ptr interface{}) error{row.ToStruct, row.ToStructLenient} {
 		s := []struct {
@@ -1772,18 +1900,26 @@ func TestToStructWithCustomTypes(t *testing.T) {
 			DateArray     []CustomNullDate `spanner:"DATE_ARRAY"`
 			NullDateArray []CustomNullDate `spanner:"NULL_DATE_ARRAY"`
 
+			// UUID / UUID ARRAY
+			UUID          CustomUUID       `spanner:"UUID"`
+			NullUUID      CustomNullUUID   `spanner:"NULL_UUID"`
+			UUIDArray     []CustomNullUUID `spanner:"UUID_ARRAY"`
+			NullUUIDArray []CustomNullUUID `spanner:"NULL_UUID_ARRAY"`
+
 			// STRUCT ARRAY
 			StructArray []*struct {
 				Col1 CustomInt64
 				Col2 CustomFloat64
 				Col3 CustomFloat32
 				Col4 CustomString
+				Col5 CustomUUID
 			} `spanner:"STRUCT_ARRAY"`
 			NullStructArray []*struct {
 				Col1 CustomInt64
 				Col2 CustomFloat64
 				Col3 CustomFloat32
 				Col4 CustomString
+				Col5 CustomUUID
 			} `spanner:"NULL_STRUCT_ARRAY"`
 		}{
 			{}, // got
@@ -1828,16 +1964,21 @@ func TestToStructWithCustomTypes(t *testing.T) {
 				CustomNullDate{},
 				[]CustomNullDate{{}, {dt, true}},
 				[]CustomNullDate(nil),
+				// UUID / UUID ARRAY
+				CustomUUID(uuid1),
+				CustomNullUUID{},
+				[]CustomNullUUID{{}, {uuid1, true}},
+				[]CustomNullUUID(nil),
 				// STRUCT ARRAY
 				[]*struct {
 					Col1 CustomInt64
 					Col2 CustomFloat64
 					Col3 CustomFloat32
 					Col4 CustomString
+					Col5 CustomUUID
 				}{
 					nil,
-
-					{3, 33.3, 0.3, "three"},
+					{3, 33.3, 0.3, "three", CustomUUID(uuid1)},
 					nil,
 				},
 				[]*struct {
@@ -1845,6 +1986,7 @@ func TestToStructWithCustomTypes(t *testing.T) {
 					Col2 CustomFloat64
 					Col3 CustomFloat32
 					Col4 CustomString
+					Col5 CustomUUID
 				}(nil),
 			}, // want
 		}
@@ -2099,6 +2241,25 @@ func BenchmarkColumn(b *testing.B) {
 	}
 }
 
+type CustomType[T any] struct {
+	Val T
+}
+
+func (n *CustomType[T]) DecodeSpanner(input any) error {
+	switch val := input.(type) {
+	case T:
+		n.Val = val
+		return nil
+	case *T:
+		if val == nil {
+			return nil
+		}
+		n.Val = *val
+		return nil
+	}
+	panic("n/a")
+}
+
 func TestSelectAll(t *testing.T) {
 	skipUnsupportedPGTest(t)
 	type args struct {
@@ -2113,6 +2274,13 @@ func TestSelectAll(t *testing.T) {
 		Col3 string
 		Col4 time.Time
 	}
+
+	type testStructWithCustom struct {
+		Col1 int64
+		COL2 float64
+		Col3 CustomType[string]
+	}
+
 	type testStructWithTag struct {
 		Col1 int64     `spanner:"tag1"`
 		Col2 float64   `spanner:"Tag2"`
@@ -2280,6 +2448,44 @@ func TestSelectAll(t *testing.T) {
 				{Col1: 3, COL2: 3.3, Col3: "value3"},
 				{Col1: 1, COL2: 1.1, Col3: "value"},
 				{Col1: 2, COL2: 2.2, Col3: "value2"},
+			},
+		},
+		{
+			name: "success: using destination with custom type with custom decoder with some null columns",
+			args: args{
+				destination: &[]*testStructWithCustom{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(3), floatProto(3.3), stringProto("value3")},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), nullProto()},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")},
+					},
+					iterator.Done,
+				),
+			},
+			want: &[]*testStructWithCustom{
+				{Col1: 3, COL2: 3.3, Col3: CustomType[string]{"value3"}},
+				{Col1: 1, COL2: 1.1, Col3: CustomType[string]{}},
+				{Col1: 2, COL2: 2.2, Col3: CustomType[string]{"value2"}},
 			},
 		},
 		{

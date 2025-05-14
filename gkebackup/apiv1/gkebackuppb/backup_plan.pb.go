@@ -21,9 +21,6 @@
 package gkebackuppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
@@ -32,6 +29,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -171,7 +170,8 @@ type BackupPlan struct {
 	// if the BackupPlan is deactivated on an Update
 	State BackupPlan_State `protobuf:"varint,14,opt,name=state,proto3,enum=google.cloud.gkebackup.v1.BackupPlan_State" json:"state,omitempty"`
 	// Output only. Human-readable description of why BackupPlan is in the current
-	// `state`
+	// `state`. This field is only meant for human readability and should not be
+	// used programmatically as this field is not guaranteed to be consistent.
 	StateReason string `protobuf:"bytes,15,opt,name=state_reason,json=stateReason,proto3" json:"state_reason,omitempty"`
 	// Output only. A number that represents the current risk level of this
 	// BackupPlan from RPO perspective with 1 being no risk and 5 being highest
@@ -180,6 +180,11 @@ type BackupPlan struct {
 	// Output only. Human-readable description of why the BackupPlan is in the
 	// current rpo_risk_level and action items if any.
 	RpoRiskReason string `protobuf:"bytes,17,opt,name=rpo_risk_reason,json=rpoRiskReason,proto3" json:"rpo_risk_reason,omitempty"`
+	// Output only. Completion time of the last successful Backup. This is sourced
+	// from a successful Backup's complete_time field. This field is added to
+	// maintain consistency with BackupPlanBinding to display last successful
+	// backup time.
+	LastSuccessfulBackupTime *timestamppb.Timestamp `protobuf:"bytes,19,opt,name=last_successful_backup_time,json=lastSuccessfulBackupTime,proto3" json:"last_successful_backup_time,omitempty"`
 }
 
 func (x *BackupPlan) Reset() {
@@ -329,6 +334,13 @@ func (x *BackupPlan) GetRpoRiskReason() string {
 		return x.RpoRiskReason
 	}
 	return ""
+}
+
+func (x *BackupPlan) GetLastSuccessfulBackupTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastSuccessfulBackupTime
+	}
+	return nil
 }
 
 // Defines RPO scheduling configuration for automatically creating
@@ -945,7 +957,7 @@ var file_google_cloud_gkebackup_v1_backup_plan_proto_rawDesc = []byte{
 	0x70, 0x65, 0x2f, 0x64, 0x61, 0x79, 0x6f, 0x66, 0x77, 0x65, 0x65, 0x6b, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x1a, 0x1b, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x2f,
 	0x74, 0x69, 0x6d, 0x65, 0x6f, 0x66, 0x64, 0x61, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
-	0x8d, 0x11, 0x0a, 0x0a, 0x42, 0x61, 0x63, 0x6b, 0x75, 0x70, 0x50, 0x6c, 0x61, 0x6e, 0x12, 0x17,
+	0xed, 0x11, 0x0a, 0x0a, 0x42, 0x61, 0x63, 0x6b, 0x75, 0x70, 0x50, 0x6c, 0x61, 0x6e, 0x12, 0x17,
 	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
 	0x03, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x15, 0x0a, 0x03, 0x75, 0x69, 0x64, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x03, 0x75, 0x69, 0x64, 0x12, 0x40,
@@ -1007,6 +1019,12 @@ var file_google_cloud_gkebackup_v1_backup_plan_proto_rawDesc = []byte{
 	0x76, 0x65, 0x6c, 0x12, 0x2b, 0x0a, 0x0f, 0x72, 0x70, 0x6f, 0x5f, 0x72, 0x69, 0x73, 0x6b, 0x5f,
 	0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x18, 0x11, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
 	0x03, 0x52, 0x0d, 0x72, 0x70, 0x6f, 0x52, 0x69, 0x73, 0x6b, 0x52, 0x65, 0x61, 0x73, 0x6f, 0x6e,
+	0x12, 0x5e, 0x0a, 0x1b, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73,
+	0x66, 0x75, 0x6c, 0x5f, 0x62, 0x61, 0x63, 0x6b, 0x75, 0x70, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18,
+	0x13, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x18, 0x6c, 0x61, 0x73, 0x74, 0x53, 0x75, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x66, 0x75, 0x6c, 0x42, 0x61, 0x63, 0x6b, 0x75, 0x70, 0x54, 0x69, 0x6d, 0x65,
 	0x1a, 0x9d, 0x01, 0x0a, 0x0f, 0x52, 0x65, 0x74, 0x65, 0x6e, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6f,
 	0x6c, 0x69, 0x63, 0x79, 0x12, 0x3a, 0x0a, 0x17, 0x62, 0x61, 0x63, 0x6b, 0x75, 0x70, 0x5f, 0x64,
 	0x65, 0x6c, 0x65, 0x74, 0x65, 0x5f, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x64, 0x61, 0x79, 0x73, 0x18,
@@ -1175,22 +1193,23 @@ var file_google_cloud_gkebackup_v1_backup_plan_proto_depIdxs = []int32{
 	5,  // 4: google.cloud.gkebackup.v1.BackupPlan.backup_schedule:type_name -> google.cloud.gkebackup.v1.BackupPlan.Schedule
 	6,  // 5: google.cloud.gkebackup.v1.BackupPlan.backup_config:type_name -> google.cloud.gkebackup.v1.BackupPlan.BackupConfig
 	0,  // 6: google.cloud.gkebackup.v1.BackupPlan.state:type_name -> google.cloud.gkebackup.v1.BackupPlan.State
-	3,  // 7: google.cloud.gkebackup.v1.RpoConfig.exclusion_windows:type_name -> google.cloud.gkebackup.v1.ExclusionWindow
-	10, // 8: google.cloud.gkebackup.v1.ExclusionWindow.start_time:type_name -> google.type.TimeOfDay
-	11, // 9: google.cloud.gkebackup.v1.ExclusionWindow.duration:type_name -> google.protobuf.Duration
-	12, // 10: google.cloud.gkebackup.v1.ExclusionWindow.single_occurrence_date:type_name -> google.type.Date
-	8,  // 11: google.cloud.gkebackup.v1.ExclusionWindow.days_of_week:type_name -> google.cloud.gkebackup.v1.ExclusionWindow.DayOfWeekList
-	2,  // 12: google.cloud.gkebackup.v1.BackupPlan.Schedule.rpo_config:type_name -> google.cloud.gkebackup.v1.RpoConfig
-	9,  // 13: google.cloud.gkebackup.v1.BackupPlan.Schedule.next_scheduled_backup_time:type_name -> google.protobuf.Timestamp
-	13, // 14: google.cloud.gkebackup.v1.BackupPlan.BackupConfig.selected_namespaces:type_name -> google.cloud.gkebackup.v1.Namespaces
-	14, // 15: google.cloud.gkebackup.v1.BackupPlan.BackupConfig.selected_applications:type_name -> google.cloud.gkebackup.v1.NamespacedNames
-	15, // 16: google.cloud.gkebackup.v1.BackupPlan.BackupConfig.encryption_key:type_name -> google.cloud.gkebackup.v1.EncryptionKey
-	16, // 17: google.cloud.gkebackup.v1.ExclusionWindow.DayOfWeekList.days_of_week:type_name -> google.type.DayOfWeek
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	9,  // 7: google.cloud.gkebackup.v1.BackupPlan.last_successful_backup_time:type_name -> google.protobuf.Timestamp
+	3,  // 8: google.cloud.gkebackup.v1.RpoConfig.exclusion_windows:type_name -> google.cloud.gkebackup.v1.ExclusionWindow
+	10, // 9: google.cloud.gkebackup.v1.ExclusionWindow.start_time:type_name -> google.type.TimeOfDay
+	11, // 10: google.cloud.gkebackup.v1.ExclusionWindow.duration:type_name -> google.protobuf.Duration
+	12, // 11: google.cloud.gkebackup.v1.ExclusionWindow.single_occurrence_date:type_name -> google.type.Date
+	8,  // 12: google.cloud.gkebackup.v1.ExclusionWindow.days_of_week:type_name -> google.cloud.gkebackup.v1.ExclusionWindow.DayOfWeekList
+	2,  // 13: google.cloud.gkebackup.v1.BackupPlan.Schedule.rpo_config:type_name -> google.cloud.gkebackup.v1.RpoConfig
+	9,  // 14: google.cloud.gkebackup.v1.BackupPlan.Schedule.next_scheduled_backup_time:type_name -> google.protobuf.Timestamp
+	13, // 15: google.cloud.gkebackup.v1.BackupPlan.BackupConfig.selected_namespaces:type_name -> google.cloud.gkebackup.v1.Namespaces
+	14, // 16: google.cloud.gkebackup.v1.BackupPlan.BackupConfig.selected_applications:type_name -> google.cloud.gkebackup.v1.NamespacedNames
+	15, // 17: google.cloud.gkebackup.v1.BackupPlan.BackupConfig.encryption_key:type_name -> google.cloud.gkebackup.v1.EncryptionKey
+	16, // 18: google.cloud.gkebackup.v1.ExclusionWindow.DayOfWeekList.days_of_week:type_name -> google.type.DayOfWeek
+	19, // [19:19] is the sub-list for method output_type
+	19, // [19:19] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_gkebackup_v1_backup_plan_proto_init() }

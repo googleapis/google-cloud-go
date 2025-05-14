@@ -22,9 +22,6 @@ package discoveryenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -96,9 +95,9 @@ type RecommendRequest struct {
 	// attribute-based expressions are expected instead of the above described
 	// tag-based syntax. Examples:
 	//
-	//   - (launguage: ANY("en", "es")) AND NOT (categories: ANY("Movie"))
+	//   - (language: ANY("en", "es")) AND NOT (categories: ANY("Movie"))
 	//   - (available: true) AND
-	//     (launguage: ANY("en", "es")) OR (categories: ANY("Movie"))
+	//     (language: ANY("en", "es")) OR (categories: ANY("Movie"))
 	//
 	// If your filter blocks all results, the API returns generic
 	// (unfiltered) popular Documents. If you only want results strictly matching

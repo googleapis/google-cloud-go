@@ -21,15 +21,14 @@
 package productspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	typepb "cloud.google.com/go/shopping/type/typepb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2735,6 +2734,77 @@ func (*ProductSustainabilityIncentive_Amount) isProductSustainabilityIncentive_V
 
 func (*ProductSustainabilityIncentive_Percentage) isProductSustainabilityIncentive_Value() {}
 
+// Information regarding Automated Discounts.
+type AutomatedDiscounts struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The price prior to the application of the first price reduction.
+	// Absent if the information about the prior price of the product is not
+	// available.
+	PriorPrice *typepb.Price `protobuf:"bytes,1,opt,name=prior_price,json=priorPrice,proto3" json:"prior_price,omitempty"`
+	// The price prior to the application of consecutive price reductions.
+	// Absent if the information about the prior price of the product is not
+	// available.
+	PriorPriceProgressive *typepb.Price `protobuf:"bytes,2,opt,name=prior_price_progressive,json=priorPriceProgressive,proto3" json:"prior_price_progressive,omitempty"`
+	// The current sale price for products with a price optimized using Google
+	// Automated Discounts (GAD). Absent if the information about the GAD_price of
+	// the product is not available.
+	GadPrice *typepb.Price `protobuf:"bytes,3,opt,name=gad_price,json=gadPrice,proto3" json:"gad_price,omitempty"`
+}
+
+func (x *AutomatedDiscounts) Reset() {
+	*x = AutomatedDiscounts{}
+	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AutomatedDiscounts) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AutomatedDiscounts) ProtoMessage() {}
+
+func (x *AutomatedDiscounts) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AutomatedDiscounts.ProtoReflect.Descriptor instead.
+func (*AutomatedDiscounts) Descriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1beta_products_common_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *AutomatedDiscounts) GetPriorPrice() *typepb.Price {
+	if x != nil {
+		return x.PriorPrice
+	}
+	return nil
+}
+
+func (x *AutomatedDiscounts) GetPriorPriceProgressive() *typepb.Price {
+	if x != nil {
+		return x.PriorPriceProgressive
+	}
+	return nil
+}
+
+func (x *AutomatedDiscounts) GetGadPrice() *typepb.Price {
+	if x != nil {
+		return x.GadPrice
+	}
+	return nil
+}
+
 // The destination status of the product status.
 type ProductStatus_DestinationStatus struct {
 	state         protoimpl.MessageState
@@ -2755,7 +2825,7 @@ type ProductStatus_DestinationStatus struct {
 
 func (x *ProductStatus_DestinationStatus) Reset() {
 	*x = ProductStatus_DestinationStatus{}
-	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[21]
+	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2767,7 +2837,7 @@ func (x *ProductStatus_DestinationStatus) String() string {
 func (*ProductStatus_DestinationStatus) ProtoMessage() {}
 
 func (x *ProductStatus_DestinationStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[21]
+	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2840,7 +2910,7 @@ type ProductStatus_ItemLevelIssue struct {
 
 func (x *ProductStatus_ItemLevelIssue) Reset() {
 	*x = ProductStatus_ItemLevelIssue{}
-	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[22]
+	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2852,7 +2922,7 @@ func (x *ProductStatus_ItemLevelIssue) String() string {
 func (*ProductStatus_ItemLevelIssue) ProtoMessage() {}
 
 func (x *ProductStatus_ItemLevelIssue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[22]
+	mi := &file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3678,22 +3748,36 @@ var file_google_shopping_merchant_products_v1beta_products_common_proto_rawDesc 
 	0x0a, 0x0d, 0x45, 0x56, 0x5f, 0x54, 0x41, 0x58, 0x5f, 0x43, 0x52, 0x45, 0x44, 0x49, 0x54, 0x10,
 	0x01, 0x12, 0x15, 0x0a, 0x11, 0x45, 0x56, 0x5f, 0x50, 0x52, 0x49, 0x43, 0x45, 0x5f, 0x44, 0x49,
 	0x53, 0x43, 0x4f, 0x55, 0x4e, 0x54, 0x10, 0x02, 0x42, 0x07, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75,
-	0x65, 0x42, 0x07, 0x0a, 0x05, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x2a, 0x4e, 0x0a, 0x12, 0x53, 0x75,
-	0x62, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64,
-	0x12, 0x23, 0x0a, 0x1f, 0x53, 0x55, 0x42, 0x53, 0x43, 0x52, 0x49, 0x50, 0x54, 0x49, 0x4f, 0x4e,
-	0x5f, 0x50, 0x45, 0x52, 0x49, 0x4f, 0x44, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46,
-	0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x4d, 0x4f, 0x4e, 0x54, 0x48, 0x10, 0x01,
-	0x12, 0x08, 0x0a, 0x04, 0x59, 0x45, 0x41, 0x52, 0x10, 0x02, 0x42, 0x95, 0x01, 0x0a, 0x2c, 0x63,
-	0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69,
-	0x6e, 0x67, 0x2e, 0x6d, 0x65, 0x72, 0x63, 0x68, 0x61, 0x6e, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x64,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x42, 0x13, 0x50, 0x72, 0x6f,
-	0x64, 0x75, 0x63, 0x74, 0x73, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x4e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67,
-	0x2f, 0x6d, 0x65, 0x72, 0x63, 0x68, 0x61, 0x6e, 0x74, 0x2f, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2f, 0x70, 0x72, 0x6f,
-	0x64, 0x75, 0x63, 0x74, 0x73, 0x70, 0x62, 0x3b, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x73,
-	0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x42, 0x07, 0x0a, 0x05, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x22, 0xe1, 0x01, 0x0a, 0x12, 0x41,
+	0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x65, 0x64, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x73, 0x12, 0x3c, 0x0a, 0x0b, 0x70, 0x72, 0x69, 0x6f, 0x72, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x50, 0x72,
+	0x69, 0x63, 0x65, 0x52, 0x0a, 0x70, 0x72, 0x69, 0x6f, 0x72, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12,
+	0x53, 0x0a, 0x17, 0x70, 0x72, 0x69, 0x6f, 0x72, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x5f, 0x70,
+	0x72, 0x6f, 0x67, 0x72, 0x65, 0x73, 0x73, 0x69, 0x76, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x1b, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69,
+	0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x15, 0x70,
+	0x72, 0x69, 0x6f, 0x72, 0x50, 0x72, 0x69, 0x63, 0x65, 0x50, 0x72, 0x6f, 0x67, 0x72, 0x65, 0x73,
+	0x73, 0x69, 0x76, 0x65, 0x12, 0x38, 0x0a, 0x09, 0x67, 0x61, 0x64, 0x5f, 0x70, 0x72, 0x69, 0x63,
+	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x50,
+	0x72, 0x69, 0x63, 0x65, 0x52, 0x08, 0x67, 0x61, 0x64, 0x50, 0x72, 0x69, 0x63, 0x65, 0x2a, 0x4e,
+	0x0a, 0x12, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x65,
+	0x72, 0x69, 0x6f, 0x64, 0x12, 0x23, 0x0a, 0x1f, 0x53, 0x55, 0x42, 0x53, 0x43, 0x52, 0x49, 0x50,
+	0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x50, 0x45, 0x52, 0x49, 0x4f, 0x44, 0x5f, 0x55, 0x4e, 0x53, 0x50,
+	0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x4d, 0x4f, 0x4e,
+	0x54, 0x48, 0x10, 0x01, 0x12, 0x08, 0x0a, 0x04, 0x59, 0x45, 0x41, 0x52, 0x10, 0x02, 0x42, 0x95,
+	0x01, 0x0a, 0x2c, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68,
+	0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x6d, 0x65, 0x72, 0x63, 0x68, 0x61, 0x6e, 0x74, 0x2e,
+	0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x42,
+	0x13, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x73, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x73, 0x68, 0x6f, 0x70,
+	0x70, 0x69, 0x6e, 0x67, 0x2f, 0x6d, 0x65, 0x72, 0x63, 0x68, 0x61, 0x6e, 0x74, 0x2f, 0x70, 0x72,
+	0x6f, 0x64, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x2f, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x73, 0x70, 0x62, 0x3b, 0x70, 0x72, 0x6f, 0x64,
+	0x75, 0x63, 0x74, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3709,7 +3793,7 @@ func file_google_shopping_merchant_products_v1beta_products_common_proto_rawDesc
 }
 
 var file_google_shopping_merchant_products_v1beta_products_common_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_google_shopping_merchant_products_v1beta_products_common_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_google_shopping_merchant_products_v1beta_products_common_proto_goTypes = []any{
 	(SubscriptionPeriod)(0),                           // 0: google.shopping.merchant.products.v1beta.SubscriptionPeriod
 	(ProductStatus_ItemLevelIssue_Severity)(0),        // 1: google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue.Severity
@@ -3735,24 +3819,25 @@ var file_google_shopping_merchant_products_v1beta_products_common_proto_goTypes 
 	(*ProductStatus)(nil),                             // 21: google.shopping.merchant.products.v1beta.ProductStatus
 	(*CloudExportAdditionalProperties)(nil),           // 22: google.shopping.merchant.products.v1beta.CloudExportAdditionalProperties
 	(*ProductSustainabilityIncentive)(nil),            // 23: google.shopping.merchant.products.v1beta.ProductSustainabilityIncentive
-	(*ProductStatus_DestinationStatus)(nil),           // 24: google.shopping.merchant.products.v1beta.ProductStatus.DestinationStatus
-	(*ProductStatus_ItemLevelIssue)(nil),              // 25: google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue
-	(*timestamppb.Timestamp)(nil),                     // 26: google.protobuf.Timestamp
-	(*typepb.Price)(nil),                              // 27: google.shopping.type.Price
-	(*interval.Interval)(nil),                         // 28: google.type.Interval
-	(typepb.ReportingContext_ReportingContextEnum)(0), // 29: google.shopping.type.ReportingContext.ReportingContextEnum
+	(*AutomatedDiscounts)(nil),                        // 24: google.shopping.merchant.products.v1beta.AutomatedDiscounts
+	(*ProductStatus_DestinationStatus)(nil),           // 25: google.shopping.merchant.products.v1beta.ProductStatus.DestinationStatus
+	(*ProductStatus_ItemLevelIssue)(nil),              // 26: google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue
+	(*timestamppb.Timestamp)(nil),                     // 27: google.protobuf.Timestamp
+	(*typepb.Price)(nil),                              // 28: google.shopping.type.Price
+	(*interval.Interval)(nil),                         // 29: google.type.Interval
+	(typepb.ReportingContext_ReportingContextEnum)(0), // 30: google.shopping.type.ReportingContext.ReportingContextEnum
 }
 var file_google_shopping_merchant_products_v1beta_products_common_proto_depIdxs = []int32{
-	26, // 0: google.shopping.merchant.products.v1beta.Attributes.expiration_date:type_name -> google.protobuf.Timestamp
-	26, // 1: google.shopping.merchant.products.v1beta.Attributes.disclosure_date:type_name -> google.protobuf.Timestamp
-	26, // 2: google.shopping.merchant.products.v1beta.Attributes.availability_date:type_name -> google.protobuf.Timestamp
-	27, // 3: google.shopping.merchant.products.v1beta.Attributes.price:type_name -> google.shopping.type.Price
+	27, // 0: google.shopping.merchant.products.v1beta.Attributes.expiration_date:type_name -> google.protobuf.Timestamp
+	27, // 1: google.shopping.merchant.products.v1beta.Attributes.disclosure_date:type_name -> google.protobuf.Timestamp
+	27, // 2: google.shopping.merchant.products.v1beta.Attributes.availability_date:type_name -> google.protobuf.Timestamp
+	28, // 3: google.shopping.merchant.products.v1beta.Attributes.price:type_name -> google.shopping.type.Price
 	10, // 4: google.shopping.merchant.products.v1beta.Attributes.installment:type_name -> google.shopping.merchant.products.v1beta.Installment
 	9,  // 5: google.shopping.merchant.products.v1beta.Attributes.subscription_cost:type_name -> google.shopping.merchant.products.v1beta.SubscriptionCost
 	11, // 6: google.shopping.merchant.products.v1beta.Attributes.loyalty_points:type_name -> google.shopping.merchant.products.v1beta.LoyaltyPoints
 	12, // 7: google.shopping.merchant.products.v1beta.Attributes.loyalty_programs:type_name -> google.shopping.merchant.products.v1beta.LoyaltyProgram
-	27, // 8: google.shopping.merchant.products.v1beta.Attributes.sale_price:type_name -> google.shopping.type.Price
-	28, // 9: google.shopping.merchant.products.v1beta.Attributes.sale_price_effective_date:type_name -> google.type.Interval
+	28, // 8: google.shopping.merchant.products.v1beta.Attributes.sale_price:type_name -> google.shopping.type.Price
+	29, // 9: google.shopping.merchant.products.v1beta.Attributes.sale_price_effective_date:type_name -> google.type.Interval
 	19, // 10: google.shopping.merchant.products.v1beta.Attributes.product_height:type_name -> google.shopping.merchant.products.v1beta.ProductDimension
 	19, // 11: google.shopping.merchant.products.v1beta.Attributes.product_length:type_name -> google.shopping.merchant.products.v1beta.ProductDimension
 	19, // 12: google.shopping.merchant.products.v1beta.Attributes.product_width:type_name -> google.shopping.merchant.products.v1beta.ProductDimension
@@ -3766,38 +3851,41 @@ var file_google_shopping_merchant_products_v1beta_products_common_proto_depIdxs 
 	4,  // 20: google.shopping.merchant.products.v1beta.Attributes.taxes:type_name -> google.shopping.merchant.products.v1beta.Tax
 	8,  // 21: google.shopping.merchant.products.v1beta.Attributes.unit_pricing_measure:type_name -> google.shopping.merchant.products.v1beta.UnitPricingMeasure
 	7,  // 22: google.shopping.merchant.products.v1beta.Attributes.unit_pricing_base_measure:type_name -> google.shopping.merchant.products.v1beta.UnitPricingBaseMeasure
-	27, // 23: google.shopping.merchant.products.v1beta.Attributes.cost_of_goods_sold:type_name -> google.shopping.type.Price
+	28, // 23: google.shopping.merchant.products.v1beta.Attributes.cost_of_goods_sold:type_name -> google.shopping.type.Price
 	15, // 24: google.shopping.merchant.products.v1beta.Attributes.product_details:type_name -> google.shopping.merchant.products.v1beta.ProductDetail
 	22, // 25: google.shopping.merchant.products.v1beta.Attributes.cloud_export_additional_properties:type_name -> google.shopping.merchant.products.v1beta.CloudExportAdditionalProperties
 	16, // 26: google.shopping.merchant.products.v1beta.Attributes.certifications:type_name -> google.shopping.merchant.products.v1beta.Certification
 	17, // 27: google.shopping.merchant.products.v1beta.Attributes.structured_title:type_name -> google.shopping.merchant.products.v1beta.ProductStructuredTitle
 	18, // 28: google.shopping.merchant.products.v1beta.Attributes.structured_description:type_name -> google.shopping.merchant.products.v1beta.ProductStructuredDescription
-	27, // 29: google.shopping.merchant.products.v1beta.Attributes.auto_pricing_min_price:type_name -> google.shopping.type.Price
+	28, // 29: google.shopping.merchant.products.v1beta.Attributes.auto_pricing_min_price:type_name -> google.shopping.type.Price
 	23, // 30: google.shopping.merchant.products.v1beta.Attributes.sustainability_incentives:type_name -> google.shopping.merchant.products.v1beta.ProductSustainabilityIncentive
 	0,  // 31: google.shopping.merchant.products.v1beta.SubscriptionCost.period:type_name -> google.shopping.merchant.products.v1beta.SubscriptionPeriod
-	27, // 32: google.shopping.merchant.products.v1beta.SubscriptionCost.amount:type_name -> google.shopping.type.Price
-	27, // 33: google.shopping.merchant.products.v1beta.Installment.amount:type_name -> google.shopping.type.Price
-	27, // 34: google.shopping.merchant.products.v1beta.Installment.downpayment:type_name -> google.shopping.type.Price
-	27, // 35: google.shopping.merchant.products.v1beta.LoyaltyProgram.price:type_name -> google.shopping.type.Price
-	27, // 36: google.shopping.merchant.products.v1beta.LoyaltyProgram.cashback_for_future_use:type_name -> google.shopping.type.Price
-	28, // 37: google.shopping.merchant.products.v1beta.LoyaltyProgram.member_price_effective_date:type_name -> google.type.Interval
-	27, // 38: google.shopping.merchant.products.v1beta.Shipping.price:type_name -> google.shopping.type.Price
-	27, // 39: google.shopping.merchant.products.v1beta.FreeShippingThreshold.price_threshold:type_name -> google.shopping.type.Price
-	24, // 40: google.shopping.merchant.products.v1beta.ProductStatus.destination_statuses:type_name -> google.shopping.merchant.products.v1beta.ProductStatus.DestinationStatus
-	25, // 41: google.shopping.merchant.products.v1beta.ProductStatus.item_level_issues:type_name -> google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue
-	26, // 42: google.shopping.merchant.products.v1beta.ProductStatus.creation_date:type_name -> google.protobuf.Timestamp
-	26, // 43: google.shopping.merchant.products.v1beta.ProductStatus.last_update_date:type_name -> google.protobuf.Timestamp
-	26, // 44: google.shopping.merchant.products.v1beta.ProductStatus.google_expiration_date:type_name -> google.protobuf.Timestamp
-	27, // 45: google.shopping.merchant.products.v1beta.ProductSustainabilityIncentive.amount:type_name -> google.shopping.type.Price
+	28, // 32: google.shopping.merchant.products.v1beta.SubscriptionCost.amount:type_name -> google.shopping.type.Price
+	28, // 33: google.shopping.merchant.products.v1beta.Installment.amount:type_name -> google.shopping.type.Price
+	28, // 34: google.shopping.merchant.products.v1beta.Installment.downpayment:type_name -> google.shopping.type.Price
+	28, // 35: google.shopping.merchant.products.v1beta.LoyaltyProgram.price:type_name -> google.shopping.type.Price
+	28, // 36: google.shopping.merchant.products.v1beta.LoyaltyProgram.cashback_for_future_use:type_name -> google.shopping.type.Price
+	29, // 37: google.shopping.merchant.products.v1beta.LoyaltyProgram.member_price_effective_date:type_name -> google.type.Interval
+	28, // 38: google.shopping.merchant.products.v1beta.Shipping.price:type_name -> google.shopping.type.Price
+	28, // 39: google.shopping.merchant.products.v1beta.FreeShippingThreshold.price_threshold:type_name -> google.shopping.type.Price
+	25, // 40: google.shopping.merchant.products.v1beta.ProductStatus.destination_statuses:type_name -> google.shopping.merchant.products.v1beta.ProductStatus.DestinationStatus
+	26, // 41: google.shopping.merchant.products.v1beta.ProductStatus.item_level_issues:type_name -> google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue
+	27, // 42: google.shopping.merchant.products.v1beta.ProductStatus.creation_date:type_name -> google.protobuf.Timestamp
+	27, // 43: google.shopping.merchant.products.v1beta.ProductStatus.last_update_date:type_name -> google.protobuf.Timestamp
+	27, // 44: google.shopping.merchant.products.v1beta.ProductStatus.google_expiration_date:type_name -> google.protobuf.Timestamp
+	28, // 45: google.shopping.merchant.products.v1beta.ProductSustainabilityIncentive.amount:type_name -> google.shopping.type.Price
 	2,  // 46: google.shopping.merchant.products.v1beta.ProductSustainabilityIncentive.type:type_name -> google.shopping.merchant.products.v1beta.ProductSustainabilityIncentive.Type
-	29, // 47: google.shopping.merchant.products.v1beta.ProductStatus.DestinationStatus.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
-	1,  // 48: google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue.severity:type_name -> google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue.Severity
-	29, // 49: google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
-	50, // [50:50] is the sub-list for method output_type
-	50, // [50:50] is the sub-list for method input_type
-	50, // [50:50] is the sub-list for extension type_name
-	50, // [50:50] is the sub-list for extension extendee
-	0,  // [0:50] is the sub-list for field type_name
+	28, // 47: google.shopping.merchant.products.v1beta.AutomatedDiscounts.prior_price:type_name -> google.shopping.type.Price
+	28, // 48: google.shopping.merchant.products.v1beta.AutomatedDiscounts.prior_price_progressive:type_name -> google.shopping.type.Price
+	28, // 49: google.shopping.merchant.products.v1beta.AutomatedDiscounts.gad_price:type_name -> google.shopping.type.Price
+	30, // 50: google.shopping.merchant.products.v1beta.ProductStatus.DestinationStatus.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
+	1,  // 51: google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue.severity:type_name -> google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue.Severity
+	30, // 52: google.shopping.merchant.products.v1beta.ProductStatus.ItemLevelIssue.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
+	53, // [53:53] is the sub-list for method output_type
+	53, // [53:53] is the sub-list for method input_type
+	53, // [53:53] is the sub-list for extension type_name
+	53, // [53:53] is the sub-list for extension extendee
+	0,  // [0:53] is the sub-list for field type_name
 }
 
 func init() { file_google_shopping_merchant_products_v1beta_products_common_proto_init() }
@@ -3824,7 +3912,7 @@ func file_google_shopping_merchant_products_v1beta_products_common_proto_init() 
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_shopping_merchant_products_v1beta_products_common_proto_rawDesc,
 			NumEnums:      3,
-			NumMessages:   23,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

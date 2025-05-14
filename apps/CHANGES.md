@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.3](https://github.com/googleapis/google-cloud-go/compare/apps/v0.7.2...apps/v0.7.3) (2025-05-13)
+
+
+### Bug Fixes
+
+* **apps/events/subscriptions:** An existing oauth_scope https ([35b4f4a](https://github.com/googleapis/google-cloud-go/commit/35b4f4aced4a5dc79f1315c74feaac7d11657f8a))
+
+## [0.7.2](https://github.com/googleapis/google-cloud-go/compare/apps/v0.7.1...apps/v0.7.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **apps:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/apps/v0.7.0...apps/v0.7.1) (2025-03-13)
 
 

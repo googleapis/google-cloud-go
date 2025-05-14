@@ -1,5 +1,46 @@
 # Changes
 
+## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.80.0...spanner/v1.81.0) (2025-05-09)
+
+
+### Features
+
+* **spanner/spansql:** Add support for DROP SEARCH INDEX and ALTER SEARCH INDEX ([#11961](https://github.com/googleapis/google-cloud-go/issues/11961)) ([952cd7f](https://github.com/googleapis/google-cloud-go/commit/952cd7fd419af9eb74f5d30a111ae936094b0645))
+* **spanner:** Add support of AFE and GRPC metrics in client-side metrics ([#12067](https://github.com/googleapis/google-cloud-go/issues/12067)) ([7b77038](https://github.com/googleapis/google-cloud-go/commit/7b77038eb4afe31b1a0d42f7c35aeabce0f48810))
+
+
+### Bug Fixes
+
+* **spanner:** Row mismatch in SelectAll using custom type ([#12222](https://github.com/googleapis/google-cloud-go/issues/12222)) ([ce6a23a](https://github.com/googleapis/google-cloud-go/commit/ce6a23a45fe66cc12e1b5014d2d45f1968ddc067))
+
+## [1.80.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.79.0...spanner/v1.80.0) (2025-04-23)
+
+
+### Features
+
+* **spanner:** Add interval type support ([#12009](https://github.com/googleapis/google-cloud-go/issues/12009)) ([5152488](https://github.com/googleapis/google-cloud-go/commit/5152488d454f332373800134be1bce0e9ecf3505))
+
+
+### Bug Fixes
+
+* **spanner/benchmarks:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+* **spanner/test/opentelemetry/test:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+* **spanner:** Retry INTERNAL retriable auth error ([#12034](https://github.com/googleapis/google-cloud-go/issues/12034)) ([65c7461](https://github.com/googleapis/google-cloud-go/commit/65c7461c06deed3f5b7723a6049e1607f72fcbd4))
+* **spanner:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+
+### Performance Improvements
+
+* **spanner:** Skip gRPC trailers for StreamingRead & ExecuteStreamingSql ([#11854](https://github.com/googleapis/google-cloud-go/issues/11854)) ([10dc8b7](https://github.com/googleapis/google-cloud-go/commit/10dc8b7e376bdc2ee22378c9334dd6552c135b09))
+
+## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.78.0...spanner/v1.79.0) (2025-04-08)
+
+
+### Features
+
+* **spanner:** Allow string values for Scan functions ([#11898](https://github.com/googleapis/google-cloud-go/issues/11898)) ([9989dd0](https://github.com/googleapis/google-cloud-go/commit/9989dd063ba36f39c880b2e7423adde05c703504))
+* **spanner:** New client(s) ([#11946](https://github.com/googleapis/google-cloud-go/issues/11946)) ([c60f28d](https://github.com/googleapis/google-cloud-go/commit/c60f28d5fd99d5356f39276268a68b729130f152))
+
 ## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.77.0...spanner/v1.78.0) (2025-03-24)
 
 

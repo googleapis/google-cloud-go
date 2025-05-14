@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.36.1...documentai/v1.37.0) (2025-04-30)
+
+
+### Features
+
+* **documentai:** Add image block and blob asset in Document proto ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **documentai:** Added a field for enabling returning images and bounding boxes from layout parser processor ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **documentai:** Added config options to enable image annotation ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **documentai:** Added config options to enable table annotation and image extraction ([#12070](https://github.com/googleapis/google-cloud-go/issues/12070)) ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.36.0...documentai/v1.36.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **documentai:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.3...documentai/v1.36.0) (2025-03-19)
 
 

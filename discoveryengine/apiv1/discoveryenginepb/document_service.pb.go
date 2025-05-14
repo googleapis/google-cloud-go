@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -339,7 +338,7 @@ type CreateDocumentRequest struct {
 	// Otherwise, an `ALREADY_EXISTS` error is returned.
 	//
 	// This field must conform to [RFC-1034](https://tools.ietf.org/html/rfc1034)
-	// standard with a length limit of 63 characters. Otherwise, an
+	// standard with a length limit of 128 characters. Otherwise, an
 	// `INVALID_ARGUMENT` error is returned.
 	DocumentId string `protobuf:"bytes,3,opt,name=document_id,json=documentId,proto3" json:"document_id,omitempty"`
 }

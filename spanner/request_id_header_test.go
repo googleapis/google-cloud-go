@@ -972,7 +972,8 @@ func testRequestIDHeaderPartitionQuery(t *testing.T, mustErrorOnPartitionQuery b
 							"LastName":  {Kind: &structpb.Value_StringValue{StringValue: "None"}},
 						},
 					}),
-				}},
+				},
+			},
 		},
 		Metadata: &sppb.ResultSetMetadata{
 			RowType: &sppb.StructType{
@@ -992,7 +993,6 @@ func testRequestIDHeaderPartitionQuery(t *testing.T, mustErrorOnPartitionQuery b
 
 	ctx := context.Background()
 	txn, err := sc.BatchReadOnlyTransaction(ctx, StrongRead())
-
 	if err != nil {
 		t.Fatal(err)
 	}

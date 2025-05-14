@@ -21,11 +21,8 @@
 package datacatalogpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1028,7 +1027,7 @@ type LookupEntryRequest_SqlResource struct {
 	//   - `bigquery.dataset.project_id.dataset_id`
 	//   - `datacatalog.entry.project_id.location_id.entry_group_id.entry_id`
 	//
-	// `*_id`s should satisfy the standard SQL rules for identifiers.
+	// `*_id`s should satisfy the GoogleSQL rules for identifiers.
 	// https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
 	SqlResource string `protobuf:"bytes,3,opt,name=sql_resource,json=sqlResource,proto3,oneof"`
 }

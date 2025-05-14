@@ -107,7 +107,7 @@ func output(s []string) error {
 	case "commit":
 		for _, m := range s {
 			fmt.Println("BEGIN_NESTED_COMMIT")
-			fmt.Printf("%s(%s):%s\n", *commitScope, m, *commitMessage)
+			fmt.Printf("%s(%s): %s\n", *commitScope, m, *commitMessage)
 			fmt.Println("END_NESTED_COMMIT")
 		}
 	case "plain":

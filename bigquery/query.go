@@ -152,6 +152,13 @@ type QueryConfig struct {
 
 	// Force usage of Storage API if client is available. For test scenarios
 	forceStorageAPI bool
+
+	// The reservation that job would use. User can specify a reservation to
+	// execute the job. If reservation is not set, reservation is determined
+	// based on the rules defined by the reservation assignments. The expected
+	// format is
+	// `projects/{project}/locations/{location}/reservations/{reservation}`.
+	Reservation string
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -224,9 +231,10 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 		qconf.ConnectionProperties = bqcp
 	}
 	jc := &bq.JobConfiguration{
-		Labels: qc.Labels,
-		DryRun: qc.DryRun,
-		Query:  qconf,
+		Labels:      qc.Labels,
+		DryRun:      qc.DryRun,
+		Reservation: qc.Reservation,
+		Query:       qconf,
 	}
 	if qc.JobTimeout > 0 {
 		jc.JobTimeoutMs = qc.JobTimeout.Milliseconds()
@@ -255,6 +263,7 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 		CreateSession:               qq.CreateSession,
 	}
 	qc.UseStandardSQL = !qc.UseLegacySQL
+	qc.Reservation = q.Reservation
 
 	if len(qq.TableDefinitions) > 0 {
 		qc.TableDefinitions = make(map[string]ExternalData)
@@ -418,6 +427,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 			cachedRows:      resp.Rows,
 			cachedSchema:    resp.Schema,
 			cachedNextToken: resp.PageToken,
+			cachedTotalRows: resp.TotalRows,
 		}
 		return newRowIterator(ctx, rowSource, fetchPage), nil
 	}
@@ -469,6 +479,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		UseLegacySql:       &pfalse,
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
 		RequestId:          uid.NewSpace("request", nil).New(),
+		Reservation:        q.Reservation,
 		Labels:             q.Labels,
 		FormatOptions: &bq.DataFormatOptions{
 			UseInt64Timestamp: true,

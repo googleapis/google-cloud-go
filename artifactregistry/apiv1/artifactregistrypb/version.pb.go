@@ -21,15 +21,14 @@
 package artifactregistrypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -523,7 +522,8 @@ type BatchDeleteVersionsRequest struct {
 	// The name of the repository holding all requested versions.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The names of the versions to delete.
-	// A maximum of 10000 versions can be deleted in a batch.
+	// The maximum number of versions deleted per batch is determined by the
+	// service and is dependent on the available resources in the region.
 	Names []string `protobuf:"bytes,2,rep,name=names,proto3" json:"names,omitempty"`
 	// If true, the request is performed without deleting data, following AIP-163.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
