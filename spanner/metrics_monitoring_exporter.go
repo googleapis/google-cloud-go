@@ -96,6 +96,9 @@ type monitoringExporter struct {
 	shutdown         chan struct{}
 	client           *monitoring.MetricClient
 	shutdownOnce     sync.Once
+	mu               sync.Mutex
+	stopExport       bool
+	lastExportedAt   time.Time
 }
 
 func newMonitoringExporter(ctx context.Context, project, compression string, clientAttributes []attribute.KeyValue, opts ...option.ClientOption) (*monitoringExporter, error) {
@@ -107,9 +110,19 @@ func newMonitoringExporter(ctx context.Context, project, compression string, cli
 		projectID:        project,
 		compression:      compression,
 		clientAttributes: clientAttributes,
+		lastExportedAt:   time.Now().Add(-time.Minute),
 		client:           client,
 		shutdown:         make(chan struct{}),
 	}, nil
+}
+
+func (me *monitoringExporter) stop() {
+	// stop the exporter if last export happens within half-time of default sample period
+	if time.Since(me.lastExportedAt) <= (defaultSamplePeriod / 2) {
+		me.mu.Lock()
+		me.stopExport = true
+		me.mu.Unlock()
+	}
 }
 
 // ForceFlush does nothing, the exporter holds no state.
@@ -133,6 +146,9 @@ func (me *monitoringExporter) Export(ctx context.Context, rm *otelmetricdata.Res
 	default:
 	}
 
+	if me.stopExport {
+		return nil
+	}
 	return me.exportTimeSeries(ctx, rm)
 }
 
@@ -178,6 +194,9 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 		errs = append(errs, err)
 	}
 
+	me.mu.Lock()
+	me.lastExportedAt = time.Now()
+	me.mu.Unlock()
 	return errors.Join(errs...)
 }
 
@@ -367,7 +386,7 @@ func histToDistribution[N int64 | float64](hist otelmetricdata.HistogramDataPoin
 }
 
 func numberDataPointToValue[N int64 | float64](
-	point otelmetricdata.DataPoint[N],
+		point otelmetricdata.DataPoint[N],
 ) (*monitoringpb.TypedValue, googlemetricpb.MetricDescriptor_ValueType) {
 	switch v := any(point.Value).(type) {
 	case int64:
