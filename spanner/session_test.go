@@ -510,6 +510,51 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 	iter.Stop()
 }
 
+func TestSessionLeak_Close(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	var logoutput bytes.Buffer
+	logger := log.Default()
+	logger.SetOutput(&logoutput)
+
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 0,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+			},
+			TrackSessionHandles: true,
+		},
+		Logger: logger,
+	})
+
+	// intentionally leak the session
+	single := client.Single()
+	iter := single.Query(ctx, NewStatement(SelectFooFromBar))
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			teardown()
+			t.Fatalf("Got unexpected error while iterating results: %v\n", err)
+		}
+	}
+
+	// teardown should now close the session and report it in the log.
+	teardown()
+
+	leaked := strings.Count(logoutput.String(), "wasn't returned for closing of the pool")
+	if leaked != 1 {
+		t.Log(logoutput.String())
+		t.Fatalf("expected 1 session to be logged, but got %d", leaked)
+	}
+}
+
 func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *testing.T) {
 	t.Parallel()
 
