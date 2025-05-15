@@ -430,7 +430,7 @@ const (
 	// information on update operations.
 	DatasetFullUpdateMode DatasetUpdateMode = "UPDATE_FULL"
 
-	// DatasetUnspecifiedView is the default value, which will be treated as DatasetFullUpdateMode
+	// DatasetUnspecifiedUpdateMode is the default value, which will be treated as DatasetFullUpdateMode
 	DatasetUnspecifiedUpdateMode DatasetUpdateMode = "UPDATE_MODE_UNSPECIFIED"
 )
 
