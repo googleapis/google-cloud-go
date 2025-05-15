@@ -504,10 +504,11 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 	}
 
 	// Re-fetch metadata with access policy specified.
-	md, err = ds.MetadataWithOptions(ctx, WithAccessPolicyVersion(3))
+	md, err = ds.MetadataWithOptions(ctx, WithAccessPolicyVersion(3), WithDatasetView(DatasetACLView))
 	if err != nil {
 		t.Fatalf("Metadata (WithAccessPolicy): %v", err)
 	}
+
 	var foundEntry bool
 	for _, entry := range md.Access {
 		if entry.Entity == wantEntry.Entity {
@@ -533,7 +534,7 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 		t.Fatalf("Update succeeded where failure expected: %v", err)
 	}
 
-	md, err = ds.UpdateWithOptions(ctx, DatasetMetadataToUpdate{Access: newAccess}, "", WithAccessPolicyVersion(3))
+	md, err = ds.UpdateWithOptions(ctx, DatasetMetadataToUpdate{Access: newAccess}, "", WithAccessPolicyVersion(3), WithUpdateMode(DatasetACLUpdateMode))
 	if err != nil {
 		t.Fatalf("Update failed: %v", err)
 	}
