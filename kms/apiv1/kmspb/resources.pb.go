@@ -628,7 +628,7 @@ const (
 	// [ENABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.ENABLED]
 	// state.
 	CryptoKeyVersion_DISABLED CryptoKeyVersion_CryptoKeyVersionState = 2
-	// This key material of this version is destroyed and no longer stored.
+	// The key material of this version is destroyed and no longer stored.
 	// This version may only become
 	// [ENABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.ENABLED]
 	// again if this version is
