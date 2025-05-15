@@ -17,6 +17,7 @@
 package accounts
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -44,6 +45,9 @@ var newOnlineReturnPolicyClientHook clientHook
 type OnlineReturnPolicyCallOptions struct {
 	GetOnlineReturnPolicy    []gax.CallOption
 	ListOnlineReturnPolicies []gax.CallOption
+	CreateOnlineReturnPolicy []gax.CallOption
+	UpdateOnlineReturnPolicy []gax.CallOption
+	DeleteOnlineReturnPolicy []gax.CallOption
 }
 
 func defaultOnlineReturnPolicyGRPCClientOptions() []option.ClientOption {
@@ -87,6 +91,42 @@ func defaultOnlineReturnPolicyCallOptions() *OnlineReturnPolicyCallOptions {
 				})
 			}),
 		},
+		CreateOnlineReturnPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateOnlineReturnPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteOnlineReturnPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -114,6 +154,39 @@ func defaultOnlineReturnPolicyRESTCallOptions() *OnlineReturnPolicyCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateOnlineReturnPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateOnlineReturnPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteOnlineReturnPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -124,6 +197,9 @@ type internalOnlineReturnPolicyClient interface {
 	Connection() *grpc.ClientConn
 	GetOnlineReturnPolicy(context.Context, *accountspb.GetOnlineReturnPolicyRequest, ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error)
 	ListOnlineReturnPolicies(context.Context, *accountspb.ListOnlineReturnPoliciesRequest, ...gax.CallOption) *OnlineReturnPolicyIterator
+	CreateOnlineReturnPolicy(context.Context, *accountspb.CreateOnlineReturnPolicyRequest, ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error)
+	UpdateOnlineReturnPolicy(context.Context, *accountspb.UpdateOnlineReturnPolicyRequest, ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error)
+	DeleteOnlineReturnPolicy(context.Context, *accountspb.DeleteOnlineReturnPolicyRequest, ...gax.CallOption) error
 }
 
 // OnlineReturnPolicyClient is a client for interacting with Merchant API.
@@ -132,7 +208,7 @@ type internalOnlineReturnPolicyClient interface {
 // The service facilitates the management of a merchant’s remorse return policy
 // configuration, encompassing return policies for both ads and free listings
 //
-// programs. This API defines the following resource model:OnlineReturnPolicy
+// programs. This API defines the following resource model:OnlineReturnPolicy (at /merchant/api/reference/rpc/google.shopping.merchant.accounts.v1beta#google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy)
 type OnlineReturnPolicyClient struct {
 	// The internal transport-dependent client.
 	internalClient internalOnlineReturnPolicyClient
@@ -164,14 +240,29 @@ func (c *OnlineReturnPolicyClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetOnlineReturnPolicy gets an existing return policy for a given business.
+// GetOnlineReturnPolicy gets an existing return policy for a given merchant.
 func (c *OnlineReturnPolicyClient) GetOnlineReturnPolicy(ctx context.Context, req *accountspb.GetOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
 	return c.internalClient.GetOnlineReturnPolicy(ctx, req, opts...)
 }
 
-// ListOnlineReturnPolicies lists all existing return policies for a given business.
+// ListOnlineReturnPolicies lists all existing return policies for a given merchant.
 func (c *OnlineReturnPolicyClient) ListOnlineReturnPolicies(ctx context.Context, req *accountspb.ListOnlineReturnPoliciesRequest, opts ...gax.CallOption) *OnlineReturnPolicyIterator {
 	return c.internalClient.ListOnlineReturnPolicies(ctx, req, opts...)
+}
+
+// CreateOnlineReturnPolicy creates a new return policy for a given merchant.
+func (c *OnlineReturnPolicyClient) CreateOnlineReturnPolicy(ctx context.Context, req *accountspb.CreateOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
+	return c.internalClient.CreateOnlineReturnPolicy(ctx, req, opts...)
+}
+
+// UpdateOnlineReturnPolicy updates an existing return policy for a given merchant.
+func (c *OnlineReturnPolicyClient) UpdateOnlineReturnPolicy(ctx context.Context, req *accountspb.UpdateOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
+	return c.internalClient.UpdateOnlineReturnPolicy(ctx, req, opts...)
+}
+
+// DeleteOnlineReturnPolicy deletes an existing return policy for a given merchant.
+func (c *OnlineReturnPolicyClient) DeleteOnlineReturnPolicy(ctx context.Context, req *accountspb.DeleteOnlineReturnPolicyRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOnlineReturnPolicy(ctx, req, opts...)
 }
 
 // onlineReturnPolicyGRPCClient is a client for interacting with Merchant API over gRPC transport.
@@ -199,7 +290,7 @@ type onlineReturnPolicyGRPCClient struct {
 // The service facilitates the management of a merchant’s remorse return policy
 // configuration, encompassing return policies for both ads and free listings
 //
-// programs. This API defines the following resource model:OnlineReturnPolicy
+// programs. This API defines the following resource model:OnlineReturnPolicy (at /merchant/api/reference/rpc/google.shopping.merchant.accounts.v1beta#google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy)
 func NewOnlineReturnPolicyClient(ctx context.Context, opts ...option.ClientOption) (*OnlineReturnPolicyClient, error) {
 	clientOpts := defaultOnlineReturnPolicyGRPCClientOptions()
 	if newOnlineReturnPolicyClientHook != nil {
@@ -276,7 +367,7 @@ type onlineReturnPolicyRESTClient struct {
 // The service facilitates the management of a merchant’s remorse return policy
 // configuration, encompassing return policies for both ads and free listings
 //
-// programs. This API defines the following resource model:OnlineReturnPolicy
+// programs. This API defines the following resource model:OnlineReturnPolicy (at /merchant/api/reference/rpc/google.shopping.merchant.accounts.v1beta#google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy)
 func NewOnlineReturnPolicyRESTClient(ctx context.Context, opts ...option.ClientOption) (*OnlineReturnPolicyClient, error) {
 	clientOpts := append(defaultOnlineReturnPolicyRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -397,7 +488,57 @@ func (c *onlineReturnPolicyGRPCClient) ListOnlineReturnPolicies(ctx context.Cont
 	return it
 }
 
-// GetOnlineReturnPolicy gets an existing return policy for a given business.
+func (c *onlineReturnPolicyGRPCClient) CreateOnlineReturnPolicy(ctx context.Context, req *accountspb.CreateOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateOnlineReturnPolicy[0:len((*c.CallOptions).CreateOnlineReturnPolicy):len((*c.CallOptions).CreateOnlineReturnPolicy)], opts...)
+	var resp *accountspb.OnlineReturnPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.onlineReturnPolicyClient.CreateOnlineReturnPolicy, req, settings.GRPC, c.logger, "CreateOnlineReturnPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *onlineReturnPolicyGRPCClient) UpdateOnlineReturnPolicy(ctx context.Context, req *accountspb.UpdateOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "online_return_policy.name", url.QueryEscape(req.GetOnlineReturnPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateOnlineReturnPolicy[0:len((*c.CallOptions).UpdateOnlineReturnPolicy):len((*c.CallOptions).UpdateOnlineReturnPolicy)], opts...)
+	var resp *accountspb.OnlineReturnPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.onlineReturnPolicyClient.UpdateOnlineReturnPolicy, req, settings.GRPC, c.logger, "UpdateOnlineReturnPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *onlineReturnPolicyGRPCClient) DeleteOnlineReturnPolicy(ctx context.Context, req *accountspb.DeleteOnlineReturnPolicyRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOnlineReturnPolicy[0:len((*c.CallOptions).DeleteOnlineReturnPolicy):len((*c.CallOptions).DeleteOnlineReturnPolicy)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.onlineReturnPolicyClient.DeleteOnlineReturnPolicy, req, settings.GRPC, c.logger, "DeleteOnlineReturnPolicy")
+		return err
+	}, opts...)
+	return err
+}
+
+// GetOnlineReturnPolicy gets an existing return policy for a given merchant.
 func (c *onlineReturnPolicyRESTClient) GetOnlineReturnPolicy(ctx context.Context, req *accountspb.GetOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -447,7 +588,7 @@ func (c *onlineReturnPolicyRESTClient) GetOnlineReturnPolicy(ctx context.Context
 	return resp, nil
 }
 
-// ListOnlineReturnPolicies lists all existing return policies for a given business.
+// ListOnlineReturnPolicies lists all existing return policies for a given merchant.
 func (c *onlineReturnPolicyRESTClient) ListOnlineReturnPolicies(ctx context.Context, req *accountspb.ListOnlineReturnPoliciesRequest, opts ...gax.CallOption) *OnlineReturnPolicyIterator {
 	it := &OnlineReturnPolicyIterator{}
 	req = proto.Clone(req).(*accountspb.ListOnlineReturnPoliciesRequest)
@@ -523,4 +664,160 @@ func (c *onlineReturnPolicyRESTClient) ListOnlineReturnPolicies(ctx context.Cont
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CreateOnlineReturnPolicy creates a new return policy for a given merchant.
+func (c *onlineReturnPolicyRESTClient) CreateOnlineReturnPolicy(ctx context.Context, req *accountspb.CreateOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOnlineReturnPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/onlineReturnPolicies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateOnlineReturnPolicy[0:len((*c.CallOptions).CreateOnlineReturnPolicy):len((*c.CallOptions).CreateOnlineReturnPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accountspb.OnlineReturnPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOnlineReturnPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateOnlineReturnPolicy updates an existing return policy for a given merchant.
+func (c *onlineReturnPolicyRESTClient) UpdateOnlineReturnPolicy(ctx context.Context, req *accountspb.UpdateOnlineReturnPolicyRequest, opts ...gax.CallOption) (*accountspb.OnlineReturnPolicy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOnlineReturnPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetOnlineReturnPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "online_return_policy.name", url.QueryEscape(req.GetOnlineReturnPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateOnlineReturnPolicy[0:len((*c.CallOptions).UpdateOnlineReturnPolicy):len((*c.CallOptions).UpdateOnlineReturnPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accountspb.OnlineReturnPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateOnlineReturnPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteOnlineReturnPolicy deletes an existing return policy for a given merchant.
+func (c *onlineReturnPolicyRESTClient) DeleteOnlineReturnPolicy(ctx context.Context, req *accountspb.DeleteOnlineReturnPolicyRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOnlineReturnPolicy")
+		return err
+	}, opts...)
 }
