@@ -45,12 +45,16 @@ type ListAttachmentsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of Case object for which attachments should be
-	// listed.
+	// Required. The name of the case for which attachments should be listed.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of attachments fetched with each request. If not
-	// provided, the default is 10. The maximum page size that will be returned is
-	// 100.
+	// The maximum number of attachments fetched with each request.
+	//
+	// If not provided, the default is 10. The maximum page size that will be
+	// returned is 100.
+	//
+	// The size of each page can be smaller than the requested page size and can
+	// include zero. For example, you could request 100 attachments on one page,
+	// receive 0, and then on the next page, receive 90.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A token identifying the page of results to return. If unspecified, the
 	// first page is retrieved.
@@ -114,11 +118,11 @@ type ListAttachmentsResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of attachments associated with the given case.
+	// The list of attachments associated with a case.
 	Attachments []*Attachment `protobuf:"bytes,1,rep,name=attachments,proto3" json:"attachments,omitempty"`
-	// A token to retrieve the next page of results. This should be set in the
-	// `page_token` field of subsequent `cases.attachments.list` requests. If
-	// unspecified, there are no more results to retrieve.
+	// A token to retrieve the next page of results. Set this in the `page_token`
+	// field of subsequent `cases.attachments.list` requests. If unspecified,
+	// there are no more results to retrieve.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -305,7 +309,43 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CaseAttachmentServiceClient interface {
-	// Retrieve all attachments associated with a support case.
+	// List all the attachments associated with a support case.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/23598314"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$case/attachments"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = (
+	//
+	//	supportApiService.cases()
+	//	.attachments()
+	//	.list(parent="projects/some-project/cases/43595344")
+	//
+	// )
+	// print(request.execute())
+	// ```
 	ListAttachments(ctx context.Context, in *ListAttachmentsRequest, opts ...grpc.CallOption) (*ListAttachmentsResponse, error)
 }
 
@@ -328,7 +368,43 @@ func (c *caseAttachmentServiceClient) ListAttachments(ctx context.Context, in *L
 
 // CaseAttachmentServiceServer is the server API for CaseAttachmentService service.
 type CaseAttachmentServiceServer interface {
-	// Retrieve all attachments associated with a support case.
+	// List all the attachments associated with a support case.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/23598314"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$case/attachments"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = (
+	//
+	//	supportApiService.cases()
+	//	.attachments()
+	//	.list(parent="projects/some-project/cases/43595344")
+	//
+	// )
+	// print(request.execute())
+	// ```
 	ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsResponse, error)
 }
 

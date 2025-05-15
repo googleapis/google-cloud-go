@@ -49,9 +49,7 @@ type RestoreChannel struct {
 	// `projects/*/locations/*/restoreChannels/*`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Immutable. The project into which the backups will be restored.
-	// The format is `projects/{project}`.
-	// Currently, {project} can only be the project number. Support for project
-	// IDs will be added in the future.
+	// The format is `projects/{projectId}` or `projects/{projectNumber}`.
 	DestinationProject string `protobuf:"bytes,2,opt,name=destination_project,json=destinationProject,proto3" json:"destination_project,omitempty"`
 	// Output only. Server generated global unique identifier of
 	// [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) format.

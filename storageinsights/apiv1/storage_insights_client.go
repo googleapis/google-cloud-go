@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	storageinsightspb "cloud.google.com/go/storageinsights/apiv1/storageinsightspb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -45,19 +47,26 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListReportConfigs  []gax.CallOption
-	GetReportConfig    []gax.CallOption
-	CreateReportConfig []gax.CallOption
-	UpdateReportConfig []gax.CallOption
-	DeleteReportConfig []gax.CallOption
-	ListReportDetails  []gax.CallOption
-	GetReportDetail    []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
+	ListReportConfigs   []gax.CallOption
+	GetReportConfig     []gax.CallOption
+	CreateReportConfig  []gax.CallOption
+	UpdateReportConfig  []gax.CallOption
+	DeleteReportConfig  []gax.CallOption
+	ListReportDetails   []gax.CallOption
+	GetReportDetail     []gax.CallOption
+	ListDatasetConfigs  []gax.CallOption
+	GetDatasetConfig    []gax.CallOption
+	CreateDatasetConfig []gax.CallOption
+	UpdateDatasetConfig []gax.CallOption
+	DeleteDatasetConfig []gax.CallOption
+	LinkDataset         []gax.CallOption
+	UnlinkDataset       []gax.CallOption
+	GetLocation         []gax.CallOption
+	ListLocations       []gax.CallOption
+	CancelOperation     []gax.CallOption
+	DeleteOperation     []gax.CallOption
+	GetOperation        []gax.CallOption
+	ListOperations      []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -134,6 +143,81 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListDatasetConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDatasetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateDatasetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateDatasetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteDatasetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		LinkDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UnlinkDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -198,6 +282,75 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListDatasetConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetDatasetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateDatasetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateDatasetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteDatasetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		LinkDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UnlinkDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -219,6 +372,18 @@ type internalClient interface {
 	DeleteReportConfig(context.Context, *storageinsightspb.DeleteReportConfigRequest, ...gax.CallOption) error
 	ListReportDetails(context.Context, *storageinsightspb.ListReportDetailsRequest, ...gax.CallOption) *ReportDetailIterator
 	GetReportDetail(context.Context, *storageinsightspb.GetReportDetailRequest, ...gax.CallOption) (*storageinsightspb.ReportDetail, error)
+	ListDatasetConfigs(context.Context, *storageinsightspb.ListDatasetConfigsRequest, ...gax.CallOption) *DatasetConfigIterator
+	GetDatasetConfig(context.Context, *storageinsightspb.GetDatasetConfigRequest, ...gax.CallOption) (*storageinsightspb.DatasetConfig, error)
+	CreateDatasetConfig(context.Context, *storageinsightspb.CreateDatasetConfigRequest, ...gax.CallOption) (*CreateDatasetConfigOperation, error)
+	CreateDatasetConfigOperation(name string) *CreateDatasetConfigOperation
+	UpdateDatasetConfig(context.Context, *storageinsightspb.UpdateDatasetConfigRequest, ...gax.CallOption) (*UpdateDatasetConfigOperation, error)
+	UpdateDatasetConfigOperation(name string) *UpdateDatasetConfigOperation
+	DeleteDatasetConfig(context.Context, *storageinsightspb.DeleteDatasetConfigRequest, ...gax.CallOption) (*DeleteDatasetConfigOperation, error)
+	DeleteDatasetConfigOperation(name string) *DeleteDatasetConfigOperation
+	LinkDataset(context.Context, *storageinsightspb.LinkDatasetRequest, ...gax.CallOption) (*LinkDatasetOperation, error)
+	LinkDatasetOperation(name string) *LinkDatasetOperation
+	UnlinkDataset(context.Context, *storageinsightspb.UnlinkDatasetRequest, ...gax.CallOption) (*UnlinkDatasetOperation, error)
+	UnlinkDatasetOperation(name string) *UnlinkDatasetOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -237,6 +402,11 @@ type Client struct {
 
 	// The call options for this service.
 	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -297,6 +467,72 @@ func (c *Client) GetReportDetail(ctx context.Context, req *storageinsightspb.Get
 	return c.internalClient.GetReportDetail(ctx, req, opts...)
 }
 
+// ListDatasetConfigs lists the dataset configurations in a given project for a given location.
+func (c *Client) ListDatasetConfigs(ctx context.Context, req *storageinsightspb.ListDatasetConfigsRequest, opts ...gax.CallOption) *DatasetConfigIterator {
+	return c.internalClient.ListDatasetConfigs(ctx, req, opts...)
+}
+
+// GetDatasetConfig gets the dataset configuration in a given project for a given location.
+func (c *Client) GetDatasetConfig(ctx context.Context, req *storageinsightspb.GetDatasetConfigRequest, opts ...gax.CallOption) (*storageinsightspb.DatasetConfig, error) {
+	return c.internalClient.GetDatasetConfig(ctx, req, opts...)
+}
+
+// CreateDatasetConfig creates a dataset configuration in a given project for a given location.
+func (c *Client) CreateDatasetConfig(ctx context.Context, req *storageinsightspb.CreateDatasetConfigRequest, opts ...gax.CallOption) (*CreateDatasetConfigOperation, error) {
+	return c.internalClient.CreateDatasetConfig(ctx, req, opts...)
+}
+
+// CreateDatasetConfigOperation returns a new CreateDatasetConfigOperation from a given name.
+// The name must be that of a previously created CreateDatasetConfigOperation, possibly from a different process.
+func (c *Client) CreateDatasetConfigOperation(name string) *CreateDatasetConfigOperation {
+	return c.internalClient.CreateDatasetConfigOperation(name)
+}
+
+// UpdateDatasetConfig updates a dataset configuration in a given project for a given location.
+func (c *Client) UpdateDatasetConfig(ctx context.Context, req *storageinsightspb.UpdateDatasetConfigRequest, opts ...gax.CallOption) (*UpdateDatasetConfigOperation, error) {
+	return c.internalClient.UpdateDatasetConfig(ctx, req, opts...)
+}
+
+// UpdateDatasetConfigOperation returns a new UpdateDatasetConfigOperation from a given name.
+// The name must be that of a previously created UpdateDatasetConfigOperation, possibly from a different process.
+func (c *Client) UpdateDatasetConfigOperation(name string) *UpdateDatasetConfigOperation {
+	return c.internalClient.UpdateDatasetConfigOperation(name)
+}
+
+// DeleteDatasetConfig deletes a dataset configuration in a given project for a given location.
+func (c *Client) DeleteDatasetConfig(ctx context.Context, req *storageinsightspb.DeleteDatasetConfigRequest, opts ...gax.CallOption) (*DeleteDatasetConfigOperation, error) {
+	return c.internalClient.DeleteDatasetConfig(ctx, req, opts...)
+}
+
+// DeleteDatasetConfigOperation returns a new DeleteDatasetConfigOperation from a given name.
+// The name must be that of a previously created DeleteDatasetConfigOperation, possibly from a different process.
+func (c *Client) DeleteDatasetConfigOperation(name string) *DeleteDatasetConfigOperation {
+	return c.internalClient.DeleteDatasetConfigOperation(name)
+}
+
+// LinkDataset links a dataset to BigQuery in a given project for a given location.
+func (c *Client) LinkDataset(ctx context.Context, req *storageinsightspb.LinkDatasetRequest, opts ...gax.CallOption) (*LinkDatasetOperation, error) {
+	return c.internalClient.LinkDataset(ctx, req, opts...)
+}
+
+// LinkDatasetOperation returns a new LinkDatasetOperation from a given name.
+// The name must be that of a previously created LinkDatasetOperation, possibly from a different process.
+func (c *Client) LinkDatasetOperation(name string) *LinkDatasetOperation {
+	return c.internalClient.LinkDatasetOperation(name)
+}
+
+// UnlinkDataset unlinks a dataset from BigQuery in a given project
+// for a given location.
+func (c *Client) UnlinkDataset(ctx context.Context, req *storageinsightspb.UnlinkDatasetRequest, opts ...gax.CallOption) (*UnlinkDatasetOperation, error) {
+	return c.internalClient.UnlinkDataset(ctx, req, opts...)
+}
+
+// UnlinkDatasetOperation returns a new UnlinkDatasetOperation from a given name.
+// The name must be that of a previously created UnlinkDatasetOperation, possibly from a different process.
+func (c *Client) UnlinkDatasetOperation(name string) *UnlinkDatasetOperation {
+	return c.internalClient.UnlinkDatasetOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -340,6 +576,11 @@ type gRPCClient struct {
 	// The gRPC API client.
 	client storageinsightspb.StorageInsightsClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	locationsClient locationpb.LocationsClient
@@ -382,6 +623,17 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -418,6 +670,11 @@ type restClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
@@ -445,6 +702,16 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -662,6 +929,170 @@ func (c *gRPCClient) GetReportDetail(ctx context.Context, req *storageinsightspb
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) ListDatasetConfigs(ctx context.Context, req *storageinsightspb.ListDatasetConfigsRequest, opts ...gax.CallOption) *DatasetConfigIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDatasetConfigs[0:len((*c.CallOptions).ListDatasetConfigs):len((*c.CallOptions).ListDatasetConfigs)], opts...)
+	it := &DatasetConfigIterator{}
+	req = proto.Clone(req).(*storageinsightspb.ListDatasetConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*storageinsightspb.DatasetConfig, string, error) {
+		resp := &storageinsightspb.ListDatasetConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDatasetConfigs, req, settings.GRPC, c.logger, "ListDatasetConfigs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatasetConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetDatasetConfig(ctx context.Context, req *storageinsightspb.GetDatasetConfigRequest, opts ...gax.CallOption) (*storageinsightspb.DatasetConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDatasetConfig[0:len((*c.CallOptions).GetDatasetConfig):len((*c.CallOptions).GetDatasetConfig)], opts...)
+	var resp *storageinsightspb.DatasetConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetDatasetConfig, req, settings.GRPC, c.logger, "GetDatasetConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateDatasetConfig(ctx context.Context, req *storageinsightspb.CreateDatasetConfigRequest, opts ...gax.CallOption) (*CreateDatasetConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDatasetConfig[0:len((*c.CallOptions).CreateDatasetConfig):len((*c.CallOptions).CreateDatasetConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateDatasetConfig, req, settings.GRPC, c.logger, "CreateDatasetConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateDatasetConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateDatasetConfig(ctx context.Context, req *storageinsightspb.UpdateDatasetConfigRequest, opts ...gax.CallOption) (*UpdateDatasetConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset_config.name", url.QueryEscape(req.GetDatasetConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDatasetConfig[0:len((*c.CallOptions).UpdateDatasetConfig):len((*c.CallOptions).UpdateDatasetConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateDatasetConfig, req, settings.GRPC, c.logger, "UpdateDatasetConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDatasetConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteDatasetConfig(ctx context.Context, req *storageinsightspb.DeleteDatasetConfigRequest, opts ...gax.CallOption) (*DeleteDatasetConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDatasetConfig[0:len((*c.CallOptions).DeleteDatasetConfig):len((*c.CallOptions).DeleteDatasetConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteDatasetConfig, req, settings.GRPC, c.logger, "DeleteDatasetConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteDatasetConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) LinkDataset(ctx context.Context, req *storageinsightspb.LinkDatasetRequest, opts ...gax.CallOption) (*LinkDatasetOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).LinkDataset[0:len((*c.CallOptions).LinkDataset):len((*c.CallOptions).LinkDataset)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.LinkDataset, req, settings.GRPC, c.logger, "LinkDataset")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &LinkDatasetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UnlinkDataset(ctx context.Context, req *storageinsightspb.UnlinkDatasetRequest, opts ...gax.CallOption) (*UnlinkDatasetOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UnlinkDataset[0:len((*c.CallOptions).UnlinkDataset):len((*c.CallOptions).UnlinkDataset)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UnlinkDataset, req, settings.GRPC, c.logger, "UnlinkDataset")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UnlinkDatasetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1256,6 +1687,449 @@ func (c *restClient) GetReportDetail(ctx context.Context, req *storageinsightspb
 	return resp, nil
 }
 
+// ListDatasetConfigs lists the dataset configurations in a given project for a given location.
+func (c *restClient) ListDatasetConfigs(ctx context.Context, req *storageinsightspb.ListDatasetConfigsRequest, opts ...gax.CallOption) *DatasetConfigIterator {
+	it := &DatasetConfigIterator{}
+	req = proto.Clone(req).(*storageinsightspb.ListDatasetConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*storageinsightspb.DatasetConfig, string, error) {
+		resp := &storageinsightspb.ListDatasetConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/datasetConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatasetConfigs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDatasetConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDatasetConfig gets the dataset configuration in a given project for a given location.
+func (c *restClient) GetDatasetConfig(ctx context.Context, req *storageinsightspb.GetDatasetConfigRequest, opts ...gax.CallOption) (*storageinsightspb.DatasetConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDatasetConfig[0:len((*c.CallOptions).GetDatasetConfig):len((*c.CallOptions).GetDatasetConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &storageinsightspb.DatasetConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDatasetConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateDatasetConfig creates a dataset configuration in a given project for a given location.
+func (c *restClient) CreateDatasetConfig(ctx context.Context, req *storageinsightspb.CreateDatasetConfigRequest, opts ...gax.CallOption) (*CreateDatasetConfigOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDatasetConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/datasetConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("datasetConfigId", fmt.Sprintf("%v", req.GetDatasetConfigId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDatasetConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDatasetConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateDatasetConfig updates a dataset configuration in a given project for a given location.
+func (c *restClient) UpdateDatasetConfig(ctx context.Context, req *storageinsightspb.UpdateDatasetConfigRequest, opts ...gax.CallOption) (*UpdateDatasetConfigOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDatasetConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDatasetConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset_config.name", url.QueryEscape(req.GetDatasetConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDatasetConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDatasetConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteDatasetConfig deletes a dataset configuration in a given project for a given location.
+func (c *restClient) DeleteDatasetConfig(ctx context.Context, req *storageinsightspb.DeleteDatasetConfigRequest, opts ...gax.CallOption) (*DeleteDatasetConfigOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDatasetConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDatasetConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// LinkDataset links a dataset to BigQuery in a given project for a given location.
+func (c *restClient) LinkDataset(ctx context.Context, req *storageinsightspb.LinkDatasetRequest, opts ...gax.CallOption) (*LinkDatasetOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:linkDataset", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LinkDataset")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &LinkDatasetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UnlinkDataset unlinks a dataset from BigQuery in a given project
+// for a given location.
+func (c *restClient) UnlinkDataset(ctx context.Context, req *storageinsightspb.UnlinkDatasetRequest, opts ...gax.CallOption) (*UnlinkDatasetOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:unlinkDataset", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnlinkDataset")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UnlinkDatasetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1592,4 +2466,94 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CreateDatasetConfigOperation returns a new CreateDatasetConfigOperation from a given name.
+// The name must be that of a previously created CreateDatasetConfigOperation, possibly from a different process.
+func (c *gRPCClient) CreateDatasetConfigOperation(name string) *CreateDatasetConfigOperation {
+	return &CreateDatasetConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateDatasetConfigOperation returns a new CreateDatasetConfigOperation from a given name.
+// The name must be that of a previously created CreateDatasetConfigOperation, possibly from a different process.
+func (c *restClient) CreateDatasetConfigOperation(name string) *CreateDatasetConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDatasetConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteDatasetConfigOperation returns a new DeleteDatasetConfigOperation from a given name.
+// The name must be that of a previously created DeleteDatasetConfigOperation, possibly from a different process.
+func (c *gRPCClient) DeleteDatasetConfigOperation(name string) *DeleteDatasetConfigOperation {
+	return &DeleteDatasetConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteDatasetConfigOperation returns a new DeleteDatasetConfigOperation from a given name.
+// The name must be that of a previously created DeleteDatasetConfigOperation, possibly from a different process.
+func (c *restClient) DeleteDatasetConfigOperation(name string) *DeleteDatasetConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDatasetConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// LinkDatasetOperation returns a new LinkDatasetOperation from a given name.
+// The name must be that of a previously created LinkDatasetOperation, possibly from a different process.
+func (c *gRPCClient) LinkDatasetOperation(name string) *LinkDatasetOperation {
+	return &LinkDatasetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// LinkDatasetOperation returns a new LinkDatasetOperation from a given name.
+// The name must be that of a previously created LinkDatasetOperation, possibly from a different process.
+func (c *restClient) LinkDatasetOperation(name string) *LinkDatasetOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &LinkDatasetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UnlinkDatasetOperation returns a new UnlinkDatasetOperation from a given name.
+// The name must be that of a previously created UnlinkDatasetOperation, possibly from a different process.
+func (c *gRPCClient) UnlinkDatasetOperation(name string) *UnlinkDatasetOperation {
+	return &UnlinkDatasetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UnlinkDatasetOperation returns a new UnlinkDatasetOperation from a given name.
+// The name must be that of a previously created UnlinkDatasetOperation, possibly from a different process.
+func (c *restClient) UnlinkDatasetOperation(name string) *UnlinkDatasetOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UnlinkDatasetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateDatasetConfigOperation returns a new UpdateDatasetConfigOperation from a given name.
+// The name must be that of a previously created UpdateDatasetConfigOperation, possibly from a different process.
+func (c *gRPCClient) UpdateDatasetConfigOperation(name string) *UpdateDatasetConfigOperation {
+	return &UpdateDatasetConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDatasetConfigOperation returns a new UpdateDatasetConfigOperation from a given name.
+// The name must be that of a previously created UpdateDatasetConfigOperation, possibly from a different process.
+func (c *restClient) UpdateDatasetConfigOperation(name string) *UpdateDatasetConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDatasetConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
