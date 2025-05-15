@@ -403,6 +403,8 @@ func (KeyOperationAttestation_AttestationFormat) EnumDescriptor() ([]byte, []int
 // The suffix following `HMAC_` corresponds to the hash algorithm being used
 // (eg. SHA256).
 //
+// Algorithms beginning with `PQ_` are post-quantum.
+//
 // For more information, see [Key purposes and algorithms]
 // (https://cloud.google.com/kms/docs/algorithms).
 type CryptoKeyVersion_CryptoKeyVersionAlgorithm int32
@@ -626,7 +628,7 @@ const (
 	// [ENABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.ENABLED]
 	// state.
 	CryptoKeyVersion_DISABLED CryptoKeyVersion_CryptoKeyVersionState = 2
-	// This version is destroyed, and the key material is no longer stored.
+	// This key material of this version is destroyed and no longer stored.
 	// This version may only become
 	// [ENABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.ENABLED]
 	// again if this version is

@@ -468,6 +468,10 @@ type ListKeyRingsResponse struct {
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// The total number of [KeyRings][google.cloud.kms.v1.KeyRing] that matched
 	// the query.
+	//
+	// This field is not populated if
+	// [ListKeyRingsRequest.filter][google.cloud.kms.v1.ListKeyRingsRequest.filter]
+	// is applied.
 	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 }
 
@@ -537,6 +541,10 @@ type ListCryptoKeysResponse struct {
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// The total number of [CryptoKeys][google.cloud.kms.v1.CryptoKey] that
 	// matched the query.
+	//
+	// This field is not populated if
+	// [ListCryptoKeysRequest.filter][google.cloud.kms.v1.ListCryptoKeysRequest.filter]
+	// is applied.
 	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 }
 
@@ -607,6 +615,10 @@ type ListCryptoKeyVersionsResponse struct {
 	// The total number of
 	// [CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion] that matched the
 	// query.
+	//
+	// This field is not populated if
+	// [ListCryptoKeyVersionsRequest.filter][google.cloud.kms.v1.ListCryptoKeyVersionsRequest.filter]
+	// is applied.
 	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 }
 
@@ -676,6 +688,10 @@ type ListImportJobsResponse struct {
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// The total number of [ImportJobs][google.cloud.kms.v1.ImportJob] that
 	// matched the query.
+	//
+	// This field is not populated if
+	// [ListImportJobsRequest.filter][google.cloud.kms.v1.ListImportJobsRequest.filter]
+	// is applied.
 	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 }
 

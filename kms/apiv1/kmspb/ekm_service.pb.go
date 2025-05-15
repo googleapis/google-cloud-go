@@ -238,6 +238,10 @@ type ListEkmConnectionsResponse struct {
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// The total number of [EkmConnections][google.cloud.kms.v1.EkmConnection]
 	// that matched the query.
+	//
+	// This field is not populated if
+	// [ListEkmConnectionsRequest.filter][google.cloud.kms.v1.ListEkmConnectionsRequest.filter]
+	// is applied.
 	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 }
 
