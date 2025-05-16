@@ -355,7 +355,7 @@ type TransferStats struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Cumulative bytes trasferred so far for the replication relatinonship.
+	// Cumulative bytes transferred so far for the replication relationship.
 	TransferBytes *int64 `protobuf:"varint,1,opt,name=transfer_bytes,json=transferBytes,proto3,oneof" json:"transfer_bytes,omitempty"`
 	// Cumulative time taken across all transfers for the replication
 	// relationship.
