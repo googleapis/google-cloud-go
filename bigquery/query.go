@@ -502,8 +502,11 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 			DatasetId: q.QueryConfig.DefaultDatasetID,
 		}
 	}
-	if q.client.enableQueryPreview {
-		qRequest.JobCreationMode = "JOB_CREATION_OPTIONAL"
+
+	if custCfg := q.client.customConfig; custCfg != nil {
+		if custCfg.jobCreationMode != "" {
+			qRequest.JobCreationMode = string(custCfg.jobCreationMode)
+		}
 	}
 	return qRequest, nil
 }
