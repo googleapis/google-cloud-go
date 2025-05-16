@@ -26,8 +26,8 @@ import (
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	"cloud.google.com/go/pubsub/internal/scheduler"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"

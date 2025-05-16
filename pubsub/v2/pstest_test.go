@@ -23,9 +23,9 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/pubsub/pstest"
 	"cloud.google.com/go/pubsub/v2"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/pstest"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )

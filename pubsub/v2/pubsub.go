@@ -25,8 +25,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/detect"
-	"cloud.google.com/go/pubsub/internal"
 	vkit "cloud.google.com/go/pubsub/v2/apiv1"
+	"cloud.google.com/go/pubsub/v2/internal"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"

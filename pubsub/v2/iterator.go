@@ -24,9 +24,9 @@ import (
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	"cloud.google.com/go/pubsub/internal/distribution"
 	vkit "cloud.google.com/go/pubsub/v2/apiv1"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/internal/distribution"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
