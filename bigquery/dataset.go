@@ -401,8 +401,8 @@ const (
 	// DatasetFullView populates both dataset metadata and ACL information.
 	DatasetFullView DatasetView = "FULL"
 
-	// DatasetUnspecifiedView is the default value, which will be treated as DatasetFullView
-	DatasetUnspecifiedView DatasetView = "DATASET_VIEW_UNSPECIFIED"
+	// UnspecifiedDatasetView is the default value, which will be treated as DatasetFullView
+	UnspecifiedDatasetView DatasetView = "DATASET_VIEW_UNSPECIFIED"
 )
 
 // WithDatasetView specifies the view that determines which dataset information
@@ -430,8 +430,8 @@ const (
 	// information on update operations.
 	DatasetFullUpdateMode DatasetUpdateMode = "UPDATE_FULL"
 
-	// DatasetUnspecifiedUpdateMode is the default value, which will be treated as DatasetFullUpdateMode
-	DatasetUnspecifiedUpdateMode DatasetUpdateMode = "UPDATE_MODE_UNSPECIFIED"
+	// UnspecifiedDatasetUpdateMode is the default value, which will be treated as DatasetFullUpdateMode
+	UnspecifiedDatasetUpdateMode DatasetUpdateMode = "UPDATE_MODE_UNSPECIFIED"
 )
 
 // WithUpdateMode specifies the fields of dataset that the update/patch
