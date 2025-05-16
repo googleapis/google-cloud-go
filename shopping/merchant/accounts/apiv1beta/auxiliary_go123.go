@@ -45,6 +45,24 @@ func (it *AccountTaxIterator) All() iter.Seq2[*accountspb.AccountTax, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *GbpAccountIterator) All() iter.Seq2[*accountspb.GbpAccount, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LfpProviderIterator) All() iter.Seq2[*accountspb.LfpProvider, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OmnichannelSettingIterator) All() iter.Seq2[*accountspb.OmnichannelSetting, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *OnlineReturnPolicyIterator) All() iter.Seq2[*accountspb.OnlineReturnPolicy, error] {
 	return iterator.RangeAdapter(it.Next)
 }

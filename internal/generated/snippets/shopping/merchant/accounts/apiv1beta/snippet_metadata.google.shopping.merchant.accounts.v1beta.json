@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
-    "version": "0.20.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -931,6 +931,98 @@
       ]
     },
     {
+      "regionTag": "merchantapi_v1beta_generated_GbpAccountsService_LinkGbpAccount_sync",
+      "title": "merchantapi LinkGbpAccount Sample",
+      "description": "LinkGbpAccount link the specified merchant to a GBP account for all countries.",
+      "file": "GbpAccountsClient/LinkGbpAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LinkGbpAccount",
+        "fullName": "google.shopping.merchant.accounts.v1beta.GbpAccountsClient.LinkGbpAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.LinkGbpAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.LinkGbpAccountResponse",
+        "client": {
+          "shortName": "GbpAccountsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.GbpAccountsClient"
+        },
+        "method": {
+          "shortName": "LinkGbpAccount",
+          "fullName": "google.shopping.merchant.accounts.v1beta.GbpAccountsService.LinkGbpAccount",
+          "service": {
+            "shortName": "GbpAccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.GbpAccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_GbpAccountsService_ListGbpAccounts_sync",
+      "title": "merchantapi ListGbpAccounts Sample",
+      "description": "ListGbpAccounts list the GBP accounts for a given merchant.",
+      "file": "GbpAccountsClient/ListGbpAccounts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGbpAccounts",
+        "fullName": "google.shopping.merchant.accounts.v1beta.GbpAccountsClient.ListGbpAccounts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListGbpAccountsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GbpAccountIterator",
+        "client": {
+          "shortName": "GbpAccountsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.GbpAccountsClient"
+        },
+        "method": {
+          "shortName": "ListGbpAccounts",
+          "fullName": "google.shopping.merchant.accounts.v1beta.GbpAccountsService.ListGbpAccounts",
+          "service": {
+            "shortName": "GbpAccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.GbpAccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "merchantapi_v1beta_generated_HomepageService_ClaimHomepage_sync",
       "title": "merchantapi ClaimHomepage Sample",
       "description": "ClaimHomepage claims a store's homepage. Executing this method requires admin access.\n\nIf the homepage is already claimed, this will recheck the\nverification (unless the merchant is exempted from claiming, which also\nexempts from verification) and return a successful response. If ownership\ncan no longer be verified, it will return an error, but it won't clear the\nclaim. In case of failure, a canonical error message will be returned: \n* PERMISSION_DENIED: user doesn't have the necessary permissions on this\nMC account;\n* FAILED_PRECONDITION: \n- The account is not a Merchant Center account;\n- MC account doesn't have a homepage;\n- claiming failed (in this case the error message will contain more\ndetails).",
@@ -1102,6 +1194,328 @@
           "service": {
             "shortName": "HomepageService",
             "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_LfpProvidersService_FindLfpProviders_sync",
+      "title": "merchantapi FindLfpProviders Sample",
+      "description": "FindLfpProviders find the LFP provider candidates in a given country.",
+      "file": "LfpProvidersClient/FindLfpProviders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FindLfpProviders",
+        "fullName": "google.shopping.merchant.accounts.v1beta.LfpProvidersClient.FindLfpProviders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.FindLfpProvidersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LfpProviderIterator",
+        "client": {
+          "shortName": "LfpProvidersClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.LfpProvidersClient"
+        },
+        "method": {
+          "shortName": "FindLfpProviders",
+          "fullName": "google.shopping.merchant.accounts.v1beta.LfpProvidersService.FindLfpProviders",
+          "service": {
+            "shortName": "LfpProvidersService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.LfpProvidersService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_LfpProvidersService_LinkLfpProvider_sync",
+      "title": "merchantapi LinkLfpProvider Sample",
+      "description": "LinkLfpProvider link the specified merchant to a LFP provider for the specified country.",
+      "file": "LfpProvidersClient/LinkLfpProvider/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LinkLfpProvider",
+        "fullName": "google.shopping.merchant.accounts.v1beta.LfpProvidersClient.LinkLfpProvider",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.LinkLfpProviderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.LinkLfpProviderResponse",
+        "client": {
+          "shortName": "LfpProvidersClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.LfpProvidersClient"
+        },
+        "method": {
+          "shortName": "LinkLfpProvider",
+          "fullName": "google.shopping.merchant.accounts.v1beta.LfpProvidersService.LinkLfpProvider",
+          "service": {
+            "shortName": "LfpProvidersService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.LfpProvidersService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_CreateOmnichannelSetting_sync",
+      "title": "merchantapi CreateOmnichannelSetting Sample",
+      "description": "CreateOmnichannelSetting create the omnichannel settings for a given merchant.",
+      "file": "OmnichannelSettingsClient/CreateOmnichannelSetting/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateOmnichannelSetting",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient.CreateOmnichannelSetting",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.CreateOmnichannelSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.OmnichannelSetting",
+        "client": {
+          "shortName": "OmnichannelSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient"
+        },
+        "method": {
+          "shortName": "CreateOmnichannelSetting",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService.CreateOmnichannelSetting",
+          "service": {
+            "shortName": "OmnichannelSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_GetOmnichannelSetting_sync",
+      "title": "merchantapi GetOmnichannelSetting Sample",
+      "description": "GetOmnichannelSetting get the omnichannel settings for a given merchant.",
+      "file": "OmnichannelSettingsClient/GetOmnichannelSetting/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOmnichannelSetting",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient.GetOmnichannelSetting",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetOmnichannelSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.OmnichannelSetting",
+        "client": {
+          "shortName": "OmnichannelSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient"
+        },
+        "method": {
+          "shortName": "GetOmnichannelSetting",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService.GetOmnichannelSetting",
+          "service": {
+            "shortName": "OmnichannelSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_ListOmnichannelSettings_sync",
+      "title": "merchantapi ListOmnichannelSettings Sample",
+      "description": "ListOmnichannelSettings list all the omnichannel settings for a given merchant.",
+      "file": "OmnichannelSettingsClient/ListOmnichannelSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOmnichannelSettings",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient.ListOmnichannelSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListOmnichannelSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OmnichannelSettingIterator",
+        "client": {
+          "shortName": "OmnichannelSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient"
+        },
+        "method": {
+          "shortName": "ListOmnichannelSettings",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService.ListOmnichannelSettings",
+          "service": {
+            "shortName": "OmnichannelSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_RequestInventoryVerification_sync",
+      "title": "merchantapi RequestInventoryVerification Sample",
+      "description": "RequestInventoryVerification requests inventory verification for a given merchant in a given country.",
+      "file": "OmnichannelSettingsClient/RequestInventoryVerification/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RequestInventoryVerification",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient.RequestInventoryVerification",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.RequestInventoryVerificationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.RequestInventoryVerificationResponse",
+        "client": {
+          "shortName": "OmnichannelSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient"
+        },
+        "method": {
+          "shortName": "RequestInventoryVerification",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService.RequestInventoryVerification",
+          "service": {
+            "shortName": "OmnichannelSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_UpdateOmnichannelSetting_sync",
+      "title": "merchantapi UpdateOmnichannelSetting Sample",
+      "description": "UpdateOmnichannelSetting update the omnichannel setting for a given merchant in a given country.",
+      "file": "OmnichannelSettingsClient/UpdateOmnichannelSetting/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateOmnichannelSetting",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient.UpdateOmnichannelSetting",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateOmnichannelSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.OmnichannelSetting",
+        "client": {
+          "shortName": "OmnichannelSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsClient"
+        },
+        "method": {
+          "shortName": "UpdateOmnichannelSetting",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService.UpdateOmnichannelSetting",
+          "service": {
+            "shortName": "OmnichannelSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OmnichannelSettingsService"
           }
         }
       },
