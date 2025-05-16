@@ -169,7 +169,33 @@ func (Case_Priority) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_support_v2_case_proto_rawDescGZIP(), []int{0, 1}
 }
 
-// A support case.
+// A Case is an object that contains the details of a support case. It
+// contains fields for the time it was created, its priority, its
+// classification, and more. Cases can also have comments and attachments that
+// get added over time.
+//
+// A case is parented by a Google Cloud organization or project.
+//
+// Organizations are identified by a number, so the name of a case parented by
+// an organization would look like this:
+//
+// ```
+// organizations/123/cases/456
+// ```
+//
+// Projects have two unique identifiers, an ID and a number, and they look like
+// this:
+//
+// ```
+// projects/abc/cases/456
+// ```
+//
+// ```
+// projects/123/cases/456
+// ```
+//
+// You can use either of them when calling the API. To learn more
+// about project identifiers, see [AIP-2510](https://google.aip.dev/cloud/2510).
 type Case struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -357,7 +383,12 @@ func (x *Case) GetPriority() Case_Priority {
 	return Case_PRIORITY_UNSPECIFIED
 }
 
-// A classification object with a product type and value.
+// A Case Classification represents the topic that a case is about. It's very
+// important to use accurate classifications, because they're
+// used to route your cases to specialists who can help you.
+//
+// A classification always has an ID that is its unique identifier.
+// A valid ID is required when creating a case.
 type CaseClassification struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -367,8 +398,16 @@ type CaseClassification struct {
 	//
 	// To retrieve valid classification IDs for case creation, use
 	// `caseClassifications.search`.
+	//
+	// Classification IDs returned by `caseClassifications.search` are guaranteed
+	// to be valid for at least 6 months. If a given classification is
+	// deactiveated, it will immediately stop being returned. After 6 months,
+	// `case.create` requests using the classification ID will fail.
 	Id string `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
-	// The display name of the classification.
+	// A display name for the classification.
+	//
+	// The display name is not static and can change. To uniquely and consistently
+	// identify classifications, use the `CaseClassification.id` field.
 	DisplayName string `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 }
 

@@ -120,7 +120,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			},
 
 			wantBuiltinEnabled:     true,
-			wantCreateTSCallsCount: 2,
+			wantCreateTSCallsCount: 1,
 			wantMethods:            []string{createSessionRPC, "Spanner.StreamingRead"},
 			wantOTELValue: map[string]map[string]int64{
 				createSessionRPC: {
