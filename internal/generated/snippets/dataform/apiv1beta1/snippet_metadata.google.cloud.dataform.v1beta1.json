@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataform/apiv1beta1",
-    "version": "0.11.2",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -1527,7 +1527,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_ListRepositories_sync",
       "title": "dataform ListRepositories Sample",
-      "description": "ListRepositories lists Repositories in a given project and location.",
+      "description": "ListRepositories lists Repositories in a given project and location.\n\n**Note: ** *This method can return repositories not shown in the [Dataform\nUI](https: //console.cloud.google.com/bigquery/dataform)*.",
       "file": "Client/ListRepositories/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2493,7 +2493,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_UpdateConfig_sync",
       "title": "dataform UpdateConfig Sample",
-      "description": "UpdateConfig update default config for a given project and location.\n\n**Note: ** This method does not fully implement\n[AIP-134](https: //google.aip.dev/134); in particular: \n- The wildcard entry (**\\***) is treated as a bad request\n- When the **field_mask** is omitted, instead of only updating the set\nfields, the request is treated as a full update on all modifiable fields",
+      "description": "UpdateConfig update default config for a given project and location.\n\n**Note: ** *This method does not fully implement\n[AIP/134](https: //google.aip.dev/134). The wildcard entry (\\*) is treated\nas a bad request, and when the `field_mask` is omitted, the request is\ntreated as a full update on all modifiable fields.*",
       "file": "Client/UpdateConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2539,7 +2539,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_UpdateReleaseConfig_sync",
       "title": "dataform UpdateReleaseConfig Sample",
-      "description": "UpdateReleaseConfig updates a single ReleaseConfig.\n\n**Note: ** This method does not fully implement\n[AIP-134](https: //google.aip.dev/134); in particular: \n- The wildcard entry (**\\***) is treated as a bad request\n- When the **field_mask** is omitted, instead of only updating the set\nfields, the request is treated as a full update on all modifiable fields",
+      "description": "UpdateReleaseConfig updates a single ReleaseConfig.\n\n**Note: ** *This method does not fully implement\n[AIP/134](https: //google.aip.dev/134). The wildcard entry (\\*) is treated\nas a bad request, and when the `field_mask` is omitted, the request is\ntreated as a full update on all modifiable fields.*",
       "file": "Client/UpdateReleaseConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2585,7 +2585,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_UpdateRepository_sync",
       "title": "dataform UpdateRepository Sample",
-      "description": "UpdateRepository updates a single Repository.\n\n**Note: ** This method does not fully implement\n[AIP-134](https: //google.aip.dev/134); in particular: \n- The wildcard entry (**\\***) is treated as a bad request\n- When the **field_mask** is omitted, instead of only updating the set\nfields, the request is treated as a full update on all modifiable fields",
+      "description": "UpdateRepository updates a single Repository.\n\n**Note: ** *This method does not fully implement\n[AIP/134](https: //google.aip.dev/134). The wildcard entry (\\*) is treated\nas a bad request, and when the `field_mask` is omitted, the request is\ntreated as a full update on all modifiable fields.*",
       "file": "Client/UpdateRepository/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2631,7 +2631,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_UpdateWorkflowConfig_sync",
       "title": "dataform UpdateWorkflowConfig Sample",
-      "description": "UpdateWorkflowConfig updates a single WorkflowConfig.\n\n**Note: ** This method does not fully implement\n[AIP-134](https: //google.aip.dev/134); in particular: \n- The wildcard entry (**\\***) is treated as a bad request\n- When the **field_mask** is omitted, instead of only updating the set\nfields, the request is treated as a full update on all modifiable fields",
+      "description": "UpdateWorkflowConfig updates a single WorkflowConfig.\n\n**Note: ** *This method does not fully implement\n[AIP/134](https: //google.aip.dev/134). The wildcard entry (\\*) is treated\nas a bad request, and when the `field_mask` is omitted, the request is\ntreated as a full update on all modifiable fields.*",
       "file": "Client/UpdateWorkflowConfig/main.go",
       "language": "GO",
       "clientMethod": {
