@@ -24,7 +24,7 @@ import (
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	"cloud.google.com/go/pubsub/internal/scheduler"
+	"cloud.google.com/go/pubsub/v2/internal/scheduler"
 	"github.com/google/uuid"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
