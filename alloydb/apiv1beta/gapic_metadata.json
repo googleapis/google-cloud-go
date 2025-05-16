@@ -130,6 +130,11 @@
                 "GetUser"
               ]
             },
+            "ImportCluster": {
+              "methods": [
+                "ImportCluster"
+              ]
+            },
             "InjectFault": {
               "methods": [
                 "InjectFault"
@@ -345,6 +350,11 @@
                 "GetUser"
               ]
             },
+            "ImportCluster": {
+              "methods": [
+                "ImportCluster"
+              ]
+            },
             "InjectFault": {
               "methods": [
                 "InjectFault"
@@ -433,6 +443,90 @@
             "UpgradeCluster": {
               "methods": [
                 "UpgradeCluster"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AlloyDBCSQLAdmin": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AlloyDBCSQLAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RestoreFromCloudSQL": {
+              "methods": [
+                "RestoreFromCloudSQL"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AlloyDBCSQLAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RestoreFromCloudSQL": {
+              "methods": [
+                "RestoreFromCloudSQL"
               ]
             }
           }

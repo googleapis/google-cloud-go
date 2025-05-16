@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.11.1...ai/v0.12.0) (2025-05-13)
+
+
+### Features
+
+* **ai:** Direct users to google.golang.org/genai ([#12255](https://github.com/googleapis/google-cloud-go/issues/12255)) ([2b68726](https://github.com/googleapis/google-cloud-go/commit/2b687261cc6093535a2bf8a543a16fc3a20df57d))
+
 ## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.11.0...ai/v0.11.1) (2025-05-06)
 
 

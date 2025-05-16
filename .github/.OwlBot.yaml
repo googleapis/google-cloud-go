@@ -614,6 +614,7 @@ deep-preserve-regex:
   - /.*/info.go
   - /.*/path_funcs.go
   - /.*/version.go
+  - /ai/generativelanguage/apiv1/doc.go
   - /container/apiv1/ListClusters_smoke_test.go
   - /kms/apiv1/iam.go
   - /kms/apiv1/iam_example_test.go

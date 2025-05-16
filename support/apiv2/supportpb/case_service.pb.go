@@ -46,7 +46,7 @@ type GetCaseRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fully qualified name of a case to be retrieved.
+	// Required. The full name of a case to be retrieved.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -93,8 +93,7 @@ type CreateCaseRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the Google Cloud Resource under which the case should
-	// be created.
+	// Required. The name of the parent under which the case should be created.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The case to be created.
 	Case *Case `protobuf:"bytes,2,opt,name=case,proto3" json:"case,omitempty"`
@@ -150,21 +149,23 @@ type ListCasesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fully qualified name of parent resource to list cases under.
+	// Required. The name of a parent to list cases under.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// An expression written in filter language. If non-empty, the query returns
-	// the cases that match the filter. Else, the query doesn't filter the cases.
+	// An expression used to filter cases.
 	//
-	// Filter expressions use the following fields with the operators equals (`=`)
-	// and `AND`:
+	// If it's an empty string, then no filtering happens. Otherwise, the endpoint
+	// returns the cases that match the filter.
 	//
-	// - `state`: The accepted values are `OPEN` or `CLOSED`.
-	// - `priority`: The accepted values are `P0`, `P1`, `P2`, `P3`, or `P4`. You
+	// Expressions use the following fields separated by `AND` and specified with
+	// `=`:
+	//
+	// - `state`: Can be `OPEN` or `CLOSED`.
+	// - `priority`: Can be `P0`, `P1`, `P2`, `P3`, or `P4`. You
 	// can specify multiple values for priority using the `OR` operator. For
 	// example, `priority=P1 OR priority=P2`.
 	// - `creator.email`: The email address of the case creator.
 	//
-	// Examples:
+	// EXAMPLES:
 	//
 	// - `state=CLOSED`
 	// - `state=OPEN AND creator.email="tester@example.com"`
@@ -241,12 +242,12 @@ type ListCasesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of cases associated with the Google Cloud Resource, after any
+	// The list of cases associated with the parent after any
 	// filters have been applied.
 	Cases []*Case `protobuf:"bytes,1,rep,name=cases,proto3" json:"cases,omitempty"`
-	// A token to retrieve the next page of results. This should be set in the
-	// `page_token` field of the subsequent `ListCasesRequest` message that is
-	// issued. If unspecified, there are no more results to retrieve.
+	// A token to retrieve the next page of results. Set this in the `page_token`
+	// field of subsequent `cases.list` requests. If unspecified, there are no
+	// more results to retrieve.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -300,23 +301,21 @@ type SearchCasesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The fully qualified name of parent resource to search cases under.
+	// The name of the parent resource to search for cases under.
 	Parent string `protobuf:"bytes,4,opt,name=parent,proto3" json:"parent,omitempty"`
-	// An expression written in filter language.
+	// An expression used to filter cases.
 	//
-	// A query uses the following fields with the operators equals (`=`) and
-	// `AND`:
+	// Expressions use the following fields separated by `AND` and specified with
+	// `=`:
 	//
 	// - `organization`: An organization name in the form
 	// `organizations/<organization_id>`.
 	// - `project`: A project name in the form `projects/<project_id>`.
-	// - `state`: The accepted values are `OPEN` or `CLOSED`.
-	// - `priority`: The accepted values are `P0`, `P1`, `P2`, `P3`, or `P4`. You
+	// - `state`: Can be `OPEN` or `CLOSED`.
+	// - `priority`: Can be `P0`, `P1`, `P2`, `P3`, or `P4`. You
 	// can specify multiple values for priority using the `OR` operator. For
 	// example, `priority=P1 OR priority=P2`.
 	// - `creator.email`: The email address of the case creator.
-	// - `billingAccount`: A billing account in the form
-	// `billingAccounts/<billing_account_id>`
 	//
 	// You must specify either `organization` or `project`.
 	//
@@ -333,7 +332,6 @@ type SearchCasesRequest struct {
 	// - `organization="organizations/123456789"`
 	// - `project="projects/my-project-id"`
 	// - `project="projects/123456789"`
-	// - `billing_account="billingAccounts/123456-A0B0C0-CUZ789"`
 	// - `organization="organizations/123456789" AND state=CLOSED`
 	// - `project="projects/my-project-id" AND creator.email="tester@example.com"`
 	// - `project="projects/my-project-id" AND (priority=P0 OR priority=P1)`
@@ -410,12 +408,12 @@ type SearchCasesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of cases associated with the Google Cloud Resource, after any
+	// The list of cases associated with the parent after any
 	// filters have been applied.
 	Cases []*Case `protobuf:"bytes,1,rep,name=cases,proto3" json:"cases,omitempty"`
-	// A token to retrieve the next page of results. This should be set in the
-	// `page_token` field of subsequent `SearchCaseRequest` message that is
-	// issued. If unspecified, there are no more results to retrieve.
+	// A token to retrieve the next page of results. Set this in the
+	// `page_token` field of subsequent `cases.search` requests. If unspecified,
+	// there are no more results to retrieve.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -469,9 +467,9 @@ type EscalateCaseRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fully qualified name of the Case resource to be escalated.
+	// Required. The name of the case to be escalated.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The escalation object to be sent with the escalation request.
+	// The escalation information to be sent with the escalation request.
 	Escalation *Escalation `protobuf:"bytes,2,opt,name=escalation,proto3" json:"escalation,omitempty"`
 }
 
@@ -525,16 +523,15 @@ type UpdateCaseRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The case object to update.
+	// Required. The case to update.
 	Case *Case `protobuf:"bytes,1,opt,name=case,proto3" json:"case,omitempty"`
-	// A list of attributes of the case object that should be updated
-	// as part of this request. Supported values are `priority`, `display_name`,
-	// and `subscriber_email_addresses`. If no fields are specified, all supported
-	// fields are updated.
+	// A list of attributes of the case that should be updated. Supported values
+	// are `priority`, `display_name`, and `subscriber_email_addresses`. If no
+	// fields are specified, all supported fields are updated.
 	//
-	// WARNING: If you do not provide a field mask, then you might accidentally
-	// clear some fields. For example, if you leave the field mask empty and do
-	// not provide a value for `subscriber_email_addresses`, then
+	// Be careful - if you do not provide a field mask, then you might
+	// accidentally clear some fields. For example, if you leave the field mask
+	// empty and do not provide a value for `subscriber_email_addresses`, then
 	// `subscriber_email_addresses` is updated to empty.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
@@ -589,7 +586,7 @@ type CloseCaseRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fully qualified name of the case resource to be closed.
+	// Required. The name of the case to close.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -630,17 +627,18 @@ func (x *CloseCaseRequest) GetName() string {
 	return ""
 }
 
-// The request message for SearchCaseClassifications endpoint.
+// The request message for the SearchCaseClassifications endpoint.
 type SearchCaseClassificationsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// An expression written in the Google Cloud filter language. If non-empty,
-	// then only cases whose fields match the filter are returned. If empty, then
-	// no messages are filtered out.
+	// An expression used to filter case classifications.
+	//
+	// If it's an empty string, then no filtering happens. Otherwise, case
+	// classifications will be returned that match the filter.
 	Query string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-	// The maximum number of cases fetched with each request.
+	// The maximum number of classifications fetched with each request.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A token identifying the page of results to return. If unspecified, the
 	// first page is retrieved.
@@ -706,9 +704,9 @@ type SearchCaseClassificationsResponse struct {
 
 	// The classifications retrieved.
 	CaseClassifications []*CaseClassification `protobuf:"bytes,1,rep,name=case_classifications,json=caseClassifications,proto3" json:"case_classifications,omitempty"`
-	// A token to retrieve the next page of results. This should be set in the
-	// `page_token` field of subsequent `SearchCaseClassificationsRequest` message
-	// that is issued. If unspecified, there are no more results to retrieve.
+	// A token to retrieve the next page of results. Set this in the `page_token`
+	// field of subsequent `caseClassifications.list` requests. If unspecified,
+	// there are no more results to retrieve.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -1082,37 +1080,366 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CaseServiceClient interface {
-	// Retrieve the specified case.
+	// Retrieve a case.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/16033687"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$case"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	//
+	// request = supportApiService.cases().get(
+	//
+	//	name="projects/some-project/cases/43595344",
+	//
+	// )
+	// print(request.execute())
+	// ```
 	GetCase(ctx context.Context, in *GetCaseRequest, opts ...grpc.CallOption) (*Case, error)
-	// Retrieve all cases under the specified parent.
+	// Retrieve all cases under a parent, but not its children.
 	//
-	// Note: Listing cases under an Organization returns only the cases directly
-	// parented by that organization. To retrieve all cases under an organization,
-	// including cases parented by projects under that organization, use
-	// `cases.search`.
+	// For example, listing cases under an organization only returns the cases
+	// that are directly parented by that organization. To retrieve cases
+	// under an organization and its projects, use `cases.search`.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// parent="projects/some-project"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	//
+	// request =
+	//
+	//	supportApiService.cases().list(parent="projects/some-project")
+	//
+	// print(request.execute())
+	// ```
 	ListCases(ctx context.Context, in *ListCasesRequest, opts ...grpc.CallOption) (*ListCasesResponse, error)
-	// Search cases using the specified query.
-	SearchCases(ctx context.Context, in *SearchCasesRequest, opts ...grpc.CallOption) (*SearchCasesResponse, error)
-	// Create a new case and associate it with the given Google Cloud Resource.
-	// The case object must have the following fields set: `display_name`,
-	// `description`, `classification`, and `priority`.
-	CreateCase(ctx context.Context, in *CreateCaseRequest, opts ...grpc.CallOption) (*Case, error)
-	// Update the specified case. Only a subset of fields can be updated.
-	UpdateCase(ctx context.Context, in *UpdateCaseRequest, opts ...grpc.CallOption) (*Case, error)
-	// Escalate a case. Escalating a case will initiate the Google Cloud Support
-	// escalation management process.
+	// Search for cases using a query.
 	//
-	// This operation is only available to certain Customer Care tiers. Go to
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// parent="projects/some-project"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases:search"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().search(
+	//
+	//	parent="projects/some-project", query="state=OPEN"
+	//
+	// )
+	// print(request.execute())
+	// ```
+	SearchCases(ctx context.Context, in *SearchCasesRequest, opts ...grpc.CallOption) (*SearchCasesResponse, error)
+	// Create a new case and associate it with a parent.
+	//
+	// It must have the following fields set: `display_name`, `description`,
+	// `classification`, and `priority`. If you're just testing the API and don't
+	// want to route your case to an agent, set `testCase=true`.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// parent="projects/some-project"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  --header 'Content-Type: application/json' \
+	//	  --data '{
+	//	    "display_name": "Test case created by me.",
+	//	    "description": "a random test case, feel free to close",
+	//	    "classification": {
+	//	      "id":
+	//	      "100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8"
+	//	    },
+	//	    "time_zone": "-07:00",
+	//	    "subscriber_email_addresses": [
+	//	      "foo@domain.com",
+	//	      "bar@domain.com"
+	//	    ],
+	//	    "testCase": true,
+	//	    "priority": "P3"
+	//	  }' \
+	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().create(
+	//
+	//	parent="projects/some-project",
+	//	body={
+	//	    "displayName": "A Test Case",
+	//	    "description": "This is a test case.",
+	//	    "testCase": True,
+	//	    "priority": "P2",
+	//	    "classification": {
+	//	        "id":
+	//	          "100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8"
+	//	    },
+	//	},
+	//
+	// )
+	// print(request.execute())
+	// ```
+	CreateCase(ctx context.Context, in *CreateCaseRequest, opts ...grpc.CallOption) (*Case, error)
+	// Update a case. Only some fields can be updated.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43595344"
+	//
+	//	curl \
+	//	  --request PATCH \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  --header "Content-Type: application/json" \
+	//	  --data '{
+	//	    "priority": "P1"
+	//	  }' \
+	//	  "https://cloudsupport.googleapis.com/v2/$case?updateMask=priority"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().patch(
+	//
+	//	name="projects/some-project/cases/43112854",
+	//	body={
+	//	    "displayName": "This is Now a New Title",
+	//	    "priority": "P2",
+	//	},
+	//
+	// )
+	// print(request.execute())
+	// ```
+	UpdateCase(ctx context.Context, in *UpdateCaseRequest, opts ...grpc.CallOption) (*Case, error)
+	// Escalate a case, starting the Google Cloud Support escalation management
+	// process.
+	//
+	// This operation is only available for some support services. Go to
 	// https://cloud.google.com/support and look for 'Technical support
-	// escalations' in the feature list to find out which tiers are able to
-	// perform escalations.
+	// escalations' in the feature list to find out which ones let you
+	// do that.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43595344"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  --header "Content-Type: application/json" \
+	//	  --data '{
+	//	    "escalation": {
+	//	      "reason": "BUSINESS_IMPACT",
+	//	      "justification": "This is a test escalation."
+	//	    }
+	//	  }' \
+	//	  "https://cloudsupport.googleapis.com/v2/$case:escalate"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().escalate(
+	//
+	//	name="projects/some-project/cases/43595344",
+	//	body={
+	//	    "escalation": {
+	//	        "reason": "BUSINESS_IMPACT",
+	//	        "justification": "This is a test escalation.",
+	//	    },
+	//	},
+	//
+	// )
+	// print(request.execute())
+	// ```
 	EscalateCase(ctx context.Context, in *EscalateCaseRequest, opts ...grpc.CallOption) (*Case, error)
-	// Close the specified case.
+	// Close a case.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43595344"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$case:close"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().close(
+	//
+	//	name="projects/some-project/cases/43595344"
+	//
+	// )
+	// print(request.execute())
+	// ```
 	CloseCase(ctx context.Context, in *CloseCaseRequest, opts ...grpc.CallOption) (*Case, error)
-	// Retrieve valid classifications to be used when creating a support case.
-	// The classications are hierarchical, with each classification containing
-	// all levels of the hierarchy, separated by " > ". For example "Technical
-	// Issue > Compute > Compute Engine".
+	// Retrieve valid classifications to use when creating a support case.
+	//
+	// Classifications are hierarchical. Each classification is a string
+	// containing all levels of the hierarchy separated by `" > "`. For example,
+	// `"Technical Issue > Compute > Compute Engine"`.
+	//
+	// Classification IDs returned by this endpoint are valid for at least six
+	// months. When a classification is deactivated, this endpoint immediately
+	// stops returning it. After six months, `case.create` requests using the
+	// classification will fail.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  'https://cloudsupport.googleapis.com/v2/caseClassifications:search?query=display_name:"*Compute%20Engine*"'
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version="v2",
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version=v2",
+	//
+	// )
+	// request = supportApiService.caseClassifications().search(
+	//
+	//	query='display_name:"*Compute Engine*"'
+	//
+	// )
+	// print(request.execute())
+	// ```
 	SearchCaseClassifications(ctx context.Context, in *SearchCaseClassificationsRequest, opts ...grpc.CallOption) (*SearchCaseClassificationsResponse, error)
 }
 
@@ -1198,37 +1525,366 @@ func (c *caseServiceClient) SearchCaseClassifications(ctx context.Context, in *S
 
 // CaseServiceServer is the server API for CaseService service.
 type CaseServiceServer interface {
-	// Retrieve the specified case.
+	// Retrieve a case.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/16033687"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$case"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	//
+	// request = supportApiService.cases().get(
+	//
+	//	name="projects/some-project/cases/43595344",
+	//
+	// )
+	// print(request.execute())
+	// ```
 	GetCase(context.Context, *GetCaseRequest) (*Case, error)
-	// Retrieve all cases under the specified parent.
+	// Retrieve all cases under a parent, but not its children.
 	//
-	// Note: Listing cases under an Organization returns only the cases directly
-	// parented by that organization. To retrieve all cases under an organization,
-	// including cases parented by projects under that organization, use
-	// `cases.search`.
+	// For example, listing cases under an organization only returns the cases
+	// that are directly parented by that organization. To retrieve cases
+	// under an organization and its projects, use `cases.search`.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// parent="projects/some-project"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	//
+	// request =
+	//
+	//	supportApiService.cases().list(parent="projects/some-project")
+	//
+	// print(request.execute())
+	// ```
 	ListCases(context.Context, *ListCasesRequest) (*ListCasesResponse, error)
-	// Search cases using the specified query.
-	SearchCases(context.Context, *SearchCasesRequest) (*SearchCasesResponse, error)
-	// Create a new case and associate it with the given Google Cloud Resource.
-	// The case object must have the following fields set: `display_name`,
-	// `description`, `classification`, and `priority`.
-	CreateCase(context.Context, *CreateCaseRequest) (*Case, error)
-	// Update the specified case. Only a subset of fields can be updated.
-	UpdateCase(context.Context, *UpdateCaseRequest) (*Case, error)
-	// Escalate a case. Escalating a case will initiate the Google Cloud Support
-	// escalation management process.
+	// Search for cases using a query.
 	//
-	// This operation is only available to certain Customer Care tiers. Go to
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// parent="projects/some-project"
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases:search"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().search(
+	//
+	//	parent="projects/some-project", query="state=OPEN"
+	//
+	// )
+	// print(request.execute())
+	// ```
+	SearchCases(context.Context, *SearchCasesRequest) (*SearchCasesResponse, error)
+	// Create a new case and associate it with a parent.
+	//
+	// It must have the following fields set: `display_name`, `description`,
+	// `classification`, and `priority`. If you're just testing the API and don't
+	// want to route your case to an agent, set `testCase=true`.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// parent="projects/some-project"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  --header 'Content-Type: application/json' \
+	//	  --data '{
+	//	    "display_name": "Test case created by me.",
+	//	    "description": "a random test case, feel free to close",
+	//	    "classification": {
+	//	      "id":
+	//	      "100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8"
+	//	    },
+	//	    "time_zone": "-07:00",
+	//	    "subscriber_email_addresses": [
+	//	      "foo@domain.com",
+	//	      "bar@domain.com"
+	//	    ],
+	//	    "testCase": true,
+	//	    "priority": "P3"
+	//	  }' \
+	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().create(
+	//
+	//	parent="projects/some-project",
+	//	body={
+	//	    "displayName": "A Test Case",
+	//	    "description": "This is a test case.",
+	//	    "testCase": True,
+	//	    "priority": "P2",
+	//	    "classification": {
+	//	        "id":
+	//	          "100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8"
+	//	    },
+	//	},
+	//
+	// )
+	// print(request.execute())
+	// ```
+	CreateCase(context.Context, *CreateCaseRequest) (*Case, error)
+	// Update a case. Only some fields can be updated.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43595344"
+	//
+	//	curl \
+	//	  --request PATCH \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  --header "Content-Type: application/json" \
+	//	  --data '{
+	//	    "priority": "P1"
+	//	  }' \
+	//	  "https://cloudsupport.googleapis.com/v2/$case?updateMask=priority"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().patch(
+	//
+	//	name="projects/some-project/cases/43112854",
+	//	body={
+	//	    "displayName": "This is Now a New Title",
+	//	    "priority": "P2",
+	//	},
+	//
+	// )
+	// print(request.execute())
+	// ```
+	UpdateCase(context.Context, *UpdateCaseRequest) (*Case, error)
+	// Escalate a case, starting the Google Cloud Support escalation management
+	// process.
+	//
+	// This operation is only available for some support services. Go to
 	// https://cloud.google.com/support and look for 'Technical support
-	// escalations' in the feature list to find out which tiers are able to
-	// perform escalations.
+	// escalations' in the feature list to find out which ones let you
+	// do that.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43595344"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  --header "Content-Type: application/json" \
+	//	  --data '{
+	//	    "escalation": {
+	//	      "reason": "BUSINESS_IMPACT",
+	//	      "justification": "This is a test escalation."
+	//	    }
+	//	  }' \
+	//	  "https://cloudsupport.googleapis.com/v2/$case:escalate"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().escalate(
+	//
+	//	name="projects/some-project/cases/43595344",
+	//	body={
+	//	    "escalation": {
+	//	        "reason": "BUSINESS_IMPACT",
+	//	        "justification": "This is a test escalation.",
+	//	    },
+	//	},
+	//
+	// )
+	// print(request.execute())
+	// ```
 	EscalateCase(context.Context, *EscalateCaseRequest) (*Case, error)
-	// Close the specified case.
+	// Close a case.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// case="projects/some-project/cases/43595344"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2/$case:close"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	// request = supportApiService.cases().close(
+	//
+	//	name="projects/some-project/cases/43595344"
+	//
+	// )
+	// print(request.execute())
+	// ```
 	CloseCase(context.Context, *CloseCaseRequest) (*Case, error)
-	// Retrieve valid classifications to be used when creating a support case.
-	// The classications are hierarchical, with each classification containing
-	// all levels of the hierarchy, separated by " > ". For example "Technical
-	// Issue > Compute > Compute Engine".
+	// Retrieve valid classifications to use when creating a support case.
+	//
+	// Classifications are hierarchical. Each classification is a string
+	// containing all levels of the hierarchy separated by `" > "`. For example,
+	// `"Technical Issue > Compute > Compute Engine"`.
+	//
+	// Classification IDs returned by this endpoint are valid for at least six
+	// months. When a classification is deactivated, this endpoint immediately
+	// stops returning it. After six months, `case.create` requests using the
+	// classification will fail.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	//
+	//	curl \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  'https://cloudsupport.googleapis.com/v2/caseClassifications:search?query=display_name:"*Compute%20Engine*"'
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version="v2",
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version=v2",
+	//
+	// )
+	// request = supportApiService.caseClassifications().search(
+	//
+	//	query='display_name:"*Compute Engine*"'
+	//
+	// )
+	// print(request.execute())
+	// ```
 	SearchCaseClassifications(context.Context, *SearchCaseClassificationsRequest) (*SearchCaseClassificationsResponse, error)
 }
 

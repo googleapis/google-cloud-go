@@ -1115,9 +1115,100 @@
       ]
     },
     {
+      "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_CreateOnlineReturnPolicy_sync",
+      "title": "merchantapi CreateOnlineReturnPolicy Sample",
+      "description": "CreateOnlineReturnPolicy creates a new return policy for a given merchant.",
+      "file": "OnlineReturnPolicyClient/CreateOnlineReturnPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateOnlineReturnPolicy",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient.CreateOnlineReturnPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.CreateOnlineReturnPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.OnlineReturnPolicy",
+        "client": {
+          "shortName": "OnlineReturnPolicyClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient"
+        },
+        "method": {
+          "shortName": "CreateOnlineReturnPolicy",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService.CreateOnlineReturnPolicy",
+          "service": {
+            "shortName": "OnlineReturnPolicyService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_DeleteOnlineReturnPolicy_sync",
+      "title": "merchantapi DeleteOnlineReturnPolicy Sample",
+      "description": "DeleteOnlineReturnPolicy deletes an existing return policy for a given merchant.",
+      "file": "OnlineReturnPolicyClient/DeleteOnlineReturnPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOnlineReturnPolicy",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient.DeleteOnlineReturnPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.DeleteOnlineReturnPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "OnlineReturnPolicyClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient"
+        },
+        "method": {
+          "shortName": "DeleteOnlineReturnPolicy",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService.DeleteOnlineReturnPolicy",
+          "service": {
+            "shortName": "OnlineReturnPolicyService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_GetOnlineReturnPolicy_sync",
       "title": "merchantapi GetOnlineReturnPolicy Sample",
-      "description": "GetOnlineReturnPolicy gets an existing return policy for a given business.",
+      "description": "GetOnlineReturnPolicy gets an existing return policy for a given merchant.",
       "file": "OnlineReturnPolicyClient/GetOnlineReturnPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1163,7 +1254,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_ListOnlineReturnPolicies_sync",
       "title": "merchantapi ListOnlineReturnPolicies Sample",
-      "description": "ListOnlineReturnPolicies lists all existing return policies for a given business.",
+      "description": "ListOnlineReturnPolicies lists all existing return policies for a given merchant.",
       "file": "OnlineReturnPolicyClient/ListOnlineReturnPolicies/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1202,6 +1293,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_UpdateOnlineReturnPolicy_sync",
+      "title": "merchantapi UpdateOnlineReturnPolicy Sample",
+      "description": "UpdateOnlineReturnPolicy updates an existing return policy for a given merchant.",
+      "file": "OnlineReturnPolicyClient/UpdateOnlineReturnPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateOnlineReturnPolicy",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient.UpdateOnlineReturnPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateOnlineReturnPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.OnlineReturnPolicy",
+        "client": {
+          "shortName": "OnlineReturnPolicyClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient"
+        },
+        "method": {
+          "shortName": "UpdateOnlineReturnPolicy",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService.UpdateOnlineReturnPolicy",
+          "service": {
+            "shortName": "OnlineReturnPolicyService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

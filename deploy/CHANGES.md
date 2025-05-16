@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.27.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.27.1...deploy/v1.27.2) (2025-05-13)
+
+
+### Bug Fixes
+
+* **deploy:** Correct pattern of unused resource definition, Revision ([35b4f4a](https://github.com/googleapis/google-cloud-go/commit/35b4f4aced4a5dc79f1315c74feaac7d11657f8a))
+
+
+### Documentation
+
+* **deploy:** Comments updated for fields in several different resources ([35b4f4a](https://github.com/googleapis/google-cloud-go/commit/35b4f4aced4a5dc79f1315c74feaac7d11657f8a))
+
 ## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.27.0...deploy/v1.27.1) (2025-04-15)
 
 
