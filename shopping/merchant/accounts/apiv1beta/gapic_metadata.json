@@ -376,6 +376,16 @@
         "grpc": {
           "libraryClient": "OnlineReturnPolicyClient",
           "rpcs": {
+            "CreateOnlineReturnPolicy": {
+              "methods": [
+                "CreateOnlineReturnPolicy"
+              ]
+            },
+            "DeleteOnlineReturnPolicy": {
+              "methods": [
+                "DeleteOnlineReturnPolicy"
+              ]
+            },
             "GetOnlineReturnPolicy": {
               "methods": [
                 "GetOnlineReturnPolicy"
@@ -384,6 +394,11 @@
             "ListOnlineReturnPolicies": {
               "methods": [
                 "ListOnlineReturnPolicies"
+              ]
+            },
+            "UpdateOnlineReturnPolicy": {
+              "methods": [
+                "UpdateOnlineReturnPolicy"
               ]
             }
           }
@@ -391,6 +406,16 @@
         "rest": {
           "libraryClient": "OnlineReturnPolicyClient",
           "rpcs": {
+            "CreateOnlineReturnPolicy": {
+              "methods": [
+                "CreateOnlineReturnPolicy"
+              ]
+            },
+            "DeleteOnlineReturnPolicy": {
+              "methods": [
+                "DeleteOnlineReturnPolicy"
+              ]
+            },
             "GetOnlineReturnPolicy": {
               "methods": [
                 "GetOnlineReturnPolicy"
@@ -399,6 +424,11 @@
             "ListOnlineReturnPolicies": {
               "methods": [
                 "ListOnlineReturnPolicies"
+              ]
+            },
+            "UpdateOnlineReturnPolicy": {
+              "methods": [
+                "UpdateOnlineReturnPolicy"
               ]
             }
           }

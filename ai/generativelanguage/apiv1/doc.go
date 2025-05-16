@@ -17,9 +17,6 @@
 // Package generativelanguage is an auto-generated package for the
 // Generative Language API.
 //
-// NOTE: New users are encouraged to use the Google GenAI Go SDK
-// available at [google.golang.org/genai]
-//
 // The Gemini API allows developers to build generative AI applications using
 // Gemini models. Gemini is our most capable model, built from the ground up
 // to be multimodal. It can generalize and seamlessly understand, operate
