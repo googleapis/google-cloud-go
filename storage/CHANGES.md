@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.54.0...storage/v1.55.0) (2025-05-17)
+
+
+### Features
+
+* **storage/control:** Add Client Libraries Storage IntelligenceConfig ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+
+### Bug Fixes
+
+* **storage:** Migrate oauth2/google usages to cloud.google.com/go/auth ([#11191](https://github.com/googleapis/google-cloud-go/issues/11191)) ([3a22349](https://github.com/googleapis/google-cloud-go/commit/3a22349c1ba6a192d70269f77e5804a9957aa572))
+
 ## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.53.0...storage/v1.54.0) (2025-05-12)
 
 
