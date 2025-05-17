@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.6...support/v1.2.0) (2025-05-17)
+
+
+### Features
+
+* **support:** Annotate `Comment.plain_text_body` as deprecated (it was already deprecated, but now we're adding the annotation for it) ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **support:** Deprecate the `Actor.email` field and add `username` to replace it ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+
+
+### Documentation
+
+* **support:** Bring comments and metadata up to date ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.5...support/v1.1.6) (2025-04-15)
 
 

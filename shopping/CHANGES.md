@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.20.0...shopping/v0.21.0) (2025-05-17)
+
+
+### Features
+
+* **shopping/merchant/accounts:** Add OmnichannelSetingsService, LfpProvidersService and GbpAccountsService ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **shopping/merchant/accounts:** Updated comments for returns sub-API publication ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** A comment for field `item_conditions` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `parent` in message `.google.shopping.merchant.accounts.v1beta.ListOnlineReturnPoliciesRequest` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `policy` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `restocking_fee` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `return_methods` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `return_shipping_fee` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for method `GetOnlineReturnPolicy` in service `OnlineReturnPolicyService` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for method `ListOnlineReturnPolicies` in service `OnlineReturnPolicyService` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for service `OnlineReturnPolicyService` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
 ## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.19.1...shopping/v0.20.0) (2025-04-30)
 
 
