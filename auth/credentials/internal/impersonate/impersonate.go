@@ -22,10 +22,12 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"regexp"
 	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/trustboundary"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -33,6 +35,8 @@ const (
 	defaultTokenLifetime = "3600s"
 	authHeaderKey        = "Authorization"
 )
+
+type TrustBoundaryData = trustboundary.TrustBoundaryData
 
 // generateAccesstokenReq is used for service account impersonation
 type generateAccessTokenReq struct {
@@ -81,6 +85,13 @@ type Options struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
+	// TrustBoundaryData specifies the trust boundary settings for the impersonated service account.
+	// It defines the regions or environments where the impersonated credential is allowed to be used.
+	// This data is used to enforce trust boundary restrictions on requests made with the impersonated credential.
+	// The TrustBoundaryData field is a pointer to allow for caching and updates to the trust boundary data.
+	TrustBoundaryData *TrustBoundaryData
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	UniverseDomain string
 }
 
 func (o *Options) validate() error {
@@ -135,11 +146,52 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("credentials: unable to parse expiry: %w", err)
 	}
-	return &auth.Token{
+	token := &auth.Token{
 		Value:  accessTokenResp.AccessToken,
 		Expiry: expiry,
 		Type:   internal.TokenTypeBearer,
-	}, nil
+	}
+	trustBoundaryData, err := o.lookupServiceAccountTrustBoundary(ctx)
+	if err != nil {
+		return nil, err
+	}
+	token.TrustBoundaryData = *trustBoundaryData
+	return token, nil
+}
+
+// lookupServiceAccountTrustBoundary fetches trust boundary data for the impersonated service account.
+// It extracts the service account email from the impersonation URL and retrieves the allowed locations.
+// Returns an error if the service account email cannot be extracted from the impersonation URL.
+func (o *Options) lookupServiceAccountTrustBoundary(ctx context.Context) (*TrustBoundaryData, error) {
+	email, err := extractServiceAccountEmail(o.URL)
+	if err != nil {
+		return nil, err
+	}
+
+	trustBoundaryData, err := trustboundary.LookupServiceAccountTrustBoundary(ctx, o.Client, email, o.TrustBoundaryData, o.UniverseDomain)
+	if err != nil {
+		return nil, err
+	}
+
+	o.TrustBoundaryData = trustBoundaryData
+	return trustBoundaryData, nil
+}
+
+// extractServiceAccountEmail extracts the service account email from the impersonation URL.
+// The impersonation URL is expected to be in the format:
+// https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}:generateAccessToken
+// or
+// https://iamcredentials.googleapis.com/v1/projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}:generateAccessToken
+// Returns an error if the email cannot be extracted.
+func extractServiceAccountEmail(impersonationURL string) (string, error) {
+	re := regexp.MustCompile(`serviceAccounts/(.+?):generateAccessToken`)
+	matches := re.FindStringSubmatch(impersonationURL)
+
+	if len(matches) < 2 {
+		return "", fmt.Errorf("invalid impersonation URL format: %s", impersonationURL)
+	}
+
+	return matches[1], nil
 }
 
 func setAuthHeader(ctx context.Context, tp auth.TokenProvider, r *http.Request) error {

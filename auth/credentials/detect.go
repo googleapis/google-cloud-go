@@ -126,6 +126,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			UniverseDomainProvider: &internal.ComputeUniverseDomainProvider{
 				MetadataClient: metadataClient,
 			},
+			IsServiceAccount: true, //GCE always uses service accounts.
 		}), nil
 	}
 
