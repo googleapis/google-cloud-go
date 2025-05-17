@@ -1,5 +1,17 @@
 # Changes
 
+## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.49.0...pubsub/v1.50.0) (2025-05-17)
+
+
+### Features
+
+* **pubsub/v2:** Generate renamed go pubsub admin clients ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Bug Fixes
+
+* **pubsub:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.48.1...pubsub/v1.49.0) (2025-04-07)
 
 
