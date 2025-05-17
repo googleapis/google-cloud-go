@@ -21,11 +21,7 @@
 package quotapb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -486,88 +482,4 @@ func file_google_shopping_merchant_quota_v1beta_quota_proto_init() {
 	file_google_shopping_merchant_quota_v1beta_quota_proto_rawDesc = nil
 	file_google_shopping_merchant_quota_v1beta_quota_proto_goTypes = nil
 	file_google_shopping_merchant_quota_v1beta_quota_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// QuotaServiceClient is the client API for QuotaService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type QuotaServiceClient interface {
-	// Lists the daily call quota and usage per group for your Merchant
-	// Center account.
-	ListQuotaGroups(ctx context.Context, in *ListQuotaGroupsRequest, opts ...grpc.CallOption) (*ListQuotaGroupsResponse, error)
-}
-
-type quotaServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewQuotaServiceClient(cc grpc.ClientConnInterface) QuotaServiceClient {
-	return &quotaServiceClient{cc}
-}
-
-func (c *quotaServiceClient) ListQuotaGroups(ctx context.Context, in *ListQuotaGroupsRequest, opts ...grpc.CallOption) (*ListQuotaGroupsResponse, error) {
-	out := new(ListQuotaGroupsResponse)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.quota.v1beta.QuotaService/ListQuotaGroups", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// QuotaServiceServer is the server API for QuotaService service.
-type QuotaServiceServer interface {
-	// Lists the daily call quota and usage per group for your Merchant
-	// Center account.
-	ListQuotaGroups(context.Context, *ListQuotaGroupsRequest) (*ListQuotaGroupsResponse, error)
-}
-
-// UnimplementedQuotaServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedQuotaServiceServer struct {
-}
-
-func (*UnimplementedQuotaServiceServer) ListQuotaGroups(context.Context, *ListQuotaGroupsRequest) (*ListQuotaGroupsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListQuotaGroups not implemented")
-}
-
-func RegisterQuotaServiceServer(s *grpc.Server, srv QuotaServiceServer) {
-	s.RegisterService(&_QuotaService_serviceDesc, srv)
-}
-
-func _QuotaService_ListQuotaGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListQuotaGroupsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QuotaServiceServer).ListQuotaGroups(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.quota.v1beta.QuotaService/ListQuotaGroups",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QuotaServiceServer).ListQuotaGroups(ctx, req.(*ListQuotaGroupsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _QuotaService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.quota.v1beta.QuotaService",
-	HandlerType: (*QuotaServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ListQuotaGroups",
-			Handler:    _QuotaService_ListQuotaGroups_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/quota/v1beta/quota.proto",
 }

@@ -22,11 +22,7 @@ package lfppb
 
 import (
 	typepb "cloud.google.com/go/shopping/type/typepb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -409,86 +405,4 @@ func file_google_shopping_merchant_lfp_v1beta_lfpsale_proto_init() {
 	file_google_shopping_merchant_lfp_v1beta_lfpsale_proto_rawDesc = nil
 	file_google_shopping_merchant_lfp_v1beta_lfpsale_proto_goTypes = nil
 	file_google_shopping_merchant_lfp_v1beta_lfpsale_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// LfpSaleServiceClient is the client API for LfpSaleService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type LfpSaleServiceClient interface {
-	// Inserts a `LfpSale` for the given merchant.
-	InsertLfpSale(ctx context.Context, in *InsertLfpSaleRequest, opts ...grpc.CallOption) (*LfpSale, error)
-}
-
-type lfpSaleServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewLfpSaleServiceClient(cc grpc.ClientConnInterface) LfpSaleServiceClient {
-	return &lfpSaleServiceClient{cc}
-}
-
-func (c *lfpSaleServiceClient) InsertLfpSale(ctx context.Context, in *InsertLfpSaleRequest, opts ...grpc.CallOption) (*LfpSale, error) {
-	out := new(LfpSale)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.lfp.v1beta.LfpSaleService/InsertLfpSale", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// LfpSaleServiceServer is the server API for LfpSaleService service.
-type LfpSaleServiceServer interface {
-	// Inserts a `LfpSale` for the given merchant.
-	InsertLfpSale(context.Context, *InsertLfpSaleRequest) (*LfpSale, error)
-}
-
-// UnimplementedLfpSaleServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedLfpSaleServiceServer struct {
-}
-
-func (*UnimplementedLfpSaleServiceServer) InsertLfpSale(context.Context, *InsertLfpSaleRequest) (*LfpSale, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method InsertLfpSale not implemented")
-}
-
-func RegisterLfpSaleServiceServer(s *grpc.Server, srv LfpSaleServiceServer) {
-	s.RegisterService(&_LfpSaleService_serviceDesc, srv)
-}
-
-func _LfpSaleService_InsertLfpSale_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InsertLfpSaleRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LfpSaleServiceServer).InsertLfpSale(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.lfp.v1beta.LfpSaleService/InsertLfpSale",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LfpSaleServiceServer).InsertLfpSale(ctx, req.(*InsertLfpSaleRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _LfpSaleService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.lfp.v1beta.LfpSaleService",
-	HandlerType: (*LfpSaleServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "InsertLfpSale",
-			Handler:    _LfpSaleService_InsertLfpSale_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/lfp/v1beta/lfpsale.proto",
 }

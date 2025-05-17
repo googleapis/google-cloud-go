@@ -22,12 +22,8 @@ package reportspb
 
 import (
 	typepb "cloud.google.com/go/shopping/type/typepb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -4714,90 +4710,4 @@ func file_google_shopping_merchant_reports_v1beta_reports_proto_init() {
 	file_google_shopping_merchant_reports_v1beta_reports_proto_rawDesc = nil
 	file_google_shopping_merchant_reports_v1beta_reports_proto_goTypes = nil
 	file_google_shopping_merchant_reports_v1beta_reports_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ReportServiceClient is the client API for ReportService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ReportServiceClient interface {
-	// Retrieves a report defined by a search query. The response might contain
-	// fewer rows than specified by `page_size`. Rely on `next_page_token` to
-	// determine if there are more rows to be requested.
-	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-}
-
-type reportServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewReportServiceClient(cc grpc.ClientConnInterface) ReportServiceClient {
-	return &reportServiceClient{cc}
-}
-
-func (c *reportServiceClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
-	out := new(SearchResponse)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.reports.v1beta.ReportService/Search", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ReportServiceServer is the server API for ReportService service.
-type ReportServiceServer interface {
-	// Retrieves a report defined by a search query. The response might contain
-	// fewer rows than specified by `page_size`. Rely on `next_page_token` to
-	// determine if there are more rows to be requested.
-	Search(context.Context, *SearchRequest) (*SearchResponse, error)
-}
-
-// UnimplementedReportServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedReportServiceServer struct {
-}
-
-func (*UnimplementedReportServiceServer) Search(context.Context, *SearchRequest) (*SearchResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
-}
-
-func RegisterReportServiceServer(s *grpc.Server, srv ReportServiceServer) {
-	s.RegisterService(&_ReportService_serviceDesc, srv)
-}
-
-func _ReportService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReportServiceServer).Search(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.reports.v1beta.ReportService/Search",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReportServiceServer).Search(ctx, req.(*SearchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ReportService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.reports.v1beta.ReportService",
-	HandlerType: (*ReportServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Search",
-			Handler:    _ReportService_Search_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/reports/v1beta/reports.proto",
 }

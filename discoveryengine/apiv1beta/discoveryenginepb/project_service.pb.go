@@ -22,11 +22,7 @@ package discoveryenginepb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -285,96 +281,4 @@ func file_google_cloud_discoveryengine_v1beta_project_service_proto_init() {
 	file_google_cloud_discoveryengine_v1beta_project_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1beta_project_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1beta_project_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ProjectServiceClient is the client API for ProjectService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ProjectServiceClient interface {
-	// Provisions the project resource. During the
-	// process, related systems will get prepared and initialized.
-	//
-	// Caller must read the [Terms for data
-	// use](https://cloud.google.com/retail/data-use-terms), and optionally
-	// specify in request to provide consent to that service terms.
-	ProvisionProject(ctx context.Context, in *ProvisionProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-}
-
-type projectServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewProjectServiceClient(cc grpc.ClientConnInterface) ProjectServiceClient {
-	return &projectServiceClient{cc}
-}
-
-func (c *projectServiceClient) ProvisionProject(ctx context.Context, in *ProvisionProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1beta.ProjectService/ProvisionProject", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ProjectServiceServer is the server API for ProjectService service.
-type ProjectServiceServer interface {
-	// Provisions the project resource. During the
-	// process, related systems will get prepared and initialized.
-	//
-	// Caller must read the [Terms for data
-	// use](https://cloud.google.com/retail/data-use-terms), and optionally
-	// specify in request to provide consent to that service terms.
-	ProvisionProject(context.Context, *ProvisionProjectRequest) (*longrunningpb.Operation, error)
-}
-
-// UnimplementedProjectServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedProjectServiceServer struct {
-}
-
-func (*UnimplementedProjectServiceServer) ProvisionProject(context.Context, *ProvisionProjectRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProvisionProject not implemented")
-}
-
-func RegisterProjectServiceServer(s *grpc.Server, srv ProjectServiceServer) {
-	s.RegisterService(&_ProjectService_serviceDesc, srv)
-}
-
-func _ProjectService_ProvisionProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProvisionProjectRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProjectServiceServer).ProvisionProject(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1beta.ProjectService/ProvisionProject",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProjectServiceServer).ProvisionProject(ctx, req.(*ProvisionProjectRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ProjectService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1beta.ProjectService",
-	HandlerType: (*ProjectServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ProvisionProject",
-			Handler:    _ProjectService_ProvisionProject_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/discoveryengine/v1beta/project_service.proto",
 }

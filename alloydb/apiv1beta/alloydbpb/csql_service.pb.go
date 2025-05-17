@@ -22,11 +22,7 @@ package alloydbpb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -281,86 +277,4 @@ func file_google_cloud_alloydb_v1beta_csql_service_proto_init() {
 	file_google_cloud_alloydb_v1beta_csql_service_proto_rawDesc = nil
 	file_google_cloud_alloydb_v1beta_csql_service_proto_goTypes = nil
 	file_google_cloud_alloydb_v1beta_csql_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// AlloyDBCSQLAdminClient is the client API for AlloyDBCSQLAdmin service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type AlloyDBCSQLAdminClient interface {
-	// Restores an AlloyDB cluster from a CloudSQL resource.
-	RestoreFromCloudSQL(ctx context.Context, in *RestoreFromCloudSQLRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-}
-
-type alloyDBCSQLAdminClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAlloyDBCSQLAdminClient(cc grpc.ClientConnInterface) AlloyDBCSQLAdminClient {
-	return &alloyDBCSQLAdminClient{cc}
-}
-
-func (c *alloyDBCSQLAdminClient) RestoreFromCloudSQL(ctx context.Context, in *RestoreFromCloudSQLRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBCSQLAdmin/RestoreFromCloudSQL", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AlloyDBCSQLAdminServer is the server API for AlloyDBCSQLAdmin service.
-type AlloyDBCSQLAdminServer interface {
-	// Restores an AlloyDB cluster from a CloudSQL resource.
-	RestoreFromCloudSQL(context.Context, *RestoreFromCloudSQLRequest) (*longrunningpb.Operation, error)
-}
-
-// UnimplementedAlloyDBCSQLAdminServer can be embedded to have forward compatible implementations.
-type UnimplementedAlloyDBCSQLAdminServer struct {
-}
-
-func (*UnimplementedAlloyDBCSQLAdminServer) RestoreFromCloudSQL(context.Context, *RestoreFromCloudSQLRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RestoreFromCloudSQL not implemented")
-}
-
-func RegisterAlloyDBCSQLAdminServer(s *grpc.Server, srv AlloyDBCSQLAdminServer) {
-	s.RegisterService(&_AlloyDBCSQLAdmin_serviceDesc, srv)
-}
-
-func _AlloyDBCSQLAdmin_RestoreFromCloudSQL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RestoreFromCloudSQLRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AlloyDBCSQLAdminServer).RestoreFromCloudSQL(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.alloydb.v1beta.AlloyDBCSQLAdmin/RestoreFromCloudSQL",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AlloyDBCSQLAdminServer).RestoreFromCloudSQL(ctx, req.(*RestoreFromCloudSQLRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _AlloyDBCSQLAdmin_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.alloydb.v1beta.AlloyDBCSQLAdmin",
-	HandlerType: (*AlloyDBCSQLAdminServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "RestoreFromCloudSQL",
-			Handler:    _AlloyDBCSQLAdmin_RestoreFromCloudSQL_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/alloydb/v1beta/csql_service.proto",
 }

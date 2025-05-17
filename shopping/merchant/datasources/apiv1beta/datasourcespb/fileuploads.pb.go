@@ -21,11 +21,7 @@
 package datasourcespb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -605,88 +601,4 @@ func file_google_shopping_merchant_datasources_v1beta_fileuploads_proto_init() {
 	file_google_shopping_merchant_datasources_v1beta_fileuploads_proto_rawDesc = nil
 	file_google_shopping_merchant_datasources_v1beta_fileuploads_proto_goTypes = nil
 	file_google_shopping_merchant_datasources_v1beta_fileuploads_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// FileUploadsServiceClient is the client API for FileUploadsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type FileUploadsServiceClient interface {
-	// Gets the latest data source file upload. Only the `latest` alias is
-	// accepted for a file upload.
-	GetFileUpload(ctx context.Context, in *GetFileUploadRequest, opts ...grpc.CallOption) (*FileUpload, error)
-}
-
-type fileUploadsServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewFileUploadsServiceClient(cc grpc.ClientConnInterface) FileUploadsServiceClient {
-	return &fileUploadsServiceClient{cc}
-}
-
-func (c *fileUploadsServiceClient) GetFileUpload(ctx context.Context, in *GetFileUploadRequest, opts ...grpc.CallOption) (*FileUpload, error) {
-	out := new(FileUpload)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.datasources.v1beta.FileUploadsService/GetFileUpload", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// FileUploadsServiceServer is the server API for FileUploadsService service.
-type FileUploadsServiceServer interface {
-	// Gets the latest data source file upload. Only the `latest` alias is
-	// accepted for a file upload.
-	GetFileUpload(context.Context, *GetFileUploadRequest) (*FileUpload, error)
-}
-
-// UnimplementedFileUploadsServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedFileUploadsServiceServer struct {
-}
-
-func (*UnimplementedFileUploadsServiceServer) GetFileUpload(context.Context, *GetFileUploadRequest) (*FileUpload, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFileUpload not implemented")
-}
-
-func RegisterFileUploadsServiceServer(s *grpc.Server, srv FileUploadsServiceServer) {
-	s.RegisterService(&_FileUploadsService_serviceDesc, srv)
-}
-
-func _FileUploadsService_GetFileUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetFileUploadRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FileUploadsServiceServer).GetFileUpload(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.datasources.v1beta.FileUploadsService/GetFileUpload",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FileUploadsServiceServer).GetFileUpload(ctx, req.(*GetFileUploadRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _FileUploadsService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.datasources.v1beta.FileUploadsService",
-	HandlerType: (*FileUploadsServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetFileUpload",
-			Handler:    _FileUploadsService_GetFileUpload_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/datasources/v1beta/fileuploads.proto",
 }

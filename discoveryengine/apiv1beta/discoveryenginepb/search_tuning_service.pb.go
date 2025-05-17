@@ -22,12 +22,8 @@ package discoveryenginepb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -755,124 +751,4 @@ func file_google_cloud_discoveryengine_v1beta_search_tuning_service_proto_init()
 	file_google_cloud_discoveryengine_v1beta_search_tuning_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1beta_search_tuning_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1beta_search_tuning_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// SearchTuningServiceClient is the client API for SearchTuningService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type SearchTuningServiceClient interface {
-	// Trains a custom model.
-	TrainCustomModel(ctx context.Context, in *TrainCustomModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Gets a list of all the custom models.
-	ListCustomModels(ctx context.Context, in *ListCustomModelsRequest, opts ...grpc.CallOption) (*ListCustomModelsResponse, error)
-}
-
-type searchTuningServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSearchTuningServiceClient(cc grpc.ClientConnInterface) SearchTuningServiceClient {
-	return &searchTuningServiceClient{cc}
-}
-
-func (c *searchTuningServiceClient) TrainCustomModel(ctx context.Context, in *TrainCustomModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1beta.SearchTuningService/TrainCustomModel", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *searchTuningServiceClient) ListCustomModels(ctx context.Context, in *ListCustomModelsRequest, opts ...grpc.CallOption) (*ListCustomModelsResponse, error) {
-	out := new(ListCustomModelsResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1beta.SearchTuningService/ListCustomModels", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// SearchTuningServiceServer is the server API for SearchTuningService service.
-type SearchTuningServiceServer interface {
-	// Trains a custom model.
-	TrainCustomModel(context.Context, *TrainCustomModelRequest) (*longrunningpb.Operation, error)
-	// Gets a list of all the custom models.
-	ListCustomModels(context.Context, *ListCustomModelsRequest) (*ListCustomModelsResponse, error)
-}
-
-// UnimplementedSearchTuningServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedSearchTuningServiceServer struct {
-}
-
-func (*UnimplementedSearchTuningServiceServer) TrainCustomModel(context.Context, *TrainCustomModelRequest) (*longrunningpb.Operation, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method TrainCustomModel not implemented")
-}
-func (*UnimplementedSearchTuningServiceServer) ListCustomModels(context.Context, *ListCustomModelsRequest) (*ListCustomModelsResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListCustomModels not implemented")
-}
-
-func RegisterSearchTuningServiceServer(s *grpc.Server, srv SearchTuningServiceServer) {
-	s.RegisterService(&_SearchTuningService_serviceDesc, srv)
-}
-
-func _SearchTuningService_TrainCustomModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TrainCustomModelRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SearchTuningServiceServer).TrainCustomModel(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1beta.SearchTuningService/TrainCustomModel",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SearchTuningServiceServer).TrainCustomModel(ctx, req.(*TrainCustomModelRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _SearchTuningService_ListCustomModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListCustomModelsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SearchTuningServiceServer).ListCustomModels(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1beta.SearchTuningService/ListCustomModels",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SearchTuningServiceServer).ListCustomModels(ctx, req.(*ListCustomModelsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _SearchTuningService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1beta.SearchTuningService",
-	HandlerType: (*SearchTuningServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "TrainCustomModel",
-			Handler:    _SearchTuningService_TrainCustomModel_Handler,
-		},
-		{
-			MethodName: "ListCustomModels",
-			Handler:    _SearchTuningService_ListCustomModels_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/discoveryengine/v1beta/search_tuning_service.proto",
 }

@@ -21,12 +21,8 @@
 package accountspb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -603,124 +599,4 @@ func file_google_shopping_merchant_accounts_v1beta_termsofserviceagreementstate_
 	file_google_shopping_merchant_accounts_v1beta_termsofserviceagreementstate_proto_rawDesc = nil
 	file_google_shopping_merchant_accounts_v1beta_termsofserviceagreementstate_proto_goTypes = nil
 	file_google_shopping_merchant_accounts_v1beta_termsofserviceagreementstate_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// TermsOfServiceAgreementStateServiceClient is the client API for TermsOfServiceAgreementStateService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type TermsOfServiceAgreementStateServiceClient interface {
-	// Returns the state of a terms of service agreement.
-	GetTermsOfServiceAgreementState(ctx context.Context, in *GetTermsOfServiceAgreementStateRequest, opts ...grpc.CallOption) (*TermsOfServiceAgreementState, error)
-	// Retrieves the state of the agreement for the application terms of service.
-	RetrieveForApplicationTermsOfServiceAgreementState(ctx context.Context, in *RetrieveForApplicationTermsOfServiceAgreementStateRequest, opts ...grpc.CallOption) (*TermsOfServiceAgreementState, error)
-}
-
-type termsOfServiceAgreementStateServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewTermsOfServiceAgreementStateServiceClient(cc grpc.ClientConnInterface) TermsOfServiceAgreementStateServiceClient {
-	return &termsOfServiceAgreementStateServiceClient{cc}
-}
-
-func (c *termsOfServiceAgreementStateServiceClient) GetTermsOfServiceAgreementState(ctx context.Context, in *GetTermsOfServiceAgreementStateRequest, opts ...grpc.CallOption) (*TermsOfServiceAgreementState, error) {
-	out := new(TermsOfServiceAgreementState)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService/GetTermsOfServiceAgreementState", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *termsOfServiceAgreementStateServiceClient) RetrieveForApplicationTermsOfServiceAgreementState(ctx context.Context, in *RetrieveForApplicationTermsOfServiceAgreementStateRequest, opts ...grpc.CallOption) (*TermsOfServiceAgreementState, error) {
-	out := new(TermsOfServiceAgreementState)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService/RetrieveForApplicationTermsOfServiceAgreementState", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// TermsOfServiceAgreementStateServiceServer is the server API for TermsOfServiceAgreementStateService service.
-type TermsOfServiceAgreementStateServiceServer interface {
-	// Returns the state of a terms of service agreement.
-	GetTermsOfServiceAgreementState(context.Context, *GetTermsOfServiceAgreementStateRequest) (*TermsOfServiceAgreementState, error)
-	// Retrieves the state of the agreement for the application terms of service.
-	RetrieveForApplicationTermsOfServiceAgreementState(context.Context, *RetrieveForApplicationTermsOfServiceAgreementStateRequest) (*TermsOfServiceAgreementState, error)
-}
-
-// UnimplementedTermsOfServiceAgreementStateServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedTermsOfServiceAgreementStateServiceServer struct {
-}
-
-func (*UnimplementedTermsOfServiceAgreementStateServiceServer) GetTermsOfServiceAgreementState(context.Context, *GetTermsOfServiceAgreementStateRequest) (*TermsOfServiceAgreementState, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTermsOfServiceAgreementState not implemented")
-}
-func (*UnimplementedTermsOfServiceAgreementStateServiceServer) RetrieveForApplicationTermsOfServiceAgreementState(context.Context, *RetrieveForApplicationTermsOfServiceAgreementStateRequest) (*TermsOfServiceAgreementState, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RetrieveForApplicationTermsOfServiceAgreementState not implemented")
-}
-
-func RegisterTermsOfServiceAgreementStateServiceServer(s *grpc.Server, srv TermsOfServiceAgreementStateServiceServer) {
-	s.RegisterService(&_TermsOfServiceAgreementStateService_serviceDesc, srv)
-}
-
-func _TermsOfServiceAgreementStateService_GetTermsOfServiceAgreementState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTermsOfServiceAgreementStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TermsOfServiceAgreementStateServiceServer).GetTermsOfServiceAgreementState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService/GetTermsOfServiceAgreementState",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TermsOfServiceAgreementStateServiceServer).GetTermsOfServiceAgreementState(ctx, req.(*GetTermsOfServiceAgreementStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TermsOfServiceAgreementStateService_RetrieveForApplicationTermsOfServiceAgreementState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RetrieveForApplicationTermsOfServiceAgreementStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TermsOfServiceAgreementStateServiceServer).RetrieveForApplicationTermsOfServiceAgreementState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService/RetrieveForApplicationTermsOfServiceAgreementState",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TermsOfServiceAgreementStateServiceServer).RetrieveForApplicationTermsOfServiceAgreementState(ctx, req.(*RetrieveForApplicationTermsOfServiceAgreementStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _TermsOfServiceAgreementStateService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService",
-	HandlerType: (*TermsOfServiceAgreementStateServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetTermsOfServiceAgreementState",
-			Handler:    _TermsOfServiceAgreementStateService_GetTermsOfServiceAgreementState_Handler,
-		},
-		{
-			MethodName: "RetrieveForApplicationTermsOfServiceAgreementState",
-			Handler:    _TermsOfServiceAgreementStateService_RetrieveForApplicationTermsOfServiceAgreementState_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/accounts/v1beta/termsofserviceagreementstate.proto",
 }

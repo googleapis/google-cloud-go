@@ -21,13 +21,9 @@
 package accountspb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	phone_number "google.golang.org/genproto/googleapis/type/phone_number"
 	postaladdress "google.golang.org/genproto/googleapis/type/postaladdress"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -450,126 +446,4 @@ func file_google_shopping_merchant_accounts_v1beta_businessinfo_proto_init() {
 	file_google_shopping_merchant_accounts_v1beta_businessinfo_proto_rawDesc = nil
 	file_google_shopping_merchant_accounts_v1beta_businessinfo_proto_goTypes = nil
 	file_google_shopping_merchant_accounts_v1beta_businessinfo_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// BusinessInfoServiceClient is the client API for BusinessInfoService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type BusinessInfoServiceClient interface {
-	// Retrieves the business info of an account.
-	GetBusinessInfo(ctx context.Context, in *GetBusinessInfoRequest, opts ...grpc.CallOption) (*BusinessInfo, error)
-	// Updates the business info of an account. Executing this method requires
-	// admin access.
-	UpdateBusinessInfo(ctx context.Context, in *UpdateBusinessInfoRequest, opts ...grpc.CallOption) (*BusinessInfo, error)
-}
-
-type businessInfoServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewBusinessInfoServiceClient(cc grpc.ClientConnInterface) BusinessInfoServiceClient {
-	return &businessInfoServiceClient{cc}
-}
-
-func (c *businessInfoServiceClient) GetBusinessInfo(ctx context.Context, in *GetBusinessInfoRequest, opts ...grpc.CallOption) (*BusinessInfo, error) {
-	out := new(BusinessInfo)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.accounts.v1beta.BusinessInfoService/GetBusinessInfo", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *businessInfoServiceClient) UpdateBusinessInfo(ctx context.Context, in *UpdateBusinessInfoRequest, opts ...grpc.CallOption) (*BusinessInfo, error) {
-	out := new(BusinessInfo)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.accounts.v1beta.BusinessInfoService/UpdateBusinessInfo", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// BusinessInfoServiceServer is the server API for BusinessInfoService service.
-type BusinessInfoServiceServer interface {
-	// Retrieves the business info of an account.
-	GetBusinessInfo(context.Context, *GetBusinessInfoRequest) (*BusinessInfo, error)
-	// Updates the business info of an account. Executing this method requires
-	// admin access.
-	UpdateBusinessInfo(context.Context, *UpdateBusinessInfoRequest) (*BusinessInfo, error)
-}
-
-// UnimplementedBusinessInfoServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedBusinessInfoServiceServer struct {
-}
-
-func (*UnimplementedBusinessInfoServiceServer) GetBusinessInfo(context.Context, *GetBusinessInfoRequest) (*BusinessInfo, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBusinessInfo not implemented")
-}
-func (*UnimplementedBusinessInfoServiceServer) UpdateBusinessInfo(context.Context, *UpdateBusinessInfoRequest) (*BusinessInfo, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateBusinessInfo not implemented")
-}
-
-func RegisterBusinessInfoServiceServer(s *grpc.Server, srv BusinessInfoServiceServer) {
-	s.RegisterService(&_BusinessInfoService_serviceDesc, srv)
-}
-
-func _BusinessInfoService_GetBusinessInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetBusinessInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BusinessInfoServiceServer).GetBusinessInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.accounts.v1beta.BusinessInfoService/GetBusinessInfo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BusinessInfoServiceServer).GetBusinessInfo(ctx, req.(*GetBusinessInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _BusinessInfoService_UpdateBusinessInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateBusinessInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BusinessInfoServiceServer).UpdateBusinessInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.accounts.v1beta.BusinessInfoService/UpdateBusinessInfo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BusinessInfoServiceServer).UpdateBusinessInfo(ctx, req.(*UpdateBusinessInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _BusinessInfoService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.accounts.v1beta.BusinessInfoService",
-	HandlerType: (*BusinessInfoServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetBusinessInfo",
-			Handler:    _BusinessInfoService_GetBusinessInfo_Handler,
-		},
-		{
-			MethodName: "UpdateBusinessInfo",
-			Handler:    _BusinessInfoService_UpdateBusinessInfo_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/accounts/v1beta/businessinfo.proto",
 }
