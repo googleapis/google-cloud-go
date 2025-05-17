@@ -21,11 +21,7 @@
 package lfppb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -856,86 +852,4 @@ func file_google_shopping_merchant_lfp_v1beta_lfpmerchantstate_proto_init() {
 	file_google_shopping_merchant_lfp_v1beta_lfpmerchantstate_proto_rawDesc = nil
 	file_google_shopping_merchant_lfp_v1beta_lfpmerchantstate_proto_goTypes = nil
 	file_google_shopping_merchant_lfp_v1beta_lfpmerchantstate_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// LfpMerchantStateServiceClient is the client API for LfpMerchantStateService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type LfpMerchantStateServiceClient interface {
-	// Gets the LFP state of a merchant
-	GetLfpMerchantState(ctx context.Context, in *GetLfpMerchantStateRequest, opts ...grpc.CallOption) (*LfpMerchantState, error)
-}
-
-type lfpMerchantStateServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewLfpMerchantStateServiceClient(cc grpc.ClientConnInterface) LfpMerchantStateServiceClient {
-	return &lfpMerchantStateServiceClient{cc}
-}
-
-func (c *lfpMerchantStateServiceClient) GetLfpMerchantState(ctx context.Context, in *GetLfpMerchantStateRequest, opts ...grpc.CallOption) (*LfpMerchantState, error) {
-	out := new(LfpMerchantState)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.lfp.v1beta.LfpMerchantStateService/GetLfpMerchantState", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// LfpMerchantStateServiceServer is the server API for LfpMerchantStateService service.
-type LfpMerchantStateServiceServer interface {
-	// Gets the LFP state of a merchant
-	GetLfpMerchantState(context.Context, *GetLfpMerchantStateRequest) (*LfpMerchantState, error)
-}
-
-// UnimplementedLfpMerchantStateServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedLfpMerchantStateServiceServer struct {
-}
-
-func (*UnimplementedLfpMerchantStateServiceServer) GetLfpMerchantState(context.Context, *GetLfpMerchantStateRequest) (*LfpMerchantState, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLfpMerchantState not implemented")
-}
-
-func RegisterLfpMerchantStateServiceServer(s *grpc.Server, srv LfpMerchantStateServiceServer) {
-	s.RegisterService(&_LfpMerchantStateService_serviceDesc, srv)
-}
-
-func _LfpMerchantStateService_GetLfpMerchantState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetLfpMerchantStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LfpMerchantStateServiceServer).GetLfpMerchantState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.lfp.v1beta.LfpMerchantStateService/GetLfpMerchantState",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LfpMerchantStateServiceServer).GetLfpMerchantState(ctx, req.(*GetLfpMerchantStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _LfpMerchantStateService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.lfp.v1beta.LfpMerchantStateService",
-	HandlerType: (*LfpMerchantStateServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetLfpMerchantState",
-			Handler:    _LfpMerchantStateService_GetLfpMerchantState_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/lfp/v1beta/lfpmerchantstate.proto",
 }

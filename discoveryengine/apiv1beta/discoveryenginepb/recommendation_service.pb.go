@@ -21,11 +21,7 @@
 package discoveryenginepb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -620,86 +616,4 @@ func file_google_cloud_discoveryengine_v1beta_recommendation_service_proto_init(
 	file_google_cloud_discoveryengine_v1beta_recommendation_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1beta_recommendation_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1beta_recommendation_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// RecommendationServiceClient is the client API for RecommendationService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type RecommendationServiceClient interface {
-	// Makes a recommendation, which requires a contextual user event.
-	Recommend(ctx context.Context, in *RecommendRequest, opts ...grpc.CallOption) (*RecommendResponse, error)
-}
-
-type recommendationServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewRecommendationServiceClient(cc grpc.ClientConnInterface) RecommendationServiceClient {
-	return &recommendationServiceClient{cc}
-}
-
-func (c *recommendationServiceClient) Recommend(ctx context.Context, in *RecommendRequest, opts ...grpc.CallOption) (*RecommendResponse, error) {
-	out := new(RecommendResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1beta.RecommendationService/Recommend", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// RecommendationServiceServer is the server API for RecommendationService service.
-type RecommendationServiceServer interface {
-	// Makes a recommendation, which requires a contextual user event.
-	Recommend(context.Context, *RecommendRequest) (*RecommendResponse, error)
-}
-
-// UnimplementedRecommendationServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedRecommendationServiceServer struct {
-}
-
-func (*UnimplementedRecommendationServiceServer) Recommend(context.Context, *RecommendRequest) (*RecommendResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Recommend not implemented")
-}
-
-func RegisterRecommendationServiceServer(s *grpc.Server, srv RecommendationServiceServer) {
-	s.RegisterService(&_RecommendationService_serviceDesc, srv)
-}
-
-func _RecommendationService_Recommend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RecommendRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RecommendationServiceServer).Recommend(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1beta.RecommendationService/Recommend",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceServer).Recommend(ctx, req.(*RecommendRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _RecommendationService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1beta.RecommendationService",
-	HandlerType: (*RecommendationServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Recommend",
-			Handler:    _RecommendationService_Recommend_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/discoveryengine/v1beta/recommendation_service.proto",
 }

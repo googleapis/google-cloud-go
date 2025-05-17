@@ -22,11 +22,7 @@ package lfppb
 
 import (
 	typepb "cloud.google.com/go/shopping/type/typepb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -461,90 +457,4 @@ func file_google_shopping_merchant_lfp_v1beta_lfpinventory_proto_init() {
 	file_google_shopping_merchant_lfp_v1beta_lfpinventory_proto_rawDesc = nil
 	file_google_shopping_merchant_lfp_v1beta_lfpinventory_proto_goTypes = nil
 	file_google_shopping_merchant_lfp_v1beta_lfpinventory_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// LfpInventoryServiceClient is the client API for LfpInventoryService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type LfpInventoryServiceClient interface {
-	// Inserts a `LfpInventory` resource for the given target merchant account. If
-	// the resource already exists, it will be replaced. The inventory
-	// automatically expires after 30 days.
-	InsertLfpInventory(ctx context.Context, in *InsertLfpInventoryRequest, opts ...grpc.CallOption) (*LfpInventory, error)
-}
-
-type lfpInventoryServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewLfpInventoryServiceClient(cc grpc.ClientConnInterface) LfpInventoryServiceClient {
-	return &lfpInventoryServiceClient{cc}
-}
-
-func (c *lfpInventoryServiceClient) InsertLfpInventory(ctx context.Context, in *InsertLfpInventoryRequest, opts ...grpc.CallOption) (*LfpInventory, error) {
-	out := new(LfpInventory)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.lfp.v1beta.LfpInventoryService/InsertLfpInventory", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// LfpInventoryServiceServer is the server API for LfpInventoryService service.
-type LfpInventoryServiceServer interface {
-	// Inserts a `LfpInventory` resource for the given target merchant account. If
-	// the resource already exists, it will be replaced. The inventory
-	// automatically expires after 30 days.
-	InsertLfpInventory(context.Context, *InsertLfpInventoryRequest) (*LfpInventory, error)
-}
-
-// UnimplementedLfpInventoryServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedLfpInventoryServiceServer struct {
-}
-
-func (*UnimplementedLfpInventoryServiceServer) InsertLfpInventory(context.Context, *InsertLfpInventoryRequest) (*LfpInventory, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method InsertLfpInventory not implemented")
-}
-
-func RegisterLfpInventoryServiceServer(s *grpc.Server, srv LfpInventoryServiceServer) {
-	s.RegisterService(&_LfpInventoryService_serviceDesc, srv)
-}
-
-func _LfpInventoryService_InsertLfpInventory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InsertLfpInventoryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LfpInventoryServiceServer).InsertLfpInventory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.lfp.v1beta.LfpInventoryService/InsertLfpInventory",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LfpInventoryServiceServer).InsertLfpInventory(ctx, req.(*InsertLfpInventoryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _LfpInventoryService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.lfp.v1beta.LfpInventoryService",
-	HandlerType: (*LfpInventoryServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "InsertLfpInventory",
-			Handler:    _LfpInventoryService_InsertLfpInventory_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/lfp/v1beta/lfpinventory.proto",
 }

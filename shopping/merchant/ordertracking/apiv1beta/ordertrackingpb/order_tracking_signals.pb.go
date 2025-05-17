@@ -22,12 +22,8 @@ package ordertrackingpb
 
 import (
 	typepb "cloud.google.com/go/shopping/type/typepb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	datetime "google.golang.org/genproto/googleapis/type/datetime"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -924,86 +920,4 @@ func file_google_shopping_merchant_ordertracking_v1beta_order_tracking_signals_p
 	file_google_shopping_merchant_ordertracking_v1beta_order_tracking_signals_proto_rawDesc = nil
 	file_google_shopping_merchant_ordertracking_v1beta_order_tracking_signals_proto_goTypes = nil
 	file_google_shopping_merchant_ordertracking_v1beta_order_tracking_signals_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// OrderTrackingSignalsServiceClient is the client API for OrderTrackingSignalsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type OrderTrackingSignalsServiceClient interface {
-	// Creates new order tracking signal.
-	CreateOrderTrackingSignal(ctx context.Context, in *CreateOrderTrackingSignalRequest, opts ...grpc.CallOption) (*OrderTrackingSignal, error)
-}
-
-type orderTrackingSignalsServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewOrderTrackingSignalsServiceClient(cc grpc.ClientConnInterface) OrderTrackingSignalsServiceClient {
-	return &orderTrackingSignalsServiceClient{cc}
-}
-
-func (c *orderTrackingSignalsServiceClient) CreateOrderTrackingSignal(ctx context.Context, in *CreateOrderTrackingSignalRequest, opts ...grpc.CallOption) (*OrderTrackingSignal, error) {
-	out := new(OrderTrackingSignal)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsService/CreateOrderTrackingSignal", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// OrderTrackingSignalsServiceServer is the server API for OrderTrackingSignalsService service.
-type OrderTrackingSignalsServiceServer interface {
-	// Creates new order tracking signal.
-	CreateOrderTrackingSignal(context.Context, *CreateOrderTrackingSignalRequest) (*OrderTrackingSignal, error)
-}
-
-// UnimplementedOrderTrackingSignalsServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedOrderTrackingSignalsServiceServer struct {
-}
-
-func (*UnimplementedOrderTrackingSignalsServiceServer) CreateOrderTrackingSignal(context.Context, *CreateOrderTrackingSignalRequest) (*OrderTrackingSignal, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateOrderTrackingSignal not implemented")
-}
-
-func RegisterOrderTrackingSignalsServiceServer(s *grpc.Server, srv OrderTrackingSignalsServiceServer) {
-	s.RegisterService(&_OrderTrackingSignalsService_serviceDesc, srv)
-}
-
-func _OrderTrackingSignalsService_CreateOrderTrackingSignal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateOrderTrackingSignalRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OrderTrackingSignalsServiceServer).CreateOrderTrackingSignal(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsService/CreateOrderTrackingSignal",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderTrackingSignalsServiceServer).CreateOrderTrackingSignal(ctx, req.(*CreateOrderTrackingSignalRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _OrderTrackingSignalsService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsService",
-	HandlerType: (*OrderTrackingSignalsServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreateOrderTrackingSignal",
-			Handler:    _OrderTrackingSignalsService_CreateOrderTrackingSignal_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/ordertracking/v1beta/order_tracking_signals.proto",
 }
