@@ -7070,6 +7070,7 @@ type testHelper struct {
 
 func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttrs) {
 	h.t.Helper()
+	b = b.Retryer(WithMaxAttempts(5))
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
 		h.t.Fatalf("BucketHandle(%q).Create: %v", b.BucketName(), err)
 	}
