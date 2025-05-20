@@ -350,6 +350,9 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // ListRepositories lists Repositories in a given project and location.
+//
+// Note: This method can return repositories not shown in the Dataform
+// UI (at https://console.cloud.google.com/bigquery/dataform).
 func (c *Client) ListRepositories(ctx context.Context, req *dataformpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	return c.internalClient.ListRepositories(ctx, req, opts...)
 }
@@ -367,12 +370,9 @@ func (c *Client) CreateRepository(ctx context.Context, req *dataformpb.CreateRep
 // UpdateRepository updates a single Repository.
 //
 // Note: This method does not fully implement
-// AIP-134 (at https://google.aip.dev/134); in particular:
-//
-//	The wildcard entry (*) is treated as a bad request
-//
-//	When the field_mask is omitted, instead of only updating the set
-//	fields, the request is treated as a full update on all modifiable fields
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *Client) UpdateRepository(ctx context.Context, req *dataformpb.UpdateRepositoryRequest, opts ...gax.CallOption) (*dataformpb.Repository, error) {
 	return c.internalClient.UpdateRepository(ctx, req, opts...)
 }
@@ -540,12 +540,9 @@ func (c *Client) CreateReleaseConfig(ctx context.Context, req *dataformpb.Create
 // UpdateReleaseConfig updates a single ReleaseConfig.
 //
 // Note: This method does not fully implement
-// AIP-134 (at https://google.aip.dev/134); in particular:
-//
-//	The wildcard entry (*) is treated as a bad request
-//
-//	When the field_mask is omitted, instead of only updating the set
-//	fields, the request is treated as a full update on all modifiable fields
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *Client) UpdateReleaseConfig(ctx context.Context, req *dataformpb.UpdateReleaseConfigRequest, opts ...gax.CallOption) (*dataformpb.ReleaseConfig, error) {
 	return c.internalClient.UpdateReleaseConfig(ctx, req, opts...)
 }
@@ -593,12 +590,9 @@ func (c *Client) CreateWorkflowConfig(ctx context.Context, req *dataformpb.Creat
 // UpdateWorkflowConfig updates a single WorkflowConfig.
 //
 // Note: This method does not fully implement
-// AIP-134 (at https://google.aip.dev/134); in particular:
-//
-//	The wildcard entry (*) is treated as a bad request
-//
-//	When the field_mask is omitted, instead of only updating the set
-//	fields, the request is treated as a full update on all modifiable fields
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *Client) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.UpdateWorkflowConfigRequest, opts ...gax.CallOption) (*dataformpb.WorkflowConfig, error) {
 	return c.internalClient.UpdateWorkflowConfig(ctx, req, opts...)
 }
@@ -646,12 +640,9 @@ func (c *Client) GetConfig(ctx context.Context, req *dataformpb.GetConfigRequest
 // UpdateConfig update default config for a given project and location.
 //
 // Note: This method does not fully implement
-// AIP-134 (at https://google.aip.dev/134); in particular:
-//
-//	The wildcard entry (*) is treated as a bad request
-//
-//	When the field_mask is omitted, instead of only updating the set
-//	fields, the request is treated as a full update on all modifiable fields
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *Client) UpdateConfig(ctx context.Context, req *dataformpb.UpdateConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
 	return c.internalClient.UpdateConfig(ctx, req, opts...)
 }
@@ -2260,6 +2251,9 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 }
 
 // ListRepositories lists Repositories in a given project and location.
+//
+// Note: This method can return repositories not shown in the Dataform
+// UI (at https://console.cloud.google.com/bigquery/dataform).
 func (c *restClient) ListRepositories(ctx context.Context, req *dataformpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
 	req = proto.Clone(req).(*dataformpb.ListRepositoriesRequest)
@@ -2454,12 +2448,9 @@ func (c *restClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 // UpdateRepository updates a single Repository.
 //
 // Note: This method does not fully implement
-// AIP-134 (at https://google.aip.dev/134); in particular:
-//
-//	The wildcard entry (*) is treated as a bad request
-//
-//	When the field_mask is omitted, instead of only updating the set
-//	fields, the request is treated as a full update on all modifiable fields
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *restClient) UpdateRepository(ctx context.Context, req *dataformpb.UpdateRepositoryRequest, opts ...gax.CallOption) (*dataformpb.Repository, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRepository()
@@ -4340,12 +4331,9 @@ func (c *restClient) CreateReleaseConfig(ctx context.Context, req *dataformpb.Cr
 // UpdateReleaseConfig updates a single ReleaseConfig.
 //
 // Note: This method does not fully implement
-// AIP-134 (at https://google.aip.dev/134); in particular:
-//
-//	The wildcard entry (*) is treated as a bad request
-//
-//	When the field_mask is omitted, instead of only updating the set
-//	fields, the request is treated as a full update on all modifiable fields
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *restClient) UpdateReleaseConfig(ctx context.Context, req *dataformpb.UpdateReleaseConfigRequest, opts ...gax.CallOption) (*dataformpb.ReleaseConfig, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetReleaseConfig()
@@ -4905,12 +4893,9 @@ func (c *restClient) CreateWorkflowConfig(ctx context.Context, req *dataformpb.C
 // UpdateWorkflowConfig updates a single WorkflowConfig.
 //
 // Note: This method does not fully implement
-// AIP-134 (at https://google.aip.dev/134); in particular:
-//
-//	The wildcard entry (*) is treated as a bad request
-//
-//	When the field_mask is omitted, instead of only updating the set
-//	fields, the request is treated as a full update on all modifiable fields
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *restClient) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.UpdateWorkflowConfigRequest, opts ...gax.CallOption) (*dataformpb.WorkflowConfig, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetWorkflowConfig()
@@ -5422,12 +5407,9 @@ func (c *restClient) GetConfig(ctx context.Context, req *dataformpb.GetConfigReq
 // UpdateConfig update default config for a given project and location.
 //
 // Note: This method does not fully implement
-// AIP-134 (at https://google.aip.dev/134); in particular:
-//
-//	The wildcard entry (*) is treated as a bad request
-//
-//	When the field_mask is omitted, instead of only updating the set
-//	fields, the request is treated as a full update on all modifiable fields
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *restClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConfig()
