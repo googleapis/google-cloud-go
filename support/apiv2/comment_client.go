@@ -145,13 +145,26 @@ func (c *CommentClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListComments retrieve all Comments associated with the Case object.
+// ListComments list all the comments associated with a case.
+//
+// EXAMPLES:
+//
+// cURL:
+//
+// Python:
 func (c *CommentClient) ListComments(ctx context.Context, req *supportpb.ListCommentsRequest, opts ...gax.CallOption) *CommentIterator {
 	return c.internalClient.ListComments(ctx, req, opts...)
 }
 
-// CreateComment add a new comment to the specified Case.
-// The comment object must have the following fields set: body.
+// CreateComment add a new comment to a case.
+//
+// The comment must have the following fields set: body.
+//
+// EXAMPLES:
+//
+// cURL:
+//
+// Python:
 func (c *CommentClient) CreateComment(ctx context.Context, req *supportpb.CreateCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
 	return c.internalClient.CreateComment(ctx, req, opts...)
 }
@@ -373,7 +386,13 @@ func (c *commentGRPCClient) CreateComment(ctx context.Context, req *supportpb.Cr
 	return resp, nil
 }
 
-// ListComments retrieve all Comments associated with the Case object.
+// ListComments list all the comments associated with a case.
+//
+// EXAMPLES:
+//
+// cURL:
+//
+// Python:
 func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.ListCommentsRequest, opts ...gax.CallOption) *CommentIterator {
 	it := &CommentIterator{}
 	req = proto.Clone(req).(*supportpb.ListCommentsRequest)
@@ -451,8 +470,15 @@ func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.Lis
 	return it
 }
 
-// CreateComment add a new comment to the specified Case.
-// The comment object must have the following fields set: body.
+// CreateComment add a new comment to a case.
+//
+// The comment must have the following fields set: body.
+//
+// EXAMPLES:
+//
+// cURL:
+//
+// Python:
 func (c *commentRESTClient) CreateComment(ctx context.Context, req *supportpb.CreateCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetComment()

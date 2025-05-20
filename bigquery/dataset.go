@@ -338,6 +338,10 @@ func (d *Dataset) MetadataWithOptions(ctx context.Context, opts ...DatasetOption
 	if cOpt.accessPolicyVersion != nil {
 		call.AccessPolicyVersion(int64(optional.ToInt(cOpt.accessPolicyVersion)))
 	}
+	if cOpt.datasetView != nil {
+		call.DatasetView(optional.ToString(cOpt.datasetView))
+	}
+
 	var ds *bq.Dataset
 	if err := runWithRetry(ctx, func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.datasets.get")
@@ -353,6 +357,8 @@ func (d *Dataset) MetadataWithOptions(ctx context.Context, opts ...DatasetOption
 // dsCallOption provides a general option holder for dataset RPCs
 type dsCallOption struct {
 	accessPolicyVersion optional.Int
+	datasetView         optional.String
+	updateMode          optional.String
 }
 
 // DatasetOption provides an option type for customizing requests against the Dataset
@@ -377,6 +383,62 @@ type DatasetOption func(*dsCallOption)
 func WithAccessPolicyVersion(apv int) DatasetOption {
 	return func(o *dsCallOption) {
 		o.accessPolicyVersion = apv
+	}
+}
+
+// DatasetView specifies which details about a dataset are desired.
+type DatasetView string
+
+const (
+	// DatasetMetadataView populates metadata information for the dataset,
+	// such as friendlyName, description, labels, etc.
+	DatasetMetadataView DatasetView = "METADATA"
+
+	// DatasetACLView populates information for the dataset, which defines
+	// dataset access for one or more entities.
+	DatasetACLView DatasetView = "ACL"
+
+	// DatasetFullView populates both dataset metadata and ACL information.
+	DatasetFullView DatasetView = "FULL"
+
+	// UnspecifiedDatasetView is the default value, which will be treated as DatasetFullView
+	UnspecifiedDatasetView DatasetView = "DATASET_VIEW_UNSPECIFIED"
+)
+
+// WithDatasetView specifies the view that determines which dataset information
+// is returned. By default, metadata and ACL information are returned.
+func WithDatasetView(view DatasetView) DatasetOption {
+	return func(o *dsCallOption) {
+		o.datasetView = string(view)
+	}
+}
+
+// DatasetUpdateMode specifies which fields of a dataset are going to be affected
+// by update/patch operations.
+type DatasetUpdateMode string
+
+const (
+	// DatasetMetadataUpdateMode targets metadata information for the dataset,
+	// such as friendlyName, description, labels, etc.
+	DatasetMetadataUpdateMode DatasetUpdateMode = "UPDATE_METADATA"
+
+	// DatasetACLUpdateMode targets ACL information for the dataset,
+	// which defines dataset access for one or more entities.
+	DatasetACLUpdateMode DatasetUpdateMode = "UPDATE_ACL"
+
+	// DatasetFullUpdateMode targets both dataset metadata and ACL
+	// information on update operations.
+	DatasetFullUpdateMode DatasetUpdateMode = "UPDATE_FULL"
+
+	// UnspecifiedDatasetUpdateMode is the default value, which will be treated as DatasetFullUpdateMode
+	UnspecifiedDatasetUpdateMode DatasetUpdateMode = "UPDATE_MODE_UNSPECIFIED"
+)
+
+// WithUpdateMode specifies the fields of dataset that the update/patch
+// operation is targeting. By default, both metadata and ACL fields are updated.
+func WithUpdateMode(mode DatasetUpdateMode) DatasetOption {
+	return func(o *dsCallOption) {
+		o.updateMode = string(mode)
 	}
 }
 
@@ -450,6 +512,10 @@ func (d *Dataset) UpdateWithOptions(ctx context.Context, dm DatasetMetadataToUpd
 	if cOpt.accessPolicyVersion != nil {
 		call.AccessPolicyVersion(int64(optional.ToInt(cOpt.accessPolicyVersion)))
 	}
+	if cOpt.updateMode != nil {
+		call.UpdateMode(optional.ToString(cOpt.updateMode))
+	}
+
 	var ds2 *bq.Dataset
 	if err := runWithRetry(ctx, func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.datasets.patch")

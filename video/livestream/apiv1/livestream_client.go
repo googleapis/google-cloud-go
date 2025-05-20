@@ -47,38 +47,43 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateChannel   []gax.CallOption
-	ListChannels    []gax.CallOption
-	GetChannel      []gax.CallOption
-	DeleteChannel   []gax.CallOption
-	UpdateChannel   []gax.CallOption
-	StartChannel    []gax.CallOption
-	StopChannel     []gax.CallOption
-	CreateInput     []gax.CallOption
-	ListInputs      []gax.CallOption
-	GetInput        []gax.CallOption
-	DeleteInput     []gax.CallOption
-	UpdateInput     []gax.CallOption
-	CreateEvent     []gax.CallOption
-	ListEvents      []gax.CallOption
-	GetEvent        []gax.CallOption
-	DeleteEvent     []gax.CallOption
-	ListClips       []gax.CallOption
-	GetClip         []gax.CallOption
-	CreateClip      []gax.CallOption
-	DeleteClip      []gax.CallOption
-	CreateAsset     []gax.CallOption
-	DeleteAsset     []gax.CallOption
-	GetAsset        []gax.CallOption
-	ListAssets      []gax.CallOption
-	GetPool         []gax.CallOption
-	UpdatePool      []gax.CallOption
-	GetLocation     []gax.CallOption
-	ListLocations   []gax.CallOption
-	CancelOperation []gax.CallOption
-	DeleteOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	CreateChannel    []gax.CallOption
+	ListChannels     []gax.CallOption
+	GetChannel       []gax.CallOption
+	DeleteChannel    []gax.CallOption
+	UpdateChannel    []gax.CallOption
+	StartChannel     []gax.CallOption
+	StopChannel      []gax.CallOption
+	CreateInput      []gax.CallOption
+	ListInputs       []gax.CallOption
+	GetInput         []gax.CallOption
+	DeleteInput      []gax.CallOption
+	UpdateInput      []gax.CallOption
+	CreateEvent      []gax.CallOption
+	ListEvents       []gax.CallOption
+	GetEvent         []gax.CallOption
+	DeleteEvent      []gax.CallOption
+	ListClips        []gax.CallOption
+	GetClip          []gax.CallOption
+	CreateClip       []gax.CallOption
+	DeleteClip       []gax.CallOption
+	CreateDvrSession []gax.CallOption
+	ListDvrSessions  []gax.CallOption
+	GetDvrSession    []gax.CallOption
+	DeleteDvrSession []gax.CallOption
+	UpdateDvrSession []gax.CallOption
+	CreateAsset      []gax.CallOption
+	DeleteAsset      []gax.CallOption
+	GetAsset         []gax.CallOption
+	ListAssets       []gax.CallOption
+	GetPool          []gax.CallOption
+	UpdatePool       []gax.CallOption
+	GetLocation      []gax.CallOption
+	ListLocations    []gax.CallOption
+	CancelOperation  []gax.CallOption
+	DeleteOperation  []gax.CallOption
+	GetOperation     []gax.CallOption
+	ListOperations   []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -200,15 +205,75 @@ func defaultCallOptions() *CallOptions {
 		DeleteEvent: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		ListClips:       []gax.CallOption{},
-		GetClip:         []gax.CallOption{},
-		CreateClip:      []gax.CallOption{},
-		DeleteClip:      []gax.CallOption{},
-		CreateAsset:     []gax.CallOption{},
-		DeleteAsset:     []gax.CallOption{},
-		GetAsset:        []gax.CallOption{},
-		ListAssets:      []gax.CallOption{},
-		GetPool:         []gax.CallOption{},
+		ListClips: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetClip: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateClip:       []gax.CallOption{},
+		DeleteClip:       []gax.CallOption{},
+		CreateDvrSession: []gax.CallOption{},
+		ListDvrSessions:  []gax.CallOption{},
+		GetDvrSession:    []gax.CallOption{},
+		DeleteDvrSession: []gax.CallOption{},
+		UpdateDvrSession: []gax.CallOption{},
+		CreateAsset:      []gax.CallOption{},
+		DeleteAsset:      []gax.CallOption{},
+		GetAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		UpdatePool:      []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
@@ -317,15 +382,70 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteEvent: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		ListClips:       []gax.CallOption{},
-		GetClip:         []gax.CallOption{},
-		CreateClip:      []gax.CallOption{},
-		DeleteClip:      []gax.CallOption{},
-		CreateAsset:     []gax.CallOption{},
-		DeleteAsset:     []gax.CallOption{},
-		GetAsset:        []gax.CallOption{},
-		ListAssets:      []gax.CallOption{},
-		GetPool:         []gax.CallOption{},
+		ListClips: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetClip: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateClip:       []gax.CallOption{},
+		DeleteClip:       []gax.CallOption{},
+		CreateDvrSession: []gax.CallOption{},
+		ListDvrSessions:  []gax.CallOption{},
+		GetDvrSession:    []gax.CallOption{},
+		DeleteDvrSession: []gax.CallOption{},
+		UpdateDvrSession: []gax.CallOption{},
+		CreateAsset:      []gax.CallOption{},
+		DeleteAsset:      []gax.CallOption{},
+		GetAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		UpdatePool:      []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
@@ -371,6 +491,14 @@ type internalClient interface {
 	CreateClipOperation(name string) *CreateClipOperation
 	DeleteClip(context.Context, *livestreampb.DeleteClipRequest, ...gax.CallOption) (*DeleteClipOperation, error)
 	DeleteClipOperation(name string) *DeleteClipOperation
+	CreateDvrSession(context.Context, *livestreampb.CreateDvrSessionRequest, ...gax.CallOption) (*CreateDvrSessionOperation, error)
+	CreateDvrSessionOperation(name string) *CreateDvrSessionOperation
+	ListDvrSessions(context.Context, *livestreampb.ListDvrSessionsRequest, ...gax.CallOption) *DvrSessionIterator
+	GetDvrSession(context.Context, *livestreampb.GetDvrSessionRequest, ...gax.CallOption) (*livestreampb.DvrSession, error)
+	DeleteDvrSession(context.Context, *livestreampb.DeleteDvrSessionRequest, ...gax.CallOption) (*DeleteDvrSessionOperation, error)
+	DeleteDvrSessionOperation(name string) *DeleteDvrSessionOperation
+	UpdateDvrSession(context.Context, *livestreampb.UpdateDvrSessionRequest, ...gax.CallOption) (*UpdateDvrSessionOperation, error)
+	UpdateDvrSessionOperation(name string) *UpdateDvrSessionOperation
 	CreateAsset(context.Context, *livestreampb.CreateAssetRequest, ...gax.CallOption) (*CreateAssetOperation, error)
 	CreateAssetOperation(name string) *CreateAssetOperation
 	DeleteAsset(context.Context, *livestreampb.DeleteAssetRequest, ...gax.CallOption) (*DeleteAssetOperation, error)
@@ -585,7 +713,7 @@ func (c *Client) CreateClipOperation(name string) *CreateClipOperation {
 }
 
 // DeleteClip deletes the specified clip job resource. This method only deletes the clip
-// job and does not delete the VOD clip stored in the GCS.
+// job and does not delete the VOD clip stored in Cloud Storage.
 func (c *Client) DeleteClip(ctx context.Context, req *livestreampb.DeleteClipRequest, opts ...gax.CallOption) (*DeleteClipOperation, error) {
 	return c.internalClient.DeleteClip(ctx, req, opts...)
 }
@@ -594,6 +722,49 @@ func (c *Client) DeleteClip(ctx context.Context, req *livestreampb.DeleteClipReq
 // The name must be that of a previously created DeleteClipOperation, possibly from a different process.
 func (c *Client) DeleteClipOperation(name string) *DeleteClipOperation {
 	return c.internalClient.DeleteClipOperation(name)
+}
+
+// CreateDvrSession creates a DVR session with the provided unique ID in the specified channel.
+func (c *Client) CreateDvrSession(ctx context.Context, req *livestreampb.CreateDvrSessionRequest, opts ...gax.CallOption) (*CreateDvrSessionOperation, error) {
+	return c.internalClient.CreateDvrSession(ctx, req, opts...)
+}
+
+// CreateDvrSessionOperation returns a new CreateDvrSessionOperation from a given name.
+// The name must be that of a previously created CreateDvrSessionOperation, possibly from a different process.
+func (c *Client) CreateDvrSessionOperation(name string) *CreateDvrSessionOperation {
+	return c.internalClient.CreateDvrSessionOperation(name)
+}
+
+// ListDvrSessions returns a list of all DVR sessions in the specified channel.
+func (c *Client) ListDvrSessions(ctx context.Context, req *livestreampb.ListDvrSessionsRequest, opts ...gax.CallOption) *DvrSessionIterator {
+	return c.internalClient.ListDvrSessions(ctx, req, opts...)
+}
+
+// GetDvrSession returns the specified DVR session.
+func (c *Client) GetDvrSession(ctx context.Context, req *livestreampb.GetDvrSessionRequest, opts ...gax.CallOption) (*livestreampb.DvrSession, error) {
+	return c.internalClient.GetDvrSession(ctx, req, opts...)
+}
+
+// DeleteDvrSession deletes the specified DVR session.
+func (c *Client) DeleteDvrSession(ctx context.Context, req *livestreampb.DeleteDvrSessionRequest, opts ...gax.CallOption) (*DeleteDvrSessionOperation, error) {
+	return c.internalClient.DeleteDvrSession(ctx, req, opts...)
+}
+
+// DeleteDvrSessionOperation returns a new DeleteDvrSessionOperation from a given name.
+// The name must be that of a previously created DeleteDvrSessionOperation, possibly from a different process.
+func (c *Client) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOperation {
+	return c.internalClient.DeleteDvrSessionOperation(name)
+}
+
+// UpdateDvrSession updates the specified DVR session.
+func (c *Client) UpdateDvrSession(ctx context.Context, req *livestreampb.UpdateDvrSessionRequest, opts ...gax.CallOption) (*UpdateDvrSessionOperation, error) {
+	return c.internalClient.UpdateDvrSession(ctx, req, opts...)
+}
+
+// UpdateDvrSessionOperation returns a new UpdateDvrSessionOperation from a given name.
+// The name must be that of a previously created UpdateDvrSessionOperation, possibly from a different process.
+func (c *Client) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOperation {
+	return c.internalClient.UpdateDvrSessionOperation(name)
 }
 
 // CreateAsset creates a Asset with the provided unique ID in the specified
@@ -1357,6 +1528,130 @@ func (c *gRPCClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 		return nil, err
 	}
 	return &DeleteClipOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateDvrSession(ctx context.Context, req *livestreampb.CreateDvrSessionRequest, opts ...gax.CallOption) (*CreateDvrSessionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDvrSession[0:len((*c.CallOptions).CreateDvrSession):len((*c.CallOptions).CreateDvrSession)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateDvrSession, req, settings.GRPC, c.logger, "CreateDvrSession")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateDvrSessionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListDvrSessions(ctx context.Context, req *livestreampb.ListDvrSessionsRequest, opts ...gax.CallOption) *DvrSessionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDvrSessions[0:len((*c.CallOptions).ListDvrSessions):len((*c.CallOptions).ListDvrSessions)], opts...)
+	it := &DvrSessionIterator{}
+	req = proto.Clone(req).(*livestreampb.ListDvrSessionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.DvrSession, string, error) {
+		resp := &livestreampb.ListDvrSessionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDvrSessions, req, settings.GRPC, c.logger, "ListDvrSessions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDvrSessions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetDvrSession(ctx context.Context, req *livestreampb.GetDvrSessionRequest, opts ...gax.CallOption) (*livestreampb.DvrSession, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDvrSession[0:len((*c.CallOptions).GetDvrSession):len((*c.CallOptions).GetDvrSession)], opts...)
+	var resp *livestreampb.DvrSession
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetDvrSession, req, settings.GRPC, c.logger, "GetDvrSession")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteDvrSession(ctx context.Context, req *livestreampb.DeleteDvrSessionRequest, opts ...gax.CallOption) (*DeleteDvrSessionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDvrSession[0:len((*c.CallOptions).DeleteDvrSession):len((*c.CallOptions).DeleteDvrSession)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteDvrSession, req, settings.GRPC, c.logger, "DeleteDvrSession")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteDvrSessionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateDvrSession(ctx context.Context, req *livestreampb.UpdateDvrSessionRequest, opts ...gax.CallOption) (*UpdateDvrSessionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dvr_session.name", url.QueryEscape(req.GetDvrSession().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDvrSession[0:len((*c.CallOptions).UpdateDvrSession):len((*c.CallOptions).UpdateDvrSession)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateDvrSession, req, settings.GRPC, c.logger, "UpdateDvrSession")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDvrSessionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2863,7 +3158,7 @@ func (c *restClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 }
 
 // DeleteClip deletes the specified clip job resource. This method only deletes the clip
-// job and does not delete the VOD clip stored in the GCS.
+// job and does not delete the VOD clip stored in Cloud Storage.
 func (c *restClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteClipRequest, opts ...gax.CallOption) (*DeleteClipOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2914,6 +3209,330 @@ func (c *restClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteClipOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateDvrSession creates a DVR session with the provided unique ID in the specified channel.
+func (c *restClient) CreateDvrSession(ctx context.Context, req *livestreampb.CreateDvrSessionRequest, opts ...gax.CallOption) (*CreateDvrSessionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDvrSession()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/dvrSessions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("dvrSessionId", fmt.Sprintf("%v", req.GetDvrSessionId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDvrSession")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDvrSessionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDvrSessions returns a list of all DVR sessions in the specified channel.
+func (c *restClient) ListDvrSessions(ctx context.Context, req *livestreampb.ListDvrSessionsRequest, opts ...gax.CallOption) *DvrSessionIterator {
+	it := &DvrSessionIterator{}
+	req = proto.Clone(req).(*livestreampb.ListDvrSessionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.DvrSession, string, error) {
+		resp := &livestreampb.ListDvrSessionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/dvrSessions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDvrSessions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDvrSessions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDvrSession returns the specified DVR session.
+func (c *restClient) GetDvrSession(ctx context.Context, req *livestreampb.GetDvrSessionRequest, opts ...gax.CallOption) (*livestreampb.DvrSession, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDvrSession[0:len((*c.CallOptions).GetDvrSession):len((*c.CallOptions).GetDvrSession)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &livestreampb.DvrSession{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDvrSession")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteDvrSession deletes the specified DVR session.
+func (c *restClient) DeleteDvrSession(ctx context.Context, req *livestreampb.DeleteDvrSessionRequest, opts ...gax.CallOption) (*DeleteDvrSessionOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDvrSession")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDvrSessionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateDvrSession updates the specified DVR session.
+func (c *restClient) UpdateDvrSession(ctx context.Context, req *livestreampb.UpdateDvrSessionRequest, opts ...gax.CallOption) (*UpdateDvrSessionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDvrSession()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDvrSession().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dvr_session.name", url.QueryEscape(req.GetDvrSession().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDvrSession")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDvrSessionOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3686,6 +4305,24 @@ func (c *restClient) CreateClipOperation(name string) *CreateClipOperation {
 	}
 }
 
+// CreateDvrSessionOperation returns a new CreateDvrSessionOperation from a given name.
+// The name must be that of a previously created CreateDvrSessionOperation, possibly from a different process.
+func (c *gRPCClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOperation {
+	return &CreateDvrSessionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateDvrSessionOperation returns a new CreateDvrSessionOperation from a given name.
+// The name must be that of a previously created CreateDvrSessionOperation, possibly from a different process.
+func (c *restClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDvrSessionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateInputOperation returns a new CreateInputOperation from a given name.
 // The name must be that of a previously created CreateInputOperation, possibly from a different process.
 func (c *gRPCClient) CreateInputOperation(name string) *CreateInputOperation {
@@ -3758,6 +4395,24 @@ func (c *restClient) DeleteClipOperation(name string) *DeleteClipOperation {
 	}
 }
 
+// DeleteDvrSessionOperation returns a new DeleteDvrSessionOperation from a given name.
+// The name must be that of a previously created DeleteDvrSessionOperation, possibly from a different process.
+func (c *gRPCClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOperation {
+	return &DeleteDvrSessionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteDvrSessionOperation returns a new DeleteDvrSessionOperation from a given name.
+// The name must be that of a previously created DeleteDvrSessionOperation, possibly from a different process.
+func (c *restClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDvrSessionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteInputOperation returns a new DeleteInputOperation from a given name.
 // The name must be that of a previously created DeleteInputOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInputOperation(name string) *DeleteInputOperation {
@@ -3825,6 +4480,24 @@ func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateChannelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateDvrSessionOperation returns a new UpdateDvrSessionOperation from a given name.
+// The name must be that of a previously created UpdateDvrSessionOperation, possibly from a different process.
+func (c *gRPCClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOperation {
+	return &UpdateDvrSessionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDvrSessionOperation returns a new UpdateDvrSessionOperation from a given name.
+// The name must be that of a previously created UpdateDvrSessionOperation, possibly from a different process.
+func (c *restClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDvrSessionOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

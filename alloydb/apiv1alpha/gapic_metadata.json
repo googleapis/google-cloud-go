@@ -80,6 +80,11 @@
                 "ExecuteSql"
               ]
             },
+            "ExportCluster": {
+              "methods": [
+                "ExportCluster"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -123,6 +128,11 @@
             "GetUser": {
               "methods": [
                 "GetUser"
+              ]
+            },
+            "ImportCluster": {
+              "methods": [
+                "ImportCluster"
               ]
             },
             "InjectFault": {
@@ -290,6 +300,11 @@
                 "ExecuteSql"
               ]
             },
+            "ExportCluster": {
+              "methods": [
+                "ExportCluster"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -333,6 +348,11 @@
             "GetUser": {
               "methods": [
                 "GetUser"
+              ]
+            },
+            "ImportCluster": {
+              "methods": [
+                "ImportCluster"
               ]
             },
             "InjectFault": {
@@ -423,6 +443,90 @@
             "UpgradeCluster": {
               "methods": [
                 "UpgradeCluster"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AlloyDBCSQLAdmin": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AlloyDBCSQLAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RestoreFromCloudSQL": {
+              "methods": [
+                "RestoreFromCloudSQL"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AlloyDBCSQLAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RestoreFromCloudSQL": {
+              "methods": [
+                "RestoreFromCloudSQL"
               ]
             }
           }

@@ -52,6 +52,7 @@ type AlloyDBAdminCallOptions struct {
 	CreateCluster              []gax.CallOption
 	UpdateCluster              []gax.CallOption
 	ExportCluster              []gax.CallOption
+	ImportCluster              []gax.CallOption
 	UpgradeCluster             []gax.CallOption
 	DeleteCluster              []gax.CallOption
 	PromoteCluster             []gax.CallOption
@@ -139,6 +140,9 @@ func defaultAlloyDBAdminCallOptions() *AlloyDBAdminCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ExportCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpgradeCluster: []gax.CallOption{
@@ -366,6 +370,9 @@ func defaultAlloyDBAdminRESTCallOptions() *AlloyDBAdminCallOptions {
 		ExportCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ImportCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		UpgradeCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -561,6 +568,8 @@ type internalAlloyDBAdminClient interface {
 	UpdateClusterOperation(name string) *UpdateClusterOperation
 	ExportCluster(context.Context, *alloydbpb.ExportClusterRequest, ...gax.CallOption) (*ExportClusterOperation, error)
 	ExportClusterOperation(name string) *ExportClusterOperation
+	ImportCluster(context.Context, *alloydbpb.ImportClusterRequest, ...gax.CallOption) (*ImportClusterOperation, error)
+	ImportClusterOperation(name string) *ImportClusterOperation
 	UpgradeCluster(context.Context, *alloydbpb.UpgradeClusterRequest, ...gax.CallOption) (*UpgradeClusterOperation, error)
 	UpgradeClusterOperation(name string) *UpgradeClusterOperation
 	DeleteCluster(context.Context, *alloydbpb.DeleteClusterRequest, ...gax.CallOption) (*DeleteClusterOperation, error)
@@ -699,6 +708,18 @@ func (c *AlloyDBAdminClient) ExportCluster(ctx context.Context, req *alloydbpb.E
 // The name must be that of a previously created ExportClusterOperation, possibly from a different process.
 func (c *AlloyDBAdminClient) ExportClusterOperation(name string) *ExportClusterOperation {
 	return c.internalClient.ExportClusterOperation(name)
+}
+
+// ImportCluster imports data to the cluster.
+// Imperative only.
+func (c *AlloyDBAdminClient) ImportCluster(ctx context.Context, req *alloydbpb.ImportClusterRequest, opts ...gax.CallOption) (*ImportClusterOperation, error) {
+	return c.internalClient.ImportCluster(ctx, req, opts...)
+}
+
+// ImportClusterOperation returns a new ImportClusterOperation from a given name.
+// The name must be that of a previously created ImportClusterOperation, possibly from a different process.
+func (c *AlloyDBAdminClient) ImportClusterOperation(name string) *ImportClusterOperation {
+	return c.internalClient.ImportClusterOperation(name)
 }
 
 // UpgradeCluster upgrades a single Cluster.
@@ -1324,6 +1345,26 @@ func (c *alloyDBAdminGRPCClient) ExportCluster(ctx context.Context, req *alloydb
 		return nil, err
 	}
 	return &ExportClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *alloyDBAdminGRPCClient) ImportCluster(ctx context.Context, req *alloydbpb.ImportClusterRequest, opts ...gax.CallOption) (*ImportClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ImportCluster[0:len((*c.CallOptions).ImportCluster):len((*c.CallOptions).ImportCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.alloyDBAdminClient.ImportCluster, req, settings.GRPC, c.logger, "ImportCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2547,6 +2588,66 @@ func (c *alloyDBAdminRESTClient) ExportCluster(ctx context.Context, req *alloydb
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
 	return &ExportClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ImportCluster imports data to the cluster.
+// Imperative only.
+func (c *alloyDBAdminRESTClient) ImportCluster(ctx context.Context, req *alloydbpb.ImportClusterRequest, opts ...gax.CallOption) (*ImportClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:import", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCluster")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &ImportClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -4015,6 +4116,9 @@ func (c *alloyDBAdminRESTClient) ListSupportedDatabaseFlags(ctx context.Context,
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetScope() != 0 {
+			params.Add("scope", fmt.Sprintf("%v", req.GetScope()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -5095,6 +5199,24 @@ func (c *alloyDBAdminGRPCClient) FailoverInstanceOperation(name string) *Failove
 func (c *alloyDBAdminRESTClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &FailoverInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ImportClusterOperation returns a new ImportClusterOperation from a given name.
+// The name must be that of a previously created ImportClusterOperation, possibly from a different process.
+func (c *alloyDBAdminGRPCClient) ImportClusterOperation(name string) *ImportClusterOperation {
+	return &ImportClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ImportClusterOperation returns a new ImportClusterOperation from a given name.
+// The name must be that of a previously created ImportClusterOperation, possibly from a different process.
+func (c *alloyDBAdminRESTClient) ImportClusterOperation(name string) *ImportClusterOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &ImportClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

@@ -540,6 +540,9 @@ service-configs:
   - input-directory: google/cloud/datacatalog/v1beta1
     service-config: datacatalog_v1beta1.yaml
     import-path: cloud.google.com/go/datacatalog/apiv1beta1
+  - input-directory: google/cloud/dataform/v1
+    service-config: dataform_v1.yaml
+    import-path: cloud.google.com/go/dataform/apiv1
   - input-directory: google/cloud/dataform/v1beta1
     service-config: dataform_v1beta1.yaml
     import-path: cloud.google.com/go/dataform/apiv1beta1

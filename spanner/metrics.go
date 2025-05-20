@@ -283,7 +283,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
-		mpOptions, err := builtInMeterProviderOptions(project, compression, tracerFactory.clientAttributes, opts...)
+		mpOptions, exporter, err := builtInMeterProviderOptions(project, compression, tracerFactory.clientAttributes, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
@@ -308,7 +308,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 		}
 		tracerFactory.enabled = true
 		tracerFactory.shutdown = func(ctx context.Context) {
-			meterProvider.ForceFlush(ctx)
+			exporter.stop()
 			meterProvider.Shutdown(ctx)
 		}
 	} else {
@@ -326,11 +326,11 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 	return tracerFactory, err
 }
 
-func builtInMeterProviderOptions(project, compression string, clientAttributes []attribute.KeyValue, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+func builtInMeterProviderOptions(project, compression string, clientAttributes []attribute.KeyValue, opts ...option.ClientOption) ([]sdkmetric.Option, *monitoringExporter, error) {
 	allOpts := createExporterOptions(opts...)
 	defaultExporter, err := newMonitoringExporter(context.Background(), project, compression, clientAttributes, allOpts...)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var views []sdkmetric.View
 	for _, m := range grpcMetricsToEnable {
@@ -354,7 +354,7 @@ func builtInMeterProviderOptions(project, compression string, clientAttributes [
 			defaultExporter,
 			sdkmetric.WithInterval(defaultSamplePeriod),
 		),
-	), sdkmetric.WithView(views...)}, nil
+	), sdkmetric.WithView(views...)}, defaultExporter, nil
 }
 
 func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {
