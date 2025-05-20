@@ -137,12 +137,6 @@ func (c *CaseAttachmentClient) Connection() *grpc.ClientConn {
 }
 
 // ListAttachments list all the attachments associated with a support case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseAttachmentClient) ListAttachments(ctx context.Context, req *supportpb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
 	return c.internalClient.ListAttachments(ctx, req, opts...)
 }
@@ -347,12 +341,6 @@ func (c *caseAttachmentGRPCClient) ListAttachments(ctx context.Context, req *sup
 }
 
 // ListAttachments list all the attachments associated with a support case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *supportpb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
 	it := &AttachmentIterator{}
 	req = proto.Clone(req).(*supportpb.ListAttachmentsRequest)
