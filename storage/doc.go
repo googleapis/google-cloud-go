@@ -279,7 +279,7 @@ Errors returned by this client are often of the type [googleapi.Error] or
 The [apierror.APIError] type can wrap a [google.golang.org/grpc/status.Status]
 if gRPC was used, or a [google.golang.org/api/googleapi.Error] if HTTP/REST was used.
 You might also encounter `[googleapi.Error]` directly from HTTP operations.
-These two types of errors can be introspected for more information by using [errors.As]
+These two types of errors can be inspected for more information by using [errors.As]
 to access the specific underlying error types and retrieve detailed
 information, including HTTP or gRPC status codes. For example:
 
