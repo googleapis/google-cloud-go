@@ -6825,7 +6825,7 @@ func examineTraffic(ctx context.Context, client *Client, expectDP bool) bool {
 	countEnough := false
 	start := time.Now()
 	for !countEnough && time.Since(start) < 2*time.Minute {
-		for i := range numRPCsToSend {
+		for range numRPCsToSend {
 			_, _ = readAllTestTable(client.Single().Read(ctx, testTable, Key{"k1"}, testTableColumns))
 			if _, useDP := isDirectPathRemoteAddress(); useDP != expectDP {
 				numCount++
