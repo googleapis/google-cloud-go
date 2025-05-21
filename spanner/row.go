@@ -560,7 +560,7 @@ func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, leni
 func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value) {
 	typ := sliceItem.Type()
 
-	for i := 0; i < sliceItem.NumField(); i++ {
+	for i := range sliceItem.NumField() {
 		fieldType := typ.Field(i)
 		exported := (fieldType.PkgPath == "")
 		// If a named field is unexported, ignore it. An anonymous

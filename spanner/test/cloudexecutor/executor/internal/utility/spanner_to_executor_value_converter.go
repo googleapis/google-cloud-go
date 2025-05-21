@@ -38,7 +38,7 @@ import (
 func ConvertSpannerRow(row *spanner.Row) (*executorpb.ValueList, *sppb.StructType, error) {
 	rowBuilder := &executorpb.ValueList{}
 	rowTypeBuilder := &sppb.StructType{}
-	for i := 0; i < row.Size(); i++ {
+	for i := range row.Size() {
 		rowTypeBuilderField := &sppb.StructType_Field{Name: row.ColumnName(i), Type: row.ColumnType(i)}
 		rowTypeBuilder.Fields = append(rowTypeBuilder.Fields, rowTypeBuilderField)
 		v, err := extractRowValue(row, i, row.ColumnType(i))
