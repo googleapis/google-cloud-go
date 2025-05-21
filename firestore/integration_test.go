@@ -495,6 +495,13 @@ func TestIntegration_Get(t *testing.T) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}
 
+	docRefFromResourceName := integrationClient(t).DocFromResourceName(ds.Ref.Path)
+	ds = h.mustGet(docRefFromResourceName)
+	got = ds.Data()
+	if want := wantIntegrationTestMap; !testEqual(got, want) {
+		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
+	}
+
 	emptyDoc := integrationColl(t).NewDoc()
 	empty := map[string]interface{}{}
 	h.mustCreate(emptyDoc, empty)
