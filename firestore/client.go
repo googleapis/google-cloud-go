@@ -34,6 +34,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -85,7 +86,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	var usesEmulator bool
 	// If this environment variable is defined, configure the client to talk to the emulator.
 	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {
-		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithPerRPCCredentials(emulatorCreds{}))
+		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithPerRPCCredentials(emulatorCreds{}))
 		if err != nil {
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
 		}
@@ -182,6 +183,40 @@ func (c *Client) Collection(path string) *CollectionRef {
 func (c *Client) Doc(path string) *DocumentRef {
 	_, doc := c.idsToRef(strings.Split(path, "/"), c.path())
 	return doc
+}
+
+// DocFromFullPath creates a reference to a document from its full, absolute path,
+// also known as its Google Cloud resource name.
+// The path must be in the format:
+// "projects/{projectID}/databases/{databaseID}/documents/{collectionID}/{documentID}/..."
+// This method returns nil if:
+//   - The fullPath is empty.
+//   - The fullPath does not match the expected resource name format (e.g., missing "projects/" or "/documents/").
+//   - The projectID or databaseID in the fullPath do not match the client's configuration.
+//   - The fullPath refers to a collection instead of a document (i.e., has an odd number of segments after "/documents/").
+//   - The fullPath contains any empty path segments.
+func (c *Client) DocFromFullPath(fullPath string) *DocumentRef {
+	if fullPath == "" {
+		return nil
+	}
+
+	const documentsPrefix = "/documents/"
+	if !strings.HasPrefix(fullPath, "projects/") || !strings.Contains(fullPath, documentsPrefix) {
+		return nil
+	}
+	parts := strings.SplitN(fullPath, documentsPrefix, 2)
+	if len(parts) != 2 {
+		return nil
+	}
+
+	actualDBPathFromFullPath := parts[0]
+	expectedDBPath := c.path()
+	if actualDBPathFromFullPath != expectedDBPath {
+		return nil
+	}
+
+	_, docRef := c.idsToRef(strings.Split(parts[1], "/"), actualDBPathFromFullPath)
+	return docRef
 }
 
 // CollectionGroup creates a reference to a group of collections that include

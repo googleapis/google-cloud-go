@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.88.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.87.0...aiplatform/v1.88.0) (2025-05-21)
+
+
+### Features
+
+* **aiplatform:** Add checkpoint ID to endpoint proto ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **aiplatform:** Add checkpoint ID to endpoint proto ([#12282](https://github.com/googleapis/google-cloud-go/issues/12282)) ([70c11ad](https://github.com/googleapis/google-cloud-go/commit/70c11ad152a463a268421050e3395017f6335090))
+* **aiplatform:** Add encryption_spec to Model Monitoring public preview API ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **aiplatform:** Add VertexAISearch.max_results, filter, data_store_specs options ([62155da](https://github.com/googleapis/google-cloud-go/commit/62155dae7958ebd50140a630a38003f4f74d68bc))
+* **aiplatform:** Add VertexAISearch.max_results, filter, data_store_specs options ([#12297](https://github.com/googleapis/google-cloud-go/issues/12297)) ([62155da](https://github.com/googleapis/google-cloud-go/commit/62155dae7958ebd50140a630a38003f4f74d68bc))
+* **aiplatform:** Adding thoughts_token_count to prediction service ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **aiplatform:** Adding thoughts_token_count to v1beta1 client library ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
 ## [1.87.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.86.0...aiplatform/v1.87.0) (2025-05-13)
 
 

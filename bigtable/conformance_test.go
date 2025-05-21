@@ -30,6 +30,7 @@ import (
 	"cloud.google.com/go/bigtable/internal/mockserver"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -48,7 +49,7 @@ func TestConformance(t *testing.T) {
 	}
 	defer srv.Close()
 
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
 		t.Fatal(err)
 	}

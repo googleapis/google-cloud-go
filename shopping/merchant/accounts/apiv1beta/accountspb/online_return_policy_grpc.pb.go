@@ -53,7 +53,7 @@ type OnlineReturnPolicyServiceClient interface {
 	CreateOnlineReturnPolicy(ctx context.Context, in *CreateOnlineReturnPolicyRequest, opts ...grpc.CallOption) (*OnlineReturnPolicy, error)
 	// Updates an existing return policy for a given merchant.
 	UpdateOnlineReturnPolicy(ctx context.Context, in *UpdateOnlineReturnPolicyRequest, opts ...grpc.CallOption) (*OnlineReturnPolicy, error)
-	// Deletes an existing return policy for a given merchant.
+	// Deletes an existing return policy.
 	DeleteOnlineReturnPolicy(ctx context.Context, in *DeleteOnlineReturnPolicyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -122,7 +122,7 @@ type OnlineReturnPolicyServiceServer interface {
 	CreateOnlineReturnPolicy(context.Context, *CreateOnlineReturnPolicyRequest) (*OnlineReturnPolicy, error)
 	// Updates an existing return policy for a given merchant.
 	UpdateOnlineReturnPolicy(context.Context, *UpdateOnlineReturnPolicyRequest) (*OnlineReturnPolicy, error)
-	// Deletes an existing return policy for a given merchant.
+	// Deletes an existing return policy.
 	DeleteOnlineReturnPolicy(context.Context, *DeleteOnlineReturnPolicyRequest) (*emptypb.Empty, error)
 }
 
