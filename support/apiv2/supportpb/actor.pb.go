@@ -53,7 +53,7 @@ type Actor struct {
 	// email must also be provided. If the user is a Google Support agent, this is
 	// obfuscated.
 	//
-	// This field is deprecated. Use **username** field instead.
+	// This field is deprecated. Use `username` instead.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/support/v2/actor.proto.
 	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`

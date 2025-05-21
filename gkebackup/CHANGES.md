@@ -2,6 +2,21 @@
 
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.7.0...gkebackup/v1.8.0) (2025-05-21)
+
+
+### Features
+
+* **gkebackup:** Add BackupChannel field in BackupPlan ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **gkebackup:** Add BackupConfig of Backups in BackupPlanBinding ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **gkebackup:** Add RestoreChannel field in RestorePlan ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **gkebackup:** Add support for Project ID in BackupChannel and RestoreChannel ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+
+### Documentation
+
+* **gkebackup:** Minor documentation fixes ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.6.5...gkebackup/v1.7.0) (2025-04-30)
 
 
