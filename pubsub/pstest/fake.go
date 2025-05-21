@@ -1243,7 +1243,7 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 		m.proto.DeliveryAttempt = int32(*m.deliveries) + 1
 	}
 
-	for i := 0; i < len(s.streams); i++ {
+	for i := range len(s.streams) {
 		idx := (i + start) % len(s.streams)
 
 		st := s.streams[idx]
@@ -1305,7 +1305,7 @@ func (s *subscription) deleteStream(st *stream) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	var i int
-	for i = 0; i < len(s.streams); i++ {
+	for i = range len(s.streams) {
 		if s.streams[i] == st {
 			break
 		}

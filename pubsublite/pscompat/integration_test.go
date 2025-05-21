@@ -163,7 +163,7 @@ func cleanUpSubscription(ctx context.Context, t *testing.T, admin *pubsublite.Ad
 
 func partitionNumbers(partitionCount int) []int {
 	var partitions []int
-	for i := 0; i < partitionCount; i++ {
+	for i := range partitionCount {
 		partitions = append(partitions, i)
 	}
 	return partitions
@@ -189,7 +189,7 @@ func publishPrefixedMessages(t *testing.T, settings PublishSettings, topic wire.
 	orderingSender := test.NewOrderingSender()
 	var pubResults []*pubsub.PublishResult
 	var msgData []string
-	for i := 0; i < msgCount; i++ {
+	for range msgCount {
 		data := orderingSender.Next(msgPrefix)
 		msgData = append(msgData, data)
 		msg := &pubsub.Message{Data: []byte(data)}
@@ -492,7 +492,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		// message. However, the subscriber isn't guaranteed to immediately stop, so
 		// allow up to `len(msgs)` iterations.
 		wantReceivedCount := len(msgs)
-		for i := 0; i < wantReceivedCount; i++ {
+		for i := range wantReceivedCount {
 			// New cctx must be created for each iteration as it is cancelled each
 			// time stopSubscriber is called.
 			cctx, stopSubscriber = context.WithTimeout(context.Background(), defaultTestTimeout)
@@ -731,8 +731,8 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 		orderingSender := test.NewOrderingSender()
 		msgTracker := test.NewMsgTracker()
 		var msgs []*pubsub.Message
-		for partition := 0; partition < partitionCount; partition++ {
-			for i := 0; i < messageCountPerPartition; i++ {
+		for partition := range partitionCount {
+			for range messageCountPerPartition {
 				data := orderingSender.Next("routing_with_key")
 				msgTracker.Add(data)
 				msg := &pubsub.Message{
@@ -789,7 +789,7 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 
 		cctx, stopSubscribers := context.WithTimeout(context.Background(), defaultTestTimeout)
 		g, _ := errgroup.WithContext(ctx)
-		for i := 0; i < subscriberCount; i++ {
+		for range subscriberCount {
 			// Subscribers must be started in a goroutine as Receive() blocks.
 			g.Go(func() error {
 				subscriber := subscriberClient(context.Background(), t, receiveSettings, subscriptionPath)
@@ -833,7 +833,7 @@ func TestIntegration_SubscribeFanOut(t *testing.T) {
 	defer cleanUpTopic(ctx, t, admin, topicPath)
 
 	var subscriptionPaths []wire.SubscriptionPath
-	for i := 0; i < subscriberCount; i++ {
+	for i := range subscriberCount {
 		subscription := baseSubscriptionPath
 		subscription.SubscriptionID += fmt.Sprintf("%s-%d", baseSubscriptionPath.SubscriptionID, i)
 		subscriptionPaths = append(subscriptionPaths, subscription)

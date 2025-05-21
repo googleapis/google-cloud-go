@@ -687,7 +687,7 @@ func TestStreamingPullAck(t *testing.T) {
 	spc := mustStartStreamingPull(ctx, t, sclient, sub)
 	time.AfterFunc(time.Duration(2*minAckDeadlineSecs)*time.Second, cancel)
 
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		res, err := spc.Recv()
 		if errors.Is(err, io.EOF) {
 			break
@@ -1320,7 +1320,7 @@ func pullN(ctx context.Context, t *testing.T, n int, sc pb.SubscriberClient, sub
 func streamingPullN(ctx context.Context, t *testing.T, n int, sc pb.SubscriberClient, sub *pb.Subscription) map[string]*pb.ReceivedMessage {
 	spc := mustStartStreamingPull(ctx, t, sc, sub)
 	got := map[string]*pb.ReceivedMessage{}
-	for i := 0; i < n; i++ {
+	for range n {
 		res, err := spc.Recv()
 		if err != nil {
 			t.Fatal(err)
@@ -1724,7 +1724,7 @@ func TestSubscriptionMessageOrdering(t *testing.T) {
 
 	const orderingKey = "ordering-key"
 	var ids []string
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
 	}
 	for len(ids) > 0 {

@@ -514,7 +514,7 @@ func TestSubscriberClientDuplicateReceive(t *testing.T) {
 	}
 
 	g, gctx := errgroup.WithContext(ctx)
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		// Receive() is blocking, so we must start them in goroutines. Passing gctx
 		// to Receive will stop the subscribers once the first error occurs.
 		g.Go(func() error {

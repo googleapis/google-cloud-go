@@ -34,7 +34,7 @@ func TestAckConsumerAck(t *testing.T) {
 	}
 
 	// Test duplicate acks.
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		ackConsumer.Ack()
 
 		if got, want := ackConsumer.IsAcked(), true; got != want {
