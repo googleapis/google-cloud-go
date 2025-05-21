@@ -193,7 +193,7 @@ func TestBytesCodecV2(t *testing.T) {
 					desc: "split every byte",
 					splitBuffer: func(b []byte) [][]byte {
 						var bufs [][]byte
-						for i := 0; i < len(b); i++ {
+						for i := range len(b) {
 							bufs = append(bufs, b[i:i+1])
 						}
 						return bufs

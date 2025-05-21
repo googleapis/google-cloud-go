@@ -435,7 +435,7 @@ func isEmulatorEnvironmentSet() bool {
 // createObject creates given number of objects in the given bucket.
 func createObject(ctx context.Context, bucket *storage.BucketHandle, numObjects int, prefix string) error {
 
-	for i := 0; i < numObjects; i++ {
+	for range numObjects {
 		// Generate a unique object name using UUIDs
 		objectName := fmt.Sprintf("%s%s", prefix, uuid.New().String())
 		// Create a writer for the object

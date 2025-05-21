@@ -26,7 +26,7 @@ import (
 
 func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *dynamicDelay) int {
 	var samplesOverThreshold int
-	for i := 0; i < numSamples; i++ {
+	for range numSamples {
 		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
 		if randomDelay > d.getValue() {
 			samplesOverThreshold++
@@ -39,7 +39,7 @@ func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *dyna
 }
 
 func applySamplesWithUpdate(numSamples int, expectedValue float64, rnd *rand.Rand, d *dynamicDelay) {
-	for i := 0; i < numSamples; i++ {
+	for range numSamples {
 		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
 		d.update(randomDelay)
 	}
@@ -142,7 +142,7 @@ func TestOverflow(t *testing.T) {
 
 	n := 10000
 	// Should converge to maxDelay.
-	for i := 0; i < n; i++ {
+	for range n {
 		d.increase()
 	}
 	if got, want := d.getValue(), 1*time.Hour; got != want {
@@ -150,7 +150,7 @@ func TestOverflow(t *testing.T) {
 	}
 
 	// Should converge to minDelay.
-	for i := 0; i < 100*n; i++ {
+	for range 100 * n {
 		d.decrease()
 	}
 	if got, want := d.getValue(), 1*time.Millisecond; got != want {
@@ -196,7 +196,7 @@ func TestValidateDynamicDelayParams(t *testing.T) {
 
 func applySamplesBucket(numSamples int, expectedValue float64, rnd *rand.Rand, b *bucketDelayManager, bucketName string) int {
 	var samplesOverThreshold int
-	for i := 0; i < numSamples; i++ {
+	for range numSamples {
 		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
 		if randomDelay > b.getValue(bucketName) {
 			samplesOverThreshold++
@@ -209,7 +209,7 @@ func applySamplesBucket(numSamples int, expectedValue float64, rnd *rand.Rand, b
 }
 
 func applySamplesWithUpdateBucket(numSamples int, expectedValue float64, rnd *rand.Rand, b *bucketDelayManager, bucketName string) {
-	for i := 0; i < numSamples; i++ {
+	for range numSamples {
 		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
 		b.update(bucketName, randomDelay)
 	}
@@ -260,7 +260,7 @@ func TestBucketDelayManagerConcurrentAccess(t *testing.T) {
 
 	// Test concurrent access
 	var wg sync.WaitGroup
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
@@ -310,7 +310,7 @@ func TestBucketDelayManagerOverflow(t *testing.T) {
 	n := 10000
 
 	// Should converge to maxDelay.
-	for i := 0; i < n; i++ {
+	for range n {
 		b.increase(bucketName)
 	}
 
@@ -319,7 +319,7 @@ func TestBucketDelayManagerOverflow(t *testing.T) {
 	}
 
 	// Should converge to minDelay.
-	for i := 0; i < 100*n; i++ {
+	for range 100 * n {
 		b.decrease(bucketName)
 	}
 	if got, want := b.getValue(bucketName), 1*time.Millisecond; got != want {
@@ -371,7 +371,7 @@ func TestBucketDelayManagerMapSize(t *testing.T) {
 	}
 	// Add delays for multiple buckets
 	numBuckets := 10
-	for i := 0; i < numBuckets; i++ {
+	for i := range numBuckets {
 		bucketName := fmt.Sprintf("bucket%d", i)
 		b.increase(bucketName)
 	}

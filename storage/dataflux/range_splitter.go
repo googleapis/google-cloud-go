@@ -248,7 +248,7 @@ func (rs *rangeSplitter) isRangeEqualWithPadding(startRange, endRange []rune) bo
 	smallestChar := sortedAlphabet[0]
 
 	// Loop through the string range.
-	for i := 0; i < maxLength; i++ {
+	for i := range maxLength {
 
 		// In cases where a character is absent at a specific position (due to a length
 		// difference), the position is padded with the smallest character in the alphabet.
@@ -359,7 +359,7 @@ func (rs *rangeSplitter) convertIntToString(splitPoint *big.Int, stringLength in
 	alphabetSize := big.NewInt(int64(len(rs.sortedAlphabet)))
 
 	// Iterate through the split point and convert alphabet by alphabet.
-	for i := 0; i < stringLength; i++ {
+	for range stringLength {
 		remainder.Mod(splitPoint, alphabetSize)
 		splitPoint.Div(splitPoint, alphabetSize)
 		splitChar = append(splitChar, (rs.sortedAlphabet)[(int)(remainder.Int64())])

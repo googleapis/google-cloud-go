@@ -81,7 +81,7 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 
 	// The Go Listing API does not expose an interface to list multiple objects together,
 	// thus we need to manually loop to construct a page of results using the iterator.
-	for i := 0; i < wsDefaultPageSize; i++ {
+	for i := range wsDefaultPageSize {
 		attrs, err := objectIterator.Next()
 
 		// If the lister has listed the last item for the assigned range,

@@ -593,7 +593,7 @@ func runInServerMode(ctx context.Context, opts *benchmarkOptions) {
 		// Synchronously gather results
 		payload := new(strings.Builder)
 
-		for i := 0; i < numResults; i++ {
+		for range numResults {
 			result := <-results
 			writeResultAsCloudMonitoring(payload, &result)
 		}

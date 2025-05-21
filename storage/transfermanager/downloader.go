@@ -488,7 +488,7 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, out *DownloadOutput, 
 // objects on error.
 func (d *Downloader) gatherObjectOutputs(in *DownloadDirectoryInput, gatherOuts <-chan DownloadOutput, numObjects int) {
 	outs := make([]DownloadOutput, 0, numObjects)
-	for i := 0; i < numObjects; i++ {
+	for range numObjects {
 		obj := <-gatherOuts
 		outs = append(outs, obj)
 	}
@@ -547,7 +547,7 @@ func NewDownloader(c *storage.Client, opts ...Option) (*Downloader, error) {
 	go d.sendInputsToWorkChan()
 
 	// Start workers.
-	for i := 0; i < d.config.numWorkers; i++ {
+	for range d.config.numWorkers {
 		d.workers.Add(1)
 		go d.downloadWorker()
 	}

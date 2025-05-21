@@ -2034,7 +2034,7 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 	oa := reflect.TypeOf((*ObjectAttrs)(nil)).Elem()
 	oaFields := make(map[string]bool)
 
-	for i := 0; i < oa.NumField(); i++ {
+	for i := range oa.NumField() {
 		fieldName := oa.Field(i).Name
 		oaFields[fieldName] = true
 	}
@@ -2398,7 +2398,7 @@ func TestSignedURLOptionsClone(t *testing.T) {
 	// Check that all fields are set to a non-zero value, so we can check that
 	// clone accurately clones all fields and catch newly added fields not cloned
 	reflectOpts := reflect.ValueOf(*opts)
-	for i := 0; i < reflectOpts.NumField(); i++ {
+	for i := range reflectOpts.NumField() {
 		zero, err := isZeroValue(reflectOpts.Field(i))
 		if err != nil {
 			t.Errorf("IsZero: %v", err)
@@ -2501,7 +2501,7 @@ func isZeroValue(v reflect.Value) (bool, error) {
 	case reflect.Uint, reflect.Uint64:
 		return v.Uint() == 0, nil
 	case reflect.Array:
-		for i := 0; i < v.Len(); i++ {
+		for i := range v.Len() {
 			zero, err := isZeroValue(v.Index(i))
 			if !zero || err != nil {
 				return false, err
@@ -2513,7 +2513,7 @@ func isZeroValue(v reflect.Value) (bool, error) {
 	case reflect.String:
 		return v.Len() == 0, nil
 	case reflect.Struct:
-		for i := 0; i < v.NumField(); i++ {
+		for i := range v.NumField() {
 			zero, err := isZeroValue(v.Field(i))
 			if !zero || err != nil {
 				return false, err
