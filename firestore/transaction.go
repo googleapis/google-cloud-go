@@ -17,6 +17,7 @@ package firestore
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -25,6 +26,23 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+const defaultStrongRollbackTimeout = 10 * time.Second
+
+// attemptStrongRollback attempts to rollback a transaction with a timeout.
+// This function is intended to be called when a transaction is in an unknown
+// state (e.g. a commit request timed out) and we want to try to ensure it
+// doesn't commit.
+func attemptStrongRollback(c *Client, transactionID []byte) error {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultStrongRollbackTimeout)
+	defer cancel()
+
+	_, err := c.c.Rollback(ctx, &pb.RollbackRequest{
+		Database:    c.path(),
+		Transaction: transactionID,
+	})
+	return err
+}
 
 // Transaction represents a Firestore transaction.
 type Transaction struct {
@@ -98,6 +116,11 @@ var (
 	errReadAfterWrite    = errors.New("firestore: read after write in transaction")
 	errWriteReadOnly     = errors.New("firestore: write in read-only transaction")
 	errNestedTransaction = errors.New("firestore: nested transaction")
+	// ErrTransactionCommitUncertain is returned when a transaction's commit outcome is unknown
+	// due to a context cancellation (like a timeout) during the Commit RPC, and a subsequent
+	// attempt to roll back the transaction also fails to clarify its status (e.g., the rollback
+	// itself times out or encounters another network issue).
+	ErrTransactionCommitUncertain = errors.New("firestore: transaction commit status uncertain after context cancellation, and subsequent rollback attempt also failed to clarify status")
 )
 
 type transactionInProgressKey struct{}
@@ -181,24 +204,54 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 		})
 		trace.EndSpan(t.ctx, err)
 
-		// on success, handle the commit response
 		if err == nil {
+			// on success, handle the commit response
 			for _, opt := range opts {
 				opt.handleCommitResponse(commitResponse)
 			}
+			return nil // Successful commit
 		}
 
-		// If a read-write transaction returns Aborted, retry.
-		// On success or other failures, return here.
-		if t.readOnly || status.Code(err) != codes.Aborted {
-			// According to the Firestore team, we should not roll back here
-			// if err != nil. But spanner does.
-			// See https://code.googlesource.com/gocloud/+/master/spanner/transaction.go#740.
+		// Handle commit errors
+		s := status.Code(err)
+		switch s {
+		case codes.Aborted:
+			if t.readOnly {
+				// This case should ideally not be reached if Aborted is from Commit for a ReadOnly transaction.
+				// But if it is, it's a definitive failure.
+				return err
+			}
+			// For read-write transaction, proceed to retry logic below the switch.
+		case codes.Canceled, codes.DeadlineExceeded:
+			// Commit outcome is unknown due to client-side cancellation or timeout.
+			// Attempt a strong rollback to clarify the transaction's status.
+			rbErr := attemptStrongRollback(t.c, t.id)
+
+			if rbErr == nil {
+				// Strong rollback succeeded. This means the original commit likely did not go through,
+				// and the transaction is now rolled back (or was already rolled back).
+				// Return the original error from Commit.
+				return err
+			}
+
+			if status.Code(rbErr) == codes.FailedPrecondition {
+				// The transaction was already committed. Return success for RunTransaction.
+				// Assuming that if it was already committed, we don't have commit time from the original
+				// timed-out response, so we can't call opt.handleCommitResponse.
+				return nil
+			}
+
+			// Rollback failed for other reasons. The transaction state is uncertain.
+			return fmt.Errorf("%w: original commit error: %v, rollback attempt error: %v", ErrTransactionCommitUncertain, err, rbErr)
+		default:
+			// For any other error from Commit, it's a definitive failure.
 			return err
 		}
 
+		// Retry logic for Aborted error in a read-write transaction.
+		// This block is reached only if err is Aborted and t.readOnly is false.
 		if txOpts == nil {
-			// txOpts can only be nil if is the first retry of a read-write transaction.
+			// txOpts can only be nil if it is the first retry of a read-write transaction.
 			// (It is only set here and in the body of "if t.readOnly" above.)
 			// Mention the transaction ID in BeginTransaction so the service
 			// knows it is a retry.
