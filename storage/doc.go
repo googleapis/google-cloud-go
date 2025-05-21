@@ -274,15 +274,27 @@ To generate the signature, you must have:
 
 # Errors
 
-Errors returned by this client are often of the type [googleapi.Error] or
-[github.com/googleapis/gax-go/v2/apierror.APIError].
+Errors returned by this client are often of the type [https://pkg.go.dev/github.com/googleapis/gax-go/v2/apierror].
 The [apierror.APIError] type can wrap a [google.golang.org/grpc/status.Status]
 if gRPC was used, or a [google.golang.org/api/googleapi.Error] if HTTP/REST was used.
-You might also encounter `[googleapi.Error]` directly from HTTP operations.
-These two types of errors can be inspected for more information by using [errors.As]
-to access the specific underlying error types and retrieve detailed
-information, including HTTP or gRPC status codes. For example:
+You might also encounter [googleapi.Error] directly from HTTP operations.
+These types of errors can be inspected for more information by using [errors.As]
+to access the specific underlying error types and retrieve detailed information,
+including HTTP or gRPC status codes. For example:
 
+	// APIErrors often wrap a googleapi.Error (for JSON and XML calls) or a status.Status (for gRPC calls)
+	var ae *apierror.APIError
+	if ok := errors.As(err, &ae); ok {
+		// ae.HTTPCode() is the HTTP status code.
+		// ae.GRPCStatus().Code() is the gRPC status code
+		log.Printf("APIError: HTTPCode: %d, GRPCStatusCode: %s", ae.HTTPCode(), ae.GRPCStatus().Code())
+
+		if ae.GRPCStatus().Code() == codes.Unavailable {
+			// ... handle gRPC unavailable ...
+		}
+	}
+
+	// This allows a user to get more information directly from googleapi.Errors (for JSON/XML calls)
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok {
 		// e.Code is the HTTP status code.
@@ -291,25 +303,14 @@ information, including HTTP or gRPC status codes. For example:
 		// e.Header contains the HTTP response headers.
 		log.Printf("HTTP Code: %d, Message: %s", e.Code, e.Message)
 
-		if e.HTTPCode() == 409 {
+		if e.Code == 409 {
 			// ... handle conflict ...
 		}
 	}
 
-	var ae *apierror.APIError
-	if ok := errors.As(err, &ae); ok {
-		// ae can wrap a googleapi.Error or a status.Status (from gRPC)
-		log.Printf("APIError: HTTPCode: %d, GRPCStatusCode: %s", ae.HTTPCode(), ae.GRPCStatus().Code())
-
-		// To get the underlying gRPC status directly:
-		if s, ok := status.FromError(ae.Unwrap()); ok {
-			if s.Code() == codes.Unavailable {
-				// ... handle gRPC unavailable ...
-			}
-		}
-	}
-
-See GRPC Status Codes at https://pkg.go.dev/google.golang.org/grpc/codes.
+This library may also return other errors that are not wrapped as [apierror.APIError]. For
+example, errors with authentication may return [cloud.google.com/go/auth.Error]  or
+[golang.org/x/oauth2/google.AuthenticationError].
 
 # Retrying failed requests
 
