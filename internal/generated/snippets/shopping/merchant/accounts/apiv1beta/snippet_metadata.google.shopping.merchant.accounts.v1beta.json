@@ -1577,7 +1577,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_DeleteOnlineReturnPolicy_sync",
       "title": "merchantapi DeleteOnlineReturnPolicy Sample",
-      "description": "DeleteOnlineReturnPolicy deletes an existing return policy for a given merchant.",
+      "description": "DeleteOnlineReturnPolicy deletes an existing return policy.",
       "file": "OnlineReturnPolicyClient/DeleteOnlineReturnPolicy/main.go",
       "language": "GO",
       "clientMethod": {
