@@ -1345,7 +1345,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	ctx2, cancel2 := context.WithCancel(gctx)
 	defer cancel2()
 
-	for i := 0; i < numGoroutines; i++ {
+	for range numGoroutines {
 		// The iterator does not use the context passed to Receive. If it did,
 		// canceling that context would immediately stop the iterator without
 		// waiting for unacked messages.

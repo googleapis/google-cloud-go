@@ -56,7 +56,7 @@ func TestEndToEnd_Dupes(t *testing.T) {
 	// Two subscriptions to the same topic.
 	var err error
 	var subs [2]*pubsub.Subscription
-	for i := 0; i < len(subs); i++ {
+	for i := range len(subs) {
 		subs[i], err = client.CreateSubscription(ctx, fmt.Sprintf("%s-%d", subPrefix, i), pubsub.SubscriptionConfig{
 			Topic:       topic,
 			AckDeadline: ackDeadline,
@@ -256,7 +256,7 @@ loop:
 // publish publishes n messages to topic.
 func publish(ctx context.Context, topic *pubsub.Topic, n int) error {
 	var rs []*pubsub.PublishResult
-	for i := 0; i < n; i++ {
+	for i := range n {
 		m := &pubsub.Message{Data: []byte(fmt.Sprintf("msg %d", i))}
 		rs = append(rs, topic.Publish(ctx, m))
 	}
