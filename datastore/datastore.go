@@ -108,7 +108,7 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 		o = []option.ClientOption{
 			option.WithEndpoint(addr),
 			option.WithoutAuthentication(),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials()),
 		}
 		if projectID == DetectProjectID {
 			projectID, _ = detectProjectIDFn(ctx, opts...)
