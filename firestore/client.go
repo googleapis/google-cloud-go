@@ -34,6 +34,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -85,7 +86,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	var usesEmulator bool
 	// If this environment variable is defined, configure the client to talk to the emulator.
 	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {
-		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials(), grpc.WithPerRPCCredentials(emulatorCreds{}))
+		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithPerRPCCredentials(emulatorCreds{}))
 		if err != nil {
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
 		}
