@@ -57,7 +57,7 @@ func BenchmarkPublishThroughput(b *testing.B) {
 	lts.init(client, "t", messageSize, batchSize, batchDuration, useOrdered)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		runOnce(lts)
 	}
 }
@@ -73,7 +73,7 @@ func runOnce(lts *PubServer) {
 	// we can ignore this too.
 	// The framework caps the number of outstanding calls to Execute at
 	// maxOutstandingPublishes. That is what we simulate here.
-	for i := 0; i < maxOutstandingPublishes; i++ {
+	for range maxOutstandingPublishes {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

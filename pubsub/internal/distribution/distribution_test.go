@@ -77,16 +77,16 @@ func TestRace(t *testing.T) {
 
 	var wg sync.WaitGroup
 	wg.Add(parallel)
-	for i := 0; i < parallel; i++ {
+	for range parallel {
 		go func() {
-			for i := 0; i < N; i++ {
+			for i := range N {
 				d.Record(i)
 			}
 			wg.Done()
 		}()
 	}
 
-	for i := 0; i < N; i++ {
+	for range N {
 		if p := d.Percentile(0.5); p > N {
 			t.Fatalf("d.Percentile(0.5)=%d, expected to be at most %d", p, N)
 		}
@@ -97,7 +97,7 @@ func BenchmarkDistribution(b *testing.B) {
 	const N int = 1e3
 
 	d := New(N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		d.Record(i)
 	}
 
