@@ -6929,6 +6929,9 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
 	}
 
+	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+	t.Setenv(disableDP, "true")
+
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
