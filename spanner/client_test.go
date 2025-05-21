@@ -603,7 +603,7 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			test: func(client *Client) error {
 				// Test the parallel single use read-only transaction
 				g := new(errgroup.Group)
-				for i := 0; i < 25; i++ {
+				for range 25 {
 					g.Go(func() error {
 						ctx := context.Background()
 						// Test the single use read-only transaction
@@ -3757,7 +3757,7 @@ func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce())
 		if err != nil {
 			t.Fatal(err)
@@ -3806,7 +3806,7 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 			SimulatedExecutionTime{
 				Errors: []error{status.Error(codes.InvalidArgument, "Invalid data")},

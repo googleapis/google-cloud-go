@@ -721,7 +721,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 			resumeTokens: make([][]byte, maxBuffers+1),
 			sql:          "SELECT t.key key, t.value value FROM t_mock t",
 			want: func() (s []*sppb.PartialResultSet) {
-				for i := 0; i < maxBuffers+1; i++ {
+				for i := range maxBuffers + 1 {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
 						Values: []*proto3.Value{
@@ -734,7 +734,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 			}(),
 			stateHistory: func() (s []resumableStreamDecoderState) {
 				s = append(s, queueingRetryable) // RPC
-				for i := 0; i < maxBuffers; i++ {
+				for range maxBuffers {
 					s = append(s, queueingRetryable) // the internal queue of resumableStreamDecoder fills up
 				}
 				// the first item fills up the queue and triggers state transition;
@@ -758,7 +758,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 			}},
 			sql: "SELECT t.key key, t.value value FROM t_mock t",
 			want: func() (s []*sppb.PartialResultSet) {
-				for i := 0; i < maxBuffers; i++ {
+				for i := range maxBuffers {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
 						Values: []*proto3.Value{
@@ -771,7 +771,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 			}(),
 			stateHistory: func() (s []resumableStreamDecoderState) {
 				s = append(s, queueingRetryable) // RPC
-				for i := 0; i < maxBuffers; i++ {
+				for range maxBuffers {
 					s = append(s, queueingRetryable) // internal queue of resumableStreamDecoder fills up
 				}
 				s = append(s, queueingUnretryable) // the last row triggers state change
@@ -1014,7 +1014,7 @@ func TestRsdBlockingStates(t *testing.T) {
 				// for the next resume token, an io.EOF leads to a `finished`
 				// state that the last message will be removed from the queue
 				// and be read by the client side.
-				for i := 0; i < maxBuffers+3; i++ {
+				for i := range maxBuffers + 3 {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
 						Values: []*proto3.Value{
@@ -1038,7 +1038,7 @@ func TestRsdBlockingStates(t *testing.T) {
 			},
 			stateHistory: func() (s []resumableStreamDecoderState) {
 				s = append(s, queueingRetryable) // RPC
-				for i := 0; i < maxBuffers; i++ {
+				for range maxBuffers {
 					s = append(s, queueingRetryable) // internal queue of resumableStreamDecoder filles up
 				}
 				for i := maxBuffers - 1; i < maxBuffers+1; i++ {
@@ -1059,7 +1059,7 @@ func TestRsdBlockingStates(t *testing.T) {
 			resumeTokens: make([][]byte, maxBuffers),
 			sql:          "SELECT t.key key, t.value value FROM t_mock t",
 			want: func() (s []*sppb.PartialResultSet) {
-				for i := 0; i < maxBuffers; i++ {
+				for i := range maxBuffers {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
 						Values: []*proto3.Value{
@@ -1072,7 +1072,7 @@ func TestRsdBlockingStates(t *testing.T) {
 			}(),
 			stateHistory: func() (s []resumableStreamDecoderState) {
 				s = append(s, queueingRetryable) // RPC
-				for i := 0; i < maxBuffers; i++ {
+				for range maxBuffers {
 					s = append(s, queueingRetryable) // internal queue of resumableStreamDecoder fills up
 				}
 				s = append(s, queueingUnretryable) // last row triggers state change
@@ -1235,7 +1235,7 @@ func (sr *sReceiver) Recv() (*sppb.PartialResultSet, error) {
 // PartialResultSets has already been returned to caller or queued, if no error
 // happened.
 func (sr *sReceiver) waitn(n int) error {
-	for i := 0; i < n; i++ {
+	for i := range n {
 		select {
 		case <-sr.c:
 		case <-time.After(10 * time.Second):
@@ -1399,7 +1399,7 @@ func TestResumeToken(t *testing.T) {
 	var row *Row
 
 	// Read first two rows.
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		row, err = iter.Next()
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
@@ -1436,7 +1436,7 @@ func TestResumeToken(t *testing.T) {
 
 	// Trigger state change of resumableStreamDecoder:
 	// queueingRetryable -> queueingUnretryable
-	for i := 0; i < maxBuffers-1; i++ {
+	for range maxBuffers - 1 {
 		row, err = iter.Next()
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
@@ -1463,7 +1463,7 @@ func TestResumeToken(t *testing.T) {
 	iter = streaming()
 	defer iter.Stop()
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		row, err = iter.Next()
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
@@ -1649,7 +1649,7 @@ func TestCancelTimeout(t *testing.T) {
 
 func setupStatementResult(t *testing.T, server *MockedSpannerInMemTestServer, stmt string, rowCount int, resumeTokens [][]byte) error {
 	selectValues := make([][]string, rowCount)
-	for i := 0; i < rowCount; i++ {
+	for i := range rowCount {
 		selectValues[i] = []string{keyStr(i), valStr(i)}
 	}
 

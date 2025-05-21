@@ -1547,7 +1547,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		queryAccountByID = "SELECT Balance FROM Accounts WHERE AccountId = $1"
 	}
-	for i := 0; i < 20; i++ {
+	for i := range 20 {
 		wg.Add(1)
 		go func(iter int) {
 			defer wg.Done()
@@ -1901,7 +1901,7 @@ func TestIntegration_Reads(t *testing.T) {
 
 	// Includes k0..k14. Strings sort lexically, eg "k1" < "k10" < "k2".
 	var ms []*Mutation
-	for i := 0; i < 15; i++ {
+	for i := range 15 {
 		ms = append(ms, InsertOrUpdate(testTable,
 			testTableColumns,
 			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v%d", i)}))
@@ -1996,7 +1996,7 @@ func TestIntegration_EarlyTimestamp(t *testing.T) {
 	defer cleanup()
 
 	var ms []*Mutation
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		ms = append(ms, InsertOrUpdate(testTable,
 			testTableColumns,
 			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v%d", i)}))
@@ -3617,7 +3617,7 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	defer cleanup()
 
 	var ms []*Mutation
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		ms = append(ms, InsertOrUpdate(testTable,
 			testTableColumns,
 			[]interface{}{fmt.Sprintf("k%d", i), "v"}))
@@ -6007,7 +6007,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 					return errors.New("expected 3 rows to be inserted")
 				}
 				counter := int64(0)
-				for i := 0; i < 3; i++ {
+				for i := range 3 {
 					newID, newCounter := values[i][0].(int64), values[i][1].(int64)
 					if newID <= 0 {
 						return errors.New("expected id1, id2, id3 > 0")
@@ -6074,7 +6074,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 					return errors.New("expected 100 rows to be inserted")
 				}
 				counter := int64(0)
-				for i := 0; i < 100; i++ {
+				for i := range 100 {
 					newID, newCounter := values[i][0].(int64), values[i][1].(int64)
 					if newID <= 0 || newID < 4611686018427387904 {
 						return errors.New("expected d1, id2, id3, …., id100 > 4611686018427387904")
@@ -6118,7 +6118,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 					return errors.New("expected 3 rows to be inserted")
 				}
 				counter := int64(0)
-				for i := 0; i < 3; i++ {
+				for i := range 3 {
 					newID, newBrID, newCounter := values[i][0].(int64), values[i][1].(int64), values[i][2].(int64)
 					if newID <= 0 {
 						return errors.New("expected id > 0")
@@ -6825,7 +6825,7 @@ func examineTraffic(ctx context.Context, client *Client, expectDP bool) bool {
 	countEnough := false
 	start := time.Now()
 	for !countEnough && time.Since(start) < 2*time.Minute {
-		for i := 0; i < numRPCsToSend; i++ {
+		for i := range numRPCsToSend {
 			_, _ = readAllTestTable(client.Single().Read(ctx, testTable, Key{"k1"}, testTableColumns))
 			if _, useDP := isDirectPathRemoteAddress(); useDP != expectDP {
 				numCount++
