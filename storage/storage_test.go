@@ -1142,7 +1142,7 @@ func TestClientSetRetry(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		t.Run(tc.name, func(s *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			c, err := NewClient(context.Background(), option.WithoutAuthentication())
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
@@ -1160,7 +1160,7 @@ func TestClientSetRetry(t *testing.T) {
 					return (a == nil && b == nil) || (a != nil && b != nil)
 				}),
 			); diff != "" {
-				s.Fatalf("retry not configured correctly: %v", diff)
+				t.Fatalf("retry not configured correctly: %v", diff)
 			}
 		})
 	}
@@ -1364,7 +1364,7 @@ func TestRetryer(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		t.Run(tc.name, func(s *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			ctx := context.Background()
 			c, err := NewClient(ctx, option.WithoutAuthentication())
 			if err != nil {
@@ -1415,7 +1415,7 @@ func TestRetryer(t *testing.T) {
 				},
 			}
 			for _, ac := range configHandleCases {
-				s.Run(ac.name, func(ss *testing.T) {
+				t.Run(ac.name, func(t *testing.T) {
 					if diff := cmp.Diff(
 						ac.want,
 						ac.r,
@@ -1426,7 +1426,7 @@ func TestRetryer(t *testing.T) {
 							return (a == nil && b == nil) || (a != nil && b != nil)
 						}),
 					); diff != "" {
-						ss.Fatalf("retry not configured correctly: %v", diff)
+						t.Fatalf("retry not configured correctly: %v", diff)
 					}
 				})
 			}
