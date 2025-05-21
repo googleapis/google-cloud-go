@@ -985,7 +985,7 @@ func testLargeInsertNoRetry(ctx context.Context, t *testing.T, mwClient *Client,
 	numRows := targetSize / len(b)
 	data = make([][]byte, numRows)
 
-	for i := 0; i < numRows; i++ {
+	for i := range numRows {
 		data[i] = b
 	}
 
@@ -1050,7 +1050,7 @@ func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Clien
 	numRows := targetSize / len(b)
 	data = make([][]byte, numRows)
 
-	for i := 0; i < numRows; i++ {
+	for i := range numRows {
 		data[i] = b
 	}
 
@@ -1305,7 +1305,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// Try to force connection errors from concurrent appends.
 	// We drop setting of offset to avoid commingling out-of-order append errors.
 	var wg sync.WaitGroup
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		id := i
 		wg.Add(1)
 		go func() {
@@ -1654,7 +1654,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 
 	var gotFirstPool *connectionPool
 	var results []*AppendResult
-	for i := 0; i < wantWrites; i++ {
+	for i := range wantWrites {
 		for k, testTable := range testTables {
 			// create a writer and send a single append
 			ms, err := mwClient.NewManagedStream(ctx,
@@ -1732,7 +1732,7 @@ func TestIntegration_MingledContexts(t *testing.T) {
 	contexts := make([]context.Context, numWriters)
 	cancels := make([]context.CancelFunc, numWriters)
 	writers := make([]*ManagedStream, numWriters)
-	for i := 0; i < numWriters; i++ {
+	for i := range numWriters {
 		contexts[i], cancels[i] = context.WithCancel(ctx)
 		ms, err := mwClient.NewManagedStream(contexts[i],
 			WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
@@ -1753,7 +1753,7 @@ func TestIntegration_MingledContexts(t *testing.T) {
 		t.Fatalf("failed to generate sample row")
 	}
 
-	for i := 0; i < numWriters; i++ {
+	for i := range numWriters {
 		res, err := writers[i].AppendRows(contexts[i], [][]byte{sampleRow})
 		if err != nil {
 			t.Errorf("initial write on %d failed: %v", i, err)

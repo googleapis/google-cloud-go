@@ -119,7 +119,7 @@ func TestWait(t *testing.T) {
 		3 * time.Second,
 		3 * time.Second,
 	}
-	for i := 0; i < len(s.getTimes)-1; i++ {
+	for i := range len(s.getTimes) - 1 {
 		w := s.getTimes[i+1] - s.getTimes[i]
 		if mw := maxWait[i]; w > mw {
 			t.Errorf("backoff, waited %s, max %s", w, mw)

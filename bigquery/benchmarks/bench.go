@@ -205,7 +205,7 @@ func runBenchmarks(ctx context.Context, client *bigquery.Client, filename string
 			query := client.Query(sql)
 			prof.Query = query
 
-			for i := 0; i < reruns; i++ {
+			for range reruns {
 				fmt.Printf(".")
 				prof.Runs = append(prof.Runs, measureSelectQuery(ctx, query))
 			}

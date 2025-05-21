@@ -32,7 +32,7 @@ func TestOnGCE_Stress(t *testing.T) {
 		t.Skip("skipping in -short mode")
 	}
 	var last bool
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		onGCEOnce = sync.Once{}
 
 		now := OnGCEWithContext(ctx)

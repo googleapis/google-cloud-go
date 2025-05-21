@@ -306,7 +306,7 @@ func (c *Cache) listFields(t reflect.Type) ([]Field, error) {
 				continue
 			}
 			visited[t] = true
-			for i := 0; i < t.NumField(); i++ {
+			for i := range t.NumField() {
 				f := t.Field(i)
 
 				exported := (f.PkgPath == "")

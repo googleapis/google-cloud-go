@@ -387,7 +387,7 @@ func messageDependsOnFile(msg protoreflect.MessageDescriptor, file protoreflect.
 		}
 	}
 	fileMessages := file.Messages()
-	for i := 0; i < fileMessages.Len(); i++ {
+	for i := range fileMessages.Len() {
 		childMsg := fileMessages.Get(i)
 		if msg.FullName() == childMsg.FullName() {
 			return true
@@ -504,7 +504,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 	fullProtoName := string(in.FullName())
 	resultDP.Name = proto.String(normalizeName(fullProtoName))
 	visitedTypes.add(fullProtoName)
-	for i := 0; i < in.Fields().Len(); i++ {
+	for i := range in.Fields().Len() {
 		inField := in.Fields().Get(i)
 		resultFDP := protodesc.ToFieldDescriptorProto(inField)
 		// For messages without explicit presence, use default values to match implicit presence behavior.

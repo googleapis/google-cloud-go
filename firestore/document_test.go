@@ -180,7 +180,7 @@ func TestDataTo(t *testing.T) {
 	// https://github.com/googleapis/google-cloud-go/issues/4722
 	want := &test{Tags: []string{"value3", "value4"}}
 
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		got := &test{}
 		if err := doc.DataTo(got); err != nil {
 			t.Fatal(err)

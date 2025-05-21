@@ -52,7 +52,7 @@ func TestWatchRecv(t *testing.T) {
 	srv.addRPC(request, []interface{}{status.Error(codes.Unavailable, "")})
 	srv.addRPC(request, []interface{}{status.Error(codes.Unauthenticated, "")})
 	srv.addRPC(request, []interface{}{response})
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		res, err := ws.recv()
 		if err != nil {
 			t.Fatal(err)

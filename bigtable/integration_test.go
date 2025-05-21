@@ -872,7 +872,7 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	// Do highly concurrent reads/writes.
 	const maxConcurrency = 1000
 	var wg sync.WaitGroup
-	for i := 0; i < maxConcurrency; i++ {
+	for range maxConcurrency {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -928,7 +928,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		mut := NewMutation()
 		mut.Set(family, "col", 1000, []byte("test"))
 		if err := table.Apply(ctx, fmt.Sprintf("row-%v", i), mut); err != nil {
@@ -1034,7 +1034,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	medBytes := make([]byte, 82<<10)
 	fill(medBytes, nonsense)
 	sem := make(chan int, 50) // do up to 50 mutations at a time.
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		mut := NewMutation()
 		mut.Set(ts, "big-scan", 1000, medBytes)
 		row := fmt.Sprintf("row-%d", i)
@@ -2437,7 +2437,7 @@ func TestIntegration_Admin(t *testing.T) {
 
 	prefixes := []string{"a", "b", "c"}
 	for _, prefix := range prefixes {
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			mut := NewMutation()
 			mut.Set("cf", "col", 1000, []byte("1"))
 			if err := tbl.Apply(ctx, fmt.Sprintf("%v-%v", prefix, i), mut); err != nil {
@@ -2877,7 +2877,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 
 	// The encryption info can take 30-500s (currently about 120-190s) to
 	// become ready.
-	for i := 0; i < 50; i++ {
+	for range 50 {
 		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
@@ -5974,7 +5974,7 @@ func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, b
 
 	start := time.Now()
 	for time.Since(start) < 2*time.Minute {
-		for i := 0; i < numRPCsToSend; i++ {
+		for range numRPCsToSend {
 			_, _ = table.ReadRow(ctx, "j§adams")
 			if _, useDP := isDirectPathRemoteAddress(testEnv); useDP != blackholeDP {
 				numCount++

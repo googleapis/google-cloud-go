@@ -535,7 +535,7 @@ func TestValidationRoundtripRepeated(t *testing.T) {
 	}
 	// Confirm the same values out the other side.
 	wantVals := []int64{1, 2, 4, -88}
-	for i := 0; i < list.Len(); i++ {
+	for i := range list.Len() {
 		got := list.Get(i).Int()
 		if got != wantVals[i] {
 			t.Errorf("expected elem %d to be %d, was %d", i, wantVals[i], got)

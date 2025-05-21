@@ -239,7 +239,7 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 		return &singleConnPool{conn}, nil
 	}
 	pool := &roundRobinConnPool{}
-	for i := 0; i < opts.PoolSize; i++ {
+	for range opts.PoolSize {
 		conn, err := dial(ctx, secure, opts)
 		if err != nil {
 			// ignore close error, if any

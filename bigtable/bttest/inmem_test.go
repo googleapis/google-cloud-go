@@ -106,7 +106,7 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 			}},
 		}
 	}
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -296,7 +296,7 @@ func TestSampleRowKeys(t *testing.T) {
 	// Populate the table
 	val := []byte("value")
 	rowCount := 1000
-	for i := 0; i < rowCount; i++ {
+	for i := range rowCount {
 		req := &btpb.MutateRowRequest{
 			TableName: tbl.Name,
 			RowKey:    []byte("row-" + strconv.Itoa(i)),
@@ -363,7 +363,7 @@ func SampleRowKeysConcurrentTest(t *testing.T, antagonist AntagonistFunction) {
 	// Populate the table
 	populate := func() {
 		rowCount := 100
-		for i := 0; i < rowCount; i++ {
+		for i := range rowCount {
 			req := &btpb.MutateRowRequest{
 				TableName: tbl.Name,
 				RowKey:    []byte("row-" + strconv.Itoa(i)),
@@ -387,7 +387,7 @@ func SampleRowKeysConcurrentTest(t *testing.T, antagonist AntagonistFunction) {
 	go func() {
 		populate()
 		mock := &MockSampleRowKeysServer{}
-		for i := 0; i < attempts; i++ {
+		for range attempts {
 			if err := s.SampleRowKeys(&btpb.SampleRowKeysRequest{TableName: tbl.Name}, mock); err != nil {
 				t.Errorf("SampleRowKeys error: %v", err)
 			}
@@ -395,7 +395,7 @@ func SampleRowKeysConcurrentTest(t *testing.T, antagonist AntagonistFunction) {
 		finished <- true
 	}()
 	go antagonist(s, attempts, tbl.Name, finished)
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		select {
 		case <-finished:
 		case <-time.After(2 * time.Second):
@@ -407,7 +407,7 @@ func SampleRowKeysConcurrentTest(t *testing.T, antagonist AntagonistFunction) {
 func TestSampleRowKeysVsDropRowRange(t *testing.T) {
 	SampleRowKeysConcurrentTest(t, func(s *server, attempts int, tblName string, finished chan (bool)) {
 		ctx := context.Background()
-		for i := 0; i < attempts; i++ {
+		for range attempts {
 			req := &btapb.DropRowRangeRequest{
 				Name:   tblName,
 				Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{DeleteAllDataFromTable: true},
@@ -423,7 +423,7 @@ func TestSampleRowKeysVsDropRowRange(t *testing.T) {
 func TestSampleRowKeysVsModifyColumnFamilies(t *testing.T) {
 	SampleRowKeysConcurrentTest(t, func(s *server, attempts int, tblName string, finished chan (bool)) {
 		ctx := context.Background()
-		for i := 0; i < attempts; i++ {
+		for range attempts {
 			req := &btapb.ModifyColumnFamiliesRequest{
 				Name: tblName,
 				Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
@@ -435,7 +435,7 @@ func TestSampleRowKeysVsModifyColumnFamilies(t *testing.T) {
 				t.Fatalf("Creating column family cf2: %v", err)
 			}
 			rowCount := 100
-			for i := 0; i < rowCount; i++ {
+			for i := range rowCount {
 				req := &btpb.MutateRowRequest{
 					TableName: tblName,
 					RowKey:    []byte("row-" + strconv.Itoa(i)),
@@ -558,7 +558,7 @@ func TestGC(t *testing.T) {
 	}
 
 	// Populate the table
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		req := &btpb.MutateRowRequest{
 			TableName: tblInfo.Name,
 			RowKey:    []byte(rowKey),
@@ -623,7 +623,7 @@ func TestDropRowRange(t *testing.T) {
 	count := 3
 	doWrite := func() {
 		for _, prefix := range prefixes {
-			for i := 0; i < count; i++ {
+			for i := range count {
 				req := &btpb.MutateRowRequest{
 					TableName: tblInfo.Name,
 					RowKey:    []byte(prefix + strconv.Itoa(i)),

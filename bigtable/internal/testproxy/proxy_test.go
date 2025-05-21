@@ -77,7 +77,7 @@ func populateTable(bts *bttest.Server) error {
 
 	// Create column families (3 is an arbitrarily sufficient number)
 	count := 3
-	for i := 0; i < count; i++ {
+	for i := range count {
 		cfName := fmt.Sprintf("%s%d", columnFamily, i)
 		if err := adminClient.CreateColumnFamily(ctx, tableID, cfName); err != nil {
 			return fmt.Errorf("testproxy setup: can't create column family: %s", cfName)
@@ -93,9 +93,9 @@ func populateTable(bts *bttest.Server) error {
 
 	t := dataClient.Open(tableID)
 
-	for fc := 0; fc < count; fc++ {
+	for fc := range count {
 		for cc := count; cc > 0; cc-- {
-			for tc := 0; tc < count; tc++ {
+			for range count {
 				rmw := bigtable.NewReadModifyWrite()
 				rmw.AppendValue(fmt.Sprintf("%s%d", columnFamily, fc), fmt.Sprintf("coll%d", cc), []byte("test data"))
 

@@ -534,7 +534,7 @@ func TestIntegration_GetAll(t *testing.T) {
 	coll := integrationColl(t)
 	ctx := context.Background()
 	var docRefs []*DocumentRef
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
 		if i != 3 {
@@ -588,7 +588,7 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 	h := testHelper{t}
 	coll := integrationColl(t)
 	var wantDocRefs []*DocumentRef
-	for i := 0; i < count; i++ {
+	for i := range count {
 		doc := coll.Doc("getRunWithOptionsTestcases" + fmt.Sprint(i))
 		wantDocRefs = append(wantDocRefs, doc)
 		h.mustCreate(doc, getAll{N: i})
@@ -928,7 +928,7 @@ func TestIntegration_Collections(t *testing.T) {
 		t.Errorf("got %d collections, want 0", len(got))
 	}
 	var want []*CollectionRef
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		id := collectionIDs.New()
 		cr := doc.Collection(id)
 		want = append(want, cr)
@@ -1267,7 +1267,7 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	h := testHelper{t}
 	var wants []map[string]interface{}
 	var createdDocRefs []*DocumentRef
-	for i := 0; i < 8; i++ {
+	for i := range 8 {
 		doc := coll.NewDoc()
 		createdDocRefs = append(createdDocRefs, doc)
 
@@ -1451,7 +1451,7 @@ func TestIntegration_QueryName(t *testing.T) {
 	coll := integrationColl(t)
 	var wantIDs []string
 	var docRefs []*DocumentRef
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, map[string]interface{}{"nm": 1})
@@ -2518,7 +2518,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	// Create documents in a collection sufficient to trigger multiple partitions.
 	batch := iClient.Batch()
 	deleteBatch := iClient.Batch()
-	for i := 0; i < documentCount; i++ {
+	for i := range documentCount {
 		doc := coll.Doc(fmt.Sprintf("doc%d", i))
 		batch.Create(doc, integrationTestMap)
 		deleteBatch.Delete(doc)
@@ -2716,7 +2716,7 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	var jobs []*BulkWriterJob
 
 	// Test a slew of writes sent at the BulkWriter
-	for i := 0; i < numNewWrites; i++ {
+	for range numNewWrites {
 		d := iColl.NewDoc()
 		docRefs = append(docRefs, d)
 		jb, err := bw.Create(d, f)
@@ -3310,7 +3310,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 	})
 
 	// create documents with vector field
-	for i := 0; i < len(beans); i++ {
+	for i := range len(beans) {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, beans[i])

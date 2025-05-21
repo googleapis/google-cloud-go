@@ -31,7 +31,7 @@ import (
 func TestStorageIteratorRetry(t *testing.T) {
 	settings := defaultReadClientSettings()
 	randomErrors := []error{} // generate more errors than the # of workers
-	for i := 0; i < settings.maxWorkerCount+2; i++ {
+	for i := range settings.maxWorkerCount + 2 {
 		randomErrors = append(randomErrors, fmt.Errorf("random error %d", i))
 	}
 	cancelledCtx, cancel := context.WithCancel(context.Background())

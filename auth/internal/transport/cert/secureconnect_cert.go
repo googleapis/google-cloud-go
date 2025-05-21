@@ -95,7 +95,7 @@ func (s *secureConnectSource) getClientCertificate(info *tls.CertificateRequestI
 		return s.cachedCert, nil
 	}
 	// Expand OS environment variables in the cert provider command such as "$HOME".
-	for i := 0; i < len(s.metadata.Cmd); i++ {
+	for i := range len(s.metadata.Cmd) {
 		s.metadata.Cmd[i] = os.ExpandEnv(s.metadata.Cmd[i])
 	}
 	command := s.metadata.Cmd

@@ -117,7 +117,7 @@ func valueSavers(src interface{}) ([]ValueSaver, error) {
 
 	}
 	var savers []ValueSaver
-	for i := 0; i < srcVal.Len(); i++ {
+	for i := range srcVal.Len() {
 		s := srcVal.Index(i).Interface()
 		saver, ok, err := toValueSaver(s)
 		if err != nil {

@@ -1282,7 +1282,7 @@ func TestLogFlushRace(t *testing.T) {
 		logging.EntryCountThreshold(100)) // small bundle size to increase interleaving
 	var wgf, wgl sync.WaitGroup
 	donec := make(chan struct{})
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		wgl.Add(1)
 		go func() {
 			defer wgl.Done()
@@ -1291,7 +1291,7 @@ func TestLogFlushRace(t *testing.T) {
 			}
 		}()
 	}
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		wgf.Add(1)
 		go func() {
 			defer wgf.Done()
@@ -1605,7 +1605,7 @@ func TestWriteLogEntriesSizeLimit(t *testing.T) {
 	logger := client.Logger("test")
 	entry := logging.Entry{Payload: strings.Repeat("1", 250000)}
 
-	for i := 0; i < 200; i++ {
+	for range 200 {
 		logger.Log(entry)
 	}
 }

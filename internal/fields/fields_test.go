@@ -214,7 +214,7 @@ func validateFunc(t reflect.Type) (err error) {
 		return errors.New("non-struct type used")
 	}
 
-	for i := 0; i < t.NumField(); i++ {
+	for i := range t.NumField() {
 		if t.Field(i).Type.Kind() == reflect.Slice {
 			return fmt.Errorf("slice field found at field %s on struct %s", t.Field(i).Name, t.Name())
 		}

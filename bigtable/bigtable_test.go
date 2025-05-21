@@ -351,7 +351,7 @@ func TestGroupEntries(t *testing.T) {
 
 func buildEntry(numMutations int) *entryErr {
 	var muts []*btpb.Mutation
-	for i := 0; i < numMutations; i++ {
+	for range numMutations {
 		muts = append(muts, &btpb.Mutation{})
 	}
 	return &entryErr{Entry: &btpb.MutateRowsRequest_Entry{Mutations: muts}}

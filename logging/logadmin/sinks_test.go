@@ -350,7 +350,7 @@ func TestListSinks(t *testing.T) {
 	ctx := context.Background()
 	var sinks []*Sink
 	want := map[string]*Sink{}
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		s := &Sink{
 			ID:             sinkIDs.New(),
 			Destination:    testSinkDestination,

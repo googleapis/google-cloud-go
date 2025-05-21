@@ -294,7 +294,7 @@ func BenchmarkRoutingParallel(b *testing.B) {
 		var explicitWriters []*ManagedStream
 		var defaultWriters []*ManagedStream
 
-		for i := 0; i < bm.numWriters; i++ {
+		for range bm.numWriters {
 			wCtx, wCancel := context.WithCancel(ctx)
 			writer := &ManagedStream{
 				id:             newUUID(writerIDPrefix),
@@ -305,7 +305,7 @@ func BenchmarkRoutingParallel(b *testing.B) {
 			}
 			explicitWriters = append(explicitWriters, writer)
 		}
-		for i := 0; i < bm.numDefaultWriters; i++ {
+		for range bm.numDefaultWriters {
 			wCtx, wCancel := context.WithCancel(ctx)
 			writer := &ManagedStream{
 				id:             newUUID(writerIDPrefix),
@@ -339,7 +339,7 @@ func BenchmarkRoutingParallel(b *testing.B) {
 			b.Run(benchName, func(b *testing.B) {
 				r := rand.New(rand.NewSource(1))
 				b.ResetTimer()
-				for i := 0; i < b.N; i++ {
+				for range b.N {
 					// pick a random explicit writer each time.
 					writer := explicitWriters[r.Intn(bm.numWriters)]
 					pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
@@ -374,7 +374,7 @@ func BenchmarkRoutingParallel(b *testing.B) {
 			b.Run(benchName, func(b *testing.B) {
 				r := rand.New(rand.NewSource(1))
 				b.ResetTimer()
-				for i := 0; i < b.N; i++ {
+				for range b.N {
 					// pick a random default writer each time.
 					writer := defaultWriters[r.Intn(bm.numDefaultWriters)]
 					pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
@@ -443,7 +443,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 
 			var writers []*ManagedStream
 
-			for i := 0; i < numWriters; i++ {
+			for i := range numWriters {
 				wCtx, wCancel := context.WithCancel(ctx)
 				writer := &ManagedStream{
 					id:             newUUID(writerIDPrefix),
@@ -463,7 +463,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 			r := rand.New(rand.NewSource(time.Now().UnixNano()))
 			countLoad := make([]int, numConnections)
 			byteLoad := make([]int, numConnections)
-			for i := 0; i < numConnections; i++ {
+			for i := range numConnections {
 				countLoad[i] = r.Intn(maxFlowInserts)
 				byteLoad[i] = r.Intn(maxFlowBytes)
 			}
@@ -473,7 +473,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 				if b.N > 9999 {
 					b.Skip("benchmark unstable, only run with -benchtime=NNNNx")
 				}
-				for i := 0; i < b.N; i++ {
+				for range b.N {
 					b.StopTimer()
 					// Each iteration, we reset the loads to the predetermined values, and repoint
 					// all writers to the first connection.

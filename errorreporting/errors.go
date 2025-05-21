@@ -223,7 +223,7 @@ func chopStack(s []byte) string {
 		return string(s)
 	}
 	stack = stack[panicLine+1:]
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		nextLine := bytes.IndexByte(stack, '\n')
 		if nextLine == -1 {
 			return string(s)

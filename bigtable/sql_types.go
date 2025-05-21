@@ -401,7 +401,7 @@ func (s ArraySQLType) valueProto(value any) (*btpb.Value, error) {
 
 	valReflectValue := reflect.ValueOf(value)
 	pbValues := make([]*btpb.Value, 0, valReflectValue.Len())
-	for i := 0; i < valReflectValue.Len(); i++ {
+	for i := range valReflectValue.Len() {
 		elem := valReflectValue.Index(i).Interface()
 		elemPbVal, err := s.ElemType.valueProto(elem)
 		if err != nil {

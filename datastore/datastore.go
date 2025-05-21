@@ -247,7 +247,7 @@ func keyToProto(k *Key) *pb.Key {
 
 	// The path should be in order [grandparent, parent, child]
 	// We did it backward above, so reverse back.
-	for i := 0; i < len(path)/2; i++ {
+	for i := range len(path) / 2 {
 		path[i], path[len(path)-i-1] = path[len(path)-i-1], path[i]
 	}
 

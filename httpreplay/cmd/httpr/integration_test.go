@@ -155,7 +155,7 @@ func start(t *testing.T, modeFlag, filename string) (*exec.Cmd, *http.Transport,
 	}
 	// Wait for the server to come up.
 	serverUp := false
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		if conn, err := net.Dial("tcp", "localhost:"+cport); err == nil {
 			conn.Close()
 			serverUp = true
