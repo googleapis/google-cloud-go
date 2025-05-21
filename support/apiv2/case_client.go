@@ -245,12 +245,6 @@ func (c *CaseClient) Connection() *grpc.ClientConn {
 }
 
 // GetCase retrieve a case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.GetCase(ctx, req, opts...)
 }
@@ -260,23 +254,11 @@ func (c *CaseClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequest,
 // For example, listing cases under an organization only returns the cases
 // that are directly parented by that organization. To retrieve cases
 // under an organization and its projects, use cases.search.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseClient) ListCases(ctx context.Context, req *supportpb.ListCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	return c.internalClient.ListCases(ctx, req, opts...)
 }
 
 // SearchCases search for cases using a query.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseClient) SearchCases(ctx context.Context, req *supportpb.SearchCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	return c.internalClient.SearchCases(ctx, req, opts...)
 }
@@ -286,23 +268,11 @@ func (c *CaseClient) SearchCases(ctx context.Context, req *supportpb.SearchCases
 // It must have the following fields set: display_name, description,
 // classification, and priority. If you’re just testing the API and don’t
 // want to route your case to an agent, set testCase=true.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseClient) CreateCase(ctx context.Context, req *supportpb.CreateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.CreateCase(ctx, req, opts...)
 }
 
 // UpdateCase update a case. Only some fields can be updated.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.UpdateCase(ctx, req, opts...)
 }
@@ -314,23 +284,11 @@ func (c *CaseClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCaseRe
 // https://cloud.google.com/support (at https://cloud.google.com/support) and look for ‘Technical support
 // escalations’ in the feature list to find out which ones let you
 // do that.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseClient) EscalateCase(ctx context.Context, req *supportpb.EscalateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.EscalateCase(ctx, req, opts...)
 }
 
 // CloseCase close a case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseClient) CloseCase(ctx context.Context, req *supportpb.CloseCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.CloseCase(ctx, req, opts...)
 }
@@ -345,12 +303,6 @@ func (c *CaseClient) CloseCase(ctx context.Context, req *supportpb.CloseCaseRequ
 // months. When a classification is deactivated, this endpoint immediately
 // stops returning it. After six months, case.create requests using the
 // classification will fail.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseClient) SearchCaseClassifications(ctx context.Context, req *supportpb.SearchCaseClassificationsRequest, opts ...gax.CallOption) *CaseClassificationIterator {
 	return c.internalClient.SearchCaseClassifications(ctx, req, opts...)
 }
@@ -420,7 +372,7 @@ func (c *caseGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *caseGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -488,7 +440,7 @@ func defaultCaseRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *caseRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -734,12 +686,6 @@ func (c *caseGRPCClient) SearchCaseClassifications(ctx context.Context, req *sup
 }
 
 // GetCase retrieve a case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -794,12 +740,6 @@ func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 // For example, listing cases under an organization only returns the cases
 // that are directly parented by that organization. To retrieve cases
 // under an organization and its projects, use cases.search.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	it := &CaseIterator{}
 	req = proto.Clone(req).(*supportpb.ListCasesRequest)
@@ -881,12 +821,6 @@ func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCases
 }
 
 // SearchCases search for cases using a query.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseRESTClient) SearchCases(ctx context.Context, req *supportpb.SearchCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	it := &CaseIterator{}
 	req = proto.Clone(req).(*supportpb.SearchCasesRequest)
@@ -972,12 +906,6 @@ func (c *caseRESTClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 // It must have the following fields set: display_name, description,
 // classification, and priority. If you’re just testing the API and don’t
 // want to route your case to an agent, set testCase=true.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseRESTClient) CreateCase(ctx context.Context, req *supportpb.CreateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCase()
@@ -1035,12 +963,6 @@ func (c *caseRESTClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 }
 
 // UpdateCase update a case. Only some fields can be updated.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCase()
@@ -1111,12 +1033,6 @@ func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 // https://cloud.google.com/support (at https://cloud.google.com/support) and look for ‘Technical support
 // escalations’ in the feature list to find out which ones let you
 // do that.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseRESTClient) EscalateCase(ctx context.Context, req *supportpb.EscalateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1173,12 +1089,6 @@ func (c *caseRESTClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 }
 
 // CloseCase close a case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1244,12 +1154,6 @@ func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 // months. When a classification is deactivated, this endpoint immediately
 // stops returning it. After six months, case.create requests using the
 // classification will fail.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseRESTClient) SearchCaseClassifications(ctx context.Context, req *supportpb.SearchCaseClassificationsRequest, opts ...gax.CallOption) *CaseClassificationIterator {
 	it := &CaseClassificationIterator{}
 	req = proto.Clone(req).(*supportpb.SearchCaseClassificationsRequest)

@@ -87,6 +87,7 @@ deep-remove-regex:
   - /cloudtasks/apiv2beta3/
   - /commerce/consumer/procurement/apiv1
   - /compute/apiv1
+  - /compute/apiv1beta
   - /confidentialcomputing/apiv1
   - /confidentialcomputing/apiv1alpha1
   - /config/apiv1/
@@ -230,6 +231,7 @@ deep-remove-regex:
   - /internal/generated/snippets/cloudtasks/apiv2beta3/
   - /internal/generated/snippets/commerce/consumer/procurement/apiv1
   - /internal/generated/snippets/compute/apiv1
+  - /internal/generated/snippets/compute/apiv1beta
   - /internal/generated/snippets/confidentialcomputing/apiv1
   - /internal/generated/snippets/confidentialcomputing/apiv1alpha1
   - /internal/generated/snippets/contactcenterinsights/apiv1/
@@ -822,6 +824,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/compute/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/compute/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/cloud/confidentialcomputing/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go
@@ -845,7 +849,7 @@ deep-copy-regex:
   - source: /google/cloud/dataform/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/dataform/v1beta1/cloud.google.com/go
-    dest: /    
+    dest: /
   - source: /google/cloud/datafusion/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/datalabeling/v1beta1/cloud.google.com/go
