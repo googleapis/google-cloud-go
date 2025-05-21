@@ -184,7 +184,7 @@ func (c *Client) Doc(path string) *DocumentRef {
 	return doc
 }
 
-// DocFromResourceName creates a reference to a document from its full resource name.
+// DocFromFullPath creates a reference to a document from its full resource name.
 // The resource name must be in the format:
 // "projects/{projectID}/databases/{databaseID}/documents/{collectionID}/{documentID}/..."
 //
@@ -194,7 +194,7 @@ func (c *Client) Doc(path string) *DocumentRef {
 //   - The projectID or databaseID in the resourceName do not match the client's configuration.
 //   - The resourceName refers to a collection instead of a document (i.e., has an odd number of segments after "/documents/").
 //   - The resourceName contains any empty path segments.
-func (c *Client) DocFromResourceName(resourceName string) *DocumentRef {
+func (c *Client) DocFromFullPath(resourceName string) *DocumentRef {
 	if resourceName == "" {
 		return nil
 	}

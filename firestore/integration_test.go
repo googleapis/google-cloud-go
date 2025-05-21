@@ -495,7 +495,7 @@ func TestIntegration_Get(t *testing.T) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}
 
-	docRefFromResourceName := integrationClient(t).DocFromResourceName(ds.Ref.Path)
+	docRefFromResourceName := integrationClient(t).DocFromFullPath(ds.Ref.Path)
 	ds = h.mustGet(docRefFromResourceName)
 	got = ds.Data()
 	if want := wantIntegrationTestMap; !testEqual(got, want) {

@@ -310,7 +310,7 @@ func TestClientDocFromResourceName(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.client.DocFromResourceName(tt.resourceName)
+			got := tt.client.DocFromFullPath(tt.resourceName)
 			if !testEqual(got, tt.want) {
 				t.Errorf("DocFromResourceName(%q) got %+v, want %+v", tt.resourceName, got, tt.want)
 			}
