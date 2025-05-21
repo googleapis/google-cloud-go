@@ -984,7 +984,7 @@ func (p *sessionPool) sessionReady(ctx context.Context, s *session) {
 	if p.idleList.Len() > 0 {
 		pos := rand.Intn(p.idleList.Len())
 		before := p.idleList.Front()
-		for i := 0; i < pos; i++ {
+		for range pos {
 			before = before.Next()
 		}
 		s.setIdleList(p.idleList.InsertBefore(s, before))
@@ -1121,7 +1121,7 @@ func (p *sessionPool) getRoundRobinClient() spannerClient {
 	}()
 	if len(p.clientPool) == 0 {
 		p.clientPool = make([]spannerClient, p.sc.connPool.Num())
-		for i := 0; i < p.sc.connPool.Num(); i++ {
+		for i := range p.sc.connPool.Num() {
 			c, err := p.sc.nextClient()
 			if err != nil {
 				// If we can't get a client, use the session's client.
@@ -1561,7 +1561,7 @@ func newMaintenanceWindow(maxOpened uint64) *maintenanceWindow {
 	// Initialize the rolling window with max values to prevent the maintainer
 	// from deleting sessions before a complete window of 10 cycles has
 	// finished.
-	for i := 0; i < maintenanceWindowSize; i++ {
+	for i := range maintenanceWindowSize {
 		mw.maxSessionsCheckedOut[i] = maxOpened
 	}
 	return mw

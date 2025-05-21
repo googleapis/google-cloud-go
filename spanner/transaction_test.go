@@ -1524,7 +1524,7 @@ func TestLastStatement_Update(t *testing.T) {
 	if g, w := len(executeRequests), 2; g != w {
 		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
 	}
-	for i := 0; i < len(executeRequests); i++ {
+	for i := range len(executeRequests) {
 		if g, w := executeRequests[i].(*sppb.ExecuteSqlRequest).LastStatement, i == len(executeRequests)-1; g != w {
 			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
 		}
@@ -1538,7 +1538,7 @@ func TestLastStatement_Query(t *testing.T) {
 	defer teardown()
 
 	if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
-		for i := 0; i < 2; i++ {
+		for i := range 2 {
 			iter := tx.QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{LastStatement: i == 1})
 			for {
 				_, err := iter.Next()
@@ -1560,7 +1560,7 @@ func TestLastStatement_Query(t *testing.T) {
 	if g, w := len(executeRequests), 2; g != w {
 		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
 	}
-	for i := 0; i < len(executeRequests); i++ {
+	for i := range len(executeRequests) {
 		if g, w := executeRequests[i].(*sppb.ExecuteSqlRequest).LastStatement, i == len(executeRequests)-1; g != w {
 			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
 		}
@@ -1589,7 +1589,7 @@ func TestLastStatement_BatchUpdate(t *testing.T) {
 	if g, w := len(batchRequests), 2; g != w {
 		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
 	}
-	for i := 0; i < len(batchRequests); i++ {
+	for i := range len(batchRequests) {
 		if g, w := batchRequests[i].(*sppb.ExecuteBatchDmlRequest).LastStatements, i == len(batchRequests)-1; g != w {
 			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
 		}
@@ -1617,7 +1617,7 @@ func TestLastStatement_StmtBasedTransaction_Update(t *testing.T) {
 	if g, w := len(executeRequests), 2; g != w {
 		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
 	}
-	for i := 0; i < len(executeRequests); i++ {
+	for i := range len(executeRequests) {
 		if g, w := executeRequests[i].(*sppb.ExecuteSqlRequest).LastStatement, i == len(executeRequests)-1; g != w {
 			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
 		}
@@ -1634,7 +1634,7 @@ func TestLastStatement_StmtBasedTx_Query(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create transaction: %v", err)
 	}
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{LastStatement: i == 1})
 		for {
 			_, err := iter.Next()
@@ -1652,7 +1652,7 @@ func TestLastStatement_StmtBasedTx_Query(t *testing.T) {
 	if g, w := len(executeRequests), 2; g != w {
 		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
 	}
-	for i := 0; i < len(executeRequests); i++ {
+	for i := range len(executeRequests) {
 		if g, w := executeRequests[i].(*sppb.ExecuteSqlRequest).LastStatement, i == len(executeRequests)-1; g != w {
 			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
 		}
@@ -1680,7 +1680,7 @@ func TestLastStatement_StmtBasedTx_BatchUpdate(t *testing.T) {
 	if g, w := len(batchRequests), 2; g != w {
 		t.Fatalf("num requests mismatch\n Got: %v\nWant: %v", g, w)
 	}
-	for i := 0; i < len(batchRequests); i++ {
+	for i := range len(batchRequests) {
 		if g, w := batchRequests[i].(*sppb.ExecuteBatchDmlRequest).LastStatements, i == len(batchRequests)-1; g != w {
 			t.Fatalf("%d: last statement mismatch\n Got: %v\nWant: %v", i, g, w)
 		}
@@ -1705,7 +1705,7 @@ func compareRequests(want []interface{}, got []interface{}) error {
 func compareRequestsWithConfig(want []interface{}, got []interface{}, config *SessionPoolConfig) error {
 	if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 		sessReq := 0
-		for i := 0; i < len(want); i++ {
+		for i := range len(want) {
 			if reflect.TypeOf(want[i]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 				sessReq = i
 				break
@@ -1719,7 +1719,7 @@ func compareRequestsWithConfig(want []interface{}, got []interface{}, config *Se
 		}
 		if reflect.TypeOf(got[0]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 			muxSessionIndex := 0
-			for i := 0; i < len(got); i++ {
+			for i := range len(got) {
 				if reflect.TypeOf(got[i]) == reflect.TypeOf(&sppb.CreateSessionRequest{}) {
 					muxSessionIndex = i
 					break

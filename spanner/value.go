@@ -4496,7 +4496,7 @@ func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{
 func getAllFieldNames(v reflect.Value) []string {
 	var names []string
 	typeOfT := v.Type()
-	for i := 0; i < v.NumField(); i++ {
+	for i := range v.NumField() {
 		f := v.Field(i)
 		fieldType := typeOfT.Field(i)
 		exported := (fieldType.PkgPath == "")
@@ -5298,7 +5298,7 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 	// or an array.
 	if destination.Kind() == reflect.Slice || destination.Kind() == reflect.Array {
 		sourceSlice := reflect.ValueOf(v)
-		for i := 0; i < destination.Len(); i++ {
+		for i := range destination.Len() {
 			source := sourceSlice.Index(i)
 			destination.Index(i).Set(source.Convert(destination.Type().Elem()))
 		}
@@ -5338,7 +5338,7 @@ func encodeStruct(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	stf := make([]*sppb.StructType_Field, 0, typ.NumField())
 	stv := make([]*proto3.Value, 0, typ.NumField())
 
-	for i := 0; i < typ.NumField(); i++ {
+	for i := range typ.NumField() {
 		// If the field has a 'spanner' tag, use the value of that tag as the field name.
 		// This is used to build STRUCT types with unnamed/duplicate fields.
 		sf := typ.Field(i)
@@ -5395,7 +5395,7 @@ func encodeStructArray(v interface{}) (*proto3.Value, *sppb.Type, error) {
 
 	values := make([]*proto3.Value, 0, sliceval.Len())
 
-	for i := 0; i < sliceval.Len(); i++ {
+	for i := range sliceval.Len() {
 		ev, _, err := encodeStruct(sliceval.Index(i).Interface())
 		if err != nil {
 			return nil, nil, err
@@ -5514,7 +5514,7 @@ func encodeValueArray(vs []interface{}) (*proto3.ListValue, error) {
 func encodeArray(len int, at func(int) interface{}) (*proto3.Value, error) {
 	vs := make([]*proto3.Value, len)
 	var err error
-	for i := 0; i < len; i++ {
+	for i := range len {
 		vs[i], _, err = encodeValue(at(i))
 		if err != nil {
 			return nil, err
@@ -5526,7 +5526,7 @@ func encodeArray(len int, at func(int) interface{}) (*proto3.Value, error) {
 func encodeProtoMessageArray(len int, at func(int) reflect.Value) (*proto3.Value, error) {
 	vs := make([]*proto3.Value, len)
 	var err error
-	for i := 0; i < len; i++ {
+	for i := range len {
 		v := at(i).Interface().(proto.Message)
 		vs[i], _, err = encodeValue(v)
 		if err != nil {
@@ -5539,7 +5539,7 @@ func encodeProtoMessageArray(len int, at func(int) reflect.Value) (*proto3.Value
 func encodeProtoEnumArray(len int, at func(int) reflect.Value) (*proto3.Value, error) {
 	vs := make([]*proto3.Value, len)
 	var err error
-	for i := 0; i < len; i++ {
+	for i := range len {
 		v := at(i).Interface().(protoreflect.Enum)
 		vs[i], _, err = encodeValue(v)
 		if err != nil {

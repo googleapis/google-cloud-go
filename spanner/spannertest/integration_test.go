@@ -257,24 +257,24 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Insert(tableName,
 			[]string{"FirstName", "LastName", "Alias", "Age"},
-			[]interface{}{"Steve", "Rogers", "Captain America", 101}),
+			[]any{"Steve", "Rogers", "Captain America", 101}),
 		spanner.Insert(tableName,
 			[]string{"LastName", "FirstName", "Age", "Alias"},
-			[]interface{}{"Romanoff", "Natasha", 35, "Black Widow"}),
+			[]any{"Romanoff", "Natasha", 35, "Black Widow"}),
 		spanner.Insert(tableName,
 			[]string{"Age", "Alias", "FirstName", "LastName"},
-			[]interface{}{49, "Iron Man", "Tony", "Stark"}),
+			[]any{49, "Iron Man", "Tony", "Stark"}),
 		spanner.Insert(tableName,
 			[]string{"FirstName", "Alias", "LastName"}, // no Age
-			[]interface{}{"Clark", "Superman", "Kent"}),
+			[]any{"Clark", "Superman", "Kent"}),
 		// Two rows with the same value in one column,
 		// but with distinct primary keys.
 		spanner.Insert(tableName,
 			[]string{"FirstName", "LastName", "Alias"},
-			[]interface{}{"Peter", "Parker", "Spider-Man"}),
+			[]any{"Peter", "Parker", "Spider-Man"}),
 		spanner.Insert(tableName,
 			[]string{"FirstName", "LastName", "Alias"},
-			[]interface{}{"Peter", "Quill", "Star-Lord"}),
+			[]any{"Peter", "Quill", "Star-Lord"}),
 	})
 	if err != nil {
 		t.Fatalf("Applying mutations: %v", err)
@@ -325,7 +325,7 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 
 	// Do a more complex query to find the aliases of the two oldest non-centenarian characters.
 	stmt := spanner.NewStatement(`SELECT Alias FROM ` + tableName + ` WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit`)
-	stmt.Params = map[string]interface{}{
+	stmt.Params = map[string]any{
 		"ageLimit": 100,
 		"limit":    2,
 	}
@@ -350,7 +350,7 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Update(tableName,
 			[]string{"FirstName", "LastName", "Age"},
-			[]interface{}{"Steve", "Rogers", 102}),
+			[]any{"Steve", "Rogers", 102}),
 	})
 	if err != nil {
 		t.Fatalf("Applying mutations: %v", err)
@@ -397,10 +397,10 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Update(tableName,
 			[]string{"FirstName", "LastName", "Allies"},
-			[]interface{}{"Steve", "Rogers", []string{}}),
+			[]any{"Steve", "Rogers", []string{}}),
 		spanner.Update(tableName,
 			[]string{"FirstName", "LastName", "Allies"},
-			[]interface{}{"Tony", "Stark", []string{"Black Widow", "Spider-Man"}}),
+			[]any{"Tony", "Stark", []string{"Black Widow", "Spider-Man"}}),
 	})
 	if err != nil {
 		t.Fatalf("Applying mutations: %v", err)
@@ -436,7 +436,7 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 		// Update one row in place.
 		spanner.Update(tableName,
 			[]string{"FirstName", "LastName", "Allies", "Updated"},
-			[]interface{}{"Tony", "Stark", []string{"Spider-Man", "Professor Hulk"}, spanner.CommitTimestamp}),
+			[]any{"Tony", "Stark", []string{"Spider-Man", "Professor Hulk"}, spanner.CommitTimestamp}),
 	})
 	if err != nil {
 		t.Fatalf("Applying mutations: %v", err)
@@ -463,7 +463,7 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 
 	// Check if IN UNNEST works.
 	stmt = spanner.NewStatement(`SELECT Age FROM ` + tableName + ` WHERE FirstName IN UNNEST(@list)`)
-	stmt.Params = map[string]interface{}{
+	stmt.Params = map[string]any{
 		"list": []string{"Peter", "Steve"},
 	}
 	rows = client.Single().Query(ctx, stmt)
@@ -532,18 +532,18 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 
 	// Insert a subset of columns.
 	_, err = client.Apply(ctx, []*spanner.Mutation{
-		spanner.Insert("Staff", []string{"ID", "Name", "Tenure", "Height"}, []interface{}{1, "Jack", 10, 1.85}),
-		spanner.Insert("Staff", []string{"ID", "Name", "Tenure", "Height"}, []interface{}{2, "Daniel", 11, 1.83}),
+		spanner.Insert("Staff", []string{"ID", "Name", "Tenure", "Height"}, []any{1, "Jack", 10, 1.85}),
+		spanner.Insert("Staff", []string{"ID", "Name", "Tenure", "Height"}, []any{2, "Daniel", 11, 1.83}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting data: %v", err)
 	}
 	// Insert a different set of columns.
 	_, err = client.Apply(ctx, []*spanner.Mutation{
-		spanner.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []interface{}{"Sam", 3, false, 9, 1.75}),
-		spanner.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []interface{}{"Teal'c", 4, true, 8, 1.91}),
-		spanner.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []interface{}{"George", 5, nil, 6, 1.73}),
-		spanner.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []interface{}{"Harry", 6, true, nil, nil}),
+		spanner.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []any{"Sam", 3, false, 9, 1.75}),
+		spanner.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []any{"Teal'c", 4, true, 8, 1.91}),
+		spanner.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []any{"George", 5, nil, 6, 1.73}),
+		spanner.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []any{"Harry", 6, true, nil, nil}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting more data: %v", err)
@@ -558,7 +558,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	// Turns out this guy isn't cool after all.
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		// Missing columns should be left alone.
-		spanner.Update("Staff", []string{"Name", "ID", "Cool"}, []interface{}{"Daniel", 2, false}),
+		spanner.Update("Staff", []string{"Name", "ID", "Cool"}, []any{"Daniel", 2, false}),
 	})
 	if err != nil {
 		t.Fatalf("Updating a row: %v", err)
@@ -575,7 +575,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		t.Fatalf("Reading keys: %v", err)
 	}
 	all := mustSlurpRows(t, ri)
-	wantAll := [][]interface{}{
+	wantAll := [][]any{
 		{"George", int64(6)},
 		{"Sam", int64(9)},
 	}
@@ -595,7 +595,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	ri = client.Single().ReadWithOptions(ctx, "Staff", spanner.AllKeys(), []string{"Tenure", "Name", "Height"},
 		&spanner.ReadOptions{Limit: 4})
 	all = mustSlurpRows(t, ri)
-	wantAll = [][]interface{}{
+	wantAll = [][]any{
 		// Primary key is (Name, ID), so results should come back sorted by Name then ID.
 		{int64(11), "Daniel", 1.83},
 		{int64(6), "George", 1.73},
@@ -615,9 +615,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		t.Fatalf("Adding columns: %v", err)
 	}
 	_, err = client.Apply(ctx, []*spanner.Mutation{
-		spanner.Update("Staff", []string{"Name", "ID", "FirstSeen", "To"}, []interface{}{"Jack", 1, "1994-10-28", nil}),
-		spanner.Update("Staff", []string{"Name", "ID", "FirstSeen", "To"}, []interface{}{"Daniel", 2, "1994-10-28", nil}),
-		spanner.Update("Staff", []string{"Name", "ID", "FirstSeen", "To"}, []interface{}{"George", 5, "1997-07-27", "2008-07-29T11:22:43Z"}),
+		spanner.Update("Staff", []string{"Name", "ID", "FirstSeen", "To"}, []any{"Jack", 1, "1994-10-28", nil}),
+		spanner.Update("Staff", []string{"Name", "ID", "FirstSeen", "To"}, []any{"Daniel", 2, "1994-10-28", nil}),
+		spanner.Update("Staff", []string{"Name", "ID", "FirstSeen", "To"}, []any{"George", 5, "1997-07-27", "2008-07-29T11:22:43Z"}),
 	})
 	if err != nil {
 		t.Fatalf("Updating rows: %v", err)
@@ -626,9 +626,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	// Add some more data, then delete it with a KeyRange.
 	// The queries below ensure that this was all deleted.
 	_, err = client.Apply(ctx, []*spanner.Mutation{
-		spanner.Insert("Staff", []string{"Name", "ID"}, []interface{}{"01", 1}),
-		spanner.Insert("Staff", []string{"Name", "ID"}, []interface{}{"03", 3}),
-		spanner.Insert("Staff", []string{"Name", "ID"}, []interface{}{"06", 6}),
+		spanner.Insert("Staff", []string{"Name", "ID"}, []any{"01", 1}),
+		spanner.Insert("Staff", []string{"Name", "ID"}, []any{"03", 3}),
+		spanner.Insert("Staff", []string{"Name", "ID"}, []any{"06", 6}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting data: %v", err)
@@ -651,9 +651,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	}
 	// Re-add the data and delete with DML.
 	_, err = client.Apply(ctx, []*spanner.Mutation{
-		spanner.Insert("Staff", []string{"Name", "ID"}, []interface{}{"01", 1}),
-		spanner.Insert("Staff", []string{"Name", "ID"}, []interface{}{"03", 3}),
-		spanner.Insert("Staff", []string{"Name", "ID"}, []interface{}{"06", 6}),
+		spanner.Insert("Staff", []string{"Name", "ID"}, []any{"01", 1}),
+		spanner.Insert("Staff", []string{"Name", "ID"}, []any{"03", 3}),
+		spanner.Insert("Staff", []string{"Name", "ID"}, []any{"06", 6}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting data: %v", err)
@@ -680,7 +680,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	}
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		// bytes {0x01 0x00 0x01} encode as base-64 AQAB.
-		spanner.Update("Staff", []string{"Name", "ID", "RawBytes"}, []interface{}{"Jack", 1, []byte{0x01, 0x00, 0x01}}),
+		spanner.Update("Staff", []string{"Name", "ID", "RawBytes"}, []any{"Jack", 1, []byte{0x01, 0x00, 0x01}}),
 	})
 	if err != nil {
 		t.Fatalf("Updating rows: %v", err)
@@ -715,44 +715,44 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		t.Fatalf("Creating sample tables: %v", err)
 	}
 	_, err = client.Apply(ctx, []*spanner.Mutation{
-		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []interface{}{"Adams", 51, 3}),
-		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []interface{}{"Buchanan", 77, 0}),
-		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []interface{}{"Coolidge", 77, 1}),
-		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []interface{}{"Adams", 52, 4}),
-		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []interface{}{"Buchanan", 50, 13}),
+		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []any{"Adams", 51, 3}),
+		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []any{"Buchanan", 77, 0}),
+		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []any{"Coolidge", 77, 1}),
+		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []any{"Adams", 52, 4}),
+		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []any{"Buchanan", 50, 13}),
 
-		spanner.Insert("JoinA", []string{"w", "x", "a"}, []interface{}{1, "a", "a1"}),
-		spanner.Insert("JoinA", []string{"w", "x", "a"}, []interface{}{2, "b", "a2"}),
-		spanner.Insert("JoinA", []string{"w", "x", "a"}, []interface{}{3, "c", "a3"}),
-		spanner.Insert("JoinA", []string{"w", "x", "a"}, []interface{}{3, "d", "a4"}),
+		spanner.Insert("JoinA", []string{"w", "x", "a"}, []any{1, "a", "a1"}),
+		spanner.Insert("JoinA", []string{"w", "x", "a"}, []any{2, "b", "a2"}),
+		spanner.Insert("JoinA", []string{"w", "x", "a"}, []any{3, "c", "a3"}),
+		spanner.Insert("JoinA", []string{"w", "x", "a"}, []any{3, "d", "a4"}),
 
-		spanner.Insert("JoinB", []string{"y", "z", "b"}, []interface{}{2, "k", "b1"}),
-		spanner.Insert("JoinB", []string{"y", "z", "b"}, []interface{}{3, "m", "b2"}),
-		spanner.Insert("JoinB", []string{"y", "z", "b"}, []interface{}{3, "n", "b3"}),
-		spanner.Insert("JoinB", []string{"y", "z", "b"}, []interface{}{4, "p", "b4"}),
+		spanner.Insert("JoinB", []string{"y", "z", "b"}, []any{2, "k", "b1"}),
+		spanner.Insert("JoinB", []string{"y", "z", "b"}, []any{3, "m", "b2"}),
+		spanner.Insert("JoinB", []string{"y", "z", "b"}, []any{3, "n", "b3"}),
+		spanner.Insert("JoinB", []string{"y", "z", "b"}, []any{4, "p", "b4"}),
 
 		// JoinC and JoinD have the same contents as JoinA and JoinB; they have different column names.
-		spanner.Insert("JoinC", []string{"x", "y", "c"}, []interface{}{1, "a", "c1"}),
-		spanner.Insert("JoinC", []string{"x", "y", "c"}, []interface{}{2, "b", "c2"}),
-		spanner.Insert("JoinC", []string{"x", "y", "c"}, []interface{}{3, "c", "c3"}),
-		spanner.Insert("JoinC", []string{"x", "y", "c"}, []interface{}{3, "d", "c4"}),
+		spanner.Insert("JoinC", []string{"x", "y", "c"}, []any{1, "a", "c1"}),
+		spanner.Insert("JoinC", []string{"x", "y", "c"}, []any{2, "b", "c2"}),
+		spanner.Insert("JoinC", []string{"x", "y", "c"}, []any{3, "c", "c3"}),
+		spanner.Insert("JoinC", []string{"x", "y", "c"}, []any{3, "d", "c4"}),
 
-		spanner.Insert("JoinD", []string{"x", "z", "d"}, []interface{}{2, "k", "d1"}),
-		spanner.Insert("JoinD", []string{"x", "z", "d"}, []interface{}{3, "m", "d2"}),
-		spanner.Insert("JoinD", []string{"x", "z", "d"}, []interface{}{3, "n", "d3"}),
-		spanner.Insert("JoinD", []string{"x", "z", "d"}, []interface{}{4, "p", "d4"}),
+		spanner.Insert("JoinD", []string{"x", "z", "d"}, []any{2, "k", "d1"}),
+		spanner.Insert("JoinD", []string{"x", "z", "d"}, []any{3, "m", "d2"}),
+		spanner.Insert("JoinD", []string{"x", "z", "d"}, []any{3, "n", "d3"}),
+		spanner.Insert("JoinD", []string{"x", "z", "d"}, []any{4, "p", "d4"}),
 
 		// JoinE and JoinF are used in the CROSS JOIN test.
-		spanner.Insert("JoinE", []string{"w", "x", "e"}, []interface{}{1, "a", "e1"}),
-		spanner.Insert("JoinE", []string{"w", "x", "e"}, []interface{}{2, "b", "e2"}),
+		spanner.Insert("JoinE", []string{"w", "x", "e"}, []any{1, "a", "e1"}),
+		spanner.Insert("JoinE", []string{"w", "x", "e"}, []any{2, "b", "e2"}),
 
-		spanner.Insert("JoinF", []string{"y", "z", "f"}, []interface{}{2, "c", "f1"}),
-		spanner.Insert("JoinF", []string{"y", "z", "f"}, []interface{}{3, "d", "f2"}),
+		spanner.Insert("JoinF", []string{"y", "z", "f"}, []any{2, "c", "f1"}),
+		spanner.Insert("JoinF", []string{"y", "z", "f"}, []any{3, "d", "f2"}),
 
-		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{0, "afoo"}),
-		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
-		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{2, nil}),
-		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{3, "bbar"}),
+		spanner.Insert("SomeStrings", []string{"i", "str"}, []any{0, "afoo"}),
+		spanner.Insert("SomeStrings", []string{"i", "str"}, []any{1, "abar"}),
+		spanner.Insert("SomeStrings", []string{"i", "str"}, []any{2, nil}),
+		spanner.Insert("SomeStrings", []string{"i", "str"}, []any{3, "bbar"}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)
@@ -786,7 +786,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
 		stmt := spanner.Statement{
 			SQL: "INSERT INTO Updateable (id, first, last) VALUES (@id, @first, @last)",
-			Params: map[string]interface{}{
+			Params: map[string]any{
 				"id":    3,
 				"first": "tom",
 				"last":  "jerry",
@@ -811,7 +811,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
 		stmt := spanner.Statement{
 			SQL: `INSERT INTO Updateable (id, first, last) VALUES (@id, "jim", @last)`,
-			Params: map[string]interface{}{
+			Params: map[string]any{
 				"id":   4,
 				"last": nil,
 			},
@@ -871,21 +871,21 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	// Do some complex queries.
 	tests := []struct {
 		q      string
-		params map[string]interface{}
-		want   [][]interface{}
+		params map[string]any
+		want   [][]any
 	}{
 		{
 
 			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B'), CAST(17 AS STRING), SAFE_CAST(TRUE AS STRING), SAFE_CAST('Foo' AS INT64), EXTRACT(DATE FROM TIMESTAMP('2008-12-25T05:30:00Z') AT TIME ZONE 'Europe/Amsterdam'), EXTRACT(YEAR FROM TIMESTAMP('2008-12-25T05:30:00Z')), FARM_FINGERPRINT('test'), MOD(5, 10)`,
 			nil,
-			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true, "17", "true", nil, civil.Date{Year: 2008, Month: 12, Day: 25}, int64(2008), int64(1), int64(5)}},
+			[][]any{{int64(17), "sweet", false, nil, []byte("hello"), false, true, "17", "true", nil, civil.Date{Year: 2008, Month: 12, Day: 25}, int64(2008), int64(1), int64(5)}},
 		},
 		// Check handling of NULL values for the IS operator.
 		// There was a bug that returned errors for some of these cases.
 		{
 			`SELECT @x IS TRUE, @x IS NOT TRUE, @x IS FALSE, @x IS NOT FALSE, @x IS NULL, @x IS NOT NULL`,
-			map[string]interface{}{"x": (*bool)(nil)},
-			[][]interface{}{
+			map[string]any{"x": (*bool)(nil)},
+			[][]any{
 				{false, true, false, true, true, false},
 			},
 		},
@@ -893,8 +893,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		// There was a bug where logical operators always returned true/false.
 		{
 			`SELECT @x, NOT @x, @x AND TRUE, @x AND FALSE, @x OR TRUE, @x OR FALSE`,
-			map[string]interface{}{"x": (*bool)(nil)},
-			[][]interface{}{
+			map[string]any{"x": (*bool)(nil)},
+			[][]any{
 				// At the time of writing (9 Oct 2020), the docs are wrong for `NULL AND FALSE`;
 				// the production Spanner returns FALSE, which is what we match.
 				{nil, nil, nil, false, true, nil},
@@ -903,25 +903,25 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT Name FROM Staff WHERE Cool`,
 			nil,
-			[][]interface{}{{"Teal'c"}},
+			[][]any{{"Teal'c"}},
 		},
 		{
 			`SELECT ID FROM Staff WHERE Cool IS NOT NULL ORDER BY ID DESC`,
 			nil,
-			[][]interface{}{{int64(4)}, {int64(3)}, {int64(2)}},
+			[][]any{{int64(4)}, {int64(3)}, {int64(2)}},
 		},
 		{
 			`SELECT Name, Tenure FROM Staff WHERE Cool IS NULL OR Cool ORDER BY Name LIMIT 2`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"George", int64(6)},
 				{"Jack", int64(10)},
 			},
 		},
 		{
 			`SELECT Name, ID + 100 FROM Staff WHERE @min <= Tenure AND Tenure < @lim ORDER BY Cool, Name DESC LIMIT @numResults`,
-			map[string]interface{}{"min": 9, "lim": 11, "numResults": 100},
-			[][]interface{}{
+			map[string]any{"min": 9, "lim": 11, "numResults": 100},
+			[][]any{
 				{"Jack", int64(101)},
 				{"Sam", int64(103)},
 			},
@@ -930,7 +930,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Expression in SELECT list.
 			`SELECT Name, Cool IS NOT NULL FROM Staff WHERE Tenure/2 > 4 ORDER BY NOT Cool, Name`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Jack", false},  // Jack has NULL Cool (NULLs always come first in orderings)
 				{"Daniel", true}, // Daniel has Cool==true
 				{"Sam", true},    // Sam has Cool==false
@@ -939,7 +939,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT Name, Height FROM Staff ORDER BY Height DESC LIMIT 2`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Teal'c", 1.91},
 				{"Jack", 1.85},
 			},
@@ -947,7 +947,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT str FROM SomeStrings WHERE str LIKE "a%"`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"afoo"},
 				{"abar"},
 			},
@@ -955,14 +955,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT Name FROM Staff WHERE Name LIKE "%e"`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"George"},
 			},
 		},
 		{
 			`SELECT Name FROM Staff WHERE Name LIKE "J%k" OR Name LIKE "_am"`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Jack"},
 				{"Sam"},
 			},
@@ -970,14 +970,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT Name FROM Staff WHERE STARTS_WITH(Name, 'Ja')`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Jack"},
 			},
 		},
 		{
 			`SELECT Name, Height FROM Staff WHERE Height BETWEEN @min AND @max ORDER BY Height DESC`,
-			map[string]interface{}{"min": 1.75, "max": 1.85},
-			[][]interface{}{
+			map[string]any{"min": 1.75, "max": 1.85},
+			[][]any{
 				{"Jack", 1.85},
 				{"Daniel", 1.83},
 				{"Sam", 1.75},
@@ -986,7 +986,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT COUNT(*) FROM Staff WHERE Name < "T"`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(4)},
 			},
 		},
@@ -994,14 +994,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Check that aggregation still works for the empty set.
 			`SELECT COUNT(*) FROM Staff WHERE Name = "Nobody"`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(0)},
 			},
 		},
 		{
 			`SELECT * FROM Staff WHERE Name LIKE "S%"`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				// These are returned in table column order, based on the appearance in the DDL.
 				// Our internal implementation sorts the primary key columns first,
 				// but that should not become visible via SELECT *.
@@ -1012,21 +1012,21 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Exactly the same as the previous, except with a redundant ORDER BY clause.
 			`SELECT * FROM Staff WHERE Name LIKE "S%" ORDER BY Name`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(9), int64(3), "Sam", false, 1.75, nil, nil, nil},
 			},
 		},
 		{
 			`SELECT Name FROM Staff WHERE FirstSeen >= @min`,
-			map[string]interface{}{"min": civil.Date{Year: 1996, Month: 1, Day: 1}},
-			[][]interface{}{
+			map[string]any{"min": civil.Date{Year: 1996, Month: 1, Day: 1}},
+			[][]any{
 				{"George"},
 			},
 		},
 		{
 			`SELECT RawBytes FROM Staff WHERE RawBytes IS NOT NULL`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{[]byte("\x01\x00\x01")},
 			},
 		},
@@ -1035,14 +1035,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Check coercion of comparison operator literal args too.
 			"SELECT COUNT(*) FROM Staff WHERE `To` > '2000-01-01T00:00:00Z'",
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(1)},
 			},
 		},
 		{
 			`SELECT DISTINCT Cool, Tenure > 8 FROM Staff ORDER BY Cool`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				// The non-distinct results are
 				//          [[false true] [<nil> false] [<nil> true] [false true] [true false]]
 				{nil, false},
@@ -1053,8 +1053,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		{
 			`SELECT Name FROM Staff WHERE ID IN UNNEST(@ids)`,
-			map[string]interface{}{"ids": []int64{3, 1}},
-			[][]interface{}{
+			map[string]any{"ids": []int64{3, 1}},
+			[][]any{
 				{"Jack"},
 				{"Sam"},
 			},
@@ -1063,7 +1063,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT LastName FROM PlayerStats GROUP BY LastName`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Adams"},
 				{"Buchanan"},
 				{"Coolidge"},
@@ -1074,7 +1074,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// but nothing documented seems to guarantee that.
 			`SELECT LastName, SUM(PointsScored) FROM PlayerStats GROUP BY LastName`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Adams", int64(7)},
 				{"Buchanan", int64(13)},
 				{"Coolidge", int64(1)},
@@ -1085,7 +1085,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Group by ID oddness, SUM over Tenure.
 			`SELECT ID&0x01 AS odd, SUM(Tenure) FROM Staff GROUP BY odd`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(0), int64(19)}, // Daniel(ID=2, Tenure=11), Teal'c(ID=4, Tenure=8)
 				{int64(1), int64(25)}, // Jack(ID=1, Tenure=10), Sam(ID=3, Tenure=9), George(ID=5, Tenure=6)
 			},
@@ -1094,37 +1094,37 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// From https://cloud.google.com/spanner/docs/aggregate_functions#avg.
 			`SELECT AVG(x) AS avg FROM UNNEST([0, 2, 4, 4, 5]) AS x`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{float64(3)},
 			},
 		},
 		{
 			`SELECT MAX(Name) FROM Staff WHERE Name < @lim`,
-			map[string]interface{}{"lim": "Teal'c"},
-			[][]interface{}{
+			map[string]any{"lim": "Teal'c"},
+			[][]any{
 				{"Sam"},
 			},
 		},
 		{
 			`SELECT MAX(Name) FROM Staff WHERE Cool = @p1 LIMIT 1`,
-			map[string]interface{}{"p1": true},
-			[][]interface{}{
+			map[string]any{"p1": true},
+			[][]any{
 				{"Teal'c"},
 			},
 		},
 		{
 			`SELECT MIN(Name) FROM Staff`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Daniel"},
 			},
 		},
 		{
 			`SELECT ARRAY_AGG(Cool) FROM Staff`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				// Daniel, George (NULL), Jack (NULL), Sam, Teal'c
-				{[]interface{}{false, nil, nil, false, true}},
+				{[]any{false, nil, nil, false, true}},
 			},
 		},
 		// SELECT with aliases.
@@ -1132,7 +1132,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Aliased table.
 			`SELECT s.Name FROM Staff AS s WHERE s.ID = 3 ORDER BY s.Tenure`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Sam"},
 			},
 		},
@@ -1140,7 +1140,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Aliased expression.
 			`SELECT Name AS nom FROM Staff WHERE ID < 4 ORDER BY nom`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Daniel"},
 				{"Jack"},
 				{"Sam"},
@@ -1150,7 +1150,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT w, x, y, z FROM JoinA INNER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w, x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(2), "b", int64(2), "k"},
 				{int64(3), "c", int64(3), "m"},
 				{int64(3), "c", int64(3), "n"},
@@ -1161,7 +1161,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT w, x, y, z FROM JoinE CROSS JOIN JoinF ORDER BY w, x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(1), "a", int64(2), "c"},
 				{int64(1), "a", int64(3), "d"},
 				{int64(2), "b", int64(2), "c"},
@@ -1172,7 +1172,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Same as in docs, but with a weird ORDER BY clause to match the row ordering.
 			`SELECT w, x, y, z FROM JoinA FULL OUTER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w IS NULL, w, x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(1), "a", nil, nil},
 				{int64(2), "b", int64(2), "k"},
 				{int64(3), "c", int64(3), "m"},
@@ -1186,7 +1186,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Same as the previous, but using a USING clause instead of an ON clause.
 			`SELECT x, y, z FROM JoinC FULL OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(1), "a", nil},
 				{int64(2), "b", "k"},
 				{int64(3), "c", "m"},
@@ -1199,7 +1199,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT w, x, y, z FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w, x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(1), "a", nil, nil},
 				{int64(2), "b", int64(2), "k"},
 				{int64(3), "c", int64(3), "m"},
@@ -1212,7 +1212,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Same as the previous, but using a USING clause instead of an ON clause.
 			`SELECT x, y, z FROM JoinC LEFT OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(1), "a", nil},
 				{int64(2), "b", "k"},
 				{int64(3), "c", "m"},
@@ -1225,7 +1225,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			// Same as in docs, but with a weird ORDER BY clause to match the row ordering.
 			`SELECT w, x, y, z FROM JoinA RIGHT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w IS NULL, w, x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(2), "b", int64(2), "k"},
 				{int64(3), "c", int64(3), "m"},
 				{int64(3), "c", int64(3), "n"},
@@ -1237,7 +1237,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT x, y, z FROM JoinC RIGHT OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(2), "b", "k"},
 				{int64(3), "c", "m"},
 				{int64(3), "c", "n"},
@@ -1249,14 +1249,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT a, b, c FROM JoinA JOIN JoinB ON JoinA.w = JoinB.y JOIN JoinC ON JoinA.w = JoinC.x WHERE JoinA.w = 2 ORDER BY x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"a2", "b1", "c2"},
 			},
 		},
 		{
 			`SELECT a, b, c FROM JoinA LEFT JOIN JoinB ON JoinA.w = JoinB.y JOIN JoinC ON JoinC.x = JoinA.w WHERE JoinA.w = 1 OR JoinA.w = 2 ORDER BY x, y, z`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"a1", nil, "c1"},
 				{"a2", "b1", "c2"},
 			},
@@ -1265,7 +1265,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT id, first, last FROM Updateable ORDER BY id`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{int64(0), "joe", "bloggs"},
 				{int64(1), "joan", "doe"},
 				{int64(2), "wong", nil},
@@ -1284,13 +1284,13 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		// https://github.com/googleapis/google-cloud-go/issues/2458
 		{
 			`SELECT COUNT(*) FROM Staff WHERE RawBytes IN UNNEST(@arg)`,
-			map[string]interface{}{
+			map[string]any{
 				"arg": [][]byte{
 					{0x02},
 					{0x01, 0x00, 0x01}, // only one present
 				},
 			},
-			[][]interface{}{
+			[][]any{
 				{int64(1)},
 			},
 		},
@@ -1298,7 +1298,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT i, str FROM SomeStrings WHERE str LIKE "%bar"`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				// Does not include [0, "afoo"] or [2, nil].
 				{int64(1), "abar"},
 				{int64(3), "bbar"},
@@ -1307,7 +1307,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT i, str FROM SomeStrings WHERE str NOT LIKE "%bar"`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				// Does not include [1, "abar"], [2, nil] or [3, "bbar"].
 				{int64(0), "afoo"},
 			},
@@ -1316,7 +1316,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT Name AS nom FROM Staff ORDER BY ID LIMIT 2`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Jack"},
 				{"Daniel"},
 			},
@@ -1324,14 +1324,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT MIN(Name), MAX(Name) FROM Staff`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Daniel", "Teal'c"},
 			},
 		},
 		{
 			`SELECT Cool, MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{nil, "George", "Jack", int64(2)},
 				{false, "Daniel", "Sam", int64(2)},
 				{true, "Teal'c", "Teal'c", int64(1)},
@@ -1340,21 +1340,21 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT Tenure/2, Cool, Name FROM Staff WHERE Tenure/2 > 5`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{float64(5.5), false, "Daniel"},
 			},
 		},
 		{
 			`SELECT Tenure/2, MAX(Cool) FROM Staff WHERE Tenure/2 > 5 GROUP BY Tenure/2`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{float64(5.5), false},
 			},
 		},
 		{
 			`SELECT Tenure/2, Cool, MIN(Name) FROM Staff WHERE Tenure/2 >= 4 GROUP BY Tenure/2, Cool ORDER BY Cool DESC, Tenure/2`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{float64(4), true, "Teal'c"},
 				{float64(4.5), false, "Sam"},
 				{float64(5.5), false, "Daniel"},
@@ -1364,14 +1364,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT MIN(Cool), MAX(Cool), MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{false, true, int64(6), int64(11), 1.73, 1.91, "Daniel", "Teal'c", int64(5)},
 			},
 		},
 		{
 			`SELECT Cool, MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{nil, int64(6), int64(10), 1.73, 1.85, "George", "Jack", int64(2)},
 				{false, int64(9), int64(11), 1.75, 1.83, "Daniel", "Sam", int64(2)},
 				{true, int64(8), int64(8), 1.91, 1.91, "Teal'c", "Teal'c", int64(1)},
@@ -1452,13 +1452,13 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Insert(tableName,
 			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
-			[]interface{}{"Average Writer", 10, 10, t1, d1}),
+			[]any{"Average Writer", 10, 10, t1, d1}),
 		spanner.Insert(tableName,
 			[]string{"Name", "EstimatedSales", "CreatedAT", "CreatedDate"},
-			[]interface{}{"Great Writer", 100, t1, d1}),
+			[]any{"Great Writer", 100, t1, d1}),
 		spanner.Insert(tableName,
 			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
-			[]interface{}{"Poor Writer", 1, 50, t1, d1}),
+			[]any{"Poor Writer", 1, 50, t1, d1}),
 	})
 	if err != nil {
 		t.Fatalf("Applying mutations: %v", err)
@@ -1479,7 +1479,7 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 
 	// Great writer has nil because NumSongs is nil
-	want := [][]interface{}{
+	want := [][]any{
 		{"average writer", int64(100), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
 		{"great writer", nil, civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
 		{"poor writer", int64(50), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
@@ -1492,13 +1492,13 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Update(tableName,
 			[]string{"Name", "NumSongs"},
-			[]interface{}{"Average Writer", 50}),
+			[]any{"Average Writer", 50}),
 		spanner.Update(tableName,
 			[]string{"Name", "NumSongs"},
-			[]interface{}{"Great Writer", 10}),
+			[]any{"Great Writer", 10}),
 		spanner.Update(tableName,
 			[]string{"Name", "NumSongs"},
-			[]interface{}{"Poor Writer", nil}),
+			[]any{"Poor Writer", nil}),
 	})
 	if err != nil {
 		t.Fatalf("Applying mutations: %v", err)
@@ -1513,7 +1513,7 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 
 	// poor writer has nil because NumSongs is nil
-	want = [][]interface{}{
+	want = [][]any{
 		{"average writer", int64(500)},
 		{"great writer", int64(1000)},
 		{"poor writer", nil},
@@ -1539,7 +1539,7 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 
 	// Poor Writer should no longer be in the result.
-	want = [][]interface{}{
+	want = [][]any{
 		{"average writer", int64(500)},
 		{"great writer", int64(1000)},
 	}
@@ -1641,7 +1641,7 @@ func updateDDL(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, statement
 	return op.Wait(ctx)
 }
 
-func mustSlurpRows(t *testing.T, ri *spanner.RowIterator) [][]interface{} {
+func mustSlurpRows(t *testing.T, ri *spanner.RowIterator) [][]any {
 	t.Helper()
 	all, err := slurpRows(t, ri)
 	if err != nil {
@@ -1650,11 +1650,11 @@ func mustSlurpRows(t *testing.T, ri *spanner.RowIterator) [][]interface{} {
 	return all
 }
 
-func slurpRows(t *testing.T, ri *spanner.RowIterator) (all [][]interface{}, err error) {
+func slurpRows(t *testing.T, ri *spanner.RowIterator) (all [][]any, err error) {
 	t.Helper()
 	err = ri.Do(func(r *spanner.Row) error {
-		var data []interface{}
-		for i := 0; i < r.Size(); i++ {
+		var data []any
+		for i := range r.Size() {
 			var gcv spanner.GenericColumnValue
 			if err := r.Column(i, &gcv); err != nil {
 				return err
@@ -1667,14 +1667,14 @@ func slurpRows(t *testing.T, ri *spanner.RowIterator) (all [][]interface{}, err 
 	return
 }
 
-func genericValue(t *testing.T, gcv spanner.GenericColumnValue) interface{} {
+func genericValue(t *testing.T, gcv spanner.GenericColumnValue) any {
 	t.Helper()
 
 	if _, ok := gcv.Value.Kind.(*structpb.Value_NullValue); ok {
 		return nil
 	}
 	if gcv.Type.Code == spannerpb.TypeCode_ARRAY {
-		var arr []interface{}
+		var arr []any
 		for _, v := range gcv.Value.GetListValue().Values {
 			arr = append(arr, genericValue(t, spanner.GenericColumnValue{
 				Type:  &spannerpb.Type{Code: gcv.Type.ArrayElementType.Code},
@@ -1684,7 +1684,7 @@ func genericValue(t *testing.T, gcv spanner.GenericColumnValue) interface{} {
 		return arr
 	}
 
-	var dst interface{}
+	var dst any
 	switch gcv.Type.Code {
 	case spannerpb.TypeCode_BOOL:
 		dst = new(bool)
