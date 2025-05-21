@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.1.6...storageinsights/v1.2.0) (2025-05-21)
+
+
+### Features
+
+* **storageinsights:** Add Client Libraries for Datasets ([#12245](https://github.com/googleapis/google-cloud-go/issues/12245)) ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.1.5...storageinsights/v1.1.6) (2025-04-15)
 
 
