@@ -18,8 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -530,19 +528,6 @@ func all(iter *GenerateContentResponseIterator) ([]*GenerateContentResponse, err
 	}
 }
 
-func dump(w io.Writer, x any) {
-	var err error
-	printf := func(format string, args ...any) {
-		if err == nil {
-			_, err = fmt.Fprintf(w, format, args...)
-		}
-	}
-	printValue(reflect.ValueOf(x), "", "", printf)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func printValue(v reflect.Value, indent, first string, printf func(string, ...any)) {
 	switch v.Kind() {
 	case reflect.Slice, reflect.Array, reflect.Map, reflect.Struct:
@@ -550,7 +535,7 @@ func printValue(v reflect.Value, indent, first string, printf func(string, ...an
 		indent1 := indent + "    "
 		switch v.Kind() {
 		case reflect.Slice, reflect.Array:
-			for i := 0; i < v.Len(); i++ {
+			for i := range v.Len() {
 				printValue(v.Index(i), indent1, fmt.Sprintf("[%d]: ", i), printf)
 			}
 		case reflect.Map:
@@ -675,13 +660,4 @@ func TestInferLocation(t *testing.T) {
 			}
 		})
 	}
-}
-
-func printResponse(resp *GenerateContentResponse) {
-	for _, cand := range resp.Candidates {
-		for _, part := range cand.Content.Parts {
-			fmt.Println(part)
-		}
-	}
-	fmt.Println("---")
 }

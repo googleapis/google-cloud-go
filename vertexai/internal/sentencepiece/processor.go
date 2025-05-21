@@ -136,7 +136,7 @@ func NewProcessor(protoReader io.Reader) (*Processor, error) {
 	// In case byte_fallback is specified, make sure that all 256 possible byte
 	// values were found.
 	if tspec.GetByteFallback() {
-		for i := 0; i < 256; i++ {
+		for i := range 256 {
 			if _, found := byte2Token[byte(i)]; !found {
 				return nil, fmt.Errorf("byte value 0x%02X not found", i)
 			}
@@ -297,7 +297,7 @@ func (proc *Processor) Encode(text string) []Token {
 		if id == proc.unknownID && proc.model.GetTrainerSpec().GetByteFallback() {
 			// Decompose this symbol into bytes, and report each byte as a separate
 			// token.
-			for i := 0; i < len(symbol); i++ {
+			for i := range len(symbol) {
 				tokens = append(tokens, proc.byte2Token[symbol[i]])
 			}
 		} else {
