@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/pubsub/v2/apiv1",
-    "version": "1.49.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -1296,7 +1296,7 @@
     {
       "regionTag": "pubsub_v1_generated_SubscriptionAdmin_StreamingPull_sync",
       "title": "pubsub StreamingPull Sample",
-      "description": "StreamingPull establishes a stream with the server, which sends messages down to the\nclient. The client streams acknowledgements and ack deadline modifications\nback to the server. The server will close the stream and return the status\non any error. The server may close the stream with status `UNAVAILABLE` to\nreassign server-side resources, in which case, the client should\nre-establish the stream. Flow control can be achieved by configuring the\nunderlying RPC channel.\n\n\nThis method is not supported for the REST transport.",
+      "description": "StreamingPull establishes a stream with the server, which sends messages down to the\nclient. The client streams acknowledgments and ack deadline modifications\nback to the server. The server will close the stream and return the status\non any error. The server may close the stream with status `UNAVAILABLE` to\nreassign server-side resources, in which case, the client should\nre-establish the stream. Flow control can be achieved by configuring the\nunderlying RPC channel.\n\n\nThis method is not supported for the REST transport.",
       "file": "SubscriptionAdminClient/StreamingPull/main.go",
       "language": "GO",
       "clientMethod": {
