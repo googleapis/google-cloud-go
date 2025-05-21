@@ -260,7 +260,7 @@ func (c *OnlineReturnPolicyClient) UpdateOnlineReturnPolicy(ctx context.Context,
 	return c.internalClient.UpdateOnlineReturnPolicy(ctx, req, opts...)
 }
 
-// DeleteOnlineReturnPolicy deletes an existing return policy for a given merchant.
+// DeleteOnlineReturnPolicy deletes an existing return policy.
 func (c *OnlineReturnPolicyClient) DeleteOnlineReturnPolicy(ctx context.Context, req *accountspb.DeleteOnlineReturnPolicyRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteOnlineReturnPolicy(ctx, req, opts...)
 }
@@ -333,7 +333,7 @@ func (c *onlineReturnPolicyGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *onlineReturnPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -404,7 +404,7 @@ func defaultOnlineReturnPolicyRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *onlineReturnPolicyRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -787,7 +787,7 @@ func (c *onlineReturnPolicyRESTClient) UpdateOnlineReturnPolicy(ctx context.Cont
 	return resp, nil
 }
 
-// DeleteOnlineReturnPolicy deletes an existing return policy for a given merchant.
+// DeleteOnlineReturnPolicy deletes an existing return policy.
 func (c *onlineReturnPolicyRESTClient) DeleteOnlineReturnPolicy(ctx context.Context, req *accountspb.DeleteOnlineReturnPolicyRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
