@@ -185,6 +185,40 @@ func (c *Client) Doc(path string) *DocumentRef {
 	return doc
 }
 
+// DocFromFullPath creates a reference to a document from its full, absolute path,
+// also known as its Google Cloud resource name.
+// The path must be in the format:
+// "projects/{projectID}/databases/{databaseID}/documents/{collectionID}/{documentID}/..."
+// This method returns nil if:
+//   - The fullPath is empty.
+//   - The fullPath does not match the expected resource name format (e.g., missing "projects/" or "/documents/").
+//   - The projectID or databaseID in the fullPath do not match the client's configuration.
+//   - The fullPath refers to a collection instead of a document (i.e., has an odd number of segments after "/documents/").
+//   - The fullPath contains any empty path segments.
+func (c *Client) DocFromFullPath(fullPath string) *DocumentRef {
+	if fullPath == "" {
+		return nil
+	}
+
+	const documentsPrefix = "/documents/"
+	if !strings.HasPrefix(fullPath, "projects/") || !strings.Contains(fullPath, documentsPrefix) {
+		return nil
+	}
+	parts := strings.SplitN(fullPath, documentsPrefix, 2)
+	if len(parts) != 2 {
+		return nil
+	}
+
+	actualDBPathFromFullPath := parts[0]
+	expectedDBPath := c.path()
+	if actualDBPathFromFullPath != expectedDBPath {
+		return nil
+	}
+
+	_, docRef := c.idsToRef(strings.Split(parts[1], "/"), actualDBPathFromFullPath)
+	return docRef
+}
+
 // CollectionGroup creates a reference to a group of collections that include
 // the given ID, regardless of parent document.
 //
