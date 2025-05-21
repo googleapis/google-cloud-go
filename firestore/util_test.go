@@ -81,7 +81,7 @@ func newMock(t *testing.T) (_ *Client, _ *mockServer, _ func()) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials(), grpc.WithBlock())
 	if err != nil {
 		t.Fatal(err)
 	}
