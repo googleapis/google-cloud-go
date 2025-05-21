@@ -1619,7 +1619,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 	}()
 
 	for _, test := range tests {
-		t.Run(test.desc, func(s *testing.T) {
+		t.Run(test.desc, func(t *testing.T) {
 			utcNow = func() time.Time {
 				return test.now
 			}
@@ -1637,11 +1637,11 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 
 			got, err := c.Bucket(bucketName).SignedURL(objectName, test.opts)
 			if err != nil {
-				s.Fatal(err)
+				t.Fatal(err)
 			}
 
 			if got != test.want {
-				s.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
+				t.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
 		})
 	}
