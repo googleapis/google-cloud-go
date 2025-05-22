@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1",
-    "version": "1.15.1",
+    "version": "1.15.2",
     "language": "GO",
     "apis": [
       {
@@ -653,6 +653,52 @@
       ]
     },
     {
+      "regionTag": "alloydb_v1_generated_AlloyDBAdmin_ExportCluster_sync",
+      "title": "alloydb ExportCluster Sample",
+      "description": "ExportCluster exports data from the cluster.\nImperative only.",
+      "file": "AlloyDBAdminClient/ExportCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportCluster",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient.ExportCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ExportClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportClusterOperation",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ExportCluster",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.ExportCluster",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "alloydb_v1_generated_AlloyDBAdmin_FailoverInstance_sync",
       "title": "alloydb FailoverInstance Sample",
       "description": "FailoverInstance forces a Failover for a highly available instance.\nFailover promotes the HA standby instance as the new primary.\nImperative only.",
@@ -1062,6 +1108,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBAdmin_ImportCluster_sync",
+      "title": "alloydb ImportCluster Sample",
+      "description": "ImportCluster imports data to the cluster.\nImperative only.",
+      "file": "AlloyDBAdminClient/ImportCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportCluster",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient.ImportCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ImportClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportClusterOperation",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ImportCluster",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.ImportCluster",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1844,6 +1936,372 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBAdmin_UpgradeCluster_sync",
+      "title": "alloydb UpgradeCluster Sample",
+      "description": "UpgradeCluster upgrades a single Cluster.\nImperative only.",
+      "file": "AlloyDBAdminClient/UpgradeCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpgradeCluster",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient.UpgradeCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.UpgradeClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpgradeClusterOperation",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "UpgradeCluster",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.UpgradeCluster",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBCSQLAdmin_CancelOperation_sync",
+      "title": "alloydb CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "AlloyDBCSQLAdminClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AlloyDBCSQLAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBCSQLAdmin_DeleteOperation_sync",
+      "title": "alloydb DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "AlloyDBCSQLAdminClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AlloyDBCSQLAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBCSQLAdmin_GetLocation_sync",
+      "title": "alloydb GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "AlloyDBCSQLAdminClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "AlloyDBCSQLAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBCSQLAdmin_GetOperation_sync",
+      "title": "alloydb GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AlloyDBCSQLAdminClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AlloyDBCSQLAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBCSQLAdmin_ListLocations_sync",
+      "title": "alloydb ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "AlloyDBCSQLAdminClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "AlloyDBCSQLAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBCSQLAdmin_ListOperations_sync",
+      "title": "alloydb ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AlloyDBCSQLAdminClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AlloyDBCSQLAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBCSQLAdmin_RestoreFromCloudSQL_sync",
+      "title": "alloydb RestoreFromCloudSQL Sample",
+      "description": "RestoreFromCloudSQL restores an AlloyDB cluster from a CloudSQL resource.",
+      "file": "AlloyDBCSQLAdminClient/RestoreFromCloudSQL/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreFromCloudSQL",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient.RestoreFromCloudSQL",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.RestoreFromCloudSQLRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreFromCloudSQLOperation",
+        "client": {
+          "shortName": "AlloyDBCSQLAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdminClient"
+        },
+        "method": {
+          "shortName": "RestoreFromCloudSQL",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdmin.RestoreFromCloudSQL",
+          "service": {
+            "shortName": "AlloyDBCSQLAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBCSQLAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

@@ -30,6 +30,11 @@
                 "CreateClip"
               ]
             },
+            "CreateDvrSession": {
+              "methods": [
+                "CreateDvrSession"
+              ]
+            },
             "CreateEvent": {
               "methods": [
                 "CreateEvent"
@@ -53,6 +58,11 @@
             "DeleteClip": {
               "methods": [
                 "DeleteClip"
+              ]
+            },
+            "DeleteDvrSession": {
+              "methods": [
+                "DeleteDvrSession"
               ]
             },
             "DeleteEvent": {
@@ -83,6 +93,11 @@
             "GetClip": {
               "methods": [
                 "GetClip"
+              ]
+            },
+            "GetDvrSession": {
+              "methods": [
+                "GetDvrSession"
               ]
             },
             "GetEvent": {
@@ -125,6 +140,11 @@
                 "ListClips"
               ]
             },
+            "ListDvrSessions": {
+              "methods": [
+                "ListDvrSessions"
+              ]
+            },
             "ListEvents": {
               "methods": [
                 "ListEvents"
@@ -158,6 +178,11 @@
             "UpdateChannel": {
               "methods": [
                 "UpdateChannel"
+              ]
+            },
+            "UpdateDvrSession": {
+              "methods": [
+                "UpdateDvrSession"
               ]
             },
             "UpdateInput": {
@@ -195,6 +220,11 @@
                 "CreateClip"
               ]
             },
+            "CreateDvrSession": {
+              "methods": [
+                "CreateDvrSession"
+              ]
+            },
             "CreateEvent": {
               "methods": [
                 "CreateEvent"
@@ -218,6 +248,11 @@
             "DeleteClip": {
               "methods": [
                 "DeleteClip"
+              ]
+            },
+            "DeleteDvrSession": {
+              "methods": [
+                "DeleteDvrSession"
               ]
             },
             "DeleteEvent": {
@@ -248,6 +283,11 @@
             "GetClip": {
               "methods": [
                 "GetClip"
+              ]
+            },
+            "GetDvrSession": {
+              "methods": [
+                "GetDvrSession"
               ]
             },
             "GetEvent": {
@@ -290,6 +330,11 @@
                 "ListClips"
               ]
             },
+            "ListDvrSessions": {
+              "methods": [
+                "ListDvrSessions"
+              ]
+            },
             "ListEvents": {
               "methods": [
                 "ListEvents"
@@ -323,6 +368,11 @@
             "UpdateChannel": {
               "methods": [
                 "UpdateChannel"
+              ]
+            },
+            "UpdateDvrSession": {
+              "methods": [
+                "UpdateDvrSession"
               ]
             },
             "UpdateInput": {

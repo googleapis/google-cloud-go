@@ -195,6 +195,52 @@
       ]
     },
     {
+      "regionTag": "livestream_v1_generated_LivestreamService_CreateDvrSession_sync",
+      "title": "livestream CreateDvrSession Sample",
+      "description": "CreateDvrSession creates a DVR session with the provided unique ID in the specified channel.",
+      "file": "Client/CreateDvrSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDvrSession",
+        "fullName": "google.cloud.video.livestream.v1.Client.CreateDvrSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.CreateDvrSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDvrSessionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateDvrSession",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.CreateDvrSession",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "livestream_v1_generated_LivestreamService_CreateEvent_sync",
       "title": "livestream CreateEvent Sample",
       "description": "CreateEvent creates an event with the provided unique ID in the specified channel.",
@@ -381,7 +427,7 @@
     {
       "regionTag": "livestream_v1_generated_LivestreamService_DeleteClip_sync",
       "title": "livestream DeleteClip Sample",
-      "description": "DeleteClip deletes the specified clip job resource. This method only deletes the clip\njob and does not delete the VOD clip stored in the GCS.",
+      "description": "DeleteClip deletes the specified clip job resource. This method only deletes the clip\njob and does not delete the VOD clip stored in Cloud Storage.",
       "file": "Client/DeleteClip/main.go",
       "language": "GO",
       "clientMethod": {
@@ -409,6 +455,52 @@
         "method": {
           "shortName": "DeleteClip",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.DeleteClip",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_DeleteDvrSession_sync",
+      "title": "livestream DeleteDvrSession Sample",
+      "description": "DeleteDvrSession deletes the specified DVR session.",
+      "file": "Client/DeleteDvrSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDvrSession",
+        "fullName": "google.cloud.video.livestream.v1.Client.DeleteDvrSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.DeleteDvrSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDvrSessionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDvrSession",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.DeleteDvrSession",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"
@@ -683,6 +775,52 @@
         "method": {
           "shortName": "GetClip",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.GetClip",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_GetDvrSession_sync",
+      "title": "livestream GetDvrSession Sample",
+      "description": "GetDvrSession returns the specified DVR session.",
+      "file": "Client/GetDvrSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDvrSession",
+        "fullName": "google.cloud.video.livestream.v1.Client.GetDvrSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.GetDvrSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*livestreampb.DvrSession",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDvrSession",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.GetDvrSession",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"
@@ -1067,6 +1205,52 @@
       ]
     },
     {
+      "regionTag": "livestream_v1_generated_LivestreamService_ListDvrSessions_sync",
+      "title": "livestream ListDvrSessions Sample",
+      "description": "ListDvrSessions returns a list of all DVR sessions in the specified channel.",
+      "file": "Client/ListDvrSessions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDvrSessions",
+        "fullName": "google.cloud.video.livestream.v1.Client.ListDvrSessions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.ListDvrSessionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DvrSessionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDvrSessions",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.ListDvrSessions",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "livestream_v1_generated_LivestreamService_ListEvents_sync",
       "title": "livestream ListEvents Sample",
       "description": "ListEvents returns a list of all events in the specified channel.",
@@ -1373,6 +1557,52 @@
         "method": {
           "shortName": "UpdateChannel",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.UpdateChannel",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_UpdateDvrSession_sync",
+      "title": "livestream UpdateDvrSession Sample",
+      "description": "UpdateDvrSession updates the specified DVR session.",
+      "file": "Client/UpdateDvrSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDvrSession",
+        "fullName": "google.cloud.video.livestream.v1.Client.UpdateDvrSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.UpdateDvrSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDvrSessionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDvrSession",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.UpdateDvrSession",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"

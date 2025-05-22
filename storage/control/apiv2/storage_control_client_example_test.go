@@ -242,6 +242,31 @@ func ExampleStorageControlClient_GetFolder() {
 	_ = resp
 }
 
+func ExampleStorageControlClient_GetFolderIntelligenceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.GetFolderIntelligenceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#GetFolderIntelligenceConfigRequest.
+	}
+	resp, err := c.GetFolderIntelligenceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleStorageControlClient_GetManagedFolder() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -260,6 +285,56 @@ func ExampleStorageControlClient_GetManagedFolder() {
 		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#GetManagedFolderRequest.
 	}
 	resp, err := c.GetManagedFolder(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleStorageControlClient_GetOrganizationIntelligenceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.GetOrganizationIntelligenceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#GetOrganizationIntelligenceConfigRequest.
+	}
+	resp, err := c.GetOrganizationIntelligenceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleStorageControlClient_GetProjectIntelligenceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.GetProjectIntelligenceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#GetProjectIntelligenceConfigRequest.
+	}
+	resp, err := c.GetProjectIntelligenceConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -506,6 +581,81 @@ func ExampleStorageControlClient_UpdateAnywhereCache() {
 	}
 
 	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleStorageControlClient_UpdateFolderIntelligenceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.UpdateFolderIntelligenceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#UpdateFolderIntelligenceConfigRequest.
+	}
+	resp, err := c.UpdateFolderIntelligenceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleStorageControlClient_UpdateOrganizationIntelligenceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.UpdateOrganizationIntelligenceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#UpdateOrganizationIntelligenceConfigRequest.
+	}
+	resp, err := c.UpdateOrganizationIntelligenceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleStorageControlClient_UpdateProjectIntelligenceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.UpdateProjectIntelligenceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#UpdateProjectIntelligenceConfigRequest.
+	}
+	resp, err := c.UpdateProjectIntelligenceConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

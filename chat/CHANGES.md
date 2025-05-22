@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.12.2...chat/v0.13.0) (2025-05-06)
+
+
+### Features
+
+* **chat:** A new method `customEmojis.create` is added ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+* **chat:** A new method `customEmojis.delete` is added ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+* **chat:** A new method `customEmojis.get` is added ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+* **chat:** A new method `customEmojis.list` is added ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+
+
+### Documentation
+
+* **chat:** A comment for field `filter` in message `.google.chat.v1.ListReactionsRequest` is changed ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+* **chat:** A comment for message `CustomEmoji` is changed ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+
 ## [0.12.2](https://github.com/googleapis/google-cloud-go/compare/chat/v0.12.1...chat/v0.12.2) (2025-04-15)
 
 
