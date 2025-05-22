@@ -103,8 +103,11 @@ func TestEmulated_SoftDelete(t *testing.T) {
 				t.Error("soft deleted object not found in listing")
 			}
 
-			// Restore the object.
-			if _, err := obj.Restore(ctx, nil); err != nil {
+			// Get a handle to the soft deleted object
+			softDeletedObj := obj.SoftDeleted()
+
+			// Restore the object using the soft deleted handle
+			if _, err := softDeletedObj.Restore(ctx, nil); err != nil {
 				t.Fatalf("object.Restore: %v", err)
 			}
 
