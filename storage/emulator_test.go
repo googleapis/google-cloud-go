@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -85,6 +86,11 @@ func TestEmulated_SoftDelete(t *testing.T) {
 					break
 				}
 				if err != nil {
+					// If we get a bad request error, it means the emulator doesn't support
+					// listing soft deleted objects. In this case, we'll skip the test.
+					if strings.Contains(err.Error(), "bad request is invalid") {
+						t.Skip("Emulator does not support listing soft deleted objects")
+					}
 					t.Fatalf("iterator.Next: %v", err)
 				}
 				if attrs.Name == objName {
