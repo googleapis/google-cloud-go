@@ -90,6 +90,7 @@ func TestEmulated_SoftDelete(t *testing.T) {
 					// listing soft deleted objects. In this case, we'll skip the test.
 					if strings.Contains(err.Error(), "bad request is invalid") {
 						t.Skip("Emulator does not support listing soft deleted objects")
+						return
 					}
 					t.Fatalf("iterator.Next: %v", err)
 				}
@@ -109,6 +110,7 @@ func TestEmulated_SoftDelete(t *testing.T) {
 			}
 			if !found {
 				t.Error("soft deleted object not found in listing")
+				return
 			}
 
 			// Get a handle to the soft deleted object with the correct generation
