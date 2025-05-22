@@ -117,7 +117,7 @@ func TestEmulated_SoftDelete(t *testing.T) {
 			softDeletedObj := obj.Generation(objGen).SoftDeleted()
 
 			// Restore the object using the soft deleted handle
-			if _, err := softDeletedObj.Restore(ctx, nil); err != nil {
+			if _, err := softDeletedObj.Restore(ctx, &RestoreOptions{}); err != nil {
 				t.Fatalf("object.Restore: %v", err)
 			}
 
