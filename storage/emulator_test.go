@@ -42,6 +42,22 @@ func TestEmulated_SoftDelete(t *testing.T) {
 
 			// Ensure bucket cleanup happens even if test is skipped
 			defer func() {
+				// First delete all objects in the bucket
+				it := bucket.Objects(ctx, nil)
+				for {
+					attrs, err := it.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						t.Logf("Error listing objects during cleanup: %v", err)
+						continue
+					}
+					if err := bucket.Object(attrs.Name).Delete(ctx); err != nil {
+						t.Logf("Error deleting object %s during cleanup: %v", attrs.Name, err)
+					}
+				}
+				// Now delete the bucket
 				if err := bucket.Delete(ctx); err != nil {
 					// Only log the error, don't fail the test
 					t.Logf("Post-test cleanup failed: %v", err)
