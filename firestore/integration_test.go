@@ -1232,7 +1232,15 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 		if test.orderBy {
 			test.q = test.q.OrderBy("height", Asc)
 		}
-		gotDocs, err := test.q.Documents(ctx).GetAll()
+
+		var gotDocs []*DocumentSnapshot
+		var err error
+		testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+			gotDocs, err = test.q.Documents(ctx).GetAll()
+			if err != nil {
+				r.Errorf(err.Error())
+			}
+		})
 		if err != nil {
 			t.Errorf("#%d: %+v: %v", i, test.q, err)
 			continue
