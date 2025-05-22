@@ -40,6 +40,14 @@ func TestEmulated_SoftDelete(t *testing.T) {
 			bucketName := "test-soft-delete-" + uidSpace.New()
 			bucket := client.Bucket(bucketName)
 
+			// Ensure bucket cleanup happens even if test is skipped
+			defer func() {
+				if err := bucket.Delete(ctx); err != nil {
+					// Only log the error, don't fail the test
+					t.Logf("Post-test cleanup failed: %v", err)
+				}
+			}()
+
 			// Create bucket with soft delete policy.
 			policy := &SoftDeletePolicy{
 				RetentionDuration: time.Hour * 24 * 8,
@@ -47,7 +55,6 @@ func TestEmulated_SoftDelete(t *testing.T) {
 			if err := bucket.Create(ctx, projectID, &BucketAttrs{SoftDeletePolicy: policy}); err != nil {
 				t.Fatalf("error creating bucket with soft delete policy set: %v", err)
 			}
-			defer bucket.Delete(ctx)
 
 			// Verify bucket's soft delete policy.
 			attrs, err := bucket.Attrs(ctx)
