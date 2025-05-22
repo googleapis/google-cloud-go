@@ -517,11 +517,6 @@ type BucketAttrs struct {
 
 	// OwnerEntity contains entity information in the form "project-owner-projectId".
 	OwnerEntity string
-
-	// IPFilter specifies the network sources that are allowed to access
-	// operations on the bucket, as well as its underlying objects.
-	// Only enforced when mode is set to 'Enabled'.
-	IPFilter *IPFilter
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -832,62 +827,6 @@ type HierarchicalNamespace struct {
 	Enabled bool
 }
 
-// PublicNetworkSource contains the public network source of the
-// bucket's IP filter. Wrapper type for raw.BucketIpFilterPublicNetworkSource.
-type PublicNetworkSource struct {
-	// AllowedIpCidrRanges: The list of public IPv4, IPv6 cidr ranges that are
-	// allowed to access the bucket.
-	AllowedIPCidrRanges []string
-	// ForceSendFields is a list of field names (e.g. "AllowedIpCidrRanges") to
-	// unconditionally include in API requests. By default, fields with empty or
-	// default values are omitted from API requests. See
-	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
-	// details.
-	ForceSendFields []string
-	// NullFields is a list of field names (e.g. "AllowedIpCidrRanges") to include
-	// in API requests with the JSON null value. By default, fields with empty
-	// values are omitted from API requests. See
-	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
-	NullFields []string
-}
-
-// VpcNetworkSources contains the VPC network source of the
-// bucket's IP filter. Wrapper type for raw.BucketIpFilterVpcNetworkSources.
-type VpcNetworkSources struct {
-	// AllowedIpCidrRanges: The list of IPv4, IPv6 cidr ranges subnetworks that are
-	// allowed to access the bucket.
-	AllowedIPCidrRanges []string
-	// Network: Name of the network. Format:
-	// projects/{PROJECT_ID}/global/networks/{NETWORK_NAME}
-	Network string
-	// ForceSendFields is a list of field names (e.g. "AllowedIpCidrRanges") to
-	// unconditionally include in API requests. By default, fields with empty or
-	// default values are omitted from API requests. See
-	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
-	// details.
-	ForceSendFields []string
-	// NullFields is a list of field names (e.g. "AllowedIpCidrRanges") to include
-	// in API requests with the JSON null value. By default, fields with empty
-	// values are omitted from API requests. See
-	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
-	NullFields []string
-}
-
-// IPFilter specifies the network sources that are allowed to access
-// operations on the bucket, as well as its underlying objects.
-// Only enforced when mode is set to 'Enabled'.
-// Wrapper type for raw.BucketIpFilter.
-// See https://cloud.google.com/storage/docs/ip-filtering-overview.
-type IPFilter struct {
-	// Mode: The mode of the IP filter. Valid values are 'Enabled' and 'Disabled'.
-	Mode string
-	// PublicNetworkSource: The public network source of the bucket's IP filter.
-	PublicNetworkSource *PublicNetworkSource
-	// VpcNetworkSources: The list of VPC network
-	// (https://cloud.google.com/vpc/docs/vpc) sources of the bucket's IP filter.
-	VpcNetworkSources []*VpcNetworkSources
-}
-
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
 		return nil, nil
@@ -929,7 +868,6 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		SoftDeletePolicy:         toSoftDeletePolicyFromRaw(b.SoftDeletePolicy),
 		HierarchicalNamespace:    toHierarchicalNamespaceFromRaw(b.HierarchicalNamespace),
 		OwnerEntity:              ownerEntityFromRaw(b.Owner),
-		IPFilter:                 ipFilterFromRaw(b.IpFilter),
 	}, nil
 }
 
@@ -1024,7 +962,6 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Autoclass:             b.Autoclass.toRawAutoclass(),
 		SoftDeletePolicy:      b.SoftDeletePolicy.toRawSoftDeletePolicy(),
 		HierarchicalNamespace: b.HierarchicalNamespace.toRawHierarchicalNamespace(),
-		IpFilter:              toRawIPFilter(b.IPFilter),
 	}
 }
 
@@ -1306,13 +1243,6 @@ type BucketAttrsToUpdate struct {
 	// Library users should use ACLHandle methods directly.
 	defaultObjectACL []ACLRule
 
-	// If set, updates the IP filtering configuration of the bucket.
-	// When mode is set to 'Enabled', IP filtering rules are applied to the bucket.
-	// When mode is set to 'Disabled', IP filtering configuration is ignored.
-	// See https://cloud.google.com/storage/docs/ip-filtering-overview for more
-	// information.
-	IPFilter *IPFilter
-
 	setLabels    map[string]string
 	deleteLabels map[string]bool
 }
@@ -1432,9 +1362,6 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 		} else {
 			rb.SoftDeletePolicy = ua.SoftDeletePolicy.toRawSoftDeletePolicy()
 		}
-	}
-	if ua.IPFilter != nil {
-		rb.IpFilter = toRawIPFilter(ua.IPFilter)
 	}
 	if ua.PredefinedACL != "" {
 		// Clear ACL or the call will fail.
@@ -2299,87 +2226,6 @@ func toHierarchicalNamespaceFromRaw(r *raw.BucketHierarchicalNamespace) *Hierarc
 	}
 	return &HierarchicalNamespace{
 		Enabled: r.Enabled,
-	}
-}
-
-// Converts a wrapper VpcNetworkSources to raw.BucketIpFilterVpcNetworkSources.
-func toRawVpcNetworkSources(src []*VpcNetworkSources) []*raw.BucketIpFilterVpcNetworkSources {
-	if src == nil {
-		return nil
-	}
-	var vpcNetworkSources []*raw.BucketIpFilterVpcNetworkSources
-	for _, v := range src {
-		vpcNetworkSources = append(vpcNetworkSources, &raw.BucketIpFilterVpcNetworkSources{
-			AllowedIpCidrRanges: v.AllowedIPCidrRanges,
-			Network:             v.Network,
-			ForceSendFields:     v.ForceSendFields,
-			NullFields:          v.NullFields,
-		})
-	}
-	return vpcNetworkSources
-}
-
-// Converts a raw.BucketIpFilterVpcNetworkSources to wrapper VpcNetworkSources.
-func vpcNetworkSourcesFromRaw(r []*raw.BucketIpFilterVpcNetworkSources) []*VpcNetworkSources {
-	if r == nil {
-		return nil
-	}
-	var vpcNetworkSources []*VpcNetworkSources
-	for _, v := range r {
-		vpcNetworkSources = append(vpcNetworkSources, &VpcNetworkSources{
-			AllowedIPCidrRanges: v.AllowedIpCidrRanges,
-			Network:             v.Network,
-			ForceSendFields:     v.ForceSendFields,
-			NullFields:          v.NullFields,
-		})
-	}
-	return vpcNetworkSources
-}
-
-// Converts a wrapper PublicNetworkSource to raw.BucketIpFilterPublicNetworkSource.
-func toRawPublicNetworkSource(src *PublicNetworkSource) *raw.BucketIpFilterPublicNetworkSource {
-	if src == nil {
-		return nil
-	}
-	return &raw.BucketIpFilterPublicNetworkSource{
-		AllowedIpCidrRanges: src.AllowedIPCidrRanges,
-		ForceSendFields:     src.ForceSendFields,
-		NullFields:          src.NullFields,
-	}
-}
-
-// Converts a raw.BucketIpFilterPublicNetworkSource to wrapper PublicNetworkSource.
-func publicNetworkSourceFromRaw(src *raw.BucketIpFilterPublicNetworkSource) *PublicNetworkSource {
-	if src == nil {
-		return nil
-	}
-	return &PublicNetworkSource{
-		AllowedIPCidrRanges: src.AllowedIpCidrRanges,
-		ForceSendFields:     src.ForceSendFields,
-		NullFields:          src.NullFields,
-	}
-}
-
-// Converts a raw.BucketIpFilter to wrapper IPFilter.
-func ipFilterFromRaw(r *raw.BucketIpFilter) *IPFilter {
-	if r == nil {
-		return nil
-	}
-	return &IPFilter{
-		Mode:                r.Mode,
-		PublicNetworkSource: publicNetworkSourceFromRaw(r.PublicNetworkSource),
-		VpcNetworkSources:   vpcNetworkSourcesFromRaw(r.VpcNetworkSources),
-	}
-}
-
-func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
-	if p == nil {
-		return nil
-	}
-	return &raw.BucketIpFilter{
-		Mode:                p.Mode,
-		PublicNetworkSource: toRawPublicNetworkSource(p.PublicNetworkSource),
-		VpcNetworkSources:   toRawVpcNetworkSources(p.VpcNetworkSources),
 	}
 }
 
