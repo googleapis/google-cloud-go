@@ -17,6 +17,9 @@
     "bigtable": {
       "component": "bigtable"
     },
+    "otelsdkadapt": {
+      "component": "otelsdkadapt"
+    },
     "datastore": {
       "component": "datastore"
     },
