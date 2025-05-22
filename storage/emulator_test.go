@@ -78,6 +78,7 @@ func TestEmulated_SoftDelete(t *testing.T) {
 			// List soft deleted objects.
 			it := bucket.Objects(ctx, &Query{SoftDeleted: true})
 			var found bool
+			var objGen int64
 			for {
 				attrs, err := it.Next()
 				if err == iterator.Done {
@@ -88,6 +89,7 @@ func TestEmulated_SoftDelete(t *testing.T) {
 				}
 				if attrs.Name == objName {
 					found = true
+					objGen = attrs.Generation
 					// Verify soft delete and hard delete times
 					if attrs.SoftDeleteTime.IsZero() {
 						t.Error("SoftDeleteTime should not be zero")
@@ -103,8 +105,8 @@ func TestEmulated_SoftDelete(t *testing.T) {
 				t.Error("soft deleted object not found in listing")
 			}
 
-			// Get a handle to the soft deleted object
-			softDeletedObj := obj.SoftDeleted()
+			// Get a handle to the soft deleted object with the correct generation
+			softDeletedObj := obj.Generation(objGen).SoftDeleted()
 
 			// Restore the object using the soft deleted handle
 			if _, err := softDeletedObj.Restore(ctx, nil); err != nil {
