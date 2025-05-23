@@ -3395,6 +3395,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 				// Compare expected and actual results length
 				if len(gotDocs) != len(tc.wantBeans) {
 					r.Errorf("Expected %v results, got %d", len(tc.wantBeans), len(gotDocs))
+					return
 				}
 
 				// Compare results
