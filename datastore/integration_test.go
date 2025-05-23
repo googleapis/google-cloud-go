@@ -425,12 +425,17 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 
 		client.WithReadOptions(tm)
 
+		newCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+		newClient := newTestClient(newCtx, t)
+		defer cancel()
+		defer newClient.Close()
+
 		// If the Entity isn't available at the requested read time, we get
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
 		// exposed in anyway in the response.
-		err = client.Get(ctx, k, &got)
+		err = newClient.Get(newCtx, k, &got)
 		if err != nil {
-			r.Errorf("client.Get: %v", err)
+			r.Errorf("newClient.Get: %v", err)
 		}
 	})
 
