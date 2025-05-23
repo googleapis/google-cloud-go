@@ -1296,7 +1296,7 @@ func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
 				r.Errorf("got: %v, want: nil", gotErr)
 				return
 			}
-			if !reflect.DeepEqual(gotAggResult, tc.wantAggResult) {
+			if !aggResultsEquals(r, gotAggResult, tc.wantAggResult) {
 				r.Errorf("%q: Mismatch in aggregation result got: %+v, want: %+v", tc.desc, gotAggResult, tc.wantAggResult)
 				return
 			}
@@ -2080,6 +2080,31 @@ func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	}
 
 	return nil
+}
+
+func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
+	if len(m1) != len(m2) {
+		r.Errorf("aggResultsEquals: length mismatch, len(m1)=%d, len(m2)=%d", len(m1), len(m2))
+		return false
+	}
+	for k, v1 := range m1 {
+		v2, ok := m2[k]
+		if !ok {
+			r.Errorf("aggResultsEquals: key %q not found in m2", k)
+			return false
+		}
+		pbVal1, ok1 := v1.(*pb.Value)
+		pbVal2, ok2 := v2.(*pb.Value)
+		if !ok1 || !ok2 {
+			r.Errorf("aggResultsEquals: type assertion to *pb.Value failed for key %q (ok1=%t, ok2=%t)", k, ok1, ok2)
+			return false
+		}
+		if diff := testutil.Diff(pbVal1, pbVal2); diff != "" {
+			r.Errorf("aggResultsEquals: failed for key %q\nv1=%v\nv2=%v\ndiff: got=-, want=+\n%v", k, pbVal1, pbVal2, diff)
+			return false
+		}
+	}
+	return true
 }
 
 func TestIntegration_KindlessQueries(t *testing.T) {
