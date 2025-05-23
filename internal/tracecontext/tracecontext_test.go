@@ -126,13 +126,13 @@ func TestEncode(t *testing.T) {
 }
 
 func BenchmarkDecode(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		Decode(validData)
 	}
 }
 
 func BenchmarkEncode(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		traceID := make([]byte, 16)
 		var opts byte
 		Encode(validData, traceID, 0, opts)

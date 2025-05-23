@@ -69,7 +69,7 @@ func TestFlowControllerNoStarve(t *testing.T) {
 	defer cancel()
 	fc := newFlowController(10, 10)
 	first := make(chan int)
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		go func() {
 			for {
 				if err := fc.acquire(ctx, 1); err != nil {
@@ -129,7 +129,7 @@ func TestFlowControllerSaturation(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		g, ctx := errgroup.WithContext(ctx)
-		for i := 0; i < 10; i++ {
+		for range 10 {
 			g.Go(func() error {
 				var hitCount, hitSize bool
 				// Run at least until we hit the expected values, and at least

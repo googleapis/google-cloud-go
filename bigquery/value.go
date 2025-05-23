@@ -723,7 +723,7 @@ func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (i
 		return nil, nil
 	}
 	vals := []Value{}
-	for i := 0; i < vfield.Len(); i++ {
+	for i := range vfield.Len() {
 		m, err := structToMap(vfield.Index(i), schemaField.Schema)
 		if err != nil {
 			return nil, err
@@ -797,7 +797,7 @@ func formatUploadValue(v reflect.Value, fs *FieldSchema, cvt func(reflect.Value)
 		return nil
 	}
 	s := make([]string, v.Len())
-	for i := 0; i < v.Len(); i++ {
+	for i := range v.Len() {
 		s[i] = cvt(v.Index(i))
 	}
 	return s

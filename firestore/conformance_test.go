@@ -230,7 +230,7 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 
 func nSnapshots(iter *QuerySnapshotIterator, n int) ([]*pb.Snapshot, error) {
 	var snaps []*pb.Snapshot
-	for i := 0; i < n; i++ {
+	for range n {
 		qsnap, err := iter.Next()
 		if err != nil {
 			return snaps, err

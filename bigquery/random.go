@@ -41,7 +41,7 @@ func randomID() string {
 	// This is used for both job IDs and insert IDs.
 	var b [randomIDLen]byte
 	rngMu.Lock()
-	for i := 0; i < len(b); i++ {
+	for i := range len(b) {
 		b[i] = alphanum[rng.Intn(len(alphanum))]
 	}
 	rngMu.Unlock()

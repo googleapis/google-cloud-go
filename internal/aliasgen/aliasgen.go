@@ -157,7 +157,7 @@ func processFunction(f *types.Func) (*function, error) {
 
 func processTuple(t *types.Tuple) ([]*typeInfo, error) {
 	var tis []*typeInfo
-	for i := 0; i < t.Len(); i++ {
+	for i := range t.Len() {
 		ti := &typeInfo{}
 		v := t.At(i)
 		ti.name = v.Name()

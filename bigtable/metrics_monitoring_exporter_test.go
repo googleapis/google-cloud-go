@@ -545,7 +545,7 @@ func TestBatchingExport(t *testing.T) {
 
 	createMetrics := func(n int) []metricdata.Metrics {
 		inputMetrics := make([]metricdata.Metrics, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			inputMetrics[i] = metricdata.Metrics{Name: "testing", Data: metricdata.Histogram[float64]{
 				DataPoints: []metricdata.HistogramDataPoint[float64]{
 					{},

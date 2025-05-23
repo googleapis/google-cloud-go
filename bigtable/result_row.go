@@ -768,7 +768,7 @@ func assignValue(dest reflect.Value, src any) error {
 		// Case: Assigning []*T source to *[]T destination (e.g., []*int64 -> []int64)
 		if srcElemType.Kind() == reflect.Ptr && destElemType == srcElemType.Elem() {
 			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
+			for i := range srcLen {
 				srcPtrVal := srcVal.Index(i)
 				if srcPtrVal.IsNil() {
 					return fmt.Errorf("cannot assign slice containing nil element to destination slice with non-pointer element type %s", destElemType)
@@ -784,7 +784,7 @@ func assignValue(dest reflect.Value, src any) error {
 		// Case: Assigning []T source to *[]*T destination (e.g., []int64 -> []*int64)
 		if destElemType.Kind() == reflect.Ptr && srcElemType == destElemType.Elem() {
 			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
+			for i := range srcLen {
 				srcValue := srcVal.Index(i)
 				elemPtrDest := newSlice.Index(i) // Dest element *T
 				// Assign T to *T: Need to allocate pointer
@@ -800,7 +800,7 @@ func assignValue(dest reflect.Value, src any) error {
 		// Case: Assigning []*T source to *[]any destination (e.g., []*int64 -> []any)
 		if destElemType.Kind() == reflect.Interface && destElemType.NumMethod() == 0 && srcElemType.Kind() == reflect.Ptr {
 			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
+			for i := range srcLen {
 				srcPtrVal := srcVal.Index(i)
 				var elemValToSet any
 				if !srcPtrVal.IsNil() {
@@ -818,7 +818,7 @@ func assignValue(dest reflect.Value, src any) error {
 		// Case: Assigning []T source to *[]any destination (e.g. []float64 -> []any)
 		if destElemType.Kind() == reflect.Interface && destElemType.NumMethod() == 0 && srcElemType.Kind() != reflect.Ptr {
 			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
+			for i := range srcLen {
 				srcElemVal := srcVal.Index(i).Interface()
 				if err := assignValue(newSlice.Index(i), srcElemVal); err != nil {
 					return fmt.Errorf("error assigning slice element %d to destination interface slice: %w", i, err)
@@ -830,7 +830,7 @@ func assignValue(dest reflect.Value, src any) error {
 		// Case: Assigning []any source to *[]T or *[]*T
 		if srcElemType.Kind() == reflect.Interface && srcElemType.NumMethod() == 0 {
 			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
+			for i := range srcLen {
 				srcElemInterface := srcVal.Index(i).Interface() // Get T/*T/nil from []any
 				// Assign element to destination slice element (T or *T)
 				if err := assignValue(newSlice.Index(i), srcElemInterface); err != nil {

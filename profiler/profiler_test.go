@@ -334,7 +334,7 @@ func TestRetry(t *testing.T) {
 		},
 		md: &md,
 	}
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		pause, shouldRetry := r.Retry(errors.New(""))
 		if !shouldRetry {
 			t.Errorf("retryer.Retry() called %v times, returned shouldRetry false, want true", i)

@@ -668,7 +668,7 @@ type Z struct {
 func (z Z) String() string {
 	var lens []string
 	v := reflect.ValueOf(z)
-	for i := 0; i < v.NumField(); i++ {
+	for i := range v.NumField() {
 		if l := v.Field(i).Len(); l > 0 {
 			lens = append(lens, fmt.Sprintf("len(%s)=%d", v.Type().Field(i).Name, l))
 		}
@@ -974,7 +974,7 @@ func populateData(t *testing.T, client *Client, childrenCount int, time int64, t
 
 	children := []*SQChild{}
 
-	for i := 0; i < childrenCount; i++ {
+	for i := range childrenCount {
 		children = append(children, &SQChild{I: i, T: time, U: time, V: 1.5, W: "str"})
 	}
 	keys := make([]*Key, childrenCount)
@@ -1599,7 +1599,7 @@ func TestIntegration_LargeQuery(t *testing.T) {
 	const n = 800
 	children := make([]*SQChild, 0, n)
 	keys := make([]*Key, 0, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		children = append(children, &SQChild{I: i, T: now, U: now})
 		keys = append(keys, IncompleteKey("SQChild", parent))
 	}
@@ -1608,9 +1608,7 @@ func TestIntegration_LargeQuery(t *testing.T) {
 	const batchSize = 500
 	for i := 0; i < n; i = i + 500 {
 		j := i + batchSize
-		if j > n {
-			j = n
-		}
+		j = min(j, n)
 		fullKeys, err := client.PutMulti(ctx, keys[i:j], children[i:j])
 		if err != nil {
 			t.Fatalf("PutMulti(%d, %d): %v", i, j, err)
@@ -1712,7 +1710,7 @@ func TestIntegration_LargeQuery(t *testing.T) {
 			ctx := context.WithValue(ctx, ckey{}, fmt.Sprintf("c=%d,l=%d,o=%d", count, limit, offset))
 			// Run iterator through count calls to Next.
 			it := client.Run(ctx, q.Limit(limit).Offset(offset).KeysOnly())
-			for i := 0; i < count; i++ {
+			for i := range count {
 				_, err := it.Next(nil)
 				if err == iterator.Done {
 					break
@@ -1912,7 +1910,7 @@ func createTestEntities(ctx context.Context, t *testing.T, client *Client, parti
 	now := timeNow.Truncate(time.Millisecond).Unix()
 
 	entities := []SQChild{}
-	for i := 0; i < count; i++ {
+	for i := range count {
 		entities = append(entities, SQChild{I: i + 1, T: now, U: now, V: 1.5, W: "str"})
 	}
 

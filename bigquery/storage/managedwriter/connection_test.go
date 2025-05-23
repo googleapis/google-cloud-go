@@ -128,7 +128,7 @@ func TestConnection_LockingAppendFlowRelease(t *testing.T) {
 	}
 
 	pw := newPendingWrite(ctx, writer, &storagepb.AppendRowsRequest{WriteStream: "somestream"}, newVersionedTemplate(), "", "")
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		conn, err := router.pool.selectConn(pw)
 		if err != nil {
 			t.Errorf("selectConn: %v", err)
@@ -181,7 +181,7 @@ func TestConnection_LeakingReconnect(t *testing.T) {
 
 	var chans []chan *pendingWrite
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		_, ch, err := router.conn.getStream(nil, true)
 		if err != nil {
 			t.Fatalf("failed getStream(%d): %v", i, err)

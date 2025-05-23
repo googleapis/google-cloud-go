@@ -140,7 +140,7 @@ func floatToProtoValue(f float64) *pb.Value {
 // whether a transform was encountered.
 func arrayToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 	vals := make([]*pb.Value, v.Len())
-	for i := 0; i < v.Len(); i++ {
+	for i := range v.Len() {
 		val, sawTransform, err := toProtoValue(v.Index(i))
 		if err != nil {
 			return nil, false, err

@@ -551,7 +551,7 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 
 	case reflect.Array:
 		var vals []*bq.QueryParameterValue
-		for i := 0; i < v.Len(); i++ {
+		for i := range v.Len() {
 			val, err := paramValue(v.Index(i))
 			if err != nil {
 				return nil, err

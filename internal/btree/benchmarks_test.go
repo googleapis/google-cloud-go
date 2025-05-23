@@ -52,7 +52,7 @@ func BenchmarkDeleteInsert(b *testing.B) {
 				tr.Set(m.Key, m.Value)
 			}
 			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
+			for i := range b.N {
 				m := insertP[i%benchmarkTreeSize]
 				tr.Delete(m.Key)
 				tr.Set(m.Key, m.Value)
@@ -71,7 +71,7 @@ func BenchmarkDeleteInsertCloneOnce(b *testing.B) {
 			}
 			tr = tr.Clone()
 			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
+			for i := range b.N {
 				m := insertP[i%benchmarkTreeSize]
 				tr.Delete(m.Key)
 				tr.Set(m.Key, m.Value)
@@ -89,7 +89,7 @@ func BenchmarkDeleteInsertCloneEachTime(b *testing.B) {
 				tr.Set(m.Key, m.Value)
 			}
 			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
+			for i := range b.N {
 				tr = tr.Clone()
 				m := insertP[i%benchmarkTreeSize]
 				tr.Delete(m.Key)
@@ -206,7 +206,7 @@ func BenchmarkGetCloneEachTime(b *testing.B) {
 func BenchmarkFind(b *testing.B) {
 	for _, d := range degrees {
 		var items []item
-		for i := 0; i < 2*d; i++ {
+		for i := range 2 * d {
 			items = append(items, item{i, i})
 		}
 		b.Run(fmt.Sprintf("size=%d", len(items)), func(b *testing.B) {
@@ -218,7 +218,7 @@ func BenchmarkFind(b *testing.B) {
 				{"linear", findLinear},
 			} {
 				b.Run(alg.name, func(b *testing.B) {
-					for i := 0; i < b.N; i++ {
+					for range b.N {
 						for j := 0; j < len(items); j++ {
 							alg.fun(items[j].key, items)
 						}

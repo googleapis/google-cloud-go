@@ -269,7 +269,7 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 // populateRepeated sets the first n elements of vr, which must be a slice or
 // array, to the corresponding elements of vals.
 func populateRepeated(vr reflect.Value, vals []*pb.Value, n int, c *Client) error {
-	for i := 0; i < n; i++ {
+	for i := range n {
 		if err := setReflectFromProtoValue(vr.Index(i), vals[i], c); err != nil {
 			return err
 		}

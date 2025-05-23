@@ -92,7 +92,7 @@ func fprint(w io.Writer, v reflect.Value, s state) {
 
 	case reflect.Array:
 		fmt.Fprintf(w, "%s{\n", v.Type())
-		for i := 0; i < v.Len(); i++ {
+		for i := range v.Len() {
 			fprint(w, v.Index(i), state{
 				level:    s.level + 1,
 				prefix:   "",
@@ -107,7 +107,7 @@ func fprint(w io.Writer, v reflect.Value, s state) {
 		fmt.Fprintf(w, "%s{", v.Type())
 		if v.Len() > 0 {
 			fmt.Fprintln(w)
-			for i := 0; i < v.Len(); i++ {
+			for i := range v.Len() {
 				fprint(w, v.Index(i), state{
 					level:    s.level + 1,
 					prefix:   "",
@@ -143,7 +143,7 @@ func fprint(w io.Writer, v reflect.Value, s state) {
 	case reflect.Struct:
 		t := v.Type()
 		fmt.Fprintf(w, "%s{\n", t)
-		for i := 0; i < t.NumField(); i++ {
+		for i := range t.NumField() {
 			f := v.Field(i)
 			if s.defaults || !isDefault(f) {
 				fprint(w, f, state{

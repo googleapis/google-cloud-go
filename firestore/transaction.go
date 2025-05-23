@@ -150,7 +150,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	// TODO(jba): use other than the standard backoff parameters?
 	// TODO(jba): get backoff time from gRPC trailer metadata? See
 	// extractRetryDelay in https://code.googlesource.com/gocloud/+/master/spanner/retry.go.
-	for i := 0; i < t.maxAttempts; i++ {
+	for range t.maxAttempts {
 		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.BeginTransaction")
 		var res *pb.BeginTransactionResponse
 		res, err = t.c.c.BeginTransaction(t.ctx, &pb.BeginTransactionRequest{

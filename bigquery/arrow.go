@@ -168,7 +168,7 @@ func (ap *arrowDecoder) convertArrowRecordValue(record arrow.Record) ([][]Value,
 	for j, col := range record.Columns() {
 		fs := ap.tableSchema[j]
 		ft := ap.arrowSchema.Field(j).Type
-		for i := 0; i < col.Len(); i++ {
+		for i := range col.Len() {
 			v, err := convertArrowValue(col, i, ft, fs)
 			if err != nil {
 				return nil, fmt.Errorf("found arrow type %s, but could not convert value: %v", ap.arrowSchema.Field(j).Type, err)

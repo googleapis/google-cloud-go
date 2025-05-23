@@ -128,7 +128,7 @@ func TestListMetrics(t *testing.T) {
 
 	var metrics []*Metric
 	want := map[string]*Metric{}
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		m := &Metric{
 			ID:          metricIDs.New(),
 			Description: "DESC",

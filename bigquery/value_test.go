@@ -1338,9 +1338,9 @@ func BenchmarkStructLoader_Compile(b *testing.B) {
 
 func benchmarkStructLoader(b *testing.B, compile bool) {
 	var ts1 testStruct1
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		var sl structLoader
-		for j := 0; j < 10; j++ {
+		for range 10 {
 			if err := load(&ts1, schema2, testValues); err != nil {
 				b.Fatal(err)
 			}

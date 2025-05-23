@@ -50,7 +50,7 @@ func perm(n int) []itemWithIndex {
 // rang returns an ordered list of Int items in the range [0, n).
 func rang(n int) []itemWithIndex {
 	var out []itemWithIndex
-	for i := 0; i < n; i++ {
+	for i := range n {
 		out = append(out, itemWithIndex{i, i, i})
 	}
 	return out
@@ -66,7 +66,7 @@ func all(it *Iterator) []itemWithIndex {
 }
 
 func reverse(s []itemWithIndex) {
-	for i := 0; i < len(s)/2; i++ {
+	for i := range len(s) / 2 {
 		s[i], s[len(s)-i-1] = s[len(s)-i-1], s[i]
 	}
 }
@@ -76,7 +76,7 @@ var btreeDegree = flag.Int("degree", 32, "B-Tree degree")
 func TestBTree(t *testing.T) {
 	tr := New(*btreeDegree, less)
 	const treeSize = 10000
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		if min, _ := tr.Min(); min != nil {
 			t.Fatalf("empty min, got %+v", min)
 		}
@@ -127,7 +127,7 @@ func TestAt(t *testing.T) {
 	for _, m := range perm(100) {
 		tr.Set(m.Key, m.Value)
 	}
-	for i := 0; i < tr.Len(); i++ {
+	for i := range tr.Len() {
 		gotk, gotv := tr.At(i)
 		if want := i; gotk != want || gotv != want {
 			t.Fatalf("At(%d) = (%v, %v), want (%v, %v)", i, gotk, gotv, want, want)
@@ -140,7 +140,7 @@ func TestGetWithIndex(t *testing.T) {
 	for _, m := range perm(100) {
 		tr.Set(m.Key, m.Value)
 	}
-	for i := 0; i < tr.Len(); i++ {
+	for i := range tr.Len() {
 		gotv, goti := tr.GetWithIndex(i)
 		wantv, wanti := i, i
 		if gotv != wantv || goti != wanti {
@@ -313,7 +313,7 @@ func TestMixed(t *testing.T) {
 	const maxSize = 1000
 	tr := New(3, less)
 	has := map[int]bool{}
-	for i := 0; i < 10000; i++ {
+	for range 10000 {
 		r := rand.Intn(maxSize)
 		if r >= tr.Len() {
 			old, ok := tr.Set(r, r)
@@ -384,7 +384,7 @@ func TestCloneConcurrentOperations(t *testing.T) {
 		}
 	}
 	toRemove := rang(cloneTestSize)[cloneTestSize/2:]
-	for i := 0; i < len(trees)/2; i++ {
+	for i := range len(trees) / 2 {
 		tree := trees[i]
 		wg.Add(1)
 		go func() {

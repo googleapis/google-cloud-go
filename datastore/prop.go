@@ -193,7 +193,7 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 			return nil
 		}
 
-		for i := 0; i < t.NumField(); i++ {
+		for i := range t.NumField() {
 			f := t.Field(i)
 
 			// If a named field is unexported, ignore it. An anonymous

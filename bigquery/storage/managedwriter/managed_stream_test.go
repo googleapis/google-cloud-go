@@ -120,7 +120,7 @@ func TestManagedStream_RequestOptimization(t *testing.T) {
 
 	wantReqs := 3
 
-	for i := 0; i < wantReqs; i++ {
+	for i := range wantReqs {
 		_, err := ms.AppendRows(ctx, fakeData, WithOffset(int64(i)))
 		if err != nil {
 			t.Errorf("AppendRows; %v", err)
@@ -471,7 +471,7 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 
 	// Send a bunch of appends that expire quicker than response, and monitor that
 	// goroutine growth stays within bounded threshold.
-	for i := 0; i < 250; i++ {
+	for i := range 250 {
 		expireCtx, cancel := context.WithTimeout(ctx, 25*time.Millisecond)
 		defer cancel()
 		ms.AppendRows(expireCtx, fakeData)
@@ -525,7 +525,7 @@ func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
 
 	// Send a bunch of appends that will trigger reconnects and monitor that
 	// goroutine growth stays within bounded threshold.
-	for i := 0; i < appendCount; i++ {
+	for i := range appendCount {
 		writeCtx := context.Background()
 		r, err := ms.AppendRows(writeCtx, fakeData)
 		if err != nil {
@@ -721,7 +721,7 @@ func TestManagedStream_RaceFinder(t *testing.T) {
 
 	var wg sync.WaitGroup
 	wg.Add(numWriters)
-	for i := 0; i < numWriters; i++ {
+	for range numWriters {
 		go func() {
 			for j := 0; j < numWrites; j++ {
 				result, err := ms.AppendRows(ctx, [][]byte{[]byte("foo")})
