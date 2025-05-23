@@ -2099,7 +2099,7 @@ func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
 			r.Errorf("aggResultsEquals: type assertion to *pb.Value failed for key %q (ok1=%t, ok2=%t)", k, ok1, ok2)
 			return false
 		}
-		if diff := testutil.Diff(pbVal1, pbVal2); diff != "" {
+		if diff := testutil.Diff(pbVal1, pbVal2, cmpopts.IgnoreUnexported(pb.Value{})); diff != "" {
 			r.Errorf("aggResultsEquals: failed for key %q\nv1=%v\nv2=%v\ndiff: got=-, want=+\n%v", k, pbVal1, pbVal2, diff)
 			return false
 		}
