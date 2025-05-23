@@ -308,7 +308,7 @@ func TestListTopics(t *testing.T) {
 
 	var ids []string
 	numTopics := 4
-	for i := 0; i < numTopics; i++ {
+	for i := range numTopics {
 		id := fmt.Sprintf("t%d", i)
 		ids = append(ids, id)
 		mustCreateTopic(t, c, id)

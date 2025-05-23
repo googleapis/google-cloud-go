@@ -96,7 +96,7 @@ func main() {
 	wg.Add(*numBusyworkers)
 	runtime.GOMAXPROCS(*numBusyworkers)
 
-	for i := 0; i < *numBusyworkers; i++ {
+	for range *numBusyworkers {
 		go func() {
 			defer wg.Done()
 			busywork(&mu)
