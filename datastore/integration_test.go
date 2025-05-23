@@ -383,6 +383,9 @@ func compareIgnoreFieldMismatchResults(t *testing.T, wantX []NewX, gotX []NewX, 
 	if !equalErrs(gotErr, wantErr) {
 		t.Errorf("%v: error got: %v, want: %v", errPrefix, gotErr, wantErr)
 	}
+	if len(gotX) != len(wantX) {
+		t.Fatalf("%v results length: got: %v, want: %v\n", errPrefix, len(gotX), len(wantX))
+	}
 	for resIndex := 0; resIndex < len(wantX) && gotErr == nil; resIndex++ {
 		if wantX[resIndex].I != gotX[resIndex].I {
 			t.Fatalf("%v %v: got: %v, want: %v\n", errPrefix, resIndex, wantX[resIndex].I, gotX[resIndex].I)
