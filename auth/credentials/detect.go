@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"cloud.google.com/go/auth/internal/trustboundary"
 	"cloud.google.com/go/compute/metadata"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
@@ -118,14 +119,17 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 		metadataClient := metadata.NewWithOptions(&metadata.Options{
 			Logger: opts.logger(),
 		})
+		gceUniverseDomainProvider := &internal.ComputeUniverseDomainProvider{
+			MetadataClient: metadataClient,
+		}
+
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider: computeTokenProvider(opts, metadataClient),
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
 				return metadataClient.ProjectIDWithContext(ctx)
 			}),
-			UniverseDomainProvider: &internal.ComputeUniverseDomainProvider{
-				MetadataClient: metadataClient,
-			},
+			UniverseDomainProvider:    gceUniverseDomainProvider,
+			TrustBoundaryDataProvider: trustboundary.NewGCETrustBoundaryDataProvider(gceUniverseDomainProvider, opts.client()),
 		}), nil
 	}
 
