@@ -1476,8 +1476,8 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 				r.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
 				return
 			}
-			if gotErr == nil && !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
-				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+			if gotErr == nil && !aggResultsEquals(r, gotAggResult, testCase.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %+v, want: %+v", testCase.desc, gotAggResult, testCase.wantAggResult)
 				return
 			}
 		})
