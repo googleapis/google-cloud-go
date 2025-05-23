@@ -85,11 +85,11 @@ type Options struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
-	// TrustBoundaryData specifies the trust boundary settings for the impersonated service account.
-	// It defines the regions or environments where the impersonated credential is allowed to be used.
-	// This data is used to enforce trust boundary restrictions on requests made with the impersonated credential.
-	// The TrustBoundaryData field is a pointer to allow for caching and updates to the trust boundary data.
-	TrustBoundaryData *TrustBoundaryData
+	// TrustBoundaryDataProvider is an interface used to fetch trust boundary data.
+	// This data defines the regions or environments where the credential (and subsequently the tokens
+	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
+	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
+	TrustBoundaryDataProvider trustboundary.TrustBoundaryDataProvider
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	UniverseDomain string
 }
@@ -151,30 +151,15 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 		Expiry: expiry,
 		Type:   internal.TokenTypeBearer,
 	}
-	trustBoundaryData, err := o.lookupServiceAccountTrustBoundary(ctx)
-	if err != nil {
-		return nil, err
+	// Fetch trust boundary data if a provider is configured, and attach it to the token.
+	if o.TrustBoundaryDataProvider != nil {
+		trustBoundaryData, err := o.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("credentials: error fetching the trust boundary data: %w", err)
+		}
+		token.TrustBoundaryData = *trustBoundaryData
 	}
-	token.TrustBoundaryData = *trustBoundaryData
 	return token, nil
-}
-
-// lookupServiceAccountTrustBoundary fetches trust boundary data for the impersonated service account.
-// It extracts the service account email from the impersonation URL and retrieves the allowed locations.
-// Returns an error if the service account email cannot be extracted from the impersonation URL.
-func (o *Options) lookupServiceAccountTrustBoundary(ctx context.Context) (*TrustBoundaryData, error) {
-	email, err := extractServiceAccountEmail(o.URL)
-	if err != nil {
-		return nil, err
-	}
-
-	trustBoundaryData, err := trustboundary.LookupServiceAccountTrustBoundary(ctx, o.Client, email, o.TrustBoundaryData, o.UniverseDomain)
-	if err != nil {
-		return nil, err
-	}
-
-	o.TrustBoundaryData = trustBoundaryData
-	return trustBoundaryData, nil
 }
 
 // extractServiceAccountEmail extracts the service account email from the impersonation URL.
@@ -183,7 +168,7 @@ func (o *Options) lookupServiceAccountTrustBoundary(ctx context.Context) (*Trust
 // or
 // https://iamcredentials.googleapis.com/v1/projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}:generateAccessToken
 // Returns an error if the email cannot be extracted.
-func extractServiceAccountEmail(impersonationURL string) (string, error) {
+func ExtractServiceAccountEmail(impersonationURL string) (string, error) {
 	re := regexp.MustCompile(`serviceAccounts/(.+?):generateAccessToken`)
 	matches := re.FindStringSubmatch(impersonationURL)
 

@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"cloud.google.com/go/auth/internal"
 )
 
 // CredentialType represents the type of credential for which trust boundary data is being fetched.
@@ -38,11 +40,17 @@ const (
 const (
 	// NoOpEncodedLocations is a special value indicating that no trust boundary is enforced.
 	NoOpEncodedLocations = "0x0"
-	// universeDomainDefault is the default domain for Google Cloud Universe.
-	universeDomainDefault = "googleapis.com"
-	// ServiceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
-	ServiceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
+	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
+	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
 )
+
+// TrustBoundaryDataProvider provides an interface for fetching TrustBoundaryData.
+// It's responsible for obtaining trust boundary information, including caching and specific logic for different credential types.
+type TrustBoundaryDataProvider interface {
+	// GetTrustBoundaryData retrieves the trust boundary data.
+	// The context provided should be used for any network requests.
+	GetTrustBoundaryData(ctx context.Context) (*TrustBoundaryData, error)
+}
 
 // AllowedLocationsResponse is the structure of the response from the Trust Boundary API.
 type AllowedLocationsResponse struct {
@@ -144,6 +152,8 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 }
 
 // LookupServiceAccountTrustBoundary fetches trust boundary data for a service account.
+// It validates input, checks for non-GDU universes, and optimizes by returning cached no-op data.
+// It attempts to fetch new data and falls back to provided cached data if the fetch fails, returning nil error on successful fallback.
 func LookupServiceAccountTrustBoundary(ctx context.Context, client *http.Client, serviceAccountEmail string, cachedData *TrustBoundaryData, universeDomain string) (*TrustBoundaryData, error) {
 	// Validate client.
 	if client == nil {
@@ -156,21 +166,20 @@ func LookupServiceAccountTrustBoundary(ctx context.Context, client *http.Client,
 	}
 
 	// Check domain, skip trust boundary flow for non-gdu universe domain.
-	if universeDomain != "" && universeDomain != universeDomainDefault {
+	if universeDomain != "" && universeDomain != internal.DefaultUniverseDomain {
 		return NewNoOpTrustBoundaryData(), nil
 	}
 
-	// Check for no-op in cached data.
 	// If the cached trust boundary data indicates a no-op (no restrictions),
 	// skip the lookup to optimize performance and reduce load on the lookup API endpoint.
 	if cachedData != nil && cachedData.EncodedLocations() == NoOpEncodedLocations {
 		return cachedData, nil
 	}
 
-	url := fmt.Sprintf(ServiceAccountAllowedLocationsEndpoint, serviceAccountEmail)
+	url := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, serviceAccountEmail)
 	trustBoundaryData, err := fetchTrustBoundaryData(ctx, client, url)
 
-	// handle errors and fall back to cached data if available.
+	// If fetchTrustBoundaryData returned an error, attempt to fall back to cached data if available.
 	if err != nil {
 		if cachedData != nil {
 			return cachedData, nil

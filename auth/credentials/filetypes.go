@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	internalauth "cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"cloud.google.com/go/auth/internal/trustboundary"
 )
 
 func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
@@ -33,12 +34,10 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		return nil, err
 	}
 
-	isServiceAccount := false
 	var projectID, universeDomain string
 	var tp auth.TokenProvider
 	switch fileType {
 	case credsfile.ServiceAccountKey:
-		isServiceAccount = true
 		f, err := credsfile.ParseServiceAccount(b)
 		if err != nil {
 			return nil, err
@@ -80,7 +79,6 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		}
 		universeDomain = f.UniverseDomain
 	case credsfile.ImpersonatedServiceAccountKey:
-		isServiceAccount = true
 		f, err := credsfile.ParseImpersonatedServiceAccount(b)
 		if err != nil {
 			return nil, err
@@ -112,7 +110,6 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		ProjectIDProvider: internalauth.StaticCredentialsProperty(projectID),
 		// TODO(codyoss): only set quota project here if there was a user override
 		UniverseDomainProvider: internalauth.StaticCredentialsProperty(universeDomain),
-		IsServiceAccount:       isServiceAccount,
 	}), nil
 }
 
@@ -138,20 +135,20 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 		return configureSelfSignedJWT(f, opts)
 	}
 	opts2LO := &auth.Options2LO{
-		Email:            f.ClientEmail,
-		PrivateKey:       []byte(f.PrivateKey),
-		PrivateKeyID:     f.PrivateKeyID,
-		Scopes:           opts.scopes(),
-		TokenURL:         f.TokenURL,
-		Subject:          opts.Subject,
-		Client:           opts.client(),
-		Logger:           opts.logger(),
-		IsServiceAccount: true,
-		UniverseDomain:   ud,
+		Email:          f.ClientEmail,
+		PrivateKey:     []byte(f.PrivateKey),
+		PrivateKeyID:   f.PrivateKeyID,
+		Scopes:         opts.scopes(),
+		TokenURL:       f.TokenURL,
+		Subject:        opts.Subject,
+		Client:         opts.client(),
+		Logger:         opts.logger(),
+		UniverseDomain: ud,
 	}
 	if opts2LO.TokenURL == "" {
 		opts2LO.TokenURL = jwtTokenURL
 	}
+	opts2LO.TrustBoundaryDataProvider = trustboundary.NewServiceAccountTrustBoundaryDataProvider(opts2LO.Client, opts2LO.Email, ud)
 	return auth.New2LOTokenProvider(opts2LO)
 }
 
@@ -219,7 +216,7 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 		return nil, err
 	}
 	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	return impersonate.NewTokenProvider(&impersonate.Options{
+	impOpts := &impersonate.Options{
 		URL:            f.ServiceAccountImpersonationURL,
 		Scopes:         opts.scopes(),
 		Tp:             tp,
@@ -227,7 +224,15 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 		Client:         opts.client(),
 		Logger:         opts.logger(),
 		UniverseDomain: ud,
-	})
+	}
+	// For impersonated service accounts, the trust boundary applies to the TARGET service account.
+	// The universe domain should be the one associated with the impersonated account.
+	targetSAEmail, err := impersonate.ExtractServiceAccountEmail(f.ServiceAccountImpersonationURL)
+	if err != nil {
+		return nil, fmt.Errorf("credentials: could not extract target service account email for trust boundary: %w", err)
+	}
+	impOpts.TrustBoundaryDataProvider = trustboundary.NewServiceAccountTrustBoundaryDataProvider(opts.client(), targetSAEmail, ud)
+	return impersonate.NewTokenProvider(impOpts)
 }
 
 func handleGDCHServiceAccount(f *credsfile.GDCHServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {

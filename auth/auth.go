@@ -54,7 +54,6 @@ const (
 
 // tokenState represents different states for a [Token].
 type tokenState int
-type TrustBoundaryData = trustboundary.TrustBoundaryData
 
 const (
 	// fresh indicates that the [Token] is valid. It is not expired or close to
@@ -105,7 +104,7 @@ type Token struct {
 	// It contains information about the regions or environments where the token is valid.
 	// This data is used to enforce trust boundary restrictions on requests made with the token.
 	// TrustBoundaryData is a value type for immutability after token creation.
-	TrustBoundaryData TrustBoundaryData
+	TrustBoundaryData trustboundary.TrustBoundaryData
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -234,9 +233,11 @@ type CredentialsOptions struct {
 	QuotaProjectIDProvider CredentialsPropertyProvider
 	// UniverseDomainProvider resolves the universe domain with the credentials.
 	UniverseDomainProvider CredentialsPropertyProvider
-	// IsServiceAccount indicates if the token provider uses a Google Cloud service account.
-	// When true, service account specific trust boundary logic is enabled.
-	IsServiceAccount bool
+	// TrustBoundaryDataProvider provides an interface for fetching trust boundary data.
+	// This data defines location restrictions for credential usage.
+	// Not all credential types utilize this provider; if it's nil, no trust boundary
+	// restrictions are applied via this mechanism.
+	TrustBoundaryDataProvider trustboundary.TrustBoundaryDataProvider
 }
 
 // NewCredentials returns new [Credentials] from the provided options.
@@ -509,18 +510,14 @@ type Options2LO struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
-
-	// TrustBoundaryData specifies the trust boundary settings for the credential.
-	// It defines the regions or environments where the credential is allowed to be used.
-	// This data is used to enforce trust boundary restrictions on requests made with the credential.
-	// The TrustBoundaryData field is a pointer to allow for caching and updates to the trust boundary data.
-	// This is particularly relevant for certain credential types, such as service accounts,
-	// where trust boundaries are enforced to limit credential usage to authorized locations.
-	// For other credential types, this field will be nil.
-	TrustBoundaryData *TrustBoundaryData
-	// IsServiceAccount indicates if the token provider uses a Google Cloud service account.
-	// When true, service account specific trust boundary logic is enabled.
-	IsServiceAccount bool
+	// TrustBoundaryDataProvider is an interface used to fetch trust boundary data.
+	// This data defines the regions or environments where the credential (and subsequently the tokens
+	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
+	// The provider pattern allows for dynamic fetching and caching of this data,
+	// which is particularly relevant for credential types like service accounts
+	// where trust boundaries are enforced to limit usage to authorized locations.
+	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
+	TrustBoundaryDataProvider trustboundary.TrustBoundaryDataProvider
 }
 
 func (o *Options2LO) client() *http.Client {
@@ -638,30 +635,12 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		}
 		token.Value = tokenRes.IDToken
 	}
-	if tp.opts.IsServiceAccount {
-		trustBoundaryData, err := tp.lookupServiceAccountTrustBoundaryData(ctx)
+	if tp.opts.TrustBoundaryDataProvider != nil {
+		trustBoundaryData, err := tp.opts.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
 		}
 		token.TrustBoundaryData = *trustBoundaryData
 	}
 	return token, nil
-}
-
-// lookupServiceAccountTrustBoundaryData fetches trust boundary data for a Google Cloud service account.
-// It retrieves the allowed locations for the service account, which are used to enforce trust boundary restrictions.
-// If the token provider is not configured for a service account (IsServiceAccount is false),
-// it returns a no-op TrustBoundaryData, indicating that no trust boundary restrictions apply.
-func (tp *tokenProvider2LO) lookupServiceAccountTrustBoundaryData(ctx context.Context) (*TrustBoundaryData, error) {
-	if !tp.opts.IsServiceAccount {
-		return trustboundary.NewNoOpTrustBoundaryData(), nil
-	}
-	trustBoundaryData, err := trustboundary.LookupServiceAccountTrustBoundary(ctx, tp.opts.client(), tp.opts.Email, tp.opts.TrustBoundaryData, tp.opts.UniverseDomain)
-	if err != nil {
-		return nil, err
-	}
-
-	// Update the cached trust boundary data in the token provider options.
-	tp.opts.TrustBoundaryData = trustBoundaryData
-	return trustBoundaryData, nil
 }
