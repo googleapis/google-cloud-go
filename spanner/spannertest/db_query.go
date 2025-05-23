@@ -567,7 +567,7 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 				}
 			} else {
 				// Fill with NULLs to keep the rows and colInfo aligned.
-				for i := 0; i < len(rawOut.cols); i++ {
+				for range len(rawOut.cols) {
 					outRow = append(outRow, nil)
 				}
 			}

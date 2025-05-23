@@ -181,9 +181,7 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 	errs := []error{err}
 	for i := 0; i < len(tss); i += sendBatchSize {
 		j := i + sendBatchSize
-		if j >= len(tss) {
-			j = len(tss)
-		}
+		j = min(j, len(tss))
 		req := &monitoringpb.CreateTimeSeriesRequest{
 			Name:       name,
 			TimeSeries: tss[i:j],

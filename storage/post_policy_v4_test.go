@@ -46,7 +46,7 @@ func TestPostPolicyV4OptionsClone(t *testing.T) {
 	// Check that all fields are set to a non-zero value, so we can check that
 	// clone accurately clones all fields and catch newly added fields not cloned
 	reflectOpts := reflect.ValueOf(*opts)
-	for i := 0; i < reflectOpts.NumField(); i++ {
+	for i := range reflectOpts.NumField() {
 		zero, err := isZeroValue(reflectOpts.Field(i))
 		if err != nil {
 			t.Errorf("IsZero: %v", err)

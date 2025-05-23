@@ -495,7 +495,7 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 		res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
 
 		// Create multiple go routines to read concurrently.
-		for i := 0; i < goRoutineCount; i++ {
+		for i := range goRoutineCount {
 			groupID := i
 			eG.Go(func() error {
 

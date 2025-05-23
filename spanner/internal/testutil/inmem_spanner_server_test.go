@@ -202,7 +202,7 @@ func TestSpannerListSessions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i := 0; i < expectedNumberOfSessions; i++ {
+	for range expectedNumberOfSessions {
 		_, err := c.CreateSession(context.Background(), createRequest)
 		if err != nil {
 			t.Fatal(err)
@@ -243,7 +243,7 @@ func TestSpannerDeleteSession(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i := 0; i < expectedNumberOfSessions; i++ {
+	for range expectedNumberOfSessions {
 		_, err := c.CreateSession(context.Background(), createRequest)
 		if err != nil {
 			t.Fatal(err)

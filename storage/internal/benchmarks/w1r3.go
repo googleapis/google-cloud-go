@@ -179,7 +179,7 @@ func (r *w1r3) run(ctx context.Context) error {
 	}
 
 	// Downloads
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		// Get full object if no rangeSize is specified
 		rangeStart := int64(0)
 		rangeLength := int64(-1)

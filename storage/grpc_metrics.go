@@ -234,7 +234,7 @@ func latencyHistogramBoundaries() []float64 {
 	boundary := 0.0
 	increment := 0.002
 	// 2ms buckets for first 100ms, so we can have higher resolution for uploads and downloads in the 100 KiB range
-	for i := 0; i < 50; i++ {
+	for range 50 {
 		boundaries = append(boundaries, boundary)
 		// increment by 2ms
 		boundary += increment
