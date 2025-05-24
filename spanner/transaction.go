@@ -344,7 +344,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
 					t.setTransactionID(nil)
-					return client, errInlineBeginTransactionFailed()
+					return client, toSpannerErrorDuringInlineBegin(err)
 				}
 				return client, t.updateTxState(err)
 			}
@@ -393,7 +393,7 @@ func errMultipleRowsFound(table string, key Key, index string) error {
 
 // errInlineBeginTransactionFailed returns error for read-write transaction to explicitly begin the transaction
 func errInlineBeginTransactionFailed() error {
-	return spannerErrorf(codes.Internal, "failed inline begin transaction")
+	return spannerErrorf(codes.Internal, inlineBeginTransactionFailedMsg)
 }
 
 // ReadRow reads a single row from the database.
@@ -645,7 +645,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			if err != nil {
 				if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
 					t.setTransactionID(nil)
-					return client, errInlineBeginTransactionFailed()
+					return client, toSpannerErrorDuringInlineBegin(err)
 				}
 				return client, t.updateTxState(err)
 			}
@@ -1270,7 +1270,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	if err != nil {
 		if hasInlineBeginTransaction {
 			t.setTransactionID(nil)
-			return 0, errInlineBeginTransactionFailed()
+			return 0, toSpannerErrorDuringInlineBegin(err)
 		}
 		return 0, t.txReadOnly.updateTxState(ToSpannerError(err))
 	}
@@ -1381,7 +1381,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	if err != nil {
 		if hasInlineBeginTransaction {
 			t.setTransactionID(nil)
-			return nil, errInlineBeginTransactionFailed()
+			return nil, toSpannerErrorDuringInlineBegin(err)
 		}
 		return nil, t.txReadOnly.updateTxState(ToSpannerError(err))
 	}
