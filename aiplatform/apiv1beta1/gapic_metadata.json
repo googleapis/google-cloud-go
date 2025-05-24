@@ -3100,6 +3100,11 @@
                 "GetOperation"
               ]
             },
+            "ImportIndex": {
+              "methods": [
+                "ImportIndex"
+              ]
+            },
             "ListIndexes": {
               "methods": [
                 "ListIndexes"
@@ -3188,6 +3193,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportIndex": {
+              "methods": [
+                "ImportIndex"
               ]
             },
             "ListIndexes": {
