@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -82,6 +83,9 @@ const (
 	serverTimingHeaderKey = "server-timing"
 	gfeTimingHeader       = "gfet4t7"
 	afeTimingHeader       = "afe"
+
+	// MinSessions for Experimental Host connection
+	experimentalHostMinSessions = 0
 )
 
 const (
@@ -365,6 +369,9 @@ type ClientConfig struct {
 	//
 	// Default: false
 	DisableNativeMetrics bool
+
+	// Default: false
+	IsExperimentalHost bool
 }
 
 type openTelemetryConfig struct {
@@ -569,6 +576,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.enableMultiplexedSessionForPartitionedOps = config.enableMultiplexedSessionForPartitionedOps && config.SessionPoolConfig.enableMultiplexSession
 	}
 
+	if config.IsExperimentalHost {
+		config.SessionPoolConfig.enableMultiplexSession = true
+		config.enableMultiplexedSessionForRW = true
+		config.enableMultiplexedSessionForPartitionedOps = true
+		config.SessionPoolConfig.MinOpened = experimentalHostMinSessions
+	}
+
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 
@@ -733,6 +747,9 @@ type wrappedStream struct {
 
 func (w *wrappedStream) RecvMsg(m any) error {
 	err := w.ClientStream.RecvMsg(m)
+	if errors.Is(err, io.EOF) {
+		return err
+	}
 	ctx := w.ClientStream.Context()
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 	if !ok {

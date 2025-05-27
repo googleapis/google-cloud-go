@@ -96,6 +96,10 @@ type monitoringExporter struct {
 	shutdown         chan struct{}
 	client           *monitoring.MetricClient
 	shutdownOnce     sync.Once
+
+	mu             sync.Mutex
+	stopExport     bool
+	lastExportedAt time.Time
 }
 
 func newMonitoringExporter(ctx context.Context, project, compression string, clientAttributes []attribute.KeyValue, opts ...option.ClientOption) (*monitoringExporter, error) {
@@ -107,9 +111,19 @@ func newMonitoringExporter(ctx context.Context, project, compression string, cli
 		projectID:        project,
 		compression:      compression,
 		clientAttributes: clientAttributes,
+		lastExportedAt:   time.Now().Add(-time.Minute),
 		client:           client,
 		shutdown:         make(chan struct{}),
 	}, nil
+}
+
+func (me *monitoringExporter) stop() {
+	// stop the exporter if last export happens within half-time of default sample period
+	me.mu.Lock()
+	defer me.mu.Unlock()
+	if time.Since(me.lastExportedAt) <= (defaultSamplePeriod / 2) {
+		me.stopExport = true
+	}
 }
 
 // ForceFlush does nothing, the exporter holds no state.
@@ -133,6 +147,12 @@ func (me *monitoringExporter) Export(ctx context.Context, rm *otelmetricdata.Res
 	default:
 	}
 
+	me.mu.Lock()
+	if me.stopExport {
+		me.mu.Unlock()
+		return nil
+	}
+	me.mu.Unlock()
 	return me.exportTimeSeries(ctx, rm)
 }
 
@@ -178,6 +198,9 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 		errs = append(errs, err)
 	}
 
+	me.mu.Lock()
+	me.lastExportedAt = time.Now()
+	me.mu.Unlock()
 	return errors.Join(errs...)
 }
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/support/apiv2",
-    "version": "1.1.6",
+    "version": "1.2.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseAttachmentService_ListAttachments_sync",
       "title": "cloudsupport ListAttachments Sample",
-      "description": "ListAttachments retrieve all attachments associated with a support case.",
+      "description": "ListAttachments list all the attachments associated with a support case.",
       "file": "CaseAttachmentClient/ListAttachments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_CloseCase_sync",
       "title": "cloudsupport CloseCase Sample",
-      "description": "CloseCase close the specified case.",
+      "description": "CloseCase close a case.",
       "file": "CaseClient/CloseCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_CreateCase_sync",
       "title": "cloudsupport CreateCase Sample",
-      "description": "CreateCase create a new case and associate it with the given Google Cloud Resource.\nThe case object must have the following fields set: `display_name`,\n`description`, `classification`, and `priority`.",
+      "description": "CreateCase create a new case and associate it with a parent.\n\nIt must have the following fields set: `display_name`, `description`,\n`classification`, and `priority`. If you're just testing the API and don't\nwant to route your case to an agent, set `testCase=true`.",
       "file": "CaseClient/CreateCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_EscalateCase_sync",
       "title": "cloudsupport EscalateCase Sample",
-      "description": "EscalateCase escalate a case. Escalating a case will initiate the Google Cloud Support\nescalation management process.\n\nThis operation is only available to certain Customer Care tiers. Go to\nhttps: //cloud.google.com/support and look for 'Technical support\nescalations' in the feature list to find out which tiers are able to\nperform escalations.",
+      "description": "EscalateCase escalate a case, starting the Google Cloud Support escalation management\nprocess.\n\nThis operation is only available for some support services. Go to\nhttps: //cloud.google.com/support and look for 'Technical support\nescalations' in the feature list to find out which ones let you\ndo that.",
       "file": "CaseClient/EscalateCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_GetCase_sync",
       "title": "cloudsupport GetCase Sample",
-      "description": "GetCase retrieve the specified case.",
+      "description": "GetCase retrieve a case.",
       "file": "CaseClient/GetCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_ListCases_sync",
       "title": "cloudsupport ListCases Sample",
-      "description": "ListCases retrieve all cases under the specified parent.\n\nNote: Listing cases under an Organization returns only the cases directly\nparented by that organization. To retrieve all cases under an organization,\nincluding cases parented by projects under that organization, use\n`cases.search`.",
+      "description": "ListCases retrieve all cases under a parent, but not its children.\n\nFor example, listing cases under an organization only returns the cases\nthat are directly parented by that organization. To retrieve cases\nunder an organization and its projects, use `cases.search`.",
       "file": "CaseClient/ListCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -290,7 +290,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_SearchCaseClassifications_sync",
       "title": "cloudsupport SearchCaseClassifications Sample",
-      "description": "SearchCaseClassifications retrieve valid classifications to be used when creating a support case.\nThe classications are hierarchical, with each classification containing\nall levels of the hierarchy, separated by \" > \". For example \"Technical\nIssue > Compute > Compute Engine\".",
+      "description": "SearchCaseClassifications retrieve valid classifications to use when creating a support case.\n\nClassifications are hierarchical. Each classification is a string\ncontaining all levels of the hierarchy separated by `\" > \"`. For example,\n`\"Technical Issue > Compute > Compute Engine\"`.\n\nClassification IDs returned by this endpoint are valid for at least six\nmonths. When a classification is deactivated, this endpoint immediately\nstops returning it. After six months, `case.create` requests using the\nclassification will fail.",
       "file": "CaseClient/SearchCaseClassifications/main.go",
       "language": "GO",
       "clientMethod": {
@@ -336,7 +336,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_SearchCases_sync",
       "title": "cloudsupport SearchCases Sample",
-      "description": "SearchCases search cases using the specified query.",
+      "description": "SearchCases search for cases using a query.",
       "file": "CaseClient/SearchCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -382,7 +382,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CaseService_UpdateCase_sync",
       "title": "cloudsupport UpdateCase Sample",
-      "description": "UpdateCase update the specified case. Only a subset of fields can be updated.",
+      "description": "UpdateCase update a case. Only some fields can be updated.",
       "file": "CaseClient/UpdateCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -428,7 +428,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CommentService_CreateComment_sync",
       "title": "cloudsupport CreateComment Sample",
-      "description": "CreateComment add a new comment to the specified Case.\nThe comment object must have the following fields set: body.",
+      "description": "CreateComment add a new comment to a case.\n\nThe comment must have the following fields set: `body`.",
       "file": "CommentClient/CreateComment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -474,7 +474,7 @@
     {
       "regionTag": "cloudsupport_v2_generated_CommentService_ListComments_sync",
       "title": "cloudsupport ListComments Sample",
-      "description": "ListComments retrieve all Comments associated with the Case object.",
+      "description": "ListComments list all the comments associated with a case.",
       "file": "CommentClient/ListComments/main.go",
       "language": "GO",
       "clientMethod": {
