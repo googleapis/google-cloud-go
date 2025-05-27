@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package trace_test
+
+import (
+	trace "cloud.google.com/go/trace/apiv2"
+)
