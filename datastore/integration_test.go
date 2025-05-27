@@ -383,6 +383,9 @@ func compareIgnoreFieldMismatchResults(t *testing.T, wantX []NewX, gotX []NewX, 
 	if !equalErrs(gotErr, wantErr) {
 		t.Errorf("%v: error got: %v, want: %v", errPrefix, gotErr, wantErr)
 	}
+	if len(gotX) != len(wantX) {
+		t.Fatalf("%v results length: got: %v, want: %v\n", errPrefix, len(gotX), len(wantX))
+	}
 	for resIndex := 0; resIndex < len(wantX) && gotErr == nil; resIndex++ {
 		if wantX[resIndex].I != gotX[resIndex].I {
 			t.Fatalf("%v %v: got: %v, want: %v\n", errPrefix, resIndex, wantX[resIndex].I, gotX[resIndex].I)
@@ -422,12 +425,17 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 
 		client.WithReadOptions(tm)
 
+		newCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+		newClient := newTestClient(newCtx, t)
+		defer cancel()
+		defer newClient.Close()
+
 		// If the Entity isn't available at the requested read time, we get
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
 		// exposed in anyway in the response.
-		err = client.Get(ctx, k, &got)
+		err = newClient.Get(newCtx, k, &got)
 		if err != nil {
-			r.Errorf("client.Get: %v", err)
+			r.Errorf("newClient.Get: %v", err)
 		}
 	})
 
@@ -1296,7 +1304,7 @@ func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
 				r.Errorf("got: %v, want: nil", gotErr)
 				return
 			}
-			if !reflect.DeepEqual(gotAggResult, tc.wantAggResult) {
+			if !aggResultsEquals(r, gotAggResult, tc.wantAggResult) {
 				r.Errorf("%q: Mismatch in aggregation result got: %+v, want: %+v", tc.desc, gotAggResult, tc.wantAggResult)
 				return
 			}
@@ -1476,8 +1484,8 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 				r.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
 				return
 			}
-			if gotErr == nil && !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
-				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+			if gotErr == nil && !aggResultsEquals(r, gotAggResult, testCase.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %+v, want: %+v", testCase.desc, gotAggResult, testCase.wantAggResult)
 				return
 			}
 		})
@@ -2080,6 +2088,31 @@ func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	}
 
 	return nil
+}
+
+func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
+	if len(m1) != len(m2) {
+		r.Errorf("aggResultsEquals: length mismatch, len(m1)=%d, len(m2)=%d", len(m1), len(m2))
+		return false
+	}
+	for k, v1 := range m1 {
+		v2, ok := m2[k]
+		if !ok {
+			r.Errorf("aggResultsEquals: key %q not found in m2", k)
+			return false
+		}
+		pbVal1, ok1 := v1.(*pb.Value)
+		pbVal2, ok2 := v2.(*pb.Value)
+		if !ok1 || !ok2 {
+			r.Errorf("aggResultsEquals: type assertion to *pb.Value failed for key %q (ok1=%t, ok2=%t)", k, ok1, ok2)
+			return false
+		}
+		if diff := testutil.Diff(pbVal1, pbVal2, cmpopts.IgnoreUnexported(pb.Value{})); diff != "" {
+			r.Errorf("aggResultsEquals: failed for key %q\nv1=%v\nv2=%v\ndiff: got=-, want=+\n%v", k, pbVal1, pbVal2, diff)
+			return false
+		}
+	}
+	return true
 }
 
 func TestIntegration_KindlessQueries(t *testing.T) {
