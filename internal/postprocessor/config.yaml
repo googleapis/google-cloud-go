@@ -996,6 +996,9 @@ service-configs:
   - input-directory: google/cloud/support/v2
     service-config: cloudsupport_v2.yaml
     import-path: cloud.google.com/go/support/apiv2
+  - input-directory: google/cloud/support/v2beta
+    service-config: cloudsupport_v2beta.yaml
+    import-path: cloud.google.com/go/support/apiv2beta
   - input-directory: google/cloud/talent/v4
     service-config: jobs_v4.yaml
     import-path: cloud.google.com/go/talent/apiv4
@@ -1185,6 +1188,9 @@ service-configs:
   - input-directory: google/cloud/modelarmor/v1
     service-config: modelarmor_v1.yaml
     import-path: cloud.google.com/go/modelarmor/apiv1
+  - input-directory: google/cloud/modelarmor/v1beta
+    service-config: modelarmor_v1beta.yaml
+    import-path: cloud.google.com/go/modelarmor/apiv1beta
   - input-directory: google/monitoring/dashboard/v1
     service-config: monitoring.yaml
     import-path: cloud.google.com/go/monitoring/dashboard/apiv1

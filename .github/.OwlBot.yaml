@@ -419,6 +419,7 @@ deep-remove-regex:
   - /internal/generated/snippets/storagetransfer/apiv1/
   - /internal/generated/snippets/streetview/publish/apiv1/
   - /internal/generated/snippets/support/apiv2/
+  - /internal/generated/snippets/support/apiv2beta/
   - /internal/generated/snippets/talent/apiv4/
   - /internal/generated/snippets/talent/apiv4beta1/
   - /internal/generated/snippets/telcoautomation/apiv1/
@@ -479,6 +480,7 @@ deep-remove-regex:
   - /metastore/apiv1beta/
   - /migrationcenter/apiv1/
   - /modelarmor/apiv1/
+  - /modelarmor/apiv1beta/
   - /monitoring/apiv3/v2/
   - /monitoring/dashboard/apiv1/
   - /monitoring/metricsscope/apiv1/
@@ -582,6 +584,7 @@ deep-remove-regex:
   - /storagetransfer/apiv1/
   - /streetview/publish/apiv1/
   - /support/apiv2/
+  - /support/apiv2beta/
   - /talent/apiv4/
   - /talent/apiv4beta1/
   - /telcoautomation/apiv1/
@@ -1013,6 +1016,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/modelarmor/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/modelarmor/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/monitoring/v3/cloud.google.com/go
     dest: /
   - source: /google/monitoring/dashboard/v1/cloud.google.com/go
@@ -1222,6 +1227,8 @@ deep-copy-regex:
   - source: /google/streetview/publish/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/support/v2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/support/v2beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/talent/v4/cloud.google.com/go
     dest: /
