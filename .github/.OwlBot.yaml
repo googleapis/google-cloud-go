@@ -419,7 +419,7 @@ deep-remove-regex:
   - /internal/generated/snippets/storagetransfer/apiv1/
   - /internal/generated/snippets/streetview/publish/apiv1/
   - /internal/generated/snippets/support/apiv2/
-    - /internal/generated/snippets/support/apiv2beta/
+  - /internal/generated/snippets/support/apiv2beta/
   - /internal/generated/snippets/talent/apiv4/
   - /internal/generated/snippets/talent/apiv4beta1/
   - /internal/generated/snippets/telcoautomation/apiv1/
