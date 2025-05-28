@@ -2792,7 +2792,7 @@
   "cloud.google.com/go/spanner/admin/instance/apiv1": {
     "api_shortname": "spanner",
     "distribution_name": "cloud.google.com/go/spanner/admin/instance/apiv1",
-    "description": "Cloud Spanner Instance Admin API",
+    "description": "Cloud Spanner API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest/admin/instance/apiv1",

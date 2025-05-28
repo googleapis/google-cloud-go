@@ -6910,7 +6910,10 @@ func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 }
 
 func TestIntegration_UniverseDomains(t *testing.T) {
-	t.Skip("this test is timing out in CI on the earliest version")
+	// Direct connectivity is not supported yet for this feature.
+	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+	t.Setenv(disableDP, "true")
+
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
 	universeDomain := os.Getenv(testUniverseDomain)
