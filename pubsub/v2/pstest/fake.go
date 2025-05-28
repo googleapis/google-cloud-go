@@ -1,4 +1,4 @@
-// Copyright 2017 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"go.einride.tech/aip/filtering"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
