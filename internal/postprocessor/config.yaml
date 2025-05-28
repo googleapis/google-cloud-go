@@ -1185,6 +1185,9 @@ service-configs:
   - input-directory: google/cloud/modelarmor/v1
     service-config: modelarmor_v1.yaml
     import-path: cloud.google.com/go/modelarmor/apiv1
+  - input-directory: google/cloud/modelarmor/v1beta
+    service-config: modelarmor_v1beta.yaml
+    import-path: cloud.google.com/go/modelarmor/apiv1beta
   - input-directory: google/monitoring/dashboard/v1
     service-config: monitoring.yaml
     import-path: cloud.google.com/go/monitoring/dashboard/apiv1
