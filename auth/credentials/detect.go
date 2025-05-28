@@ -50,6 +50,8 @@ const (
 var (
 	// for testing
 	allowOnGCECheck = true
+	// trustBoundaryEnabled controls whether the trust boundary feature is enabled.
+	trustBoundaryEnabled = os.Getenv("ENABLE_TRUST_BOUNDARY") == "true"
 )
 
 // TokenBindingType specifies the type of binding used when requesting a token
@@ -123,13 +125,17 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			MetadataClient: metadataClient,
 		}
 
+		var trustboundaryProvider trustboundary.TrustBoundaryDataProvider
+		if trustBoundaryEnabled {
+			trustboundaryProvider = trustboundary.NewGCETrustBoundaryDataProvider(gceUniverseDomainProvider, opts.client())
+		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider: computeTokenProvider(opts, metadataClient),
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
 				return metadataClient.ProjectIDWithContext(ctx)
 			}),
 			UniverseDomainProvider:    gceUniverseDomainProvider,
-			TrustBoundaryDataProvider: trustboundary.NewGCETrustBoundaryDataProvider(gceUniverseDomainProvider, opts.client()),
+			TrustBoundaryDataProvider: trustboundaryProvider,
 		}), nil
 	}
 

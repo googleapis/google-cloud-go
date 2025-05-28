@@ -153,7 +153,7 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	}
 	// Fetch trust boundary data if a provider is configured, and attach it to the token.
 	if o.TrustBoundaryDataProvider != nil {
-		trustBoundaryData, err := o.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx)
+		trustBoundaryData, err := o.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token.Value)
 		if err != nil {
 			return nil, fmt.Errorf("credentials: error fetching the trust boundary data: %w", err)
 		}

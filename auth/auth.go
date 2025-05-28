@@ -636,7 +636,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		token.Value = tokenRes.IDToken
 	}
 	if tp.opts.TrustBoundaryDataProvider != nil {
-		trustBoundaryData, err := tp.opts.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx)
+		trustBoundaryData, err := tp.opts.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token.Value)
 		if err != nil {
 			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
 		}

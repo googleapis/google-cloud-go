@@ -59,14 +59,14 @@ func NewGCETrustBoundaryDataProvider(universeDomainProvider *internal.ComputeUni
 // It performs a one-time lazy initialization of the delegate provider by fetching
 // the GCE default service account email and universe domain from the metadata server,
 // and then delegates the trust boundary data request.
-func (p *GCETrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context) (*TrustBoundaryData, error) {
+func (p *GCETrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context, accessToken string) (*TrustBoundaryData, error) {
 	p.mu.Lock()
 	defer p.mu.Unlock() // Ensure mutex is unlocked upon function exit.
 
 	// If initialization has already been attempted (either successfully or failed),
 	// use the stored result directly without retrying the metadata server calls.
 	if p.delegate != nil {
-		return p.delegate.GetTrustBoundaryData(ctx)
+		return p.delegate.GetTrustBoundaryData(ctx, accessToken)
 	}
 	if p.initErr != nil {
 		// If initialization failed on a previous attempt, do not retry.
@@ -102,5 +102,5 @@ func (p *GCETrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context)
 	p.delegate = NewServiceAccountTrustBoundaryDataProvider(p.httpClient, saEmail, universeDomain)
 
 	// Delegate the current GetTrustBoundaryData call to the newly initialized provider.
-	return p.delegate.GetTrustBoundaryData(ctx)
+	return p.delegate.GetTrustBoundaryData(ctx, accessToken)
 }

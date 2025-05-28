@@ -48,8 +48,9 @@ const (
 // It's responsible for obtaining trust boundary information, including caching and specific logic for different credential types.
 type TrustBoundaryDataProvider interface {
 	// GetTrustBoundaryData retrieves the trust boundary data.
+	// The accessToken is the bearer token used to authenticate the lookup request to the Trust Boundary API.
 	// The context provided should be used for any network requests.
-	GetTrustBoundaryData(ctx context.Context) (*TrustBoundaryData, error)
+	GetTrustBoundaryData(ctx context.Context, accessToken string) (*TrustBoundaryData, error)
 }
 
 // AllowedLocationsResponse is the structure of the response from the Trust Boundary API.
@@ -114,7 +115,7 @@ func NewTrustBoundaryData(locations []string, encodedLocations string) *TrustBou
 }
 
 // fetchTrustBoundaryData fetches the trust boundary data from the API.
-func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string) (*TrustBoundaryData, error) {
+func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string, accessToken string) (*TrustBoundaryData, error) {
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client is required")
 	}
@@ -127,6 +128,11 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 	if err != nil {
 		return nil, fmt.Errorf("trustboundary: failed to create trust boundary request: %w", err)
 	}
+
+	if accessToken == "" {
+		return nil, errors.New("trustboundary: access token required for lookup API authentication")
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	response, err := client.Do(req)
 	if err != nil {
@@ -154,7 +160,8 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 // LookupServiceAccountTrustBoundary fetches trust boundary data for a service account.
 // It validates input, checks for non-GDU universes, and optimizes by returning cached no-op data.
 // It attempts to fetch new data and falls back to provided cached data if the fetch fails, returning nil error on successful fallback.
-func LookupServiceAccountTrustBoundary(ctx context.Context, client *http.Client, serviceAccountEmail string, cachedData *TrustBoundaryData, universeDomain string) (*TrustBoundaryData, error) {
+// The accessToken is used to authenticate the lookup request.
+func LookupServiceAccountTrustBoundary(ctx context.Context, client *http.Client, serviceAccountEmail string, cachedData *TrustBoundaryData, universeDomain string, accessToken string) (*TrustBoundaryData, error) {
 	// Validate client.
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client cannot be nil")
@@ -177,7 +184,7 @@ func LookupServiceAccountTrustBoundary(ctx context.Context, client *http.Client,
 	}
 
 	url := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, serviceAccountEmail)
-	trustBoundaryData, err := fetchTrustBoundaryData(ctx, client, url)
+	trustBoundaryData, err := fetchTrustBoundaryData(ctx, client, url, accessToken)
 
 	// If fetchTrustBoundaryData returned an error, attempt to fall back to cached data if available.
 	if err != nil {

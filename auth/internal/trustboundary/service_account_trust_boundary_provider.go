@@ -46,7 +46,7 @@ func NewServiceAccountTrustBoundaryDataProvider(client *http.Client, saEmail, un
 
 // GetTrustBoundaryData implements the auth.TrustBoundaryDataProvider interface.
 // It retrieves the trust boundary data for the configured service account, utilizing caching and fallback.
-func (p *ServiceAccountTrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context) (*TrustBoundaryData, error) {
+func (p *ServiceAccountTrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context, accessToken string) (*TrustBoundaryData, error) {
 	// Acquire lock to safely read cached data before potentially making a network call.
 	p.mu.Lock()
 	cachedData := p.data
@@ -54,7 +54,7 @@ func (p *ServiceAccountTrustBoundaryDataProvider) GetTrustBoundaryData(ctx conte
 
 	// LookupServiceAccountTrustBoundary handles the core logic of fetching new data,
 	// applying no-op rules, and falling back to cachedData if necessary, returning nil error on successful fallback.
-	newData, err := LookupServiceAccountTrustBoundary(ctx, p.client, p.serviceAccountEmail, cachedData, p.universeDomain)
+	newData, err := LookupServiceAccountTrustBoundary(ctx, p.client, p.serviceAccountEmail, cachedData, p.universeDomain, accessToken)
 
 	// Re-acquire lock to safely update the cache and return.
 	p.mu.Lock()
