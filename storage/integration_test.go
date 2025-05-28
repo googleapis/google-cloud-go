@@ -6910,7 +6910,10 @@ func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 }
 
 func TestIntegration_UniverseDomains(t *testing.T) {
-	t.Skip("this test is timing out in CI on the earliest version")
+	// Direct connectivity is not supported yet for this feature.
+	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+	t.Setenv(disableDP, "true")
+
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
 	universeDomain := os.Getenv(testUniverseDomain)
@@ -7071,6 +7074,7 @@ type testHelper struct {
 
 func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttrs) {
 	h.t.Helper()
+	b = b.Retryer(WithMaxAttempts(10))
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
 		h.t.Fatalf("BucketHandle(%q).Create: %v", b.BucketName(), err)
 	}
@@ -7111,6 +7115,7 @@ func (h testHelper) mustDeleteBucket(b *BucketHandle) {
 
 func (h testHelper) mustBucketAttrs(b *BucketHandle) *BucketAttrs {
 	h.t.Helper()
+	b = b.Retryer(WithMaxAttempts(10))
 	attrs, err := b.Attrs(context.Background())
 	if err != nil {
 		h.t.Fatalf("BucketHandle(%q).Attrs: %v", b.BucketName(), err)
@@ -7138,6 +7143,7 @@ func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, me
 
 func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
 	h.t.Helper()
+	o = o.Retryer(WithMaxAttempts(10))
 	attrs, err := o.Attrs(context.Background())
 	if err != nil {
 		h.t.Fatalf("get object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
@@ -7163,6 +7169,7 @@ func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 // mustUpdateObject will assume success if it receives a failed precondition response.
 func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, metageneration int64) *ObjectAttrs {
 	h.t.Helper()
+	o = o.Retryer(WithMaxAttempts(10))
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
 		if errorIsStatusCode(err, http.StatusPreconditionFailed, codes.FailedPrecondition) {

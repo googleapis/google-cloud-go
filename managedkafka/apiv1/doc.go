@@ -58,16 +58,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &managedkafkapb.CreateClusterRequest{
+//	req := &managedkafkapb.AddAclEntryRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/managedkafka/apiv1/managedkafkapb#CreateClusterRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/managedkafka/apiv1/managedkafkapb#AddAclEntryRequest.
 //	}
-//	op, err := c.CreateCluster(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.AddAclEntry(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

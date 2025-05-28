@@ -310,42 +310,6 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CaseAttachmentServiceClient interface {
 	// List all the attachments associated with a support case.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/23598314"
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$case/attachments"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = (
-	//
-	//	supportApiService.cases()
-	//	.attachments()
-	//	.list(parent="projects/some-project/cases/43595344")
-	//
-	// )
-	// print(request.execute())
-	// ```
 	ListAttachments(ctx context.Context, in *ListAttachmentsRequest, opts ...grpc.CallOption) (*ListAttachmentsResponse, error)
 }
 
@@ -369,42 +333,6 @@ func (c *caseAttachmentServiceClient) ListAttachments(ctx context.Context, in *L
 // CaseAttachmentServiceServer is the server API for CaseAttachmentService service.
 type CaseAttachmentServiceServer interface {
 	// List all the attachments associated with a support case.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/23598314"
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$case/attachments"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = (
-	//
-	//	supportApiService.cases()
-	//	.attachments()
-	//	.list(parent="projects/some-project/cases/43595344")
-	//
-	// )
-	// print(request.execute())
-	// ```
 	ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsResponse, error)
 }
 

@@ -38,6 +38,7 @@ import (
 	"google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -582,7 +583,7 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 	}
 	var requestCount int
 	incrementRequestCount := func() { requestCount++ }
-	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
 		grpc.WithStreamInterceptor(requestCallback(incrementRequestCount)),
 	)
@@ -652,7 +653,7 @@ func TestReadRowsRequestStats(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", err)
 	}
-	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
 	)
 	if err != nil {
@@ -733,7 +734,7 @@ func TestReadRowsLimit(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", err)
 	}
-	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
 	)
 	if err != nil {
@@ -838,7 +839,7 @@ func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", err)
 	}
-	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
 		t.Fatalf("grpc.Dial failed: %v", err)
 	}
@@ -878,7 +879,7 @@ func TestMutateRowsWithAggregates_AddToCell(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", err)
 	}
-	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
 	)
 	if err != nil {
@@ -939,7 +940,7 @@ func TestMutateRowsWithAggregates_MergeToCell(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", err)
 	}
-	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
 	)
 	if err != nil {
@@ -1030,7 +1031,7 @@ func TestApplyBulk_MutationsSucceedAfterGroupError(t *testing.T) {
 	failedRow := "row2"
 	failErr := status.Error(codes.InvalidArgument, "Invalid row key")
 	reqCount := 0
-	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
 		grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 			clientStream, err := streamer(ctx, desc, cc, method, opts...)
@@ -1705,7 +1706,7 @@ func TestExecuteQuery(t *testing.T) {
 	}
 
 	// Create client
-	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
 		grpc.WithStreamInterceptor(
 			newStreamClientInterceptor(&gotRecvMsgCount, &gotSendMsgReqs, &mockRecvMsgResps)),

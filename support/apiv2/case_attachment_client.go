@@ -137,12 +137,6 @@ func (c *CaseAttachmentClient) Connection() *grpc.ClientConn {
 }
 
 // ListAttachments list all the attachments associated with a support case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CaseAttachmentClient) ListAttachments(ctx context.Context, req *supportpb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
 	return c.internalClient.ListAttachments(ctx, req, opts...)
 }
@@ -212,7 +206,7 @@ func (c *caseAttachmentGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *caseAttachmentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -280,7 +274,7 @@ func defaultCaseAttachmentRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *caseAttachmentRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -347,12 +341,6 @@ func (c *caseAttachmentGRPCClient) ListAttachments(ctx context.Context, req *sup
 }
 
 // ListAttachments list all the attachments associated with a support case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *supportpb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
 	it := &AttachmentIterator{}
 	req = proto.Clone(req).(*supportpb.ListAttachmentsRequest)

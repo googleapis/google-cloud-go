@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.8.0...netapp/v1.9.0) (2025-05-21)
+
+
+### Features
+
+* **netapp:** A new field 'enforced_retention_end_time' in message 'google.cloud.netapp.v1.Backup' is added ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **netapp:** A new message 'google.cloud.netapp.v1.BackupRetentionPolicy' is added in 'google.cloud.netapp.v1.BackupVault' ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **netapp:** New fields 'custom_performance_enabled', 'total_throughput_mibps', 'total_iops' in message 'google.cloud.netapp.v1.StoragePool' are added ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
+
+### Documentation
+
+* **netapp:** A comment for field `transfer_bytes` in message `.google.cloud.netapp.v1.TransferStats` is changed ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.3...netapp/v1.8.0) (2025-04-30)
 
 

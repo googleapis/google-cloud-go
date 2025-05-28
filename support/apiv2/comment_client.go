@@ -146,12 +146,6 @@ func (c *CommentClient) Connection() *grpc.ClientConn {
 }
 
 // ListComments list all the comments associated with a case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CommentClient) ListComments(ctx context.Context, req *supportpb.ListCommentsRequest, opts ...gax.CallOption) *CommentIterator {
 	return c.internalClient.ListComments(ctx, req, opts...)
 }
@@ -159,12 +153,6 @@ func (c *CommentClient) ListComments(ctx context.Context, req *supportpb.ListCom
 // CreateComment add a new comment to a case.
 //
 // The comment must have the following fields set: body.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *CommentClient) CreateComment(ctx context.Context, req *supportpb.CreateCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
 	return c.internalClient.CreateComment(ctx, req, opts...)
 }
@@ -234,7 +222,7 @@ func (c *commentGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *commentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -302,7 +290,7 @@ func defaultCommentRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *commentRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -387,12 +375,6 @@ func (c *commentGRPCClient) CreateComment(ctx context.Context, req *supportpb.Cr
 }
 
 // ListComments list all the comments associated with a case.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.ListCommentsRequest, opts ...gax.CallOption) *CommentIterator {
 	it := &CommentIterator{}
 	req = proto.Clone(req).(*supportpb.ListCommentsRequest)
@@ -473,12 +455,6 @@ func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.Lis
 // CreateComment add a new comment to a case.
 //
 // The comment must have the following fields set: body.
-//
-// EXAMPLES:
-//
-// cURL:
-//
-// Python:
 func (c *commentRESTClient) CreateComment(ctx context.Context, req *supportpb.CreateCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetComment()
