@@ -996,6 +996,9 @@ service-configs:
   - input-directory: google/cloud/support/v2
     service-config: cloudsupport_v2.yaml
     import-path: cloud.google.com/go/support/apiv2
+  - input-directory: google/cloud/support/v2beta
+    service-config: cloudsupport_v2beta.yaml
+    import-path: cloud.google.com/go/support/apiv2beta
   - input-directory: google/cloud/talent/v4
     service-config: jobs_v4.yaml
     import-path: cloud.google.com/go/talent/apiv4
