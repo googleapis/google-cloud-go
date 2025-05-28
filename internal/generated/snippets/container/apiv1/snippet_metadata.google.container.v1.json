@@ -378,6 +378,98 @@
       ]
     },
     {
+      "regionTag": "container_v1_generated_ClusterManager_FetchClusterUpgradeInfo_sync",
+      "title": "container FetchClusterUpgradeInfo Sample",
+      "description": "FetchClusterUpgradeInfo fetch upgrade information of a specific cluster.",
+      "file": "ClusterManagerClient/FetchClusterUpgradeInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchClusterUpgradeInfo",
+        "fullName": "google.container.v1.ClusterManagerClient.FetchClusterUpgradeInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.FetchClusterUpgradeInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*containerpb.ClusterUpgradeInfo",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "FetchClusterUpgradeInfo",
+          "fullName": "google.container.v1.ClusterManager.FetchClusterUpgradeInfo",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_FetchNodePoolUpgradeInfo_sync",
+      "title": "container FetchNodePoolUpgradeInfo Sample",
+      "description": "FetchNodePoolUpgradeInfo fetch upgrade information of a specific nodepool.",
+      "file": "ClusterManagerClient/FetchNodePoolUpgradeInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchNodePoolUpgradeInfo",
+        "fullName": "google.container.v1.ClusterManagerClient.FetchNodePoolUpgradeInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.FetchNodePoolUpgradeInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*containerpb.NodePoolUpgradeInfo",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "FetchNodePoolUpgradeInfo",
+          "fullName": "google.container.v1.ClusterManager.FetchNodePoolUpgradeInfo",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "container_v1_generated_ClusterManager_GetCluster_sync",
       "title": "container GetCluster Sample",
       "description": "GetCluster gets the details of a specific cluster.",
