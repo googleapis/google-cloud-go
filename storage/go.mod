@@ -14,7 +14,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.14.2
-	go.opentelemetry.io/contrib/detectors/gcp v1.35.0
+	go.opentelemetry.io/contrib/detectors/gcp v1.36.0
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.36.0
 	go.opentelemetry.io/otel/sdk v1.36.0
