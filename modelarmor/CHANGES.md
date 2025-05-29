@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.2.0...modelarmor/v0.3.0) (2025-05-29)
+
+
+### Features
+
+* **modelarmor:** New clients ([#12350](https://github.com/googleapis/google-cloud-go/issues/12350)) ([eeeeb82](https://github.com/googleapis/google-cloud-go/commit/eeeeb82aa2199b9ddf1bde62454ed7a93f0c6448))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.1.2...modelarmor/v0.2.0) (2025-05-06)
 
 
@@ -34,4 +41,3 @@
 * **modelarmor:** New client(s) ([#11868](https://github.com/googleapis/google-cloud-go/issues/11868)) ([4b7209d](https://github.com/googleapis/google-cloud-go/commit/4b7209d54459d10741f4dd57bb9c1ae07450d719))
 
 ## Changes
-
