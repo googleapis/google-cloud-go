@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.14.6...metastore/v1.14.7) (2025-05-06)
 
 
