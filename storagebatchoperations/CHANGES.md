@@ -13,4 +13,3 @@
 * **storagebatchoperations:** Minor fixes to the reference documentation ([f2b31a3](https://github.com/googleapis/google-cloud-go/commit/f2b31a31eb97db32ca7f19d5bb4f4c9cba73a806))
 
 ## Changes
-
