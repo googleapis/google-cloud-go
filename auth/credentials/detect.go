@@ -125,7 +125,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			MetadataClient: metadataClient,
 		}
 
-		var trustboundaryProvider trustboundary.TrustBoundaryDataProvider
+		var trustboundaryProvider trustboundary.DataProvider
 		if trustBoundaryEnabled {
 			trustboundaryProvider = trustboundary.NewGCETrustBoundaryDataProvider(gceUniverseDomainProvider, opts.client())
 		}

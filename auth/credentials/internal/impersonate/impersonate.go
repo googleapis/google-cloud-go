@@ -36,8 +36,6 @@ const (
 	authHeaderKey        = "Authorization"
 )
 
-type TrustBoundaryData = trustboundary.TrustBoundaryData
-
 // generateAccesstokenReq is used for service account impersonation
 type generateAccessTokenReq struct {
 	Delegates []string `json:"delegates,omitempty"`
@@ -89,7 +87,7 @@ type Options struct {
 	// This data defines the regions or environments where the credential (and subsequently the tokens
 	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
 	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
-	TrustBoundaryDataProvider trustboundary.TrustBoundaryDataProvider
+	TrustBoundaryDataProvider trustboundary.DataProvider
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	UniverseDomain string
 }
@@ -162,7 +160,7 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	return token, nil
 }
 
-// extractServiceAccountEmail extracts the service account email from the impersonation URL.
+// ExtractServiceAccountEmail extracts the service account email from the impersonation URL.
 // The impersonation URL is expected to be in the format:
 // https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}:generateAccessToken
 // or

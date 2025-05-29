@@ -20,8 +20,8 @@ import (
 	"sync"
 )
 
-// ServiceAccountTrustBoundaryDataProvider fetches and caches TrustBoundaryData for a service account.
-// It implements the auth.TrustBoundaryDataProvider interface.
+// ServiceAccountTrustBoundaryDataProvider fetches and caches trust boundary Data for a service account.
+// It implements the DataProvider interface.
 // This provider is thread-safe for concurrent access to its cached data.
 type ServiceAccountTrustBoundaryDataProvider struct {
 	client              *http.Client
@@ -29,14 +29,14 @@ type ServiceAccountTrustBoundaryDataProvider struct {
 	universeDomain      string
 
 	mu   sync.Mutex // Protects 'data' for concurrent access.
-	data *TrustBoundaryData
+	data *Data
 	// Note: We don't store 'err' here because LookupServiceAccountTrustBoundary
 	// already handles fallback logic. We only propagate an error if no data
 	// (neither new nor cached) can be returned.
 }
 
 // NewServiceAccountTrustBoundaryDataProvider creates a new ServiceAccountTrustBoundaryDataProvider.
-func NewServiceAccountTrustBoundaryDataProvider(client *http.Client, saEmail, universeDomain string) TrustBoundaryDataProvider {
+func NewServiceAccountTrustBoundaryDataProvider(client *http.Client, saEmail, universeDomain string) DataProvider {
 	return &ServiceAccountTrustBoundaryDataProvider{
 		client:              client,
 		serviceAccountEmail: saEmail,
@@ -44,9 +44,9 @@ func NewServiceAccountTrustBoundaryDataProvider(client *http.Client, saEmail, un
 	}
 }
 
-// GetTrustBoundaryData implements the auth.TrustBoundaryDataProvider interface.
+// GetTrustBoundaryData implements the DataProvider interface.
 // It retrieves the trust boundary data for the configured service account, utilizing caching and fallback.
-func (p *ServiceAccountTrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context, accessToken string) (*TrustBoundaryData, error) {
+func (p *ServiceAccountTrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context, accessToken string) (*Data, error) {
 	// Acquire lock to safely read cached data before potentially making a network call.
 	p.mu.Lock()
 	cachedData := p.data

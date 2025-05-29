@@ -104,7 +104,7 @@ type Token struct {
 	// It contains information about the regions or environments where the token is valid.
 	// This data is used to enforce trust boundary restrictions on requests made with the token.
 	// TrustBoundaryData is a value type for immutability after token creation.
-	TrustBoundaryData trustboundary.TrustBoundaryData
+	TrustBoundaryData trustboundary.Data
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -237,7 +237,7 @@ type CredentialsOptions struct {
 	// This data defines location restrictions for credential usage.
 	// Not all credential types utilize this provider; if it's nil, no trust boundary
 	// restrictions are applied via this mechanism.
-	TrustBoundaryDataProvider trustboundary.TrustBoundaryDataProvider
+	TrustBoundaryDataProvider trustboundary.DataProvider
 }
 
 // NewCredentials returns new [Credentials] from the provided options.
@@ -517,7 +517,7 @@ type Options2LO struct {
 	// which is particularly relevant for credential types like service accounts
 	// where trust boundaries are enforced to limit usage to authorized locations.
 	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
-	TrustBoundaryDataProvider trustboundary.TrustBoundaryDataProvider
+	TrustBoundaryDataProvider trustboundary.DataProvider
 }
 
 func (o *Options2LO) client() *http.Client {

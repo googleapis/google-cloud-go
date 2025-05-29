@@ -44,13 +44,13 @@ const (
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
 )
 
-// TrustBoundaryDataProvider provides an interface for fetching TrustBoundaryData.
+// DataProvider provides an interface for fetching trust boundary data.
 // It's responsible for obtaining trust boundary information, including caching and specific logic for different credential types.
-type TrustBoundaryDataProvider interface {
-	// GetTrustBoundaryData retrieves the trust boundary data.
+type DataProvider interface {
+	// GetTrustBoundaryData retrieves the trust boundary data (type Data).
 	// The accessToken is the bearer token used to authenticate the lookup request to the Trust Boundary API.
 	// The context provided should be used for any network requests.
-	GetTrustBoundaryData(ctx context.Context, accessToken string) (*TrustBoundaryData, error)
+	GetTrustBoundaryData(ctx context.Context, accessToken string) (*Data, error)
 }
 
 // AllowedLocationsResponse is the structure of the response from the Trust Boundary API.
@@ -61,8 +61,8 @@ type AllowedLocationsResponse struct {
 	EncodedLocations string `json:"encodedLocations"`
 }
 
-// TrustBoundaryData represents the trust boundary data.
-type TrustBoundaryData struct {
+// Data represents the trust boundary data.
+type Data struct {
 	// Locations is the list of locations that the token is allowed to be used in.
 	locations []string
 	// EncodedLocations represents the locations in an encoded format.
@@ -70,7 +70,7 @@ type TrustBoundaryData struct {
 }
 
 // Locations returns a read-only copy of the allowed locations.
-func (t *TrustBoundaryData) Locations() []string {
+func (t *Data) Locations() []string {
 	if t == nil {
 		return nil
 	}
@@ -80,7 +80,7 @@ func (t *TrustBoundaryData) Locations() []string {
 }
 
 // EncodedLocations returns the encoded representation of the allowed locations.
-func (t *TrustBoundaryData) EncodedLocations() string {
+func (t *Data) EncodedLocations() string {
 	if t == nil {
 		return ""
 	}
@@ -90,7 +90,7 @@ func (t *TrustBoundaryData) EncodedLocations() string {
 // IsNoOpOrEmpty reports whether the trust boundary is a no-op or empty.
 // A no-op trust boundary is one where no restrictions are enforced.
 // An empty trust boundary is one where no locations are specified.
-func (t *TrustBoundaryData) IsNoOpOrEmpty() bool {
+func (t *Data) IsNoOpOrEmpty() bool {
 	if t == nil {
 		return true
 	}
@@ -98,24 +98,24 @@ func (t *TrustBoundaryData) IsNoOpOrEmpty() bool {
 }
 
 // NewNoOpTrustBoundaryData returns a new TrustBoundaryData with no restrictions.
-func NewNoOpTrustBoundaryData() *TrustBoundaryData {
-	return &TrustBoundaryData{
+func NewNoOpTrustBoundaryData() *Data {
+	return &Data{
 		encodedLocations: NoOpEncodedLocations,
 	}
 }
 
 // NewTrustBoundaryData returns a new TrustBoundaryData with the specified locations and encoded locations.
-func NewTrustBoundaryData(locations []string, encodedLocations string) *TrustBoundaryData {
+func NewTrustBoundaryData(locations []string, encodedLocations string) *Data {
 	locationsCopy := make([]string, len(locations))
 	copy(locationsCopy, locations)
-	return &TrustBoundaryData{
+	return &Data{
 		locations:        locationsCopy,
 		encodedLocations: encodedLocations,
 	}
 }
 
 // fetchTrustBoundaryData fetches the trust boundary data from the API.
-func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string, accessToken string) (*TrustBoundaryData, error) {
+func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string, accessToken string) (*Data, error) {
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client is required")
 	}
@@ -161,7 +161,7 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 // It validates input, checks for non-GDU universes, and optimizes by returning cached no-op data.
 // It attempts to fetch new data and falls back to provided cached data if the fetch fails, returning nil error on successful fallback.
 // The accessToken is used to authenticate the lookup request.
-func LookupServiceAccountTrustBoundary(ctx context.Context, client *http.Client, serviceAccountEmail string, cachedData *TrustBoundaryData, universeDomain string, accessToken string) (*TrustBoundaryData, error) {
+func LookupServiceAccountTrustBoundary(ctx context.Context, client *http.Client, serviceAccountEmail string, cachedData *Data, universeDomain string, accessToken string) (*Data, error) {
 	// Validate client.
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client cannot be nil")

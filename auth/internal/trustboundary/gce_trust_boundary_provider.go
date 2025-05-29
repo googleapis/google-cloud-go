@@ -23,7 +23,7 @@ import (
 	"cloud.google.com/go/auth/internal"
 )
 
-// GCETrustBoundaryDataProvider fetches and caches TrustBoundaryData
+// GCETrustBoundaryDataProvider fetches and caches trust boundary Data
 // for the default service account on a GCE instance. It lazily initializes
 // a delegate ServiceAccountTrustBoundaryDataProvider.
 type GCETrustBoundaryDataProvider struct {
@@ -36,7 +36,7 @@ type GCETrustBoundaryDataProvider struct {
 	mu sync.Mutex
 	// delegate is the lazily initialized inner provider that handles the actual
 	// fetching and caching of TrustBoundaryData.
-	delegate TrustBoundaryDataProvider
+	delegate DataProvider
 	// initErr stores any error encountered during the one-time delegate initialization attempt.
 	initErr error
 }
@@ -48,7 +48,7 @@ type GCETrustBoundaryDataProvider struct {
 //
 // httpClient is passed to the underlying ServiceAccountTrustBoundaryDataProvider
 // for making API calls to the IAM Credentials endpoint.
-func NewGCETrustBoundaryDataProvider(universeDomainProvider *internal.ComputeUniverseDomainProvider, httpClient *http.Client) TrustBoundaryDataProvider {
+func NewGCETrustBoundaryDataProvider(universeDomainProvider *internal.ComputeUniverseDomainProvider, httpClient *http.Client) DataProvider {
 	return &GCETrustBoundaryDataProvider{
 		universeDomainProvider: universeDomainProvider,
 		httpClient:             httpClient,
@@ -59,7 +59,7 @@ func NewGCETrustBoundaryDataProvider(universeDomainProvider *internal.ComputeUni
 // It performs a one-time lazy initialization of the delegate provider by fetching
 // the GCE default service account email and universe domain from the metadata server,
 // and then delegates the trust boundary data request.
-func (p *GCETrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context, accessToken string) (*TrustBoundaryData, error) {
+func (p *GCETrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context, accessToken string) (*Data, error) {
 	p.mu.Lock()
 	defer p.mu.Unlock() // Ensure mutex is unlocked upon function exit.
 
