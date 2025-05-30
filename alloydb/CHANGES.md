@@ -2,6 +2,7 @@
 
 
 
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.15.2...alloydb/v1.16.0) (2025-05-21)
 
 

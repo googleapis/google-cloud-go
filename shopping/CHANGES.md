@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.20.0...shopping/v0.21.0) (2025-05-21)
 
 

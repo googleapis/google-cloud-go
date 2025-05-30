@@ -359,9 +359,6 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 	bucketName := "bucket-name"
 	objectName := "obj-name"
 
-	emulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
-	defer os.Setenv("STORAGE_EMULATOR_HOST", emulatorHost)
-
 	tests := []struct {
 		desc         string
 		emulatorHost string
@@ -495,7 +492,7 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 				return test.now
 			}
 
-			os.Setenv("STORAGE_EMULATOR_HOST", test.emulatorHost)
+			t.Setenv("STORAGE_EMULATOR_HOST", test.emulatorHost)
 
 			got, err := SignedURL(bucketName, objectName, test.opts)
 			if err != nil {
@@ -2073,7 +2070,6 @@ func TestEmulatorWithCredentialsFile(t *testing.T) {
 // STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath (used
 // for writes) and xmlHost and scheme (used for reads) are all set correctly.
 func TestWithEndpoint(t *testing.T) {
-	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	testCases := []struct {
 		desc                string
 		CustomEndpoint      string
@@ -2165,7 +2161,7 @@ func TestWithEndpoint(t *testing.T) {
 	}
 	ctx := context.Background()
 	for _, tc := range testCases {
-		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+		t.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint), option.WithoutAuthentication())
 		if err != nil {
 			t.Fatalf("error creating client: %v", err)
@@ -2181,7 +2177,6 @@ func TestWithEndpoint(t *testing.T) {
 			t.Errorf("%s: scheme not set correctly\n\tgot %v, want %v", tc.desc, c.scheme, tc.WantScheme)
 		}
 	}
-	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 }
 
 // Create a client using a combination of custom endpoint and STORAGE_EMULATOR_HOST
@@ -2190,9 +2185,6 @@ func TestWithEndpoint(t *testing.T) {
 // Verifies also that raw.BasePath, xmlHost and scheme are not changed
 // after running the operations.
 func TestOperationsWithEndpoint(t *testing.T) {
-	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
-	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
-
 	gotURL := make(chan string, 1)
 	gotHost := make(chan string, 1)
 	gotMethod := make(chan string, 1)
@@ -2261,7 +2253,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			timeout := time.After(time.Second)
 			done := make(chan bool, 1)
 			go func() {
-				os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+				t.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 
 				c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
 				if err != nil {
