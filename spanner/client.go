@@ -1516,7 +1516,7 @@ func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
 		for _, match := range matches {
 			if len(match) == 3 { // full match + 2 capture groups
 				metricName := match[1]
-				duration, err := strconv.ParseFloat(match[2], 10)
+				duration, err := strconv.ParseFloat(match[2], 64)
 				if err == nil {
 					metrics[metricName] = time.Duration(duration*1000) * time.Microsecond
 				}
