@@ -1,6 +1,26 @@
 # Changes
 
 
+## [1.90.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.89.0...aiplatform/v1.90.0) (2025-05-30)
+
+
+### Features
+
+* **aiplatform:** A new field `include_thoughts` is added to message `.google.cloud.aiplatform.v1.GenerationConfig.ThinkingConfig` ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** A new field `thought_signature` is added to message `.google.cloud.aiplatform.v1.Part` ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** A new field `thought` is added to message `.google.cloud.aiplatform.v1.Part` ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Add network_attachment to PscInterfaceConfig ([#12356](https://github.com/googleapis/google-cloud-go/issues/12356)) ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Add psc_interface_config to CustomJobSpec ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Add psc_interface_config to PersistentResource ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Add psc_interface_config to PipelineJob ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Expose URL Context API to v1 ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Expose URL Context API to v1beta1 ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+
+
+### Documentation
+
+* **aiplatform:** Allow field `thought` to be set as input ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+
 ## [1.89.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.88.0...aiplatform/v1.89.0) (2025-05-29)
 
 
