@@ -2,6 +2,7 @@
 
 
 
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudcontrolspartner/v1.3.2...cloudcontrolspartner/v1.4.0) (2025-05-06)
 
 

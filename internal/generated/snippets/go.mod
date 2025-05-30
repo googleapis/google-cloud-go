@@ -129,7 +129,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.6
 	cloud.google.com/go/workflows v1.14.2
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.233.0
+	google.golang.org/api v0.235.0
 	google.golang.org/genproto v0.0.0-20250505200425-f936aa4a68b2
 )
 
@@ -191,9 +191,9 @@ require (
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.60.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0 // indirect
-	go.opentelemetry.io/otel v1.35.0 // indirect
-	go.opentelemetry.io/otel/metric v1.35.0 // indirect
-	go.opentelemetry.io/otel/trace v1.35.0 // indirect
+	go.opentelemetry.io/otel v1.36.0 // indirect
+	go.opentelemetry.io/otel/metric v1.36.0 // indirect
+	go.opentelemetry.io/otel/trace v1.36.0 // indirect
 	golang.org/x/crypto v0.38.0 // indirect
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
