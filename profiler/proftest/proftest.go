@@ -23,7 +23,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -549,7 +549,7 @@ func (tr *TestRunner) QueryProfilesWithZone(projectID, service, startTime, endTi
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return ProfileResponse{}, fmt.Errorf("failed to read response body: %w", err)
 	}
@@ -581,7 +581,7 @@ func (tr *GKETestRunner) deleteDockerImage(ctx context.Context, ImageName string
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return []error{err}
 	}
