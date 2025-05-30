@@ -1,6 +1,21 @@
 # Changes
 
 
+## [1.89.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.88.0...aiplatform/v1.89.0) (2025-05-29)
+
+
+### Features
+
+* **aiplatform:** A new field `include_thoughts` is added to message `.google.cloud.aiplatform.v1.Part` ([#12349](https://github.com/googleapis/google-cloud-go/issues/12349)) ([49769e0](https://github.com/googleapis/google-cloud-go/commit/49769e084bbcb3116f7ff4c7498e189b81c06798))
+* **aiplatform:** Add ImportIndex to IndexService ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **aiplatform:** Introduce RAG as context/memory store for Gemini Live API ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `global_max_embedding_requests_per_min` in message `.google.cloud.aiplatform.v1beta1.ImportRagFilesConfig` is updated. ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **aiplatform:** A comment for message `RagFileParsingConfig` is updated. ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
 ## [1.88.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.87.0...aiplatform/v1.88.0) (2025-05-21)
 
 

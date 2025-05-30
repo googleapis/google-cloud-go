@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.11.1...ai/v0.12.0) (2025-05-13)
 
 
