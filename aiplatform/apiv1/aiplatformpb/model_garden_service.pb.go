@@ -21,11 +21,7 @@
 package aiplatformpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -322,86 +318,4 @@ func file_google_cloud_aiplatform_v1_model_garden_service_proto_init() {
 	file_google_cloud_aiplatform_v1_model_garden_service_proto_rawDesc = nil
 	file_google_cloud_aiplatform_v1_model_garden_service_proto_goTypes = nil
 	file_google_cloud_aiplatform_v1_model_garden_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ModelGardenServiceClient is the client API for ModelGardenService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ModelGardenServiceClient interface {
-	// Gets a Model Garden publisher model.
-	GetPublisherModel(ctx context.Context, in *GetPublisherModelRequest, opts ...grpc.CallOption) (*PublisherModel, error)
-}
-
-type modelGardenServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewModelGardenServiceClient(cc grpc.ClientConnInterface) ModelGardenServiceClient {
-	return &modelGardenServiceClient{cc}
-}
-
-func (c *modelGardenServiceClient) GetPublisherModel(ctx context.Context, in *GetPublisherModelRequest, opts ...grpc.CallOption) (*PublisherModel, error) {
-	out := new(PublisherModel)
-	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.ModelGardenService/GetPublisherModel", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ModelGardenServiceServer is the server API for ModelGardenService service.
-type ModelGardenServiceServer interface {
-	// Gets a Model Garden publisher model.
-	GetPublisherModel(context.Context, *GetPublisherModelRequest) (*PublisherModel, error)
-}
-
-// UnimplementedModelGardenServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedModelGardenServiceServer struct {
-}
-
-func (*UnimplementedModelGardenServiceServer) GetPublisherModel(context.Context, *GetPublisherModelRequest) (*PublisherModel, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPublisherModel not implemented")
-}
-
-func RegisterModelGardenServiceServer(s *grpc.Server, srv ModelGardenServiceServer) {
-	s.RegisterService(&_ModelGardenService_serviceDesc, srv)
-}
-
-func _ModelGardenService_GetPublisherModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPublisherModelRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ModelGardenServiceServer).GetPublisherModel(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.aiplatform.v1.ModelGardenService/GetPublisherModel",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ModelGardenServiceServer).GetPublisherModel(ctx, req.(*GetPublisherModelRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ModelGardenService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.aiplatform.v1.ModelGardenService",
-	HandlerType: (*ModelGardenServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetPublisherModel",
-			Handler:    _ModelGardenService_GetPublisherModel_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/aiplatform/v1/model_garden_service.proto",
 }
