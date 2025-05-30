@@ -165,6 +165,7 @@ use (
 	./speech
 	./storage
 	./storage/internal/benchmarks
+	./storagebatchoperations
 	./storageinsights
 	./storagetransfer
 	./streetview

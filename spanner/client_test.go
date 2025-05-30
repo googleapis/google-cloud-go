@@ -25,6 +25,7 @@ import (
 	"math/big"
 	"net"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -45,6 +46,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -6652,5 +6654,56 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 	if !requests[1+muxCreateBuffer].(*sppb.BatchWriteRequest).ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
+}
+
+func TestParseServerTimingHeader(t *testing.T) {
+	tests := []struct {
+		name     string
+		header   metadata.MD
+		expected map[string]time.Duration
+	}{
+		{
+			name:     "empty metadata",
+			header:   metadata.New(map[string]string{}),
+			expected: map[string]time.Duration{},
+		},
+		{
+			name:     "no server-timing header",
+			header:   metadata.New(map[string]string{"other-header": "value"}),
+			expected: map[string]time.Duration{},
+		},
+		{
+			name:     "integer duration",
+			header:   metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"}),
+			expected: map[string]time.Duration{"gfet4t7": 123 * time.Millisecond},
+		},
+		{
+			name:     "float duration",
+			header:   metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123.45"}),
+			expected: map[string]time.Duration{"gfet4t7": 123*time.Millisecond + 450*time.Microsecond},
+		},
+		{
+			name:   "multiple metrics",
+			header: metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123, afe; dur=456.789"}),
+			expected: map[string]time.Duration{
+				"gfet4t7": 123 * time.Millisecond,
+				"afe":     456*time.Millisecond + 789*time.Microsecond,
+			},
+		},
+		{
+			name:     "invalid duration format",
+			header:   metadata.New(map[string]string{"server-timing": "gfet4t7; dur=invalid"}),
+			expected: map[string]time.Duration{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := parseServerTimingHeader(tt.header)
+			if !reflect.DeepEqual(got, tt.expected) {
+				t.Errorf("parseServerTimingHeader() = %v, want %v", got, tt.expected)
+			}
+		})
 	}
 }

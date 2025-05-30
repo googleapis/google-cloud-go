@@ -29,6 +29,7 @@ import (
 	rpcpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -38,7 +39,7 @@ func setupFakeServer(project, instance string, config ClientConfig, opt ...grpc.
 	if err != nil {
 		return nil, nil, err
 	}
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
 		return nil, nil, err
 	}
@@ -590,6 +591,38 @@ func TestRetryReverseReadRows(t *testing.T) {
 	if !testutil.Equal(got, want) {
 		t.Errorf("retry range integration: got %v, want %v", got, want)
 	}
+}
+
+func TestRetryOptionSelection(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+
+	t.Run("DefaultRetryLogic", func(t *testing.T) {
+		client, err := NewClientWithConfig(ctx, project, instance, disableMetricsConfig)
+		if err != nil {
+			t.Fatalf("NewClientWithConfig: %v", err)
+		}
+		defer client.Close()
+
+		if client.disableRetryInfo {
+			t.Errorf("client.disableRetryInfo got: true, want: false")
+		}
+	})
+
+	t.Run("ClientOnlyRetryLogic", func(t *testing.T) {
+		t.Setenv("DISABLE_RETRY_INFO", "1")
+
+		client, err := NewClientWithConfig(ctx, project, instance, disableMetricsConfig)
+		if err != nil {
+			t.Fatalf("NewClientWithConfig: %v", err)
+		}
+		defer client.Close()
+
+		if !client.disableRetryInfo {
+			t.Errorf("client.disableRetryInfo got: false, want: true")
+		}
+	})
 }
 
 func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {

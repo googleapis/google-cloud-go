@@ -61,6 +61,13 @@ type CallOptions struct {
 	GetConsumerGroup    []gax.CallOption
 	UpdateConsumerGroup []gax.CallOption
 	DeleteConsumerGroup []gax.CallOption
+	ListAcls            []gax.CallOption
+	GetAcl              []gax.CallOption
+	CreateAcl           []gax.CallOption
+	UpdateAcl           []gax.CallOption
+	DeleteAcl           []gax.CallOption
+	AddAclEntry         []gax.CallOption
+	RemoveAclEntry      []gax.CallOption
 	GetLocation         []gax.CallOption
 	ListLocations       []gax.CallOption
 	CancelOperation     []gax.CallOption
@@ -182,6 +189,13 @@ func defaultCallOptions() *CallOptions {
 		DeleteConsumerGroup: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListAcls:        []gax.CallOption{},
+		GetAcl:          []gax.CallOption{},
+		CreateAcl:       []gax.CallOption{},
+		UpdateAcl:       []gax.CallOption{},
+		DeleteAcl:       []gax.CallOption{},
+		AddAclEntry:     []gax.CallOption{},
+		RemoveAclEntry:  []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -283,6 +297,13 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteConsumerGroup: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListAcls:        []gax.CallOption{},
+		GetAcl:          []gax.CallOption{},
+		CreateAcl:       []gax.CallOption{},
+		UpdateAcl:       []gax.CallOption{},
+		DeleteAcl:       []gax.CallOption{},
+		AddAclEntry:     []gax.CallOption{},
+		RemoveAclEntry:  []gax.CallOption{},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -314,6 +335,13 @@ type internalClient interface {
 	GetConsumerGroup(context.Context, *managedkafkapb.GetConsumerGroupRequest, ...gax.CallOption) (*managedkafkapb.ConsumerGroup, error)
 	UpdateConsumerGroup(context.Context, *managedkafkapb.UpdateConsumerGroupRequest, ...gax.CallOption) (*managedkafkapb.ConsumerGroup, error)
 	DeleteConsumerGroup(context.Context, *managedkafkapb.DeleteConsumerGroupRequest, ...gax.CallOption) error
+	ListAcls(context.Context, *managedkafkapb.ListAclsRequest, ...gax.CallOption) *AclIterator
+	GetAcl(context.Context, *managedkafkapb.GetAclRequest, ...gax.CallOption) (*managedkafkapb.Acl, error)
+	CreateAcl(context.Context, *managedkafkapb.CreateAclRequest, ...gax.CallOption) (*managedkafkapb.Acl, error)
+	UpdateAcl(context.Context, *managedkafkapb.UpdateAclRequest, ...gax.CallOption) (*managedkafkapb.Acl, error)
+	DeleteAcl(context.Context, *managedkafkapb.DeleteAclRequest, ...gax.CallOption) error
+	AddAclEntry(context.Context, *managedkafkapb.AddAclEntryRequest, ...gax.CallOption) (*managedkafkapb.AddAclEntryResponse, error)
+	RemoveAclEntry(context.Context, *managedkafkapb.RemoveAclEntryRequest, ...gax.CallOption) (*managedkafkapb.RemoveAclEntryResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -451,6 +479,44 @@ func (c *Client) DeleteConsumerGroup(ctx context.Context, req *managedkafkapb.De
 	return c.internalClient.DeleteConsumerGroup(ctx, req, opts...)
 }
 
+// ListAcls lists the acls in a given cluster.
+func (c *Client) ListAcls(ctx context.Context, req *managedkafkapb.ListAclsRequest, opts ...gax.CallOption) *AclIterator {
+	return c.internalClient.ListAcls(ctx, req, opts...)
+}
+
+// GetAcl returns the properties of a single acl.
+func (c *Client) GetAcl(ctx context.Context, req *managedkafkapb.GetAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	return c.internalClient.GetAcl(ctx, req, opts...)
+}
+
+// CreateAcl creates a new acl in the given project, location, and cluster.
+func (c *Client) CreateAcl(ctx context.Context, req *managedkafkapb.CreateAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	return c.internalClient.CreateAcl(ctx, req, opts...)
+}
+
+// UpdateAcl updates the properties of a single acl.
+func (c *Client) UpdateAcl(ctx context.Context, req *managedkafkapb.UpdateAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	return c.internalClient.UpdateAcl(ctx, req, opts...)
+}
+
+// DeleteAcl deletes an acl.
+func (c *Client) DeleteAcl(ctx context.Context, req *managedkafkapb.DeleteAclRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAcl(ctx, req, opts...)
+}
+
+// AddAclEntry incremental update: Adds an acl entry to an acl. Creates the acl if it does
+// not exist yet.
+func (c *Client) AddAclEntry(ctx context.Context, req *managedkafkapb.AddAclEntryRequest, opts ...gax.CallOption) (*managedkafkapb.AddAclEntryResponse, error) {
+	return c.internalClient.AddAclEntry(ctx, req, opts...)
+}
+
+// RemoveAclEntry incremental update: Removes an acl entry from an acl. Deletes the acl if
+// its acl entries become empty (i.e. if the removed entry was the last one in
+// the acl).
+func (c *Client) RemoveAclEntry(ctx context.Context, req *managedkafkapb.RemoveAclEntryRequest, opts ...gax.CallOption) (*managedkafkapb.RemoveAclEntryResponse, error) {
+	return c.internalClient.RemoveAclEntry(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -569,7 +635,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -653,7 +719,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -1005,6 +1071,156 @@ func (c *gRPCClient) DeleteConsumerGroup(ctx context.Context, req *managedkafkap
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) ListAcls(ctx context.Context, req *managedkafkapb.ListAclsRequest, opts ...gax.CallOption) *AclIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAcls[0:len((*c.CallOptions).ListAcls):len((*c.CallOptions).ListAcls)], opts...)
+	it := &AclIterator{}
+	req = proto.Clone(req).(*managedkafkapb.ListAclsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.Acl, string, error) {
+		resp := &managedkafkapb.ListAclsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAcls, req, settings.GRPC, c.logger, "ListAcls")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAcls(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetAcl(ctx context.Context, req *managedkafkapb.GetAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAcl[0:len((*c.CallOptions).GetAcl):len((*c.CallOptions).GetAcl)], opts...)
+	var resp *managedkafkapb.Acl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAcl, req, settings.GRPC, c.logger, "GetAcl")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateAcl(ctx context.Context, req *managedkafkapb.CreateAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAcl[0:len((*c.CallOptions).CreateAcl):len((*c.CallOptions).CreateAcl)], opts...)
+	var resp *managedkafkapb.Acl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateAcl, req, settings.GRPC, c.logger, "CreateAcl")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateAcl(ctx context.Context, req *managedkafkapb.UpdateAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl.name", url.QueryEscape(req.GetAcl().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateAcl[0:len((*c.CallOptions).UpdateAcl):len((*c.CallOptions).UpdateAcl)], opts...)
+	var resp *managedkafkapb.Acl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateAcl, req, settings.GRPC, c.logger, "UpdateAcl")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteAcl(ctx context.Context, req *managedkafkapb.DeleteAclRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteAcl[0:len((*c.CallOptions).DeleteAcl):len((*c.CallOptions).DeleteAcl)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteAcl, req, settings.GRPC, c.logger, "DeleteAcl")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) AddAclEntry(ctx context.Context, req *managedkafkapb.AddAclEntryRequest, opts ...gax.CallOption) (*managedkafkapb.AddAclEntryResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl", url.QueryEscape(req.GetAcl()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AddAclEntry[0:len((*c.CallOptions).AddAclEntry):len((*c.CallOptions).AddAclEntry)], opts...)
+	var resp *managedkafkapb.AddAclEntryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.AddAclEntry, req, settings.GRPC, c.logger, "AddAclEntry")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RemoveAclEntry(ctx context.Context, req *managedkafkapb.RemoveAclEntryRequest, opts ...gax.CallOption) (*managedkafkapb.RemoveAclEntryResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl", url.QueryEscape(req.GetAcl()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RemoveAclEntry[0:len((*c.CallOptions).RemoveAclEntry):len((*c.CallOptions).RemoveAclEntry)], opts...)
+	var resp *managedkafkapb.RemoveAclEntryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RemoveAclEntry, req, settings.GRPC, c.logger, "RemoveAclEntry")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1997,6 +2213,408 @@ func (c *restClient) DeleteConsumerGroup(ctx context.Context, req *managedkafkap
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConsumerGroup")
 		return err
 	}, opts...)
+}
+
+// ListAcls lists the acls in a given cluster.
+func (c *restClient) ListAcls(ctx context.Context, req *managedkafkapb.ListAclsRequest, opts ...gax.CallOption) *AclIterator {
+	it := &AclIterator{}
+	req = proto.Clone(req).(*managedkafkapb.ListAclsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.Acl, string, error) {
+		resp := &managedkafkapb.ListAclsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/acls", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAcls")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAcls(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetAcl returns the properties of a single acl.
+func (c *restClient) GetAcl(ctx context.Context, req *managedkafkapb.GetAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetAcl[0:len((*c.CallOptions).GetAcl):len((*c.CallOptions).GetAcl)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &managedkafkapb.Acl{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAcl")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateAcl creates a new acl in the given project, location, and cluster.
+func (c *restClient) CreateAcl(ctx context.Context, req *managedkafkapb.CreateAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAcl()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/acls", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("aclId", fmt.Sprintf("%v", req.GetAclId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAcl[0:len((*c.CallOptions).CreateAcl):len((*c.CallOptions).CreateAcl)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &managedkafkapb.Acl{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAcl")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateAcl updates the properties of a single acl.
+func (c *restClient) UpdateAcl(ctx context.Context, req *managedkafkapb.UpdateAclRequest, opts ...gax.CallOption) (*managedkafkapb.Acl, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAcl()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAcl().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl.name", url.QueryEscape(req.GetAcl().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateAcl[0:len((*c.CallOptions).UpdateAcl):len((*c.CallOptions).UpdateAcl)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &managedkafkapb.Acl{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAcl")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteAcl deletes an acl.
+func (c *restClient) DeleteAcl(ctx context.Context, req *managedkafkapb.DeleteAclRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAcl")
+		return err
+	}, opts...)
+}
+
+// AddAclEntry incremental update: Adds an acl entry to an acl. Creates the acl if it does
+// not exist yet.
+func (c *restClient) AddAclEntry(ctx context.Context, req *managedkafkapb.AddAclEntryRequest, opts ...gax.CallOption) (*managedkafkapb.AddAclEntryResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAclEntry()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addAclEntry", req.GetAcl())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl", url.QueryEscape(req.GetAcl()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AddAclEntry[0:len((*c.CallOptions).AddAclEntry):len((*c.CallOptions).AddAclEntry)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &managedkafkapb.AddAclEntryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddAclEntry")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RemoveAclEntry incremental update: Removes an acl entry from an acl. Deletes the acl if
+// its acl entries become empty (i.e. if the removed entry was the last one in
+// the acl).
+func (c *restClient) RemoveAclEntry(ctx context.Context, req *managedkafkapb.RemoveAclEntryRequest, opts ...gax.CallOption) (*managedkafkapb.RemoveAclEntryResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAclEntry()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:removeAclEntry", req.GetAcl())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl", url.QueryEscape(req.GetAcl()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RemoveAclEntry[0:len((*c.CallOptions).RemoveAclEntry):len((*c.CallOptions).RemoveAclEntry)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &managedkafkapb.RemoveAclEntryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveAclEntry")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.

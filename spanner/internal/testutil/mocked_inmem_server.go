@@ -155,8 +155,8 @@ func (s *MockedSpannerInMemTestServer) setupSingersResults() {
 		Metadata: metadata,
 		Rows:     rows,
 	}
-	result := &StatementResult{Type: StatementResultResultSet, ResultSet: resultSet}
-	s.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, result)
+	result := &StatementResult{Type: StatementResultResultSet, ResultSet: resultSet, SetLastFlag: true}
+	_ = s.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, result)
 }
 
 // CreateSingersResults creates a result set containing rowCount size of rows

@@ -244,58 +244,65 @@ func (c *CaseClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetCase retrieve the specified case.
+// GetCase retrieve a case.
 func (c *CaseClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.GetCase(ctx, req, opts...)
 }
 
-// ListCases retrieve all cases under the specified parent.
+// ListCases retrieve all cases under a parent, but not its children.
 //
-// Note: Listing cases under an Organization returns only the cases directly
-// parented by that organization. To retrieve all cases under an organization,
-// including cases parented by projects under that organization, use
-// cases.search.
+// For example, listing cases under an organization only returns the cases
+// that are directly parented by that organization. To retrieve cases
+// under an organization and its projects, use cases.search.
 func (c *CaseClient) ListCases(ctx context.Context, req *supportpb.ListCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	return c.internalClient.ListCases(ctx, req, opts...)
 }
 
-// SearchCases search cases using the specified query.
+// SearchCases search for cases using a query.
 func (c *CaseClient) SearchCases(ctx context.Context, req *supportpb.SearchCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	return c.internalClient.SearchCases(ctx, req, opts...)
 }
 
-// CreateCase create a new case and associate it with the given Google Cloud Resource.
-// The case object must have the following fields set: display_name,
-// description, classification, and priority.
+// CreateCase create a new case and associate it with a parent.
+//
+// It must have the following fields set: display_name, description,
+// classification, and priority. If you’re just testing the API and don’t
+// want to route your case to an agent, set testCase=true.
 func (c *CaseClient) CreateCase(ctx context.Context, req *supportpb.CreateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.CreateCase(ctx, req, opts...)
 }
 
-// UpdateCase update the specified case. Only a subset of fields can be updated.
+// UpdateCase update a case. Only some fields can be updated.
 func (c *CaseClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.UpdateCase(ctx, req, opts...)
 }
 
-// EscalateCase escalate a case. Escalating a case will initiate the Google Cloud Support
-// escalation management process.
+// EscalateCase escalate a case, starting the Google Cloud Support escalation management
+// process.
 //
-// This operation is only available to certain Customer Care tiers. Go to
+// This operation is only available for some support services. Go to
 // https://cloud.google.com/support (at https://cloud.google.com/support) and look for ‘Technical support
-// escalations’ in the feature list to find out which tiers are able to
-// perform escalations.
+// escalations’ in the feature list to find out which ones let you
+// do that.
 func (c *CaseClient) EscalateCase(ctx context.Context, req *supportpb.EscalateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.EscalateCase(ctx, req, opts...)
 }
 
-// CloseCase close the specified case.
+// CloseCase close a case.
 func (c *CaseClient) CloseCase(ctx context.Context, req *supportpb.CloseCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	return c.internalClient.CloseCase(ctx, req, opts...)
 }
 
-// SearchCaseClassifications retrieve valid classifications to be used when creating a support case.
-// The classications are hierarchical, with each classification containing
-// all levels of the hierarchy, separated by " > ". For example “Technical
-// Issue > Compute > Compute Engine”.
+// SearchCaseClassifications retrieve valid classifications to use when creating a support case.
+//
+// Classifications are hierarchical. Each classification is a string
+// containing all levels of the hierarchy separated by " > ". For example,
+// "Technical Issue > Compute > Compute Engine".
+//
+// Classification IDs returned by this endpoint are valid for at least six
+// months. When a classification is deactivated, this endpoint immediately
+// stops returning it. After six months, case.create requests using the
+// classification will fail.
 func (c *CaseClient) SearchCaseClassifications(ctx context.Context, req *supportpb.SearchCaseClassificationsRequest, opts ...gax.CallOption) *CaseClassificationIterator {
 	return c.internalClient.SearchCaseClassifications(ctx, req, opts...)
 }
@@ -365,7 +372,7 @@ func (c *caseGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *caseGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -433,7 +440,7 @@ func defaultCaseRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *caseRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -678,7 +685,7 @@ func (c *caseGRPCClient) SearchCaseClassifications(ctx context.Context, req *sup
 	return it
 }
 
-// GetCase retrieve the specified case.
+// GetCase retrieve a case.
 func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -728,12 +735,11 @@ func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 	return resp, nil
 }
 
-// ListCases retrieve all cases under the specified parent.
+// ListCases retrieve all cases under a parent, but not its children.
 //
-// Note: Listing cases under an Organization returns only the cases directly
-// parented by that organization. To retrieve all cases under an organization,
-// including cases parented by projects under that organization, use
-// cases.search.
+// For example, listing cases under an organization only returns the cases
+// that are directly parented by that organization. To retrieve cases
+// under an organization and its projects, use cases.search.
 func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	it := &CaseIterator{}
 	req = proto.Clone(req).(*supportpb.ListCasesRequest)
@@ -814,7 +820,7 @@ func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCases
 	return it
 }
 
-// SearchCases search cases using the specified query.
+// SearchCases search for cases using a query.
 func (c *caseRESTClient) SearchCases(ctx context.Context, req *supportpb.SearchCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	it := &CaseIterator{}
 	req = proto.Clone(req).(*supportpb.SearchCasesRequest)
@@ -895,9 +901,11 @@ func (c *caseRESTClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 	return it
 }
 
-// CreateCase create a new case and associate it with the given Google Cloud Resource.
-// The case object must have the following fields set: display_name,
-// description, classification, and priority.
+// CreateCase create a new case and associate it with a parent.
+//
+// It must have the following fields set: display_name, description,
+// classification, and priority. If you’re just testing the API and don’t
+// want to route your case to an agent, set testCase=true.
 func (c *caseRESTClient) CreateCase(ctx context.Context, req *supportpb.CreateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCase()
@@ -954,7 +962,7 @@ func (c *caseRESTClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 	return resp, nil
 }
 
-// UpdateCase update the specified case. Only a subset of fields can be updated.
+// UpdateCase update a case. Only some fields can be updated.
 func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCase()
@@ -1018,13 +1026,13 @@ func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 	return resp, nil
 }
 
-// EscalateCase escalate a case. Escalating a case will initiate the Google Cloud Support
-// escalation management process.
+// EscalateCase escalate a case, starting the Google Cloud Support escalation management
+// process.
 //
-// This operation is only available to certain Customer Care tiers. Go to
+// This operation is only available for some support services. Go to
 // https://cloud.google.com/support (at https://cloud.google.com/support) and look for ‘Technical support
-// escalations’ in the feature list to find out which tiers are able to
-// perform escalations.
+// escalations’ in the feature list to find out which ones let you
+// do that.
 func (c *caseRESTClient) EscalateCase(ctx context.Context, req *supportpb.EscalateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1080,7 +1088,7 @@ func (c *caseRESTClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 	return resp, nil
 }
 
-// CloseCase close the specified case.
+// CloseCase close a case.
 func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1136,10 +1144,16 @@ func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 	return resp, nil
 }
 
-// SearchCaseClassifications retrieve valid classifications to be used when creating a support case.
-// The classications are hierarchical, with each classification containing
-// all levels of the hierarchy, separated by " > ". For example “Technical
-// Issue > Compute > Compute Engine”.
+// SearchCaseClassifications retrieve valid classifications to use when creating a support case.
+//
+// Classifications are hierarchical. Each classification is a string
+// containing all levels of the hierarchy separated by " > ". For example,
+// "Technical Issue > Compute > Compute Engine".
+//
+// Classification IDs returned by this endpoint are valid for at least six
+// months. When a classification is deactivated, this endpoint immediately
+// stops returning it. After six months, case.create requests using the
+// classification will fail.
 func (c *caseRESTClient) SearchCaseClassifications(ctx context.Context, req *supportpb.SearchCaseClassificationsRequest, opts ...gax.CallOption) *CaseClassificationIterator {
 	it := &CaseClassificationIterator{}
 	req = proto.Clone(req).(*supportpb.SearchCaseClassificationsRequest)

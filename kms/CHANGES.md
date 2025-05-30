@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.21.2...kms/v1.22.0) (2025-05-21)
+
+
+### Features
+
+* **kms:** Adding eTag field to AutokeyConfig ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
+
+### Documentation
+
+* **kms:** A comment for enum value `DESTROYED` in enum `CryptoKeyVersionState` is changed ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **kms:** Updating docs for total_size field in KMS List APIs ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
 ## [1.21.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.21.1...kms/v1.21.2) (2025-04-15)
 
 

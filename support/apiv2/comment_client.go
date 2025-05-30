@@ -145,13 +145,14 @@ func (c *CommentClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListComments retrieve all Comments associated with the Case object.
+// ListComments list all the comments associated with a case.
 func (c *CommentClient) ListComments(ctx context.Context, req *supportpb.ListCommentsRequest, opts ...gax.CallOption) *CommentIterator {
 	return c.internalClient.ListComments(ctx, req, opts...)
 }
 
-// CreateComment add a new comment to the specified Case.
-// The comment object must have the following fields set: body.
+// CreateComment add a new comment to a case.
+//
+// The comment must have the following fields set: body.
 func (c *CommentClient) CreateComment(ctx context.Context, req *supportpb.CreateCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
 	return c.internalClient.CreateComment(ctx, req, opts...)
 }
@@ -221,7 +222,7 @@ func (c *commentGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *commentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -289,7 +290,7 @@ func defaultCommentRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *commentRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -373,7 +374,7 @@ func (c *commentGRPCClient) CreateComment(ctx context.Context, req *supportpb.Cr
 	return resp, nil
 }
 
-// ListComments retrieve all Comments associated with the Case object.
+// ListComments list all the comments associated with a case.
 func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.ListCommentsRequest, opts ...gax.CallOption) *CommentIterator {
 	it := &CommentIterator{}
 	req = proto.Clone(req).(*supportpb.ListCommentsRequest)
@@ -451,8 +452,9 @@ func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.Lis
 	return it
 }
 
-// CreateComment add a new comment to the specified Case.
-// The comment object must have the following fields set: body.
+// CreateComment add a new comment to a case.
+//
+// The comment must have the following fields set: body.
 func (c *commentRESTClient) CreateComment(ctx context.Context, req *supportpb.CreateCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetComment()

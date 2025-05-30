@@ -49,6 +49,7 @@ var newIndexClientHook clientHook
 type IndexCallOptions struct {
 	CreateIndex        []gax.CallOption
 	GetIndex           []gax.CallOption
+	ImportIndex        []gax.CallOption
 	ListIndexes        []gax.CallOption
 	UpdateIndex        []gax.CallOption
 	DeleteIndex        []gax.CallOption
@@ -89,6 +90,7 @@ func defaultIndexCallOptions() *IndexCallOptions {
 		GetIndex: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		ImportIndex: []gax.CallOption{},
 		ListIndexes: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
@@ -121,6 +123,7 @@ func defaultIndexRESTCallOptions() *IndexCallOptions {
 		GetIndex: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		ImportIndex: []gax.CallOption{},
 		ListIndexes: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
@@ -153,6 +156,8 @@ type internalIndexClient interface {
 	CreateIndex(context.Context, *aiplatformpb.CreateIndexRequest, ...gax.CallOption) (*CreateIndexOperation, error)
 	CreateIndexOperation(name string) *CreateIndexOperation
 	GetIndex(context.Context, *aiplatformpb.GetIndexRequest, ...gax.CallOption) (*aiplatformpb.Index, error)
+	ImportIndex(context.Context, *aiplatformpb.ImportIndexRequest, ...gax.CallOption) (*ImportIndexOperation, error)
+	ImportIndexOperation(name string) *ImportIndexOperation
 	ListIndexes(context.Context, *aiplatformpb.ListIndexesRequest, ...gax.CallOption) *IndexIterator
 	UpdateIndex(context.Context, *aiplatformpb.UpdateIndexRequest, ...gax.CallOption) (*UpdateIndexOperation, error)
 	UpdateIndexOperation(name string) *UpdateIndexOperation
@@ -226,6 +231,17 @@ func (c *IndexClient) CreateIndexOperation(name string) *CreateIndexOperation {
 // GetIndex gets an Index.
 func (c *IndexClient) GetIndex(ctx context.Context, req *aiplatformpb.GetIndexRequest, opts ...gax.CallOption) (*aiplatformpb.Index, error) {
 	return c.internalClient.GetIndex(ctx, req, opts...)
+}
+
+// ImportIndex imports an Index from an external source (e.g., BigQuery).
+func (c *IndexClient) ImportIndex(ctx context.Context, req *aiplatformpb.ImportIndexRequest, opts ...gax.CallOption) (*ImportIndexOperation, error) {
+	return c.internalClient.ImportIndex(ctx, req, opts...)
+}
+
+// ImportIndexOperation returns a new ImportIndexOperation from a given name.
+// The name must be that of a previously created ImportIndexOperation, possibly from a different process.
+func (c *IndexClient) ImportIndexOperation(name string) *ImportIndexOperation {
+	return c.internalClient.ImportIndexOperation(name)
 }
 
 // ListIndexes lists Indexes in a Location.
@@ -419,7 +435,7 @@ func (c *indexGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *indexGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -502,7 +518,7 @@ func defaultIndexRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *indexRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -558,6 +574,26 @@ func (c *indexGRPCClient) GetIndex(ctx context.Context, req *aiplatformpb.GetInd
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *indexGRPCClient) ImportIndex(ctx context.Context, req *aiplatformpb.ImportIndexRequest, opts ...gax.CallOption) (*ImportIndexOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ImportIndex[0:len((*c.CallOptions).ImportIndex):len((*c.CallOptions).ImportIndex)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.indexClient.ImportIndex, req, settings.GRPC, c.logger, "ImportIndex")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportIndexOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *indexGRPCClient) ListIndexes(ctx context.Context, req *aiplatformpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
@@ -1018,6 +1054,65 @@ func (c *indexRESTClient) GetIndex(ctx context.Context, req *aiplatformpb.GetInd
 		return nil, e
 	}
 	return resp, nil
+}
+
+// ImportIndex imports an Index from an external source (e.g., BigQuery).
+func (c *indexRESTClient) ImportIndex(ctx context.Context, req *aiplatformpb.ImportIndexRequest, opts ...gax.CallOption) (*ImportIndexOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:import", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportIndex")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &ImportIndexOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // ListIndexes lists Indexes in a Location.
@@ -1942,6 +2037,24 @@ func (c *indexGRPCClient) DeleteIndexOperation(name string) *DeleteIndexOperatio
 func (c *indexRESTClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &DeleteIndexOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ImportIndexOperation returns a new ImportIndexOperation from a given name.
+// The name must be that of a previously created ImportIndexOperation, possibly from a different process.
+func (c *indexGRPCClient) ImportIndexOperation(name string) *ImportIndexOperation {
+	return &ImportIndexOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ImportIndexOperation returns a new ImportIndexOperation from a given name.
+// The name must be that of a previously created ImportIndexOperation, possibly from a different process.
+func (c *indexRESTClient) ImportIndexOperation(name string) *ImportIndexOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &ImportIndexOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

@@ -29,6 +29,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DatasetConfigIterator) All() iter.Seq2[*storageinsightspb.DatasetConfig, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 	return iterator.RangeAdapter(it.Next)
 }

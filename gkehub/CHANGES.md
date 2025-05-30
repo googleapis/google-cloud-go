@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [0.15.6](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.15.5...gkehub/v0.15.6) (2025-04-15)
 
 

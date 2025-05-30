@@ -10,9 +10,19 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddAclEntry": {
+              "methods": [
+                "AddAclEntry"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CreateAcl": {
+              "methods": [
+                "CreateAcl"
               ]
             },
             "CreateCluster": {
@@ -23,6 +33,11 @@
             "CreateTopic": {
               "methods": [
                 "CreateTopic"
+              ]
+            },
+            "DeleteAcl": {
+              "methods": [
+                "DeleteAcl"
               ]
             },
             "DeleteCluster": {
@@ -43,6 +58,11 @@
             "DeleteTopic": {
               "methods": [
                 "DeleteTopic"
+              ]
+            },
+            "GetAcl": {
+              "methods": [
+                "GetAcl"
               ]
             },
             "GetCluster": {
@@ -70,6 +90,11 @@
                 "GetTopic"
               ]
             },
+            "ListAcls": {
+              "methods": [
+                "ListAcls"
+              ]
+            },
             "ListClusters": {
               "methods": [
                 "ListClusters"
@@ -93,6 +118,16 @@
             "ListTopics": {
               "methods": [
                 "ListTopics"
+              ]
+            },
+            "RemoveAclEntry": {
+              "methods": [
+                "RemoveAclEntry"
+              ]
+            },
+            "UpdateAcl": {
+              "methods": [
+                "UpdateAcl"
               ]
             },
             "UpdateCluster": {
@@ -115,9 +150,19 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddAclEntry": {
+              "methods": [
+                "AddAclEntry"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CreateAcl": {
+              "methods": [
+                "CreateAcl"
               ]
             },
             "CreateCluster": {
@@ -128,6 +173,11 @@
             "CreateTopic": {
               "methods": [
                 "CreateTopic"
+              ]
+            },
+            "DeleteAcl": {
+              "methods": [
+                "DeleteAcl"
               ]
             },
             "DeleteCluster": {
@@ -148,6 +198,11 @@
             "DeleteTopic": {
               "methods": [
                 "DeleteTopic"
+              ]
+            },
+            "GetAcl": {
+              "methods": [
+                "GetAcl"
               ]
             },
             "GetCluster": {
@@ -175,6 +230,11 @@
                 "GetTopic"
               ]
             },
+            "ListAcls": {
+              "methods": [
+                "ListAcls"
+              ]
+            },
             "ListClusters": {
               "methods": [
                 "ListClusters"
@@ -198,6 +258,16 @@
             "ListTopics": {
               "methods": [
                 "ListTopics"
+              ]
+            },
+            "RemoveAclEntry": {
+              "methods": [
+                "RemoveAclEntry"
+              ]
+            },
+            "UpdateAcl": {
+              "methods": [
+                "UpdateAcl"
               ]
             },
             "UpdateCluster": {

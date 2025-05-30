@@ -47,6 +47,12 @@ func (it *ClipIterator) All() iter.Seq2[*livestreampb.Clip, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DvrSessionIterator) All() iter.Seq2[*livestreampb.DvrSession, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *EventIterator) All() iter.Seq2[*livestreampb.Event, error] {
 	return iterator.RangeAdapter(it.Next)
 }

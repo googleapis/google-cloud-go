@@ -95,7 +95,7 @@ func streamWithReplaceSessionFunc(
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
 		meterTracerFactory:   meterTracerFactory,
-		streamd:              newResumableStreamDecoder(ctx, logger, rpc, replaceSession, gsc),
+		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, replaceSession, gsc),
 		rowd:                 &partialResultSetDecoder{},
 		setTransactionID:     setTransactionID,
 		updatePrecommitToken: updatePrecommitToken,
@@ -234,6 +234,7 @@ func (r *RowIterator) Next() (*Row, error) {
 	} else if !r.rowd.done() {
 		r.err = errEarlyReadEnd()
 	} else {
+		r.cancel = nil
 		r.err = iterator.Done
 	}
 	return nil, r.err
@@ -401,6 +402,9 @@ type resumableStreamDecoder struct {
 	// ctx is the caller's context, used for cancel/timeout Next().
 	ctx context.Context
 
+	// cancel is the function to cancel the context
+	cancel func()
+
 	// rpc is a factory of streamingReceiver, which might resume
 	// a previous stream from the point encoded in restartToken.
 	// rpc is always a wrapper of a Cloud Spanner query which is
@@ -461,9 +465,10 @@ type resumableStreamDecoder struct {
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
 // Parameter rpc should be a function that creates a new stream beginning at the
 // restartToken if non-nil.
-func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), replaceSession func(ctx context.Context) error, gsc *grpcSpannerClient) *resumableStreamDecoder {
+func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), replaceSession func(ctx context.Context) error, gsc *grpcSpannerClient) *resumableStreamDecoder {
 	return &resumableStreamDecoder{
 		ctx:                         ctx,
+		cancel:                      cancel,
 		logger:                      logger,
 		rpc:                         rpc,
 		replaceSessionFunc:          replaceSession,
@@ -672,6 +677,13 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
+			go func(s streamingReceiver) {
+				_, _ = s.Recv()
+				// Cancel the context after receiving trailers
+				if d.cancel != nil {
+					d.cancel()
+				}
+			}(d.stream)
 			d.changeState(finished)
 			return
 		}
@@ -684,6 +696,10 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 
 	if d.err == io.EOF {
 		d.err = nil
+		// Cancel the context after receiving trailers
+		if d.cancel != nil {
+			d.cancel()
+		}
 		d.changeState(finished)
 		return
 	}

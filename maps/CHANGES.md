@@ -2,6 +2,32 @@
 
 
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.4...maps/v1.21.0) (2025-05-21)
+
+
+### Features
+
+* **maps/places:** Add address descriptor proto ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new GoogleMapsLinks fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new NeighborhoodSummary fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new photo fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new review fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new ReviewSummary fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Update GenerativeSummary fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+
+### Bug Fixes
+
+* **maps/places:** An existing field `area_summary` is removed from message `.google.maps.places.v1.Place` ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** An existing field `description` is removed from message `.google.maps.places.v1.Place` ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** An existing field `references` is removed from message `.google.maps.places.v1.Place` ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** An existing message `AreaSummary` is removed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+
+### Documentation
+
+* **maps/places:** Change comments for some fields in Places API ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
 ## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.3...maps/v1.20.4) (2025-04-30)
 
 

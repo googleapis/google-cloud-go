@@ -1,5 +1,22 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.4...storagetransfer/v1.13.0) (2025-05-29)
+
+
+### Features
+
+* **storagetransfer:** Support Azure federated identity ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** Support BYOSA ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+
+### Documentation
+
+* **storagetransfer:** A comment for enum value `COPY` in enum `LoggableAction` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** A comment for field `end_time_of_day` in message `.google.storagetransfer.v1.Schedule` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** A comment for field `list_url` in message `.google.storagetransfer.v1.HttpData` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** A comment for field `overwrite_objects_already_existing_in_sink` in message `.google.storagetransfer.v1.TransferOptions` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** A comment for message `ObjectConditions` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
 ## [1.12.4](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.3...storagetransfer/v1.12.4) (2025-04-15)
 
 

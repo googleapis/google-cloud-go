@@ -77,6 +77,8 @@ type ClusterManagerCallOptions struct {
 	SetMaintenancePolicy        []gax.CallOption
 	ListUsableSubnetworks       []gax.CallOption
 	CheckAutopilotCompatibility []gax.CallOption
+	FetchClusterUpgradeInfo     []gax.CallOption
+	FetchNodePoolUpgradeInfo    []gax.CallOption
 }
 
 func defaultClusterManagerGRPCClientOptions() []option.ClientOption {
@@ -280,6 +282,8 @@ func defaultClusterManagerCallOptions() *ClusterManagerCallOptions {
 		},
 		ListUsableSubnetworks:       []gax.CallOption{},
 		CheckAutopilotCompatibility: []gax.CallOption{},
+		FetchClusterUpgradeInfo:     []gax.CallOption{},
+		FetchNodePoolUpgradeInfo:    []gax.CallOption{},
 	}
 }
 
@@ -460,6 +464,8 @@ func defaultClusterManagerRESTCallOptions() *ClusterManagerCallOptions {
 		},
 		ListUsableSubnetworks:       []gax.CallOption{},
 		CheckAutopilotCompatibility: []gax.CallOption{},
+		FetchClusterUpgradeInfo:     []gax.CallOption{},
+		FetchNodePoolUpgradeInfo:    []gax.CallOption{},
 	}
 }
 
@@ -502,6 +508,8 @@ type internalClusterManagerClient interface {
 	SetMaintenancePolicy(context.Context, *containerpb.SetMaintenancePolicyRequest, ...gax.CallOption) (*containerpb.Operation, error)
 	ListUsableSubnetworks(context.Context, *containerpb.ListUsableSubnetworksRequest, ...gax.CallOption) *UsableSubnetworkIterator
 	CheckAutopilotCompatibility(context.Context, *containerpb.CheckAutopilotCompatibilityRequest, ...gax.CallOption) (*containerpb.CheckAutopilotCompatibilityResponse, error)
+	FetchClusterUpgradeInfo(context.Context, *containerpb.FetchClusterUpgradeInfoRequest, ...gax.CallOption) (*containerpb.ClusterUpgradeInfo, error)
+	FetchNodePoolUpgradeInfo(context.Context, *containerpb.FetchNodePoolUpgradeInfoRequest, ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error)
 }
 
 // ClusterManagerClient is a client for interacting with Kubernetes Engine API.
@@ -744,6 +752,16 @@ func (c *ClusterManagerClient) CheckAutopilotCompatibility(ctx context.Context, 
 	return c.internalClient.CheckAutopilotCompatibility(ctx, req, opts...)
 }
 
+// FetchClusterUpgradeInfo fetch upgrade information of a specific cluster.
+func (c *ClusterManagerClient) FetchClusterUpgradeInfo(ctx context.Context, req *containerpb.FetchClusterUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.ClusterUpgradeInfo, error) {
+	return c.internalClient.FetchClusterUpgradeInfo(ctx, req, opts...)
+}
+
+// FetchNodePoolUpgradeInfo fetch upgrade information of a specific nodepool.
+func (c *ClusterManagerClient) FetchNodePoolUpgradeInfo(ctx context.Context, req *containerpb.FetchNodePoolUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error) {
+	return c.internalClient.FetchNodePoolUpgradeInfo(ctx, req, opts...)
+}
+
 // clusterManagerGRPCClient is a client for interacting with Kubernetes Engine API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -809,7 +827,7 @@ func (c *clusterManagerGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *clusterManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -877,7 +895,7 @@ func defaultClusterManagerRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *clusterManagerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -1521,6 +1539,42 @@ func (c *clusterManagerGRPCClient) CheckAutopilotCompatibility(ctx context.Conte
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.clusterManagerClient.CheckAutopilotCompatibility, req, settings.GRPC, c.logger, "CheckAutopilotCompatibility")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) FetchClusterUpgradeInfo(ctx context.Context, req *containerpb.FetchClusterUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.ClusterUpgradeInfo, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchClusterUpgradeInfo[0:len((*c.CallOptions).FetchClusterUpgradeInfo):len((*c.CallOptions).FetchClusterUpgradeInfo)], opts...)
+	var resp *containerpb.ClusterUpgradeInfo
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.clusterManagerClient.FetchClusterUpgradeInfo, req, settings.GRPC, c.logger, "FetchClusterUpgradeInfo")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) FetchNodePoolUpgradeInfo(ctx context.Context, req *containerpb.FetchNodePoolUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchNodePoolUpgradeInfo[0:len((*c.CallOptions).FetchNodePoolUpgradeInfo):len((*c.CallOptions).FetchNodePoolUpgradeInfo)], opts...)
+	var resp *containerpb.NodePoolUpgradeInfo
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.clusterManagerClient.FetchNodePoolUpgradeInfo, req, settings.GRPC, c.logger, "FetchNodePoolUpgradeInfo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3459,6 +3513,112 @@ func (c *clusterManagerRESTClient) CheckAutopilotCompatibility(ctx context.Conte
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CheckAutopilotCompatibility")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchClusterUpgradeInfo fetch upgrade information of a specific cluster.
+func (c *clusterManagerRESTClient) FetchClusterUpgradeInfo(ctx context.Context, req *containerpb.FetchClusterUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.ClusterUpgradeInfo, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchClusterUpgradeInfo", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetVersion() != "" {
+		params.Add("version", fmt.Sprintf("%v", req.GetVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).FetchClusterUpgradeInfo[0:len((*c.CallOptions).FetchClusterUpgradeInfo):len((*c.CallOptions).FetchClusterUpgradeInfo)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &containerpb.ClusterUpgradeInfo{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchClusterUpgradeInfo")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchNodePoolUpgradeInfo fetch upgrade information of a specific nodepool.
+func (c *clusterManagerRESTClient) FetchNodePoolUpgradeInfo(ctx context.Context, req *containerpb.FetchNodePoolUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchNodePoolUpgradeInfo", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetVersion() != "" {
+		params.Add("version", fmt.Sprintf("%v", req.GetVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).FetchNodePoolUpgradeInfo[0:len((*c.CallOptions).FetchNodePoolUpgradeInfo):len((*c.CallOptions).FetchNodePoolUpgradeInfo)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &containerpb.NodePoolUpgradeInfo{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchNodePoolUpgradeInfo")
 		if err != nil {
 			return err
 		}

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/managedkafka/apiv1",
-    "version": "0.5.2",
+    "version": "0.6.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_AddAclEntry_sync",
+      "title": "managedkafka AddAclEntry Sample",
+      "description": "AddAclEntry incremental update: Adds an acl entry to an acl. Creates the acl if it does\nnot exist yet.",
+      "file": "Client/AddAclEntry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddAclEntry",
+        "fullName": "google.cloud.managedkafka.v1.Client.AddAclEntry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedkafkapb.AddAclEntryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*managedkafkapb.AddAclEntryResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedkafka.v1.Client"
+        },
+        "method": {
+          "shortName": "AddAclEntry",
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.AddAclEntry",
+          "service": {
+            "shortName": "ManagedKafka",
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "managedkafka_v1_generated_ManagedKafka_CancelOperation_sync",
       "title": "managedkafka CancelOperation Sample",
@@ -52,6 +98,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateAcl_sync",
+      "title": "managedkafka CreateAcl Sample",
+      "description": "CreateAcl creates a new acl in the given project, location, and cluster.",
+      "file": "Client/CreateAcl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAcl",
+        "fullName": "google.cloud.managedkafka.v1.Client.CreateAcl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedkafkapb.CreateAclRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*managedkafkapb.Acl",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedkafka.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAcl",
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.CreateAcl",
+          "service": {
+            "shortName": "ManagedKafka",
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -144,6 +236,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteAcl_sync",
+      "title": "managedkafka DeleteAcl Sample",
+      "description": "DeleteAcl deletes an acl.",
+      "file": "Client/DeleteAcl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAcl",
+        "fullName": "google.cloud.managedkafka.v1.Client.DeleteAcl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedkafkapb.DeleteAclRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedkafka.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAcl",
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteAcl",
+          "service": {
+            "shortName": "ManagedKafka",
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -325,6 +462,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetAcl_sync",
+      "title": "managedkafka GetAcl Sample",
+      "description": "GetAcl returns the properties of a single acl.",
+      "file": "Client/GetAcl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAcl",
+        "fullName": "google.cloud.managedkafka.v1.Client.GetAcl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedkafkapb.GetAclRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*managedkafkapb.Acl",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedkafka.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAcl",
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetAcl",
+          "service": {
+            "shortName": "ManagedKafka",
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -560,6 +743,52 @@
       ]
     },
     {
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListAcls_sync",
+      "title": "managedkafka ListAcls Sample",
+      "description": "ListAcls lists the acls in a given cluster.",
+      "file": "Client/ListAcls/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAcls",
+        "fullName": "google.cloud.managedkafka.v1.Client.ListAcls",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedkafkapb.ListAclsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AclIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedkafka.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAcls",
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListAcls",
+          "service": {
+            "shortName": "ManagedKafka",
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "managedkafka_v1_generated_ManagedKafka_ListClusters_sync",
       "title": "managedkafka ListClusters Sample",
       "description": "ListClusters lists the clusters in a given project and location.",
@@ -785,6 +1014,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_RemoveAclEntry_sync",
+      "title": "managedkafka RemoveAclEntry Sample",
+      "description": "RemoveAclEntry incremental update: Removes an acl entry from an acl. Deletes the acl if\nits acl entries become empty (i.e. if the removed entry was the last one in\nthe acl).",
+      "file": "Client/RemoveAclEntry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveAclEntry",
+        "fullName": "google.cloud.managedkafka.v1.Client.RemoveAclEntry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedkafkapb.RemoveAclEntryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*managedkafkapb.RemoveAclEntryResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedkafka.v1.Client"
+        },
+        "method": {
+          "shortName": "RemoveAclEntry",
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.RemoveAclEntry",
+          "service": {
+            "shortName": "ManagedKafka",
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateAcl_sync",
+      "title": "managedkafka UpdateAcl Sample",
+      "description": "UpdateAcl updates the properties of a single acl.",
+      "file": "Client/UpdateAcl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAcl",
+        "fullName": "google.cloud.managedkafka.v1.Client.UpdateAcl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedkafkapb.UpdateAclRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*managedkafkapb.Acl",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedkafka.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateAcl",
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateAcl",
+          "service": {
+            "shortName": "ManagedKafka",
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

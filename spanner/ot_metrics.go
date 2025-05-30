@@ -17,8 +17,6 @@ package spanner
 import (
 	"context"
 	"log"
-	"strconv"
-	"strings"
 	"sync"
 
 	"cloud.google.com/go/spanner/internal"
@@ -250,18 +248,14 @@ func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod st
 		return nil
 	}
 	attr := otConfig.attributeMap
-	if len(md.Get("server-timing")) == 0 && otConfig.gfeHeaderMissingCount != nil {
+	metrics := parseServerTimingHeader(md)
+	if len(metrics) == 0 && otConfig.gfeHeaderMissingCount != nil {
 		otConfig.gfeHeaderMissingCount.Add(ctx, 1, metric.WithAttributes(attr...))
 		return nil
 	}
-	serverTiming := md.Get("server-timing")[0]
-	gfeLatency, err := strconv.Atoi(strings.TrimPrefix(serverTiming, "gfet4t7; dur="))
-	if !strings.HasPrefix(serverTiming, "gfet4t7; dur=") || err != nil {
-		return err
-	}
 	attr = append(attr, attributeKeyMethod.String(keyMethod))
 	if otConfig.gfeLatency != nil {
-		otConfig.gfeLatency.Record(ctx, int64(gfeLatency), metric.WithAttributes(attr...))
+		otConfig.gfeLatency.Record(ctx, metrics[gfeTimingHeader].Milliseconds(), metric.WithAttributes(attr...))
 	}
 	return nil
 }

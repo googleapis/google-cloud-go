@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.5](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.2.4...commerce/v1.2.5) (2025-05-29)
+
+
+### Bug Fixes
+
+* **commerce/consumer/procurement:** An existing google.api.http annotation `http_uri` is changed for method `UpdateLicensePool` in service `LicenseManagementService` ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
 ## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.2.3...commerce/v1.2.4) (2025-04-15)
 
 

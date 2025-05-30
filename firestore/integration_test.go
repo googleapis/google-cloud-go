@@ -495,6 +495,13 @@ func TestIntegration_Get(t *testing.T) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}
 
+	docRefFromResourceName := integrationClient(t).DocFromFullPath(ds.Ref.Path)
+	ds = h.mustGet(docRefFromResourceName)
+	got = ds.Data()
+	if want := wantIntegrationTestMap; !testEqual(got, want) {
+		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
+	}
+
 	emptyDoc := integrationColl(t).NewDoc()
 	empty := map[string]interface{}{}
 	h.mustCreate(emptyDoc, empty)
@@ -638,10 +645,7 @@ func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 	for _, wantRef := range wantDocRefs {
 		snapshotRefIDs = append(snapshotRefIDs, wantRef.ID)
 	}
-
-	defer func() {
-		deleteDocuments(wantDocRefs)
-	}()
+	t.Cleanup(func() { deleteDocuments(wantDocRefs) })
 
 	for _, testcase := range testcases {
 		t.Run(testcase.desc, func(t *testing.T) {
@@ -687,14 +691,11 @@ func TestIntegration_Query_WithRunOptions(t *testing.T) {
 	coll := integrationColl(t)
 	ctx := context.Background()
 	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
+	t.Cleanup(func() { deleteDocuments(wantDocRefs) })
 	snapshotRefIDs := []string{}
 	for _, wantRef := range wantDocRefs {
 		snapshotRefIDs = append(snapshotRefIDs, wantRef.ID)
 	}
-
-	defer func() {
-		deleteDocuments(wantDocRefs)
-	}()
 
 	for _, testcase := range testcases {
 		gotIDs := []string{}
@@ -1225,7 +1226,15 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 		if test.orderBy {
 			test.q = test.q.OrderBy("height", Asc)
 		}
-		gotDocs, err := test.q.Documents(ctx).GetAll()
+
+		var gotDocs []*DocumentSnapshot
+		var err error
+		testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+			gotDocs, err = test.q.Documents(ctx).GetAll()
+			if err != nil {
+				r.Errorf(err.Error())
+			}
+		})
 		if err != nil {
 			t.Errorf("#%d: %+v: %v", i, test.q, err)
 			continue
@@ -1383,42 +1392,59 @@ func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
 func TestIntegration_QueryUnary(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
+
+	// Create required indexes
+	indexFields := [][]string{
+		{"testNull", "x", "q"},
+		{"testNaN", "x", "q"},
+	}
+	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
+	t.Cleanup(func() {
+		deleteIndexes(adminCtx, indexNames)
+		cancel()
+	})
+
 	h := testHelper{t}
 	docRefs := []*DocumentRef{coll.NewDoc(), coll.NewDoc(), coll.NewDoc()}
-	h.mustCreate(docRefs[0], map[string]interface{}{"x": 2, "q": "a", "testNull": true, "testNaN": true})
-	h.mustCreate(docRefs[1], map[string]interface{}{"x": 2, "q": nil, "testNull": true, "testNaN": false})
-	h.mustCreate(docRefs[2], map[string]interface{}{"x": 2, "q": math.NaN(), "testNull": false, "testNaN": true})
-	wantNull := map[string]interface{}{"q": nil}
-	wantNaN := map[string]interface{}{"q": math.NaN()}
-	wantA := map[string]interface{}{"q": "a"}
+	t.Cleanup(func() { deleteDocuments(docRefs) })
+	h.mustCreate(docRefs[0], map[string]any{"x": 2, "q": "a", "testNull": true, "testNaN": true})
+	h.mustCreate(docRefs[1], map[string]any{"x": 2, "q": nil, "testNull": true, "testNaN": false})
+	h.mustCreate(docRefs[2], map[string]any{"x": 2, "q": math.NaN(), "testNull": false, "testNaN": true})
+	wantNull := map[string]any{"q": nil}
+	wantNaN := map[string]any{"q": math.NaN()}
+	wantA := map[string]any{"q": "a"}
 
 	base := coll.Select("q").Where("x", "==", 2)
 	baseNull := base.Where("testNull", "==", true)
 	baseNaN := base.Where("testNaN", "==", true)
 	for _, test := range []struct {
+		desc string
 		q    Query
-		want map[string]interface{}
+		want map[string]any
 	}{
-		{baseNull.Where("q", "==", nil), wantNull},
-		{baseNull.Where("q", "!=", nil), wantA},
-		{baseNaN.Where("q", "==", math.NaN()), wantNaN},
-		{baseNaN.Where("q", "!=", math.NaN()), wantA},
+		{desc: "IS NULL", q: baseNull.Where("q", "==", nil), want: wantNull},
+		{desc: "IS NOT NULL", q: baseNull.Where("q", "!=", nil), want: wantA},
+		{desc: "IS NaN", q: baseNaN.Where("q", "==", math.NaN()), want: wantNaN},
+		{desc: "IS NOT NaN", q: baseNaN.Where("q", "!=", math.NaN()), want: wantA},
 	} {
-		got, err := test.q.Documents(ctx).GetAll()
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(got) != 1 {
-			t.Errorf("got %d responses, want 1", len(got))
-			continue
-		}
-		if g, w := got[0].Data(), test.want; !testEqual(g, w) {
-			t.Errorf("%v: got %v, want %v", test.q, g, w)
-		}
+		t.Run(test.desc, func(t *testing.T) {
+			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+				got, err := test.q.Documents(ctx).GetAll()
+				if err != nil {
+					r.Errorf(err.Error())
+					return
+				}
+				if len(got) != 1 {
+					t.Errorf("got %d responses, want 1", len(got))
+					return
+				}
+				if g, w := got[0].Data(), test.want; !testEqual(g, w) {
+					t.Errorf("%v: got %v, want %v", test.q, g, w)
+				}
+			})
+		})
 	}
-	t.Cleanup(func() {
-		deleteDocuments(docRefs)
-	})
 }
 
 // Test the special DocumentID field in queries.
@@ -1574,6 +1600,7 @@ func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
 	ctx := context.Background()
 	client := integrationClient(t)
 	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
+	t.Cleanup(func() { deleteDocuments(wantDocRefs) })
 	numDocs := len(wantDocRefs)
 	for _, testcase := range testcases {
 		t.Run(testcase.desc, func(t *testing.T) {
@@ -1615,9 +1642,6 @@ func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
 		})
 	}
 
-	t.Cleanup(func() {
-		deleteDocuments(wantDocRefs)
-	})
 }
 
 func TestIntegration_TransactionGetAll(t *testing.T) {
@@ -2738,6 +2762,31 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	})
 }
 
+func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
+	if len(m1) != len(m2) {
+		r.Errorf("aggResultsEquals: length mismatch, len(m1)=%d, len(m2)=%d", len(m1), len(m2))
+		return false
+	}
+	for k, v1 := range m1 {
+		v2, ok := m2[k]
+		if !ok {
+			r.Errorf("aggResultsEquals: key %q not found in m2", k)
+			return false
+		}
+		pbVal1, ok1 := v1.(*pb.Value)
+		pbVal2, ok2 := v2.(*pb.Value)
+		if !ok1 || !ok2 {
+			r.Errorf("aggResultsEquals: type assertion to *pb.Value failed for key %q (ok1=%t, ok2=%t)", k, ok1, ok2)
+			return false
+		}
+		if diff := testutil.Diff(pbVal1, pbVal2, cmpopts.IgnoreUnexported(pb.Value{})); diff != "" {
+			r.Errorf("aggResultsEquals: failed for key %q\nv1=%v\nv2=%v\ndiff: got=-, want=+\n%v", k, pbVal1, pbVal2, diff)
+			return false
+		}
+	}
+	return true
+}
+
 func TestIntegration_AggregationQueries(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -2792,13 +2841,13 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		aggregationQuery *AggregationQuery
 		wantErr          bool
 		runInTransaction bool
-		result           AggregationResult
+		wantResult       AggregationResult
 	}{
 		{
 			desc:             "Multiple aggregations",
 			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("volume", "height_avg1").WithSum("weight", "weight_sum1").WithSum("volume", "height_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
 				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
@@ -2811,7 +2860,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("volume", "height_avg1").WithSum("weight", "weight_sum1").WithSum("volume", "height_sum1"),
 			wantErr:          false,
 			runInTransaction: true,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
 				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
@@ -2823,7 +2872,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "WithSum aggregation without alias",
 			aggregationQuery: query.NewAggregationQuery().WithSum("weight", ""),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
 			},
 		},
@@ -2831,7 +2880,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "WithSumPath aggregation without alias",
 			aggregationQuery: query.NewAggregationQuery().WithSumPath([]string{"weight"}, ""),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
 			},
 		},
@@ -2839,7 +2888,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "WithAvg aggregation without alias",
 			aggregationQuery: query.NewAggregationQuery().WithAvg("weight", ""),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
 			},
 		},
@@ -2847,7 +2896,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "WithAvgPath aggregation without alias",
 			aggregationQuery: query.NewAggregationQuery().WithAvgPath([]string{"weight"}, ""),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
 			},
 		},
@@ -2855,7 +2904,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "Aggregations with limit",
 			aggregationQuery: (&limitQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
 				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
@@ -2865,7 +2914,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "Aggregations with StartAt",
 			aggregationQuery: (&startAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
 				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
@@ -2875,7 +2924,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "Aggregations with StartAfter",
 			aggregationQuery: (&startAfterQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
 				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
@@ -2885,7 +2934,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "Aggregations with EndAt",
 			aggregationQuery: (&endAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
 				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
@@ -2895,7 +2944,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "Aggregations with EndBefore",
 			aggregationQuery: (&endBeforeQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
 				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
@@ -2905,7 +2954,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "Aggregations with LimitToLast",
 			aggregationQuery: (&limitToLastQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
 				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
@@ -2915,7 +2964,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "Aggregations on empty results",
 			aggregationQuery: emptyResultsQueryPtr.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithSum("weight", "weight_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
 				"weight_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
 				"weight_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
@@ -2925,7 +2974,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			desc:             "Aggregation on non-numeric field",
 			aggregationQuery: query.NewAggregationQuery().WithAvg("model", "model_avg1").WithSum("model", "model_sum1"),
 			wantErr:          false,
-			result: map[string]interface{}{
+			wantResult: map[string]interface{}{
 				"model_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
 				"model_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
 			},
@@ -2940,15 +2989,15 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.desc, func(t *testing.T) {
 			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
-				var aggResult AggregationResult
+				var gotResult AggregationResult
 				var err error
 				if tc.runInTransaction {
 					client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
-						aggResult, err = tc.aggregationQuery.Transaction(tx).Get(ctx)
+						gotResult, err = tc.aggregationQuery.Transaction(tx).Get(ctx)
 						return err
 					})
 				} else {
-					aggResult, err = tc.aggregationQuery.Get(ctx)
+					gotResult, err = tc.aggregationQuery.Get(ctx)
 				}
 
 				// Retry only if index building is in progress
@@ -2961,13 +3010,16 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 
 				// Compare expected and actual results
 				if err != nil && !tc.wantErr {
-					r.Fatalf("got: %v, want: nil", err)
+					r.Errorf("got: %v, want: nil", err)
+					return
 				}
 				if err == nil && tc.wantErr {
-					r.Fatalf("got: %v, wanted error", err)
+					r.Errorf("got: %v, wanted error", err)
+					return
 				}
-				if !reflect.DeepEqual(aggResult, tc.result) {
-					r.Fatalf("got: %v, want: %v", aggResult, tc.result)
+				if !aggResultsEquals(r, gotResult, tc.wantResult) {
+					r.Errorf("got: %v, want: %v", gotResult, tc.wantResult)
+					return
 				}
 			})
 		})
@@ -3066,7 +3118,7 @@ func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 				r.Errorf("%s: Mismatch in error got: %v, want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
 				return
 			}
-			if !gotFailed && !testutil.Equal(gotRes.Result, testcase.wantRes.Result) {
+			if !gotFailed && !aggResultsEquals(r, gotRes.Result, testcase.wantRes.Result) {
 				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes.Result, testcase.wantRes.Result)
 				return
 			}
@@ -3335,22 +3387,15 @@ func TestIntegration_FindNearest(t *testing.T) {
 				// Get all documents
 				iter := tc.vq.Documents(ctx)
 				gotDocs, err := iter.GetAll()
-
-				// Retry only if index building is in progress
-				s, ok := status.FromError(err)
-				if err != nil && ok && s != nil && s.Code() != codes.FailedPrecondition &&
-					strings.Contains(s.Message(), indexBuilding) {
-					r.Errorf("GetAll: %v", err)
-					return
-				}
-
 				if err != nil {
-					t.Fatalf("GetAll: %+v", err)
+					r.Errorf("GetAll: %+v", err)
+					return
 				}
 
 				// Compare expected and actual results length
 				if len(gotDocs) != len(tc.wantBeans) {
-					t.Fatalf("Expected %v results, got %d", len(tc.wantBeans), len(gotDocs))
+					r.Errorf("Expected %v results, got %d", len(tc.wantBeans), len(gotDocs))
+					return
 				}
 
 				// Compare results
@@ -3361,18 +3406,18 @@ func TestIntegration_FindNearest(t *testing.T) {
 					if len(tc.wantResField) != 0 {
 						_, ok := doc.Data()[tc.wantResField]
 						if !ok {
-							t.Errorf("Expected %v field to exist in %v", tc.wantResField, doc.Data())
+							r.Errorf("Expected %v field to exist in %v", tc.wantResField, doc.Data())
 						}
 					}
 
 					// Compare expected and actual document ID
 					err := doc.DataTo(&gotBean)
 					if err != nil {
-						t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
-						continue
+						r.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
+						return
 					}
 					if tc.wantBeans[i].ID != gotBean.ID {
-						t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
+						r.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
 					}
 				}
 			})

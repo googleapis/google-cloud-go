@@ -427,6 +427,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 			cachedRows:      resp.Rows,
 			cachedSchema:    resp.Schema,
 			cachedNextToken: resp.PageToken,
+			cachedTotalRows: resp.TotalRows,
 		}
 		return newRowIterator(ctx, rowSource, fetchPage), nil
 	}
@@ -501,8 +502,11 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 			DatasetId: q.QueryConfig.DefaultDatasetID,
 		}
 	}
-	if q.client.enableQueryPreview {
-		qRequest.JobCreationMode = "JOB_CREATION_OPTIONAL"
+
+	if custCfg := q.client.customConfig; custCfg != nil {
+		if custCfg.jobCreationMode != "" {
+			qRequest.JobCreationMode = string(custCfg.jobCreationMode)
+		}
 	}
 	return qRequest, nil
 }

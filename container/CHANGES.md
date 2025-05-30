@@ -1,5 +1,53 @@
 # Changes
 
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.4...container/v1.43.0) (2025-05-29)
+
+
+### Features
+
+* **container:** Add allowed_unsafe_sysctls in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add alpha_cluster_feature_gates in Cluster ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add auto_monitoring_config in ManagedPrometheusConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add autopilot_compatibility_auditing_enabled in WorkloadPolicyConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add ClusterUpgradeInfo ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add confidential_instance_type in ConfidentialNodes ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add container_log_max_files in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add container_log_max_size in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add data_cache_count in EphemeralStorageLocalSsdConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add desired_anonymous_authentication_config in ClusterUpdate ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add desired_disable_l4_lb_firewall_reconciliation in ClusterUpdate ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add desired_pod_autoscaling in ClusterUpdate ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add disable_l4_lb_firewall_reconciliation in NetworkConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add event_type in UpgradeInfoEvent ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add extended_support_end_time in UpgradeInfoEvent ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add FetchClusterUpgradeInfoRequest ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add FetchNodePoolUpgradeInfoRequest ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add flex_start in NodeConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add flex_start in UpdateNodePoolRequest ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add high_scale_checkpointing_config in AddonsConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add image_gc_high_threshold_percent in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add image_gc_low_threshold_percent in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add image_maximum_gc_age in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add image_minimum_gc_age in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add JOBSET in MonitoringComponentConfig.Component ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add KCP_HPA in LoggingComponentConfig.Component ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add max_run_duration in NodeConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add max_run_duration in UpdateNodePoolRequest ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add mitigated_versions in SecurityBulletinEvent ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add NODE_SERVICE_ACCOUNT_MISSING_PERMISSIONS in StatusCondition.Code ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add NodePoolUpgradeInfo ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add performance_monitoring_unit in AdvancedMachineFeatures ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add pod_autoscaling in Cluster ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add standard_support_end_time in UpgradeInfoEvent ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add topology_manager in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add UPGRADE_INFO_EVENT in NotificationConfig.EventType ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add UpgradeDetails ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+
+### Documentation
+
+* **container:** Minor documentation updates ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
 ## [1.42.4](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.3...container/v1.42.4) (2025-04-15)
 
 

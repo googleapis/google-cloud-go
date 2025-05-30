@@ -383,6 +383,9 @@ func compareIgnoreFieldMismatchResults(t *testing.T, wantX []NewX, gotX []NewX, 
 	if !equalErrs(gotErr, wantErr) {
 		t.Errorf("%v: error got: %v, want: %v", errPrefix, gotErr, wantErr)
 	}
+	if len(gotX) != len(wantX) {
+		t.Fatalf("%v results length: got: %v, want: %v\n", errPrefix, len(gotX), len(wantX))
+	}
 	for resIndex := 0; resIndex < len(wantX) && gotErr == nil; resIndex++ {
 		if wantX[resIndex].I != gotX[resIndex].I {
 			t.Fatalf("%v %v: got: %v, want: %v\n", errPrefix, resIndex, wantX[resIndex].I, gotX[resIndex].I)
@@ -422,12 +425,17 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 
 		client.WithReadOptions(tm)
 
+		newCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+		newClient := newTestClient(newCtx, t)
+		defer cancel()
+		defer newClient.Close()
+
 		// If the Entity isn't available at the requested read time, we get
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
 		// exposed in anyway in the response.
-		err = client.Get(ctx, k, &got)
+		err = newClient.Get(newCtx, k, &got)
 		if err != nil {
-			r.Errorf("client.Get: %v", err)
+			r.Errorf("newClient.Get: %v", err)
 		}
 	})
 
@@ -500,6 +508,12 @@ func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
 		S: "abcd",
 	}
 
+	defer func() {
+		if err := client.Delete(ctx, completeKey); err != nil {
+			t.Helper()
+			t.Errorf("client.Delete for key %v: %v", completeKey, err)
+		}
+	}()
 	k, err := client.Put(ctx, completeKey, in)
 	if err != nil {
 		t.Fatalf("client.Put: %v", err)
@@ -558,6 +572,12 @@ func TestIntegration_PutGetUntypedNil(t *testing.T) {
 	if err != nil {
 		t.Fatalf("client.Put got: %v, want: nil", err)
 	}
+	defer func() {
+		if err := client.Delete(ctx, key); err != nil {
+			t.Helper()
+			t.Errorf("client.Delete for key %v: %v", key, err)
+		}
+	}()
 
 	getX := &X{}
 	err = client.Get(ctx, key, getX)
@@ -608,6 +628,12 @@ func TestIntegration_GetMulti(t *testing.T) {
 	if _, err := client.PutMulti(ctx, srcKeys, src); err != nil {
 		t.Error(err)
 	}
+	defer func() {
+		if err := client.DeleteMulti(ctx, srcKeys); err != nil {
+			t.Helper()
+			t.Errorf("client.DeleteMulti for keys %v: %v", srcKeys, err)
+		}
+	}()
 
 	err := client.GetMulti(ctx, dstKeys, dst)
 	if err == nil {
@@ -671,9 +697,17 @@ func TestIntegration_UnindexableValues(t *testing.T) {
 		{in: Z{K: []byte(x1501)}, wantErr: false},
 	}
 	for _, tt := range testCases {
-		_, err := client.Put(ctx, IncompleteKey("BasicsZ", nil), &tt.in)
+		gotKey, err := client.Put(ctx, IncompleteKey("BasicsZ", nil), &tt.in)
 		if (err != nil) != tt.wantErr {
 			t.Errorf("client.Put %s got err %v, want err %t", tt.in, err, tt.wantErr)
+		}
+		if !tt.wantErr {
+			defer func() {
+				if err := client.Delete(ctx, gotKey); err != nil {
+					t.Helper()
+					t.Errorf("client.Delete for key %v: %v", gotKey, err)
+				}
+			}()
 		}
 	}
 }
@@ -691,10 +725,16 @@ func TestIntegration_NilKey(t *testing.T) {
 		{in: K0{}, wantErr: false},
 	}
 	for _, tt := range testCases {
-		_, err := client.Put(ctx, IncompleteKey("NilKey", nil), &tt.in)
+		gotKey, err := client.Put(ctx, IncompleteKey("NilKey", nil), &tt.in)
 		if (err != nil) != tt.wantErr {
 			t.Errorf("client.Put %s got err %v, want err %t", tt.in, err, tt.wantErr)
 		}
+		defer func() {
+			if err := client.Delete(ctx, gotKey); err != nil {
+				t.Helper()
+				t.Errorf("client.Delete for key %v: %v", gotKey, err)
+			}
+		}()
 	}
 }
 
@@ -928,7 +968,7 @@ func TestIntegration_Filters(t *testing.T) {
 	})
 }
 
-func populateData(t *testing.T, client *Client, childrenCount int, time int64, testKey string) ([]*Key, *Key, func()) {
+func populateData(t *testing.T, client *Client, childrenCount int, time int64, testKey string) ([]*Key, *Key, func(client *Client)) {
 	ctx := context.Background()
 	parent := NameKey("SQParent", keyPrefix+testKey+suffix, nil)
 
@@ -946,7 +986,7 @@ func populateData(t *testing.T, client *Client, childrenCount int, time int64, t
 		t.Fatalf("client.PutMulti: %v", err)
 	}
 
-	cleanup := func() {
+	cleanup := func(client *Client) {
 		err := client.DeleteMulti(ctx, keys)
 		if err != nil {
 			t.Errorf("client.DeleteMulti: %v", err)
@@ -981,7 +1021,10 @@ func TestIntegration_BeginLaterPerf(t *testing.T) {
 		// Populate data
 		now := timeNow.Truncate(time.Millisecond).Unix()
 		keys, _, cleanupData := populateData(t, client, numKeys, now, "BeginLaterPerf"+fmt.Sprint(runOption)+fmt.Sprint(now))
-		defer cleanupData()
+		currentCleanup := cleanupData // Capture loop variable
+		t.Cleanup(func() {
+			currentCleanup(newTestClient(ctx, t))
+		})
 
 		for rep := 0; rep < numRepetitions; rep++ {
 			go runTransaction(ctx, client, keys, res, runOption, t)
@@ -1104,6 +1147,10 @@ func TestIntegration_BeginLater(t *testing.T) {
 		// Populate data
 		now := timeNow.Truncate(time.Millisecond).Unix()
 		keys, parent, cleanupData := populateData(t, client, 3, now, "BeginLater")
+		currentCleanup := cleanupData // Capture loop variable
+		t.Cleanup(func() {
+			currentCleanup(newTestClient(ctx, t))
+		})
 
 		testutil.Retry(t, 5, 10*time.Second, func(r *testutil.R) {
 			_, err := client.RunInTransaction(ctx, func(tx *Transaction) error {
@@ -1162,7 +1209,6 @@ func TestIntegration_BeginLater(t *testing.T) {
 				}
 			}
 		})
-		cleanupData()
 	}
 }
 
@@ -1258,7 +1304,7 @@ func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
 				r.Errorf("got: %v, want: nil", gotErr)
 				return
 			}
-			if !reflect.DeepEqual(gotAggResult, tc.wantAggResult) {
+			if !aggResultsEquals(r, gotAggResult, tc.wantAggResult) {
 				r.Errorf("%q: Mismatch in aggregation result got: %+v, want: %+v", tc.desc, gotAggResult, tc.wantAggResult)
 				return
 			}
@@ -1438,8 +1484,8 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 				r.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
 				return
 			}
-			if gotErr == nil && !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
-				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+			if gotErr == nil && !aggResultsEquals(r, gotAggResult, testCase.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %+v, want: %+v", testCase.desc, gotAggResult, testCase.wantAggResult)
 				return
 			}
 		})
@@ -1836,6 +1882,12 @@ func TestIntegration_GetAllWithFieldMismatch(t *testing.T) {
 			t.Fatalf("client.Put: %v", err)
 		}
 	}
+	defer func() {
+		if err := client.DeleteMulti(ctx, putKeys); err != nil {
+			t.Helper()
+			t.Errorf("client.DeleteMulti for keys %v: %v", putKeys, err)
+		}
+	}()
 
 	var got []Thin
 	want := []Thin{
@@ -2038,6 +2090,31 @@ func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	return nil
 }
 
+func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
+	if len(m1) != len(m2) {
+		r.Errorf("aggResultsEquals: length mismatch, len(m1)=%d, len(m2)=%d", len(m1), len(m2))
+		return false
+	}
+	for k, v1 := range m1 {
+		v2, ok := m2[k]
+		if !ok {
+			r.Errorf("aggResultsEquals: key %q not found in m2", k)
+			return false
+		}
+		pbVal1, ok1 := v1.(*pb.Value)
+		pbVal2, ok2 := v2.(*pb.Value)
+		if !ok1 || !ok2 {
+			r.Errorf("aggResultsEquals: type assertion to *pb.Value failed for key %q (ok1=%t, ok2=%t)", k, ok1, ok2)
+			return false
+		}
+		if diff := testutil.Diff(pbVal1, pbVal2, cmpopts.IgnoreUnexported(pb.Value{})); diff != "" {
+			r.Errorf("aggResultsEquals: failed for key %q\nv1=%v\nv2=%v\ndiff: got=-, want=+\n%v", k, pbVal1, pbVal2, diff)
+			return false
+		}
+	}
+	return true
+}
+
 func TestIntegration_KindlessQueries(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
@@ -2070,6 +2147,12 @@ func TestIntegration_KindlessQueries(t *testing.T) {
 	if err != nil {
 		t.Fatalf("put: %v", err)
 	}
+	defer func() {
+		if err := client.DeleteMulti(ctx, keys); err != nil {
+			t.Helper()
+			t.Errorf("client.DeleteMulti for keys %v: %v", keys, err)
+		}
+	}()
 
 	testCases := []struct {
 		desc    string
@@ -2318,6 +2401,14 @@ func TestIntegration_NilPointers(t *testing.T) {
 	if err != nil {
 		t.Fatalf("PutMulti: %v", err)
 	}
+	originalKeys := make([]*Key, len(keys)) // Keep a copy of the original keys for deferred cleanup
+	copy(originalKeys, keys)
+	defer func() {
+		if err := client.DeleteMulti(ctx, originalKeys); err != nil {
+			t.Helper()
+			t.Errorf("client.DeleteMulti for original keys %v: %v", originalKeys, err)
+		}
+	}()
 
 	// It's okay to store into a slice of nil *X.
 	xs := make([]*X, 2)
@@ -2378,6 +2469,12 @@ func TestIntegration_PointerFields(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer func() {
+		if err := client.Delete(ctx, key); err != nil {
+			t.Helper()
+			t.Errorf("client.Delete for key %v: %v", key, err)
+		}
+	}()
 	var got Pointers
 	if err := client.Get(ctx, key, &got); err != nil {
 		t.Fatal(err)
@@ -2433,6 +2530,16 @@ func testMutate(t *testing.T, mutate func(ctx context.Context, client *Client, m
 
 	type T struct{ I int }
 
+	var createdKeysForCleanup []*Key
+	defer func() {
+		if len(createdKeysForCleanup) > 0 {
+			if err := client.DeleteMulti(ctx, createdKeysForCleanup); err != nil {
+				t.Helper()
+				t.Errorf("client.DeleteMulti for keys %v: %v", createdKeysForCleanup, err)
+			}
+		}
+	}()
+
 	check := func(k *Key, want interface{}) {
 		var x T
 		err := client.Get(ctx, k, &x)
@@ -2460,6 +2567,13 @@ func testMutate(t *testing.T, mutate func(ctx context.Context, client *Client, m
 	if err != nil {
 		t.Fatal(err)
 	}
+	if len(keys) > 0 && keys[0] != nil {
+		createdKeysForCleanup = append(createdKeysForCleanup, keys[0])
+	}
+	if len(keys) > 1 && keys[1] != nil {
+		createdKeysForCleanup = append(createdKeysForCleanup, keys[1])
+	}
+
 	check(keys[0], 1)
 	check(keys[1], 2)
 

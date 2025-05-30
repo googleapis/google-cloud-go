@@ -15,9 +15,19 @@
                 "CancelOperation"
               ]
             },
+            "CreateDatasetConfig": {
+              "methods": [
+                "CreateDatasetConfig"
+              ]
+            },
             "CreateReportConfig": {
               "methods": [
                 "CreateReportConfig"
+              ]
+            },
+            "DeleteDatasetConfig": {
+              "methods": [
+                "DeleteDatasetConfig"
               ]
             },
             "DeleteOperation": {
@@ -28,6 +38,11 @@
             "DeleteReportConfig": {
               "methods": [
                 "DeleteReportConfig"
+              ]
+            },
+            "GetDatasetConfig": {
+              "methods": [
+                "GetDatasetConfig"
               ]
             },
             "GetLocation": {
@@ -50,6 +65,16 @@
                 "GetReportDetail"
               ]
             },
+            "LinkDataset": {
+              "methods": [
+                "LinkDataset"
+              ]
+            },
+            "ListDatasetConfigs": {
+              "methods": [
+                "ListDatasetConfigs"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -68,6 +93,16 @@
             "ListReportDetails": {
               "methods": [
                 "ListReportDetails"
+              ]
+            },
+            "UnlinkDataset": {
+              "methods": [
+                "UnlinkDataset"
+              ]
+            },
+            "UpdateDatasetConfig": {
+              "methods": [
+                "UpdateDatasetConfig"
               ]
             },
             "UpdateReportConfig": {
@@ -85,9 +120,19 @@
                 "CancelOperation"
               ]
             },
+            "CreateDatasetConfig": {
+              "methods": [
+                "CreateDatasetConfig"
+              ]
+            },
             "CreateReportConfig": {
               "methods": [
                 "CreateReportConfig"
+              ]
+            },
+            "DeleteDatasetConfig": {
+              "methods": [
+                "DeleteDatasetConfig"
               ]
             },
             "DeleteOperation": {
@@ -98,6 +143,11 @@
             "DeleteReportConfig": {
               "methods": [
                 "DeleteReportConfig"
+              ]
+            },
+            "GetDatasetConfig": {
+              "methods": [
+                "GetDatasetConfig"
               ]
             },
             "GetLocation": {
@@ -120,6 +170,16 @@
                 "GetReportDetail"
               ]
             },
+            "LinkDataset": {
+              "methods": [
+                "LinkDataset"
+              ]
+            },
+            "ListDatasetConfigs": {
+              "methods": [
+                "ListDatasetConfigs"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -138,6 +198,16 @@
             "ListReportDetails": {
               "methods": [
                 "ListReportDetails"
+              ]
+            },
+            "UnlinkDataset": {
+              "methods": [
+                "UnlinkDataset"
+              ]
+            },
+            "UpdateDatasetConfig": {
+              "methods": [
+                "UpdateDatasetConfig"
               ]
             },
             "UpdateReportConfig": {

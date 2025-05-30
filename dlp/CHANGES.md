@@ -1,5 +1,19 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.22.1...dlp/v1.23.0) (2025-05-29)
+
+
+### Features
+
+* **dlp:** Add a project ID to table reference so that org parents can create single table discovery configs. ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **dlp:** Add Dataplex Catalog action for discovery configs ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **dlp:** New fields for data profile finding. ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+
+### Documentation
+
+* **dlp:** Various doc revisions ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
 ## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.22.0...dlp/v1.22.1) (2025-04-15)
 
 

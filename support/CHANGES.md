@@ -1,6 +1,29 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.2.0...support/v1.3.0) (2025-05-29)
+
+
+### Features
+
+* **support:** New client(s) ([#12351](https://github.com/googleapis/google-cloud-go/issues/12351)) ([6297761](https://github.com/googleapis/google-cloud-go/commit/6297761f4d292877e003855b83c02b52e54f1f9d))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.6...support/v1.2.0) (2025-05-21)
+
+
+### Features
+
+* **support:** Annotate `Comment.plain_text_body` as deprecated (it was already deprecated, but now we're adding the annotation for it) ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **support:** Deprecate the `Actor.email` field and add `username` to replace it ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+
+
+### Documentation
+
+* **support:** Annotate all names with IDENTIFIER ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **support:** Bring comments and metadata up to date ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **support:** Update Cloud Support RPC comments to no longer include cURL and Python examples ([62155da](https://github.com/googleapis/google-cloud-go/commit/62155dae7958ebd50140a630a38003f4f74d68bc))
+* **support:** Use backticks around `username` in documentation for `Actor.email` ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.5...support/v1.1.6) (2025-04-15)
 
 
