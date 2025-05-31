@@ -453,7 +453,7 @@ func mergeCallOptions(a *vkit.CallOptions, b *vkit.CallOptions) *vkit.CallOption
 
 	t := aVal.Type()
 
-	for i := 0; i < aVal.NumField(); i++ {
+	for i := range aVal.NumField() {
 		fieldName := t.Field(i).Name
 
 		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)

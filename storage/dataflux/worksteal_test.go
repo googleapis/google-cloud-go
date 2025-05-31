@@ -25,7 +25,7 @@ import (
 
 // createObject creates given number of objects in the given bucket.
 func createObjectWithVersion(ctx context.Context, bucket *storage.BucketHandle, numObjects int, objectName string) error {
-	for i := 0; i < numObjects; i++ {
+	for range numObjects {
 		// Create a writer for the object
 		wc := bucket.Object(objectName).NewWriter(ctx)
 

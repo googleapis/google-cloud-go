@@ -1217,7 +1217,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				if len(readRanges)%100 != 0 {
 					requestCount++
 				}
-				for i := 0; i < requestCount; i++ {
+				for i := range requestCount {
 					start := i * 100
 					end := (i + 1) * 100
 					if end > len(readRanges) {

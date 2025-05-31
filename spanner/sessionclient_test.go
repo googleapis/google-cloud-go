@@ -103,7 +103,7 @@ func TestNextClient(t *testing.T) {
 	defer teardown()
 	sc := client.idleSessions.sc
 	connections := make(map[*grpc.ClientConn]int)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		client, err := sc.nextClient()
 		if err != nil {
 			t.Fatalf("Error getting a gapic client from the session client\nGot: %v", err)
@@ -120,7 +120,7 @@ func TestNextClient(t *testing.T) {
 	}
 	// Pass through all the clients once more. This time the exact same
 	// connections should be found.
-	for i := 0; i < n; i++ {
+	for i := range n {
 		client, err := sc.nextClient()
 		if err != nil {
 			t.Fatalf("Error getting a gapic client from the session client\nGot: %v", err)

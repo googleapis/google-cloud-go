@@ -131,7 +131,7 @@ func executorStructValueToSpannerValue(t *spannerpb.Type, v *executorpb.ValueLis
 	cloudFieldVals := make([]any, 0, len(fieldTypes))
 
 	// Convert the fields to Go types and build the struct's dynamic type.
-	for i := 0; i < len(fieldTypes); i++ {
+	for i := range len(fieldTypes) {
 		var techValue *executorpb.Value
 		var isnull bool
 

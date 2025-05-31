@@ -580,7 +580,7 @@ func ExampleGenericColumnValue_Decode() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	for i := 0; i < row.Size(); i++ {
+	for i := range row.Size() {
 		var col spanner.GenericColumnValue
 		if err := row.Column(i, &col); err != nil {
 			// TODO: Handle error.

@@ -345,7 +345,7 @@ func TestFakeReadCloser(t *testing.T) {
 	}
 	wants := []string{"0", "12", "345"}
 	buf := make([]byte, 10)
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		n, err := f.Read(buf)
 		if got, want := n, f.counts[i]; got != want {
 			t.Fatalf("i=%d: got %d, want %d", i, got, want)

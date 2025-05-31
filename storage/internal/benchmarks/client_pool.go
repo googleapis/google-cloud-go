@@ -46,7 +46,7 @@ func newClientPool(initializeClient func() (*storage.Client, error), numClients 
 		clientQueue: make(chan *storage.Client, numClients),
 	}
 
-	for i := 0; i < numClients; i++ {
+	for i := range numClients {
 		var err error
 		p.clients[i], err = initializeClient()
 		if err != nil {

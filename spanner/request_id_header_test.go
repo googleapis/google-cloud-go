@@ -1793,7 +1793,7 @@ func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
 	// This will check out MinOpened + 1 sessions, which also triggers
 	// one more BatchCreateSessions call.
 	iterators := make([]*RowIterator, 0, clientConfig.MinOpened+1)
-	for i := 0; i < int(clientConfig.MinOpened)+1; i++ {
+	for range int(clientConfig.MinOpened) + 1 {
 		iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectFooFromBar})
 		iterators = append(iterators, iter)
 		_, err := iter.Next()

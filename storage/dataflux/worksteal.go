@@ -79,7 +79,7 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 	}
 	g, ctx := errgroup.WithContext(ctx)
 	// Initialize all workers as idle.
-	for i := 0; i < c.parallelism; i++ {
+	for i := range c.parallelism {
 		idleWorker := &worker{
 			id:            i,
 			startRange:    "",

@@ -944,7 +944,7 @@ func (p *parser) sniffAhead(skip int, want ...string) bool {
 	orig := *p
 	defer func() { *p = orig }()
 
-	for i := 0; i < skip; i++ {
+	for range skip {
 		p.next()
 	}
 

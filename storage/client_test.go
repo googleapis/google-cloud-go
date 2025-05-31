@@ -1153,7 +1153,7 @@ func TestWriterFlushEmulated(t *testing.T) {
 		}
 
 		// Write another 1KiB three times and do a Flush each time.
-		for i := 0; i < 3; i++ {
+		for i := range 3 {
 			start := int64(4*MiB + i*1024)
 			end := int64(4*MiB + (i+1)*1024)
 			n, err := w.Write(randomBytes9MiB[start:end])
@@ -2517,7 +2517,7 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 		// to suceed. Error only after the first chunk has been sent, as the
 		// retry deadline does not apply to the first chunk.
 		manyErrs := []string{fmt.Sprintf("return-%d-after-%dK", errCode, 257)}
-		for i := 0; i < 20; i++ {
+		for range 20 {
 			manyErrs = append(manyErrs, fmt.Sprintf("return-%d", errCode))
 
 		}

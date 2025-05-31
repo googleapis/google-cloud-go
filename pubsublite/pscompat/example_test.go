@@ -183,7 +183,7 @@ func ExamplePublisherClient_Publish_errorHandling() {
 	var mu sync.Mutex
 	g := new(errgroup.Group)
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		msg := &pubsub.Message{
 			Data: []byte(fmt.Sprintf("message-%d", i)),
 		}

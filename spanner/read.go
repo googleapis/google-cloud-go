@@ -336,7 +336,7 @@ func (q *partialResultQueue) push(r *sppb.PartialResultSet) {
 	}
 	if q.n == cap(q.q) {
 		buf := make([]*sppb.PartialResultSet, cap(q.q)*2)
-		for i := 0; i < q.n; i++ {
+		for i := range q.n {
 			buf[i] = q.q[(q.first+i)%cap(q.q)]
 		}
 		q.q = buf

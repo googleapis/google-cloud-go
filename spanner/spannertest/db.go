@@ -175,16 +175,16 @@ The mapping between Spanner types and Go types internal to this package are:
 	BYTES		[]byte
 	DATE		civil.Date
 	TIMESTAMP	time.Time (location set to UTC)
-	ARRAY<T>	[]interface{}
+	ARRAY<T>	[]any
 	STRUCT		TODO
 */
-type row []interface{}
+type row []any
 
-func (r row) copyDataElem(index int) interface{} {
+func (r row) copyDataElem(index int) any {
 	v := r[index]
-	if is, ok := v.([]interface{}); ok {
+	if is, ok := v.([]any); ok {
 		// Deep-copy array values.
-		v = append([]interface{}(nil), is...)
+		v = append([]any(nil), is...)
 	}
 	return v
 }
@@ -864,15 +864,15 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 			}
 		}
 	}
-	var conv func(x interface{}) interface{}
+	var conv func(x any) any
 	if stringOrBytes(oldT.Base) && stringOrBytes(newT.Base) && !oldT.Array && !newT.Array {
 		// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
 		// TODO: This should permit array conversions too.
 		// TODO: Validate data; length limit changes should be rejected if they'd lead to data loss, for instance.
 		if oldT.Base == spansql.Bytes && newT.Base == spansql.String {
-			conv = func(x interface{}) interface{} { return string(x.([]byte)) }
+			conv = func(x any) any { return string(x.([]byte)) }
 		} else if oldT.Base == spansql.String && newT.Base == spansql.Bytes {
-			conv = func(x interface{}) interface{} { return []byte(x.(string)) }
+			conv = func(x any) any { return []byte(x.(string)) }
 		}
 	} else if oldT == newT {
 		// Same type; only NOT NULL changes.
@@ -991,7 +991,7 @@ func (t *table) colIndexes(cols []spansql.ID) ([]int, error) {
 
 // primaryKey constructs the internal representation of a primary key.
 // The list of given values must be in 1:1 correspondence with the primary key of the table.
-func (t *table) primaryKey(values []*structpb.Value) ([]interface{}, error) {
+func (t *table) primaryKey(values []*structpb.Value) ([]any, error) {
 	if len(values) != t.pkCols {
 		return nil, status.Errorf(codes.InvalidArgument, "primary key length mismatch: got %d values, table has %d", len(values), t.pkCols)
 	}
@@ -999,12 +999,12 @@ func (t *table) primaryKey(values []*structpb.Value) ([]interface{}, error) {
 }
 
 // primaryKeyPrefix constructs the internal representation of a primary key prefix.
-func (t *table) primaryKeyPrefix(values []*structpb.Value) ([]interface{}, error) {
+func (t *table) primaryKeyPrefix(values []*structpb.Value) ([]any, error) {
 	if len(values) > t.pkCols {
 		return nil, status.Errorf(codes.InvalidArgument, "primary key length too long: got %d values, table has %d", len(values), t.pkCols)
 	}
 
-	var pk []interface{}
+	var pk []any
 	for i, value := range values {
 		v, err := valForType(value, t.cols[i].Type)
 		if err != nil {
@@ -1017,7 +1017,7 @@ func (t *table) primaryKeyPrefix(values []*structpb.Value) ([]interface{}, error
 
 // rowForPK returns the index of t.rows that holds the row for the given primary key, and true.
 // If the given primary key isn't found, it returns the row that should hold it, and false.
-func (t *table) rowForPK(pk []interface{}) (row int, found bool) {
+func (t *table) rowForPK(pk []any) (row int, found bool) {
 	if len(pk) != t.pkCols {
 		panic(fmt.Sprintf("primary key length mismatch: got %d values, table has %d", len(pk), t.pkCols))
 	}
@@ -1035,8 +1035,8 @@ func (t *table) rowForPK(pk []interface{}) (row int, found bool) {
 // The desc arg indicates whether each column is in a descending order.
 // This is used for primary key matching and so doesn't support array/struct types.
 // a is permitted to be shorter than b.
-func rowCmp(a, b []interface{}, desc []bool) int {
-	for i := 0; i < len(a); i++ {
+func rowCmp(a, b []any, desc []bool) int {
+	for i := range len(a) {
 		if cmp := compareVals(a[i], b[i]); cmp != 0 {
 			if desc[i] {
 				cmp = -cmp
@@ -1049,8 +1049,8 @@ func rowCmp(a, b []interface{}, desc []bool) int {
 
 // rowEqual reports whether two rows are equal.
 // This doesn't support array/struct types.
-func rowEqual(a, b []interface{}) bool {
-	for i := 0; i < len(a); i++ {
+func rowEqual(a, b []any) bool {
+	for i := range len(a) {
 		if compareVals(a[i], b[i]) != 0 {
 			return false
 		}
@@ -1059,7 +1059,7 @@ func rowEqual(a, b []interface{}) bool {
 }
 
 // valForType converts a value from its RPC form into its internal representation.
-func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
+func valForType(v *structpb.Value, t spansql.Type) (any, error) {
 	if _, ok := v.Kind.(*structpb.Value_NullValue); ok {
 		return nil, nil
 	}
@@ -1069,7 +1069,7 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		et.Array = false
 
 		// Construct the non-nil slice for the list.
-		arr := make([]interface{}, 0, len(lv.ListValue.Values))
+		arr := make([]any, 0, len(lv.ListValue.Values))
 		for _, v := range lv.ListValue.Values {
 			x, err := valForType(v, et)
 			if err != nil {
@@ -1147,7 +1147,7 @@ type keyRange struct {
 
 	// These are populated during an operation
 	// when we know what table this keyRange applies to.
-	startKey, endKey []interface{}
+	startKey, endKey []any
 }
 
 func (r *keyRange) String() string {
@@ -1235,7 +1235,7 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 
 		n := 0
 		values := make(row, len(stmt.Items)) // scratch space for new values
-		for i := 0; i < len(t.rows); i++ {
+		for i := range len(t.rows) {
 			ec.row = t.rows[i]
 			b, err := ec.evalBoolExpr(stmt.Where)
 			if err != nil {
@@ -1279,7 +1279,7 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 		values := make(row, len(t.cols))
 		input := stmt.Input.(spansql.Values)
 		if len(input) > 0 {
-			for i := 0; i < len(input); i++ {
+			for i := range len(input) {
 				val := input[i]
 				for k, v := range val {
 					switch v := v.(type) {

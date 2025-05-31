@@ -40,7 +40,7 @@ func BenchmarkEncodeIntArray(b *testing.B) {
 			for _, size := range []int{1, 10, 100, 1000} {
 				a := make([]int, size)
 				b.Run(strconv.Itoa(size), func(b *testing.B) {
-					for i := 0; i < b.N; i++ {
+					for range b.N {
 						s.f(a)
 					}
 				})
@@ -82,7 +82,7 @@ func encodeArrayReflect(a interface{}) (*proto3.Value, error) {
 	len := va.Len()
 	vs := make([]*proto3.Value, len)
 	var err error
-	for i := 0; i < len; i++ {
+	for i := range len {
 		vs[i], _, err = encodeValue(va.Index(i).Interface())
 		if err != nil {
 			return nil, err
@@ -96,7 +96,7 @@ func BenchmarkDecodeGeneric(b *testing.B) {
 	t := stringType()
 	var g GenericColumnValue
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		decodeValue(v, t, &g)
 	}
 }
@@ -106,7 +106,7 @@ func BenchmarkDecodeString(b *testing.B) {
 	t := stringType()
 	var s string
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		decodeValue(v, t, &s)
 	}
 }
@@ -117,7 +117,7 @@ func BenchmarkDecodeCustomString(b *testing.B) {
 	type CustomString string
 	var s CustomString
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		decodeValue(v, t, &s)
 	}
 }
@@ -125,7 +125,7 @@ func BenchmarkDecodeCustomString(b *testing.B) {
 func BenchmarkDecodeArray(b *testing.B) {
 	for _, size := range []int{1, 10, 100, 1000} {
 		vals := make([]*proto3.Value, size)
-		for i := 0; i < size; i++ {
+		for i := range size {
 			vals[i] = dateProto(d1)
 		}
 		lv := &proto3.ListValue{Values: vals}
@@ -143,7 +143,7 @@ func BenchmarkDecodeArray(b *testing.B) {
 				{"StringReflect", decodeArrayStringReflect},
 			} {
 				b.Run(s.name, func(b *testing.B) {
-					for i := 0; i < b.N; i++ {
+					for range b.N {
 						s.decode(lv)
 					}
 				})
@@ -248,7 +248,7 @@ func BenchmarkScan(b *testing.B) {
 					City   string
 					State  string
 				}
-				for i := 0; i < n; i++ {
+				for i := range n {
 					rows = append(rows, struct {
 						ID     int64
 						Name   string
@@ -258,7 +258,7 @@ func BenchmarkScan(b *testing.B) {
 					}{int64(i), fmt.Sprintf("name-%d", i), true, "city", "state"})
 				}
 				src := mockBenchmarkIterator(b, rows)
-				for i := 0; i < b.N; i++ {
+				for range b.N {
 					it := *src
 					var res []struct {
 						ID     int64
@@ -318,7 +318,7 @@ func BenchmarkScan100RowsUsingSelectAll(b *testing.B) {
 		ID   int64
 		Name string
 	}
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		rows = append(rows, struct {
 			ID   int64
 			Name string
@@ -344,7 +344,7 @@ func BenchmarkScan100RowsUsingToStruct(b *testing.B) {
 		ID   int64
 		Name string
 	}
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		rows = append(rows, struct {
 			ID   int64
 			Name string
@@ -385,7 +385,7 @@ func BenchmarkScan100RowsUsingColumns(b *testing.B) {
 		ID   int64
 		Name string
 	}
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		rows = append(rows, struct {
 			ID   int64
 			Name string
@@ -425,14 +425,14 @@ func mockBenchmarkIterator[T any](t testing.TB, rows []T) *mockIteratorImpl {
 	var v T
 	var colNames []string
 	numCols := reflect.TypeOf(v).NumField()
-	for i := 0; i < numCols; i++ {
+	for i := range numCols {
 		f := reflect.TypeOf(v).Field(i)
 		colNames = append(colNames, f.Name)
 	}
 	var srows []*Row
 	for _, e := range rows {
 		var vs []any
-		for f := 0; f < numCols; f++ {
+		for f := range numCols {
 			v := reflect.ValueOf(e).Field(f).Interface()
 			vs = append(vs, v)
 		}
