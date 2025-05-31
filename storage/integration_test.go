@@ -5315,6 +5315,53 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 	})
 }
 
+func TestIntegration_BucketIPFilter(t *testing.T) {
+	ctx := skipGRPC("IPFilter not yet supported in gRPC transport")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		projID := testutil.ProjID()
+
+		// Create bucket with initial IPFilter configuration.
+		bucketName := prefix + uidSpace.New()
+		fmt.Printf("Creating bucket %q\n", bucketName)
+		bucket := client.Bucket(bucketName)
+		want := &IPFilter{
+			Mode: "Disabled",
+		}
+
+		h.mustCreate(bucket, projID, &BucketAttrs{
+			IPFilter: want,
+		})
+		defer h.mustDeleteBucket(bucket)
+
+		// Verify initial configuration.
+		attrs := h.mustBucketAttrs(bucket)
+		if !testutil.Equal(attrs.IPFilter, want) {
+			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
+		}
+
+		// Update IPFilter configuration.
+		want = &IPFilter{
+			Mode: "Disabled",
+			VPCNetworkSource: []VPCNetworkSource{
+				{
+					Network:             fmt.Sprintf("projects/%s/global/networks/default", projID),
+					AllowedIPCidrRanges: []string{"0.0.0.0/0"},
+				},
+			},
+		}
+
+		ua := BucketAttrsToUpdate{
+			IPFilter: want,
+		}
+		// Verify updated configuration.
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.IPFilter, want) {
+			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
+		}
+	})
+}
+
 func TestIntegration_SoftDelete(t *testing.T) {
 	multiTransportTest(skipExtraReadAPIs(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
