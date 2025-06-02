@@ -155,8 +155,25 @@ func (s *MockedSpannerInMemTestServer) setupSingersResults() {
 		Metadata: metadata,
 		Rows:     rows,
 	}
-	result := &StatementResult{Type: StatementResultResultSet, ResultSet: resultSet}
-	s.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, result)
+	result := &StatementResult{Type: StatementResultResultSet, ResultSet: resultSet, SetLastFlag: true}
+	_ = s.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, result)
+}
+
+// CreateSingersResults creates a result set containing rowCount size of rows
+// and also setLastFlag param helps in setting Last flag in PartialResultSet
+// in the last PartialResult for StreamingRead and ExecuteStreamingSql gRPC methods
+func (s *MockedSpannerInMemTestServer) CreateSingersResults(rowCount int64, setLastFlag bool) *StatementResult {
+	metadata := createSingersMetadata()
+	rows := make([]*structpb.ListValue, rowCount)
+	var idx int64
+	for idx = 0; idx < rowCount; idx++ {
+		rows[idx] = createSingersRow(idx)
+	}
+	resultSet := &spannerpb.ResultSet{
+		Metadata: metadata,
+		Rows:     rows,
+	}
+	return &StatementResult{Type: StatementResultResultSet, ResultSet: resultSet, SetLastFlag: setLastFlag}
 }
 
 // CreateSingleRowSingersResult creates a result set containing a single row of

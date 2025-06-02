@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,11 +59,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &cloudcontrolspartnerpb.GetCustomerRequest{
+//	req := &cloudcontrolspartnerpb.CreateCustomerRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb#GetCustomerRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb#CreateCustomerRequest.
 //	}
-//	resp, err := c.GetCustomer(ctx, req)
+//	resp, err := c.CreateCustomer(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

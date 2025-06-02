@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,12 @@ import (
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *ConferenceRecordIterator) All() iter.Seq2[*meetpb.ConferenceRecord, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MemberIterator) All() iter.Seq2[*meetpb.Member, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

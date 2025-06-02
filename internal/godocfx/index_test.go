@@ -16,48 +16,64 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
 
 const wantEntries = 5
 
-type fakeIC struct{}
+// responses is used for faking HTTP responses. Format each value with a timestamp based on whether get() should
+// fetch another page.
+var responses = []string{
+	`{"Path":"golang.org/x/net","Version":"v0.0.0-20180627171509-e514e69ffb8b","Timestamp":"2019-04-10T20:30:42.413493Z"}
+	 {"Path":"golang.org/x/exp/notary","Version":"v0.0.0-20190409044807-56b785ea58b2","Timestamp":"2019-04-10T20:37:01.409908Z"}
+	 {"Path":"golang.org/x/crypto","Version":"v0.0.0-20181025213731-e84da0312774","Timestamp":"2019-04-10T20:40:43.408586Z"}
+	 {"Path":"golang.org/x/net","Version":"v0.0.0-20181213202711-891ebc4b82d6","Timestamp":"2019-04-10T20:40:54.12906Z"}
+	 {"Path":"cloud.google.com/go","Version":"v1.0.0","Timestamp":"%s"}`,
 
-func (f fakeIC) get(prefixes []string, since time.Time) (entries []indexEntry, last time.Time, err error) {
-	e := indexEntry{Timestamp: since.Add(24 * time.Hour)}
-	return []indexEntry{e}, e.Timestamp, nil
+	`{"Path":"cloud.google.com/go/storage","Version":"v1.0.0","Timestamp":"2020-04-10T20:40:43.408586Z"}
+	 {"Path":"cloud.google.com/go/bigquery","Version":"v1.0.0","Timestamp":"2020-04-10T20:40:43.408586Z"}
+	 {"Path":"golang.org/x/crypto","Version":"v0.0.0-20181025213731-e84da0312774","Timestamp":"2020-04-10T20:40:43.408586Z"}
+	 {"Path":"cloud.google.com/go/spanner","Version":"v1.0.0","Timestamp":"2020-04-10T20:40:43.408586Z"}
+	 {"Path":"cloud.google.com/go","Version":"v1.0.0","Timestamp":"%s"}`,
 }
 
-type fakeTS struct {
-	getCalled, putCalled bool
-}
+func TestGet(t *testing.T) {
+	numCalls := 0
+	lastTime := time.Now().Add(-time.Minute).Format(time.RFC3339)
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		numCalls++
+		if numCalls == 1 {
+			resp := []byte(fmt.Sprintf(responses[0], time.Now().Add(-time.Hour).Format(time.RFC3339)))
+			w.Write(resp)
+			return
+		}
+		if numCalls == 2 {
+			resp := []byte(fmt.Sprintf(responses[1], lastTime))
+			w.Write(resp)
+			return
+		}
+		t.Fatalf("Unexpected call #%d to server", numCalls)
+	}))
 
-func (f *fakeTS) get(context.Context) (time.Time, error) {
-	f.getCalled = true
-	t := time.Now().Add(-wantEntries * 24 * time.Hour).UTC()
-	return t, nil
-}
+	ic := indexClient{indexURL: s.URL}
 
-func (f *fakeTS) put(context.Context, time.Time) error {
-	f.putCalled = true
-	return nil
-}
-
-func TestNewModules(t *testing.T) {
-	ic := fakeIC{}
-	ts := &fakeTS{}
-	entries, err := newModules(context.Background(), ic, ts, []string{"cloud.google.com"})
+	entries, last, err := ic.get(context.Background(), []string{"cloud.google.com"}, time.Time{})
 	if err != nil {
-		t.Fatalf("newModules got err: %v", err)
+		t.Fatalf("get got err: %v", err)
 	}
 	if got, want := len(entries), wantEntries; got != want {
-		t.Errorf("newModules got %d entries, want %d", got, want)
+		t.Errorf("get got %d entries, want %d", got, want)
 	}
-	if !ts.getCalled {
-		t.Errorf("fakeTS.get was never called")
+
+	want, err := time.Parse(time.RFC3339, lastTime)
+	if err != nil {
+		t.Fatalf("Failed to parse time: %v", err)
 	}
-	if !ts.putCalled {
-		t.Errorf("fakeTS.put was never called")
+	if !last.Equal(want) {
+		t.Errorf("get got last time %v, want %v", last, lastTime)
 	}
 }

@@ -395,6 +395,50 @@
         }
       }
     },
+    "ConversationalSearchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ConversationalSearchClient",
+          "rpcs": {
+            "ConversationalSearch": {
+              "methods": [
+                "ConversationalSearch"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ConversationalSearchClient",
+          "rpcs": {
+            "ConversationalSearch": {
+              "methods": [
+                "ConversationalSearch"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "GenerativeQuestionService": {
       "clients": {
         "grpc": {

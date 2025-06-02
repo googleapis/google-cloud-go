@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/bigtable/bttest"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func ExampleNewServer() {
@@ -36,7 +37,7 @@ func ExampleNewServer() {
 
 	ctx := context.Background()
 
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalln(err)
 	}

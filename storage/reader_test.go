@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -60,7 +59,7 @@ func TestRangeReader(t *testing.T) {
 				t.Errorf("%d/%d: %v", test.offset, test.length, err)
 				continue
 			}
-			gotb, err := ioutil.ReadAll(r)
+			gotb, err := io.ReadAll(r)
 			if err != nil {
 				t.Errorf("%d/%d: %v", test.offset, test.length, err)
 				continue
@@ -299,8 +298,16 @@ type fakeReadCloser struct {
 	counts []int // how much of data to deliver on each read
 	err    error // error to return with last count
 
-	d int // current position in data
-	c int // current position in counts
+	d      int // current position in data
+	c      int // current position in counts
+	handle *ReadHandle
+}
+
+func (f *fakeReadCloser) ReadHandle() ReadHandle {
+	if f.handle == nil {
+		f.handle = &ReadHandle{}
+	}
+	return *f.handle
 }
 
 func (f *fakeReadCloser) Close() error {
@@ -352,6 +359,10 @@ func TestFakeReadCloser(t *testing.T) {
 		}
 		if got, want := string(buf[:n]), wants[i]; got != want {
 			t.Fatalf("i=%d: got %q, want %q", i, got, want)
+		}
+		han := f.ReadHandle()
+		if len(han) != 0 {
+			t.Fatalf("i=%d: got len(ReadHandle) %q, want %q", i, han, 0)
 		}
 	}
 }
@@ -460,7 +471,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 				}
 				defer rd.Close()
 
-				got, err := ioutil.ReadAll(rd)
+				got, err := io.ReadAll(rd)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -528,7 +539,7 @@ func TestMetadataParsingWithReader(t *testing.T) {
 			t.Fatalf("metadata mismatch diff got vs want: %v", diff)
 		}
 
-		got, err := ioutil.ReadAll(rd)
+		got, err := io.ReadAll(rd)
 		if err != nil {
 			t.Fatal(err)
 		}

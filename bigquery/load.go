@@ -110,6 +110,13 @@ type LoadConfig struct {
 	// For more information, see:
 	// https://cloud.google.com/bigquery/docs/reference/rest/v2/Job#columnnamecharactermap
 	ColumnNameCharacterMap ColumnNameCharacterMap
+
+	// The reservation that job would use. User can specify a reservation to
+	// execute the job. If reservation is not set, reservation is determined
+	// based on the rules defined by the reservation assignments. The expected
+	// format is
+	// `projects/{project}/locations/{location}/reservations/{reservation}`.
+	Reservation string
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -140,6 +147,7 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 		config.Load.ConnectionProperties = append(config.Load.ConnectionProperties, v.toBQ())
 	}
 	media := l.Src.populateLoadConfig(config.Load)
+	config.Reservation = l.Reservation
 	return config, media
 }
 
@@ -160,6 +168,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		ReferenceFileSchemaURI:      q.Load.ReferenceFileSchemaUri,
 		CreateSession:               q.Load.CreateSession,
 		ColumnNameCharacterMap:      ColumnNameCharacterMap(q.Load.ColumnNameCharacterMap),
+		Reservation:                 q.Reservation,
 	}
 	if q.JobTimeoutMs > 0 {
 		lc.JobTimeout = time.Duration(q.JobTimeoutMs) * time.Millisecond

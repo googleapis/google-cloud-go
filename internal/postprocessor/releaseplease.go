@@ -31,8 +31,6 @@ var unreleasedModuleDir map[string]bool = map[string]bool{
 
 var individuallyReleasedModules map[string]bool = map[string]bool{
 	".":                true,
-	"ai":               true,
-	"aiplatform":       true,
 	"auth":             true,
 	"auth/oauth2adapt": true,
 	"bigquery":         true,

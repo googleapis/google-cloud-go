@@ -444,8 +444,8 @@ func TestParseExpr(t *testing.T) {
 		// Functions
 		{`STARTS_WITH(Bar, 'B')`, Func{Name: "STARTS_WITH", Args: []Expr{ID("Bar"), StringLiteral("B")}}},
 		{`CAST(Bar AS STRING)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: String}}}}},
-		{`CAST(Bar AS ENUM)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Enum}}}}},
-		{`CAST(Bar AS PROTO)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Proto}}}}},
+		{`CAST(Bar AS fizzle.bit)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Proto, ProtoRef: "fizzle.bit"}}}}},
+		{`CAST(Bar AS fizzle.bit.baz)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Proto, ProtoRef: "fizzle.bit.baz"}}}}},
 		{`SAFE_CAST(Bar AS INT64)`, Func{Name: "SAFE_CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Int64}}}}},
 		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
 		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
@@ -1943,6 +1943,26 @@ func TestParseDDL(t *testing.T) {
 			},
 		},
 		{
+			"CREATE TABLE IF NOT EXISTS tname (id INT64, name `foo.bar.baz.ProtoName` NOT NULL) PRIMARY KEY (id)",
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", NotNull: true, Type: Type{Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
 			`CREATE INDEX IF NOT EXISTS iname ON tname (cname)`,
 			&DDL{
 				Filename: "filename",
@@ -2162,6 +2182,201 @@ func TestParseDDL(t *testing.T) {
 						UpdateTypes: nil,
 						DeleteTypes: []string{"foo.bar.baz.Foozle"},
 						Position:    line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE TABLE TableTokens (
+				Name STRING(MAX) NOT NULL,
+				Name_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name)) HIDDEN,
+				Value INT64 NOT NULL,
+				Value_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value)) HIDDEN,
+				Values ARRAY<STRING(MAX)>,
+				Values_Tokens TOKENLIST AS (TOKEN(Values)) HIDDEN,
+				ValueTwo BOOL NOT NULL,
+				ValueTwo_Tokens TOKENLIST AS (TOKENIZE_BOOL(ValueTwo)) HIDDEN,
+				ValueThree STRING(MAX) NOT NULL,
+				ValueThree_Tokens TOKENLIST AS (TOKENIZE_NGRAMS(ValueThree)) HIDDEN,
+				ValueFour STRING(MAX) NOT NULL,
+				ValueFour_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(ValueFour || "concat")) HIDDEN,
+				Combined_Tokens TOKENLIST AS (TOKENLIST_CONCAT([Name_Tokens, ValueFour_Tokens])) HIDDEN,
+				Argument_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name, token_category => "small")) HIDDEN,
+				ManyArgument_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value, comparison_type => "all", min => 1, max => 5)) HIDDEN,
+			) PRIMARY KEY (Name);
+
+			CREATE SEARCH INDEX TableTokensSearch
+			ON TableTokens(Name_Tokens, Value_Tokens)
+			STORING (ValueTwo)
+			PARTITION BY Value, ValueTwo
+			ORDER BY Value DESC, ValueTwo ASC,
+			INTERLEAVE IN SomeTable
+			OPTIONS (sort_order_sharding = true);`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name: "TableTokens",
+						Columns: []ColumnDef{
+							{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+							{
+								Name: "Name_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name")}},
+								Hidden:    true,
+								Position:  line(3),
+							},
+							{Name: "Value", Type: Type{Base: Int64}, NotNull: true, Position: line(4)},
+							{
+								Name: "Value_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{ID("Value")}},
+								Hidden:    true,
+								Position:  line(5),
+							},
+							{Name: "Values", Type: Type{Array: true, Base: String, Len: MaxLen}, NotNull: false, Position: line(6)},
+							{
+								Name: "Values_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKEN", Args: []Expr{ID("Values")}},
+								Hidden:    true,
+								Position:  line(7),
+							},
+							{Name: "ValueTwo", Type: Type{Base: Bool}, NotNull: true, Position: line(8)},
+							{
+								Name: "ValueTwo_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_BOOL", Args: []Expr{ID("ValueTwo")}},
+								Hidden:    true,
+								Position:  line(9),
+							},
+							{Name: "ValueThree", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(10)},
+							{
+								Name: "ValueThree_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_NGRAMS", Args: []Expr{ID("ValueThree")}},
+								Hidden:    true,
+								Position:  line(11),
+							},
+							{Name: "ValueFour", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(12)},
+							{
+								Name: "ValueFour_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ArithOp{Op: 5, LHS: ID("ValueFour"), RHS: StringLiteral("concat")}}},
+								Hidden:    true,
+								Position:  line(13),
+							},
+							{
+								Name: "Combined_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENLIST_CONCAT", Args: []Expr{Array{ID("Name_Tokens"), ID("ValueFour_Tokens")}}},
+								Hidden:    true,
+								Position:  line(14),
+							},
+							{
+								Name: "Argument_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name"), DefinitionExpr{
+									Key:   "token_category",
+									Value: StringLiteral("small"),
+								}}},
+								Hidden:   true,
+								Position: line(15),
+							},
+							{
+								Name: "ManyArgument_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{
+									ID("Value"),
+									DefinitionExpr{
+										Key:   "comparison_type",
+										Value: StringLiteral("all"),
+									},
+									DefinitionExpr{
+										Key:   "min",
+										Value: IntegerLiteral(1),
+									},
+									DefinitionExpr{
+										Key:   "max",
+										Value: IntegerLiteral(5),
+									},
+								}},
+								Hidden:   true,
+								Position: line(16),
+							},
+						},
+						PrimaryKey: []KeyPart{{Column: "Name"}},
+						Position:   line(1),
+					},
+					&CreateSearchIndex{
+						Name:  "TableTokensSearch",
+						Table: "TableTokens",
+						Columns: []KeyPart{
+							{Column: "Name_Tokens"},
+							{Column: "Value_Tokens"},
+						},
+						Storing:     []ID{"ValueTwo"},
+						PartitionBy: []ID{"Value", "ValueTwo"},
+						OrderBy:     []Order{{Expr: ID("Value"), Desc: true}, {Expr: ID("ValueTwo"), Desc: false}},
+						Position:    line(19),
+						Interleave:  ID("SomeTable"),
+						Options:     SearchIndexOptions{SortOrderSharding: func(b bool) *bool { return &b }(true)},
+					},
+				},
+			},
+		},
+		{
+			`CREATE TABLE TableTokens (
+				Name STRING(MAX) NOT NULL,
+				Name_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name)) HIDDEN,
+				Value INT64 NOT NULL,
+				Value_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value)) HIDDEN,
+			) PRIMARY KEY (Name);
+
+			CREATE SEARCH INDEX TableTokensSearch
+			ON TableTokens(Name_Tokens, Value_Tokens);
+			
+			ALTER SEARCH INDEX TableTokensSearch ADD STORED COLUMN Value_Tokens;
+			ALTER SEARCH INDEX TableTokensSearch DROP STORED COLUMN Value_Tokens;
+			DROP SEARCH INDEX IF EXISTS TableTokensSearch;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name: "TableTokens",
+						Columns: []ColumnDef{
+							{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+							{
+								Name: "Name_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name")}},
+								Hidden:    true,
+								Position:  line(3),
+							},
+							{Name: "Value", Type: Type{Base: Int64}, NotNull: true, Position: line(4)},
+							{
+								Name: "Value_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{ID("Value")}},
+								Hidden:    true,
+								Position:  line(5),
+							},
+						},
+						PrimaryKey: []KeyPart{{Column: "Name"}},
+						Position:   line(1),
+					},
+					&CreateSearchIndex{
+						Name:  "TableTokensSearch",
+						Table: "TableTokens",
+						Columns: []KeyPart{
+							{Column: "Name_Tokens"},
+							{Column: "Value_Tokens"},
+						},
+						Position: line(8),
+					},
+					&AlterSearchIndex{
+						Name:       "TableTokensSearch",
+						Alteration: AddStoredColumn{Name: "Value_Tokens"},
+						Position:   line(11),
+					},
+					&AlterSearchIndex{
+						Name:       "TableTokensSearch",
+						Alteration: DropStoredColumn{Name: "Value_Tokens"},
+						Position:   line(12),
+					},
+					&DropSearchIndex{
+						Name:     "TableTokensSearch",
+						IfExists: true,
+						Position: line(13),
 					},
 				},
 			},

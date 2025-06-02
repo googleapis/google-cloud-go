@@ -40,6 +40,8 @@ func init() {
 	storageinternal.WithMetricExporter = withMetricExporter
 	storageinternal.WithMetricInterval = withMetricInterval
 	storageinternal.WithReadStallTimeout = withReadStallTimeout
+	storageinternal.WithGRPCBidiReads = withGRPCBidiReads
+	storageinternal.WithZonalBucketAPIs = withZonalBucketAPIs
 }
 
 // getDynamicReadReqIncreaseRateFromEnv returns the value set in the env variable.
@@ -81,6 +83,8 @@ type storageConfig struct {
 	metricInterval         time.Duration
 	manualReader           *metric.ManualReader
 	readStallTimeoutConfig *experimental.ReadStallTimeoutConfig
+	grpcBidiReads          bool
+	grpcAppendableUploads  bool
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -239,4 +243,30 @@ type withReadStallTimeoutConfig struct {
 
 func (wrstc *withReadStallTimeoutConfig) ApplyStorageOpt(config *storageConfig) {
 	config.readStallTimeoutConfig = wrstc.readStallTimeoutConfig
+}
+
+func withGRPCBidiReads() option.ClientOption {
+	return &withGRPCBidiReadsConfig{}
+}
+
+type withGRPCBidiReadsConfig struct {
+	internaloption.EmbeddableAdapter
+}
+
+func (w *withGRPCBidiReadsConfig) ApplyStorageOpt(config *storageConfig) {
+	config.grpcBidiReads = true
+}
+
+func withZonalBucketAPIs() option.ClientOption {
+	return &withZonalBucketAPIsConfig{}
+}
+
+type withZonalBucketAPIsConfig struct {
+	internaloption.EmbeddableAdapter
+}
+
+func (w *withZonalBucketAPIsConfig) ApplyStorageOpt(config *storageConfig) {
+	// Use both appendable upload semantics and bidi reads.
+	config.grpcAppendableUploads = true
+	config.grpcBidiReads = true
 }

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1196,7 +1196,7 @@ func (c *keyManagementGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *keyManagementGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -1278,7 +1278,7 @@ func defaultKeyManagementRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *keyManagementRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -2560,6 +2560,9 @@ func (c *keyManagementRESTClient) GetPublicKey(ctx context.Context, req *kmspb.G
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPublicKeyFormat() != 0 {
+		params.Add("publicKeyFormat", fmt.Sprintf("%v", req.GetPublicKeyFormat()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

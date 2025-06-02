@@ -16,16 +16,19 @@ package dataflux
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"runtime"
-	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
+	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestPrefixAdjustedOffsets(t *testing.T) {
@@ -200,7 +203,7 @@ func TestNewLister(t *testing.T) {
 	}
 }
 
-func TestNextBatchEmulated(t *testing.T) {
+func TestNextBatchContextCancelEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		bucketHandle := client.Bucket(bucket)
@@ -209,8 +212,7 @@ func TestNextBatchEmulated(t *testing.T) {
 		}); err != nil {
 			t.Fatal(err)
 		}
-		wantObjects := 2
-		if err := createObject(ctx, bucketHandle, wantObjects); err != nil {
+		if err := createObject(ctx, bucketHandle, 2, ""); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		c := NewLister(client, &ListerInput{BucketName: bucket})
@@ -218,14 +220,140 @@ func TestNextBatchEmulated(t *testing.T) {
 		childCtx, cancel := context.WithCancel(ctx)
 		cancel()
 		result, err := c.NextBatch(childCtx)
-		if err != nil && !strings.Contains(err.Error(), context.Canceled.Error()) {
+		if err != nil && !(errors.Is(err, context.Canceled) || status.Code(err) == codes.Canceled) {
 			t.Fatalf("NextBatch() failed with error: %v", err)
 		}
 		if err == nil {
 			t.Errorf("NextBatch() expected to fail with %v, got nil", context.Canceled)
 		}
 		if len(result) > 0 {
-			t.Errorf("NextBatch() got object %v, want 0 objects", len(result))
+			t.Errorf("NextBatch() got %v objects, want 0 objects", len(result))
+		}
+	})
+}
+
+func TestNextBatchEmulated(t *testing.T) {
+	transportClientTest(skipGRPC("context cancel not supported"), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+
+		bucketHandle := client.Bucket(bucket)
+		if err := bucketHandle.Create(ctx, project, &storage.BucketAttrs{
+			Name: bucket,
+		}); err != nil {
+			t.Fatal(err)
+		}
+		numObject := 1500
+		if err := createObject(ctx, bucketHandle, numObject, ""); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+
+		testcase := []struct {
+			desc   string
+			method listingMethod
+		}{
+			{
+				desc:   "sequential or worksteal listing",
+				method: open,
+			},
+			{
+				desc:   "sequential listing",
+				method: sequential,
+			}, {
+				desc:   "worksteal listing",
+				method: worksteal,
+			}}
+
+		for _, tc := range testcase {
+			t.Run(tc.desc, func(t *testing.T) {
+				c := NewLister(client, &ListerInput{BucketName: bucket})
+				defer c.Close()
+				c.method = tc.method
+				result, err := c.NextBatch(ctx)
+				if err != nil && err != iterator.Done {
+					t.Fatalf("NextBatch() failed with error: %v", err)
+				}
+				if err == nil {
+					t.Errorf("NextBatch() expected to return %v", iterator.Done)
+				}
+				if len(result) != numObject {
+					t.Errorf("NextBatch() got %d objects, want %d objects", len(result), numObject)
+				}
+			})
+		}
+
+	})
+}
+
+func TestNextBatchWithQueryEmulated(t *testing.T) {
+	transportClientTest(skipGRPC("context cancel not supported"), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+
+		bucketHandle := client.Bucket(bucket)
+		if err := bucketHandle.Create(ctx, project, &storage.BucketAttrs{
+			Name: bucket,
+		}); err != nil {
+			t.Fatal(err)
+		}
+		numObject := 100
+		prefix := "prefix/"
+		if err := createObject(ctx, bucketHandle, numObject, ""); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		if err := createObject(ctx, bucketHandle, numObject, prefix); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		input := &ListerInput{
+			BucketName: bucket,
+		}
+		testcase := []struct {
+			desc                 string
+			skipDirectoryObjects bool
+			query                storage.Query
+			method               listingMethod
+			want                 int
+		}{
+			{
+				desc:                 "object at root level using worksteal lsiting",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Delimiter: "/"},
+				method:               worksteal,
+				want:                 101,
+			},
+			{
+				desc:                 "objects with prefix using worksteal listing",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Prefix: prefix},
+				method:               worksteal,
+				want:                 100,
+			},
+			{
+				desc:                 "object at root level",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Delimiter: "/"},
+				method:               open,
+				want:                 101,
+			},
+			{
+				desc:                 "objects with prefix",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Prefix: prefix},
+				method:               open,
+				want:                 100,
+			},
+		}
+		for _, tc := range testcase {
+			t.Run(tc.desc, func(t *testing.T) {
+				input.Query = tc.query
+				input.SkipDirectoryObjects = tc.skipDirectoryObjects
+				df := NewLister(client, input)
+				defer df.Close()
+				df.method = tc.method
+				got, err := df.NextBatch(ctx)
+				if err != nil && err != iterator.Done {
+					t.Fatalf("NextBatch() for input %v failed: %v", *input, err)
+				}
+				if len(got) != tc.want || err != iterator.Done {
+					t.Errorf("NextBatch(%v) got = (%d, %v), want (%d, %v)", *input, len(got), err, tc.want, iterator.Done)
+				}
+			})
 		}
 	})
 }
@@ -254,8 +382,8 @@ func initEmulatorClients() func() error {
 	}
 
 	emulatorClients = map[string]*storage.Client{
-		"http": httpClient,
-		"grpc": grpcClient,
+		HTTP: httpClient,
+		GRPC: grpcClient,
 	}
 
 	return func() error {
@@ -287,6 +415,10 @@ func transportClientTest(ctx context.Context, t *testing.T, test func(*testing.T
 	}
 }
 
+func skipGRPC(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey(GRPC), reason)
+}
+
 // checkEmulatorEnvironment skips the test if the emulator environment variables
 // are not set.
 func checkEmulatorEnvironment(t *testing.T) {
@@ -301,11 +433,11 @@ func isEmulatorEnvironmentSet() bool {
 }
 
 // createObject creates given number of objects in the given bucket.
-func createObject(ctx context.Context, bucket *storage.BucketHandle, numObjects int) error {
+func createObject(ctx context.Context, bucket *storage.BucketHandle, numObjects int, prefix string) error {
 
 	for i := 0; i < numObjects; i++ {
 		// Generate a unique object name using UUIDs
-		objectName := fmt.Sprintf("object%s", uuid.New().String())
+		objectName := fmt.Sprintf("%s%s", prefix, uuid.New().String())
 		// Create a writer for the object
 		w := bucket.Object(objectName).NewWriter(ctx)
 

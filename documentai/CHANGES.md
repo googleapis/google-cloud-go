@@ -1,6 +1,51 @@
 # Changes
 
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.36.1...documentai/v1.37.0) (2025-04-30)
+
+
+### Features
+
+* **documentai:** Add image block and blob asset in Document proto ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **documentai:** Added a field for enabling returning images and bounding boxes from layout parser processor ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **documentai:** Added config options to enable image annotation ([0fe3b60](https://github.com/googleapis/google-cloud-go/commit/0fe3b60aa3b1530361012fecb13a00567ca27094))
+* **documentai:** Added config options to enable table annotation and image extraction ([#12070](https://github.com/googleapis/google-cloud-go/issues/12070)) ([a6c85f6](https://github.com/googleapis/google-cloud-go/commit/a6c85f6387ee6aa291e786c882637fb03f3302f4))
+
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.36.0...documentai/v1.36.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **documentai:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.3...documentai/v1.36.0) (2025-03-19)
+
+
+### Features
+
+* **documentai:** Added config options to enable LLM layout parsing ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
+## [1.35.3](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.2...documentai/v1.35.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.35.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.1...documentai/v1.35.2) (2025-02-12)
+
+
+### Documentation
+
+* **documentai:** Mark fields as unused ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
+## [1.35.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.0...documentai/v1.35.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.34.0...documentai/v1.35.0) (2024-10-23)
 
 

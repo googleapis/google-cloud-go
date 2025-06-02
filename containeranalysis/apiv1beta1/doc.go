@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,12 @@
 // Package containeranalysis is an auto-generated package for the
 // Container Analysis API.
 //
-// An implementation of the Grafeas API, which stores, and enables querying
-// and retrieval of critical metadata about all of your software artifacts.
+// This API is a prerequisite for leveraging Artifact Analysis scanning
+// capabilities in both Artifact Registry and with Advanced Vulnerability
+// Insights (runtime scanning) in GKE. In addition, the Container Analysis
+// API is an implementation of the Grafeas API, which enables storing,
+// querying, and retrieval of critical metadata about all of your software
+// artifacts.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

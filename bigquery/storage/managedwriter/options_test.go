@@ -342,7 +342,7 @@ func TestWriterOptions(t *testing.T) {
 
 		if diff := cmp.Diff(got, tc.want,
 			cmp.AllowUnexported(ManagedStream{}, streamSettings{}),
-			cmp.AllowUnexported(sync.Mutex{}),
+			cmpopts.IgnoreTypes(sync.Mutex{}),
 			cmp.AllowUnexported(versionedTemplate{}),
 			cmpopts.IgnoreFields(versionedTemplate{}, "versionTime", "hashVal"),
 			protocmp.Transform(), // versionedTemplate embeds proto messages.

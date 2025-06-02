@@ -100,6 +100,11 @@
                 "ListSnapshots"
               ]
             },
+            "PromoteReplica": {
+              "methods": [
+                "PromoteReplica"
+              ]
+            },
             "RestoreInstance": {
               "methods": [
                 "RestoreInstance"
@@ -218,6 +223,11 @@
             "ListSnapshots": {
               "methods": [
                 "ListSnapshots"
+              ]
+            },
+            "PromoteReplica": {
+              "methods": [
+                "PromoteReplica"
               ]
             },
             "RestoreInstance": {

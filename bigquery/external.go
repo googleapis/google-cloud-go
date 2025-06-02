@@ -41,6 +41,21 @@ const (
 	Iceberg        DataFormat = "ICEBERG"
 )
 
+// MetadataCacheMode describes the types of metadata cache mode for external data.
+type MetadataCacheMode string
+
+// Constants describing types of metadata cache mode for external data.
+const (
+	// Automatic metadata cache mode triggers automatic background refresh of
+	// metadata cache from the external source. Queries will use the latest
+	// available cache version within the table's maxStaleness interval.
+	Automatic MetadataCacheMode = "AUTOMATIC"
+	// Manual metadata cache mode triggers manual refresh of the
+	// metadata cache from external source. Queries will use the latest manually
+	// triggered cache version within the table's maxStaleness interval.
+	Manual MetadataCacheMode = "MANUAL"
+)
+
 // ExternalData is a table which is stored outside of BigQuery. It is implemented by
 // *ExternalDataConfig.
 // GCSReference also implements it, for backwards compatibility.
@@ -114,6 +129,10 @@ type ExternalDataConfig struct {
 	// When creating an external table, the user can provide a reference file with the table schema.
 	// This is enabled for the following formats: AVRO, PARQUET, ORC.
 	ReferenceFileSchemaURI string
+
+	// Metadata Cache Mode for the table. Set this to
+	// enable caching of metadata from external data source.
+	MetadataCacheMode MetadataCacheMode
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -127,6 +146,7 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
 		ConnectionId:            e.ConnectionID,
 		ReferenceFileSchemaUri:  e.ReferenceFileSchemaURI,
+		MetadataCacheMode:       string(e.MetadataCacheMode),
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
@@ -152,6 +172,7 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
 		ConnectionID:            q.ConnectionId,
 		ReferenceFileSchemaURI:  q.ReferenceFileSchemaUri,
+		MetadataCacheMode:       MetadataCacheMode(q.MetadataCacheMode),
 	}
 	for _, v := range q.DecimalTargetTypes {
 		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))

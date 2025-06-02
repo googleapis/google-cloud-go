@@ -1,0 +1,2037 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/financialservices/apiv1",
+    "version": "0.1.3",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.financialservices.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "financialservices_v1_generated_AML_CancelOperation_sync",
+      "title": "financialservices CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "AMLClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_CreateBacktestResult_sync",
+      "title": "financialservices CreateBacktestResult Sample",
+      "description": "CreateBacktestResult create a BacktestResult.",
+      "file": "AMLClient/CreateBacktestResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBacktestResult",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.CreateBacktestResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.CreateBacktestResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBacktestResultOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "CreateBacktestResult",
+          "fullName": "google.cloud.financialservices.v1.AML.CreateBacktestResult",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_CreateDataset_sync",
+      "title": "financialservices CreateDataset Sample",
+      "description": "CreateDataset creates a dataset.",
+      "file": "AMLClient/CreateDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataset",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.CreateDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.CreateDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDatasetOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "CreateDataset",
+          "fullName": "google.cloud.financialservices.v1.AML.CreateDataset",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_CreateEngineConfig_sync",
+      "title": "financialservices CreateEngineConfig Sample",
+      "description": "CreateEngineConfig creates an engine config.",
+      "file": "AMLClient/CreateEngineConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEngineConfig",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.CreateEngineConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.CreateEngineConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEngineConfigOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "CreateEngineConfig",
+          "fullName": "google.cloud.financialservices.v1.AML.CreateEngineConfig",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_CreateInstance_sync",
+      "title": "financialservices CreateInstance Sample",
+      "description": "CreateInstance creates an instance.",
+      "file": "AMLClient/CreateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstance",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.CreateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.CreateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstanceOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "CreateInstance",
+          "fullName": "google.cloud.financialservices.v1.AML.CreateInstance",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_CreateModel_sync",
+      "title": "financialservices CreateModel Sample",
+      "description": "CreateModel creates a model.",
+      "file": "AMLClient/CreateModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateModel",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.CreateModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.CreateModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateModelOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "CreateModel",
+          "fullName": "google.cloud.financialservices.v1.AML.CreateModel",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_CreatePredictionResult_sync",
+      "title": "financialservices CreatePredictionResult Sample",
+      "description": "CreatePredictionResult create a PredictionResult.",
+      "file": "AMLClient/CreatePredictionResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePredictionResult",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.CreatePredictionResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.CreatePredictionResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePredictionResultOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "CreatePredictionResult",
+          "fullName": "google.cloud.financialservices.v1.AML.CreatePredictionResult",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_DeleteBacktestResult_sync",
+      "title": "financialservices DeleteBacktestResult Sample",
+      "description": "DeleteBacktestResult deletes a BacktestResult.",
+      "file": "AMLClient/DeleteBacktestResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBacktestResult",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.DeleteBacktestResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.DeleteBacktestResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBacktestResultOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "DeleteBacktestResult",
+          "fullName": "google.cloud.financialservices.v1.AML.DeleteBacktestResult",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_DeleteDataset_sync",
+      "title": "financialservices DeleteDataset Sample",
+      "description": "DeleteDataset deletes a dataset.",
+      "file": "AMLClient/DeleteDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataset",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.DeleteDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.DeleteDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDatasetOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "DeleteDataset",
+          "fullName": "google.cloud.financialservices.v1.AML.DeleteDataset",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_DeleteEngineConfig_sync",
+      "title": "financialservices DeleteEngineConfig Sample",
+      "description": "DeleteEngineConfig deletes an engine config.",
+      "file": "AMLClient/DeleteEngineConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEngineConfig",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.DeleteEngineConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.DeleteEngineConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEngineConfigOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "DeleteEngineConfig",
+          "fullName": "google.cloud.financialservices.v1.AML.DeleteEngineConfig",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_DeleteInstance_sync",
+      "title": "financialservices DeleteInstance Sample",
+      "description": "DeleteInstance deletes an instance.",
+      "file": "AMLClient/DeleteInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstance",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.DeleteInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.DeleteInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteInstanceOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "DeleteInstance",
+          "fullName": "google.cloud.financialservices.v1.AML.DeleteInstance",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_DeleteModel_sync",
+      "title": "financialservices DeleteModel Sample",
+      "description": "DeleteModel deletes a model.",
+      "file": "AMLClient/DeleteModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteModel",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.DeleteModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.DeleteModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteModelOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "DeleteModel",
+          "fullName": "google.cloud.financialservices.v1.AML.DeleteModel",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_DeleteOperation_sync",
+      "title": "financialservices DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "AMLClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_DeletePredictionResult_sync",
+      "title": "financialservices DeletePredictionResult Sample",
+      "description": "DeletePredictionResult deletes a PredictionResult.",
+      "file": "AMLClient/DeletePredictionResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePredictionResult",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.DeletePredictionResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.DeletePredictionResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePredictionResultOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "DeletePredictionResult",
+          "fullName": "google.cloud.financialservices.v1.AML.DeletePredictionResult",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ExportBacktestResultMetadata_sync",
+      "title": "financialservices ExportBacktestResultMetadata Sample",
+      "description": "ExportBacktestResultMetadata export governance information for a BacktestResult resource. For\ninformation on the exported fields, see\n[AML output data\nmodel](https: //cloud.google.com/financial-services/anti-money-laundering/docs/reference/schemas/aml-output-data-model#backtest-results).",
+      "file": "AMLClient/ExportBacktestResultMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportBacktestResultMetadata",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ExportBacktestResultMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ExportBacktestResultMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportBacktestResultMetadataOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ExportBacktestResultMetadata",
+          "fullName": "google.cloud.financialservices.v1.AML.ExportBacktestResultMetadata",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ExportEngineConfigMetadata_sync",
+      "title": "financialservices ExportEngineConfigMetadata Sample",
+      "description": "ExportEngineConfigMetadata export governance information for an EngineConfig resource. For\ninformation on the exported fields, see\n[AML output data\nmodel](https: //cloud.google.com/financial-services/anti-money-laundering/docs/reference/schemas/aml-output-data-model#engine-config).",
+      "file": "AMLClient/ExportEngineConfigMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportEngineConfigMetadata",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ExportEngineConfigMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ExportEngineConfigMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportEngineConfigMetadataOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ExportEngineConfigMetadata",
+          "fullName": "google.cloud.financialservices.v1.AML.ExportEngineConfigMetadata",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ExportModelMetadata_sync",
+      "title": "financialservices ExportModelMetadata Sample",
+      "description": "ExportModelMetadata export governance information for a Model resource. For\ninformation on the exported fields, see\n[AML output data\nmodel](https: //cloud.google.com/financial-services/anti-money-laundering/docs/reference/schemas/aml-output-data-model#model).",
+      "file": "AMLClient/ExportModelMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportModelMetadata",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ExportModelMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ExportModelMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportModelMetadataOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ExportModelMetadata",
+          "fullName": "google.cloud.financialservices.v1.AML.ExportModelMetadata",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ExportPredictionResultMetadata_sync",
+      "title": "financialservices ExportPredictionResultMetadata Sample",
+      "description": "ExportPredictionResultMetadata export governance information for a PredictionResult resource. For\ninformation on the exported fields, see\n[AML output data\nmodel](https: //cloud.google.com/financial-services/anti-money-laundering/docs/reference/schemas/aml-output-data-model#prediction-results).",
+      "file": "AMLClient/ExportPredictionResultMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportPredictionResultMetadata",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ExportPredictionResultMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ExportPredictionResultMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportPredictionResultMetadataOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ExportPredictionResultMetadata",
+          "fullName": "google.cloud.financialservices.v1.AML.ExportPredictionResultMetadata",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ExportRegisteredParties_sync",
+      "title": "financialservices ExportRegisteredParties Sample",
+      "description": "ExportRegisteredParties exports the list of registered parties. See\n[Create and manage\ninstances](https: //cloud.google.com/financial-services/anti-money-laundering/docs/create-and-manage-instances#export-registered-parties)\nfor information on the output schema for this method.",
+      "file": "AMLClient/ExportRegisteredParties/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportRegisteredParties",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ExportRegisteredParties",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ExportRegisteredPartiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportRegisteredPartiesOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ExportRegisteredParties",
+          "fullName": "google.cloud.financialservices.v1.AML.ExportRegisteredParties",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetBacktestResult_sync",
+      "title": "financialservices GetBacktestResult Sample",
+      "description": "GetBacktestResult gets a BacktestResult.",
+      "file": "AMLClient/GetBacktestResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBacktestResult",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetBacktestResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.GetBacktestResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*financialservicespb.BacktestResult",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetBacktestResult",
+          "fullName": "google.cloud.financialservices.v1.AML.GetBacktestResult",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetDataset_sync",
+      "title": "financialservices GetDataset Sample",
+      "description": "GetDataset gets a dataset.",
+      "file": "AMLClient/GetDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataset",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.GetDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*financialservicespb.Dataset",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetDataset",
+          "fullName": "google.cloud.financialservices.v1.AML.GetDataset",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetEngineConfig_sync",
+      "title": "financialservices GetEngineConfig Sample",
+      "description": "GetEngineConfig gets an engine config.",
+      "file": "AMLClient/GetEngineConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEngineConfig",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetEngineConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.GetEngineConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*financialservicespb.EngineConfig",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetEngineConfig",
+          "fullName": "google.cloud.financialservices.v1.AML.GetEngineConfig",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetEngineVersion_sync",
+      "title": "financialservices GetEngineVersion Sample",
+      "description": "GetEngineVersion gets a single EngineVersion.",
+      "file": "AMLClient/GetEngineVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEngineVersion",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetEngineVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.GetEngineVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*financialservicespb.EngineVersion",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetEngineVersion",
+          "fullName": "google.cloud.financialservices.v1.AML.GetEngineVersion",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetInstance_sync",
+      "title": "financialservices GetInstance Sample",
+      "description": "GetInstance gets an instance.",
+      "file": "AMLClient/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*financialservicespb.Instance",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.cloud.financialservices.v1.AML.GetInstance",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetLocation_sync",
+      "title": "financialservices GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "AMLClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetModel_sync",
+      "title": "financialservices GetModel Sample",
+      "description": "GetModel gets a model.",
+      "file": "AMLClient/GetModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModel",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.GetModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*financialservicespb.Model",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetModel",
+          "fullName": "google.cloud.financialservices.v1.AML.GetModel",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetOperation_sync",
+      "title": "financialservices GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AMLClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_GetPredictionResult_sync",
+      "title": "financialservices GetPredictionResult Sample",
+      "description": "GetPredictionResult gets a PredictionResult.",
+      "file": "AMLClient/GetPredictionResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPredictionResult",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.GetPredictionResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.GetPredictionResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*financialservicespb.PredictionResult",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "GetPredictionResult",
+          "fullName": "google.cloud.financialservices.v1.AML.GetPredictionResult",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ImportRegisteredParties_sync",
+      "title": "financialservices ImportRegisteredParties Sample",
+      "description": "ImportRegisteredParties imports the list of registered parties. See\n[Create and manage\ninstances](https: //cloud.google.com/financial-services/anti-money-laundering/docs/create-and-manage-instances#import-registered-parties)\nfor information on the input schema and response for this method.",
+      "file": "AMLClient/ImportRegisteredParties/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportRegisteredParties",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ImportRegisteredParties",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ImportRegisteredPartiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportRegisteredPartiesOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ImportRegisteredParties",
+          "fullName": "google.cloud.financialservices.v1.AML.ImportRegisteredParties",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListBacktestResults_sync",
+      "title": "financialservices ListBacktestResults Sample",
+      "description": "ListBacktestResults list BacktestResults.",
+      "file": "AMLClient/ListBacktestResults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBacktestResults",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListBacktestResults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ListBacktestResultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BacktestResultIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListBacktestResults",
+          "fullName": "google.cloud.financialservices.v1.AML.ListBacktestResults",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListDatasets_sync",
+      "title": "financialservices ListDatasets Sample",
+      "description": "ListDatasets lists datasets.",
+      "file": "AMLClient/ListDatasets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatasets",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListDatasets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ListDatasetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatasetIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListDatasets",
+          "fullName": "google.cloud.financialservices.v1.AML.ListDatasets",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListEngineConfigs_sync",
+      "title": "financialservices ListEngineConfigs Sample",
+      "description": "ListEngineConfigs lists engine configs.",
+      "file": "AMLClient/ListEngineConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEngineConfigs",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListEngineConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ListEngineConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EngineConfigIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListEngineConfigs",
+          "fullName": "google.cloud.financialservices.v1.AML.ListEngineConfigs",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListEngineVersions_sync",
+      "title": "financialservices ListEngineVersions Sample",
+      "description": "ListEngineVersions lists EngineVersions for given location.",
+      "file": "AMLClient/ListEngineVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEngineVersions",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListEngineVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ListEngineVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EngineVersionIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListEngineVersions",
+          "fullName": "google.cloud.financialservices.v1.AML.ListEngineVersions",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListInstances_sync",
+      "title": "financialservices ListInstances Sample",
+      "description": "ListInstances lists instances.",
+      "file": "AMLClient/ListInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstances",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ListInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListInstances",
+          "fullName": "google.cloud.financialservices.v1.AML.ListInstances",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListLocations_sync",
+      "title": "financialservices ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "AMLClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListModels_sync",
+      "title": "financialservices ListModels Sample",
+      "description": "ListModels lists models.",
+      "file": "AMLClient/ListModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModels",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ListModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListModels",
+          "fullName": "google.cloud.financialservices.v1.AML.ListModels",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListOperations_sync",
+      "title": "financialservices ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AMLClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_ListPredictionResults_sync",
+      "title": "financialservices ListPredictionResults Sample",
+      "description": "ListPredictionResults list PredictionResults.",
+      "file": "AMLClient/ListPredictionResults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPredictionResults",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.ListPredictionResults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.ListPredictionResultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PredictionResultIterator",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "ListPredictionResults",
+          "fullName": "google.cloud.financialservices.v1.AML.ListPredictionResults",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_UpdateBacktestResult_sync",
+      "title": "financialservices UpdateBacktestResult Sample",
+      "description": "UpdateBacktestResult updates the parameters of a single BacktestResult.",
+      "file": "AMLClient/UpdateBacktestResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBacktestResult",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.UpdateBacktestResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.UpdateBacktestResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBacktestResultOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "UpdateBacktestResult",
+          "fullName": "google.cloud.financialservices.v1.AML.UpdateBacktestResult",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_UpdateDataset_sync",
+      "title": "financialservices UpdateDataset Sample",
+      "description": "UpdateDataset updates the parameters of a single Dataset.",
+      "file": "AMLClient/UpdateDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataset",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.UpdateDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.UpdateDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDatasetOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "UpdateDataset",
+          "fullName": "google.cloud.financialservices.v1.AML.UpdateDataset",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_UpdateEngineConfig_sync",
+      "title": "financialservices UpdateEngineConfig Sample",
+      "description": "UpdateEngineConfig updates the parameters of a single EngineConfig.",
+      "file": "AMLClient/UpdateEngineConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEngineConfig",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.UpdateEngineConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.UpdateEngineConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEngineConfigOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "UpdateEngineConfig",
+          "fullName": "google.cloud.financialservices.v1.AML.UpdateEngineConfig",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_UpdateInstance_sync",
+      "title": "financialservices UpdateInstance Sample",
+      "description": "UpdateInstance updates the parameters of a single Instance.",
+      "file": "AMLClient/UpdateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInstance",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.UpdateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.UpdateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateInstanceOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "UpdateInstance",
+          "fullName": "google.cloud.financialservices.v1.AML.UpdateInstance",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_UpdateModel_sync",
+      "title": "financialservices UpdateModel Sample",
+      "description": "UpdateModel updates the parameters of a single Model.",
+      "file": "AMLClient/UpdateModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateModel",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.UpdateModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.UpdateModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateModelOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "UpdateModel",
+          "fullName": "google.cloud.financialservices.v1.AML.UpdateModel",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "financialservices_v1_generated_AML_UpdatePredictionResult_sync",
+      "title": "financialservices UpdatePredictionResult Sample",
+      "description": "UpdatePredictionResult updates the parameters of a single PredictionResult.",
+      "file": "AMLClient/UpdatePredictionResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePredictionResult",
+        "fullName": "google.cloud.financialservices.v1.AMLClient.UpdatePredictionResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "financialservicespb.UpdatePredictionResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePredictionResultOperation",
+        "client": {
+          "shortName": "AMLClient",
+          "fullName": "google.cloud.financialservices.v1.AMLClient"
+        },
+        "method": {
+          "shortName": "UpdatePredictionResult",
+          "fullName": "google.cloud.financialservices.v1.AML.UpdatePredictionResult",
+          "service": {
+            "shortName": "AML",
+            "fullName": "google.cloud.financialservices.v1.AML"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

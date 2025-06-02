@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,24 @@ func (it *AccountIterator) All() iter.Seq2[*accountspb.Account, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *AccountTaxIterator) All() iter.Seq2[*accountspb.AccountTax, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GbpAccountIterator) All() iter.Seq2[*accountspb.GbpAccount, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LfpProviderIterator) All() iter.Seq2[*accountspb.LfpProvider, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OmnichannelSettingIterator) All() iter.Seq2[*accountspb.OmnichannelSetting, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

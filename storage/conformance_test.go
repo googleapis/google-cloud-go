@@ -19,7 +19,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"strconv"
@@ -230,7 +229,7 @@ func headersAsSlice(m map[string]string) []string {
 func parseFiles(t *testing.T) (googleAccessID, privateKey string, testFiles []*storage_v1_tests.TestFile) {
 	dir := "internal/test/conformance"
 
-	inBytes, err := ioutil.ReadFile(dir + "/service-account")
+	inBytes, err := os.ReadFile(dir + "/service-account")
 	if err != nil {
 		t.Fatal(err)
 	}

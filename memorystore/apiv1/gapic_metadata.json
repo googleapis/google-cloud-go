@@ -10,6 +10,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "BackupInstance": {
+              "methods": [
+                "BackupInstance"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -20,6 +25,11 @@
                 "CreateInstance"
               ]
             },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
@@ -28,6 +38,21 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "ExportBackup": {
+              "methods": [
+                "ExportBackup"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupCollection": {
+              "methods": [
+                "GetBackupCollection"
               ]
             },
             "GetCertificateAuthority": {
@@ -50,6 +75,16 @@
                 "GetOperation"
               ]
             },
+            "ListBackupCollections": {
+              "methods": [
+                "ListBackupCollections"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -63,6 +98,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
               ]
             },
             "UpdateInstance": {

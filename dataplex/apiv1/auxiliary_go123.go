@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -78,6 +78,12 @@ func (it *DataScanJobIterator) All() iter.Seq2[*dataplexpb.DataScanJob, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *DataTaxonomyIterator) All() iter.Seq2[*dataplexpb.DataTaxonomy, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EncryptionConfigIterator) All() iter.Seq2[*dataplexpb.EncryptionConfig, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,6 +42,12 @@ func (it *ChannelIterator) All() iter.Seq2[*livestreampb.Channel, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *ClipIterator) All() iter.Seq2[*livestreampb.Clip, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DvrSessionIterator) All() iter.Seq2[*livestreampb.DvrSession, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

@@ -1,0 +1,33 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.ordertracking.v1beta",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta",
+  "services": {
+    "OrderTrackingSignalsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OrderTrackingSignalsClient",
+          "rpcs": {
+            "CreateOrderTrackingSignal": {
+              "methods": [
+                "CreateOrderTrackingSignal"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "OrderTrackingSignalsClient",
+          "rpcs": {
+            "CreateOrderTrackingSignal": {
+              "methods": [
+                "CreateOrderTrackingSignal"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

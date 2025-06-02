@@ -99,6 +99,10 @@ func TestExternalDataConfig(t *testing.T) {
 				UseAvroLogicalTypes: true,
 			},
 		},
+		{
+			SourceFormat:      JSON,
+			MetadataCacheMode: Automatic,
+		},
 	} {
 		q := want.toBQ()
 		got, err := bqToExternalDataConfig(&q)

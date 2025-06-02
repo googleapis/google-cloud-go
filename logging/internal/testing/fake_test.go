@@ -25,6 +25,7 @@ import (
 
 	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	grpc "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -35,7 +36,7 @@ func TestNewServer(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}

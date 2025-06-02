@@ -73,6 +73,13 @@ type CopyConfig struct {
 	// Experimental: this option is experimental and may be modified or removed in future versions,
 	// regardless of any other documented package stability guarantees.
 	JobTimeout time.Duration
+
+	// The reservation that job would use. User can specify a reservation to
+	// execute the job. If reservation is not set, reservation is determined
+	// based on the rules defined by the reservation assignments. The expected
+	// format is
+	// `projects/{project}/locations/{location}/reservations/{reservation}`.
+	Reservation string
 }
 
 func (c *CopyConfig) toBQ() *bq.JobConfiguration {
@@ -91,6 +98,7 @@ func (c *CopyConfig) toBQ() *bq.JobConfiguration {
 			OperationType:                      string(c.OperationType),
 		},
 		JobTimeoutMs: c.JobTimeout.Milliseconds(),
+		Reservation:  c.Reservation,
 	}
 }
 
@@ -103,6 +111,7 @@ func bqToCopyConfig(q *bq.JobConfiguration, c *Client) *CopyConfig {
 		DestinationEncryptionConfig: bqToEncryptionConfig(q.Copy.DestinationEncryptionConfiguration),
 		OperationType:               TableCopyOperationType(q.Copy.OperationType),
 		JobTimeout:                  time.Duration(q.JobTimeoutMs) * time.Millisecond,
+		Reservation:                 q.Reservation,
 	}
 	for _, t := range q.Copy.SourceTables {
 		cc.Srcs = append(cc.Srcs, bqToTable(t, c))

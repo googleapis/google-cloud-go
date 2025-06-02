@@ -115,6 +115,11 @@
                 "GetCompilationResult"
               ]
             },
+            "GetConfig": {
+              "methods": [
+                "GetConfig"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -260,6 +265,11 @@
                 "ResetWorkspaceChanges"
               ]
             },
+            "SearchFiles": {
+              "methods": [
+                "SearchFiles"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -268,6 +278,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateConfig": {
+              "methods": [
+                "UpdateConfig"
               ]
             },
             "UpdateReleaseConfig": {
@@ -400,6 +415,11 @@
                 "GetCompilationResult"
               ]
             },
+            "GetConfig": {
+              "methods": [
+                "GetConfig"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -545,6 +565,11 @@
                 "ResetWorkspaceChanges"
               ]
             },
+            "SearchFiles": {
+              "methods": [
+                "SearchFiles"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -553,6 +578,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateConfig": {
+              "methods": [
+                "UpdateConfig"
               ]
             },
             "UpdateReleaseConfig": {

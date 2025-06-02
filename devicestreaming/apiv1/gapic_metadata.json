@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.devicestreaming.v1",
+  "libraryPackage": "cloud.google.com/go/devicestreaming/apiv1",
+  "services": {
+    "DirectAccessService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DirectAccessClient",
+          "rpcs": {
+            "AdbConnect": {
+              "methods": [
+                "AdbConnect"
+              ]
+            },
+            "CancelDeviceSession": {
+              "methods": [
+                "CancelDeviceSession"
+              ]
+            },
+            "CreateDeviceSession": {
+              "methods": [
+                "CreateDeviceSession"
+              ]
+            },
+            "GetDeviceSession": {
+              "methods": [
+                "GetDeviceSession"
+              ]
+            },
+            "ListDeviceSessions": {
+              "methods": [
+                "ListDeviceSessions"
+              ]
+            },
+            "UpdateDeviceSession": {
+              "methods": [
+                "UpdateDeviceSession"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DirectAccessClient",
+          "rpcs": {
+            "AdbConnect": {
+              "methods": [
+                "AdbConnect"
+              ]
+            },
+            "CancelDeviceSession": {
+              "methods": [
+                "CancelDeviceSession"
+              ]
+            },
+            "CreateDeviceSession": {
+              "methods": [
+                "CreateDeviceSession"
+              ]
+            },
+            "GetDeviceSession": {
+              "methods": [
+                "GetDeviceSession"
+              ]
+            },
+            "ListDeviceSessions": {
+              "methods": [
+                "ListDeviceSessions"
+              ]
+            },
+            "UpdateDeviceSession": {
+              "methods": [
+                "UpdateDeviceSession"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

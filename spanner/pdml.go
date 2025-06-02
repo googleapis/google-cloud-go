@@ -51,14 +51,19 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 	if err := checkNestedTxn(ctx); err != nil {
 		return 0, err
 	}
-
-	sh, err := c.idleSessions.take(ctx)
+	var sh *sessionHandle
+	if c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
+		sh, err = c.idleSessions.takeMultiplexed(ctx)
+	} else {
+		sh, err = c.idleSessions.take(ctx)
+	}
 	if err != nil {
 		return 0, ToSpannerError(err)
 	}
-	if sh != nil {
-		defer sh.recycle()
+	if sh == nil {
+		return 0, spannerErrorf(codes.Internal, "no session available")
 	}
+	defer sh.recycle()
 	// Mark isLongRunningTransaction to true, as the session in case of partitioned dml can be long-running
 	sh.mu.Lock()
 	sh.eligibleForLongRunning = true
@@ -87,6 +92,24 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 			count, err := executePdml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), c.disableRouteToLeader), sh, req, options)
 			if err == nil {
 				return count, nil
+			}
+			if isUnimplementedErrorForMultiplexedPartitionedDML(err) && sh.session.pool.isMultiplexedSessionForPartitionedOpsEnabled() {
+				logf(c.logger, "Warning: Multiplexed sessions are not supported for partitioned operations in this environment. Falling back to regular sessions.")
+				sh.session.pool.disableMultiplexedSessionForPartitionedOps()
+				sh, err = c.idleSessions.take(ctx)
+				if err != nil {
+					return 0, ToSpannerError(err)
+				}
+				if sh == nil {
+					return 0, spannerErrorf(codes.Internal, "no session available")
+				}
+				defer sh.recycle()
+				// Mark isLongRunningTransaction to true, as the session in case of partitioned dml can be long-running
+				sh.mu.Lock()
+				sh.eligibleForLongRunning = true
+				sh.mu.Unlock()
+				req.Session = sh.getID()
+				continue
 			}
 			delay, shouldRetry := retryer.Retry(err)
 			if !shouldRetry {

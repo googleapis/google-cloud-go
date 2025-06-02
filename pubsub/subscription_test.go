@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/pstest"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -274,6 +275,59 @@ func TestSubscriptionConfig(t *testing.T) {
 	want.ExpirationPolicy = time.Duration(0)
 	if diff := testutil.Diff(got, want, opt); diff != "" {
 		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
+	}
+}
+
+func TestSubscriptionMessageTransform(t *testing.T) {
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, c, "t")
+	want := SubscriptionConfig{
+		MessageTransforms: []MessageTransform{
+			{
+				Transform: JavaScriptUDF{
+					FunctionName: "some-function",
+					Code:         "some-code",
+				},
+				Disabled: false,
+			},
+		},
+		Topic: topic,
+	}
+
+	ctx := context.Background()
+	sub, err := c.CreateSubscription(ctx, "s", want)
+	if err != nil {
+		t.Fatalf("failed to create subscription: %v", err)
+	}
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatalf("error getting sub config: %v", err)
+	}
+	if diff := cmp.Diff(got.MessageTransforms, want.MessageTransforms); diff != "" {
+		t.Errorf("sub config mismatch: -got, +want:\n%s", diff)
+	}
+
+	update := SubscriptionConfigToUpdate{
+		MessageTransforms: []MessageTransform{
+			{
+				Transform: JavaScriptUDF{
+					FunctionName: "some-function-2",
+					Code:         "some-code-2",
+				},
+				Disabled: false,
+			},
+		},
+	}
+	got, err = sub.Update(ctx, update)
+	if err != nil {
+		t.Errorf("failed to update sub: %v", err)
+	}
+	if diff := cmp.Diff(got.MessageTransforms, update.MessageTransforms); diff != "" {
+		t.Errorf("sub config mismatch: -got, +want:\n%s", diff)
 	}
 }
 

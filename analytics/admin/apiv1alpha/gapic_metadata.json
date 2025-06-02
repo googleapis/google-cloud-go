@@ -165,6 +165,11 @@
                 "CreateProperty"
               ]
             },
+            "CreateReportingDataAnnotation": {
+              "methods": [
+                "CreateReportingDataAnnotation"
+              ]
+            },
             "CreateRollupProperty": {
               "methods": [
                 "CreateRollupProperty"
@@ -283,6 +288,11 @@
             "DeleteProperty": {
               "methods": [
                 "DeleteProperty"
+              ]
+            },
+            "DeleteReportingDataAnnotation": {
+              "methods": [
+                "DeleteReportingDataAnnotation"
               ]
             },
             "DeleteRollupPropertySourceLink": {
@@ -445,6 +455,11 @@
                 "GetProperty"
               ]
             },
+            "GetReportingDataAnnotation": {
+              "methods": [
+                "GetReportingDataAnnotation"
+              ]
+            },
             "GetRollupPropertySourceLink": {
               "methods": [
                 "GetRollupPropertySourceLink"
@@ -580,6 +595,11 @@
                 "ListProperties"
               ]
             },
+            "ListReportingDataAnnotations": {
+              "methods": [
+                "ListReportingDataAnnotations"
+              ]
+            },
             "ListRollupPropertySourceLinks": {
               "methods": [
                 "ListRollupPropertySourceLinks"
@@ -628,6 +648,11 @@
             "SetAutomatedGa4ConfigurationOptOut": {
               "methods": [
                 "SetAutomatedGa4ConfigurationOptOut"
+              ]
+            },
+            "SubmitUserDeletion": {
+              "methods": [
+                "SubmitUserDeletion"
               ]
             },
             "UpdateAccessBinding": {
@@ -743,6 +768,11 @@
             "UpdateProperty": {
               "methods": [
                 "UpdateProperty"
+              ]
+            },
+            "UpdateReportingDataAnnotation": {
+              "methods": [
+                "UpdateReportingDataAnnotation"
               ]
             },
             "UpdateSKAdNetworkConversionValueSchema": {
@@ -920,6 +950,11 @@
                 "CreateProperty"
               ]
             },
+            "CreateReportingDataAnnotation": {
+              "methods": [
+                "CreateReportingDataAnnotation"
+              ]
+            },
             "CreateRollupProperty": {
               "methods": [
                 "CreateRollupProperty"
@@ -1038,6 +1073,11 @@
             "DeleteProperty": {
               "methods": [
                 "DeleteProperty"
+              ]
+            },
+            "DeleteReportingDataAnnotation": {
+              "methods": [
+                "DeleteReportingDataAnnotation"
               ]
             },
             "DeleteRollupPropertySourceLink": {
@@ -1200,6 +1240,11 @@
                 "GetProperty"
               ]
             },
+            "GetReportingDataAnnotation": {
+              "methods": [
+                "GetReportingDataAnnotation"
+              ]
+            },
             "GetRollupPropertySourceLink": {
               "methods": [
                 "GetRollupPropertySourceLink"
@@ -1335,6 +1380,11 @@
                 "ListProperties"
               ]
             },
+            "ListReportingDataAnnotations": {
+              "methods": [
+                "ListReportingDataAnnotations"
+              ]
+            },
             "ListRollupPropertySourceLinks": {
               "methods": [
                 "ListRollupPropertySourceLinks"
@@ -1383,6 +1433,11 @@
             "SetAutomatedGa4ConfigurationOptOut": {
               "methods": [
                 "SetAutomatedGa4ConfigurationOptOut"
+              ]
+            },
+            "SubmitUserDeletion": {
+              "methods": [
+                "SubmitUserDeletion"
               ]
             },
             "UpdateAccessBinding": {
@@ -1498,6 +1553,11 @@
             "UpdateProperty": {
               "methods": [
                 "UpdateProperty"
+              ]
+            },
+            "UpdateReportingDataAnnotation": {
+              "methods": [
+                "UpdateReportingDataAnnotation"
               ]
             },
             "UpdateSKAdNetworkConversionValueSchema": {

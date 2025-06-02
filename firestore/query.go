@@ -1114,12 +1114,19 @@ func (f PropertyPathFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 		return nil, err
 	}
 	if uop, ok := unaryOpFor(f.Value); ok {
-		if f.Operator != "==" && !(f.Operator == "!=" && f.Value == nil) {
-			return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.Value)
+		if f.Operator != "==" && !(f.Operator == "!=" && (f.Value == nil || isNaN(f.Value))) {
+			return nil, fmt.Errorf("firestore: must use '==' or '!=' when comparing %v", f.Value)
 		}
 		ref, err := fref(f.Path)
 		if err != nil {
 			return nil, err
+		}
+		if f.Operator == "!=" {
+			if uop == pb.StructuredQuery_UnaryFilter_IS_NULL {
+				uop = pb.StructuredQuery_UnaryFilter_IS_NOT_NULL
+			} else if uop == pb.StructuredQuery_UnaryFilter_IS_NAN {
+				uop = pb.StructuredQuery_UnaryFilter_IS_NOT_NAN
+			}
 		}
 		return &pb.StructuredQuery_Filter{
 			FilterType: &pb.StructuredQuery_Filter_UnaryFilter{

@@ -33,8 +33,7 @@ done
 git diff '*go.mod' :^internal/generated/snippets | tee /dev/stderr | (! read)
 git diff '*go.sum' :^internal/generated/snippets | tee /dev/stderr | (! read)
 
-gofmt -s -d -l . 2>&1 | tee /dev/stderr | (! read)
-goimports -l . 2>&1 | tee /dev/stderr | (! read)
+goimports -l . 2>&1 | grep -vE ".pb.go" | tee /dev/stderr | (! read)
 
 # Runs the linter. Regrettably the linter is very simple and does not provide the ability to exclude rules or files,
 # so we rely on inverse grepping to do this for us.
@@ -80,12 +79,10 @@ golint ./... 2>&1 | (
 ) |
   tee /dev/stderr | (! read)
 
-staticcheck -go 1.15 ./... 2>&1 | (
+staticcheck -go 1.24 ./... 2>&1 | (
   grep -v SA1019 |
-    grep -v go-cloud-debug-agent |
     grep -v internal/btree/btree.go |
     grep -v httpreplay/internal/proxy/debug.go |
-    grep -v third_party/go/doc |
     grep -v third_party/pkgsite/synopsis.go
 ) |
   tee /dev/stderr | (! read)

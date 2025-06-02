@@ -229,6 +229,7 @@ type rowSource struct {
 	cachedRows      []*bq.TableRow
 	cachedSchema    *bq.TableSchema
 	cachedNextToken string
+	cachedTotalRows uint64
 }
 
 // fetchPageResult represents a page of rows returned from the backend.
@@ -382,6 +383,7 @@ func fetchCachedPage(src *rowSource, schema Schema, startIndex uint64, pageSize 
 			// We can't progress with no schema, destroy references and return a miss.
 			src.cachedRows = nil
 			src.cachedNextToken = ""
+			src.cachedTotalRows = 0
 			return nil, errNoCacheData
 		}
 		schema = bqToSchema(src.cachedSchema)
@@ -400,23 +402,26 @@ func fetchCachedPage(src *rowSource, schema Schema, startIndex uint64, pageSize 
 			src.cachedRows = nil
 			src.cachedSchema = nil
 			src.cachedNextToken = ""
+			src.cachedTotalRows = 0
 			return nil, err
 		}
 		result := &fetchPageResult{
 			pageToken: src.cachedNextToken,
 			rows:      converted,
 			schema:    schema,
-			totalRows: uint64(len(converted)),
+			totalRows: src.cachedTotalRows,
 		}
 		// clear cache references and return response.
 		src.cachedRows = nil
 		src.cachedSchema = nil
 		src.cachedNextToken = ""
+		src.cachedTotalRows = 0
 		return result, nil
 	}
 	// All other cases are invalid.  Destroy any cache references on the way out the door.
 	src.cachedRows = nil
 	src.cachedSchema = nil
 	src.cachedNextToken = ""
+	src.cachedTotalRows = 0
 	return nil, errNoCacheData
 }

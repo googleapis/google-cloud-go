@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"math/big"
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -561,61 +562,198 @@ func TestEncodeMutation(t *testing.T) {
 
 // Test Encoding an array of mutations.
 func TestEncodeMutationArray(t *testing.T) {
-	for _, test := range []struct {
-		name    string
-		ms      []*Mutation
-		want    []*sppb.Mutation
-		wantErr error
+	tests := []struct {
+		name            string
+		ms              []*Mutation
+		want            []*sppb.Mutation
+		wantMutationKey *sppb.Mutation
+		wantErr         error
 	}{
+		// Test case for empty mutation list
 		{
-			"Multiple Mutations",
-			[]*Mutation{
-				{opDelete, "t_test", Key{"bar"}, nil, nil},
-				{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}},
+			name:            "Empty Mutation List",
+			ms:              []*Mutation{},
+			want:            []*sppb.Mutation{},
+			wantMutationKey: nil,
+			wantErr:         nil,
+		},
+		// Test case for only insert mutations
+		{
+			name: "Only Inserts",
+			ms: []*Mutation{
+				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}},
+				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"bar", 2}},
+				{opInsert, "t_test", nil, []string{"key", "val", "col3"}, []interface{}{"bar2", 3, 4}},
 			},
-			[]*sppb.Mutation{
+			want: []*sppb.Mutation{
 				{
-					Operation: &sppb.Mutation_Delete_{
-						Delete: &sppb.Mutation_Delete{
-							Table: "t_test",
-							KeySet: &sppb.KeySet{
-								Keys: []*proto3.ListValue{listValueProto(stringProto("bar"))},
+					Operation: &sppb.Mutation_Insert{
+						Insert: &sppb.Mutation_Write{
+							Table:   "t_test",
+							Columns: []string{"key", "val"},
+							Values: []*proto3.ListValue{
+								listValueProto(stringProto("foo"), intProto(1)),
 							},
 						},
 					},
 				},
 				{
-					Operation: &sppb.Mutation_InsertOrUpdate{
-						InsertOrUpdate: &sppb.Mutation_Write{
+					Operation: &sppb.Mutation_Insert{
+						Insert: &sppb.Mutation_Write{
 							Table:   "t_test",
 							Columns: []string{"key", "val"},
-							Values:  []*proto3.ListValue{listValueProto(stringProto("foo"), intProto(1))},
+							Values: []*proto3.ListValue{
+								listValueProto(stringProto("bar"), intProto(2)),
+							},
+						},
+					},
+				},
+				{
+					Operation: &sppb.Mutation_Insert{
+						Insert: &sppb.Mutation_Write{
+							Table:   "t_test",
+							Columns: []string{"key", "val", "col3"},
+							Values: []*proto3.ListValue{
+								listValueProto(stringProto("bar2"), intProto(3), intProto(4)),
+							},
 						},
 					},
 				},
 			},
-			nil,
-		},
-		{
-			"Multiple Mutations - Bad Mutation",
-			[]*Mutation{
-				{opDelete, "t_test", Key{"bar"}, nil, nil},
-				{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", struct{}{}}},
+			wantMutationKey: &sppb.Mutation{
+				Operation: &sppb.Mutation_Insert{
+					Insert: &sppb.Mutation_Write{
+						Table:   "t_test",
+						Columns: []string{"key", "val", "col3"},
+						Values: []*proto3.ListValue{
+							listValueProto(stringProto("bar2"), intProto(3), intProto(4)),
+						},
+					},
+				},
 			},
-			[]*sppb.Mutation{},
-			errEncoderUnsupportedType(struct{}{}),
+			wantErr: nil,
 		},
-	} {
-		gotProto, gotErr := mutationsProto(test.ms)
-		if gotErr != nil {
-			if !testEqual(gotErr, test.wantErr) {
-				t.Errorf("%v: mutationsProto(%v) returns error %v, want %v", test.name, test.ms, gotErr, test.wantErr)
+		// Test case for mixed operations
+		{
+			name: "Mixed Operations",
+			ms: []*Mutation{
+				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}},
+				{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"bar", 2}},
+			},
+			want: []*sppb.Mutation{
+				{
+					Operation: &sppb.Mutation_Insert{
+						Insert: &sppb.Mutation_Write{
+							Table:   "t_test",
+							Columns: []string{"key", "val"},
+							Values: []*proto3.ListValue{
+								listValueProto(stringProto("foo"), intProto(1)),
+							},
+						},
+					},
+				},
+				{
+					Operation: &sppb.Mutation_Update{
+						Update: &sppb.Mutation_Write{
+							Table:   "t_test",
+							Columns: []string{"key", "val"},
+							Values: []*proto3.ListValue{
+								listValueProto(stringProto("bar"), intProto(2)),
+							},
+						},
+					},
+				},
+			},
+			wantMutationKey: &sppb.Mutation{
+				Operation: &sppb.Mutation_Update{
+					Update: &sppb.Mutation_Write{
+						Table:   "t_test",
+						Columns: []string{"key", "val"},
+						Values: []*proto3.ListValue{
+							listValueProto(stringProto("bar"), intProto(2)),
+						},
+					},
+				},
+			},
+			wantErr: nil,
+		},
+		// Test case for error in mutation
+		{
+			name: "Error in Mutation",
+			ms: []*Mutation{
+				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{struct{}{}, 1}},
+			},
+			want:            []*sppb.Mutation{},
+			wantMutationKey: nil,
+			wantErr:         errEncoderUnsupportedType(struct{}{}),
+		},
+		// Test case for only delete mutations
+		{
+			name: "Only Deletes",
+			ms: []*Mutation{
+				{opDelete, "t_test", Key{"foo"}, nil, nil},
+				{opDelete, "t_test", Key{"bar"}, nil, nil},
+			},
+			want: []*sppb.Mutation{
+				{
+					Operation: &sppb.Mutation_Delete_{
+						Delete: &sppb.Mutation_Delete{
+							Table: "t_test",
+							KeySet: &sppb.KeySet{
+								Keys: []*proto3.ListValue{
+									listValueProto(stringProto("foo")),
+								},
+							},
+						},
+					},
+				},
+				{
+					Operation: &sppb.Mutation_Delete_{
+						Delete: &sppb.Mutation_Delete{
+							Table: "t_test",
+							KeySet: &sppb.KeySet{
+								Keys: []*proto3.ListValue{
+									listValueProto(stringProto("bar")),
+								},
+							},
+						},
+					},
+				},
+			},
+			wantMutationKey: &sppb.Mutation{
+				Operation: &sppb.Mutation_Delete_{
+					Delete: &sppb.Mutation_Delete{
+						Table: "t_test",
+						KeySet: &sppb.KeySet{
+							Keys: []*proto3.ListValue{
+								listValueProto(stringProto("bar")),
+							},
+						},
+					},
+				},
+			},
+			wantErr: nil,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			gotProto, gotMutationKey, gotErr := mutationsProto(test.ms)
+			if gotErr != nil {
+				if !testEqual(gotErr, test.wantErr) {
+					t.Errorf("mutationsProto(%v) returns error %v, want %v", test.ms, gotErr, test.wantErr)
+				}
+				return
 			}
-			continue
-		}
-		if !testEqual(gotProto, test.want) {
-			t.Errorf("%v: mutationsProto(%v) = (%v, nil), want (%v, nil)", test.name, test.ms, gotProto, test.want)
-		}
+			if !testEqual(gotProto, test.want) {
+				t.Errorf("mutationsProto(%v) = (%v, nil), want (%v, nil)", test.ms, gotProto, test.want)
+			}
+			if test.wantMutationKey != nil {
+				if reflect.TypeOf(gotMutationKey.Operation) != reflect.TypeOf(test.wantMutationKey.Operation) {
+					t.Errorf("mutationsProto(%v) returns mutation key %v, want %v", test.ms, gotMutationKey, test.wantMutationKey)
+				}
+			}
+		})
 	}
 }
 

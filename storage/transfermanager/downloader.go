@@ -815,14 +815,6 @@ type DownloadOutput struct {
 	crc32c      uint32
 }
 
-// TODO: use built-in after go < 1.21 is dropped.
-func min(a, b int64) int64 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 // numShards calculates how many shards the given range should be divided into
 // given the part size.
 func numShards(attrs *storage.ReaderObjectAttrs, r *DownloadRange, partSize int64) int {

@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"cloud.google.com/go/storage/experimental"
 	"golang.org/x/net/http2"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
@@ -137,6 +138,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 					readBufferSize:     opts.readBufferSize,
 					connectionPoolSize: opts.connPoolSize,
 					endpoint:           opts.endpoint,
+					useGRPCBidiReads:   opts.gRPCBidiReads,
 				})
 			},
 			opts.numClients,
@@ -179,6 +181,7 @@ type clientConfig struct {
 	useJSON                         bool // only applicable to HTTP Clients
 	setGCSFuseOpts                  bool // only applicable to HTTP Clients
 	connectionPoolSize              int  // only applicable to GRPC Clients
+	useGRPCBidiReads                bool // only applicable to GRPC Clients
 }
 
 func initializeHTTPClient(ctx context.Context, config clientConfig) (*storage.Client, error) {
@@ -246,6 +249,9 @@ func initializeGRPCClient(ctx context.Context, config clientConfig) (*storage.Cl
 	}
 	if config.readBufferSize != useDefault {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithReadBufferSize(config.readBufferSize)))
+	}
+	if config.useGRPCBidiReads {
+		opts = append(opts, experimental.WithGRPCBidiReads())
 	}
 
 	client, err := storage.NewGRPCClient(ctx, opts...)

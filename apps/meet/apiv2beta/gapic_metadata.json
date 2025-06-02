@@ -144,9 +144,24 @@
         "grpc": {
           "libraryClient": "SpacesClient",
           "rpcs": {
+            "ConnectActiveConference": {
+              "methods": [
+                "ConnectActiveConference"
+              ]
+            },
+            "CreateMember": {
+              "methods": [
+                "CreateMember"
+              ]
+            },
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
+              ]
+            },
+            "DeleteMember": {
+              "methods": [
+                "DeleteMember"
               ]
             },
             "EndActiveConference": {
@@ -154,9 +169,19 @@
                 "EndActiveConference"
               ]
             },
+            "GetMember": {
+              "methods": [
+                "GetMember"
+              ]
+            },
             "GetSpace": {
               "methods": [
                 "GetSpace"
+              ]
+            },
+            "ListMembers": {
+              "methods": [
+                "ListMembers"
               ]
             },
             "UpdateSpace": {
@@ -169,9 +194,24 @@
         "rest": {
           "libraryClient": "SpacesClient",
           "rpcs": {
+            "ConnectActiveConference": {
+              "methods": [
+                "ConnectActiveConference"
+              ]
+            },
+            "CreateMember": {
+              "methods": [
+                "CreateMember"
+              ]
+            },
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
+              ]
+            },
+            "DeleteMember": {
+              "methods": [
+                "DeleteMember"
               ]
             },
             "EndActiveConference": {
@@ -179,9 +219,19 @@
                 "EndActiveConference"
               ]
             },
+            "GetMember": {
+              "methods": [
+                "GetMember"
+              ]
+            },
             "GetSpace": {
               "methods": [
                 "GetSpace"
+              ]
+            },
+            "ListMembers": {
+              "methods": [
+                "ListMembers"
               ]
             },
             "UpdateSpace": {

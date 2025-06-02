@@ -26,6 +26,8 @@ import (
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -46,7 +48,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	randIDForProcess = r64.String()
+	randIDForProcess = fmt.Sprintf("%016x", r64.Uint64())
 }
 
 // Please bump this version whenever this implementation
@@ -54,6 +56,7 @@ func init() {
 const xSpannerRequestIDVersion uint8 = 1
 
 const xSpannerRequestIDHeader = "x-goog-spanner-request-id"
+const xSpannerRequestIDSpanAttr = "x_goog_spanner_request_id"
 
 // optsWithNextRequestID bundles priors with a new header "x-goog-spanner-request-id"
 func (g *grpcSpannerClient) optsWithNextRequestID(priors []gax.CallOption) []gax.CallOption {
@@ -116,7 +119,7 @@ func (r requestID) augmentErrorWithRequestID(err error) error {
 	}
 }
 
-func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (reqID requestID, found bool) {
+func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID requestID, found bool) {
 	for _, opt := range opts {
 		hdrOpt, ok := opt.(grpc.HeaderCallOption)
 		if !ok {
@@ -126,6 +129,7 @@ func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (reqID requestID, found 
 		metadata := hdrOpt.HeaderAddr
 		reqIDs := metadata.Get(xSpannerRequestIDHeader)
 		if len(reqIDs) != 0 && len(reqIDs[0]) != 0 {
+			md = *metadata
 			reqID = requestID(reqIDs[0])
 			found = true
 			break
@@ -137,7 +141,18 @@ func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (reqID requestID, found 
 func (wr *requestIDHeaderInjector) interceptUnary(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	// It is imperative to search for the requestID before the call
 	// because gRPC's internals will consume the headers.
-	reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
+	_, reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
+	if foundRequestID {
+		ctx = metadata.AppendToOutgoingContext(ctx, xSpannerRequestIDHeader, string(reqID))
+
+		// Associate the requestId as an attribute on the span in the current context.
+		span := trace.SpanFromContext(ctx)
+		span.SetAttributes(attribute.KeyValue{
+			Key:   xSpannerRequestIDSpanAttr,
+			Value: attribute.StringValue(string(reqID)),
+		})
+	}
+
 	err := invoker(ctx, method, req, reply, cc, opts...)
 	if !foundRequestID {
 		return err
@@ -174,7 +189,18 @@ type requestIDHeaderInjector int
 func (wr *requestIDHeaderInjector) interceptStream(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	// It is imperative to search for the requestID before the call
 	// because gRPC's internals will consume the headers.
-	reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
+	_, reqID, foundRequestID := gRPCCallOptionsToRequestID(opts)
+	if foundRequestID {
+		ctx = metadata.AppendToOutgoingContext(ctx, xSpannerRequestIDHeader, string(reqID))
+
+		// Associate the requestId as an attribute on the span in the current context.
+		span := trace.SpanFromContext(ctx)
+		span.SetAttributes(attribute.KeyValue{
+			Key:   xSpannerRequestIDSpanAttr,
+			Value: attribute.StringValue(string(reqID)),
+		})
+	}
+
 	cs, err := streamer(ctx, desc, cc, method, opts...)
 	if !foundRequestID {
 		return cs, err

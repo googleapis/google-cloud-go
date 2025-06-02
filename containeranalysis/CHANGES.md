@@ -1,5 +1,33 @@
 # Changes
 
+## [0.14.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.14.0...containeranalysis/v0.14.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.13.4...containeranalysis/v0.14.0) (2025-03-27)
+
+
+### Features
+
+* **containeranalysis:** Add new location-specific bindings ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+
+## [0.13.4](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.13.3...containeranalysis/v0.13.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.13.3](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.13.2...containeranalysis/v0.13.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.13.2](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.13.1...containeranalysis/v0.13.2) (2024-10-23)
 
 

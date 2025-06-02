@@ -509,6 +509,13 @@ type transform struct {
 	err error
 }
 
+func (t transform) String() string {
+	if t.t == nil {
+		return "{t:nil}"
+	}
+	return fmt.Sprintf("{t:%v}", t.t.String())
+}
+
 // FieldTransformIncrement returns a special value that can be used with Set, Create, or
 // Update that tells the server to transform the field's current value
 // by the given value.
@@ -662,6 +669,15 @@ type Update struct {
 	Path      string // Will be split on dots, and must not contain any of "˜*/[]".
 	FieldPath FieldPath
 	Value     interface{}
+}
+
+// String returns string representation of firestore.Update
+func (u Update) String() string {
+	t, ok := u.Value.(transform)
+	if !ok {
+		return fmt.Sprintf("{Path:%s FieldPath:%s Value:%s}", u.Path, u.FieldPath, u.Value)
+	}
+	return fmt.Sprintf("{Path:%s FieldPath:%s Value:%s}", u.Path, u.FieldPath, t.String())
 }
 
 // An fpv is a pair of validated FieldPath and value.

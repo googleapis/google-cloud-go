@@ -1,6 +1,42 @@
 # Changes
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.5...video/v1.24.0) (2025-05-21)
+
+
+### Features
+
+* **video/livestream:** Added DVRSession methods to support DVR feature ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **video/livestream:** Added OutputType field to the Clip resource to support MP4 clipping ([#12283](https://github.com/googleapis/google-cloud-go/issues/12283)) ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+
+
+### Documentation
+
+* **video/livestream:** A comment for field `requested_cancellation` in message `.google.cloud.video.livestream.v1.OperationMetadata` is changed to clarify error type ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **video/livestream:** Clarified GCS in the comment for method `DeleteClip` in service `LivestreamService` ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **video/livestream:** Updated comment for field `update_mask` in message `.google.cloud.video.livestream.v1.UpdateInputRequest` to indicate updates in `tier` field are allowed ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+
+## [1.23.5](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.4...video/v1.23.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **video:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.3...video/v1.23.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **video:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.2...video/v1.23.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **video:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.1...video/v1.23.2) (2024-10-23)
 
 

@@ -560,7 +560,7 @@ func TestIntegration_DownloaderErrorSync(t *testing.T) {
 
 			// Check that the nonexistent object returned an error.
 			if got.Object == nonexistentObject {
-				if got.Err != storage.ErrObjectNotExist {
+				if !errors.Is(got.Err, storage.ErrObjectNotExist) {
 					t.Errorf("Object(%q) should not exist, err found to be %v", got.Object, got.Err)
 				}
 				continue
@@ -718,7 +718,7 @@ func TestIntegration_DownloaderErrorAsync(t *testing.T) {
 				callbackMu.Unlock()
 
 				// Check that the nonexistent object returned an error.
-				if got.Err != storage.ErrObjectNotExist {
+				if !errors.Is(got.Err, storage.ErrObjectNotExist) {
 					t.Errorf("Object(%q) should not exist, err found to be %v", got.Object, got.Err)
 				}
 			},

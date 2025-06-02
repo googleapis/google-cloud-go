@@ -35,8 +35,10 @@ const maxIndividualReqTxnRetry = 5
 var ErrConcurrentTransaction = errors.New("datastore: concurrent transaction")
 
 var (
-	errExpiredTransaction             = errors.New("datastore: transaction expired")
-	errEventualConsistencyTransaction = errors.New("datastore: cannot use EventualConsistency query in a transaction")
+	errExpiredTransaction                   = errors.New("datastore: transaction expired")
+	errEventualConsistencyTransaction       = errors.New("datastore: cannot use EventualConsistency query in a transaction")
+	errEventualConsistencyTxnClientReadTime = errors.New("datastore: cannot use EventualConsistency query when read time is specified on client or query is in a transaction")
+	errTxnClientReadTime                    = errors.New("datastore: cannot use query in a transaction when read time is specified on client")
 
 	txnBackoff = gax.Backoff{
 		Initial:    20 * time.Millisecond,
@@ -542,6 +544,10 @@ func (t *Transaction) Rollback() (err error) {
 }
 
 func (t *Transaction) parseReadOptions() (*pb.ReadOptions, error) {
+	if t.client != nil && t.client.readSettings.readTimeExists() {
+		return nil, errTxnClientReadTime
+	}
+
 	var opts *pb.ReadOptions
 	switch t.state {
 	case transactionStateExpired:

@@ -21,7 +21,6 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
@@ -92,7 +91,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 
 func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 	DisableGfeLatencyAndHeaderMissingCountViews()
-	te := testutil.NewTestExporter(v)
+	te := stestutil.NewTestExporter(v)
 	defer te.Unregister()
 
 	_, client, teardown := setupMockedTestServer(t)
@@ -143,7 +142,7 @@ func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 
 func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	DisableGfeLatencyAndHeaderMissingCountViews()
-	te := testutil.NewTestExporter(SessionsCountView)
+	te := stestutil.NewTestExporter(SessionsCountView)
 	defer te.Unregister()
 
 	waitErr := &Error{}
@@ -217,7 +216,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 
 func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	DisableGfeLatencyAndHeaderMissingCountViews()
-	te := testutil.NewTestExporter(GetSessionTimeoutsCountView)
+	te := stestutil.NewTestExporter(GetSessionTimeoutsCountView)
 	defer te.Unregister()
 
 	server, client, teardown := setupMockedTestServerWithoutWaitingForMultiplexedSessionInit(t)
@@ -269,7 +268,7 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 }
 
 func TestOCStats_GFE_Latency(t *testing.T) {
-	te := testutil.NewTestExporter([]*view.View{GFELatencyView, GFEHeaderMissingCountView}...)
+	te := stestutil.NewTestExporter([]*view.View{GFELatencyView, GFEHeaderMissingCountView}...)
 	defer te.Unregister()
 
 	setGFELatencyMetricsFlag(true)

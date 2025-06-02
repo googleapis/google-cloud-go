@@ -357,6 +357,20 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
+				Q:                "query string",
+				Reservation:      "reservation/1",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Reservation = "reservation/1"
+				return j
+			}(),
+		},
 	}
 	for i, tc := range testCases {
 		query := c.Query("")
@@ -459,6 +473,7 @@ func TestProbeFastPath(t *testing.T) {
 				Labels: map[string]string{
 					"key": "val",
 				},
+				Reservation: "reservation/1",
 			},
 			wantReq: &bq.QueryRequest{
 				Query:          "foo",
@@ -479,6 +494,7 @@ func TestProbeFastPath(t *testing.T) {
 				FormatOptions: &bq.DataFormatOptions{
 					UseInt64Timestamp: true,
 				},
+				Reservation: "reservation/1",
 			},
 		},
 		{

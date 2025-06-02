@@ -809,6 +809,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
+				cancel,
 				nil,
 				test.rpc,
 				nil,
@@ -847,7 +848,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 			for {
 				select {
 				case <-ctx.Done():
-					t.Fatal("context cancelled or timeout during test")
+					if test.stateHistory[len(test.stateHistory)-1] != finished {
+						t.Fatal("context cancelled or timeout during test")
+					}
 				default:
 				}
 				if stateDone {
@@ -1108,6 +1111,7 @@ func TestRsdBlockingStates(t *testing.T) {
 			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
+				cancel,
 				nil,
 				test.rpc,
 				nil,
@@ -1275,6 +1279,7 @@ func TestQueueBytes(t *testing.T) {
 	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 	decoder := newResumableStreamDecoder(
 		ctx,
+		cancel,
 		nil,
 		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
@@ -1672,6 +1677,75 @@ func setupStatementResult(t *testing.T, server *MockedSpannerInMemTestServer, st
 	return server.TestSpanner.PutStatementResult(stmt, result)
 }
 
+func TestSkippingTrailersForExecuteStreamingSql(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	res := server.CreateSingersResults(4, true)
+	sql := "SELECT SingerId, AlbumId, AlbumTitle FROM Albums WHERE 1=2"
+	err := server.TestSpanner.PutStatementResult(sql, res)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer teardown()
+	ctx := context.Background()
+	iter := client.Single().Query(ctx, NewStatement(sql))
+	defer iter.Stop()
+	var noOfRows int
+	for {
+		row, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		noOfRows++
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if row.ColumnValue(0).GetStringValue() != fmt.Sprintf("%v", noOfRows) {
+			t.Fatalf("ID Mismatch in the result")
+		}
+	}
+	if g, w := noOfRows, 4; g != w {
+		t.Fatalf("num rows mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestSkippingTrailersForStreamingRead(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+
+	res := server.CreateSingersResults(5, true)
+	sql := "SELECT SingerId, AlbumId, AlbumTitle FROM Albums"
+	err := server.TestSpanner.PutStatementResult(sql, res)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer teardown()
+	ctx := context.Background()
+	iter := client.Single().Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+	var noOfRows int
+	for {
+		row, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		noOfRows++
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if row.ColumnValue(0).GetStringValue() != fmt.Sprintf("%v", noOfRows) {
+			t.Fatalf("ID Mismatch in the result")
+		}
+	}
+	if g, w := noOfRows, 5; g != w {
+		t.Fatalf("num rows mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 func TestRowIteratorDo(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
@@ -1781,7 +1855,7 @@ func TestIteratorStopEarly(t *testing.T) {
 }
 
 func TestIteratorWithError(t *testing.T) {
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", noop.NewMeterProvider(), "identity")
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", "identity", false, false, noop.NewMeterProvider())
 	if err != nil {
 		t.Fatalf("failed to create metrics tracer factory: %v", err)
 	}

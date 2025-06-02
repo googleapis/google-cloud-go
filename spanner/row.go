@@ -68,6 +68,8 @@ import (
 //	*[]time.Time, *[]NullTime - TIMESTAMP ARRAY
 //	*Date(not NULL), *NullDate - DATE
 //	*[]civil.Date, *[]NullDate - DATE ARRAY
+//	*uuid.UUID(not NULL), *NullUuid - UUID
+//	*[]uuid.UUID, *[]NullUuid - UUID Array
 //	*[]*some_go_struct, *[]NullRow - STRUCT ARRAY
 //	*NullJSON - JSON
 //	*[]NullJSON - JSON ARRAY
@@ -462,13 +464,24 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 	var err error
 	return rows.Do(func(row *Row) error {
 		sliceItem := reflect.New(itemType)
-		if isFirstRow && !isPrimitive {
-			defer func() {
-				isFirstRow = false
-			}()
-			if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
-				return err
+		if !isPrimitive {
+			if isFirstRow {
+				defer func() {
+					isFirstRow = false
+				}()
+				if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
+					return err
+				}
 			}
+			defer func() {
+				for _, ptr := range pointers {
+					v := reflect.ValueOf(ptr)
+					if v.IsValid() && !(v.IsNil() || v.IsZero()) {
+						e := v.Elem()
+						e.Set(reflect.Zero(e.Type()))
+					}
+				}
+			}()
 		} else if isPrimitive {
 			if len(row.fields) > 1 && !s.Lenient {
 				return errTooManyColumns()

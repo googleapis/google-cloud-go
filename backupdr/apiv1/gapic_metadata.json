@@ -115,6 +115,11 @@
                 "GetOperation"
               ]
             },
+            "InitializeService": {
+              "methods": [
+                "InitializeService"
+              ]
+            },
             "ListBackupPlanAssociations": {
               "methods": [
                 "ListBackupPlanAssociations"
@@ -298,6 +303,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "InitializeService": {
+              "methods": [
+                "InitializeService"
               ]
             },
             "ListBackupPlanAssociations": {

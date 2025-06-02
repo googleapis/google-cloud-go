@@ -131,11 +131,11 @@ func (s *Space) Timestamp(uid string) (time.Time, bool) {
 	y, err1 := strconv.Atoi(subs[1])
 	m, err2 := strconv.Atoi(subs[2])
 	d, err3 := strconv.Atoi(subs[3])
-	ns, err4 := strconv.Atoi(subs[4])
+	ns, err4 := strconv.ParseInt(subs[4], 10, 64)
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 		return time.Time{}, false
 	}
-	return time.Date(y, time.Month(m), d, 0, 0, 0, ns, time.UTC), true
+	return time.Date(y, time.Month(m), d, 0, 0, 0, 0, time.UTC).Add(time.Duration(ns)), true
 }
 
 // Older reports whether uid was created by m and has a timestamp older than

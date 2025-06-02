@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -36,6 +37,8 @@ const (
 
 var (
 	errNoRouterForPool = errors.New("no router for connection pool")
+	// TODO(https://github.com/googleapis/google-cloud-go/issues/11460): revisit if this should be user configurable
+	gracefulReconnectDuration = 20 * time.Second
 )
 
 // connectionPool represents a pooled set of connections.
@@ -489,7 +492,12 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 		close(co.pending)
 	}
 	if co.cancel != nil {
-		co.cancel()
+		// Delay cancellation to give queued writes a chance to drain normally.
+		oldCancel := co.cancel
+		go func() {
+			time.Sleep(gracefulReconnectDuration)
+			oldCancel()
+		}()
 		co.ctx, co.cancel = context.WithCancel(co.pool.ctx)
 	}
 

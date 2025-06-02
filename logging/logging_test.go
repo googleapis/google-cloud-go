@@ -57,6 +57,7 @@ import (
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/anypb"
 )
@@ -117,7 +118,7 @@ func TestMain(m *testing.M) {
 		logging.SetNow(testNow)
 
 		newClients = func(ctx context.Context, parent string) (*logging.Client, *logadmin.Client) {
-			conn, err := grpc.Dial(addr, grpc.WithInsecure())
+			conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {
 				log.Fatalf("dialing %q: %v", addr, err)
 			}
@@ -1197,7 +1198,7 @@ func TestDetectProjectIdParent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("creating fake server: %v", err)
 	}
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatalf("dialing %q: %v", addr, err)
 	}
@@ -1536,7 +1537,7 @@ func fakeClient(parent string, writeLogEntryHandler func(e *logpb.WriteLogEntrie
 	ctx := context.Background()
 	client, _ := logging.NewClient(ctx, parent, option.WithEndpoint(fakeServerAddr),
 		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()))
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
 	return client, nil
 }
 

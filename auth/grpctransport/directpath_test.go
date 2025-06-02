@@ -41,11 +41,7 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 		},
 		{
 			name: "EnableNonDefaultSAForDirectPath",
-			tp: &staticTP{
-				tok: token(map[string]interface{}{
-					"auth.google.tokenSource": "compute-metadata",
-				}),
-			},
+			tp:   &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 			opts: &Options{
 				InternalOptions: &InternalOptions{
 					EnableNonDefaultSAForDirectPath: true,
@@ -54,18 +50,19 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "EnableNonDefaultSAForDirectPathButNotCompute",
-			tp:   &staticTP{},
-			opts: &Options{
-				InternalOptions: &InternalOptions{
-					EnableNonDefaultSAForDirectPath: true,
-				},
-			},
+			name: "non-compute token source",
+			tp:   &staticTP{tok: token(map[string]interface{}{"auth.google.tokenSource": "NOT-compute-metadata"})},
+			opts: &Options{},
 			want: false,
 		},
 		{
-			name: "non-compute token source",
-			tp:   &staticTP{tok: token(map[string]interface{}{"auth.google.tokenSource": "NOT-compute-metadata"})},
+			name: "compute-metadata but non default SA",
+			tp: &staticTP{
+				tok: token(map[string]interface{}{
+					"auth.google.tokenSource":    "compute-metadata",
+					"auth.google.serviceAccount": "NON-default",
+				}),
+			},
 			opts: &Options{},
 			want: false,
 		},
@@ -90,6 +87,53 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := isTokenProviderDirectPathCompatible(tt.tp, tt.opts); got != tt.want {
 				t.Fatalf("got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsDirectPathBoundTokenEnabled(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		opts *InternalOptions
+		want bool
+	}{
+		{
+			name: "empty list",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{},
+			},
+		},
+		{
+			name: "nil list",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{},
+			},
+		},
+		{
+			name: "list does not contain ALTS",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"MTLS_S2A"},
+			},
+		},
+		{
+			name: "list only contains ALTS",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"ALTS"},
+			},
+			want: true,
+		},
+		{
+			name: "list contains ALTS and others",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"ALTS", "MTLS_S2A"},
+			},
+			want: true,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isDirectPathBoundTokenEnabled(tt.opts); got != tt.want {
+				t.Fatalf("isDirectPathBoundTokenEnabled() = %v, want %v", got, tt.want)
 			}
 		})
 	}

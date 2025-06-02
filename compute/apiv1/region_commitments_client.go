@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -163,7 +163,7 @@ func (c *RegionCommitmentsClient) List(ctx context.Context, req *computepb.ListR
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.
+// Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.
 func (c *RegionCommitmentsClient) Update(ctx context.Context, req *computepb.UpdateRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -237,7 +237,7 @@ func defaultRegionCommitmentsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *regionCommitmentsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -558,7 +558,7 @@ func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.L
 	return it
 }
 
-// Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.
+// Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.
 func (c *regionCommitmentsRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCommitmentResource()

@@ -62,6 +62,12 @@ export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
 export GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER="gc-bt-it-cluster-02"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
 
+# Universe domain variables. Tests will be skipped if TEST_UNIVERSE_DOMAIN is removed.
+export TEST_UNIVERSE_DOMAIN=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain)
+export TEST_UNIVERSE_PROJECT_ID=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-project-id)
+export TEST_UNIVERSE_LOCATION=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-storage-location)
+export TEST_UNIVERSE_DOMAIN_CREDENTIAL="${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain-credential"
+
 # TODO: Remove this env after OMG/43748 is fixed
 # Spanner integration tests for backup/restore is flaky https://github.com/googleapis/google-cloud-go/issues/5037
 # to fix the flaky test Spanner need to run on us-west1 region.
@@ -97,6 +103,14 @@ try3 go mod download
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
+  if [[ $PWD == *"/aliasshim" ]]; then
+    # aliasshim: build constraints exclude all Go files
+    return
+  fi
+  if [[ $PWD == *"bigquery/benchmarks" ]]; then
+    # bigquery/benchmarks: build constraints exclude all Go files
+    return
+  fi
   if { [[ $PWD == *"/internal/"* ]] ||
     [[ $PWD == *"/third_party/"* ]]; } &&
     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
@@ -159,7 +173,7 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR.
   SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' || true)
 
-  if [ -z $SIGNIFICANT_CHANGES ]; then
+  if [[ -z $SIGNIFICANT_CHANGES ]]; then
     echo "No changes detected, skipping tests"
     exit 0
   fi

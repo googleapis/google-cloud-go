@@ -1,6 +1,76 @@
 # Changelog
 
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.8.0...netapp/v1.9.0) (2025-05-21)
+
+
+### Features
+
+* **netapp:** A new field 'enforced_retention_end_time' in message 'google.cloud.netapp.v1.Backup' is added ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **netapp:** A new message 'google.cloud.netapp.v1.BackupRetentionPolicy' is added in 'google.cloud.netapp.v1.BackupVault' ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **netapp:** New fields 'custom_performance_enabled', 'total_throughput_mibps', 'total_iops' in message 'google.cloud.netapp.v1.StoragePool' are added ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
+
+### Documentation
+
+* **netapp:** A comment for field `transfer_bytes` in message `.google.cloud.netapp.v1.TransferStats` is changed ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.3...netapp/v1.8.0) (2025-04-30)
+
+
+### Features
+
+* **netapp:** Add `source_region`, `backup_region`, `source_backup_vault`, `destination_backup_vault`, `backupVault_type` (of new enum type `BackupVaultType`) to `BackupVault` message ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+* **netapp:** Add `volume_region` and `backup_region` to backup `Backup` message ([4c53c42](https://github.com/googleapis/google-cloud-go/commit/4c53c4273a17a39667d962ffa74e308b663270e9))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.2...netapp/v1.7.3) (2025-04-22)
+
+
+### Documentation
+
+* **netapp:** A comment for field `cooling_threshold_days` in message `.google.cloud.netapp.v1.TieringPolicy` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.1...netapp/v1.7.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **netapp:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.7.0...netapp/v1.7.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **netapp:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.6.0...netapp/v1.7.0) (2025-02-05)
+
+
+### Features
+
+* **netapp:** Add ipAddress field to MountOption ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+* **netapp:** Add support for Quota Rule apis ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.1...netapp/v1.6.0) (2025-01-08)
+
+
+### Features
+
+* **netapp:** Add ValidateDirectoryService API for testing AD connection of a storage pool ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+
+### Documentation
+
+* **netapp:** Removed the format for `replication` in message `google.cloud.netapp.v1.HybridReplicationParameters` ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.0...netapp/v1.5.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **netapp:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.4.1...netapp/v1.5.0) (2024-12-04)
 
 

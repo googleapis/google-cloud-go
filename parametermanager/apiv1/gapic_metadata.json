@@ -1,0 +1,153 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.parametermanager.v1",
+  "libraryPackage": "cloud.google.com/go/parametermanager/apiv1",
+  "services": {
+    "ParameterManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateParameter": {
+              "methods": [
+                "CreateParameter"
+              ]
+            },
+            "CreateParameterVersion": {
+              "methods": [
+                "CreateParameterVersion"
+              ]
+            },
+            "DeleteParameter": {
+              "methods": [
+                "DeleteParameter"
+              ]
+            },
+            "DeleteParameterVersion": {
+              "methods": [
+                "DeleteParameterVersion"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetParameter": {
+              "methods": [
+                "GetParameter"
+              ]
+            },
+            "GetParameterVersion": {
+              "methods": [
+                "GetParameterVersion"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListParameterVersions": {
+              "methods": [
+                "ListParameterVersions"
+              ]
+            },
+            "ListParameters": {
+              "methods": [
+                "ListParameters"
+              ]
+            },
+            "RenderParameterVersion": {
+              "methods": [
+                "RenderParameterVersion"
+              ]
+            },
+            "UpdateParameter": {
+              "methods": [
+                "UpdateParameter"
+              ]
+            },
+            "UpdateParameterVersion": {
+              "methods": [
+                "UpdateParameterVersion"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateParameter": {
+              "methods": [
+                "CreateParameter"
+              ]
+            },
+            "CreateParameterVersion": {
+              "methods": [
+                "CreateParameterVersion"
+              ]
+            },
+            "DeleteParameter": {
+              "methods": [
+                "DeleteParameter"
+              ]
+            },
+            "DeleteParameterVersion": {
+              "methods": [
+                "DeleteParameterVersion"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetParameter": {
+              "methods": [
+                "GetParameter"
+              ]
+            },
+            "GetParameterVersion": {
+              "methods": [
+                "GetParameterVersion"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListParameterVersions": {
+              "methods": [
+                "ListParameterVersions"
+              ]
+            },
+            "ListParameters": {
+              "methods": [
+                "ListParameters"
+              ]
+            },
+            "RenderParameterVersion": {
+              "methods": [
+                "RenderParameterVersion"
+              ]
+            },
+            "UpdateParameter": {
+              "methods": [
+                "UpdateParameter"
+              ]
+            },
+            "UpdateParameterVersion": {
+              "methods": [
+                "UpdateParameterVersion"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
