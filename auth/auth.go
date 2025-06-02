@@ -233,7 +233,7 @@ type CredentialsOptions struct {
 	QuotaProjectIDProvider CredentialsPropertyProvider
 	// UniverseDomainProvider resolves the universe domain with the credentials.
 	UniverseDomainProvider CredentialsPropertyProvider
-	// TrustBoundaryDataProvider provides an interface for fetching trust boundary data.
+	// TrustBoundaryDataProvider is used to fetch trust boundary data.
 	// This data defines location restrictions for credential usage.
 	// Not all credential types utilize this provider; if it's nil, no trust boundary
 	// restrictions are applied via this mechanism.
@@ -510,7 +510,7 @@ type Options2LO struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
-	// TrustBoundaryDataProvider is an interface used to fetch trust boundary data.
+	// TrustBoundaryDataProvider is used to fetch trust boundary data.
 	// This data defines the regions or environments where the credential (and subsequently the tokens
 	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
 	// The provider pattern allows for dynamic fetching and caching of this data,

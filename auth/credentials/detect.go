@@ -125,9 +125,14 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			MetadataClient: metadataClient,
 		}
 
-		var trustboundaryProvider trustboundary.DataProvider
+		var tbDataProvider trustboundary.DataProvider
 		if trustBoundaryEnabled {
-			trustboundaryProvider = trustboundary.NewGCETrustBoundaryDataProvider(gceUniverseDomainProvider, opts.client())
+			gceTBConfigProvider := trustboundary.NewGCETrustBoundaryConfigProvider(gceUniverseDomainProvider)
+			var err error
+			tbDataProvider, err = trustboundary.NewTrustBoundaryDataProvider(opts.client(), gceTBConfigProvider)
+			if err != nil {
+				return nil, fmt.Errorf("credentials: failed to initialize GCE trust boundary provider: %w", err)
+			}
 		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider: computeTokenProvider(opts, metadataClient),
@@ -135,7 +140,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 				return metadataClient.ProjectIDWithContext(ctx)
 			}),
 			UniverseDomainProvider:    gceUniverseDomainProvider,
-			TrustBoundaryDataProvider: trustboundaryProvider,
+			TrustBoundaryDataProvider: tbDataProvider,
 		}), nil
 	}
 

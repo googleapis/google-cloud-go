@@ -149,7 +149,12 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 		opts2LO.TokenURL = jwtTokenURL
 	}
 	if trustBoundaryEnabled {
-		opts2LO.TrustBoundaryDataProvider = trustboundary.NewServiceAccountTrustBoundaryDataProvider(opts2LO.Client, opts2LO.Email, ud)
+		saTrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(opts2LO.Email, opts2LO.UniverseDomain)
+		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts2LO.Client, saTrustBoundaryConfig)
+		if err != nil {
+			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider: %w", err)
+		}
+		opts2LO.TrustBoundaryDataProvider = tbProvider
 	}
 	return auth.New2LOTokenProvider(opts2LO)
 }
@@ -234,7 +239,13 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 		return nil, fmt.Errorf("credentials: could not extract target service account email for trust boundary: %w", err)
 	}
 	if trustBoundaryEnabled {
-		impOpts.TrustBoundaryDataProvider = trustboundary.NewServiceAccountTrustBoundaryDataProvider(opts.client(), targetSAEmail, ud)
+		targetSATrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(targetSAEmail, impOpts.UniverseDomain)
+		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), targetSATrustBoundaryConfig)
+		if err != nil {
+			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for impersonation: %w", err)
+		}
+		impOpts.TrustBoundaryDataProvider = tbProvider
+
 	}
 	return impersonate.NewTokenProvider(impOpts)
 }

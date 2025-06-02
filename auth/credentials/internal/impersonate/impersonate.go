@@ -83,10 +83,10 @@ type Options struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
-	// TrustBoundaryDataProvider is an interface used to fetch trust boundary data.
+	// TrustBoundaryDataProvider is used to fetch trust boundary data.
 	// This data defines the regions or environments where the credential (and subsequently the tokens
 	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
-	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
+	// If nil, no trust boundary restrictions are applied or fetched for this flow.
 	TrustBoundaryDataProvider trustboundary.DataProvider
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	UniverseDomain string
