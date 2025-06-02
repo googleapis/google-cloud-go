@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package dataqna_test
-
-import (
-	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
-)
