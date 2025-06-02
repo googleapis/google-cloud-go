@@ -25,6 +25,8 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 	"time"
 
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -55,6 +57,7 @@ type CallOptions struct {
 	Commit              []gax.CallOption
 	Rollback            []gax.CallOption
 	RunQuery            []gax.CallOption
+	ExecutePipeline     []gax.CallOption
 	RunAggregationQuery []gax.CallOption
 	PartitionQuery      []gax.CallOption
 	Write               []gax.CallOption
@@ -214,6 +217,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ExecutePipeline: []gax.CallOption{},
 		RunAggregationQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -431,6 +435,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		ExecutePipeline: []gax.CallOption{},
 		RunAggregationQuery: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -536,6 +541,7 @@ type internalClient interface {
 	Commit(context.Context, *firestorepb.CommitRequest, ...gax.CallOption) (*firestorepb.CommitResponse, error)
 	Rollback(context.Context, *firestorepb.RollbackRequest, ...gax.CallOption) error
 	RunQuery(context.Context, *firestorepb.RunQueryRequest, ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error)
+	ExecutePipeline(context.Context, *firestorepb.ExecutePipelineRequest, ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error)
 	RunAggregationQuery(context.Context, *firestorepb.RunAggregationQueryRequest, ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error)
 	PartitionQuery(context.Context, *firestorepb.PartitionQueryRequest, ...gax.CallOption) *CursorIterator
 	Write(context.Context, ...gax.CallOption) (firestorepb.Firestore_WriteClient, error)
@@ -637,6 +643,11 @@ func (c *Client) Rollback(ctx context.Context, req *firestorepb.RollbackRequest,
 // RunQuery runs a query.
 func (c *Client) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error) {
 	return c.internalClient.RunQuery(ctx, req, opts...)
+}
+
+// ExecutePipeline executes a pipeline query.
+func (c *Client) ExecutePipeline(ctx context.Context, req *firestorepb.ExecutePipelineRequest, opts ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error) {
+	return c.internalClient.ExecutePipeline(ctx, req, opts...)
 }
 
 // RunAggregationQuery runs an aggregation query.
@@ -1074,6 +1085,38 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 	return resp, nil
 }
 
+func (c *gRPCClient) ExecutePipeline(ctx context.Context, req *firestorepb.ExecutePipelineRequest, opts ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
+	}
+	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExecutePipeline[0:len((*c.CallOptions).ExecutePipeline):len((*c.CallOptions).ExecutePipeline)], opts...)
+	var resp firestorepb.Firestore_ExecutePipelineClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ExecutePipeline")
+		resp, err = c.client.ExecutePipeline(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ExecutePipeline")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.RunAggregationQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1357,7 +1400,6 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if items := req.GetMask().GetFieldPaths(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("mask.fieldPaths", fmt.Sprintf("%v", item))
@@ -1435,7 +1477,6 @@ func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 		baseUrl.Path += fmt.Sprintf("/v1/%v/%v", req.GetParent(), req.GetCollectionId())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if items := req.GetMask().GetFieldPaths(); len(items) > 0 {
 			for _, item := range items {
 				params.Add("mask.fieldPaths", fmt.Sprintf("%v", item))
@@ -1528,7 +1569,6 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDocument().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCurrentDocument().GetExists() {
 		params.Add("currentDocument.exists", fmt.Sprintf("%v", req.GetCurrentDocument().GetExists()))
 	}
@@ -1598,7 +1638,6 @@ func (c *restClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCurrentDocument().GetExists() {
 		params.Add("currentDocument.exists", fmt.Sprintf("%v", req.GetCurrentDocument().GetExists()))
 	}
@@ -1650,11 +1689,6 @@ func (c *restClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:batchGet", req.GetDatabase())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
@@ -1753,11 +1787,6 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:beginTransaction", req.GetDatabase())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
 
@@ -1808,11 +1837,6 @@ func (c *restClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:commit", req.GetDatabase())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
@@ -1865,11 +1889,6 @@ func (c *restClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequ
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:rollback", req.GetDatabase())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
 
@@ -1905,11 +1924,6 @@ func (c *restClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:runQuery", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
@@ -1994,6 +2008,115 @@ func (c *runQueryRESTStreamClient) RecvMsg(m interface{}) error {
 	return errors.New("this method is not implemented, use Recv")
 }
 
+// ExecutePipeline executes a pipeline query.
+func (c *restClient) ExecutePipeline(ctx context.Context, req *firestorepb.ExecutePipelineRequest, opts ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:executePipeline", req.GetDatabase())
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
+	}
+	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *executePipelineRESTStreamClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecutePipeline")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &executePipelineRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&firestorepb.ExecutePipelineResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// executePipelineRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of ExecutePipeline.
+type executePipelineRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *executePipelineRESTStreamClient) Recv() (*firestorepb.ExecutePipelineResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*firestorepb.ExecutePipelineResponse)
+	return res, nil
+}
+
+func (c *executePipelineRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *executePipelineRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *executePipelineRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *executePipelineRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *executePipelineRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *executePipelineRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
+}
+
 // RunAggregationQuery runs an aggregation query.
 //
 // Rather than producing Document results like
@@ -2014,11 +2137,6 @@ func (c *restClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:runAggregationQuery", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
@@ -2132,11 +2250,6 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:partitionQuery", req.GetParent())
 
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-
-		baseUrl.RawQuery = params.Encode()
-
 		// Build HTTP headers from client and context metadata.
 		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
@@ -2226,11 +2339,6 @@ func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listCollectionIds", req.GetParent())
 
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-
-		baseUrl.RawQuery = params.Encode()
-
 		// Build HTTP headers from client and context metadata.
 		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
@@ -2300,11 +2408,6 @@ func (c *restClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:batchWrite", req.GetDatabase())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
 
@@ -2358,7 +2461,6 @@ func (c *restClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 	baseUrl.Path += fmt.Sprintf("/v1/%v/%v", req.GetParent(), req.GetCollectionId())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetDocumentId() != "" {
 		params.Add("documentId", fmt.Sprintf("%v", req.GetDocumentId()))
 	}
@@ -2421,11 +2523,6 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2456,11 +2553,6 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2490,11 +2582,6 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2555,7 +2642,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
