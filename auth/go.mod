@@ -12,6 +12,8 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0
 	golang.org/x/net v0.40.0
 	google.golang.org/grpc v1.72.2
+	golang.org/x/time v0.5.0
+
 	google.golang.org/protobuf v1.36.6
 )
 
