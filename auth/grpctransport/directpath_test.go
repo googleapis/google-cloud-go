@@ -182,16 +182,12 @@ func TestLogDirectPathMisconfigWrongCredential(t *testing.T) {
 		EnableDirectPathXds: true,
 		EnableDirectPath:    true,
 	}}
-	opts.InternalOptions.EnableDirectPath = true
-	opts.InternalOptions.EnableDirectPathXds = true
 
 	var logOutput bytes.Buffer
 	opts.Logger = slog.New(slog.NewTextHandler(&logOutput, nil))
 
 	endpoint := "abc.googleapis.com"
-	creds := &auth.Credentials{}
-
-	logDirectPathMisconfig(endpoint, creds, opts)
+	logDirectPathMisconfig(endpoint, nil, opts)
 
 	wantedLog := "DirectPath is disabled. Please make sure the token source is fetched from GCE metadata server and the default service account is used."
 	if !strings.Contains(logOutput.String(), wantedLog) {
