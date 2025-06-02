@@ -331,7 +331,7 @@ func (Instance_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_parallelstore_v1beta_parallelstore_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// The UID perservation behavior.
+// The UID preservation behavior.
 type TransferMetadataOptions_Uid int32
 
 const (
@@ -516,8 +516,8 @@ type Instance struct {
 	// Allowed values are between 12000 and 100000, in multiples of 4000; e.g.,
 	// 12000, 16000, 20000, ...
 	CapacityGib int64 `protobuf:"varint,8,opt,name=capacity_gib,json=capacityGib,proto3" json:"capacity_gib,omitempty"`
-	// Output only. Deprecated 'daos_version' field.
-	// Output only. The version of DAOS software running in the instance.
+	// Output only. Deprecated: The version of DAOS software running in the
+	// instance.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/parallelstore/v1beta/parallelstore.proto.
 	DaosVersion string `protobuf:"bytes,9,opt,name=daos_version,json=daosVersion,proto3" json:"daos_version,omitempty"`
@@ -989,8 +989,8 @@ type CreateInstanceRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -1076,8 +1076,8 @@ type UpdateInstanceRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -1151,8 +1151,8 @@ type DeleteInstanceRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes after the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -1530,8 +1530,8 @@ type ImportDataRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -1688,8 +1688,8 @@ type ExportDataRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -2428,9 +2428,9 @@ type TransferCounters struct {
 	ObjectsCopied int64 `protobuf:"varint,5,opt,name=objects_copied,json=objectsCopied,proto3" json:"objects_copied,omitempty"`
 	// Bytes that are copied to the data destination.
 	BytesCopied int64 `protobuf:"varint,6,opt,name=bytes_copied,json=bytesCopied,proto3" json:"bytes_copied,omitempty"`
-	// Objects that are failed to write to the data destination.
+	// Objects that failed to be written to the data destination.
 	ObjectsFailed int64 `protobuf:"varint,7,opt,name=objects_failed,json=objectsFailed,proto3" json:"objects_failed,omitempty"`
-	// Bytes that are failed to write to the data destination.
+	// Bytes that failed to be written to the data destination.
 	BytesFailed int64 `protobuf:"varint,8,opt,name=bytes_failed,json=bytesFailed,proto3" json:"bytes_failed,omitempty"`
 }
 
