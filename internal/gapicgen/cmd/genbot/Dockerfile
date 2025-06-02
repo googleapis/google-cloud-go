@@ -1,4 +1,17 @@
-FROM golang:1.23-alpine as godist
+FROM marketplace.gcr.io/google/debian12:latest
+
+# Set environment variables for the Go version and installation
+ENV GO_VERSION 1.23.0
+ENV PATH /usr/local/go/bin:$PATH
+
+RUN apt-get update && \
+    apt-get install -y wget ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
+    tar -C /usr/local -xzf go.tar.gz && \
+    rm go.tar.gz
+
 RUN go version
 
 FROM docker:25.0

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/admin/instance/apiv1",
-    "version": "1.81.1",
+    "version": "1.82.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_CancelOperation_sync",
+      "title": "spanner CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "InstanceAdminClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_CreateInstance_sync",
       "title": "spanner CreateInstance Sample",
@@ -285,6 +330,51 @@
       ]
     },
     {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_DeleteOperation_sync",
+      "title": "spanner DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "InstanceAdminClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "spanner_v1_generated_InstanceAdmin_GetIamPolicy_sync",
       "title": "spanner GetIamPolicy Sample",
       "description": "GetIamPolicy gets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set.\n\nAuthorization requires `spanner.instances.getIamPolicy` on\n[resource][google.iam.v1.GetIamPolicyRequest.resource].",
@@ -456,6 +546,52 @@
           "service": {
             "shortName": "InstanceAdmin",
             "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_GetOperation_sync",
+      "title": "spanner GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "InstanceAdminClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -686,6 +822,52 @@
           "service": {
             "shortName": "InstanceAdmin",
             "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_ListOperations_sync",
+      "title": "spanner ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "InstanceAdminClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },

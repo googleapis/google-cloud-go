@@ -789,6 +789,8 @@ func (x *ConversationalSearchResponse_ConversationalFilteringResult) GetAddition
 }
 
 // Suggested answers to the follow-up question.
+// If it's numerical attribute, only ProductAttributeInterval will be set.
+// If it's textual attribute, only productAttributeValue will be set.
 type ConversationalSearchResponse_FollowupQuestion_SuggestedAnswer struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
