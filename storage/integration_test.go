@@ -2356,7 +2356,7 @@ func TestIntegration_Copy(t *testing.T) {
 		obj := bucketFrom.Object("copy-object-original" + uidSpaceObjects.New())
 
 		// Create an object to copy from
-		w := obj.NewWriter(ctx)
+		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 		c := randomContents()
 		for written := 0; written < minObjectSize; {
 			n, err := w.Write(c)
@@ -2422,7 +2422,7 @@ func TestIntegration_Copy(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				copyObj := test.toBucket.Object(test.toObj)
-				copier := copyObj.CopierFrom(obj)
+				copier := copyObj.If(Conditions{DoesNotExist: true}).CopierFrom(obj)
 
 				if attrs := test.copierAttrs; attrs != nil {
 					if attrs.contentEncoding != "" {
