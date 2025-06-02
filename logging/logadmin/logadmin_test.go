@@ -37,6 +37,7 @@ import (
 	audit "google.golang.org/genproto/googleapis/cloud/audit"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/anypb"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -70,7 +71,7 @@ func TestMain(m *testing.M) {
 			log.Fatalf("creating fake server: %v", err)
 		}
 		newClient = func(ctx context.Context, projectID string) *Client {
-			conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
+			conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 			if err != nil {
 				log.Fatalf("dialing %q: %v", addr, err)
 			}

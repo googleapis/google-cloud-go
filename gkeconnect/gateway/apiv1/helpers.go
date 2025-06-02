@@ -18,6 +18,7 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -25,9 +26,12 @@ import (
 	"github.com/googleapis/gax-go/v2/internallog"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const serviceName = "connectgateway.googleapis.com"
+
+var protoVersion = fmt.Sprintf("1.%d", protoimpl.MaxVersion)
 
 // For more information on implementing a client constructor hook, see
 // https://github.com/googleapis/google-cloud-go/wiki/Customizing-constructors.

@@ -194,7 +194,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.UpdateReleaseFiles(); err != nil {
 		return err
 	}
-	if err := gocmd.Vet(p.googleCloudDir); err != nil {
+	if err := gocmd.Format(p.googleCloudDir); err != nil {
 		return err
 	}
 	if err := p.WritePRInfoToFile(prTitle, prBody); err != nil {

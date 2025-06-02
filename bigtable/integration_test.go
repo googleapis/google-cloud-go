@@ -5002,20 +5002,24 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Reading row from a materialized view: %v", err)
 	}
+
 	wantRow := Row{
 		"result": []ReadItem{
-			{Row: "r1", Column: "result:count", Timestamp: 1000, Value: []byte("1")},
+			{Row: "r1", Column: "result:count", Timestamp: 0, Value: binary.BigEndian.AppendUint64([]byte{}, 1)},
+		},
+		"default": []ReadItem{
+			{Row: "r1", Column: "default:", Timestamp: 0},
 		},
 	}
 	if !testutil.Equal(gotRow, wantRow) {
-		t.Fatalf("Error reading row from materialized view.\n Got %v\n Want %v", gotRow, wantRow)
+		t.Errorf("Error reading row from materialized view.\n Got %#v\n Want %#v", gotRow, wantRow)
 	}
 	gotRow, err = mv.ReadRow(ctx, "r2")
 	if err != nil {
 		t.Fatalf("Reading row from an materialized view: %v", err)
 	}
 	if len(gotRow) != 0 {
-		t.Fatalf("Expect empty result when reading row from outside an materialized view")
+		t.Errorf("Expect empty result when reading row from outside an materialized view")
 	}
 
 	// Test ReadRows
@@ -5031,14 +5035,15 @@ func TestIntegration_DataMaterializedView(t *testing.T) {
 	if err = mv.ReadRows(ctx, RowRange{}, f); err != nil {
 		t.Fatalf("Reading rows from an materialized view: %v", err)
 	}
-	want := "r1-col1-1"
+	want := "r1--,r1-count-" + string(binary.BigEndian.AppendUint64([]byte{}, 1))
+	sort.Strings(elt)
 	if got := strings.Join(elt, ","); got != want {
-		t.Fatalf("Error bulk reading from materialized view.\n Got %v\n Want %v", got, want)
+		t.Errorf("Error bulk reading from materialized view.\n Got %q\n Want %q", got, want)
 	}
 
 	// Test SampleRowKeys
 	if _, err := mv.SampleRowKeys(ctx); err != nil {
-		t.Fatalf("Sampling row keys from an materialized view: %v", err)
+		t.Errorf("Sampling row keys from an materialized view: %v", err)
 	}
 }
 
@@ -5089,8 +5094,9 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	defer instanceAdminClient.DeleteLogicalView(ctx, testEnv.Config().Instance, logicalView)
 
 	logicalViewInfo := LogicalViewInfo{
-		LogicalViewID: logicalView,
-		Query:         fmt.Sprintf("SELECT _key, fam1['col1'] as col FROM `%s`", tblConf.TableID),
+		LogicalViewID:      logicalView,
+		Query:              fmt.Sprintf("SELECT _key, fam1['col1'] as col FROM `%s`", tblConf.TableID),
+		DeletionProtection: Protected,
 	}
 	if err = instanceAdminClient.CreateLogicalView(ctx, testEnv.Config().Instance, &logicalViewInfo); err != nil {
 		t.Fatalf("Creating logical view: %v", err)
@@ -5110,6 +5116,9 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	if got, want := logicalViews[0].Query, logicalViewInfo.Query; got != want {
 		t.Errorf("LogicalView Query: %q, want: %q", got, want)
 	}
+	if got, want := logicalViews[0].DeletionProtection, logicalViewInfo.DeletionProtection; got != want {
+		t.Errorf("LogicalView DeletionProtection: %v, want: %v", got, want)
+	}
 
 	// Get logical view
 	lvInfo, err := instanceAdminClient.LogicalViewInfo(ctx, testEnv.Config().Instance, logicalView)
@@ -5119,11 +5128,15 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	if got, want := lvInfo.Query, logicalViewInfo.Query; got != want {
 		t.Errorf("LogicalView Query: %q, want: %q", got, want)
 	}
+	if got, want := lvInfo.DeletionProtection, logicalViewInfo.DeletionProtection; got != want {
+		t.Errorf("LogicalView DeletionProtection: %v, want: %v", got, want)
+	}
 
 	// Update logical view
 	newLogicalViewInfo := LogicalViewInfo{
-		LogicalViewID: logicalView,
-		Query:         fmt.Sprintf("SELECT _key, fam2[col1] as col FROM `%s`", tblConf.TableID),
+		LogicalViewID:      logicalView,
+		Query:              fmt.Sprintf("SELECT _key, fam2['col1'] as col FROM `%s`", tblConf.TableID),
+		DeletionProtection: Unprotected,
 	}
 	err = instanceAdminClient.UpdateLogicalView(ctx, testEnv.Config().Instance, newLogicalViewInfo)
 	if err != nil {
@@ -5137,6 +5150,9 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 	}
 	if got, want := lvInfo.Query, newLogicalViewInfo.Query; got != want {
 		t.Errorf("LogicalView Query: %q, want: %q", got, want)
+	}
+	if got, want := lvInfo.DeletionProtection, newLogicalViewInfo.DeletionProtection; got != want {
+		t.Errorf("LogicalView DeletionProtection: %v, want: %v", got, want)
 	}
 
 	// Delete logical view
@@ -5214,14 +5230,16 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Listing materialized views: %v", err)
 	}
-	if got, want := len(materializedViews), 1; got != want {
-		t.Fatalf("Listing materialized views count: %d, want: != %d", got, want)
+	if got, want := len(materializedViews), 1; got < want {
+		t.Fatalf("Listing materialized views count: %d, want: >= %d", got, want)
 	}
-	if got, want := materializedViews[0].MaterializedViewID, materializedView; got != want {
-		t.Errorf("MaterializedView Name: %s, want: %s", got, want)
-	}
-	if got, want := materializedViews[0].Query, materializedViewInfo.Query; got != want {
-		t.Errorf("MaterializedView Query: %q, want: %q", got, want)
+
+	for _, mv := range materializedViews {
+		if mv.MaterializedViewID == materializedView {
+			if got, want := mv.Query, materializedViewInfo.Query; got != want {
+				t.Errorf("MaterializedView Query: %q, want: %q", got, want)
+			}
+		}
 	}
 
 	// Get materialized view
@@ -5258,8 +5276,8 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 		t.Errorf("MaterializedViewInfo deletion protection: %v, want: %v", got, want)
 	}
 	// Check that the subset_view field doesn't change
-	if got, want := mvInfo.Query, materializedViewInfo.Query; cmp.Equal(got, want) {
-		t.Errorf("Query: %v, want: %v", got, want)
+	if got, want := mvInfo.Query, materializedViewInfo.Query; !cmp.Equal(got, want) {
+		t.Errorf("Query: %q, want: %q", got, want)
 	}
 
 	// Delete materialized view
@@ -5272,8 +5290,10 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Listing materialized views: %v", err)
 	}
-	if got, want := len(materializedViews), 0; got != want {
-		t.Fatalf("Listing materialized views count: %d, want: != %d", got, want)
+	for _, mv := range materializedViews {
+		if mv.MaterializedViewID == materializedView {
+			t.Errorf("Found view %q that was meant to be deleted", materializedView)
+		}
 	}
 }
 

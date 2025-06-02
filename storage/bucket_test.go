@@ -21,12 +21,12 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
@@ -1300,9 +1300,7 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			bucket := BucketHandle{
 				c: &Client{
-					creds: &google.Credentials{
-						JSON: []byte(tc.creds(tc.serviceAccount)),
-					},
+					creds: auth.NewCredentials(&auth.CredentialsOptions{JSON: []byte(tc.creds(tc.serviceAccount))}),
 				},
 				name: "my-bucket",
 			}
@@ -1621,7 +1619,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 	}()
 
 	for _, test := range tests {
-		t.Run(test.desc, func(s *testing.T) {
+		t.Run(test.desc, func(t *testing.T) {
 			utcNow = func() time.Time {
 				return test.now
 			}
@@ -1639,11 +1637,11 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 
 			got, err := c.Bucket(bucketName).SignedURL(objectName, test.opts)
 			if err != nil {
-				s.Fatal(err)
+				t.Fatal(err)
 			}
 
 			if got != test.want {
-				s.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
+				t.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
 		})
 	}
