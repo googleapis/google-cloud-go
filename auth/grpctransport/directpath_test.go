@@ -16,14 +16,15 @@ package grpctransport
 
 import (
 	"bytes"
-	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/compute/metadata"
 	"context"
 	"errors"
 	"log/slog"
 	"strings"
 	"testing"
+
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/compute/metadata"
 )
 
 func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
