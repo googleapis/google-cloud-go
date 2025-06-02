@@ -809,6 +809,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
+				cancel,
 				nil,
 				test.rpc,
 				nil,
@@ -847,7 +848,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 			for {
 				select {
 				case <-ctx.Done():
-					t.Fatal("context cancelled or timeout during test")
+					if test.stateHistory[len(test.stateHistory)-1] != finished {
+						t.Fatal("context cancelled or timeout during test")
+					}
 				default:
 				}
 				if stateDone {
@@ -1108,6 +1111,7 @@ func TestRsdBlockingStates(t *testing.T) {
 			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
+				cancel,
 				nil,
 				test.rpc,
 				nil,
@@ -1275,6 +1279,7 @@ func TestQueueBytes(t *testing.T) {
 	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 	decoder := newResumableStreamDecoder(
 		ctx,
+		cancel,
 		nil,
 		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
@@ -1850,7 +1855,7 @@ func TestIteratorStopEarly(t *testing.T) {
 }
 
 func TestIteratorWithError(t *testing.T) {
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", noop.NewMeterProvider(), "identity")
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", "identity", false, false, noop.NewMeterProvider())
 	if err != nil {
 		t.Fatalf("failed to create metrics tracer factory: %v", err)
 	}

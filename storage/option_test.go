@@ -15,7 +15,6 @@
 package storage
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -145,6 +144,14 @@ func TestApplyStorageOpt(t *testing.T) {
 				grpcBidiReads: true,
 			},
 		},
+		{
+			desc: "use gRPC zonal bucket APIs",
+			opts: []option.ClientOption{withZonalBucketAPIs()},
+			want: storageConfig{
+				grpcBidiReads:         true,
+				grpcAppendableUploads: true,
+			},
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig
@@ -208,7 +215,7 @@ func TestGetDynamicReadReqInitialTimeoutSecFromEnv(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			os.Setenv(dynamicReadReqInitialTimeoutEnv, tt.envValue)
+			t.Setenv(dynamicReadReqInitialTimeoutEnv, tt.envValue)
 			if got := getDynamicReadReqInitialTimeoutSecFromEnv(defaultValue); got != tt.want {
 				t.Errorf("getDynamicReadReqInitialTimeoutSecFromEnv(defaultValue) = %v, want %v", got, tt.want)
 			}
@@ -228,7 +235,7 @@ func TestGetDynamicReadReqIncreaseRateFromEnv(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			os.Setenv(dynamicReadReqIncreaseRateEnv, tt.envValue)
+			t.Setenv(dynamicReadReqIncreaseRateEnv, tt.envValue)
 			if got := getDynamicReadReqIncreaseRateFromEnv(); got != tt.want {
 				t.Errorf("getDynamicReadReqIncreaseRateFromEnv() = %v, want %v", got, tt.want)
 			}

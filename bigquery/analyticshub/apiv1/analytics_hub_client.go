@@ -789,8 +789,10 @@ func (c *Client) SubscribeListing(ctx context.Context, req *analyticshubpb.Subsc
 	return c.internalClient.SubscribeListing(ctx, req, opts...)
 }
 
-// SubscribeDataExchange creates a Subscription to a Data Clean Room. This is a long-running
-// operation as it will create one or more linked datasets.
+// SubscribeDataExchange creates a Subscription to a Data Clean Room. This is a
+// long-running operation as it will create one or more linked datasets.
+// Throws a Bad Request error if the Data Exchange does not contain any
+// listings.
 func (c *Client) SubscribeDataExchange(ctx context.Context, req *analyticshubpb.SubscribeDataExchangeRequest, opts ...gax.CallOption) (*SubscribeDataExchangeOperation, error) {
 	return c.internalClient.SubscribeDataExchange(ctx, req, opts...)
 }
@@ -946,7 +948,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -1034,7 +1036,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -2188,6 +2190,13 @@ func (c *restClient) DeleteListing(ctx context.Context, req *analyticshubpb.Dele
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
+	params := url.Values{}
+	if req.GetDeleteCommercial() {
+		params.Add("deleteCommercial", fmt.Sprintf("%v", req.GetDeleteCommercial()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2266,8 +2275,10 @@ func (c *restClient) SubscribeListing(ctx context.Context, req *analyticshubpb.S
 	return resp, nil
 }
 
-// SubscribeDataExchange creates a Subscription to a Data Clean Room. This is a long-running
-// operation as it will create one or more linked datasets.
+// SubscribeDataExchange creates a Subscription to a Data Clean Room. This is a
+// long-running operation as it will create one or more linked datasets.
+// Throws a Bad Request error if the Data Exchange does not contain any
+// listings.
 func (c *restClient) SubscribeDataExchange(ctx context.Context, req *analyticshubpb.SubscribeDataExchangeRequest, opts ...gax.CallOption) (*SubscribeDataExchangeOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

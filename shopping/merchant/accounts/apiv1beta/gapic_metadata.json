@@ -317,6 +317,40 @@
         }
       }
     },
+    "GbpAccountsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GbpAccountsClient",
+          "rpcs": {
+            "LinkGbpAccount": {
+              "methods": [
+                "LinkGbpAccount"
+              ]
+            },
+            "ListGbpAccounts": {
+              "methods": [
+                "ListGbpAccounts"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GbpAccountsClient",
+          "rpcs": {
+            "LinkGbpAccount": {
+              "methods": [
+                "LinkGbpAccount"
+              ]
+            },
+            "ListGbpAccounts": {
+              "methods": [
+                "ListGbpAccounts"
+              ]
+            }
+          }
+        }
+      }
+    },
     "HomepageService": {
       "clients": {
         "grpc": {
@@ -371,11 +405,119 @@
         }
       }
     },
+    "LfpProvidersService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LfpProvidersClient",
+          "rpcs": {
+            "FindLfpProviders": {
+              "methods": [
+                "FindLfpProviders"
+              ]
+            },
+            "LinkLfpProvider": {
+              "methods": [
+                "LinkLfpProvider"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LfpProvidersClient",
+          "rpcs": {
+            "FindLfpProviders": {
+              "methods": [
+                "FindLfpProviders"
+              ]
+            },
+            "LinkLfpProvider": {
+              "methods": [
+                "LinkLfpProvider"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "OmnichannelSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OmnichannelSettingsClient",
+          "rpcs": {
+            "CreateOmnichannelSetting": {
+              "methods": [
+                "CreateOmnichannelSetting"
+              ]
+            },
+            "GetOmnichannelSetting": {
+              "methods": [
+                "GetOmnichannelSetting"
+              ]
+            },
+            "ListOmnichannelSettings": {
+              "methods": [
+                "ListOmnichannelSettings"
+              ]
+            },
+            "RequestInventoryVerification": {
+              "methods": [
+                "RequestInventoryVerification"
+              ]
+            },
+            "UpdateOmnichannelSetting": {
+              "methods": [
+                "UpdateOmnichannelSetting"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "OmnichannelSettingsClient",
+          "rpcs": {
+            "CreateOmnichannelSetting": {
+              "methods": [
+                "CreateOmnichannelSetting"
+              ]
+            },
+            "GetOmnichannelSetting": {
+              "methods": [
+                "GetOmnichannelSetting"
+              ]
+            },
+            "ListOmnichannelSettings": {
+              "methods": [
+                "ListOmnichannelSettings"
+              ]
+            },
+            "RequestInventoryVerification": {
+              "methods": [
+                "RequestInventoryVerification"
+              ]
+            },
+            "UpdateOmnichannelSetting": {
+              "methods": [
+                "UpdateOmnichannelSetting"
+              ]
+            }
+          }
+        }
+      }
+    },
     "OnlineReturnPolicyService": {
       "clients": {
         "grpc": {
           "libraryClient": "OnlineReturnPolicyClient",
           "rpcs": {
+            "CreateOnlineReturnPolicy": {
+              "methods": [
+                "CreateOnlineReturnPolicy"
+              ]
+            },
+            "DeleteOnlineReturnPolicy": {
+              "methods": [
+                "DeleteOnlineReturnPolicy"
+              ]
+            },
             "GetOnlineReturnPolicy": {
               "methods": [
                 "GetOnlineReturnPolicy"
@@ -384,6 +526,11 @@
             "ListOnlineReturnPolicies": {
               "methods": [
                 "ListOnlineReturnPolicies"
+              ]
+            },
+            "UpdateOnlineReturnPolicy": {
+              "methods": [
+                "UpdateOnlineReturnPolicy"
               ]
             }
           }
@@ -391,6 +538,16 @@
         "rest": {
           "libraryClient": "OnlineReturnPolicyClient",
           "rpcs": {
+            "CreateOnlineReturnPolicy": {
+              "methods": [
+                "CreateOnlineReturnPolicy"
+              ]
+            },
+            "DeleteOnlineReturnPolicy": {
+              "methods": [
+                "DeleteOnlineReturnPolicy"
+              ]
+            },
             "GetOnlineReturnPolicy": {
               "methods": [
                 "GetOnlineReturnPolicy"
@@ -399,6 +556,11 @@
             "ListOnlineReturnPolicies": {
               "methods": [
                 "ListOnlineReturnPolicies"
+              ]
+            },
+            "UpdateOnlineReturnPolicy": {
+              "methods": [
+                "UpdateOnlineReturnPolicy"
               ]
             }
           }

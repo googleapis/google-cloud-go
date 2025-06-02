@@ -275,9 +275,10 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 // disable change stream retention.
 type ChangeStreamRetention optional.Duration
 
-// DeletionProtection indicates whether the table is protected against data loss
-// i.e. when set to protected, deleting the table, the column families in the table,
-// and the instance containing the table would be prohibited.
+// DeletionProtection indicates whether the table, authorized view, logical view or
+// materialized view is protected against data loss i.e. when set to protected,
+// deleting the view, the table, the column families in the table,
+// and the instance containing the table or view would be prohibited.
 type DeletionProtection int
 
 // None indicates that deletion protection is unset
@@ -3123,13 +3124,25 @@ func (iac *InstanceAdminClient) CreateLogicalView(ctx context.Context, instanceI
 		return errors.New("LogicalViewID is required")
 	}
 
+	lv := &btapb.LogicalView{
+		Query: conf.Query,
+	}
+	if conf.DeletionProtection != None {
+		switch dp := conf.DeletionProtection; dp {
+		case Protected:
+			lv.DeletionProtection = true
+		case Unprotected:
+			lv.DeletionProtection = false
+		default:
+			break
+		}
+	}
+
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.CreateLogicalViewRequest{
 		Parent:        instancePrefix(iac.project, instanceID),
 		LogicalViewId: conf.LogicalViewID,
-		LogicalView: &btapb.LogicalView{
-			Query: conf.Query,
-		},
+		LogicalView:   lv,
 	}
 
 	op, err := iac.iClient.CreateLogicalView(ctx, req)
@@ -3144,7 +3157,8 @@ func (iac *InstanceAdminClient) CreateLogicalView(ctx context.Context, instanceI
 type LogicalViewInfo struct {
 	LogicalViewID string
 
-	Query string
+	Query              string
+	DeletionProtection DeletionProtection
 }
 
 // LogicalViewInfo retrieves information about a logical view.
@@ -3165,7 +3179,13 @@ func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID,
 	if err != nil {
 		return nil, err
 	}
-	return &LogicalViewInfo{LogicalViewID: strings.TrimPrefix(res.Name, prefix+"/logicalViews/"), Query: res.Query}, nil
+	lv := &LogicalViewInfo{LogicalViewID: strings.TrimPrefix(res.Name, prefix+"/logicalViews/"), Query: res.Query}
+	if res.DeletionProtection {
+		lv.DeletionProtection = Protected
+	} else {
+		lv.DeletionProtection = Unprotected
+	}
+	return lv, nil
 }
 
 // LogicalViews returns a list of the logical views in the instance.
@@ -3185,8 +3205,14 @@ func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID str
 		return nil, err
 	}
 
-	for _, lv := range res.LogicalViews {
-		views = append(views, LogicalViewInfo{LogicalViewID: strings.TrimPrefix(lv.Name, prefix+"/logicalViews/"), Query: lv.Query})
+	for _, lView := range res.LogicalViews {
+		lv := LogicalViewInfo{LogicalViewID: strings.TrimPrefix(lView.Name, prefix+"/logicalViews/"), Query: lView.Query}
+		if lView.DeletionProtection {
+			lv.DeletionProtection = Protected
+		} else {
+			lv.DeletionProtection = Unprotected
+		}
+		views = append(views, lv)
 	}
 	return views, nil
 }
@@ -3206,6 +3232,17 @@ func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceI
 	if conf.Query != "" {
 		updateMask.Paths = append(updateMask.Paths, "query")
 		lv.Query = conf.Query
+	}
+	if conf.DeletionProtection != None {
+		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+		switch dp := conf.DeletionProtection; dp {
+		case Protected:
+			lv.DeletionProtection = true
+		case Unprotected:
+			lv.DeletionProtection = false
+		default:
+			break
+		}
 	}
 	req := &btapb.UpdateLogicalViewRequest{
 		LogicalView: lv,

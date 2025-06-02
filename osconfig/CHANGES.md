@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/osconfig/v1.14.5...osconfig/v1.14.6) (2025-05-06)
 
 

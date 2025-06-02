@@ -1,6 +1,31 @@
 # Changes
 
 
+## [1.25.3](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.25.2...dataplex/v1.25.3) (2025-05-13)
+
+
+### Documentation
+
+* **dataplex:** A comment for enum `SyncMode` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for enum value `EXPORT` in enum `Type` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for enum value `INTERNAL_ERROR` in enum `ErrorCode` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `aspect_types` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `encryption_config_id` in message `.google.cloud.dataplex.v1.CreateEncryptionConfigRequest` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `entry_groups` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `entry_types` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `error_message` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `exported_entries` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `organization_level` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `output_path` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `projects` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `scan_statistics` in message `.google.cloud.dataplex.v1.DataDiscoveryResult` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `scope` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for field `source_storage_uri` in message `.google.cloud.dataplex.v1.MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for message `DataDiscoveryResult` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for message `MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for message `MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **dataplex:** A comment for message `MetadataJob` is changed ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+
 ## [1.25.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.25.1...dataplex/v1.25.2) (2025-04-15)
 
 
