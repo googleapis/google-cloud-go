@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package lfp_test
+
+import (
+	lfp "cloud.google.com/go/shopping/merchant/lfp/apiv1beta"
+)
