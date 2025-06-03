@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1beta",
-    "version": "1.38.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -20668,7 +20668,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_AddAssociation_sync",
       "title": "compute AddAssociation Sample",
-      "description": "AddAssociation inserts an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.",
+      "description": "AddAssociation inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.",
       "file": "OrganizationSecurityPoliciesClient/AddAssociation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -33081,6 +33081,98 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_ReservationSubBlocks_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get retrieves information about the specified reservation subBlock.",
+      "file": "ReservationSubBlocksClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1beta.ReservationSubBlocksClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.ReservationSubBlocksGetResponse",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1beta.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks.Get",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_ReservationSubBlocks_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of reservation subBlocks under a single reservation.",
+      "file": "ReservationSubBlocksClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1beta.ReservationSubBlocksClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListReservationSubBlocksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReservationSubBlockIterator",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1beta.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks.List",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
