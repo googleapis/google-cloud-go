@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package credentials_test
-
-import (
-	credentials "cloud.google.com/go/iam/credentials/apiv1"
-)
