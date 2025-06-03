@@ -267,6 +267,12 @@ func (it *InstantSnapshotsScopedListPairIterator) All() iter.Seq2[InstantSnapsho
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *InterconnectAttachmentGroupIterator) All() iter.Seq2[*computepb.InterconnectAttachmentGroup, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *InterconnectAttachmentIterator) All() iter.Seq2[*computepb.InterconnectAttachment, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -274,6 +280,12 @@ func (it *InterconnectAttachmentIterator) All() iter.Seq2[*computepb.Interconnec
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *InterconnectAttachmentsScopedListPairIterator) All() iter.Seq2[InterconnectAttachmentsScopedListPair, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectGroupIterator) All() iter.Seq2[*computepb.InterconnectGroup, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
