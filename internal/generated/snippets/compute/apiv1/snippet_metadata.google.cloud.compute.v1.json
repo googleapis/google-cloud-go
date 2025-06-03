@@ -12064,6 +12064,420 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified InterconnectAttachmentGroup in the given scope",
+      "file": "InterconnectAttachmentGroupsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteInterconnectAttachmentGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.Delete",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified InterconnectAttachmentGroup resource in the given scope.",
+      "file": "InterconnectAttachmentGroupsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInterconnectAttachmentGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InterconnectAttachmentGroup",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.Get",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "InterconnectAttachmentGroupsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyInterconnectAttachmentGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.GetIamPolicy",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_GetOperationalStatus_sync",
+      "title": "compute GetOperationalStatus Sample",
+      "description": "GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified InterconnectAttachmentGroup resource.",
+      "file": "InterconnectAttachmentGroupsClient/GetOperationalStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperationalStatus",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.GetOperationalStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetOperationalStatusInterconnectAttachmentGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InterconnectAttachmentGroupsGetOperationalStatusResponse",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "GetOperationalStatus",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.GetOperationalStatus",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a InterconnectAttachmentGroup in the specified project in the given scope using the parameters that are included in the request.",
+      "file": "InterconnectAttachmentGroupsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertInterconnectAttachmentGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.Insert",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists the InterconnectAttachmentGroups for a project in the given scope.",
+      "file": "InterconnectAttachmentGroupsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListInterconnectAttachmentGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InterconnectAttachmentGroupIterator",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.List",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patches the specified InterconnectAttachmentGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.",
+      "file": "InterconnectAttachmentGroupsClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchInterconnectAttachmentGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.Patch",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "InterconnectAttachmentGroupsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyInterconnectAttachmentGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.SetIamPolicy",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectAttachmentGroups_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "InterconnectAttachmentGroupsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsInterconnectAttachmentGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "InterconnectAttachmentGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroupsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups.TestIamPermissions",
+          "service": {
+            "shortName": "InterconnectAttachmentGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachmentGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InterconnectAttachments_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
@@ -12381,6 +12795,466 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_CreateMembers_sync",
+      "title": "compute CreateMembers Sample",
+      "description": "CreateMembers create Interconnects with redundancy by creating them in a specified interconnect group.",
+      "file": "InterconnectGroupsClient/CreateMembers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMembers",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.CreateMembers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.CreateMembersInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "CreateMembers",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.CreateMembers",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified InterconnectGroup in the given scope",
+      "file": "InterconnectGroupsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.Delete",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified InterconnectGroup resource in the given scope.",
+      "file": "InterconnectGroupsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InterconnectGroup",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.Get",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "InterconnectGroupsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.GetIamPolicy",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_GetOperationalStatus_sync",
+      "title": "compute GetOperationalStatus Sample",
+      "description": "GetOperationalStatus returns the interconnectStatuses for the specified InterconnectGroup.",
+      "file": "InterconnectGroupsClient/GetOperationalStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperationalStatus",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.GetOperationalStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetOperationalStatusInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InterconnectGroupsGetOperationalStatusResponse",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "GetOperationalStatus",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.GetOperationalStatus",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a InterconnectGroup in the specified project in the given scope using the parameters that are included in the request.",
+      "file": "InterconnectGroupsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.Insert",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists the InterconnectGroups for a project in the given scope.",
+      "file": "InterconnectGroupsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListInterconnectGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InterconnectGroupIterator",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.List",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patches the specified InterconnectGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.",
+      "file": "InterconnectGroupsClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.Patch",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "InterconnectGroupsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.SetIamPolicy",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectGroups_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "InterconnectGroupsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.InterconnectGroupsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsInterconnectGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "InterconnectGroupsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectGroupsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.InterconnectGroups.TestIamPermissions",
+          "service": {
+            "shortName": "InterconnectGroups",
+            "fullName": "google.cloud.compute.v1.InterconnectGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -13347,6 +14221,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Licenses_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update updates a License resource in the specified project. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
+      "file": "LicensesClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1.LicensesClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateLicenseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "LicensesClient",
+          "fullName": "google.cloud.compute.v1.LicensesClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1.Licenses.Update",
+          "service": {
+            "shortName": "Licenses",
+            "fullName": "google.cloud.compute.v1.Licenses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
