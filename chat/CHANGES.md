@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.0...chat/v0.13.1) (2025-06-04)
+
+
+### Bug Fixes
+
+* **chat:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
 ## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.12.2...chat/v0.13.0) (2025-05-06)
 
 
@@ -225,4 +232,3 @@
 * **chat:** Chat API documentation update ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
 
 ## Changes
-
