@@ -319,6 +319,11 @@
                 "BulkInsert"
               ]
             },
+            "BulkSetLabels": {
+              "methods": [
+                "BulkSetLabels"
+              ]
+            },
             "CreateSnapshot": {
               "methods": [
                 "CreateSnapshot"
@@ -3753,6 +3758,25 @@
             "PerformMaintenance": {
               "methods": [
                 "PerformMaintenance"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ReservationSubBlocks": {
+      "clients": {
+        "rest": {
+          "libraryClient": "ReservationSubBlocksClient",
+          "rpcs": {
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
               ]
             }
           }
