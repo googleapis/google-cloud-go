@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.6](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.5.5...advisorynotifications/v1.5.6) (2025-06-04)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
 ## [1.5.5](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.5.4...advisorynotifications/v1.5.5) (2025-04-15)
 
 
@@ -192,4 +199,3 @@
 * **advisorynotifications:** Start generating apiv1 ([#7502](https://github.com/googleapis/google-cloud-go/issues/7502)) ([6c2b06c](https://github.com/googleapis/google-cloud-go/commit/6c2b06c43873ce4f2037383b204867c8db694a83))
 
 ## Changes
-

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4](https://github.com/googleapis/google-cloud-go/compare/apps/v0.7.3...apps/v0.7.4) (2025-06-04)
+
+
+### Bug Fixes
+
+* **apps:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
 ## [0.7.3](https://github.com/googleapis/google-cloud-go/compare/apps/v0.7.2...apps/v0.7.3) (2025-05-13)
 
 
@@ -159,4 +166,3 @@
 * **apps:** New clients ([#9142](https://github.com/googleapis/google-cloud-go/issues/9142)) ([8095c6e](https://github.com/googleapis/google-cloud-go/commit/8095c6ee342d9cca812c966b708ba48398fd91ed))
 
 ## Changes
-
