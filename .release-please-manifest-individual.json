@@ -1,5 +1,5 @@
 {
-  "auth": "0.16.1",
+  "auth": "0.16.2",
   "auth/oauth2adapt": "0.2.8",
   "bigquery": "1.69.0",
   "bigtable": "1.37.0",
