@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package policytroubleshooter_test
+
+import (
+	policytroubleshooter "cloud.google.com/go/policytroubleshooter/apiv1"
+)
