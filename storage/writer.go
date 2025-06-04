@@ -233,7 +233,7 @@ func (w *Writer) Flush() (int64, error) {
 		return 0, werr
 	}
 	// If Flush called before any bytes written, it should start the upload
-	// at zero bytes.
+	// at zero bytes. This will make the object visible with zero length data.
 	if !w.opened {
 		if err := w.openWriter(); err != nil {
 			return 0, err
