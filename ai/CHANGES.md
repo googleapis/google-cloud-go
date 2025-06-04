@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.12.0...ai/v0.12.1) (2025-06-04)
+
+
+### Bug Fixes
+
+* **ai:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.11.1...ai/v0.12.0) (2025-05-13)
 
 
