@@ -2358,6 +2358,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Disks_BulkSetLabels_sync",
+      "title": "compute BulkSetLabels Sample",
+      "description": "BulkSetLabels sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "DisksClient/BulkSetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkSetLabels",
+        "fullName": "google.cloud.compute.v1.DisksClient.BulkSetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.BulkSetLabelsDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "DisksClient",
+          "fullName": "google.cloud.compute.v1.DisksClient"
+        },
+        "method": {
+          "shortName": "BulkSetLabels",
+          "fullName": "google.cloud.compute.v1.Disks.BulkSetLabels",
+          "service": {
+            "shortName": "Disks",
+            "fullName": "google.cloud.compute.v1.Disks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Disks_CreateSnapshot_sync",
       "title": "compute CreateSnapshot Sample",
       "description": "CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.",
@@ -28251,6 +28297,98 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSubBlocks_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get retrieves information about the specified reservation subBlock.",
+      "file": "ReservationSubBlocksClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.ReservationSubBlocksGetResponse",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocks.Get",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSubBlocks_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of reservation subBlocks under a single reservation.",
+      "file": "ReservationSubBlocksClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListReservationSubBlocksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReservationSubBlockIterator",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocks.List",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
