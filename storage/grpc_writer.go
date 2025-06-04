@@ -136,7 +136,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}
 	s.retry.maxRetryDuration = retryDeadline
 
-	gw, err := newGRPCWriter(c, s, params, pr, pw)
+	gw, err := newGRPCWriter(c, s, params, pr, pr, pw)
 	if err != nil {
 		errorf(err)
 		pr.CloseWithError(err)
@@ -222,14 +222,14 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		// These calls are still valid if err is nil
 		err = checkCanceled(err)
 		errorf(err)
-		gw.iw.CloseWithError(err)
+		gw.pr.CloseWithError(err)
 		close(params.donec)
 	}()
 
 	return gw.iw, nil
 }
 
-func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pw *io.PipeWriter) (*gRPCWriter, error) {
+func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, r io.Reader, pr *io.PipeReader, pw *io.PipeWriter) (*gRPCWriter, error) {
 	if params.attrs.Retention != nil {
 		// TO-DO: remove once ObjectRetention is available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
@@ -274,6 +274,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		c:      c,
 		ctx:    params.ctx,
 		reader: r,
+		pr:     pr,
 		iw: &gRPCInternalWriter{
 			flushSupported:  params.append,
 			flushInProgress: false,
@@ -303,6 +304,7 @@ type gRPCWriter struct {
 	c      *grpcStorageClient
 	buf    []byte
 	reader io.Reader
+	pr     *io.PipeReader // Keep track of pr to update post-flush
 	iw     *gRPCInternalWriter
 
 	ctx context.Context
@@ -656,6 +658,7 @@ func (w *gRPCWriter) read() (int, bool, error) {
 			// Reset pipe for additional writes after the flush.
 			pr, pw := io.Pipe()
 			w.reader = pr
+			w.pr = pr
 			w.iw.pw = pw
 		} else {
 			done = true
