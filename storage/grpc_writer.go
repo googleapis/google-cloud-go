@@ -114,7 +114,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 	// If we are taking over an appendable object, send the first message here
 	// to get the append offset.
-	if params.appendGen > 0 {
+	if params.append && params.appendGen >= 0 {
 		// Create the buffer sender. This opens a stream and blocks until we
 		// get a response that tells us what offset to write from.
 		wbs, err := gw.newGRPCAppendTakeoverWriteBufferSender(params.ctx)
@@ -223,7 +223,7 @@ func newGRPCWriter(c *grpcStorageClient, s *settings, params *openWriterParams, 
 		Appendable: proto.Bool(params.append),
 	}
 	var appendSpec *storagepb.AppendObjectSpec
-	if params.appendGen > 0 {
+	if params.append && params.appendGen >= 0 {
 		appendSpec = &storagepb.AppendObjectSpec{
 			Bucket:     bucketResourceName(globalProjectAlias, params.bucket),
 			Object:     params.attrs.Name,
