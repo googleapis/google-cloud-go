@@ -15,7 +15,9 @@
       "component": "bigquery"
     },
     "bigquery/v2": {
-      "component": "bigquery/v2"
+      "component": "bigquery/v2",
+      "prerelease": true,
+      "prerelease-type": "alpha"
     },
     "bigtable": {
       "component": "bigtable"
