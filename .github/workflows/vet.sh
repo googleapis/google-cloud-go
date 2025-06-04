@@ -76,7 +76,6 @@ golint ./... 2>&1 | (
     grep -vE "spanner/spansql/(sql|types).go:.*should have comment" |
     grep -vE "\.pb\.go:" |
     grep -v "third_party/go/doc"
-    grep -v "bigquery/v2/doc.go"
 ) |
   tee /dev/stderr | (! read)
 
