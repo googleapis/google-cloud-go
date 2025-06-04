@@ -16,3 +16,4 @@
 // Google BigQuery ecosystem.  This root package provides no functionality at this
 // time.
 package bigquery
+
