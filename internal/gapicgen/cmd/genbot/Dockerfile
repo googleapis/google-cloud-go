@@ -27,7 +27,8 @@ ENV PATH /usr/local/go/bin:$PATH
 RUN go version
 
 # Install Go tools.
-RUN go install github.com/golang/protobuf/protoc-gen-go@v1.5.3 && \
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6 && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1 && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest && \
     go install honnef.co/go/tools/cmd/staticcheck@latest && \
