@@ -19,6 +19,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"math"
 	"math/rand"
@@ -117,6 +118,15 @@ func TestNewServer(t *testing.T) {
 
 		// Clean up the real listener now that the test is done.
 		l.Close()
+
+		// Validate that the listener is now actually closed.
+		_, err = l.Accept()
+		if err == nil {
+			t.Fatal("l.Accept() should have failed for a closed listener, but it did not")
+		}
+		if !errors.Is(err, net.ErrClosed) {
+			t.Errorf("Expected net.ErrClosed, but got a different error: %v", err)
+		}
 	})
 }
 

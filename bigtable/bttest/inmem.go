@@ -147,7 +147,7 @@ func NewServer(laddr string, opt ...grpc.ServerOption) (*Server, error) {
 	return newServer(l, true, opt...), nil
 }
 
-func newServer(l net.Listener, closeListener bool, opt ...grpc.ServerOption) *Server {
+func newServer(l net.Listener, ownsListener bool, opt ...grpc.ServerOption) *Server {
 	s := &Server{
 		Addr: l.Addr().String(),
 		l:    l,
@@ -156,14 +156,14 @@ func newServer(l net.Listener, closeListener bool, opt ...grpc.ServerOption) *Se
 			tables:    make(map[string]*table),
 			instances: make(map[string]*btapb.Instance),
 		},
-		ownsListener: closeListener,
+		ownsListener: ownsListener,
 	}
 	btapb.RegisterBigtableInstanceAdminServer(s.srv, s.s)
 	btapb.RegisterBigtableTableAdminServer(s.srv, s.s)
 	btpb.RegisterBigtableServer(s.srv, s.s)
 
 	listenerForGRPC := l
-	if !closeListener {
+	if !ownsListener {
 		// If the user owns the listener, wrap it so srv.Stop() doesn't close it.
 		listenerForGRPC = &noopCloserListener{Listener: l}
 	}
