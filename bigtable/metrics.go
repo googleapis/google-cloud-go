@@ -127,7 +127,8 @@ var (
 	endpointOptionType = reflect.TypeOf(option.WithEndpoint(""))
 
 	// GCM exporter should use the same options as Bigtable client
-	// createExporterOptions takes Bigtable client options and returns exporter options
+	// createExporterOptions takes Bigtable client options and returns exporter options,
+	// filtering out any WithEndpoint option to ensure the metrics exporter uses its default endpoint.
 	// Overwritten in tests
 	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
 		filteredOptions := []option.ClientOption{}
