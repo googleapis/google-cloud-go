@@ -19,9 +19,12 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"math"
 	"math/rand"
+	"net"
+	"os"
 	"sort"
 	"strconv"
 	"sync"
@@ -45,6 +48,87 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
+
+type closeSpyListener struct {
+	net.Listener
+	closed bool
+}
+
+func (s *closeSpyListener) Close() error {
+	s.closed = true
+	return s.Listener.Close()
+}
+
+func TestNewServer(t *testing.T) {
+	t.Run("TCP", func(t *testing.T) {
+		srv, err := NewServer("localhost:0")
+		if err != nil {
+			t.Fatalf("NewServer() error = %v", err)
+		}
+		if srv == nil {
+			t.Fatal("NewServer() returned nil server")
+		}
+		defer srv.Close()
+		if srv.Addr == "" {
+			t.Error("NewServer() returned server with empty Addr")
+		}
+	})
+
+	t.Run("Unix", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		sockPath := tmpDir + "/bttest.sock"
+		srv, err := NewServer(sockPath)
+		if err != nil {
+			t.Fatalf("NewServer() error = %v", err)
+		}
+		if srv == nil {
+			t.Fatal("NewServer() returned nil server")
+		}
+
+		if srv.Addr != sockPath {
+			t.Errorf("srv.Addr got %q, want %q", srv.Addr, sockPath)
+		}
+
+		srv.Close()
+
+		// Check that the unix socket file was removed.
+		if _, err := os.Stat(sockPath); !os.IsNotExist(err) {
+			t.Errorf("socket file %q was not removed after Close()", sockPath)
+		}
+	})
+
+	t.Run("WithListener", func(t *testing.T) {
+		l, err := net.Listen("tcp", "localhost:0")
+		if err != nil {
+			t.Fatalf("net.Listen() error = %v", err)
+		}
+
+		// Create a spy that can tell us if its Close method was called.
+		spy := &closeSpyListener{Listener: l}
+		srv, err := NewServerWithListener(spy) // This should not call spy.Close().
+		if err != nil {
+			l.Close()
+			t.Fatalf("NewServerWithListener() error = %v", err)
+		}
+
+		srv.Close() // This should NOT call the Close method on our spy.
+		if spy.closed {
+			t.Error("Listener was closed by the server, but it should not have been.")
+		}
+
+		// Clean up the real listener now that the test is done.
+		l.Close()
+
+		// Validate that the listener is now actually closed.
+		_, err = l.Accept()
+		if err == nil {
+			t.Fatal("l.Accept() should have failed for a closed listener, but it did not")
+		}
+		if !errors.Is(err, net.ErrClosed) {
+			t.Errorf("Expected net.ErrClosed, but got a different error: %v", err)
+		}
+	})
+}
 
 func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	s := &server{
