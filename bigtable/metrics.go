@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -123,11 +124,19 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
+	endpointOptionType = reflect.TypeOf(option.WithEndpoint(""))
+
 	// GCM exporter should use the same options as Bigtable client
 	// createExporterOptions takes Bigtable client options and returns exporter options
 	// Overwritten in tests
 	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
-		return btOpts
+		filteredOptions := []option.ClientOption{}
+		for _, opt := range btOpts {
+			if reflect.TypeOf(opt) != endpointOptionType {
+				filteredOptions = append(filteredOptions, opt)
+			}
+		}
+		return filteredOptions
 	}
 )
 
