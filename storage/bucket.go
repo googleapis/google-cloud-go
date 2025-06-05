@@ -833,7 +833,7 @@ type HierarchicalNamespace struct {
 }
 
 // PublicNetworkSource contains the public network source of the
-// bucket's IP filter. Wrapper type for raw.BucketIpFilterPublicNetworkSource.
+// bucket's IP filter.
 type PublicNetworkSource struct {
 	// AllowedIpCidrRanges: The list of public IPv4, IPv6 cidr ranges that are
 	// allowed to access the bucket.
@@ -841,7 +841,7 @@ type PublicNetworkSource struct {
 }
 
 // VPCNetworkSource contains the VPC network source of the
-// bucket's IP filter. Wrapper type for raw.BucketIpFilterVpcNetworkSources.
+// bucket's IP filter.
 type VPCNetworkSource struct {
 	// AllowedIpCidrRanges: The list of IPv4, IPv6 cidr ranges subnetworks that are
 	// allowed to access the bucket.
@@ -851,6 +851,9 @@ type VPCNetworkSource struct {
 	Network string
 }
 
+// IPFilter specifies the network sources that are allowed to access
+// operations on the bucket, as well as its underlying objects.
+// Only enforced when mode is set to 'Enabled'.
 // See https://cloud.google.com/storage/docs/ip-filtering-overview.
 // Currently not supported by the gRPC API.
 type IPFilter struct {
