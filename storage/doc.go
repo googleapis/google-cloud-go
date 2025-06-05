@@ -274,7 +274,7 @@ To generate the signature, you must have:
 
 # Errors
 
-Errors returned by this client are often of the type [https://pkg.go.dev/github.com/googleapis/gax-go/v2/apierror].
+Errors returned by this client are often of the type [github.com/googleapis/gax-go/v2/apierror].
 The [apierror.APIError] type can wrap a [google.golang.org/grpc/status.Status]
 if gRPC was used, or a [google.golang.org/api/googleapi.Error] if HTTP/REST was used.
 You might also encounter [googleapi.Error] directly from HTTP operations.
@@ -309,8 +309,7 @@ including HTTP or gRPC status codes. For example:
 	}
 
 This library may also return other errors that are not wrapped as [apierror.APIError]. For
-example, errors with authentication may return [cloud.google.com/go/auth.Error]  or
-[golang.org/x/oauth2/google.AuthenticationError].
+example, errors with authentication may return [cloud.google.com/go/auth.Error].
 
 # Retrying failed requests
 
