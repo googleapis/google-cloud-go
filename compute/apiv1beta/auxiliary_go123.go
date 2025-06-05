@@ -543,6 +543,12 @@ func (it *ReservationIterator) All() iter.Seq2[*computepb.Reservation, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ReservationSubBlockIterator) All() iter.Seq2[*computepb.ReservationSubBlock, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ReservationsScopedListPairIterator) All() iter.Seq2[ReservationsScopedListPair, error] {
 	return iterator.RangeAdapter(it.Next)
 }

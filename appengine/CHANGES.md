@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.7](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.9.6...appengine/v1.9.7) (2025-06-04)
+
+
+### Bug Fixes
+
+* **appengine:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
 ## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.9.5...appengine/v1.9.6) (2025-04-15)
 
 

@@ -3,6 +3,13 @@
 
 
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.16.0...alloydb/v1.16.1) (2025-06-04)
+
+
+### Bug Fixes
+
+* **alloydb:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.15.2...alloydb/v1.16.0) (2025-05-21)
 
 

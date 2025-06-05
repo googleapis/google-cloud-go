@@ -97,7 +97,7 @@ type ImportDataRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// A Cloud Storage URI of a folder to import file data from, in the
-	// form of `gs://<bucket_name>/<path_inside_bucket>`
+	// form of `gs://<bucket_name>/<path_inside_bucket>/`.
 	//
 	// Types that are assignable to Source:
 	//
@@ -109,12 +109,13 @@ type ImportDataRequest struct {
 	//
 	//	*ImportDataRequest_LustrePath
 	Destination isImportDataRequest_Destination `protobuf_oneof:"destination"`
-	// Required. Name of the resource.
+	// Required. The name of the Managed Lustre instance in the format
+	// `projects/{project}/locations/{location}/instances/{instance}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. UUID to identify requests.
 	RequestId string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Optional. User-specified service account used to perform the transfer.
-	// If unspecified, the default Lustre P4 service account will be used.
+	// If unspecified, the default Managed Lustre service agent will be used.
 	ServiceAccount string `protobuf:"bytes,5,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 }
 
@@ -203,6 +204,8 @@ type isImportDataRequest_Source interface {
 
 type ImportDataRequest_GcsPath struct {
 	// The Cloud Storage source bucket and, optionally, path inside the bucket.
+	// If a path inside the bucket is specified, it must end with a forward
+	// slash (`/`).
 	GcsPath *GcsPath `protobuf:"bytes,2,opt,name=gcs_path,json=gcsPath,proto3,oneof"`
 }
 
@@ -219,7 +222,7 @@ type ImportDataRequest_LustrePath struct {
 
 func (*ImportDataRequest_LustrePath) isImportDataRequest_Destination() {}
 
-// Message for exporting data from Lustre.
+// Export data from Managed Lustre to a Cloud Storage bucket.
 type ExportDataRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -237,7 +240,8 @@ type ExportDataRequest struct {
 	//
 	//	*ExportDataRequest_GcsPath
 	Destination isExportDataRequest_Destination `protobuf_oneof:"destination"`
-	// Required. Name of the resource.
+	// Required. The name of the Managed Lustre instance in the format
+	// `projects/{project}/locations/{location}/instances/{instance}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. UUID to identify requests.
 	RequestId string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
@@ -330,7 +334,8 @@ type isExportDataRequest_Source interface {
 }
 
 type ExportDataRequest_LustrePath struct {
-	// Lustre path source.
+	// The root directory path to the Managed Lustre file system. Must start
+	// with `/`. Default is `/`.
 	LustrePath *LustrePath `protobuf:"bytes,2,opt,name=lustre_path,json=lustrePath,proto3,oneof"`
 }
 
@@ -341,7 +346,10 @@ type isExportDataRequest_Destination interface {
 }
 
 type ExportDataRequest_GcsPath struct {
-	// Cloud Storage destination.
+	// The URI to a Cloud Storage bucket, or a path within a bucket, using
+	// the format `gs://<bucket_name>/<optional_path_inside_bucket>/`. If a
+	// path inside the bucket is specified, it must end with a forward slash
+	// (`/`).
 	GcsPath *GcsPath `protobuf:"bytes,3,opt,name=gcs_path,json=gcsPath,proto3,oneof"`
 }
 
@@ -642,14 +650,16 @@ func (x *ImportDataMetadata) GetApiVersion() string {
 	return ""
 }
 
-// Cloud Storage as the source of a data transfer.
+// Specifies a Cloud Storage bucket and, optionally, a path inside the bucket.
 type GcsPath struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. URI to a Cloud Storage path in the format:
-	// `gs://<bucket_name>`.
+	// Required. The URI to a Cloud Storage bucket, or a path within a bucket,
+	// using the format `gs://<bucket_name>/<optional_path_inside_bucket>/`. If a
+	// path inside the bucket is specified, it must end with a forward slash
+	// (`/`).
 	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
 }
 
@@ -690,14 +700,16 @@ func (x *GcsPath) GetUri() string {
 	return ""
 }
 
-// LustrePath represents a path in the Lustre file system.
+// The root directory path to the Lustre file system.
 type LustrePath struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Root directory path to the Managed Lustre file system, starting
-	// with `/`. Defaults to `/` if unset.
+	// Optional. The root directory path to the Managed Lustre file system. Must
+	// start with
+	// `/`. Default is `/`. If you're importing data into Managed Lustre, any
+	// path other than the default must already exist on the file system.
 	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 }
 

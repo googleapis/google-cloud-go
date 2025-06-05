@@ -2,6 +2,29 @@
 
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.17.2...discoveryengine/v1.18.0) (2025-06-04)
+
+
+### Features
+
+* **discoveryengine:** Add CMEK config service ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add ConnectorRunErrorContext to error log ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add custom search operators for Workspace search ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add HealthcareFhirConfig to FHIR data store ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add identity mapping service ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add more indexing state for site search engine ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add more options for layout parser config ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add user license config service ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Enable claim level score for grounding ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Support ACL data store and document ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Support media recommendation engine ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Support structured content for chunk ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+
 ## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.17.1...discoveryengine/v1.17.2) (2025-05-06)
 
 

@@ -5,6 +5,90 @@
   "protoPackage": "google.cloud.discoveryengine.v1",
   "libraryPackage": "cloud.google.com/go/discoveryengine/apiv1",
   "services": {
+    "CmekConfigService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CmekConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteCmekConfig": {
+              "methods": [
+                "DeleteCmekConfig"
+              ]
+            },
+            "GetCmekConfig": {
+              "methods": [
+                "GetCmekConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCmekConfigs": {
+              "methods": [
+                "ListCmekConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCmekConfig": {
+              "methods": [
+                "UpdateCmekConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CmekConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteCmekConfig": {
+              "methods": [
+                "DeleteCmekConfig"
+              ]
+            },
+            "GetCmekConfig": {
+              "methods": [
+                "GetCmekConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCmekConfigs": {
+              "methods": [
+                "ListCmekConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCmekConfig": {
+              "methods": [
+                "UpdateCmekConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CompletionService": {
       "clients": {
         "grpc": {
@@ -763,6 +847,120 @@
         }
       }
     },
+    "IdentityMappingStoreService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IdentityMappingStoreClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateIdentityMappingStore": {
+              "methods": [
+                "CreateIdentityMappingStore"
+              ]
+            },
+            "DeleteIdentityMappingStore": {
+              "methods": [
+                "DeleteIdentityMappingStore"
+              ]
+            },
+            "GetIdentityMappingStore": {
+              "methods": [
+                "GetIdentityMappingStore"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportIdentityMappings": {
+              "methods": [
+                "ImportIdentityMappings"
+              ]
+            },
+            "ListIdentityMappingStores": {
+              "methods": [
+                "ListIdentityMappingStores"
+              ]
+            },
+            "ListIdentityMappings": {
+              "methods": [
+                "ListIdentityMappings"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PurgeIdentityMappings": {
+              "methods": [
+                "PurgeIdentityMappings"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "IdentityMappingStoreClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateIdentityMappingStore": {
+              "methods": [
+                "CreateIdentityMappingStore"
+              ]
+            },
+            "DeleteIdentityMappingStore": {
+              "methods": [
+                "DeleteIdentityMappingStore"
+              ]
+            },
+            "GetIdentityMappingStore": {
+              "methods": [
+                "GetIdentityMappingStore"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportIdentityMappings": {
+              "methods": [
+                "ImportIdentityMappings"
+              ]
+            },
+            "ListIdentityMappingStores": {
+              "methods": [
+                "ListIdentityMappingStores"
+              ]
+            },
+            "ListIdentityMappings": {
+              "methods": [
+                "ListIdentityMappings"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PurgeIdentityMappings": {
+              "methods": [
+                "PurgeIdentityMappings"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ProjectService": {
       "clients": {
         "grpc": {
@@ -1473,6 +1671,70 @@
             "WriteUserEvent": {
               "methods": [
                 "WriteUserEvent"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserLicenseService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserLicenseClient",
+          "rpcs": {
+            "BatchUpdateUserLicenses": {
+              "methods": [
+                "BatchUpdateUserLicenses"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListUserLicenses": {
+              "methods": [
+                "ListUserLicenses"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "UserLicenseClient",
+          "rpcs": {
+            "BatchUpdateUserLicenses": {
+              "methods": [
+                "BatchUpdateUserLicenses"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListUserLicenses": {
+              "methods": [
+                "ListUserLicenses"
               ]
             }
           }

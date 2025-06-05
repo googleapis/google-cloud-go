@@ -56,10 +56,10 @@ type LocationsCallOptions struct {
 
 func defaultLocationsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("cloud.googleapis.com:443"),
-		internaloption.WithDefaultEndpointTemplate("cloud.UNIVERSE_DOMAIN:443"),
-		internaloption.WithDefaultMTLSEndpoint("cloud.mtls.googleapis.com:443"),
-		internaloption.WithDefaultAudience("https://cloud.googleapis.com/"),
+		internaloption.WithDefaultEndpoint("run.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("run.UNIVERSE_DOMAIN:443"),
+		internaloption.WithDefaultMTLSEndpoint("run.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -286,10 +286,10 @@ func NewLocationsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 
 func defaultLocationsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("https://cloud.googleapis.com"),
-		internaloption.WithDefaultEndpointTemplate("https://cloud.UNIVERSE_DOMAIN"),
-		internaloption.WithDefaultMTLSEndpoint("https://cloud.mtls.googleapis.com"),
-		internaloption.WithDefaultAudience("https://cloud.googleapis.com/"),
+		internaloption.WithDefaultEndpoint("https://run.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://run.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://run.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
 }

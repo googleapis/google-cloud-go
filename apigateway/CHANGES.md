@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/apigateway/v1.7.6...apigateway/v1.7.7) (2025-06-04)
+
+
+### Bug Fixes
+
+* **apigateway:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
 ## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/apigateway/v1.7.5...apigateway/v1.7.6) (2025-04-15)
 
 

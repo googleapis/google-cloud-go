@@ -44,7 +44,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := issueresolution.NewClient(ctx)
+//	c, err := issueresolution.NewAggregateProductStatusesClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -58,20 +58,32 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &issueresolutionpb.RenderAccountIssuesRequest{
+//	req := &issueresolutionpb.ListAggregateProductStatusesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/shopping/merchant/issueresolution/apiv1beta/issueresolutionpb#RenderAccountIssuesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/shopping/merchant/issueresolution/apiv1beta/issueresolutionpb#ListAggregateProductStatusesRequest.
 //	}
-//	resp, err := c.RenderAccountIssues(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
+//	it := c.ListAggregateProductStatuses(ctx, req)
+//	for {
+//		resp, err := it.Next()
+//		if err == iterator.Done {
+//			break
+//		}
+//		if err != nil {
+//			// TODO: Handle error.
+//		}
+//		// TODO: Use resp.
+//		_ = resp
+//
+//		// If you need to access the underlying RPC response,
+//		// you can do so by casting the `Response` as below.
+//		// Otherwise, remove this line. Only populated after
+//		// first call to Next(). Not safe for concurrent access.
+//		_ = it.Response.(*issueresolutionpb.ListAggregateProductStatusesResponse)
 //	}
-//	// TODO: Use resp.
-//	_ = resp
 //
 // # Use of Context
 //
-// The ctx passed to NewClient is used for authentication requests and
+// The ctx passed to NewAggregateProductStatusesClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

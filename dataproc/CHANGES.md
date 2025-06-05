@@ -1,5 +1,12 @@
 # Changes
 
+## [2.12.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.11.2...dataproc/v2.12.0) (2025-06-04)
+
+
+### Features
+
+* **dataproc:** Add scenarios AUTO/NONE to autotuning config ([40b60a4](https://github.com/googleapis/google-cloud-go/commit/40b60a4b268040ca3debd71ebcbcd126b5d58eaa))
+
 ## [2.11.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.11.1...dataproc/v2.11.2) (2025-04-15)
 
 

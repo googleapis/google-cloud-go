@@ -42,7 +42,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := discoveryengine.NewCompletionClient(ctx)
+//	c, err := discoveryengine.NewCmekConfigClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -56,20 +56,23 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &discoveryenginepb.CompleteQueryRequest{
+//	req := &discoveryenginepb.DeleteCmekConfigRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1/discoveryenginepb#CompleteQueryRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1/discoveryenginepb#DeleteCmekConfigRequest.
 //	}
-//	resp, err := c.CompleteQuery(ctx, req)
+//	op, err := c.DeleteCmekConfig(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
-//	// TODO: Use resp.
-//	_ = resp
+//
+//	err = op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
 //
 // # Use of Context
 //
-// The ctx passed to NewCompletionClient is used for authentication requests and
+// The ctx passed to NewCmekConfigClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
