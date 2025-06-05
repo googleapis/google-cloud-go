@@ -1,5 +1,13 @@
 # Changelog
 
+
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.21.0...shopping/v0.22.0) (2025-06-04)
+
+
+### Features
+
+* **shopping/merchant/issueresolution:** Add AggregateProductStatuses ([#12397](https://github.com/googleapis/google-cloud-go/issues/12397)) ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+
 ## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.20.0...shopping/v0.21.0) (2025-05-21)
 
 
