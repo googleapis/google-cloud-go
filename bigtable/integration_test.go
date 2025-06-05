@@ -935,11 +935,14 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 			t.Fatalf("Apply: %v", err)
 		}
 	}
-	err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
-		return true
-	}, RowFilter(ColumnFilter("col")))
-	if err != nil {
-		t.Fatalf("ReadRows: %v", err)
+
+	for i := 0; i < 10; i++ {
+		err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+			return true
+		}, RowFilter(ColumnFilter("col")))
+		if err != nil {
+			t.Fatalf("ReadRows: %v", err)
+		}
 	}
 
 	// Validate that metrics are exported
@@ -960,6 +963,8 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		metricNameOperationLatencies,
 		metricNameAttemptLatencies,
 		metricNameServerLatencies,
+		metricNameFirstRespLatencies,
+		metricNameConnErrCount,
 	}
 
 	// Try for 5m with 10s sleep between retries
