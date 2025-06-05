@@ -851,11 +851,8 @@ type VPCNetworkSource struct {
 	Network string
 }
 
-// IPFilter specifies the network sources that are allowed to access
-// operations on the bucket, as well as its underlying objects.
-// Only enforced when mode is set to 'Enabled'.
-// Wrapper type for raw.BucketIpFilter.
 // See https://cloud.google.com/storage/docs/ip-filtering-overview.
+// Currently not supported by the gRPC API.
 type IPFilter struct {
 	// Mode: The mode of the IP filter. Valid values are 'Enabled' and 'Disabled'.
 	Mode string
@@ -2358,11 +2355,34 @@ func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
 	if p == nil {
 		return nil
 	}
-	return &raw.BucketIpFilter{
-		Mode:                p.Mode,
-		PublicNetworkSource: toRawPublicNetworkSource(p.PublicNetworkSource),
-		VpcNetworkSources:   toRawVPCNetworkSources(p.VPCNetworkSource),
+	rawIPFilter := &raw.BucketIpFilter{
+		Mode: p.Mode,
 	}
+
+	// Handle VPCNetworkSource clearing
+	if len(p.VPCNetworkSource) == 0 {
+		rawIPFilter.VpcNetworkSources = []*raw.BucketIpFilterVpcNetworkSources{}
+		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "VpcNetworkSources")
+		rawIPFilter.NullFields = append(rawIPFilter.NullFields, "VpcNetworkSources")
+	} else {
+		rawIPFilter.VpcNetworkSources = toRawVPCNetworkSources(p.VPCNetworkSource)
+	}
+
+	// Handle PublicNetworkSource clearing
+	if p.PublicNetworkSource == nil {
+		rawIPFilter.PublicNetworkSource = nil
+		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "PublicNetworkSource")
+		rawIPFilter.NullFields = append(rawIPFilter.NullFields, "PublicNetworkSource")
+	} else if len(p.PublicNetworkSource.AllowedIPCidrRanges) == 0 {
+		rawIPFilter.PublicNetworkSource = &raw.BucketIpFilterPublicNetworkSource{
+			AllowedIpCidrRanges: []string{},
+		}
+		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "PublicNetworkSource")
+	} else {
+		rawIPFilter.PublicNetworkSource = toRawPublicNetworkSource(p.PublicNetworkSource)
+	}
+
+	return rawIPFilter
 }
 
 func ownerEntityFromRaw(r *raw.BucketOwner) string {

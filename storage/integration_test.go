@@ -5340,7 +5340,7 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
 		}
 
-		// Update IPFilter configuration.
+		// Update IPFilter configuration with VPCNetworkSource and PublicNetworkSource.
 		want = &IPFilter{
 			Mode: "Disabled",
 			VPCNetworkSource: []VPCNetworkSource{
@@ -5349,15 +5349,36 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 					AllowedIPCidrRanges: []string{"0.0.0.0/0"},
 				},
 			},
+			PublicNetworkSource: &PublicNetworkSource{
+				AllowedIPCidrRanges: []string{"1.2.3.4/32"},
+			},
 		}
 
 		ua := BucketAttrsToUpdate{
 			IPFilter: want,
 		}
-		// Verify updated configuration.
 		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
 		if !testutil.Equal(attrs.IPFilter, want) {
 			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
+		}
+
+		// Now clear VPCNetworkSource and PublicNetworkSource.
+		want = &IPFilter{
+			Mode: "Disabled",
+			// VPCNetworkSource and PublicNetworkSource omitted/zeroed to clear them.
+		}
+		ua = BucketAttrsToUpdate{
+			IPFilter: want,
+		}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if attrs.IPFilter == nil {
+			t.Errorf("got nil IPFilter, want non-nil")
+		}
+		if len(attrs.IPFilter.VPCNetworkSource) != 0 {
+			t.Errorf("expected VPCNetworkSource to be cleared, got %+v", attrs.IPFilter.VPCNetworkSource)
+		}
+		if attrs.IPFilter.PublicNetworkSource != nil && len(attrs.IPFilter.PublicNetworkSource.AllowedIPCidrRanges) != 0 {
+			t.Errorf("expected PublicNetworkSource to be cleared, got %+v", attrs.IPFilter.PublicNetworkSource)
 		}
 	})
 }
