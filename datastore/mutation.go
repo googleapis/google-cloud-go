@@ -143,26 +143,13 @@ func mutationProtos(muts []*Mutation) ([]*pb.Mutation, error) {
 		}
 	}
 	if merr != nil {
-		hasActualError := false
-		for _, e := range merr {
-			if e != nil {
-				hasActualError = true
-				break
-			}
-		}
-		if hasActualError {
-			return nil, merr
-		}
+		return nil, merr
 	}
 
 	var protos []*pb.Mutation
 	// Collect protos. Remove duplicate deletions (see deleteMutations).
 	seen := map[string]bool{}
 	for _, m := range muts {
-		if m.err != nil || m.mut == nil {
-			continue
-		}
-
 		if m.isDelete() {
 			ks := m.key.stringInternal()
 			if seen[ks] {

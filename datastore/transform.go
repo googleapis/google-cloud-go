@@ -16,6 +16,7 @@ package datastore
 
 import (
 	"fmt"
+	"reflect"
 
 	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 )
@@ -27,35 +28,24 @@ type PropertyTransform struct {
 	pb *pb.PropertyTransform
 }
 
-// Increment returns a PropertyTransform that atomically adds the given integer value
+// Increment returns a PropertyTransform that atomically adds the given numeric value
 // to the property's current numeric value.
 // If the property does not exist or is not numeric, it's set to the given value.
+// Accepted types for value: int, int8, int16, int32, int64, uint8, uint16, uint32, float32, float64.
 // fieldName is the name of the property to transform.
-func Increment(fieldName string, value int64) PropertyTransform {
+func Increment(fieldName string, value interface{}) (PropertyTransform, error) {
+	pbVal, err := toNumericValue(value)
+	if err != nil {
+		return PropertyTransform{}, fmt.Errorf("datastore: Increment: %w", err)
+	}
 	return PropertyTransform{
 		pb: &pb.PropertyTransform{
 			Property: fieldName,
 			TransformType: &pb.PropertyTransform_Increment{
-				Increment: &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: value}},
+				Increment: pbVal,
 			},
 		},
-	}
-}
-
-// IncrementFloat returns a PropertyTransform that atomically adds the given float value
-// to the property's current numeric value.
-// If the property does not exist or is not numeric, it's set to the given value.
-// Double arithmetic follows IEEE 754 semantics.
-// fieldName is the name of the property to transform.
-func IncrementFloat(fieldName string, value float64) PropertyTransform {
-	return PropertyTransform{
-		pb: &pb.PropertyTransform{
-			Property: fieldName,
-			TransformType: &pb.PropertyTransform_Increment{
-				Increment: &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: value}},
-			},
-		},
-	}
+	}, nil
 }
 
 // SetToServerTime returns a PropertyTransform that sets the property
@@ -73,61 +63,42 @@ func SetToServerTime(fieldName string) PropertyTransform {
 }
 
 // Maximum returns a PropertyTransform that atomically sets the property to the maximum
-// of its current numeric value and the given integer value.
+// of its current numeric value and the given numeric value.
 // If the property does not exist or is not numeric, it's set to the given value.
+// Accepted types for value: int, int8, int16, int32, int64, uint8, uint16, uint32, float32, float64.
 // fieldName is the name of the property to transform.
-func Maximum(fieldName string, value int64) PropertyTransform {
+func Maximum(fieldName string, value interface{}) (PropertyTransform, error) {
+	pbVal, err := toNumericValue(value)
+	if err != nil {
+		return PropertyTransform{}, fmt.Errorf("datastore: Maximum: %w", err)
+	}
 	return PropertyTransform{
 		pb: &pb.PropertyTransform{
 			Property: fieldName,
 			TransformType: &pb.PropertyTransform_Maximum{
-				Maximum: &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: value}},
+				Maximum: pbVal,
 			},
 		},
-	}
-}
-
-// MaximumFloat returns a PropertyTransform that atomically sets the property to the maximum
-// of its current numeric value and the given float value.
-// If the property does not exist or is not numeric, it's set to the given value.
-// fieldName is the name of the property to transform.
-func MaximumFloat(fieldName string, value float64) PropertyTransform {
-	return PropertyTransform{
-		pb: &pb.PropertyTransform{
-			Property: fieldName,
-			TransformType: &pb.PropertyTransform_Maximum{
-				Maximum: &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: value}},
-			},
-		},
-	}
+	}, nil
 }
 
 // Minimum returns a PropertyTransform that atomically sets the property to the minimum
-// of its current numeric value and the given integer value.
+// of its current numeric value and the given numeric value.
+// Accepted types for value: int, int8, int16, int32, int64, uint8, uint16, uint32, float32, float64.
 // fieldName is the name of the property to transform.
-func Minimum(fieldName string, value int64) PropertyTransform {
+func Minimum(fieldName string, value interface{}) (PropertyTransform, error) {
+	pbVal, err := toNumericValue(value)
+	if err != nil {
+		return PropertyTransform{}, fmt.Errorf("datastore: Minimum: %w", err)
+	}
 	return PropertyTransform{
 		pb: &pb.PropertyTransform{
 			Property: fieldName,
 			TransformType: &pb.PropertyTransform_Minimum{
-				Minimum: &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: value}},
+				Minimum: pbVal,
 			},
 		},
-	}
-}
-
-// MinimumFloat returns a PropertyTransform that atomically sets the property to the minimum
-// of its current numeric value and the given float value.
-// fieldName is the name of the property to transform.
-func MinimumFloat(fieldName string, value float64) PropertyTransform {
-	return PropertyTransform{
-		pb: &pb.PropertyTransform{
-			Property: fieldName,
-			TransformType: &pb.PropertyTransform_Minimum{
-				Minimum: &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: value}},
-			},
-		},
-	}
+	}, nil
 }
 
 // AppendMissingElements returns a PropertyTransform that atomically appends the given elements
@@ -139,7 +110,7 @@ func MinimumFloat(fieldName string, value float64) PropertyTransform {
 func AppendMissingElements(fieldName string, elements ...interface{}) (PropertyTransform, error) {
 	pbValues := make([]*pb.Value, len(elements))
 	for i, el := range elements {
-		vProto, err := interfaceToProto(el, false)
+		vProto, err := interfaceToProto(el, false) // NoIndex is false for elements in array for matching
 		if err != nil {
 			return PropertyTransform{}, fmt.Errorf("datastore: AppendMissingElements: cannot convert element at index %d for field '%s': %w", i, fieldName, err)
 		}
@@ -165,7 +136,7 @@ func AppendMissingElements(fieldName string, elements ...interface{}) (PropertyT
 func RemoveAllFromArray(fieldName string, elements ...interface{}) (PropertyTransform, error) {
 	pbValues := make([]*pb.Value, len(elements))
 	for i, el := range elements {
-		vProto, err := interfaceToProto(el, false)
+		vProto, err := interfaceToProto(el, false) // NoIndex is false for elements in array for matching
 		if err != nil {
 			return PropertyTransform{}, fmt.Errorf("datastore: RemoveAllFromArray: cannot convert element at index %d for field '%s': %w", i, fieldName, err)
 		}
@@ -179,4 +150,22 @@ func RemoveAllFromArray(fieldName string, elements ...interface{}) (PropertyTran
 			},
 		},
 	}, nil
+}
+
+// toNumericValue converts an interface{} to a protobuf Value with either
+// IntegerValue or DoubleValue.
+// It accepts int, int8, int16, int32, int64, uint8, uint16, uint32, float32, float64.
+func toNumericValue(n interface{}) (*pb.Value, error) {
+	v := reflect.ValueOf(n)
+	switch v.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: v.Int()}}, nil
+	case reflect.Uint8, reflect.Uint16, reflect.Uint32:
+		return &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(v.Uint())}}, nil
+	case reflect.Float32, reflect.Float64:
+		return &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: v.Float()}}, nil
+	// uint, uint64, uintptr are excluded as they can overflow int64
+	default:
+		return nil, fmt.Errorf("datastore: unsupported type for numeric transform: %T", n)
+	}
 }
