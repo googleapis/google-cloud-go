@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.2.0...support/v1.3.0) (2025-05-29)
+
+
+### Features
+
+* **support:** New client(s) ([#12351](https://github.com/googleapis/google-cloud-go/issues/12351)) ([6297761](https://github.com/googleapis/google-cloud-go/commit/6297761f4d292877e003855b83c02b52e54f1f9d))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.6...support/v1.2.0) (2025-05-21)
 
 

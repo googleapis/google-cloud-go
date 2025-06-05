@@ -380,7 +380,7 @@ To create a client which will use gRPC, use the alternate constructor:
 	// Use client as usual.
 
 One major advantage of the gRPC API is that it can use [Direct Connectivity],
-enabling requests to skip some proxy steps and reducing responce latency.
+enabling requests to skip some proxy steps and reducing response latency.
 Requirements to use Direct Connectivity include:
 
   - Your application must be running inside Google Cloud.

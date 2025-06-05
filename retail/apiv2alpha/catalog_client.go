@@ -488,19 +488,19 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 // For example, if projects/*/locations/*/catalogs/*/branches/1 is set as
 // default, setting
-// SearchRequest.branch
-// to projects/*/locations/*/catalogs/*/branches/default_branch is
-// equivalent to setting
-// SearchRequest.branch
-// to projects/*/locations/*/catalogs/*/branches/1.
+// SearchRequest.branch to
+// projects/*/locations/*/catalogs/*/branches/default_branch is equivalent
+// to setting
+// SearchRequest.branch to
+// projects/*/locations/*/catalogs/*/branches/1.
 //
 // Using multiple branches can be useful when developers would like
 // to have a staging branch to test and verify for future usage. When it
 // becomes ready, developers switch on the staging branch using this API
 // while keeping using
 // projects/*/locations/*/catalogs/*/branches/default_branch as
-// SearchRequest.branch
-// to route the traffic to this staging branch.
+// SearchRequest.branch to
+// route the traffic to this staging branch.
 //
 // CAUTION: If you have live predict/search traffic, switching the default
 // branch could potentially cause outages if the ID space of the new branch
@@ -1216,19 +1216,19 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 //
 // For example, if projects/*/locations/*/catalogs/*/branches/1 is set as
 // default, setting
-// SearchRequest.branch
-// to projects/*/locations/*/catalogs/*/branches/default_branch is
-// equivalent to setting
-// SearchRequest.branch
-// to projects/*/locations/*/catalogs/*/branches/1.
+// SearchRequest.branch to
+// projects/*/locations/*/catalogs/*/branches/default_branch is equivalent
+// to setting
+// SearchRequest.branch to
+// projects/*/locations/*/catalogs/*/branches/1.
 //
 // Using multiple branches can be useful when developers would like
 // to have a staging branch to test and verify for future usage. When it
 // becomes ready, developers switch on the staging branch using this API
 // while keeping using
 // projects/*/locations/*/catalogs/*/branches/default_branch as
-// SearchRequest.branch
-// to route the traffic to this staging branch.
+// SearchRequest.branch to
+// route the traffic to this staging branch.
 //
 // CAUTION: If you have live predict/search traffic, switching the default
 // branch could potentially cause outages if the ID space of the new branch
