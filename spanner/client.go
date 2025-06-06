@@ -680,6 +680,7 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowHardBoundTokens("ALTS"))
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -1516,7 +1517,7 @@ func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
 		for _, match := range matches {
 			if len(match) == 3 { // full match + 2 capture groups
 				metricName := match[1]
-				duration, err := strconv.ParseFloat(match[2], 10)
+				duration, err := strconv.ParseFloat(match[2], 64)
 				if err == nil {
 					metrics[metricName] = time.Duration(duration*1000) * time.Microsecond
 				}
