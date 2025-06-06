@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package storage_test
+
+import (
+	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+)
