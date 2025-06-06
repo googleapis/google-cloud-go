@@ -41,8 +41,8 @@ type DataProvider interface {
 	GetTrustBoundaryData(ctx context.Context, accessToken string) (*Data, error)
 }
 
-// TrustBoundaryConfigProvider provides specific configuration for trust boundary lookups.
-type TrustBoundaryConfigProvider interface {
+// ConfigProvider provides specific configuration for trust boundary lookups.
+type ConfigProvider interface {
 	// GetTrustBoundaryEndpoint returns the endpoint URL for the trust boundary lookup.
 	GetTrustBoundaryEndpoint(ctx context.Context) (url string, err error)
 	// GetUniverseDomain returns the universe domain associated with the credential.
@@ -173,6 +173,8 @@ func NewServiceAccountTrustBoundaryConfig(saEmail, universeDomain string) *Servi
 	}
 }
 
+// GetTrustBoundaryEndpoint returns the formatted URL for fetching allowed locations
+// for the configured service account and universe domain.
 func (sac *ServiceAccountTrustBoundaryConfig) GetTrustBoundaryEndpoint(ctx context.Context) (url string, err error) {
 	if sac.ServiceAccountEmail == "" {
 		return "", errors.New("trustboundary: service account email cannot be empty for config")
@@ -184,6 +186,8 @@ func (sac *ServiceAccountTrustBoundaryConfig) GetTrustBoundaryEndpoint(ctx conte
 	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, ud, sac.ServiceAccountEmail), nil
 }
 
+// GetUniverseDomain returns the configured universe domain, defaulting to
+// [internal.DefaultUniverseDomain] if not explicitly set.
 func (sac *ServiceAccountTrustBoundaryConfig) GetUniverseDomain(ctx context.Context) (string, error) {
 	if sac.UniverseDomain == "" {
 		return internal.DefaultUniverseDomain, nil
@@ -191,32 +195,39 @@ func (sac *ServiceAccountTrustBoundaryConfig) GetUniverseDomain(ctx context.Cont
 	return sac.UniverseDomain, nil
 }
 
-// TrustBoundaryDataProvider fetches and caches trust boundary Data.
-// It implements the DataProvider interface and uses a TrustBoundaryConfigProvider
+// dataProvider fetches and caches trust boundary Data.
+// It implements the DataProvider interface and uses a ConfigProvider
 // to get type-specific details for the lookup.
-type TrustBoundaryDataProvider struct {
+type dataProvider struct {
 	client         *http.Client
-	configProvider TrustBoundaryConfigProvider
+	configProvider ConfigProvider
 	data           *Data
 }
 
-// NewTrustBoundaryDataProvider creates a new TrustBoundaryDataProvider.
-func NewTrustBoundaryDataProvider(client *http.Client, configProvider TrustBoundaryConfigProvider) (DataProvider, error) {
+// NewTrustBoundaryDataProvider creates a new DataProvider.
+// It will use the provided HTTP client to make requests and the configProvider
+// to determine the correct endpoint and universe domain for trust boundary lookups.
+func NewTrustBoundaryDataProvider(client *http.Client, configProvider ConfigProvider) (DataProvider, error) {
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client cannot be nil for TrustBoundaryDataProvider")
 	}
 	if configProvider == nil {
 		return nil, errors.New("trustboundary: TrustBoundaryConfigProvider cannot be nil for TrustBoundaryDataProvider")
 	}
-	return &TrustBoundaryDataProvider{
+	return &dataProvider{
 		client:         client,
 		configProvider: configProvider,
 	}, nil
 }
 
-func (p *TrustBoundaryDataProvider) GetTrustBoundaryData(ctx context.Context, accessToken string) (*Data, error) {
-	// If the universe domain is not the default, trust boundary enforcement is explicitly
-	// not applied. In this scenario, we return a no-op trust boundary.
+// GetTrustBoundaryData retrieves the trust boundary data.
+// It first checks the universe domain: if it's non-default, a NoOp is returned.
+// Otherwise, it checks a local cache. If the data is not cached as NoOp,
+// it fetches new data from the endpoint provided by its ConfigProvider,
+// using the given accessToken for authentication. Results are cached.
+// If fetching fails, it returns previously cached data if available, otherwise the fetch error.
+func (p *dataProvider) GetTrustBoundaryData(ctx context.Context, accessToken string) (*Data, error) {
+	// Check the universe domain.
 	uniDomain, err := p.configProvider.GetUniverseDomain(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("trustboundary: error getting universe domain: %w", err)
@@ -265,8 +276,9 @@ type GCETrustBoundaryConfigProvider struct {
 	universeDomainProvider *internal.ComputeUniverseDomainProvider
 }
 
-// NewGCETrustBoundaryConfigProvider creates a new GCETrustBoundaryConfigProvider.
-func NewGCETrustBoundaryConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider) TrustBoundaryConfigProvider {
+// NewGCETrustBoundaryConfigProvider creates a new GCETrustBoundaryConfigProvider
+// which uses the provided gceUDP to interact with the GCE metadata server.
+func NewGCETrustBoundaryConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider) ConfigProvider {
 	// The validity of gceUDP and its internal MetadataClient will be checked
 	// within the GetTrustBoundaryEndpoint and GetUniverseDomain methods.
 	return &GCETrustBoundaryConfigProvider{
@@ -274,6 +286,8 @@ func NewGCETrustBoundaryConfigProvider(gceUDP *internal.ComputeUniverseDomainPro
 	}
 }
 
+// GetTrustBoundaryEndpoint constructs the trust boundary lookup URL for a GCE environment.
+// It fetches the default service account email and universe domain from the metadata server.
 func (g *GCETrustBoundaryConfigProvider) GetTrustBoundaryEndpoint(ctx context.Context) (string, error) {
 	if g.universeDomainProvider == nil || g.universeDomainProvider.MetadataClient == nil {
 		return "", errors.New("trustboundary: GCETrustBoundaryConfigProvider not properly initialized (missing ComputeUniverseDomainProvider or MetadataClient)")
@@ -293,6 +307,8 @@ func (g *GCETrustBoundaryConfigProvider) GetTrustBoundaryEndpoint(ctx context.Co
 	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, ud, saEmail), nil
 }
 
+// GetUniverseDomain retrieves the universe domain from the GCE metadata server.
+// If the metadata server returns an empty universe domain, it defaults to [internal.DefaultUniverseDomain
 func (g *GCETrustBoundaryConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
 	if g.universeDomainProvider == nil || g.universeDomainProvider.MetadataClient == nil {
 		return "", errors.New("trustboundary: GCETrustBoundaryConfigProvider not properly initialized (missing ComputeUniverseDomainProvider or MetadataClient)")
