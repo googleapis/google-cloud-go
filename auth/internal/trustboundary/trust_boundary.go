@@ -29,7 +29,7 @@ const (
 	// NoOpEncodedLocations is a special value indicating that no trust boundary is enforced.
 	NoOpEncodedLocations = "0x0"
 	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
-	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
+	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.%s/v1/projects/-/serviceAccounts/%s/allowedLocations"
 )
 
 // DataProvider provides an interface for fetching trust boundary data.
@@ -152,6 +152,10 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 		return nil, fmt.Errorf("trustboundary: failed to unmarshal trust boundary response: %w", err)
 	}
 
+	if apiResponse.EncodedLocations == "" {
+		return nil, errors.New("trustboundary: invalid API response: encodedLocations is empty")
+	}
+
 	return NewTrustBoundaryData(apiResponse.Locations, apiResponse.EncodedLocations), nil
 }
 
@@ -174,10 +178,17 @@ func (sac *ServiceAccountTrustBoundaryConfig) GetTrustBoundaryEndpoint(ctx conte
 	if sac.ServiceAccountEmail == "" {
 		return "", errors.New("trustboundary: service account email cannot be empty for config")
 	}
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, sac.ServiceAccountEmail), nil
+	ud := sac.UniverseDomain
+	if ud == "" {
+		ud = internal.DefaultUniverseDomain
+	}
+	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, ud, sac.ServiceAccountEmail), nil
 }
 
 func (sac *ServiceAccountTrustBoundaryConfig) GetUniverseDomain(ctx context.Context) (string, error) {
+	if sac.UniverseDomain == "" {
+		return internal.DefaultUniverseDomain, nil
+	}
 	return sac.UniverseDomain, nil
 }
 
@@ -271,9 +282,16 @@ func (g *GCETrustBoundaryConfigProvider) GetTrustBoundaryEndpoint(ctx context.Co
 	mdClient := g.universeDomainProvider.MetadataClient
 	saEmail, err := mdClient.EmailWithContext(ctx, "default")
 	if err != nil {
-		return "", fmt.Errorf("trustboundary: GCE config: failed to get SA email: %w", err)
+		return "", fmt.Errorf("trustboundary: GCE config: failed to get service account email: %w", err)
 	}
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, saEmail), nil
+	ud, err := g.universeDomainProvider.GetProperty(ctx)
+	if err != nil {
+		return "", fmt.Errorf("trustboundary: GCE config: failed to get universe domain: %w", err)
+	}
+	if ud == "" {
+		ud = internal.DefaultUniverseDomain
+	}
+	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, ud, saEmail), nil
 }
 
 func (g *GCETrustBoundaryConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
@@ -283,6 +301,9 @@ func (g *GCETrustBoundaryConfigProvider) GetUniverseDomain(ctx context.Context) 
 	ud, err := g.universeDomainProvider.GetProperty(ctx)
 	if err != nil {
 		return "", fmt.Errorf("trustboundary: GCE config: failed to get universe domain: %w", err)
+	}
+	if ud == "" {
+		return internal.DefaultUniverseDomain, nil
 	}
 	return ud, nil
 }
