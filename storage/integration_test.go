@@ -6656,7 +6656,7 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
 		if jwt == nil {
-			t.skip("JSON key file is not present")
+			t.Skip("JSON key file is not present")
 		}
 
 		obj := "testBucketSignedURL"
