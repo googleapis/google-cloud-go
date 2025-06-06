@@ -5315,6 +5315,74 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 	})
 }
 
+func TestIntegration_BucketIPFilter(t *testing.T) {
+	ctx := skipGRPC("IPFilter not yet supported in gRPC transport")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		projID := testutil.ProjID()
+
+		// Create bucket with initial IPFilter configuration.
+		bucketName := prefix + uidSpace.New()
+		fmt.Printf("Creating bucket %q\n", bucketName)
+		bucket := client.Bucket(bucketName)
+		want := &IPFilter{
+			Mode: "Disabled",
+		}
+
+		h.mustCreate(bucket, projID, &BucketAttrs{
+			IPFilter: want,
+		})
+		defer h.mustDeleteBucket(bucket)
+
+		// Verify initial configuration.
+		attrs := h.mustBucketAttrs(bucket)
+		if !testutil.Equal(attrs.IPFilter, want) {
+			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
+		}
+
+		// Update IPFilter configuration with VPCNetworkSource and PublicNetworkSource.
+		want = &IPFilter{
+			Mode: "Disabled",
+			VPCNetworkSource: []VPCNetworkSource{
+				{
+					Network:             fmt.Sprintf("projects/%s/global/networks/default", projID),
+					AllowedIPCidrRanges: []string{"0.0.0.0/0"},
+				},
+			},
+			PublicNetworkSource: &PublicNetworkSource{
+				AllowedIPCidrRanges: []string{"1.2.3.4/32"},
+			},
+		}
+
+		ua := BucketAttrsToUpdate{
+			IPFilter: want,
+		}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.IPFilter, want) {
+			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
+		}
+
+		// Now clear VPCNetworkSource and PublicNetworkSource.
+		want = &IPFilter{
+			Mode: "Disabled",
+			// VPCNetworkSource and PublicNetworkSource omitted/zeroed to clear them.
+		}
+		ua = BucketAttrsToUpdate{
+			IPFilter: want,
+		}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if attrs.IPFilter == nil {
+			t.Errorf("got nil IPFilter, want non-nil")
+		}
+		if len(attrs.IPFilter.VPCNetworkSource) != 0 {
+			t.Errorf("expected VPCNetworkSource to be cleared, got %+v", attrs.IPFilter.VPCNetworkSource)
+		}
+		if attrs.IPFilter.PublicNetworkSource != nil && len(attrs.IPFilter.PublicNetworkSource.AllowedIPCidrRanges) != 0 {
+			t.Errorf("expected PublicNetworkSource to be cleared, got %+v", attrs.IPFilter.PublicNetworkSource)
+		}
+	})
+}
+
 func TestIntegration_SoftDelete(t *testing.T) {
 	multiTransportTest(skipExtraReadAPIs(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
