@@ -4048,6 +4048,10 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
 		}
+		if jwt == nil {
+			t.Skip("JSON key file is not present")
+		}
+
 		// an account that has permissions on the project that owns the bucket
 		mainUserEmail := jwt.Email
 
@@ -6651,6 +6655,9 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.skip("JSON key file is not present")
+		}
 
 		obj := "testBucketSignedURL"
 		contents := []byte("test")
@@ -6744,6 +6751,9 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 		jwt, err := testutil.JWTConfig()
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
+		}
+		if jwt == nil {
+			t.Skip("JSON key file is not present")
 		}
 
 		statusCodeToRespond := 200
