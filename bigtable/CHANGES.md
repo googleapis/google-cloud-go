@@ -1,5 +1,21 @@
 # Changes
 
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.37.0...bigtable/v1.38.0) (2025-06-06)
+
+
+### Features
+
+* **bigtable/admin:** Add deletion_protection support for LVs ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **bigtable:** Add DeletionProtection support for Logical Views ([#11895](https://github.com/googleapis/google-cloud-go/issues/11895)) ([ed488b9](https://github.com/googleapis/google-cloud-go/commit/ed488b94b46b50585f91e065dd877c06d85ce879))
+* **bigtable:** NewServerWithListener ([#12408](https://github.com/googleapis/google-cloud-go/issues/12408)) ([59ea0de](https://github.com/googleapis/google-cloud-go/commit/59ea0de1013a4320deba227102fecbf77e8211cb))
+* **bigtable:** Use delay from RetryInfo ([#11955](https://github.com/googleapis/google-cloud-go/issues/11955)) ([0510711](https://github.com/googleapis/google-cloud-go/commit/051071159420cd199858d556186aa7dfd86ac940))
+
+
+### Bug Fixes
+
+* **bigtable:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+* **bigtable:** Retry RST stream errors ([#11477](https://github.com/googleapis/google-cloud-go/issues/11477)) ([df43b4a](https://github.com/googleapis/google-cloud-go/commit/df43b4af7529ae91993361b485daff3f83234b2b))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.36.0...bigtable/v1.37.0) (2025-04-15)
 
 
@@ -508,4 +524,3 @@
 
 This is the first tag to carve out bigtable as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
