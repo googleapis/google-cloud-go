@@ -3,6 +3,13 @@
 
 
 
+## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.3...cloudquotas/v1.3.4) (2025-06-04)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
 ## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.2...cloudquotas/v1.3.3) (2025-04-15)
 
 
