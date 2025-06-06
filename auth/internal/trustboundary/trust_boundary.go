@@ -126,11 +126,10 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 		return nil, fmt.Errorf("trustboundary: failed to create trust boundary request: %w", err)
 	}
 
-	// TODO(negarb): uncomment after endpoint authentication is implemented and released.
-	// if accessToken == "" {
-	// 	return nil, errors.New("trustboundary: access token required for lookup API authentication")
-	// }
-	// req.Header.Set("Authorization", "Bearer "+accessToken)
+	if accessToken == "" {
+		return nil, errors.New("trustboundary: access token required for lookup API authentication")
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	response, err := client.Do(req)
 	if err != nil {
