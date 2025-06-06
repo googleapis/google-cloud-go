@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"cloud.google.com/go/auth/internal/trustboundary"
 	"cloud.google.com/go/compute/metadata"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
@@ -49,6 +50,8 @@ const (
 var (
 	// for testing
 	allowOnGCECheck = true
+	// trustBoundaryEnabled controls whether the trust boundary feature is enabled.
+	trustBoundaryEnabled = os.Getenv("ENABLE_TRUST_BOUNDARY") == "true"
 )
 
 // TokenBindingType specifies the type of binding used when requesting a token
@@ -118,14 +121,26 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 		metadataClient := metadata.NewWithOptions(&metadata.Options{
 			Logger: opts.logger(),
 		})
+		gceUniverseDomainProvider := &internal.ComputeUniverseDomainProvider{
+			MetadataClient: metadataClient,
+		}
+
+		var tbDataProvider trustboundary.DataProvider
+		if trustBoundaryEnabled {
+			gceTBConfigProvider := trustboundary.NewGCETrustBoundaryConfigProvider(gceUniverseDomainProvider)
+			var err error
+			tbDataProvider, err = trustboundary.NewTrustBoundaryDataProvider(opts.client(), gceTBConfigProvider)
+			if err != nil {
+				return nil, fmt.Errorf("credentials: failed to initialize GCE trust boundary provider: %w", err)
+			}
+		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider: computeTokenProvider(opts, metadataClient),
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
 				return metadataClient.ProjectIDWithContext(ctx)
 			}),
-			UniverseDomainProvider: &internal.ComputeUniverseDomainProvider{
-				MetadataClient: metadataClient,
-			},
+			UniverseDomainProvider:    gceUniverseDomainProvider,
+			TrustBoundaryDataProvider: tbDataProvider,
 		}), nil
 	}
 
