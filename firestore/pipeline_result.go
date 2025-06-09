@@ -88,9 +88,6 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 //
 //	var m map[string]interface{}
 //	p.DataTo(&m)
-//
-// except that it returns nil if the document does not exist.
-
 func (p *PipelineResult) Data() (map[string]interface{}, error) {
 	if p == nil {
 		return nil, status.Errorf(codes.NotFound, "document does not exist")
