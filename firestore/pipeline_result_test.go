@@ -151,7 +151,11 @@ func TestStreamPipelineResultIterator_Next(t *testing.T) {
 					t.Fatalf("Result count mismatch for data check: expected %d, got %d", len(tc.wantData), len(results))
 				}
 				for i, pr := range results {
-					if diff := cmp.Diff(tc.wantData[i], pr.Data()); diff != "" {
+					data, err := pr.Data()
+					if err != nil {
+						t.Fatalf("Data: %v", err)
+					}
+					if diff := cmp.Diff(tc.wantData[i], data); diff != "" {
 						t.Errorf("Data mismatch for result %d (-want +got):\n%s", i, diff)
 					}
 				}
@@ -233,11 +237,16 @@ func TestPipelineResultIterator_GetAll(t *testing.T) {
 	if len(allResults) != 2 {
 		t.Errorf("results from GetAll(): got %d, want: 2", len(allResults))
 	}
-	if allResults[0].Data()["id"].(int64) != 1 {
-		t.Errorf("first result id: got %v, want: 1", allResults[0].Data()["id"])
+
+	data, err := allResults[0].Data()
+	if err != nil {
+		t.Fatalf("Data: %v", err)
 	}
-	if allResults[1].Data()["id"].(int64) != 2 {
-		t.Errorf("second result id: got %v, want: 2", allResults[1].Data()["id"])
+	if data["id"].(int64) != 1 {
+		t.Errorf("first result id: got %v, want: 1", data["id"])
+	}
+	if data["id"].(int64) != 2 {
+		t.Errorf("second result id: got %v, want: 2", data["id"])
 	}
 
 	// After GetAll, Next should return iterator.Done
@@ -275,12 +284,12 @@ func TestPipelineResult_DataExtraction(t *testing.T) {
 		t.Fatalf("newPipelineResult: %v", err)
 	}
 
-	if !pr.Exists() {
-		t.Error("pr.Exists: got false, want true")
+	// Test Data()
+	dataMap, err := pr.Data()
+	if err != nil {
+		t.Fatalf("Data: %+v", err)
 	}
 
-	// Test Data()
-	dataMap := pr.Data()
 	if dataMap["stringProp"].(string) != "hello" {
 		t.Errorf("stringProp: got %v, want 'hello'", dataMap["stringProp"])
 	}
@@ -347,11 +356,12 @@ func TestPipelineResult_NoResults(t *testing.T) {
 		t.Fatalf("newPipelineResult: %v", err)
 	}
 
-	if pr.Exists() {
-		t.Error("pr.Exists() for non-existent result: got true, want false")
+	data, err := pr.Data()
+	if err == nil {
+		t.Errorf("pr.Data() for non-existent result err: got nil, want %v", err)
 	}
-	if data := pr.Data(); data != nil {
-		t.Errorf("pr.Data() for non-existent result: got %v, want nil", data)
+	if data != nil {
+		t.Errorf("pr.Data() for non-existent result: got %v, want nil. Err: got", data)
 	}
 
 	type MyStruct struct{ Foo string }
