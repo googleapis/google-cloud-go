@@ -56,6 +56,10 @@ type MetricsTestServer struct {
 	createServiceTimeSeriesReqs []*monitoringpb.CreateTimeSeriesRequest
 	RetryCount                  int
 	mu                          sync.Mutex
+
+	createServiceTimeSeriesReqCount     int
+	expectedCreateServiceTimeSeriesReqs int
+	timeSeriesReqCh                     chan struct{}
 }
 
 func (m *MetricsTestServer) Shutdown() {
@@ -94,6 +98,57 @@ func (m *MetricsTestServer) appendCreateServiceTimeSeriesReq(ctx context.Context
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		m.userAgent = strings.Join(md.Get("User-Agent"), ";")
 	}
+
+	m.createServiceTimeSeriesReqCount++
+	if m.expectedCreateServiceTimeSeriesReqs > 0 && m.createServiceTimeSeriesReqCount >= m.expectedCreateServiceTimeSeriesReqs {
+		// Non-blocking send in case the channel is not being listened to or already signaled
+		select {
+		case m.timeSeriesReqCh <- struct{}{}:
+		default:
+		}
+	}
+}
+
+func (m *MetricsTestServer) waitForRequests(ctx context.Context, count int, timeout time.Duration) error {
+	m.mu.Lock()
+	m.expectedCreateServiceTimeSeriesReqs = count
+	m.createServiceTimeSeriesReqCount = 0 // Reset counter
+	// Ensure channel is clean, in case this method is called multiple times or after a previous signal without a wait.
+	// A new channel is made each time to avoid race conditions with previous waiters.
+	m.timeSeriesReqCh = make(chan struct{}, 1)
+	// Read current count in case requests came in before waitForRequests was called
+	currentReqCount := len(m.createServiceTimeSeriesReqs)
+	// If currentReqCount already meets or exceeds the target, signal immediately.
+	// This handles cases where metrics are exported very quickly.
+	if currentReqCount >= count {
+		m.mu.Unlock()
+		// Non-blocking send as channel is buffered and we are the only sender here.
+		select {
+		case m.timeSeriesReqCh <- struct{}{}:
+		default:
+		}
+	} else {
+		m.mu.Unlock()
+	}
+
+	select {
+	case <-m.timeSeriesReqCh:
+		m.mu.Lock()
+		m.expectedCreateServiceTimeSeriesReqs = 0 // Reset expected count
+		m.mu.Unlock()
+		return nil
+	case <-ctx.Done():
+		m.mu.Lock()
+		m.expectedCreateServiceTimeSeriesReqs = 0 // Reset expected count
+		m.mu.Unlock()
+		return ctx.Err()
+	case <-time.After(timeout):
+		m.mu.Lock()
+		m.expectedCreateServiceTimeSeriesReqs = 0 // Reset expected count
+		numReceived := m.createServiceTimeSeriesReqCount
+		m.mu.Unlock()
+		return fmt.Errorf("timed out waiting for %d requests, received %d", count, numReceived)
+	}
 }
 
 func (m *MetricsTestServer) Serve() error {
@@ -128,9 +183,10 @@ func NewMetricTestServer() (*MetricsTestServer, error) {
 		return nil, err
 	}
 	testServer := &MetricsTestServer{
-		Endpoint: lis.Addr().String(),
-		lis:      lis,
-		srv:      srv,
+		Endpoint:        lis.Addr().String(),
+		lis:             lis,
+		srv:             srv,
+		timeSeriesReqCh: make(chan struct{}, 1), // Buffered channel
 	}
 
 	monitoringpb.RegisterMetricServiceServer(
@@ -214,18 +270,15 @@ func TestExportMetrics(t *testing.T) {
 	counterNotBuiltIn, err := meterNotbuiltIn.Int64Counter("name.lastvalue")
 	requireNoError(t, err)
 
-	// record start time
-	testStartTime := time.Now()
-
 	// record data points
 	counterBuiltIn.Add(ctx, 1)
 	counterNotBuiltIn.Add(ctx, 1)
 
-	// Calculate elapsed time
-	elapsedTime := time.Since(testStartTime)
-	if elapsedTime < 3*defaultSamplePeriod {
-		// Ensure at least 2 datapoints are recorded
-		time.Sleep(3*defaultSamplePeriod - elapsedTime)
+	// Wait for at least two export cycles.
+	// A 20-second timeout should be generous.
+	err = testServer.waitForRequests(ctx, 2, 20*time.Second)
+	if err != nil {
+		t.Fatalf("Error waiting for requests: %v", err)
 	}
 
 	gotCalls := testServer.CreateServiceTimeSeriesRequests()
