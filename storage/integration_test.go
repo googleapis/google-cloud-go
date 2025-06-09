@@ -2682,7 +2682,7 @@ func TestIntegration_SignedURL(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		bkt := client.Bucket(bucket)
@@ -2803,7 +2803,7 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		bkt := client.Bucket(bucket)
@@ -2890,7 +2890,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		opts := &SignedURLOptions{
@@ -4048,6 +4048,10 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
+
 		// an account that has permissions on the project that owns the bucket
 		mainUserEmail := jwt.Email
 
@@ -6543,7 +6547,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		projectID := testutil.ProjID()
@@ -6726,6 +6730,9 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
 
 		obj := "testBucketSignedURL"
 		contents := []byte("test")
@@ -6820,6 +6827,9 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
 
 		statusCodeToRespond := 200
 
@@ -6885,7 +6895,7 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		signingFunc := func(b []byte) ([]byte, error) {
