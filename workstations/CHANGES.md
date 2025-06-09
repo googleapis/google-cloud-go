@@ -2,6 +2,7 @@
 
 
 
+
 ## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.1.4...workstations/v1.1.5) (2025-04-15)
 
 

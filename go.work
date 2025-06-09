@@ -29,6 +29,7 @@ use (
 	./batch
 	./beyondcorp
 	./bigquery
+	./bigquery/v2
 	./bigtable
 	./billing
 	./binaryauthorization
