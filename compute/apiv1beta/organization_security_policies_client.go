@@ -224,7 +224,7 @@ func (c *OrganizationSecurityPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddAssociation inserts an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
+// AddAssociation inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
 func (c *OrganizationSecurityPoliciesClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddAssociation(ctx, req, opts...)
 }
@@ -397,7 +397,7 @@ func (c *organizationSecurityPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddAssociation inserts an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
+// AddAssociation inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
 func (c *organizationSecurityPoliciesRESTClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyAssociationResource()
