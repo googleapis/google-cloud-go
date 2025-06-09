@@ -5321,7 +5321,6 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 		h := testHelper{t}
 		projID := testutil.ProjID()
 
-		// Create bucket with initial IPFilter configuration.
 		bucketName := prefix + uidSpace.New()
 		fmt.Printf("Creating bucket %q\n", bucketName)
 		bucket := client.Bucket(bucketName)
@@ -5334,7 +5333,6 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 		})
 		defer h.mustDeleteBucket(bucket)
 
-		// Verify initial configuration.
 		attrs := h.mustBucketAttrs(bucket)
 		if !testutil.Equal(attrs.IPFilter, want) {
 			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
@@ -5362,10 +5360,9 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
 		}
 
-		// Now clear VPCNetworkSource and PublicNetworkSource.
+		// Clear VPCNetworkSource and PublicNetworkSource.
 		want = &IPFilter{
 			Mode: "Disabled",
-			// VPCNetworkSource and PublicNetworkSource omitted/zeroed to clear them.
 		}
 		ua = BucketAttrsToUpdate{
 			IPFilter: want,
@@ -5373,12 +5370,22 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
 		if attrs.IPFilter == nil {
 			t.Errorf("got nil IPFilter, want non-nil")
-		}
-		if len(attrs.IPFilter.VPCNetworkSource) != 0 {
-			t.Errorf("expected VPCNetworkSource to be cleared, got %+v", attrs.IPFilter.VPCNetworkSource)
-		}
-		if attrs.IPFilter.PublicNetworkSource != nil && len(attrs.IPFilter.PublicNetworkSource.AllowedIPCidrRanges) != 0 {
-			t.Errorf("expected PublicNetworkSource to be cleared, got %+v", attrs.IPFilter.PublicNetworkSource)
+		} else {
+			// Retry in case of metadata propagation delay.
+			err := retry(ctx, func() error {
+				return nil
+			}, func() error {
+				if len(attrs.IPFilter.VPCNetworkSource) != 0 {
+					return fmt.Errorf("expected VPCNetworkSource to be cleared, got %+v", attrs.IPFilter.VPCNetworkSource)
+				}
+				if attrs.IPFilter.PublicNetworkSource != nil && len(attrs.IPFilter.PublicNetworkSource.AllowedIPCidrRanges) != 0 {
+					return fmt.Errorf("expected PublicNetworkSource to be cleared, got %+v", attrs.IPFilter.PublicNetworkSource)
+				}
+				return nil
+			})
+			if err != nil {
+				t.Error(err)
+			}
 		}
 	})
 }

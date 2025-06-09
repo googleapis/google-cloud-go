@@ -2354,68 +2354,6 @@ func ipFilterFromRaw(r *raw.BucketIpFilter) *IPFilter {
 	}
 }
 
-// func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
-// 	if p == nil {
-// 		return nil
-// 	}
-// 	rawIPFilter := &raw.BucketIpFilter{
-// 		Mode: p.Mode,
-// 	}
-
-// 	// Handle VPCNetworkSource clearing
-// 	if len(p.VPCNetworkSource) == 0 {
-// 		rawIPFilter.VpcNetworkSources = []*raw.BucketIpFilterVpcNetworkSources{}
-// 		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "VpcNetworkSources")
-// 		rawIPFilter.NullFields = append(rawIPFilter.NullFields, "VpcNetworkSources")
-// 	} else {
-// 		rawIPFilter.VpcNetworkSources = toRawVPCNetworkSources(p.VPCNetworkSource)
-// 	}
-
-// 	// Handle PublicNetworkSource clearing
-// 	if p.PublicNetworkSource == nil {
-// 		rawIPFilter.PublicNetworkSource = nil
-// 		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "PublicNetworkSource")
-// 		rawIPFilter.NullFields = append(rawIPFilter.NullFields, "PublicNetworkSource")
-// 	} else if len(p.PublicNetworkSource.AllowedIPCidrRanges) == 0 {
-// 		rawIPFilter.PublicNetworkSource = &raw.BucketIpFilterPublicNetworkSource{
-// 			AllowedIpCidrRanges: []string{},
-// 		}
-// 		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "PublicNetworkSource")
-// 	} else {
-// 		rawIPFilter.PublicNetworkSource = toRawPublicNetworkSource(p.PublicNetworkSource)
-// 	}
-
-// 	return rawIPFilter
-// }
-
-// func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
-// 	if p == nil {
-// 		return nil
-// 	}
-// 	rawIPFilter := &raw.BucketIpFilter{
-// 		Mode: p.Mode,
-// 	}
-
-// 	// Only set VpcNetworkSources if non-empty
-// 	if len(p.VPCNetworkSource) > 0 {
-// 		rawIPFilter.VpcNetworkSources = toRawVPCNetworkSources(p.VPCNetworkSource)
-// 	}
-
-// 	// Only set PublicNetworkSource if non-nil
-// 	if p.PublicNetworkSource != nil {
-// 		if len(p.PublicNetworkSource.AllowedIPCidrRanges) == 0 {
-// 			rawIPFilter.PublicNetworkSource = &raw.BucketIpFilterPublicNetworkSource{
-// 				AllowedIpCidrRanges: []string{},
-// 			}
-// 			rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "PublicNetworkSource")
-// 		} else {
-// 			rawIPFilter.PublicNetworkSource = toRawPublicNetworkSource(p.PublicNetworkSource)
-// 		}
-// 	}
-
-// 	return rawIPFilter
-// }
-
 func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
 	if p == nil {
 		return nil
@@ -2424,7 +2362,17 @@ func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
 		Mode: p.Mode,
 	}
 
-	// Handle VPCNetworkSource clearing
+	// When mode is "disabled", we need to clear both VpcNetworkSources and PublicNetworkSource
+	// and use ForceSendFields/NullFields to ensure they're properly sent as empty/null values
+	if p.Mode == "disabled" {
+		rawIPFilter.VpcNetworkSources = []*raw.BucketIpFilterVpcNetworkSources{}
+		rawIPFilter.PublicNetworkSource = nil
+		rawIPFilter.ForceSendFields = []string{"VpcNetworkSources", "PublicNetworkSource"}
+		rawIPFilter.NullFields = []string{"VpcNetworkSources", "PublicNetworkSource"}
+		return rawIPFilter
+	}
+
+	// Handle VPCNetworkSource
 	if len(p.VPCNetworkSource) == 0 {
 		rawIPFilter.VpcNetworkSources = []*raw.BucketIpFilterVpcNetworkSources{}
 		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "VpcNetworkSources")
@@ -2433,7 +2381,7 @@ func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
 		rawIPFilter.VpcNetworkSources = toRawVPCNetworkSources(p.VPCNetworkSource)
 	}
 
-	// Handle PublicNetworkSource clearing
+	// Handle PublicNetworkSource
 	if p.PublicNetworkSource == nil {
 		rawIPFilter.PublicNetworkSource = nil
 		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "PublicNetworkSource")

@@ -432,15 +432,15 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: time.Hour},
 		IPFilter: &IPFilter{
 			Mode: "disabled",
-			// VPCNetworkSource: []VPCNetworkSource{
-			// 	{
-			// 		Network:             fmt.Sprintf("projects/%s/global/networks/default", testutil.ProjID()),
-			// 		AllowedIPCidrRanges: []string{"0.0.0.0/0"},
-			// 	},
-			// },
-			// PublicNetworkSource: &PublicNetworkSource{
-			// 	AllowedIPCidrRanges: []string{"1.2.3.4/32"},
-			// },
+			VPCNetworkSource: []VPCNetworkSource{
+				{
+					Network:             fmt.Sprintf("projects/%s/global/networks/default", testutil.ProjID()),
+					AllowedIPCidrRanges: []string{"0.0.0.0/0"},
+				},
+			},
+			PublicNetworkSource: &PublicNetworkSource{
+				AllowedIPCidrRanges: []string{"1.2.3.4/32"},
+			},
 		},
 	}
 	au.SetLabel("a", "foo")
