@@ -4414,8 +4414,6 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		for name := range wantBackups {
 			wantedNames = append(wantedNames, name)
 		}
-		t.Logf("Found backup names: %v", foundNames)
-		t.Logf("Wanted backup names: %v", wantedNames)
 	}
 
 	for backupName, expected := range wantBackups {
@@ -4566,7 +4564,6 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	time.Sleep(5 * time.Second)
 
 	paginatedBackups := []*BackupInfo{}
-	// Corrected: Call Backups without the unknown WithBackupPagination option.
 	// The iterator itself will handle pagination if there are many backups.
 	// The key is to test the processing of items from the iterator.
 	it := adminClient.Backups(ctx, sourceCluster)
@@ -4581,10 +4578,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		paginatedBackups = append(paginatedBackups, bk)
 	}
 
-	foundPaginatedBackup := false
 	for _, bk := range paginatedBackups {
 		if bk.Name == paginatedBkpName {
-			foundPaginatedBackup = true
 			// Perform a basic check on the paginated backup
 			if bk.SourceTable != tblConf.TableID {
 				t.Errorf("Paginated backup %s SourceTable got: %s, want: %s", bk.Name, bk.SourceTable, tblConf.TableID)
@@ -4592,12 +4587,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 			break // Found the backup, no need to check further in this loop
 		}
 	}
-	if !foundPaginatedBackup && len(paginatedBackups) > 0 { // only fail if backups were returned but not the one we made
-		// It's possible other backups exist from parallel test runs or previous failed runs.
-		// We are primarily interested if our specific backup can be listed.
-		// A more robust check might be needed if strict isolation is required.
-		t.Logf("Paginated backup %s not found in list of %d backups. This might be okay if other backups exist.", paginatedBkpName, len(paginatedBackups))
-	} else if len(paginatedBackups) == 0 {
+	if len(paginatedBackups) == 0 {
 		t.Errorf("ListBackups with pagination returned no backups, expected at least %s", paginatedBkpName)
 	}
 }
