@@ -265,16 +265,11 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			},
 		},
 		IpFilter: &raw.BucketIpFilter{
-			Mode: "disabled",
-			PublicNetworkSource: &raw.BucketIpFilterPublicNetworkSource{
-				AllowedIpCidrRanges: []string{"1.2.3.4/32", "5.6.7.8/32"},
-			},
-			VpcNetworkSources: []*raw.BucketIpFilterVpcNetworkSources{
-				{
-					AllowedIpCidrRanges: []string{"10.0.0.0/8"},
-					Network:             "projects/my-project/global/networks/my-network",
-				},
-			},
+			Mode:                "disabled",
+			PublicNetworkSource: nil,
+			VpcNetworkSources:   []*raw.BucketIpFilterVpcNetworkSources{},
+			ForceSendFields:     []string{"VpcNetworkSources", "PublicNetworkSource"},
+			NullFields:          []string{"VpcNetworkSources", "PublicNetworkSource"},
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
