@@ -59,7 +59,7 @@ type httpStorageClient struct {
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
 // Storage API.
-func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
+func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (*httpStorageClient, error) {
 	s := initSettings(opts...)
 	o := s.clientOption
 	config := newStorageConfig(o...)
@@ -79,7 +79,9 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		o = append(o, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
 			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
 			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+			internaloption.EnableNewAuthLibrary(),
 		)
+
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
 		c, err := internaloption.AuthCreds(ctx, o)
@@ -89,6 +91,11 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		}
 	} else {
 		var hostURL *url.URL
+
+		c, err := internaloption.AuthCreds(ctx, o)
+		if err == nil {
+			creds = c
+		}
 
 		if strings.Contains(host, "://") {
 			h, err := url.Parse(host)
@@ -106,10 +113,12 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		endpoint := hostURL.String()
 
 		// Append the emulator host as default endpoint for the user
-		o = append([]option.ClientOption{option.WithoutAuthentication()}, o...)
-
-		o = append(o, internaloption.WithDefaultEndpointTemplate(endpoint))
-		o = append(o, internaloption.WithDefaultMTLSEndpoint(endpoint))
+		o = append([]option.ClientOption{
+			option.WithoutAuthentication(),
+			internaloption.SkipDialSettingsValidation(),
+			internaloption.WithDefaultEndpointTemplate(endpoint),
+			internaloption.WithDefaultMTLSEndpoint(endpoint),
+		}, o...)
 	}
 	s.clientOption = o
 
