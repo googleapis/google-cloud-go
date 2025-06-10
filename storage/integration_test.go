@@ -6953,6 +6953,87 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(credFile))
 }
 
+func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+
+	universeDomain := os.Getenv(testUniverseDomain)
+	if universeDomain == "" {
+		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
+	}
+	credFile := os.Getenv(testUniverseCreds)
+	if credFile == "" {
+		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
+	}
+	project := os.Getenv(testUniverseProject)
+	if project == "" {
+		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
+	}
+	location := os.Getenv(testUniverseLocation)
+	if location == "" {
+		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	}
+
+	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
+
+	// Get new Auth creds
+	newAuthCreds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		Scopes:           scopes,
+		CredentialsFile:  credFile,
+		UniverseDomain:   universeDomain,
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatalf("Cannot get Auth Credentials to create client")
+	}
+
+	// Get JSON info
+	jsonKey, err := os.ReadFile(credFile)
+	if err != nil {
+		t.Fatalf("cannot read the JSON key file, err: %v", err)
+	}
+
+	jwt, err := google.JWTConfigFromJSON(jsonKey, scopes...)
+	if err != nil {
+		t.Fatalf("google.JWTConfigFromJSON: %v", err)
+	}
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucket := client.Bucket(prefix + uidSpace.New())
+
+		h.mustCreate(bucket, project, &BucketAttrs{Location: location})
+		defer h.mustDeleteBucket(bucket)
+
+		obj := "testBucketSignedURL"
+		contents := []byte("test")
+		if err := writeObject(ctx, bucket.Object(obj), "text/plain", contents); err != nil {
+			t.Fatalf("writing: %v", err)
+		}
+
+		defer h.mustDeleteObject(bucket.Object(obj))
+
+		opts := SignedURLOptions{
+			Method:         "GET",
+			Expires:        time.Now().Add(30 * time.Second),
+			GoogleAccessID: jwt.Email,
+		}
+
+		url, err := bucket.SignedURL(obj, &opts)
+		if err != nil {
+			t.Fatalf("unable to create signed URL: %v", err)
+		}
+
+		if err := verifySignedURL(url, nil, contents); err != nil {
+			t.Fatalf("problem with the signed URL: %v", err)
+		}
+	}, option.WithAuthCredentials(newAuthCreds), option.WithUniverseDomain(universeDomain))
+
+}
+
 // verifySignedURL gets the bytes at the provided url and verifies them against the
 // expectedFileBody. Make sure the SignedURLOptions set the method as "GET".
 func verifySignedURL(url string, headers map[string][]string, expectedFileBody []byte) error {
