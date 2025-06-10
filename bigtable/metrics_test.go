@@ -27,6 +27,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -299,6 +300,107 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				t.Errorf("No. of CreateServiceTimeSeriesRequests: got: %v,  want: %v", gotCreateTSCalls, test.wantCreateTSCallsCount)
 			}
 		})
+	}
+}
+
+func TestConnectivityErrorCountWithInterceptor(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	appProfile := "test-app-profile"
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 100 * time.Millisecond // Faster sampling for this test
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// Setup mock monitoring server with request waiting capability
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("Error setting up metrics test server: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	// Override exporter options to connect to the mock server
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint), // Connect to mock
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() {
+		createExporterOptions = origCreateExporterOptions
+	}()
+
+	// Setup fake Bigtable server that returns Unavailable for the first three ReadRows calls,
+	// and a non-retriable error on the fourth to stop the retry loop.
+	var attemptCount int32
+	serverStreamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "ReadRows") {
+			currentAttempt := atomic.AddInt32(&attemptCount, 1)
+			if currentAttempt <= 3 {
+				return status.Error(codes.Unavailable, "Mock Unavailable error for connectivity test")
+			}
+			return status.Error(codes.Internal, "non-retriable error")
+		}
+		return handler(srv, ss)
+	}
+
+	config := ClientConfig{AppProfile: appProfile}
+	tbl, cleanup, gotErr := setupFakeServer(project, instance, config, grpc.StreamInterceptor(serverStreamInterceptor))
+	defer cleanup()
+	if gotErr != nil {
+		t.Fatalf("setupFakeServer error: got: %v, want: nil", gotErr)
+	}
+
+	// Pop out any old requests from the monitoring server
+	monitoringServer.CreateServiceTimeSeriesRequests()
+
+	// Perform read rows operation. The first three attempts will fail with Unavailable,
+	// the fourth with Internal. The overall operation will fail with Internal.
+	err = tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool { return true })
+	if err == nil {
+		t.Fatal("ReadRows: got nil error, want an error")
+	}
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("ReadRows: got error code %v, want %v", status.Code(err), codes.Internal)
+	}
+
+	// Wait for the single metric export batch that occurs after the operation completes.
+	if err := monitoringServer.waitForRequests(ctx, 1, 5*time.Second); err != nil {
+		t.Fatalf("Timed out waiting for metrics to be exported: %v", err)
+	}
+
+	gotCreateTSCalls := monitoringServer.CreateServiceTimeSeriesRequests()
+
+	var totalConnectivityErrors int64
+	foundConnectivityErrorMetric := false
+	for _, call := range gotCreateTSCalls {
+		for _, ts := range call.TimeSeries {
+			if strings.HasSuffix(ts.Metric.Type, metricNameConnErrCount) {
+				foundConnectivityErrorMetric = true
+				// The status label for a connectivity error metric should be the code of that error
+				if val := ts.Metric.Labels[metricLabelKeyStatus]; val != codes.Unavailable.String() {
+					t.Errorf("Metric %s: label %s: got %s, want %s", metricNameConnErrCount, metricLabelKeyStatus, val, codes.Unavailable.String())
+				}
+				for _, point := range ts.Points {
+					totalConnectivityErrors += point.GetValue().GetInt64Value()
+				}
+			}
+		}
+	}
+
+	if !foundConnectivityErrorMetric {
+		t.Fatalf("Metric %s was not found in exported metrics. Exported calls: %+v", metricNameConnErrCount, gotCreateTSCalls)
+	}
+
+	if totalConnectivityErrors != 3 {
+		t.Errorf("Metric %s: got count %d, want 3", metricNameConnErrCount, totalConnectivityErrors)
 	}
 }
 
