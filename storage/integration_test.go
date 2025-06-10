@@ -6968,6 +6968,10 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
+	// Direct connectivity is not supported yet for this feature.
+	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+	t.Setenv(disableDP, "true")
+
 	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 
 	universeDomain := os.Getenv(testUniverseDomain)
