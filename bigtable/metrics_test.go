@@ -93,7 +93,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		attribute.String(metricLabelKeyClientName, clientName),
 	}
 
-	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameConnErrCount, metricNameConnErrCount, metricNameFirstRespLatencies, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies}
+	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameFirstRespLatencies, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
 		wantMetricTypesGCM = append(wantMetricTypesGCM, builtInMetricsMeterName+wantMetricName)
@@ -213,7 +213,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				gotClient.metricsTracerFactory.serverLatencies != nil &&
 				gotClient.metricsTracerFactory.attemptLatencies != nil &&
 				gotClient.metricsTracerFactory.firstRespLatencies != nil &&
-				gotClient.metricsTracerFactory.connErrCount != nil &&
 				gotClient.metricsTracerFactory.retryCount != nil
 			if test.wantBuiltinEnabled != gotNonNilInstruments {
 				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
