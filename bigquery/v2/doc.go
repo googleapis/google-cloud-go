@@ -15,4 +15,6 @@
 // Package bigquery provides provides support for services within the
 // Google BigQuery ecosystem.  This root package provides no functionality at this
 // time.
+//
+// This module is EXPERIMENTAL and subject to change or removal without notice. 
 package bigquery
