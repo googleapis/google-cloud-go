@@ -6980,9 +6980,9 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 	}
 
 	// Get JSON info
-	jwt, err := testutil.JWTConfig_Explicit(udTestVars.credFile)
+	jwt, err := testutil.JWTConfigExplicit(udTestVars.credFile)
 	if err != nil {
-		t.Fatalf("unable to find test credentials: %v", err)
+		t.Fatalf("Cannot extract JSON credentials from %q: %v", udTestVars.credFile, err)
 	}
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
