@@ -21,8 +21,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sync"
 	"reflect"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -287,6 +287,9 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Create debug_tags
 	tf.debugTags, err = meter.Int64Counter(
