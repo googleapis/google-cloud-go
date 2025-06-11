@@ -6923,31 +6923,18 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	// Direct connectivity is not supported yet for this feature.
 	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
 	t.Setenv(disableDP, "true")
-
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
-	universeDomain := os.Getenv(testUniverseDomain)
-	if universeDomain == "" {
-		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
-	}
-	credFile := os.Getenv(testUniverseCreds)
-	if credFile == "" {
-		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
-	}
-	project := os.Getenv(testUniverseProject)
-	if project == "" {
-		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
-	}
-	location := os.Getenv(testUniverseLocation)
-	if location == "" {
-		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	udTestVars, err := getUniverseDomainTestVars()
+	if err != nil {
+		t.Fatalf("Cannot get Universe Domain vars, err: %v", err)
 	}
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		bucket := client.Bucket(prefix + uidSpace.New())
-		h.mustCreate(bucket, project, &BucketAttrs{Location: location})
+		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
 		defer h.mustDeleteBucket(bucket)
 
 		obj := bucket.Object(uidSpaceObjects.New())
@@ -6960,7 +6947,7 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 		if !bytes.Equal(got, contents) {
 			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
 		}
-	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(credFile))
+	}, option.WithUniverseDomain(udTestVars.universeDomain), option.WithCredentialsFile(udTestVars.credFile))
 }
 
 func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
@@ -6974,21 +6961,9 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 
 	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 
-	universeDomain := os.Getenv(testUniverseDomain)
-	if universeDomain == "" {
-		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
-	}
-	credFile := os.Getenv(testUniverseCreds)
-	if credFile == "" {
-		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
-	}
-	project := os.Getenv(testUniverseProject)
-	if project == "" {
-		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
-	}
-	location := os.Getenv(testUniverseLocation)
-	if location == "" {
-		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	udTestVars, err := getUniverseDomainTestVars()
+	if err != nil {
+		t.Fatalf("Cannot get Universe Domain vars, err: %v", err)
 	}
 
 	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
@@ -6996,30 +6971,25 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 	// Get new Auth creds
 	newAuthCreds, err := credentials.DetectDefault(&credentials.DetectOptions{
 		Scopes:           scopes,
-		CredentialsFile:  credFile,
-		UniverseDomain:   universeDomain,
+		CredentialsFile:  udTestVars.credFile,
+		UniverseDomain:   udTestVars.universeDomain,
 		UseSelfSignedJWT: true,
 	})
 	if err != nil {
-		t.Fatalf("Cannot get Auth Credentials to create client")
+		t.Fatalf("Cannot get Auth Credentials to create client, err: %v", err)
 	}
 
 	// Get JSON info
-	jsonKey, err := os.ReadFile(credFile)
+	jwt, err := testutil.JWTConfig_Explicit(udTestVars.credFile)
 	if err != nil {
-		t.Fatalf("cannot read the JSON key file, err: %v", err)
-	}
-
-	jwt, err := google.JWTConfigFromJSON(jsonKey, scopes...)
-	if err != nil {
-		t.Fatalf("google.JWTConfigFromJSON: %v", err)
+		t.Fatalf("unable to find test credentials: %v", err)
 	}
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		h := testHelper{t}
 		bucket := client.Bucket(prefix + uidSpace.New())
 
-		h.mustCreate(bucket, project, &BucketAttrs{Location: location})
+		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
 		defer h.mustDeleteBucket(bucket)
 
 		obj := "testBucketSignedURL"
@@ -7044,8 +7014,36 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 		if err := verifySignedURL(url, nil, contents); err != nil {
 			t.Fatalf("problem with the signed URL: %v", err)
 		}
-	}, option.WithAuthCredentials(newAuthCreds), option.WithUniverseDomain(universeDomain))
+	}, option.WithAuthCredentials(newAuthCreds), option.WithUniverseDomain(udTestVars.universeDomain))
+}
 
+type universeDomainTestVars struct {
+	universeDomain string
+	credFile       string
+	project        string
+	location       string
+}
+
+// Gets Universe Domain environment variables for Universe Domain tests
+// Returns universeDomainTestVars pointer for easy access
+func getUniverseDomainTestVars() (*universeDomainTestVars, error) {
+	universeDomain := os.Getenv(testUniverseDomain)
+	if universeDomain == "" {
+		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
+	}
+	credFile := os.Getenv(testUniverseCreds)
+	if credFile == "" {
+		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
+	}
+	project := os.Getenv(testUniverseProject)
+	if project == "" {
+		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
+	}
+	location := os.Getenv(testUniverseLocation)
+	if location == "" {
+		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	}
+	return &universeDomainTestVars{universeDomain: universeDomain, credFile: credFile, project: project, location: location}, nil
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
