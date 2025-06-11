@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/spanner"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
+	"google.golang.org/api/option"
 )
 
 var (
@@ -38,8 +39,9 @@ func getMultiplexEnableFlag() bool {
 	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true"
 }
 
-func setupMockedTestServerWithConfig(t *testing.T, config spanner.ClientConfig) (server *stestutil.MockedSpannerInMemTestServer, client *spanner.Client, teardown func()) {
+func setupMockedTestServerWithConfig(t *testing.T, config spanner.ClientConfig, clientOpts ...option.ClientOption) (server *stestutil.MockedSpannerInMemTestServer, client *spanner.Client, teardown func()) {
 	server, opts, serverTeardown := stestutil.NewMockedSpannerInMemTestServer(t)
+	opts = append(opts, clientOpts...)
 	ctx := context.Background()
 	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
 	client, err := spanner.NewClientWithConfig(ctx, formattedDatabase, config, opts...)

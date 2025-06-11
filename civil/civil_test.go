@@ -741,6 +741,16 @@ func TestScanner(t *testing.T) {
 		{time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC), &tm, &Time{18, 54, 2, 0}},
 		{time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC), &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
 
+		// Date* input
+		{&Date{1987, 4, 15}, &d, &Date{1987, 4, 15}},
+		{&Time{18, 54, 2, 0}, &tm, &Time{18, 54, 2, 0}},
+		{&DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}, &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+
+		// Date input
+		{Date{1987, 4, 15}, &d, &Date{1987, 4, 15}},
+		{Time{18, 54, 2, 0}, &tm, &Time{18, 54, 2, 0}},
+		{DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}, &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+
 		// *time input
 		{toPtr(time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC)), &d, &Date{1987, 4, 15}},
 		{toPtr(time.Date(1987, 4, 15, 18, 54, 2, 0, time.UTC)), &tm, &Time{18, 54, 2, 0}},

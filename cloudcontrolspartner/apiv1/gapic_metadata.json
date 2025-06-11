@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "CloudControlsPartnerCoreClient",
           "rpcs": {
+            "CreateCustomer": {
+              "methods": [
+                "CreateCustomer"
+              ]
+            },
+            "DeleteCustomer": {
+              "methods": [
+                "DeleteCustomer"
+              ]
+            },
             "GetCustomer": {
               "methods": [
                 "GetCustomer"
@@ -48,6 +58,11 @@
             "ListWorkloads": {
               "methods": [
                 "ListWorkloads"
+              ]
+            },
+            "UpdateCustomer": {
+              "methods": [
+                "UpdateCustomer"
               ]
             }
           }
@@ -55,6 +70,16 @@
         "rest": {
           "libraryClient": "CloudControlsPartnerCoreClient",
           "rpcs": {
+            "CreateCustomer": {
+              "methods": [
+                "CreateCustomer"
+              ]
+            },
+            "DeleteCustomer": {
+              "methods": [
+                "DeleteCustomer"
+              ]
+            },
             "GetCustomer": {
               "methods": [
                 "GetCustomer"
@@ -93,6 +118,11 @@
             "ListWorkloads": {
               "methods": [
                 "ListWorkloads"
+              ]
+            },
+            "UpdateCustomer": {
+              "methods": [
+                "UpdateCustomer"
               ]
             }
           }

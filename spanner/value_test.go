@@ -34,6 +34,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -50,6 +51,9 @@ var (
 	t4 = time.Now()
 	d1 = mustParseDate("2016-11-15")
 	d2 = mustParseDate("1678-01-01")
+	// UUID
+	uuid1 = uuid.MustParse("94dcd1d9-7582-464a-96d0-071effcc373c")
+	uuid2 = uuid.MustParse("a344e03b-5f8a-4cbf-87f3-482dc67abe78")
 )
 
 func mustParseTime(s string) time.Time {
@@ -272,6 +276,7 @@ func TestEncodeValue(t *testing.T) {
 	var fNilPtr *float64
 	f32Value := float32(3.14)
 	var f32NilPtr *float32
+	var uuidNilPtr *uuid.UUID
 	tValue := t1
 	var tNilPtr *time.Time
 	dValue := d1
@@ -315,6 +320,7 @@ func TestEncodeValue(t *testing.T) {
 		tPGJsonb      = pgJsonbType()
 		tProtoMessage = protoMessageType(protoMessagefqn)
 		tProtoEnum    = protoEnumType(protoEnumfqn)
+		tUUID         = uuidType()
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -381,6 +387,16 @@ func TestEncodeValue(t *testing.T) {
 		{[]float32{3.14, 0.618, float32(math.Inf(-1))}, listProto(float32Proto(3.14), float32Proto(0.618), float32Proto(float32(math.Inf(-1)))), listType(tFloat32), "[]float32"},
 		{[]NullFloat32{{3.14, true}, {0.618, false}}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat"},
 		{[]*float32{&f32Value, f32NilPtr}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat32"},
+		// UUID / UUID ARRAY
+		{uuid1, uuidProto(uuid1), tUUID, "uuid.UUID"},
+		{NullUUID{uuid1, true}, uuidProto(uuid1), tUUID, "NullUUID with value"},
+		{NullUUID{uuid1, false}, nullProto(), tUUID, "NullUUID with null"},
+		{&uuid1, uuidProto(uuid1), tUUID, "*uuid.UUID with value"},
+		{uuidNilPtr, nullProto(), tUUID, "*uuid.UUID with null"},
+		{[]uuid.UUID{uuid1, uuid2}, listProto(uuidProto(uuid1), uuidProto(uuid2)), listType(tUUID), "[]uuid.UUID"},
+		{[]uuid.UUID(nil), nullProto(), listType(tUUID), "null []uuid.UUID"},
+		{[]NullUUID{{uuid1, true}, {uuid2, false}}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]NullUUID"},
+		{[]*uuid.UUID{&uuid1, uuidNilPtr}, listProto(uuidProto(uuid1), nullProto()), listType(tUUID), "[]*uuid.UUID"},
 		// NUMERIC / NUMERIC ARRAY
 		{*numValuePtr, numericProto(numValuePtr), tNumeric, "big.Rat"},
 		{numValuePtr, numericProto(numValuePtr), tNumeric, "*big.Rat"},
@@ -1000,6 +1016,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomFloat32 float32
 	type CustomTime time.Time
 	type CustomDate civil.Date
+	type CustomUUID uuid.UUID
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -1008,6 +1025,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomNullFloat32 NullFloat32
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
+	type CustomNullUUID NullUUID
 
 	sValue := "abc"
 	iValue := int64(300)
@@ -1016,6 +1034,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	f32Value := float32(3.14)
 	tValue := t1
 	dValue := d1
+	uuidValue := uuid1
 
 	StructTypeProto := structType(
 		mkField("Stringf", stringType()),
@@ -1025,7 +1044,9 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		mkField("Float32f", float32Type()),
 		mkField("Bytef", bytesType()),
 		mkField("Timef", timeType()),
-		mkField("Datef", dateType()))
+		mkField("Datef", dateType()),
+		mkField("Uuidf", uuidType()),
+	)
 
 	for _, test := range []encodeTest{
 		{
@@ -1039,7 +1060,8 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    time.Time
 				Datef    civil.Date
-			}{"abc", 300, false, 3.45, float32(3.14), []byte("foo"), t1, d1},
+				Uuidf    uuid.UUID
+			}{"abc", 300, false, 3.45, float32(3.14), []byte("foo"), t1, d1, uuid1},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
@@ -1048,7 +1070,8 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
-				dateProto(d1)),
+				dateProto(d1),
+				uuidProto(uuid1)),
 			StructTypeProto,
 		},
 		{
@@ -1062,7 +1085,8 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    *time.Time
 				Datef    *civil.Date
-			}{&sValue, &iValue, &bValue, &fValue, &f32Value, []byte("foo"), &tValue, &dValue},
+				Uuidf    *uuid.UUID
+			}{&sValue, &iValue, &bValue, &fValue, &f32Value, []byte("foo"), &tValue, &dValue, &uuidValue},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
@@ -1071,7 +1095,9 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
-				dateProto(d1)),
+				dateProto(d1),
+				uuidProto(uuid1),
+			),
 			StructTypeProto,
 		},
 		{
@@ -1085,8 +1111,10 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    *time.Time
 				Datef    *civil.Date
-			}{nil, nil, nil, nil, nil, nil, nil, nil},
+				Uuidf    *uuid.UUID
+			}{nil, nil, nil, nil, nil, nil, nil, nil, nil},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1108,7 +1136,8 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    CustomBytes
 				Timef    CustomTime
 				Datef    CustomDate
-			}{"abc", 300, false, 3.45, CustomFloat32(3.14), []byte("foo"), CustomTime(t1), CustomDate(d1)},
+				Uuidf    CustomUUID
+			}{"abc", 300, false, 3.45, CustomFloat32(3.14), []byte("foo"), CustomTime(t1), CustomDate(d1), CustomUUID(uuid1)},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
@@ -1117,7 +1146,9 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
-				dateProto(d1)),
+				dateProto(d1),
+				uuidProto(uuid1),
+			),
 			StructTypeProto,
 		},
 		{
@@ -1131,6 +1162,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    []byte
 				Timef    NullTime
 				Datef    NullDate
+				Uuidf    NullUUID
 			}{
 				NullString{"abc", false},
 				NullInt64{4, false},
@@ -1140,8 +1172,10 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				nil,
 				NullTime{t1, false},
 				NullDate{d1, false},
+				NullUUID{uuid1, false},
 			},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1163,6 +1197,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				Bytef    CustomBytes
 				Timef    CustomNullTime
 				Datef    CustomNullDate
+				Uuidf    CustomNullUUID
 			}{
 				CustomNullString{"abc", false},
 				CustomNullInt64{4, false},
@@ -1172,8 +1207,10 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 				nil,
 				CustomNullTime{t1, false},
 				CustomNullDate{d1, false},
+				CustomNullUUID{uuid1, false},
 			},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1544,6 +1581,8 @@ func TestDecodeValue(t *testing.T) {
 	protoMessagefqn := "examples.spanner.music.SingerInfo"
 	protoEnumfqn := "examples.spanner.music.Genre"
 
+	var uuidNilPtr *uuid.UUID
+
 	for _, test := range []struct {
 		desc      string
 		proto     *proto3.Value
@@ -1707,6 +1746,19 @@ func TestDecodeValue(t *testing.T) {
 		// DATE ARRAY with []NullDate
 		{desc: "decode ARRAY<DATE> to []*civil.Date", proto: listProto(dateProto(d1), nullProto(), dateProto(d2)), protoType: listType(dateType()), want: []*civil.Date{&dValue, nil, &d2Value}},
 		{desc: "decode NULL to []*civil.Date", proto: nullProto(), protoType: listType(dateType()), want: []*civil.Date(nil)},
+		// UUID
+		{desc: "decode UUID to uuid.UUID", proto: uuidProto(uuid1), protoType: uuidType(), want: uuid1},
+		{desc: "decode NULL to uuid.UUID", proto: nullProto(), protoType: uuidType(), want: "", wantErr: true},
+		{desc: "decode UUID to *uuid.UUID", proto: uuidProto(uuid1), protoType: uuidType(), want: &uuid1},
+		{desc: "decode NULL to *uuid.UUID", proto: nullProto(), protoType: uuidType(), want: uuidNilPtr},
+		{desc: "decode UUID to NullUUID", proto: uuidProto(uuid1), protoType: uuidType(), want: NullUUID{uuid1, true}},
+		{desc: "decode NULL to NullUUID", proto: nullProto(), protoType: uuidType(), want: NullUUID{}},
+		// UUID ARRAY with []NullUUID
+		{desc: "decode ARRAY<UUID> to []NullUUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []NullUUID{{uuid1, true}, {}, {uuid2, true}}},
+		{desc: "decode NULL to []NullUUID", proto: nullProto(), protoType: listType(uuidType()), want: []NullUUID(nil)},
+		{desc: "decode ARRAY<UUID> to []uuid.UUID", proto: listProto(uuidProto(uuid1), uuidProto(uuid2)), protoType: listType(uuidType()), want: []uuid.UUID{uuid1, uuid2}},
+		{desc: "decode ARRAY<UUID> to []*uuid.UUID", proto: listProto(uuidProto(uuid1), nullProto(), uuidProto(uuid2)), protoType: listType(uuidType()), want: []*uuid.UUID{&uuid1, nil, &uuid2}},
+		{desc: "decode NULL to []*uuid.UUID", proto: nullProto(), protoType: listType(uuidType()), want: []*uuid.UUID(nil)},
 		// STRUCT ARRAY
 		// STRUCT schema is equal to the following Go struct:
 		// type s struct {
@@ -2090,6 +2142,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomTime time.Time
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
+	type CustomUUID uuid.UUID
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -2099,6 +2152,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
+	type CustomNullUUID NullUUID
 
 	type StringEmbedded struct {
 		string
@@ -2120,6 +2174,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{float32(3.14), spannerTypeNonNullFloat32},
 		{time.Now(), spannerTypeNonNullTime},
 		{civil.DateOf(time.Now()), spannerTypeNonNullDate},
+		{uuid1, spannerTypeNonNullUUID},
 		{NullString{}, spannerTypeNullString},
 		{NullInt64{}, spannerTypeNullInt64},
 		{NullBool{}, spannerTypeNullBool},
@@ -2130,6 +2185,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{*big.NewRat(1234, 1000), spannerTypeNonNullNumeric},
 		{big.Rat{}, spannerTypeNonNullNumeric},
 		{NullNumeric{}, spannerTypeNullNumeric},
+		{NullUUID{}, spannerTypeNullUUID},
 
 		{[]string{"foo", "bar"}, spannerTypeArrayOfNonNullString},
 		{[][]byte{{1, 2, 3}, {3, 2, 1}}, spannerTypeArrayOfByteArray},
@@ -2140,6 +2196,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]float32{3.14}, spannerTypeArrayOfNonNullFloat32},
 		{[]time.Time{time.Now()}, spannerTypeArrayOfNonNullTime},
 		{[]civil.Date{civil.DateOf(time.Now())}, spannerTypeArrayOfNonNullDate},
+		{[]uuid.UUID{uuid1}, spannerTypeArrayOfNonNullUUID},
 		{[]NullString{}, spannerTypeArrayOfNullString},
 		{[]NullInt64{}, spannerTypeArrayOfNullInt64},
 		{[]NullBool{}, spannerTypeArrayOfNullBool},
@@ -2150,6 +2207,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]big.Rat{}, spannerTypeArrayOfNonNullNumeric},
 		{[]big.Rat{*big.NewRat(1234, 1000), *big.NewRat(1234, 100)}, spannerTypeArrayOfNonNullNumeric},
 		{[]NullNumeric{}, spannerTypeArrayOfNullNumeric},
+		{[]NullUUID{}, spannerTypeArrayOfNullUUID},
 
 		{CustomString("foo"), spannerTypeNonNullString},
 		{CustomInt64(-100), spannerTypeNonNullInt64},
@@ -2159,6 +2217,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomTime(time.Now()), spannerTypeNonNullTime},
 		{CustomDate(civil.DateOf(time.Now())), spannerTypeNonNullDate},
 		{CustomNumeric(*big.NewRat(1234, 1000)), spannerTypeNonNullNumeric},
+		{CustomUUID(uuid1), spannerTypeNonNullUUID},
 
 		{[]CustomString{}, spannerTypeArrayOfNonNullString},
 		{[]CustomInt64{}, spannerTypeArrayOfNonNullInt64},
@@ -2168,6 +2227,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomTime{}, spannerTypeArrayOfNonNullTime},
 		{[]CustomDate{}, spannerTypeArrayOfNonNullDate},
 		{[]CustomNumeric{}, spannerTypeArrayOfNonNullNumeric},
+		{[]CustomUUID{}, spannerTypeArrayOfNonNullUUID},
 
 		{CustomNullString{}, spannerTypeNullString},
 		{CustomNullInt64{}, spannerTypeNullInt64},
@@ -2177,6 +2237,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomNullTime{}, spannerTypeNullTime},
 		{CustomNullDate{}, spannerTypeNullDate},
 		{CustomNullNumeric{}, spannerTypeNullNumeric},
+		{CustomNullUUID{}, spannerTypeNullUUID},
 
 		{[]CustomNullString{}, spannerTypeArrayOfNullString},
 		{[]CustomNullInt64{}, spannerTypeArrayOfNullInt64},
@@ -2186,6 +2247,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomNullTime{}, spannerTypeArrayOfNullTime},
 		{[]CustomNullDate{}, spannerTypeArrayOfNullDate},
 		{[]CustomNullNumeric{}, spannerTypeArrayOfNullNumeric},
+		{[]CustomNullUUID{}, spannerTypeArrayOfNullUUID},
 
 		{StringEmbedded{}, spannerTypeUnknown},
 		{NullStringEmbedded{}, spannerTypeUnknown},
@@ -3055,6 +3117,15 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 				{input: NullProtoEnum{}, expect: "null"},
 			},
 		},
+		{
+			"NullUUID",
+			[]testcase{
+				{input: NullUUID{uuid1, true}, expect: fmt.Sprintf("%q", uuid1.String())},
+				{input: &NullUUID{uuid2, true}, expect: fmt.Sprintf("%q", uuid2.String())},
+				{input: &NullUUID{uuid1, false}, expect: "null"},
+				{input: NullUUID{}, expect: "null"},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -3215,6 +3286,16 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 				{input: []byte(`"hello`), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
 			},
 		},
+		{
+			"NullUUID",
+			[]testcase{
+				{input: []byte(fmt.Sprintf("%q", uuid1.String())), got: NullUUID{}, isNull: false, expect: uuid1.String(), expectError: false},
+				{input: []byte("null"), got: NullUUID{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullUUID{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -3253,6 +3334,9 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullProtoEnum:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullUUID:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				default:

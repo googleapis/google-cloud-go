@@ -29,6 +29,7 @@ use (
 	./batch
 	./beyondcorp
 	./bigquery
+	./bigquery/v2
 	./bigtable
 	./billing
 	./binaryauthorization
@@ -165,6 +166,7 @@ use (
 	./speech
 	./storage
 	./storage/internal/benchmarks
+	./storagebatchoperations
 	./storageinsights
 	./storagetransfer
 	./streetview

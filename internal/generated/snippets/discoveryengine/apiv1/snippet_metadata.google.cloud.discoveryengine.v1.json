@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.17.1",
+    "version": "1.18.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,327 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "discoveryengine_v1_generated_CmekConfigService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmekConfigClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CmekConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_CmekConfigService_DeleteCmekConfig_sync",
+      "title": "discoveryengine DeleteCmekConfig Sample",
+      "description": "DeleteCmekConfig de-provisions a CmekConfig.",
+      "file": "CmekConfigClient/DeleteCmekConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCmekConfig",
+        "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient.DeleteCmekConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteCmekConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteCmekConfigOperation",
+        "client": {
+          "shortName": "CmekConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteCmekConfig",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigService.DeleteCmekConfig",
+          "service": {
+            "shortName": "CmekConfigService",
+            "fullName": "google.cloud.discoveryengine.v1.CmekConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_CmekConfigService_GetCmekConfig_sync",
+      "title": "discoveryengine GetCmekConfig Sample",
+      "description": "GetCmekConfig gets the [CmekConfig][google.cloud.discoveryengine.v1.CmekConfig].",
+      "file": "CmekConfigClient/GetCmekConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCmekConfig",
+        "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient.GetCmekConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetCmekConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.CmekConfig",
+        "client": {
+          "shortName": "CmekConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient"
+        },
+        "method": {
+          "shortName": "GetCmekConfig",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigService.GetCmekConfig",
+          "service": {
+            "shortName": "CmekConfigService",
+            "fullName": "google.cloud.discoveryengine.v1.CmekConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_CmekConfigService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmekConfigClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CmekConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_CmekConfigService_ListCmekConfigs_sync",
+      "title": "discoveryengine ListCmekConfigs Sample",
+      "description": "ListCmekConfigs lists all the [CmekConfig][google.cloud.discoveryengine.v1.CmekConfig]s\nwith the project.",
+      "file": "CmekConfigClient/ListCmekConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCmekConfigs",
+        "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient.ListCmekConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListCmekConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ListCmekConfigsResponse",
+        "client": {
+          "shortName": "CmekConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient"
+        },
+        "method": {
+          "shortName": "ListCmekConfigs",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigService.ListCmekConfigs",
+          "service": {
+            "shortName": "CmekConfigService",
+            "fullName": "google.cloud.discoveryengine.v1.CmekConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_CmekConfigService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CmekConfigClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CmekConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_CmekConfigService_UpdateCmekConfig_sync",
+      "title": "discoveryengine UpdateCmekConfig Sample",
+      "description": "UpdateCmekConfig provisions a CMEK key for use in a location of a customer's project.\nThis method will also conduct location validation on the provided\ncmekConfig to make sure the key is valid and can be used in the\nselected location.",
+      "file": "CmekConfigClient/UpdateCmekConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCmekConfig",
+        "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient.UpdateCmekConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateCmekConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateCmekConfigOperation",
+        "client": {
+          "shortName": "CmekConfigClient",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateCmekConfig",
+          "fullName": "google.cloud.discoveryengine.v1.CmekConfigService.UpdateCmekConfig",
+          "service": {
+            "shortName": "CmekConfigService",
+            "fullName": "google.cloud.discoveryengine.v1.CmekConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "discoveryengine_v1_generated_CompletionService_CancelOperation_sync",
       "title": "discoveryengine CancelOperation Sample",
@@ -2987,6 +3308,465 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "IdentityMappingStoreClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_CreateIdentityMappingStore_sync",
+      "title": "discoveryengine CreateIdentityMappingStore Sample",
+      "description": "CreateIdentityMappingStore creates a new Identity Mapping Store.",
+      "file": "IdentityMappingStoreClient/CreateIdentityMappingStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateIdentityMappingStore",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.CreateIdentityMappingStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateIdentityMappingStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.IdentityMappingStore",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "CreateIdentityMappingStore",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService.CreateIdentityMappingStore",
+          "service": {
+            "shortName": "IdentityMappingStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_DeleteIdentityMappingStore_sync",
+      "title": "discoveryengine DeleteIdentityMappingStore Sample",
+      "description": "DeleteIdentityMappingStore deletes the Identity Mapping Store.",
+      "file": "IdentityMappingStoreClient/DeleteIdentityMappingStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteIdentityMappingStore",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.DeleteIdentityMappingStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteIdentityMappingStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteIdentityMappingStoreOperation",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "DeleteIdentityMappingStore",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService.DeleteIdentityMappingStore",
+          "service": {
+            "shortName": "IdentityMappingStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_GetIdentityMappingStore_sync",
+      "title": "discoveryengine GetIdentityMappingStore Sample",
+      "description": "GetIdentityMappingStore gets the Identity Mapping Store.",
+      "file": "IdentityMappingStoreClient/GetIdentityMappingStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIdentityMappingStore",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.GetIdentityMappingStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetIdentityMappingStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.IdentityMappingStore",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "GetIdentityMappingStore",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService.GetIdentityMappingStore",
+          "service": {
+            "shortName": "IdentityMappingStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "IdentityMappingStoreClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_ImportIdentityMappings_sync",
+      "title": "discoveryengine ImportIdentityMappings Sample",
+      "description": "ImportIdentityMappings imports a list of Identity Mapping Entries to an Identity Mapping Store.",
+      "file": "IdentityMappingStoreClient/ImportIdentityMappings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportIdentityMappings",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.ImportIdentityMappings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ImportIdentityMappingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportIdentityMappingsOperation",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "ImportIdentityMappings",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService.ImportIdentityMappings",
+          "service": {
+            "shortName": "IdentityMappingStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_ListIdentityMappingStores_sync",
+      "title": "discoveryengine ListIdentityMappingStores Sample",
+      "description": "ListIdentityMappingStores lists all Identity Mapping Stores.",
+      "file": "IdentityMappingStoreClient/ListIdentityMappingStores/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListIdentityMappingStores",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.ListIdentityMappingStores",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListIdentityMappingStoresRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IdentityMappingStoreIterator",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "ListIdentityMappingStores",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService.ListIdentityMappingStores",
+          "service": {
+            "shortName": "IdentityMappingStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_ListIdentityMappings_sync",
+      "title": "discoveryengine ListIdentityMappings Sample",
+      "description": "ListIdentityMappings lists Identity Mappings in an Identity Mapping Store.",
+      "file": "IdentityMappingStoreClient/ListIdentityMappings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListIdentityMappings",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.ListIdentityMappings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListIdentityMappingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IdentityMappingEntryIterator",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "ListIdentityMappings",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService.ListIdentityMappings",
+          "service": {
+            "shortName": "IdentityMappingStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "IdentityMappingStoreClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_IdentityMappingStoreService_PurgeIdentityMappings_sync",
+      "title": "discoveryengine PurgeIdentityMappings Sample",
+      "description": "PurgeIdentityMappings purges specified or all Identity Mapping Entries from an Identity Mapping\nStore.",
+      "file": "IdentityMappingStoreClient/PurgeIdentityMappings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PurgeIdentityMappings",
+        "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient.PurgeIdentityMappings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.PurgeIdentityMappingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurgeIdentityMappingsOperation",
+        "client": {
+          "shortName": "IdentityMappingStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreClient"
+        },
+        "method": {
+          "shortName": "PurgeIdentityMappings",
+          "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService.PurgeIdentityMappings",
+          "service": {
+            "shortName": "IdentityMappingStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.IdentityMappingStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_ProjectService_CancelOperation_sync",
       "title": "discoveryengine CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -5687,6 +6467,235 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_UserLicenseService_BatchUpdateUserLicenses_sync",
+      "title": "discoveryengine BatchUpdateUserLicenses Sample",
+      "description": "BatchUpdateUserLicenses updates the User License.\nThis method is used for batch assign/unassign licenses to users.",
+      "file": "UserLicenseClient/BatchUpdateUserLicenses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateUserLicenses",
+        "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient.BatchUpdateUserLicenses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.BatchUpdateUserLicensesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchUpdateUserLicensesOperation",
+        "client": {
+          "shortName": "UserLicenseClient",
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient"
+        },
+        "method": {
+          "shortName": "BatchUpdateUserLicenses",
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseService.BatchUpdateUserLicenses",
+          "service": {
+            "shortName": "UserLicenseService",
+            "fullName": "google.cloud.discoveryengine.v1.UserLicenseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_UserLicenseService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "UserLicenseClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "UserLicenseClient",
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_UserLicenseService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "UserLicenseClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "UserLicenseClient",
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_UserLicenseService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "UserLicenseClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "UserLicenseClient",
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_UserLicenseService_ListUserLicenses_sync",
+      "title": "discoveryengine ListUserLicenses Sample",
+      "description": "ListUserLicenses lists the User Licenses.",
+      "file": "UserLicenseClient/ListUserLicenses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUserLicenses",
+        "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient.ListUserLicenses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListUserLicensesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserLicenseIterator",
+        "client": {
+          "shortName": "UserLicenseClient",
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient"
+        },
+        "method": {
+          "shortName": "ListUserLicenses",
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseService.ListUserLicenses",
+          "service": {
+            "shortName": "UserLicenseService",
+            "fullName": "google.cloud.discoveryengine.v1.UserLicenseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]

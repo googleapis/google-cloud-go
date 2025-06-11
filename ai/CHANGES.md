@@ -1,5 +1,27 @@
 # Changelog
 
+
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.12.0...ai/v0.12.1) (2025-06-04)
+
+
+### Bug Fixes
+
+* **ai:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.11.1...ai/v0.12.0) (2025-05-13)
+
+
+### Features
+
+* **ai:** Direct users to google.golang.org/genai ([#12255](https://github.com/googleapis/google-cloud-go/issues/12255)) ([2b68726](https://github.com/googleapis/google-cloud-go/commit/2b687261cc6093535a2bf8a543a16fc3a20df57d))
+
+## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.11.0...ai/v0.11.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* **ai:** Upgrade gRPC service registration func ([7c01015](https://github.com/googleapis/google-cloud-go/commit/7c01015f2aafb5eeb0237accced76b059bc7635d))
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.10.2...ai/v0.11.0) (2025-04-30)
 
 

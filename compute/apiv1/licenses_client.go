@@ -48,6 +48,7 @@ type LicensesCallOptions struct {
 	List               []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
+	Update             []gax.CallOption
 }
 
 func defaultLicensesRESTCallOptions() *LicensesCallOptions {
@@ -100,6 +101,9 @@ func defaultLicensesRESTCallOptions() *LicensesCallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -115,6 +119,7 @@ type internalLicensesClient interface {
 	List(context.Context, *computepb.ListLicensesRequest, ...gax.CallOption) *LicenseIterator
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyLicenseRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsLicenseRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
+	Update(context.Context, *computepb.UpdateLicenseRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // LicensesClient is a client for interacting with Google Compute Engine API.
@@ -187,6 +192,11 @@ func (c *LicensesClient) TestIamPermissions(ctx context.Context, req *computepb.
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// Update updates a License resource in the specified project. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+func (c *LicensesClient) Update(ctx context.Context, req *computepb.UpdateLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Update(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type licensesRESTClient struct {
 	// The http endpoint to connect to.
@@ -256,7 +266,7 @@ func defaultLicensesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *licensesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -690,4 +700,73 @@ func (c *licensesRESTClient) TestIamPermissions(ctx context.Context, req *comput
 		return nil, e
 	}
 	return resp, nil
+}
+
+// Update updates a License resource in the specified project. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+func (c *licensesRESTClient) Update(ctx context.Context, req *computepb.UpdateLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetLicenseResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "license", url.QueryEscape(req.GetLicense()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Update")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
 }

@@ -22,6 +22,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"reflect"
 	"slices"
 	"sort"
 	"strings"
@@ -477,5 +478,51 @@ func TestToOtelMetricAttrs(t *testing.T) {
 				t.Errorf("got=-, want=+ \n%v", diff)
 			}
 		})
+	}
+}
+
+func TestCreateExporterOptionsFiltering(t *testing.T) {
+	endpointOpt := option.WithEndpoint("test.endpoint")
+	apiKeyOpt := option.WithAPIKey("test.apikey")
+	audiencesOpt := option.WithAudiences("test.audience")
+
+	inputOpts := []option.ClientOption{
+		endpointOpt,
+		apiKeyOpt,
+		audiencesOpt,
+	}
+
+	filteredOpts := createExporterOptions(inputOpts...)
+
+	foundEndpointOpt := false
+	foundAPIKeyOpt := false
+	foundAudiencesOpt := false
+
+	for _, opt := range filteredOpts {
+		if reflect.TypeOf(opt) == reflect.TypeOf(endpointOpt) {
+			foundEndpointOpt = true
+		}
+		if reflect.TypeOf(opt) == reflect.TypeOf(apiKeyOpt) {
+			foundAPIKeyOpt = true
+		}
+		if reflect.TypeOf(opt) == reflect.TypeOf(audiencesOpt) {
+			foundAudiencesOpt = true
+		}
+	}
+
+	if foundEndpointOpt {
+		t.Errorf("option.WithEndpoint was found in filtered options, but it should have been filtered out")
+	}
+
+	if !foundAPIKeyOpt {
+		t.Errorf("option.WithAPIKey was not found in filtered options, but it should have been preserved")
+	}
+
+	if !foundAudiencesOpt {
+		t.Errorf("option.WithAudiences was not found in filtered options, but it should have been preserved")
+	}
+
+	if len(filteredOpts) != 2 {
+		t.Errorf("Expected 2 options to be returned, got %d", len(filteredOpts))
 	}
 }

@@ -1,6 +1,94 @@
 # Changes
 
 
+## [1.90.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.89.0...aiplatform/v1.90.0) (2025-06-04)
+
+
+### Features
+
+* **aiplatform:** A new field `include_thoughts` is added to message `.google.cloud.aiplatform.v1.GenerationConfig.ThinkingConfig` ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** A new field `thought_signature` is added to message `.google.cloud.aiplatform.v1.Part` ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** A new field `thought` is added to message `.google.cloud.aiplatform.v1.Part` ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Add json schema support to structured output and function declaration ([4ee690e](https://github.com/googleapis/google-cloud-go/commit/4ee690e07fddac5d742561bf39cd3b610de7d80a))
+* **aiplatform:** Add json schema support to structured output and function declaration ([#12382](https://github.com/googleapis/google-cloud-go/issues/12382)) ([4ee690e](https://github.com/googleapis/google-cloud-go/commit/4ee690e07fddac5d742561bf39cd3b610de7d80a))
+* **aiplatform:** Add network_attachment to PscInterfaceConfig ([#12356](https://github.com/googleapis/google-cloud-go/issues/12356)) ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Add psc_interface_config to CustomJobSpec ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Add psc_interface_config to PersistentResource ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Add psc_interface_config to PipelineJob ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Expose URL Context API to v1 ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+* **aiplatform:** Expose URL Context API to v1beta1 ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+
+
+### Bug Fixes
+
+* **aiplatform:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
+
+### Documentation
+
+* **aiplatform:** Allow field `thought` to be set as input ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+
+## [1.89.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.88.0...aiplatform/v1.89.0) (2025-05-29)
+
+
+### Features
+
+* **aiplatform:** A new field `include_thoughts` is added to message `.google.cloud.aiplatform.v1.Part` ([#12349](https://github.com/googleapis/google-cloud-go/issues/12349)) ([49769e0](https://github.com/googleapis/google-cloud-go/commit/49769e084bbcb3116f7ff4c7498e189b81c06798))
+* **aiplatform:** Add ImportIndex to IndexService ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **aiplatform:** Introduce RAG as context/memory store for Gemini Live API ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `global_max_embedding_requests_per_min` in message `.google.cloud.aiplatform.v1beta1.ImportRagFilesConfig` is updated. ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **aiplatform:** A comment for message `RagFileParsingConfig` is updated. ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+## [1.88.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.87.0...aiplatform/v1.88.0) (2025-05-21)
+
+
+### Features
+
+* **aiplatform:** Add checkpoint ID to endpoint proto ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **aiplatform:** Add checkpoint ID to endpoint proto ([#12282](https://github.com/googleapis/google-cloud-go/issues/12282)) ([70c11ad](https://github.com/googleapis/google-cloud-go/commit/70c11ad152a463a268421050e3395017f6335090))
+* **aiplatform:** Add encryption_spec to Model Monitoring public preview API ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **aiplatform:** Add VertexAISearch.max_results, filter, data_store_specs options ([62155da](https://github.com/googleapis/google-cloud-go/commit/62155dae7958ebd50140a630a38003f4f74d68bc))
+* **aiplatform:** Add VertexAISearch.max_results, filter, data_store_specs options ([#12297](https://github.com/googleapis/google-cloud-go/issues/12297)) ([62155da](https://github.com/googleapis/google-cloud-go/commit/62155dae7958ebd50140a630a38003f4f74d68bc))
+* **aiplatform:** Adding thoughts_token_count to prediction service ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **aiplatform:** Adding thoughts_token_count to v1beta1 client library ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
+## [1.87.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.86.0...aiplatform/v1.87.0) (2025-05-13)
+
+
+### Features
+
+* **aiplatform:** A new value `NVIDIA_B200 & NVIDIA_H200_141GB` is added to enum `AcceleratorType` ([#12216](https://github.com/googleapis/google-cloud-go/issues/12216)) ([f2b31a3](https://github.com/googleapis/google-cloud-go/commit/f2b31a31eb97db32ca7f19d5bb4f4c9cba73a806))
+* **aiplatform:** A new value `NVIDIA_B200 & NVIDIA_H200_141GB` is added to enum `AcceleratorType` ([#12232](https://github.com/googleapis/google-cloud-go/issues/12232)) ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **aiplatform:** Add ANN feature for RagManagedDb ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Add EncryptionSpec for RagCorpus CMEK feature ([909dcbd](https://github.com/googleapis/google-cloud-go/commit/909dcbdba2685cdf6c4727be3357918be99bc847))
+* **aiplatform:** New field `additional_properties` is added to message `.google.cloud.aiplatform.v1.Schema` ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** New field `additional_properties` is added to message `.google.cloud.aiplatform.v1beta1.Schema` ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Tuning Checkpoints API ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Tuning Checkpoints API ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+
+
+### Documentation
+
+* **aiplatform:** Fix links and typos ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+* **aiplatform:** Remove comments for a non public feature ([#12243](https://github.com/googleapis/google-cloud-go/issues/12243)) ([037b55c](https://github.com/googleapis/google-cloud-go/commit/037b55cf453e23451b59ee04077ca599e3ffe031))
+
+## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.85.0...aiplatform/v1.86.0) (2025-05-06)
+
+
+### Features
+
+* **aiplatform:** A new field `system_labels` is added to message `google.cloud.aiplatform.v1beta1.DeployRequest` ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+* **aiplatform:** Expose llm parser to public v1 proto to prepare for GA ([#12089](https://github.com/googleapis/google-cloud-go/issues/12089)) ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+
+
+### Documentation
+
+* **aiplatform:** Update an outdated URL ([83ae06c](https://github.com/googleapis/google-cloud-go/commit/83ae06c3ec7d190e38856ba4cfd8a13f08356b4d))
+
 ## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.84.0...aiplatform/v1.85.0) (2025-04-30)
 
 

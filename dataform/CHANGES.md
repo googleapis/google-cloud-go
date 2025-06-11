@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.11.2...dataform/v0.12.0) (2025-05-21)
+
+
+### Features
+
+* **dataform:** Support adding a workflow action to execute a Data Preparation node ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
+
+### Documentation
+
+* **dataform:** Updated the formatting in some comments in multiple services ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+
 ## [0.11.2](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.11.1...dataform/v0.11.2) (2025-04-15)
 
 

@@ -362,7 +362,7 @@ func (c *dataStoreGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *dataStoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -446,7 +446,7 @@ func defaultDataStoreRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *dataStoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -689,10 +689,16 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetCmekConfigName() != "" {
+		params.Add("cmekConfigName", fmt.Sprintf("%v", req.GetCmekConfigName()))
+	}
 	if req.GetCreateAdvancedSiteSearch() {
 		params.Add("createAdvancedSiteSearch", fmt.Sprintf("%v", req.GetCreateAdvancedSiteSearch()))
 	}
 	params.Add("dataStoreId", fmt.Sprintf("%v", req.GetDataStoreId()))
+	if req.GetDisableCmek() {
+		params.Add("disableCmek", fmt.Sprintf("%v", req.GetDisableCmek()))
+	}
 	if req.GetSkipDefaultSchemaCreation() {
 		params.Add("skipDefaultSchemaCreation", fmt.Sprintf("%v", req.GetSkipDefaultSchemaCreation()))
 	}

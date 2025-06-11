@@ -1,6 +1,21 @@
 # Changes
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.5...video/v1.24.0) (2025-05-21)
+
+
+### Features
+
+* **video/livestream:** Added DVRSession methods to support DVR feature ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **video/livestream:** Added OutputType field to the Clip resource to support MP4 clipping ([#12283](https://github.com/googleapis/google-cloud-go/issues/12283)) ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+
+
+### Documentation
+
+* **video/livestream:** A comment for field `requested_cancellation` in message `.google.cloud.video.livestream.v1.OperationMetadata` is changed to clarify error type ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **video/livestream:** Clarified GCS in the comment for method `DeleteClip` in service `LivestreamService` ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **video/livestream:** Updated comment for field `update_mask` in message `.google.cloud.video.livestream.v1.UpdateInputRequest` to indicate updates in `tier` field are allowed ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+
 ## [1.23.5](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.4...video/v1.23.5) (2025-04-15)
 
 

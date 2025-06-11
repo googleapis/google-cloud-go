@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.10.0...run/v1.10.1) (2025-06-04)
+
+
+### Bug Fixes
+
+* **run:** Manually fix default endpoints in frozen locations_client.go ([#12399](https://github.com/googleapis/google-cloud-go/issues/12399)) ([c2af696](https://github.com/googleapis/google-cloud-go/commit/c2af696abbdf356fdc76df557204ce54cd7a036e)), refs [#12389](https://github.com/googleapis/google-cloud-go/issues/12389)
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.9.3...run/v1.10.0) (2025-05-21)
+
+
+### Features
+
+* **run:** Support GPU zonal redundancy setting in Cloud Run services ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **run:** Support node selector in Cloud Run jobs for GPU setting ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
 ## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/run/v1.9.2...run/v1.9.3) (2025-04-15)
 
 
