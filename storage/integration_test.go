@@ -5368,28 +5368,29 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 		want = &IPFilter{
 			Mode: "Disabled",
 		}
-		ua = BucketAttrsToUpdate{
-			IPFilter: want,
+		attrs, err := bucket.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("b.Attrs(%q): %v", bucket.name, err)
 		}
-		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
-		if attrs.IPFilter == nil {
-			t.Errorf("got nil IPFilter, want non-nil")
-		} else {
-			// Retry in case of metadata propagation delay.
-			err := retry(ctx, func() error {
-				return nil
-			}, func() error {
-				if len(attrs.IPFilter.VPCNetworkSource) != 0 {
-					return fmt.Errorf("expected VPCNetworkSource to be cleared, got %+v", attrs.IPFilter.VPCNetworkSource)
-				}
-				if attrs.IPFilter.PublicNetworkSource != nil && len(attrs.IPFilter.PublicNetworkSource.AllowedIPCidrRanges) != 0 {
-					return fmt.Errorf("expected PublicNetworkSource to be cleared, got %+v", attrs.IPFilter.PublicNetworkSource)
-				}
-				return nil
-			})
+
+		// Update IPFilter and check the results.
+		// Retry in case of metadata propagation delay.
+		if err := retry(ctx, func() error {
+			attrs, err = bucket.Update(ctx, BucketAttrsToUpdate{IPFilter: want})
 			if err != nil {
-				t.Error(err)
+				return fmt.Errorf("b.Update: %v", err)
 			}
+			return nil
+		}, func() error {
+			if len(attrs.IPFilter.VPCNetworkSource) != 0 {
+				return fmt.Errorf("expected VPCNetworkSource to be cleared, got %+v", attrs.IPFilter.VPCNetworkSource)
+			}
+			if attrs.IPFilter.PublicNetworkSource != nil && len(attrs.IPFilter.PublicNetworkSource.AllowedIPCidrRanges) != 0 {
+				return fmt.Errorf("expected PublicNetworkSource to be cleared, got %+v", attrs.IPFilter.PublicNetworkSource)
+			}
+			return nil
+		}); err != nil {
+			t.Error(err)
 		}
 	})
 }
