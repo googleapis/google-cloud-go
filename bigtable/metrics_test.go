@@ -303,7 +303,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 }
 
-func TestConnectivityErrorCountWithInterceptor(t *testing.T) {
+func TestConnectivityErrorCount(t *testing.T) {
 	ctx := context.Background()
 	project := "test-project"
 	instance := "test-instance"
