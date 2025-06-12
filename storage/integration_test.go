@@ -5337,7 +5337,8 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 		})
 		defer h.mustDeleteBucket(bucket)
 
-		attrs := h.mustBucketAttrs(bucket)
+		var attrs *BucketAttrs
+		attrs = h.mustBucketAttrs(bucket)
 		if !testutil.Equal(attrs.IPFilter, want) {
 			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
 		}
