@@ -63,6 +63,7 @@ deep-remove-regex:
   - /bigquery/storage/apiv1beta/
   - /bigquery/storage/apiv1beta1/
   - /bigquery/storage/apiv1beta2/
+  - /bigquery/v2/apiv2/
   - /bigtable/admin/apiv2/
   - /bigtable/apiv2/
   - /billing/apiv1/
@@ -209,6 +210,7 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/storage/apiv1beta/
   - /internal/generated/snippets/bigquery/storage/apiv1beta1/
   - /internal/generated/snippets/bigquery/storage/apiv1beta2/
+  - /internal/generated/snippets/bigquery/v2/apiv2/
   - /internal/generated/snippets/billing/apiv1/
   - /internal/generated/snippets/billing/budgets/apiv1/
   - /internal/generated/snippets/billing/budgets/apiv1beta1/
@@ -786,6 +788,8 @@ deep-copy-regex:
   - source: /google/cloud/bigquery/storage/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/storage/v1beta2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/bigquery/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/billing/v1/cloud.google.com/go
     dest: /
