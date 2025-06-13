@@ -249,6 +249,11 @@
                 "CreateServiceBinding"
               ]
             },
+            "CreateServiceLbPolicy": {
+              "methods": [
+                "CreateServiceLbPolicy"
+              ]
+            },
             "CreateTcpRoute": {
               "methods": [
                 "CreateTcpRoute"
@@ -294,6 +299,11 @@
                 "DeleteServiceBinding"
               ]
             },
+            "DeleteServiceLbPolicy": {
+              "methods": [
+                "DeleteServiceLbPolicy"
+              ]
+            },
             "DeleteTcpRoute": {
               "methods": [
                 "DeleteTcpRoute"
@@ -312,6 +322,11 @@
             "GetGateway": {
               "methods": [
                 "GetGateway"
+              ]
+            },
+            "GetGatewayRouteView": {
+              "methods": [
+                "GetGatewayRouteView"
               ]
             },
             "GetGrpcRoute": {
@@ -339,6 +354,11 @@
                 "GetMesh"
               ]
             },
+            "GetMeshRouteView": {
+              "methods": [
+                "GetMeshRouteView"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -347,6 +367,11 @@
             "GetServiceBinding": {
               "methods": [
                 "GetServiceBinding"
+              ]
+            },
+            "GetServiceLbPolicy": {
+              "methods": [
+                "GetServiceLbPolicy"
               ]
             },
             "GetTcpRoute": {
@@ -362,6 +387,11 @@
             "ListEndpointPolicies": {
               "methods": [
                 "ListEndpointPolicies"
+              ]
+            },
+            "ListGatewayRouteViews": {
+              "methods": [
+                "ListGatewayRouteViews"
               ]
             },
             "ListGateways": {
@@ -384,6 +414,11 @@
                 "ListLocations"
               ]
             },
+            "ListMeshRouteViews": {
+              "methods": [
+                "ListMeshRouteViews"
+              ]
+            },
             "ListMeshes": {
               "methods": [
                 "ListMeshes"
@@ -397,6 +432,11 @@
             "ListServiceBindings": {
               "methods": [
                 "ListServiceBindings"
+              ]
+            },
+            "ListServiceLbPolicies": {
+              "methods": [
+                "ListServiceLbPolicies"
               ]
             },
             "ListTcpRoutes": {
@@ -442,6 +482,16 @@
             "UpdateMesh": {
               "methods": [
                 "UpdateMesh"
+              ]
+            },
+            "UpdateServiceBinding": {
+              "methods": [
+                "UpdateServiceBinding"
+              ]
+            },
+            "UpdateServiceLbPolicy": {
+              "methods": [
+                "UpdateServiceLbPolicy"
               ]
             },
             "UpdateTcpRoute": {
@@ -494,6 +544,11 @@
                 "CreateServiceBinding"
               ]
             },
+            "CreateServiceLbPolicy": {
+              "methods": [
+                "CreateServiceLbPolicy"
+              ]
+            },
             "CreateTcpRoute": {
               "methods": [
                 "CreateTcpRoute"
@@ -539,6 +594,11 @@
                 "DeleteServiceBinding"
               ]
             },
+            "DeleteServiceLbPolicy": {
+              "methods": [
+                "DeleteServiceLbPolicy"
+              ]
+            },
             "DeleteTcpRoute": {
               "methods": [
                 "DeleteTcpRoute"
@@ -557,6 +617,11 @@
             "GetGateway": {
               "methods": [
                 "GetGateway"
+              ]
+            },
+            "GetGatewayRouteView": {
+              "methods": [
+                "GetGatewayRouteView"
               ]
             },
             "GetGrpcRoute": {
@@ -584,6 +649,11 @@
                 "GetMesh"
               ]
             },
+            "GetMeshRouteView": {
+              "methods": [
+                "GetMeshRouteView"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -592,6 +662,11 @@
             "GetServiceBinding": {
               "methods": [
                 "GetServiceBinding"
+              ]
+            },
+            "GetServiceLbPolicy": {
+              "methods": [
+                "GetServiceLbPolicy"
               ]
             },
             "GetTcpRoute": {
@@ -607,6 +682,11 @@
             "ListEndpointPolicies": {
               "methods": [
                 "ListEndpointPolicies"
+              ]
+            },
+            "ListGatewayRouteViews": {
+              "methods": [
+                "ListGatewayRouteViews"
               ]
             },
             "ListGateways": {
@@ -629,6 +709,11 @@
                 "ListLocations"
               ]
             },
+            "ListMeshRouteViews": {
+              "methods": [
+                "ListMeshRouteViews"
+              ]
+            },
             "ListMeshes": {
               "methods": [
                 "ListMeshes"
@@ -642,6 +727,11 @@
             "ListServiceBindings": {
               "methods": [
                 "ListServiceBindings"
+              ]
+            },
+            "ListServiceLbPolicies": {
+              "methods": [
+                "ListServiceLbPolicies"
               ]
             },
             "ListTcpRoutes": {
@@ -687,6 +777,16 @@
             "UpdateMesh": {
               "methods": [
                 "UpdateMesh"
+              ]
+            },
+            "UpdateServiceBinding": {
+              "methods": [
+                "UpdateServiceBinding"
+              ]
+            },
+            "UpdateServiceLbPolicy": {
+              "methods": [
+                "UpdateServiceLbPolicy"
               ]
             },
             "UpdateTcpRoute": {

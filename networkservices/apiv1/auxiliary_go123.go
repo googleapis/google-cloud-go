@@ -41,6 +41,12 @@ func (it *GatewayIterator) All() iter.Seq2[*networkservicespb.Gateway, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *GatewayRouteViewIterator) All() iter.Seq2[*networkservicespb.GatewayRouteView, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *GrpcRouteIterator) All() iter.Seq2[*networkservicespb.GrpcRoute, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -77,6 +83,12 @@ func (it *MeshIterator) All() iter.Seq2[*networkservicespb.Mesh, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *MeshRouteViewIterator) All() iter.Seq2[*networkservicespb.MeshRouteView, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -84,6 +96,12 @@ func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *ServiceBindingIterator) All() iter.Seq2[*networkservicespb.ServiceBinding, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceLbPolicyIterator) All() iter.Seq2[*networkservicespb.ServiceLbPolicy, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

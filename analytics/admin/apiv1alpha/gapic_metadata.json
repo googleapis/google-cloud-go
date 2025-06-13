@@ -480,6 +480,11 @@
                 "GetSubpropertyEventFilter"
               ]
             },
+            "GetSubpropertySyncConfig": {
+              "methods": [
+                "GetSubpropertySyncConfig"
+              ]
+            },
             "ListAccessBindings": {
               "methods": [
                 "ListAccessBindings"
@@ -618,6 +623,11 @@
             "ListSubpropertyEventFilters": {
               "methods": [
                 "ListSubpropertyEventFilters"
+              ]
+            },
+            "ListSubpropertySyncConfigs": {
+              "methods": [
+                "ListSubpropertySyncConfigs"
               ]
             },
             "ProvisionAccountTicket": {
@@ -788,6 +798,11 @@
             "UpdateSubpropertyEventFilter": {
               "methods": [
                 "UpdateSubpropertyEventFilter"
+              ]
+            },
+            "UpdateSubpropertySyncConfig": {
+              "methods": [
+                "UpdateSubpropertySyncConfig"
               ]
             }
           }
@@ -1265,6 +1280,11 @@
                 "GetSubpropertyEventFilter"
               ]
             },
+            "GetSubpropertySyncConfig": {
+              "methods": [
+                "GetSubpropertySyncConfig"
+              ]
+            },
             "ListAccessBindings": {
               "methods": [
                 "ListAccessBindings"
@@ -1403,6 +1423,11 @@
             "ListSubpropertyEventFilters": {
               "methods": [
                 "ListSubpropertyEventFilters"
+              ]
+            },
+            "ListSubpropertySyncConfigs": {
+              "methods": [
+                "ListSubpropertySyncConfigs"
               ]
             },
             "ProvisionAccountTicket": {
@@ -1573,6 +1598,11 @@
             "UpdateSubpropertyEventFilter": {
               "methods": [
                 "UpdateSubpropertyEventFilter"
+              ]
+            },
+            "UpdateSubpropertySyncConfig": {
+              "methods": [
+                "UpdateSubpropertySyncConfig"
               ]
             }
           }
