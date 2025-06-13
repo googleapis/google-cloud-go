@@ -402,7 +402,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 // - converts metric attributes values captured throughout the operation / attempt
 // to OpenTelemetry attributes format,
 // - combines these with common client attributes and returns
-func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribute.KeyValue, error) {
+func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 	// Create attribute key value pairs for attributes common to all metricss
 	attrKeyValues := []attribute.KeyValue{
 		attribute.String(metricLabelKeyMethod, mt.method),
@@ -422,7 +422,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	// Get metric details
 	mDetails, found := metricsDetails[metricName]
 	if !found {
-		return attrKeyValues, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
+		return attribute.Set{}, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
 	}
 
 	status := mt.currOp.status
@@ -438,9 +438,10 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 		case metricLabelKeyStreamingOperation:
 			attrKeyValues = append(attrKeyValues, attribute.Bool(metricLabelKeyStreamingOperation, mt.isStreaming))
 		default:
-			return attrKeyValues, fmt.Errorf("unknown additional attribute: %v", attrKey)
+			return attribute.Set{}, fmt.Errorf("unknown additional attribute: %v", attrKey)
 		}
 	}
 
-	return attrKeyValues, nil
+	attrSet := attribute.NewSet(attrKeyValues...)
+	return attrSet, nil
 }
