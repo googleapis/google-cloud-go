@@ -2307,7 +2307,7 @@ func TestRetryDeadlineExceededEmulated(t *testing.T) {
 func TestRetryBackoffEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		backoffs := []time.Duration{
-			10 * time.Millisecond,
+			1 * time.Nanosecond,
 			100 * time.Millisecond,
 		}
 		var durations [2]time.Duration
@@ -2319,7 +2319,7 @@ func TestRetryBackoffEmulated(t *testing.T) {
 			if err != nil {
 				t.Fatalf("creating bucket: %v", err)
 			}
-			instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503"}}
+			instructions := map[string][]string{"storage.buckets.get": {"return-503"}}
 			testID := createRetryTest(t, client, instructions)
 			ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 
