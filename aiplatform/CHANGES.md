@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.91.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.90.0...aiplatform/v1.91.0) (2025-06-13)
+
+
+### Features
+
+* **aiplatform:** Expose UrlContextMetadata API to v1 ([feb078b](https://github.com/googleapis/google-cloud-go/commit/feb078b04ab541dd3bdceb2ac1f24938bb0354a3))
+* **aiplatform:** Expose UrlContextMetadata API to v1beta1 ([feb078b](https://github.com/googleapis/google-cloud-go/commit/feb078b04ab541dd3bdceb2ac1f24938bb0354a3))
+
 ## [1.90.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.89.0...aiplatform/v1.90.0) (2025-06-04)
 
 
