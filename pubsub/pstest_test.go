@@ -73,7 +73,7 @@ func TestPSTest(t *testing.T) {
 	}
 
 	go func() {
-		for i := 0; i < 10; i++ {
+		for i := range 10 {
 			srv.Publish("projects/some-project/topics/test-topic", []byte(strconv.Itoa(i)), nil)
 		}
 	}()
