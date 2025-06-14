@@ -93,11 +93,12 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		attribute.String(metricLabelKeyClientUID, clientUID),
 		attribute.String(metricLabelKeyClientName, clientName),
 	}
-	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies}
+	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameFirstRespLatencies, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
 		wantMetricTypesGCM = append(wantMetricTypesGCM, builtInMetricsMeterName+wantMetricName)
 	}
+	sort.Strings(wantMetricTypesGCM)
 
 	// Reduce sampling period to reduce test run time
 	origSamplePeriod := defaultSamplePeriod
@@ -211,6 +212,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			gotNonNilInstruments := gotClient.metricsTracerFactory.operationLatencies != nil &&
 				gotClient.metricsTracerFactory.serverLatencies != nil &&
 				gotClient.metricsTracerFactory.attemptLatencies != nil &&
+				gotClient.metricsTracerFactory.firstRespLatencies != nil &&
 				gotClient.metricsTracerFactory.retryCount != nil
 			if test.wantBuiltinEnabled != gotNonNilInstruments {
 				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
@@ -289,7 +291,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				}
 				sort.Strings(gotMetricTypes)
 				if !testutil.Equal(gotMetricTypes, wantMetricTypesGCM) {
-					t.Errorf("Metric types missing in req. got: %v, want: %v", gotMetricTypes, wantMetricTypesGCM)
+					t.Errorf("Metric types missing in req. \ngot: %v, \nwant: %v\ndiff: %v", gotMetricTypes, wantMetricTypesGCM, testutil.Diff(gotMetricTypes, wantMetricTypesGCM))
 				}
 			}
 
