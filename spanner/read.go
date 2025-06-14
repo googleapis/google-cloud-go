@@ -191,7 +191,7 @@ func (r *RowIterator) Next() (*Row, error) {
 				// if request contains TransactionSelector::Begin option, this is here as fallback to retry with
 				// explicit transactionID after a retry.
 				r.setTransactionID(nil)
-				r.err = errInlineBeginTransactionFailed()
+				r.err = r.updateTxState(errInlineBeginTransactionFailed(nil))
 				return nil, r.err
 			}
 			r.setTransactionID = nil

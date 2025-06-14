@@ -2006,7 +2006,7 @@ func isFailedInlineBeginTransaction(err error) bool {
 	if err == nil {
 		return false
 	}
-	return ErrCode(err) == codes.Internal && strings.Contains(err.Error(), errInlineBeginTransactionFailed().Error())
+	return ErrCode(err) == codes.Internal && strings.Contains(err.Error(), errInlineBeginTransactionFailedMsg)
 }
 
 // isClientClosing returns true if the given error is a
