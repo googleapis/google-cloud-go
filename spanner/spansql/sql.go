@@ -1048,6 +1048,13 @@ func (co ComparisonOp) addSQL(sb *strings.Builder) {
 	}
 }
 
+func (eo ExistsOp) SQL() string { return buildSQL(eo) }
+func (eo ExistsOp) addSQL(sb *strings.Builder) {
+	sb.WriteString("EXISTS (")
+	eo.Subquery.addSQL(sb)
+	sb.WriteString(")")
+}
+
 func (io InOp) SQL() string { return buildSQL(io) }
 func (io InOp) addSQL(sb *strings.Builder) {
 	io.LHS.addSQL(sb)

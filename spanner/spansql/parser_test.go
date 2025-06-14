@@ -340,6 +340,31 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{
+			`SELECT * FROM A WHERE EXISTS (SELECT * FROM B)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{
+						SelectFromTable{
+							Table: "A",
+						},
+					},
+					Where: ExistsOp{
+						Subquery: Query{
+							Select: Select{
+								List: []Expr{Star},
+								From: []SelectFrom{
+									SelectFromTable{
+										Table: "B",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)
