@@ -41,9 +41,21 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 
+	"cloud.google.com/go/bigtable/bttest"
 	"google.golang.org/grpc/metadata"
 )
+
+// bigtableReadRowsServerWrapper wraps a generic grpc.ServerStream to implement the
+// btpb.Bigtable_ReadRowsServer interface, specifically the Send(*ReadRowsResponse) error method.
+type bigtableReadRowsServerWrapper struct {
+	grpc.ServerStream
+}
+
+func (x *bigtableReadRowsServerWrapper) Send(m *btpb.ReadRowsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
 
 var (
 	clusterID1 = "cluster-id-1"
@@ -67,7 +79,102 @@ var (
 		locationMDKey:     []string{string(testTrailers)},
 		serverTimingMDKey: []string{"gfet4t7; dur=5678"},
 	}
+
+	sleepDurationForTest = 200 * time.Millisecond // Used in ReadRowsWithDelayLogic
 )
+
+// ReadRowsWithDelayLogic implements the core logic for a ReadRows RPC that introduces a delay.
+// This is designed to be used within a gRPC stream interceptor.
+func ReadRowsWithDelayLogic(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+	// 1. Send headers immediately
+	if err := stream.SendHeader(metadata.MD{
+		serverTimingMDKey: []string{"gfet4t7; dur=10"}, // Small initial server latency
+		locationMDKey:     []string{string(testHeaders)},
+	}); err != nil {
+		return err
+	}
+
+	// 2. Send first chunk/response
+	if err := stream.Send(&btpb.ReadRowsResponse{
+		Chunks: []*btpb.ReadRowsResponse_CellChunk{
+			{
+				RowKey:     []byte("row1"),
+				FamilyName: &wrapperspb.StringValue{Value: "cf"},
+				Qualifier:  &wrapperspb.BytesValue{Value: []byte("q1")},
+				Value:      []byte("val1"),
+				RowStatus:  &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
+			},
+		},
+	}); err != nil {
+		return err
+	}
+
+	// 3. Sleep
+	time.Sleep(sleepDurationForTest)
+
+	// 4. Send second chunk/response
+	if err := stream.Send(&btpb.ReadRowsResponse{
+		Chunks: []*btpb.ReadRowsResponse_CellChunk{
+			{
+				RowKey:     []byte("row2"),
+				FamilyName: &wrapperspb.StringValue{Value: "cf"},
+				Qualifier:  &wrapperspb.BytesValue{Value: []byte("q2")},
+				Value:      []byte("val2"),
+				RowStatus:  &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
+			},
+		},
+	}); err != nil {
+		return err
+	}
+
+	return nil // Indicates successful end of stream
+}
+
+// setupFakeServerWithCustomHandler sets up a fake server with a custom stream handler for ReadRows.
+// It returns a configured Table, a cleanup function, and any error during setup.
+func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientConfig,
+	customReadRowsHandler func(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error) (*Table, func(), error) {
+
+	streamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if info.FullMethod == "/google.bigtable.v2.Bigtable/ReadRows" {
+			// req is nil because ReadRowsWithDelayLogic does not use the request argument.
+			// Wrap the generic ServerStream with our specific wrapper.
+			wrappedStream := &bigtableReadRowsServerWrapper{ss}
+			return customReadRowsHandler(nil, wrappedStream)
+		}
+		return handler(srv, ss) // Default handling for other methods
+	}
+
+	rawGrpcServer, err := bttest.NewServer("localhost:0", grpc.StreamInterceptor(streamInterceptor))
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to start bttest server: %w", err)
+	}
+
+	conn, err := grpc.Dial(rawGrpcServer.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	if err != nil {
+		rawGrpcServer.Close()
+		return nil, nil, fmt.Errorf("failed to dial test server: %w", err)
+	}
+
+	clientOpts := []option.ClientOption{option.WithGRPCConn(conn)}
+
+	ctx := context.Background()
+	client, err := NewClientWithConfig(ctx, projectID, instanceID, cfg, clientOpts...)
+	if err != nil {
+		conn.Close()
+		rawGrpcServer.Close()
+		return nil, nil, fmt.Errorf("failed to create client: %w", err)
+	}
+
+	tbl := client.Open("test-table")
+
+	cleanup := func() {
+		client.Close()
+		conn.Close()
+		rawGrpcServer.Close()
+	}
+	return tbl, cleanup, nil
+}
 
 func equalErrs(gotErr error, wantErr error) bool {
 	if gotErr == nil && wantErr == nil {
@@ -379,10 +486,14 @@ func TestExporterLogs(t *testing.T) {
 		time.Sleep(3*defaultSamplePeriod - elapsedTime)
 	}
 
-	// In setupFakeServer above, Bigtable client is created with options :
-	// option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock())
-	// These same options will be used to create Monitoring client but since there
-	// is no fake Monitoring server at that grpc conn, all the exports result in failure.
+	// In setupFakeServerWithMock (and assumed setupFakeServer), Bigtable client is created with options like
+	// option.WithGRPCConn(conn). If the monitoring client uses these exact same options (which it might,
+	// depending on how createExporterOptions is configured for the test), and if the endpoint for monitoring
+	// is not overridden to point to monitoringServer.Endpoint, then exports could fail if the gRPC conn
+	// doesn't also host a fake Monitoring server. This comment is to note that TestExporterLogs relies
+	// on this behavior to check for errors.
+	// For TestFirstResponseLatencyWithDelayedStream, we explicitly override createExporterOptions
+	// to point to monitoringServer.Endpoint, so this isn't an issue there.
 	// Thus, there should be errors in errBuf.
 	data, readErr := mer.read()
 	if readErr != nil {
@@ -524,4 +635,177 @@ func TestCreateExporterOptionsFiltering(t *testing.T) {
 	if len(filteredOpts) != 2 {
 		t.Errorf("Expected 2 options to be returned, got %d", len(filteredOpts))
 	}
+}
+
+func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	appProfile := "test-app-profile"
+	clientUID := "test-uid-delayed" // Unique UID for this test
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 100 * time.Millisecond // Shorter for quicker metric export
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// return constant client UID instead of random, so that attributes can be compared
+	origGenerateClientUID := generateClientUID
+	generateClientUID = func() (string, error) {
+		return clientUID, nil
+	}
+	defer func() {
+		generateClientUID = origGenerateClientUID
+	}()
+
+	// Set up a mock error handler to swallow expected shutdown errors
+	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
+	origErrHandler := otel.GetErrorHandler()
+	otel.SetErrorHandler(mer)
+	t.Cleanup(func() {
+		otel.SetErrorHandler(origErrHandler)
+	})
+
+	// Setup mock monitoring server
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("Error setting up metrics test server: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	// Override exporter options
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() {
+		createExporterOptions = origCreateExporterOptions
+	}()
+
+	// Setup fake Bigtable server with delayed stream handler
+	// Define the custom ReadRows handler that uses ReadRowsWithDelayLogic
+	readRowsHandler := func(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+		return ReadRowsWithDelayLogic(req, stream) // req can be nil if ReadRowsWithDelayLogic is adapted
+	}
+
+	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, readRowsHandler)
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("setupFakeServerWithMock error: got: %v, want: nil", err)
+		return
+	}
+
+	// Pop out any old requests from other tests
+	monitoringServer.CreateServiceTimeSeriesRequests()
+
+	// Perform read rows operation
+	readErr := tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+		// Consume all rows
+		return true
+	})
+	if readErr != nil {
+		t.Fatalf("ReadRows failed: %v", readErr)
+	}
+
+	// Allow time for metrics to be exported
+	// Wait for at least 3 export cycles to be reasonably sure metrics are flushed.
+	// Increased sleep duration to see if it's a timing issue.
+	time.Sleep(defaultSamplePeriod * 10)
+
+	// Fetch and analyze metrics
+	requests := monitoringServer.CreateServiceTimeSeriesRequests()
+	if len(requests) == 0 {
+		t.Fatalf("No CreateTimeSeriesRequests received from mock monitoring server")
+	}
+
+	var firstRespLatencyValue float64 = -1
+	var opLatencyValue float64 = -1
+	var foundMetricsForClientUID []string
+
+	for _, req := range requests {
+		for _, ts := range req.TimeSeries {
+			metricType := ts.GetMetric().GetType()
+			// Check client UID label first
+			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metricLabelKeyClientUID]
+			if !ok || clientUIDLabel != clientUID {
+				// Metric does not match target client UID. Skipping
+				continue
+			}
+			// If we reach here, the metric belongs to our test client instance
+			foundMetricsForClientUID = append(foundMetricsForClientUID, metricType)
+
+			points := ts.GetPoints()
+			if len(points) == 0 {
+				continue
+			}
+			typedVal := points[0].GetValue()
+			if typedVal == nil {
+				continue
+			}
+			distVal := typedVal.GetDistributionValue()
+			if distVal == nil {
+				continue
+			}
+
+			if distVal.GetCount() != 1 {
+				continue
+			}
+
+			// Already filtered by clientUID above.
+			if strings.HasSuffix(metricType, metricNameFirstRespLatencies) {
+				firstRespLatencyValue = distVal.GetMean()
+			} else if strings.HasSuffix(metricType, metricNameOperationLatencies) {
+				opLatencyValue = distVal.GetMean()
+			}
+		}
+	}
+
+	if firstRespLatencyValue == -1 {
+		t.Fatalf("first_response_latencies metric not found or had count != 1 for client UID '%s'. foundMetricsForClientUID: %+v", clientUID, foundMetricsForClientUID)
+	}
+	if opLatencyValue == -1 {
+		t.Fatalf("operation_latencies metric not found or had count != 1 for client UID '%s'. foundMetricsForClientUID: %+v", clientUID, foundMetricsForClientUID)
+	}
+
+	// Assertions
+	if firstRespLatencyValue <= 0 {
+		t.Errorf("firstRespLatencyValue: got %v, want > 0", firstRespLatencyValue)
+	}
+	if opLatencyValue <= firstRespLatencyValue {
+		t.Errorf("opLatencyValue (%v) should be greater than firstRespLatencyValue (%v)", opLatencyValue, firstRespLatencyValue)
+	}
+
+	expectedMinOpLatency := float64(sleepDurationForTest / time.Millisecond)
+	if opLatencyValue <= expectedMinOpLatency {
+		t.Errorf("opLatencyValue: got %v, want > %v (sleepDuration)", opLatencyValue, expectedMinOpLatency)
+	}
+
+	// The primary assertion: firstRespLatencyValue should not include the sleepDuration.
+	// opLatencyValue = firstRespLatencyValue + serverProcessingTimeBetweenFirstAndLastResponse + clientProcessingTimeAfterLastChunk
+	// serverProcessingTimeBetweenFirstAndLastResponse includes the sleepDurationForTest
+	// So, opLatencyValue should be roughly firstRespLatencyValue + sleepDurationForTest + other_small_overheads
+	epsilon := 150.0 // Epsilon in milliseconds
+	// It can be that firstRespLatencyValue is very small (e.g. <1ms) and opLatencyValue is dominated by sleepDuration + server processing of 2nd chunk.
+	// Assert that opLatencyValue is greater than or equal to firstRespLatency + sleepDuration, minus epsilon.
+	// opLatencyValue >= firstRespLatencyValue + float64(sleepDurationForTest/time.Millisecond) - epsilon
+	// This is equivalent to: firstRespLatencyValue + float64(sleepDurationForTest/time.Millisecond) <= opLatencyValue + epsilon
+	// This ensures that the first response latency is recorded *before* the artificial delay.
+	lowerBoundForOpLatency := firstRespLatencyValue + float64(sleepDurationForTest/time.Millisecond)
+	if opLatencyValue < lowerBoundForOpLatency-epsilon {
+		t.Errorf("opLatencyValue (%v) is too small. Expected it to be >= firstRespLatencyValue (%v) + sleepDuration (%v ms) - epsilon (%v ms). Difference: %v",
+			opLatencyValue, firstRespLatencyValue, float64(sleepDurationForTest/time.Millisecond), epsilon, lowerBoundForOpLatency-opLatencyValue)
+	}
+
+	// first response latency should be significantly smaller than the sleep duration.
+	if firstRespLatencyValue >= float64(sleepDurationForTest/time.Millisecond) {
+		t.Errorf("firstRespLatencyValue (%v) should be significantly smaller than sleepDuration (%v ms)", firstRespLatencyValue, float64(sleepDurationForTest/time.Millisecond))
+	}
+
 }

@@ -41,6 +41,7 @@ const (
 	serverTimingMDKey     = "server-timing"
 	serverTimingValPrefix = "gfet4t7; dur="
 
+	metricMethodPrefix = "Bigtable."
 	// Monitored resource labels
 	monitoredResLabelKeyProject  = "project_id"
 	monitoredResLabelKeyInstance = "instance"
@@ -326,7 +327,7 @@ type builtinMetricsTracer struct {
 }
 
 func (b *builtinMetricsTracer) setMethod(m string) {
-	b.method = "Bigtable." + m
+	b.method = metricMethodPrefix + m
 }
 
 // opTracer is used to record metrics for the entire operation, including retries.

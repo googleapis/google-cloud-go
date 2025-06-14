@@ -2253,7 +2253,7 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 
 	// Record first_reponse_latencies
 	firstRespLatAttrs, _ := mt.toOtelMetricAttrs(metricNameFirstRespLatencies)
-	if mt.method == methodNameReadRows {
+	if mt.method == metricMethodPrefix+methodNameReadRows {
 		elapsedTimeMs = convertToMs(mt.currOp.firstRespTime.Sub(mt.currOp.startTime))
 		mt.instrumentFirstRespLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(firstRespLatAttrs...))
 	}
