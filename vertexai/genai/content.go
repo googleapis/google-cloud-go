@@ -106,6 +106,8 @@ func (f FunctionResponse) toPart() *pb.Part {
 	}
 }
 
+// ThoughtSignature is an opaque signature for the thought
+// so it can be reused in subsequent requests.
 type ThoughtSignature []byte
 
 func (t ThoughtSignature) toPart() *pb.Part {
