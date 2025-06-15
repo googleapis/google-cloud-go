@@ -15,10 +15,13 @@
 package impersonate_test
 
 import (
+	"context"
 	"log"
 
 	"cloud.google.com/go/auth/credentials/impersonate"
 	"cloud.google.com/go/auth/httptransport"
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
 func ExampleNewCredentials_serviceAccount() {
@@ -33,10 +36,8 @@ func ExampleNewCredentials_serviceAccount() {
 		log.Fatal(err)
 	}
 
-	// TODO(codyoss): link to option once it exists.
-
-	// Use this Credentials with a client library
-	_ = creds
+	// Use this Credentials with a client library, e.g. storage
+	_, _ = storage.NewClient(context.TODO(), option.WithAuthCredentials(creds))
 }
 
 func ExampleNewCredentials_adminUser() {
