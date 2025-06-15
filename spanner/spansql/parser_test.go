@@ -2200,6 +2200,8 @@ func TestParseDDL(t *testing.T) {
 				ValueThree_Tokens TOKENLIST AS (TOKENIZE_NGRAMS(ValueThree)) HIDDEN,
 				ValueFour STRING(MAX) NOT NULL,
 				ValueFour_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(ValueFour || "concat")) HIDDEN,
+				ValueFive JSON NOT NULL,
+				ValueFive_Tokens TOKENLIST AS (TOKENIZE_JSON(ValueFive)) HIDDEN,
 				Combined_Tokens TOKENLIST AS (TOKENLIST_CONCAT([Name_Tokens, ValueFour_Tokens])) HIDDEN,
 				Argument_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name, token_category => "small")) HIDDEN,
 				ManyArgument_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value, comparison_type => "all", min => 1, max => 5)) HIDDEN,
@@ -2260,11 +2262,18 @@ func TestParseDDL(t *testing.T) {
 								Hidden:    true,
 								Position:  line(13),
 							},
+							{Name: "ValueFive", Type: Type{Base: JSON}, NotNull: true, Position: line(14)},
+							{
+								Name: "ValueFive_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_JSON", Args: []Expr{ID("ValueFive")}},
+								Hidden:    true,
+								Position:  line(15),
+							},
 							{
 								Name: "Combined_Tokens", Type: Type{Base: Tokenlist},
 								Generated: Func{Name: "TOKENLIST_CONCAT", Args: []Expr{Array{ID("Name_Tokens"), ID("ValueFour_Tokens")}}},
 								Hidden:    true,
-								Position:  line(14),
+								Position:  line(16),
 							},
 							{
 								Name: "Argument_Tokens", Type: Type{Base: Tokenlist},
@@ -2273,7 +2282,7 @@ func TestParseDDL(t *testing.T) {
 									Value: StringLiteral("small"),
 								}}},
 								Hidden:   true,
-								Position: line(15),
+								Position: line(17),
 							},
 							{
 								Name: "ManyArgument_Tokens", Type: Type{Base: Tokenlist},
@@ -2293,7 +2302,7 @@ func TestParseDDL(t *testing.T) {
 									},
 								}},
 								Hidden:   true,
-								Position: line(16),
+								Position: line(18),
 							},
 						},
 						PrimaryKey: []KeyPart{{Column: "Name"}},
@@ -2309,7 +2318,7 @@ func TestParseDDL(t *testing.T) {
 						Storing:     []ID{"ValueTwo"},
 						PartitionBy: []ID{"Value", "ValueTwo"},
 						OrderBy:     []Order{{Expr: ID("Value"), Desc: true}, {Expr: ID("ValueTwo"), Desc: false}},
-						Position:    line(19),
+						Position:    line(21),
 						Interleave:  ID("SomeTable"),
 						Options:     SearchIndexOptions{SortOrderSharding: func(b bool) *bool { return &b }(true)},
 					},
@@ -2326,7 +2335,7 @@ func TestParseDDL(t *testing.T) {
 
 			CREATE SEARCH INDEX TableTokensSearch
 			ON TableTokens(Name_Tokens, Value_Tokens);
-			
+
 			ALTER SEARCH INDEX TableTokensSearch ADD STORED COLUMN Value_Tokens;
 			ALTER SEARCH INDEX TableTokensSearch DROP STORED COLUMN Value_Tokens;
 			DROP SEARCH INDEX IF EXISTS TableTokensSearch;`,
