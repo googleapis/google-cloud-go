@@ -57,11 +57,12 @@ const (
 	metricLabelKeyClientUID          = "client_uid"
 
 	// Metric names
-	metricNameOperationLatencies = "operation_latencies"
-	metricNameAttemptLatencies   = "attempt_latencies"
-	metricNameServerLatencies    = "server_latencies"
-	metricNameRetryCount         = "retry_count"
-	metricNameDebugTags          = "debug_tags"
+	metricNameOperationLatencies   = "operation_latencies"
+	metricNameAttemptLatencies     = "attempt_latencies"
+	metricNameServerLatencies      = "server_latencies"
+	metricNameAppBlockingLatencies = "application_latencies"
+	metricNameRetryCount           = "retry_count"
+	metricNameDebugTags            = "debug_tags"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -106,6 +107,7 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
+		metricNameAppBlockingLatencies: {},
 		metricNameRetryCount: {
 			additionalAttrs: []string{
 				metricLabelKeyStatus,
@@ -156,11 +158,12 @@ type builtinMetricsTracerFactory struct {
 	// do not change across different function calls on client
 	clientAttributes []attribute.KeyValue
 
-	operationLatencies metric.Float64Histogram
-	serverLatencies    metric.Float64Histogram
-	attemptLatencies   metric.Float64Histogram
-	retryCount         metric.Int64Counter
-	debugTags          metric.Int64Counter
+	operationLatencies   metric.Float64Histogram
+	serverLatencies      metric.Float64Histogram
+	attemptLatencies     metric.Float64Histogram
+	appBlockingLatencies metric.Float64Histogram
+	retryCount           metric.Int64Counter
+	debugTags            metric.Int64Counter
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -260,6 +263,17 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
+	// Create application_latencies
+	tf.appBlockingLatencies, err = meter.Float64Histogram(
+		metricNameAppBlockingLatencies,
+		metric.WithDescription("The latency of the client application consuming available response data."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
+	}
+
 	// Create retry_count
 	tf.retryCount, err = meter.Int64Counter(
 		metricNameRetryCount,
@@ -290,11 +304,12 @@ type builtinMetricsTracer struct {
 	// do not change across different operations on client
 	clientAttributes []attribute.KeyValue
 
-	instrumentOperationLatencies metric.Float64Histogram
-	instrumentServerLatencies    metric.Float64Histogram
-	instrumentAttemptLatencies   metric.Float64Histogram
-	instrumentRetryCount         metric.Int64Counter
-	instrumentDebugTags          metric.Int64Counter
+	instrumentOperationLatencies   metric.Float64Histogram
+	instrumentServerLatencies      metric.Float64Histogram
+	instrumentAttemptLatencies     metric.Float64Histogram
+	instrumentAppBlockingLatencies metric.Float64Histogram
+	instrumentRetryCount           metric.Int64Counter
+	instrumentDebugTags            metric.Int64Counter
 
 	tableName   string
 	method      string
@@ -319,6 +334,8 @@ type opTracer struct {
 	status string
 
 	currAttempt attemptTracer
+
+	appBlockingLatency float64
 }
 
 func (o *opTracer) setStartTime(t time.Time) {
@@ -331,6 +348,10 @@ func (o *opTracer) setStatus(status string) {
 
 func (o *opTracer) incrementAttemptCount() {
 	o.attemptCount++
+}
+
+func (o *opTracer) incrementAppBlockingLatency(latency float64) {
+	o.appBlockingLatency += latency
 }
 
 // attemptTracer is used to record metrics for each individual attempt of the operation.
@@ -387,11 +408,12 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		currOp:           currOpTracer,
 		clientAttributes: tf.clientAttributes,
 
-		instrumentOperationLatencies: tf.operationLatencies,
-		instrumentServerLatencies:    tf.serverLatencies,
-		instrumentAttemptLatencies:   tf.attemptLatencies,
-		instrumentRetryCount:         tf.retryCount,
-		instrumentDebugTags:          tf.debugTags,
+		instrumentOperationLatencies:   tf.operationLatencies,
+		instrumentServerLatencies:      tf.serverLatencies,
+		instrumentAttemptLatencies:     tf.attemptLatencies,
+		instrumentAppBlockingLatencies: tf.appBlockingLatencies,
+		instrumentRetryCount:           tf.retryCount,
+		instrumentDebugTags:            tf.debugTags,
 
 		tableName:   tableName,
 		isStreaming: isStreaming,
