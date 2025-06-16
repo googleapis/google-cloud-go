@@ -1219,6 +1219,35 @@ func TestSQL(t *testing.T) {
 		{
 			Query{
 				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{
+						SelectFromTable{
+							Table: "A",
+						},
+					},
+					Where: LogicalOp{
+						Op: Not,
+						RHS: ExistsOp{
+							Subquery: Query{
+								Select: Select{
+									List: []Expr{Star},
+									From: []SelectFrom{
+										SelectFromTable{
+											Table: "B",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			`SELECT * FROM A WHERE NOT EXISTS (SELECT * FROM B)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
 					List: []Expr{ID("A")},
 					From: []SelectFrom{SelectFromTable{
 						Table: "Table",
