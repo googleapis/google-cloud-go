@@ -1,8 +1,6 @@
 module cloud.google.com/go/spanner/benchmarks
 
-go 1.23.8
-
-toolchain go1.23.10
+go 1.23.0
 
 replace cloud.google.com/go/spanner => ../
 
