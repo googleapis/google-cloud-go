@@ -56,6 +56,9 @@ type Client struct {
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
 	location = inferLocation(location)
 	endpoint := fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)
+	if location == "global" {
+		endpoint = "aiplatform.googleapis.com:443"
+	}
 	conf := newConfig(opts...)
 	return newClient(ctx, projectID, location, endpoint, conf, opts)
 }
