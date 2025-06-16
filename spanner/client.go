@@ -1116,7 +1116,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		}
 		initTx := func(t *ReadWriteTransaction) {
 			t.txReadOnly.sp = c.idleSessions
-			t.txReadOnly.sp = c.idleSessions
 			t.txReadOnly.txReadEnv = t
 			t.txReadOnly.qo = c.qo
 			t.txReadOnly.ro = c.ro

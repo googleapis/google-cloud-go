@@ -1004,13 +1004,16 @@ func TestReadOnlyTransaction_ConcurrentQueries(t *testing.T) {
 		tx := client.ReadOnlyTransaction().WithBeginTransactionOption(beginTransactionOption)
 		wg := sync.WaitGroup{}
 		errs := make([]error, 0, numQueries)
+		mu := sync.Mutex{}
 		for range numQueries {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
 				iter := tx.Query(ctx, Statement{SQL: SelectFooFromBar})
 				if err := consumeIterator(iter); err != nil {
+					mu.Lock()
 					errs = append(errs, err)
+					mu.Unlock()
 				}
 			}()
 		}
