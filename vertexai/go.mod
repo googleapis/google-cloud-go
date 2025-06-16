@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	cloud.google.com/go v0.121.2
-	cloud.google.com/go/aiplatform v1.89.0
+	cloud.google.com/go/aiplatform v1.90.0
 	github.com/google/go-cmp v0.7.0
 	golang.org/x/text v0.25.0
 	google.golang.org/api v0.235.0
