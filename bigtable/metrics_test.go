@@ -80,12 +80,12 @@ var (
 		serverTimingMDKey: []string{"gfet4t7; dur=5678"},
 	}
 
-	sleepDurationForTest = 200 * time.Millisecond // Used in ReadRowsWithDelayLogic
+	sleepDurationForTest = 200 * time.Millisecond // Used in ReadRowsWithDelay
 )
 
-// ReadRowsWithDelayLogic implements the core logic for a ReadRows RPC that introduces a delay.
+// ReadRowsWithDelay implements the core logic for a ReadRows RPC that introduces a delay.
 // This is designed to be used within a gRPC stream interceptor.
-func ReadRowsWithDelayLogic(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+func ReadRowsWithDelay(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
 	// 1. Send headers immediately
 	if err := stream.SendHeader(metadata.MD{
 		serverTimingMDKey: []string{"gfet4t7; dur=10"}, // Small initial server latency
@@ -137,7 +137,7 @@ func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientCo
 
 	streamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if info.FullMethod == "/google.bigtable.v2.Bigtable/ReadRows" {
-			// req is nil because ReadRowsWithDelayLogic does not use the request argument.
+			// req is nil because ReadRowsWithDelay does not use the request argument.
 			// Wrap the generic ServerStream with our specific wrapper.
 			wrappedStream := &bigtableReadRowsServerWrapper{ss}
 			return customReadRowsHandler(nil, wrappedStream)
@@ -690,9 +690,9 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 	}()
 
 	// Setup fake Bigtable server with delayed stream handler
-	// Define the custom ReadRows handler that uses ReadRowsWithDelayLogic
+	// Define the custom ReadRows handler that uses ReadRowsWithDelay
 	readRowsHandler := func(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
-		return ReadRowsWithDelayLogic(req, stream) // req can be nil if ReadRowsWithDelayLogic is adapted
+		return ReadRowsWithDelay(req, stream) // req can be nil if ReadRowsWithDelay is adapted
 	}
 
 	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, readRowsHandler)
