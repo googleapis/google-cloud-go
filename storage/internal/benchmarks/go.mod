@@ -1,6 +1,8 @@
 module main
 
-go 1.23.0
+go 1.23.8
+
+toolchain go1.23.10
 
 require (
 	cloud.google.com/go/storage v1.55.0
