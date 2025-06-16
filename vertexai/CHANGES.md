@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.4...vertexai/v0.14.0) (2025-06-16)
+
+
+### Features
+
+* **vertexai:** Support global endpoint ([#12450](https://github.com/googleapis/google-cloud-go/issues/12450)) ([0fc210c](https://github.com/googleapis/google-cloud-go/commit/0fc210cf11d0b90468b07ce0be65e20dc73635db))
+
 ## [0.13.4](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.3...vertexai/v0.13.4) (2025-05-15)
 
 
