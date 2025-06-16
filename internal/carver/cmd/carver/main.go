@@ -20,7 +20,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -482,7 +481,7 @@ func parseMetadata(r io.Reader) (map[string]string, error) {
 	m := map[string]struct {
 		Description string `json:"description"`
 	}{}
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}

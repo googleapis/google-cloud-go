@@ -183,6 +183,9 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 		// TO-DO: implement ObjectRetention once available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
 	}
+	if attrs != nil && attrs.IPFilter != nil {
+		return nil, status.Errorf(codes.Unimplemented, "storage: IPFilter is not supported in gRPC")
+	}
 
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
@@ -305,6 +308,9 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	return battrs, formatBucketError(err)
 }
 func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
+	if uattrs != nil && uattrs.IPFilter != nil {
+		return nil, status.Errorf(codes.Unimplemented, "storage: IPFilter is not supported in gRPC")
+	}
 	s := callSettings(c.settings, opts...)
 	b := uattrs.toProtoBucket()
 	b.Name = bucketResourceName(globalProjectAlias, bucket)
@@ -1452,16 +1458,10 @@ func (mrd *gRPCBidiReader) reopenStream(failSpec []mrdRange) error {
 	return nil
 }
 
-// Add will add current range to stream.
+// add will add current range to stream. The size of the range is not validated
+// by add; if the client requests more bytes than are available in the object
+// the server will return an error.
 func (mrd *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback func(int64, int64, error)) {
-	mrd.mu.Lock()
-	objectSize := mrd.objectSize
-	mrd.mu.Unlock()
-
-	if offset > objectSize {
-		callback(offset, 0, fmt.Errorf("storage: offset should not be larger than the size of object (%v)", objectSize))
-		return
-	}
 	if limit < 0 {
 		callback(offset, 0, errors.New("storage: cannot add range because the limit cannot be negative"))
 		return

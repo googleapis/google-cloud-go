@@ -170,7 +170,7 @@ type Condition struct {
 	// Optional. Query regex to match the whole search query.
 	// Cannot be set when
 	// [Condition.query_terms][google.cloud.discoveryengine.v1.Condition.query_terms]
-	// is set. This is currently supporting promotion use case.
+	// is set. Only supported for Basic Site Search promotion serving controls.
 	QueryRegex string `protobuf:"bytes,4,opt,name=query_regex,json=queryRegex,proto3" json:"query_regex,omitempty"`
 }
 
@@ -420,8 +420,6 @@ type Control_SynonymsAction_ struct {
 
 type Control_PromoteAction_ struct {
 	// Promote certain links based on predefined trigger queries.
-	//
-	// This now only supports basic site search.
 	PromoteAction *Control_PromoteAction `protobuf:"bytes,15,opt,name=promote_action,json=promoteAction,proto3,oneof"`
 }
 

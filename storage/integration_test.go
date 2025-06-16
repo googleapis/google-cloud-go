@@ -2356,7 +2356,7 @@ func TestIntegration_Copy(t *testing.T) {
 		obj := bucketFrom.Object("copy-object-original" + uidSpaceObjects.New())
 
 		// Create an object to copy from
-		w := obj.NewWriter(ctx)
+		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 		c := randomContents()
 		for written := 0; written < minObjectSize; {
 			n, err := w.Write(c)
@@ -2422,7 +2422,7 @@ func TestIntegration_Copy(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				copyObj := test.toBucket.Object(test.toObj)
-				copier := copyObj.CopierFrom(obj)
+				copier := copyObj.If(Conditions{DoesNotExist: true}).CopierFrom(obj)
 
 				if attrs := test.copierAttrs; attrs != nil {
 					if attrs.contentEncoding != "" {
@@ -2682,7 +2682,7 @@ func TestIntegration_SignedURL(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		bkt := client.Bucket(bucket)
@@ -2803,7 +2803,7 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		bkt := client.Bucket(bucket)
@@ -2890,7 +2890,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		opts := &SignedURLOptions{
@@ -4048,6 +4048,10 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
+
 		// an account that has permissions on the project that owns the bucket
 		mainUserEmail := jwt.Email
 
@@ -5315,6 +5319,83 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 	})
 }
 
+func TestIntegration_BucketIPFilter(t *testing.T) {
+	ctx := skipGRPC("IPFilter not yet supported in gRPC transport")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		projID := testutil.ProjID()
+
+		bucketName := prefix + uidSpace.New()
+		fmt.Printf("Creating bucket %q\n", bucketName)
+		bucket := client.Bucket(bucketName)
+		want := &IPFilter{
+			Mode: "Disabled",
+		}
+
+		h.mustCreate(bucket, projID, &BucketAttrs{
+			IPFilter: want,
+		})
+		defer h.mustDeleteBucket(bucket)
+
+		var attrs *BucketAttrs
+		attrs = h.mustBucketAttrs(bucket)
+		if !testutil.Equal(attrs.IPFilter, want) {
+			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
+		}
+
+		// Update IPFilter configuration with VPCNetworkSource and PublicNetworkSource.
+		want = &IPFilter{
+			Mode: "Disabled",
+			VPCNetworkSource: []VPCNetworkSource{
+				{
+					Network:             fmt.Sprintf("projects/%s/global/networks/default", projID),
+					AllowedIPCidrRanges: []string{"0.0.0.0/0"},
+				},
+			},
+			PublicNetworkSource: &PublicNetworkSource{
+				AllowedIPCidrRanges: []string{"1.2.3.4/32"},
+			},
+		}
+
+		ua := BucketAttrsToUpdate{
+			IPFilter: want,
+		}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.IPFilter, want) {
+			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
+		}
+
+		// Clear VPCNetworkSource and PublicNetworkSource.
+		want = &IPFilter{
+			Mode: "Disabled",
+		}
+		attrs, err := bucket.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("b.Attrs(%q): %v", bucket.name, err)
+		}
+
+		// Update IPFilter and check the results.
+		// Retry in case of metadata propagation delay.
+		if err := retry(ctx, func() error {
+			attrs, err = bucket.Update(ctx, BucketAttrsToUpdate{IPFilter: want})
+			if err != nil {
+				return fmt.Errorf("b.Update: %v", err)
+			}
+			return nil
+		}, func() error {
+			if len(attrs.IPFilter.VPCNetworkSource) != 0 {
+				return fmt.Errorf("expected VPCNetworkSource to be cleared, got %+v", attrs.IPFilter.VPCNetworkSource)
+			}
+			if attrs.IPFilter.PublicNetworkSource != nil && len(attrs.IPFilter.PublicNetworkSource.AllowedIPCidrRanges) != 0 {
+				return fmt.Errorf("expected PublicNetworkSource to be cleared, got %+v", attrs.IPFilter.PublicNetworkSource)
+			}
+			return nil
+		}); err != nil {
+			t.Error(err)
+		}
+	})
+}
+
 func TestIntegration_SoftDelete(t *testing.T) {
 	multiTransportTest(skipExtraReadAPIs(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -6468,7 +6549,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		projectID := testutil.ProjID()
@@ -6651,6 +6732,9 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
 
 		obj := "testBucketSignedURL"
 		contents := []byte("test")
@@ -6745,6 +6829,9 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
 
 		statusCodeToRespond := 200
 
@@ -6810,7 +6897,7 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		signingFunc := func(b []byte) ([]byte, error) {

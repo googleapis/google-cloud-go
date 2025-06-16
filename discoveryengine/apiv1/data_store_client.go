@@ -689,10 +689,16 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetCmekConfigName() != "" {
+		params.Add("cmekConfigName", fmt.Sprintf("%v", req.GetCmekConfigName()))
+	}
 	if req.GetCreateAdvancedSiteSearch() {
 		params.Add("createAdvancedSiteSearch", fmt.Sprintf("%v", req.GetCreateAdvancedSiteSearch()))
 	}
 	params.Add("dataStoreId", fmt.Sprintf("%v", req.GetDataStoreId()))
+	if req.GetDisableCmek() {
+		params.Add("disableCmek", fmt.Sprintf("%v", req.GetDisableCmek()))
+	}
 	if req.GetSkipDefaultSchemaCreation() {
 		params.Add("skipDefaultSchemaCreation", fmt.Sprintf("%v", req.GetSkipDefaultSchemaCreation()))
 	}
