@@ -6925,7 +6925,7 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	t.Setenv(disableDP, "true")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
-	udTestVars, err := getUniverseDomainTestVars()
+	udTestVars, err := UniverseDomainTestVars()
 	if err != nil {
 		t.Fatalf("Cannot get Universe Domain vars, err: %v", err)
 	}
@@ -6961,9 +6961,9 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 
 	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 
-	udTestVars, err := getUniverseDomainTestVars()
+	udTestVars, err := UniverseDomainTestVars()
 	if err != nil {
-		t.Fatalf("Cannot get Universe Domain vars, err: %v", err)
+		t.Fatal(err)
 	}
 
 	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
@@ -6976,13 +6976,7 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 		UseSelfSignedJWT: true,
 	})
 	if err != nil {
-		t.Fatalf("Cannot get Auth Credentials to create client, err: %v", err)
-	}
-
-	// Get JSON info
-	jwt, err := testutil.JWTConfigExplicit(udTestVars.credFile)
-	if err != nil {
-		t.Fatalf("Cannot extract JSON credentials from %q: %v", udTestVars.credFile, err)
+		t.Fatalf("cannot get Auth Credentials to create client, err: %v", err)
 	}
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
@@ -6992,7 +6986,7 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
 		defer h.mustDeleteBucket(bucket)
 
-		obj := "testBucketSignedURL"
+		obj := uidSpaceObjects.New()
 		contents := []byte("test")
 		if err := writeObject(ctx, bucket.Object(obj), "text/plain", contents); err != nil {
 			t.Fatalf("writing: %v", err)
@@ -7001,9 +6995,8 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 		defer h.mustDeleteObject(bucket.Object(obj))
 
 		opts := SignedURLOptions{
-			Method:         "GET",
-			Expires:        time.Now().Add(30 * time.Second),
-			GoogleAccessID: jwt.Email,
+			Method:  "GET",
+			Expires: time.Now().Add(30 * time.Second),
 		}
 
 		url, err := bucket.SignedURL(obj, &opts)
@@ -7026,7 +7019,7 @@ type universeDomainTestVars struct {
 
 // Gets Universe Domain environment variables for Universe Domain tests
 // Returns universeDomainTestVars pointer for easy access
-func getUniverseDomainTestVars() (*universeDomainTestVars, error) {
+func UniverseDomainTestVars() (*universeDomainTestVars, error) {
 	universeDomain := os.Getenv(testUniverseDomain)
 	if universeDomain == "" {
 		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
