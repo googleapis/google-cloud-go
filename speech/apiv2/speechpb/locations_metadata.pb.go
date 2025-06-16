@@ -84,7 +84,7 @@ func (AccessMetadata_ConstraintType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_speech_v2_locations_metadata_proto_rawDescGZIP(), []int{4, 0}
 }
 
-// Representes a singular feature of a model. If the feature is `recognizer`,
+// Represents a singular feature of a model. If the feature is `recognizer`,
 // the release_state of the feature represents the release_state of the model
 type ModelFeature struct {
 	state         protoimpl.MessageState
