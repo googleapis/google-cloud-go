@@ -7010,7 +7010,7 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 	}, option.WithAuthCredentials(newAuthCreds), option.WithUniverseDomain(udTestVars.universeDomain))
 }
 
-type universeDomainTestVars struct {
+type UniverseDomainVars struct {
 	universeDomain string
 	credFile       string
 	project        string
@@ -7019,7 +7019,7 @@ type universeDomainTestVars struct {
 
 // Gets Universe Domain environment variables for Universe Domain tests
 // Returns universeDomainTestVars pointer for easy access
-func UniverseDomainTestVars() (*universeDomainTestVars, error) {
+func UniverseDomainTestVars() (*UniverseDomainVars, error) {
 	universeDomain := os.Getenv(testUniverseDomain)
 	if universeDomain == "" {
 		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
@@ -7036,7 +7036,7 @@ func UniverseDomainTestVars() (*universeDomainTestVars, error) {
 	if location == "" {
 		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
 	}
-	return &universeDomainTestVars{universeDomain: universeDomain, credFile: credFile, project: project, location: location}, nil
+	return &UniverseDomainVars{universeDomain: universeDomain, credFile: credFile, project: project, location: location}, nil
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the

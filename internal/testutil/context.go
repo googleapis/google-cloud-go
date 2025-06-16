@@ -133,13 +133,6 @@ func JWTConfig() (*jwt.Config, error) {
 	return jwtConfigFromFile(os.Getenv(envPrivateKey), nil)
 }
 
-// JWTConfigExplicit reads an explicit credentials file
-// that is passed in as a parameter. It ignores scopes.
-// If the environment variable is empty, it returns (nil, nil).
-func JWTConfigExplicit(credFile string) (*jwt.Config, error) {
-	return jwtConfigFromFile(credFile, nil)
-}
-
 // jwtConfigFromFile reads the given JSON private key file, and returns the
 // jwt.Config it contains.
 // If the filename is empty, it returns (nil, nil).
