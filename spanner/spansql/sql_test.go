@@ -833,11 +833,18 @@ func TestSQL(t *testing.T) {
 						Hidden:    true,
 						Position:  line(13),
 					},
+					{Name: "ValueFive", Type: Type{Base: JSON}, NotNull: true, Position: line(14)},
+					{
+						Name: "ValueFive_Tokens", Type: Type{Base: Tokenlist},
+						Generated: Func{Name: "TOKENIZE_JSON", Args: []Expr{ID("ValueFive")}},
+						Hidden:    true,
+						Position:  line(15),
+					},
 					{
 						Name: "Combined_Tokens", Type: Type{Base: Tokenlist},
 						Generated: Func{Name: "TOKENLIST_CONCAT", Args: []Expr{Array{ID("Name_Tokens"), ID("ValueFour_Tokens")}}},
 						Hidden:    true,
-						Position:  line(14),
+						Position:  line(16),
 					},
 					{
 						Name: "Argument_Tokens", Type: Type{Base: Tokenlist},
@@ -846,7 +853,7 @@ func TestSQL(t *testing.T) {
 							Value: StringLiteral("small"),
 						}}},
 						Hidden:   true,
-						Position: line(15),
+						Position: line(17),
 					},
 					{
 						Name: "ManyArgument_Tokens", Type: Type{Base: Tokenlist},
@@ -866,7 +873,7 @@ func TestSQL(t *testing.T) {
 							},
 						}},
 						Hidden:   true,
-						Position: line(16),
+						Position: line(18),
 					},
 				},
 				PrimaryKey: []KeyPart{{Column: "Name"}},
@@ -885,6 +892,8 @@ func TestSQL(t *testing.T) {
   ValueThree_Tokens TOKENLIST AS (TOKENIZE_NGRAMS(ValueThree)) HIDDEN,
   ValueFour STRING(MAX) NOT NULL,
   ValueFour_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(ValueFour)) HIDDEN,
+  ValueFive JSON NOT NULL,
+  ValueFive_Tokens TOKENLIST AS (TOKENIZE_JSON(ValueFive)) HIDDEN,
   Combined_Tokens TOKENLIST AS (TOKENLIST_CONCAT([Name_Tokens, ValueFour_Tokens])) HIDDEN,
   Argument_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name, token_category => "small")) HIDDEN,
   ManyArgument_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value, comparison_type => "all", min => 1, max => 5)) HIDDEN,
@@ -1214,6 +1223,35 @@ func TestSQL(t *testing.T) {
 				Limit: IntegerLiteral(1000),
 			},
 			`SELECT A, B AS banana FROM Table WHERE C < "whelp" AND D IS NOT NULL ORDER BY OCol DESC LIMIT 1000`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{
+						SelectFromTable{
+							Table: "A",
+						},
+					},
+					Where: LogicalOp{
+						Op: Not,
+						RHS: ExistsOp{
+							Subquery: Query{
+								Select: Select{
+									List: []Expr{Star},
+									From: []SelectFrom{
+										SelectFromTable{
+											Table: "B",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			`SELECT * FROM A WHERE NOT EXISTS (SELECT * FROM B)`,
 			reparseQuery,
 		},
 		{
