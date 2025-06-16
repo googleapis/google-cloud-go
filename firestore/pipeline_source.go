@@ -20,7 +20,38 @@ type PipelineSource struct {
 	client *Client
 }
 
-// Collection returns all documents from the entire collection.
+// Collection creates a new [Pipeline] that operates on the specified Firestore collection.
 func (ps *PipelineSource) Collection(path string) *Pipeline {
 	return newPipeline(ps.client, newInputStageCollection(path))
+}
+
+// CollectionGroup creates a new [Pipeline] that operates on all documents in a group
+// of collections that include the given ID, regardless of parent document.
+//
+// For example, consider:
+// France/Cities/Paris = {population: 100}
+// Canada/Cities/Montreal = {population: 90}
+//
+// CollectionGroup can be used to query across all "Cities" regardless of
+// its parent "Countries".
+func (ps *PipelineSource) CollectionGroup(collectionID string) *Pipeline {
+	return newPipeline(ps.client, newInputStageCollectionGroup("", collectionID))
+}
+
+// CollectionGroupWithAncestor creates a new [Pipeline] that operates on all documents in a group
+// of collections that include the given ID, that are underneath a given document.
+//
+// For example, consider:
+// /continents/Europe/Germany/Cities/Paris = {population: 100}
+// /continents/Europe/France/Cities/Paris = {population: 100}
+// /continents/NorthAmerica/Canada/Cities/Montreal = {population: 90}
+//
+// CollectionGroupWithAncestor can be used to query across all "Cities" in "/continents/Europe".
+func (ps *PipelineSource) CollectionGroupWithAncestor(ancestor, collectionID string) *Pipeline {
+	return newPipeline(ps.client, newInputStageCollectionGroup(ancestor, collectionID))
+}
+
+// Database creates a new [Pipeline] that operates on all documents in the Firestore database.
+func (ps *PipelineSource) Database() *Pipeline {
+	return newPipeline(ps.client, newInputStageDatabase())
 }
