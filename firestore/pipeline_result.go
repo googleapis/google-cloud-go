@@ -90,7 +90,7 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 //	p.DataTo(&m)
 func (p *PipelineResult) Data() (map[string]interface{}, error) {
 	if p == nil {
-		return nil, status.Errorf(codes.NotFound, "document does not exist")
+		return nil, status.Errorf(codes.NotFound, "result does not exist")
 	}
 	m, err := createMapFromValueMap(p.proto.Fields, p.c)
 	// Any error here is a bug in the client.

@@ -47,7 +47,6 @@ func (ps *PipelineSource) CollectionGroup(collectionID string) *Pipeline {
 // /continents/NorthAmerica/Canada/Cities/Montreal = {population: 90}
 //
 // CollectionGroupWithAncestor can be used to query across all "Cities" in "/continents/Europe".
-// TODO(bhshkh): Subcollections are not yet supported in enterprise DB. Check with Firestore team whether ancestors should be added.
 func (ps *PipelineSource) CollectionGroupWithAncestor(ancestor, collectionID string) *Pipeline {
 	return newPipeline(ps.client, newInputStageCollectionGroup(ancestor, collectionID))
 }
