@@ -88,25 +88,23 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 //
 //	var m map[string]interface{}
 //	p.DataTo(&m)
-//
-// except that it returns nil if the document does not exist.
-func (p *PipelineResult) Data() map[string]interface{} {
-	if !p.Exists() {
-		return nil
+func (p *PipelineResult) Data() (map[string]interface{}, error) {
+	if p == nil {
+		return nil, status.Errorf(codes.NotFound, "result does not exist")
 	}
 	m, err := createMapFromValueMap(p.proto.Fields, p.c)
 	// Any error here is a bug in the client.
 	if err != nil {
 		panic(fmt.Sprintf("firestore: %v", err))
 	}
-	return m
+	return m, nil
 }
 
 // DataTo uses the PipelineResult's fields to populate v, which can be a pointer to a
 // map[string]interface{} or a pointer to a struct.
 // This is similar to [DocumentSnapshot.DataTo]
 func (p *PipelineResult) DataTo(v interface{}) error {
-	if !p.Exists() {
+	if p == nil {
 		return status.Errorf(codes.NotFound, "document does not exist")
 	}
 	return setFromProtoValue(v, &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: p.proto.Fields}}}, p.c)

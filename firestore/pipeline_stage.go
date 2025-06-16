@@ -46,6 +46,40 @@ func (s *inputStageCollection) toProto() (*pb.Pipeline_Stage, error) {
 	}, nil
 }
 
+// inputStageCollection returns all documents from the entire collection.
+type inputStageCollectionGroup struct {
+	collectionID string
+	ancestor     string
+}
+
+func newInputStageCollectionGroup(ancestor, collectionID string) *inputStageCollectionGroup {
+	return &inputStageCollectionGroup{ancestor: ancestor, collectionID: collectionID}
+}
+func (s *inputStageCollectionGroup) name() string { return "collection_group" }
+func (s *inputStageCollectionGroup) toProto() (*pb.Pipeline_Stage, error) {
+	ancestor := &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.ancestor}}
+	collectionID := &pb.Value{ValueType: &pb.Value_StringValue{StringValue: s.collectionID}}
+	return &pb.Pipeline_Stage{
+		Name: s.name(),
+		Args: []*pb.Value{ancestor, collectionID},
+	}, nil
+}
+
+// inputStageDatabase returns all documents from the entire database.
+type inputStageDatabase struct {
+	path string
+}
+
+func newInputStageDatabase() *inputStageDatabase {
+	return &inputStageDatabase{}
+}
+func (s *inputStageDatabase) name() string { return "database" }
+func (s *inputStageDatabase) toProto() (*pb.Pipeline_Stage, error) {
+	return &pb.Pipeline_Stage{
+		Name: s.name(),
+	}, nil
+}
+
 type limitStage struct {
 	limit int
 }

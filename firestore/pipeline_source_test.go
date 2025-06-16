@@ -50,3 +50,99 @@ func TestPipelineSource_Collection(t *testing.T) {
 		t.Errorf("toExecutePipelineRequest mismatch for collection stage (-want +got):\n%s", diff)
 	}
 }
+
+func TestPipelineSource_CollectionGroup(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.CollectionGroup("cities")
+
+	if p.err != nil {
+		t.Fatalf("CollectionGroup: %v", p.err)
+	}
+	if len(p.stages) != 1 {
+		t.Fatalf("initial stages: got %d, want 1", len(p.stages))
+	}
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("toExecutePipelineRequest: %v", err)
+	}
+
+	wantStage := &pb.Pipeline_Stage{
+		Name: "collection_group",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_ReferenceValue{ReferenceValue: ""}},
+			{ValueType: &pb.Value_StringValue{StringValue: "cities"}},
+		},
+	}
+
+	if len(req.GetStructuredPipeline().GetPipeline().GetStages()) != 1 {
+		t.Fatalf("stage in proto: got %d, want 1", len(req.GetStructuredPipeline().GetPipeline().GetStages()))
+	}
+	if diff := testutil.Diff(wantStage, req.GetStructuredPipeline().GetPipeline().GetStages()[0]); diff != "" {
+		t.Errorf("toExecutePipelineRequest mismatch for collectionGroup stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipelineSource_CollectionGroupWithAncestor(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.CollectionGroupWithAncestor("ancestor/path", "items")
+
+	if p.err != nil {
+		t.Fatalf("CollectionGroupWithAncestor: %v", p.err)
+	}
+	if len(p.stages) != 1 {
+		t.Fatalf("initial stages: got %d, want 1", len(p.stages))
+	}
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("toExecutePipelineRequest: %v", err)
+	}
+
+	wantStage := &pb.Pipeline_Stage{
+		Name: "collection_group",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_ReferenceValue{ReferenceValue: "ancestor/path"}},
+			{ValueType: &pb.Value_StringValue{StringValue: "items"}},
+		},
+	}
+
+	if len(req.GetStructuredPipeline().GetPipeline().GetStages()) != 1 {
+		t.Fatalf("stage in proto: got %d, want 1", len(req.GetStructuredPipeline().GetPipeline().GetStages()))
+	}
+	if diff := testutil.Diff(wantStage, req.GetStructuredPipeline().GetPipeline().GetStages()[0]); diff != "" {
+		t.Errorf("toExecutePipelineRequest mismatch for collectionGroupWithAncestor stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipelineSource_Database(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Database()
+
+	if p.err != nil {
+		t.Fatalf("Database: %v", p.err)
+	}
+	if len(p.stages) != 1 {
+		t.Fatalf("initial stages: got %d, want 1", len(p.stages))
+	}
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("toExecutePipelineRequest: %v", err)
+	}
+
+	wantStage := &pb.Pipeline_Stage{
+		Name: "database",
+		Args: nil,
+	}
+
+	if len(req.GetStructuredPipeline().GetPipeline().GetStages()) != 1 {
+		t.Fatalf("stage in proto: got %d, want 1", len(req.GetStructuredPipeline().GetPipeline().GetStages()))
+	}
+	if diff := testutil.Diff(wantStage, req.GetStructuredPipeline().GetPipeline().GetStages()[0]); diff != "" {
+		t.Errorf("toExecutePipelineRequest mismatch for database stage (-want +got):\n%s", diff)
+	}
+}
