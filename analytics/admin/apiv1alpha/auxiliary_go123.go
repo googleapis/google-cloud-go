@@ -192,3 +192,9 @@ func (it *SearchAds360LinkIterator) All() iter.Seq2[*adminpb.SearchAds360Link, e
 func (it *SubpropertyEventFilterIterator) All() iter.Seq2[*adminpb.SubpropertyEventFilter, error] {
 	return iterator.RangeAdapter(it.Next)
 }
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubpropertySyncConfigIterator) All() iter.Seq2[*adminpb.SubpropertySyncConfig, error] {
+	return iterator.RangeAdapter(it.Next)
+}
