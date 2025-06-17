@@ -75,9 +75,6 @@
         "beyondcorp": {
             "component": "beyondcorp"
         },
-        "bigquery/v2": {
-            "component": "bigquery/v2"
-        },
         "billing": {
             "component": "billing"
         },
