@@ -24,6 +24,7 @@ require (
 	cloud.google.com/go/batch v1.12.2
 	cloud.google.com/go/beyondcorp v1.1.6
 	cloud.google.com/go/bigquery v1.69.0
+	cloud.google.com/go/bigquery/v2 v2.0.0
 	cloud.google.com/go/billing v1.20.4
 	cloud.google.com/go/binaryauthorization v1.9.5
 	cloud.google.com/go/certificatemanager v1.9.5
@@ -401,6 +402,8 @@ replace cloud.google.com/go/iam => ../../../iam
 replace cloud.google.com/go/compute => ../../../compute
 
 replace cloud.google.com/go/bigquery => ../../../bigquery
+
+replace cloud.google.com/go/bigquery/v2 => ../../../bigquery/v2
 
 replace cloud.google.com/go/bigtable => ../../../bigtable
 
