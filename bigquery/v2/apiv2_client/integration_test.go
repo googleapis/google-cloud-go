@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package monoclient
+package apiv2_client
 
 import (
 	"context"
@@ -21,7 +21,7 @@ import (
 
 func TestGRPCClient(t *testing.T) {
 	ctx := context.Background()
-	client, err := NewClient(ctx)
+	client, err := NewBigQueryClient(ctx)
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
 	}
@@ -32,7 +32,7 @@ func TestGRPCClient(t *testing.T) {
 
 func TestRESTClient(t *testing.T) {
 	ctx := context.Background()
-	client, err := NewRESTClient(ctx)
+	client, err := NewBigQueryRESTClient(ctx)
 	if err != nil {
 		t.Fatalf("NewRESTClient failed: %v", err)
 	}

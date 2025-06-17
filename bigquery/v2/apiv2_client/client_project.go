@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package monoclient
+package apiv2_client
 
 import (
 	"context"
@@ -23,6 +23,6 @@ import (
 
 // GetServiceAccount rPC to get the service account for a project used for interactions with
 // Google Cloud KMS
-func (mc *monoClient) GetServiceAccount(ctx context.Context, req *bigquerypb.GetServiceAccountRequest, opts ...gax.CallOption) (*bigquerypb.GetServiceAccountResponse, error) {
+func (mc *BigQueryClient) GetServiceAccount(ctx context.Context, req *bigquerypb.GetServiceAccountRequest, opts ...gax.CallOption) (*bigquerypb.GetServiceAccountResponse, error) {
 	return mc.projClient.GetServiceAccount(ctx, req, opts...)
 }

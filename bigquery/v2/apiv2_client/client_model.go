@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package monoclient
+package apiv2_client
 
 import (
 	"context"
@@ -24,23 +24,23 @@ import (
 )
 
 // GetModel gets the specified model resource by model ID.
-func (mc *monoClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
+func (mc *BigQueryClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	return mc.modelClient.GetModel(ctx, req, opts...)
 }
 
 // ListModels lists all models in the specified dataset. Requires the READER dataset
 // role. After retrieving the list of models, you can get information about a
 // particular model by calling the models.get method.
-func (mc *monoClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *bigquery.ModelIterator {
+func (mc *BigQueryClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *bigquery.ModelIterator {
 	return mc.modelClient.ListModels(ctx, req, opts...)
 }
 
 // PatchModel patch specific fields in the specified model.
-func (mc *monoClient) PatchModel(ctx context.Context, req *bigquerypb.PatchModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
+func (mc *BigQueryClient) PatchModel(ctx context.Context, req *bigquerypb.PatchModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	return mc.modelClient.PatchModel(ctx, req, opts...)
 }
 
 // DeleteModel deletes the model specified by modelId from the dataset.
-func (mc *monoClient) DeleteModel(ctx context.Context, req *bigquerypb.DeleteModelRequest, opts ...gax.CallOption) error {
+func (mc *BigQueryClient) DeleteModel(ctx context.Context, req *bigquerypb.DeleteModelRequest, opts ...gax.CallOption) error {
 	return mc.modelClient.DeleteModel(ctx, req, opts...)
 }

@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package monoclient provides an experimental monoclient for interacting with the
+// Package apiv2_client provides an experimental combined client for interacting with the
 // various RPC services that comprise the BigQuery v2 API surface.  It simplifies
 // interactions with the bigquery service by allowing the user to only manage a single
 // unified client rather than instantiating multiple clients.
-package monoclient
+package apiv2_client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	bigquery "cloud.google.com/go/bigquery/v2/apiv2"
 	"google.golang.org/api/option"
 )
 
-type monoClient struct {
+type BigQueryClient struct {
 	dsClient    *bigquery.DatasetClient
 	jobClient   *bigquery.JobClient
 	modelClient *bigquery.ModelClient
@@ -36,12 +37,12 @@ type monoClient struct {
 	tblClient   *bigquery.TableClient
 }
 
-// NewClient creates a new monoclient based on gRPC.
+// NewBigQueryClient creates a new BigQueryClient based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
-func NewClient(ctx context.Context, opts ...option.ClientOption) (*monoClient, error) {
+func NewBigQueryClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryClient, error) {
 	var errs []error
 	var err error
-	mc := &monoClient{}
+	mc := &BigQueryClient{}
 	mc.dsClient, err = bigquery.NewDatasetClient(ctx, opts...)
 	if err != nil {
 		errs = append(errs, fmt.Errorf("NewDatasetClient: %w", err))
@@ -71,17 +72,17 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*monoClient, e
 		errs = append(errs, fmt.Errorf("NewTableClient: %w", err))
 	}
 	if len(errs) > 0 {
-		return nil, fmt.Errorf("NewClient: %d errors during instantiation, first error: %w", len(errs), errs[0])
+		return nil, errors.Join(errs...)
 	}
 	return mc, nil
 }
 
-// NewClient creates a new monoclient based on REST.
+// NewBigQueryRESTClient creates a new BigQueryClient based on REST.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
-func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*monoClient, error) {
+func NewBigQueryRESTClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryClient, error) {
 	var errs []error
 	var err error
-	mc := &monoClient{}
+	mc := &BigQueryClient{}
 	mc.dsClient, err = bigquery.NewDatasetRESTClient(ctx, opts...)
 	if err != nil {
 		errs = append(errs, fmt.Errorf("NewDatasetRESTClient: %w", err))
@@ -116,7 +117,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*monoClien
 	return mc, nil
 }
 
-func (mc *monoClient) Close() error {
+func (mc *BigQueryClient) Close() error {
 	var errs []error
 	err := mc.dsClient.Close()
 	if err != nil {

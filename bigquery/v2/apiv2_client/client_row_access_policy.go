@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package monoclient
+package apiv2_client
 
 import (
 	"context"
@@ -24,31 +24,31 @@ import (
 )
 
 // ListRowAccessPolicies lists all row access policies on the specified table.
-func (mc *monoClient) ListRowAccessPolicies(ctx context.Context, req *bigquerypb.ListRowAccessPoliciesRequest, opts ...gax.CallOption) *bigquery.RowAccessPolicyIterator {
+func (mc *BigQueryClient) ListRowAccessPolicies(ctx context.Context, req *bigquerypb.ListRowAccessPoliciesRequest, opts ...gax.CallOption) *bigquery.RowAccessPolicyIterator {
 	return mc.rapClient.ListRowAccessPolicies(ctx, req, opts...)
 }
 
 // GetRowAccessPolicy gets the specified row access policy by policy ID.
-func (mc *monoClient) GetRowAccessPolicy(ctx context.Context, req *bigquerypb.GetRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
+func (mc *BigQueryClient) GetRowAccessPolicy(ctx context.Context, req *bigquerypb.GetRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return mc.rapClient.GetRowAccessPolicy(ctx, req, opts...)
 }
 
 // CreateRowAccessPolicy creates a row access policy.
-func (mc *monoClient) CreateRowAccessPolicy(ctx context.Context, req *bigquerypb.CreateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
+func (mc *BigQueryClient) CreateRowAccessPolicy(ctx context.Context, req *bigquerypb.CreateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return mc.rapClient.CreateRowAccessPolicy(ctx, req, opts...)
 }
 
 // UpdateRowAccessPolicy updates a row access policy.
-func (mc *monoClient) UpdateRowAccessPolicy(ctx context.Context, req *bigquerypb.UpdateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
+func (mc *BigQueryClient) UpdateRowAccessPolicy(ctx context.Context, req *bigquerypb.UpdateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return mc.rapClient.UpdateRowAccessPolicy(ctx, req, opts...)
 }
 
 // DeleteRowAccessPolicy deletes a row access policy.
-func (mc *monoClient) DeleteRowAccessPolicy(ctx context.Context, req *bigquerypb.DeleteRowAccessPolicyRequest, opts ...gax.CallOption) error {
+func (mc *BigQueryClient) DeleteRowAccessPolicy(ctx context.Context, req *bigquerypb.DeleteRowAccessPolicyRequest, opts ...gax.CallOption) error {
 	return mc.rapClient.DeleteRowAccessPolicy(ctx, req, opts...)
 }
 
 // BatchDeleteRowAccessPolicies deletes provided row access policies.
-func (mc *monoClient) BatchDeleteRowAccessPolicies(ctx context.Context, req *bigquerypb.BatchDeleteRowAccessPoliciesRequest, opts ...gax.CallOption) error {
+func (mc *BigQueryClient) BatchDeleteRowAccessPolicies(ctx context.Context, req *bigquerypb.BatchDeleteRowAccessPoliciesRequest, opts ...gax.CallOption) error {
 	return mc.rapClient.BatchDeleteRowAccessPolicies(ctx, req, opts...)
 }

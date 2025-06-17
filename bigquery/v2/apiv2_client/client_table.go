@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package monoclient
+package apiv2_client
 
 import (
 	"context"
@@ -26,12 +26,12 @@ import (
 // GetTable gets the specified table resource by table ID.
 // This method does not return the data in the table, it only returns the
 // table resource, which describes the structure of this table.
-func (mc *monoClient) GetTable(ctx context.Context, req *bigquerypb.GetTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
+func (mc *BigQueryClient) GetTable(ctx context.Context, req *bigquerypb.GetTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return mc.tblClient.GetTable(ctx, req, opts...)
 }
 
 // InsertTable creates a new, empty table in the dataset.
-func (mc *monoClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
+func (mc *BigQueryClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return mc.tblClient.InsertTable(ctx, req, opts...)
 }
 
@@ -39,25 +39,25 @@ func (mc *monoClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTab
 // entire table resource, whereas the patch method only replaces fields that
 // are provided in the submitted table resource.
 // This method supports RFC5789 patch semantics.
-func (mc *monoClient) PatchTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
+func (mc *BigQueryClient) PatchTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return mc.tblClient.PatchTable(ctx, req, opts...)
 }
 
 // UpdateTable updates information in an existing table. The update method replaces the
 // entire Table resource, whereas the patch method only replaces fields that
 // are provided in the submitted Table resource.
-func (mc *monoClient) UpdateTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
+func (mc *BigQueryClient) UpdateTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return mc.tblClient.UpdateTable(ctx, req, opts...)
 }
 
 // DeleteTable deletes the table specified by tableId from the dataset.
 // If the table contains data, all the data will be deleted.
-func (mc *monoClient) DeleteTable(ctx context.Context, req *bigquerypb.DeleteTableRequest, opts ...gax.CallOption) error {
+func (mc *BigQueryClient) DeleteTable(ctx context.Context, req *bigquerypb.DeleteTableRequest, opts ...gax.CallOption) error {
 	return mc.tblClient.DeleteTable(ctx, req, opts...)
 }
 
 // ListTables lists all tables in the specified dataset. Requires the READER dataset
 // role.
-func (mc *monoClient) ListTables(ctx context.Context, req *bigquerypb.ListTablesRequest, opts ...gax.CallOption) *bigquery.ListFormatTableIterator {
+func (mc *BigQueryClient) ListTables(ctx context.Context, req *bigquerypb.ListTablesRequest, opts ...gax.CallOption) *bigquery.ListFormatTableIterator {
 	return mc.tblClient.ListTables(ctx, req, opts...)
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package monoclient
+package apiv2_client
 
 import (
 	"context"
@@ -23,12 +23,12 @@ import (
 )
 
 // GetDataset returns the dataset specified by datasetID.
-func (mc *monoClient) GetDataset(ctx context.Context, req *bigquerypb.GetDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
+func (mc *BigQueryClient) GetDataset(ctx context.Context, req *bigquerypb.GetDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return mc.dsClient.GetDataset(ctx, req, opts...)
 }
 
 // InsertDataset creates a new empty dataset.
-func (mc *monoClient) InsertDataset(ctx context.Context, req *bigquerypb.InsertDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
+func (mc *BigQueryClient) InsertDataset(ctx context.Context, req *bigquerypb.InsertDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return mc.dsClient.InsertDataset(ctx, req, opts...)
 }
 
@@ -36,14 +36,14 @@ func (mc *monoClient) InsertDataset(ctx context.Context, req *bigquerypb.InsertD
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
 // This method supports RFC5789 patch semantics.
-func (mc *monoClient) PatchDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
+func (mc *BigQueryClient) PatchDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return mc.dsClient.PatchDataset(ctx, req, opts...)
 }
 
 // UpdateDataset updates information in an existing dataset. The update method replaces the
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
-func (mc *monoClient) UpdateDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
+func (mc *BigQueryClient) UpdateDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return mc.dsClient.UpdateDataset(ctx, req, opts...)
 }
 
@@ -51,19 +51,19 @@ func (mc *monoClient) UpdateDataset(ctx context.Context, req *bigquerypb.UpdateO
 // a dataset, you must delete all its tables, either manually or by specifying
 // deleteContents. Immediately after deletion, you can create another dataset
 // with the same name.
-func (mc *monoClient) DeleteDataset(ctx context.Context, req *bigquerypb.DeleteDatasetRequest, opts ...gax.CallOption) error {
+func (mc *BigQueryClient) DeleteDataset(ctx context.Context, req *bigquerypb.DeleteDatasetRequest, opts ...gax.CallOption) error {
 	return mc.dsClient.DeleteDataset(ctx, req, opts...)
 }
 
 // ListDatasets lists all datasets in the specified project to which the user has been
 // granted the READER dataset role.
-func (mc *monoClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *bigquery.ListFormatDatasetIterator {
+func (mc *BigQueryClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *bigquery.ListFormatDatasetIterator {
 	return mc.dsClient.ListDatasets(ctx, req, opts...)
 }
 
 // UndeleteDataset undeletes a dataset which is within time travel window based on datasetId.
 // If a time is specified, the dataset version deleted at that time is
 // undeleted, else the last live version is undeleted.
-func (mc *monoClient) UndeleteDataset(ctx context.Context, req *bigquerypb.UndeleteDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
+func (mc *BigQueryClient) UndeleteDataset(ctx context.Context, req *bigquerypb.UndeleteDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return mc.dsClient.UndeleteDataset(ctx, req, opts...)
 }
