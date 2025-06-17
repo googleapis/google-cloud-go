@@ -397,7 +397,7 @@ func TestLiveGlobalEndpoint(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
-	model := client.GenerativeModel("gemini-2.5-pro")
+	model := client.GenerativeModel(defaultModel)
 	model.SetTemperature(0.0)
 
 	resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
@@ -424,7 +424,7 @@ func TestLiveGlobalEndpointREST(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
-	model := client.GenerativeModel("gemini-2.5-pro")
+	model := client.GenerativeModel(defaultModel)
 	model.SetTemperature(0.0)
 
 	resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
