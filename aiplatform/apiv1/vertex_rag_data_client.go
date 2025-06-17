@@ -42,26 +42,28 @@ var newVertexRagDataClientHook clientHook
 
 // VertexRagDataCallOptions contains the retry settings for each method of VertexRagDataClient.
 type VertexRagDataCallOptions struct {
-	CreateRagCorpus    []gax.CallOption
-	UpdateRagCorpus    []gax.CallOption
-	GetRagCorpus       []gax.CallOption
-	ListRagCorpora     []gax.CallOption
-	DeleteRagCorpus    []gax.CallOption
-	UploadRagFile      []gax.CallOption
-	ImportRagFiles     []gax.CallOption
-	GetRagFile         []gax.CallOption
-	ListRagFiles       []gax.CallOption
-	DeleteRagFile      []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
-	WaitOperation      []gax.CallOption
+	CreateRagCorpus       []gax.CallOption
+	UpdateRagCorpus       []gax.CallOption
+	GetRagCorpus          []gax.CallOption
+	ListRagCorpora        []gax.CallOption
+	DeleteRagCorpus       []gax.CallOption
+	UploadRagFile         []gax.CallOption
+	ImportRagFiles        []gax.CallOption
+	GetRagFile            []gax.CallOption
+	ListRagFiles          []gax.CallOption
+	DeleteRagFile         []gax.CallOption
+	UpdateRagEngineConfig []gax.CallOption
+	GetRagEngineConfig    []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	CancelOperation       []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
+	WaitOperation         []gax.CallOption
 }
 
 func defaultVertexRagDataGRPCClientOptions() []option.ClientOption {
@@ -81,26 +83,28 @@ func defaultVertexRagDataGRPCClientOptions() []option.ClientOption {
 
 func defaultVertexRagDataCallOptions() *VertexRagDataCallOptions {
 	return &VertexRagDataCallOptions{
-		CreateRagCorpus:    []gax.CallOption{},
-		UpdateRagCorpus:    []gax.CallOption{},
-		GetRagCorpus:       []gax.CallOption{},
-		ListRagCorpora:     []gax.CallOption{},
-		DeleteRagCorpus:    []gax.CallOption{},
-		UploadRagFile:      []gax.CallOption{},
-		ImportRagFiles:     []gax.CallOption{},
-		GetRagFile:         []gax.CallOption{},
-		ListRagFiles:       []gax.CallOption{},
-		DeleteRagFile:      []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CreateRagCorpus:       []gax.CallOption{},
+		UpdateRagCorpus:       []gax.CallOption{},
+		GetRagCorpus:          []gax.CallOption{},
+		ListRagCorpora:        []gax.CallOption{},
+		DeleteRagCorpus:       []gax.CallOption{},
+		UploadRagFile:         []gax.CallOption{},
+		ImportRagFiles:        []gax.CallOption{},
+		GetRagFile:            []gax.CallOption{},
+		ListRagFiles:          []gax.CallOption{},
+		DeleteRagFile:         []gax.CallOption{},
+		UpdateRagEngineConfig: []gax.CallOption{},
+		GetRagEngineConfig:    []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
+		WaitOperation:         []gax.CallOption{},
 	}
 }
 
@@ -124,6 +128,9 @@ type internalVertexRagDataClient interface {
 	ListRagFiles(context.Context, *aiplatformpb.ListRagFilesRequest, ...gax.CallOption) *RagFileIterator
 	DeleteRagFile(context.Context, *aiplatformpb.DeleteRagFileRequest, ...gax.CallOption) (*DeleteRagFileOperation, error)
 	DeleteRagFileOperation(name string) *DeleteRagFileOperation
+	UpdateRagEngineConfig(context.Context, *aiplatformpb.UpdateRagEngineConfigRequest, ...gax.CallOption) (*UpdateRagEngineConfigOperation, error)
+	UpdateRagEngineConfigOperation(name string) *UpdateRagEngineConfigOperation
+	GetRagEngineConfig(context.Context, *aiplatformpb.GetRagEngineConfigRequest, ...gax.CallOption) (*aiplatformpb.RagEngineConfig, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -254,6 +261,22 @@ func (c *VertexRagDataClient) DeleteRagFile(ctx context.Context, req *aiplatform
 // The name must be that of a previously created DeleteRagFileOperation, possibly from a different process.
 func (c *VertexRagDataClient) DeleteRagFileOperation(name string) *DeleteRagFileOperation {
 	return c.internalClient.DeleteRagFileOperation(name)
+}
+
+// UpdateRagEngineConfig updates a RagEngineConfig.
+func (c *VertexRagDataClient) UpdateRagEngineConfig(ctx context.Context, req *aiplatformpb.UpdateRagEngineConfigRequest, opts ...gax.CallOption) (*UpdateRagEngineConfigOperation, error) {
+	return c.internalClient.UpdateRagEngineConfig(ctx, req, opts...)
+}
+
+// UpdateRagEngineConfigOperation returns a new UpdateRagEngineConfigOperation from a given name.
+// The name must be that of a previously created UpdateRagEngineConfigOperation, possibly from a different process.
+func (c *VertexRagDataClient) UpdateRagEngineConfigOperation(name string) *UpdateRagEngineConfigOperation {
+	return c.internalClient.UpdateRagEngineConfigOperation(name)
+}
+
+// GetRagEngineConfig gets a RagEngineConfig.
+func (c *VertexRagDataClient) GetRagEngineConfig(ctx context.Context, req *aiplatformpb.GetRagEngineConfigRequest, opts ...gax.CallOption) (*aiplatformpb.RagEngineConfig, error) {
+	return c.internalClient.GetRagEngineConfig(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -665,6 +688,44 @@ func (c *vertexRagDataGRPCClient) DeleteRagFile(ctx context.Context, req *aiplat
 	}, nil
 }
 
+func (c *vertexRagDataGRPCClient) UpdateRagEngineConfig(ctx context.Context, req *aiplatformpb.UpdateRagEngineConfigRequest, opts ...gax.CallOption) (*UpdateRagEngineConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rag_engine_config.name", url.QueryEscape(req.GetRagEngineConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRagEngineConfig[0:len((*c.CallOptions).UpdateRagEngineConfig):len((*c.CallOptions).UpdateRagEngineConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.UpdateRagEngineConfig, req, settings.GRPC, c.logger, "UpdateRagEngineConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateRagEngineConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *vertexRagDataGRPCClient) GetRagEngineConfig(ctx context.Context, req *aiplatformpb.GetRagEngineConfigRequest, opts ...gax.CallOption) (*aiplatformpb.RagEngineConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetRagEngineConfig[0:len((*c.CallOptions).GetRagEngineConfig):len((*c.CallOptions).GetRagEngineConfig)], opts...)
+	var resp *aiplatformpb.RagEngineConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.GetRagEngineConfig, req, settings.GRPC, c.logger, "GetRagEngineConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *vertexRagDataGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -929,6 +990,14 @@ func (c *vertexRagDataGRPCClient) ImportRagFilesOperation(name string) *ImportRa
 // The name must be that of a previously created UpdateRagCorpusOperation, possibly from a different process.
 func (c *vertexRagDataGRPCClient) UpdateRagCorpusOperation(name string) *UpdateRagCorpusOperation {
 	return &UpdateRagCorpusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateRagEngineConfigOperation returns a new UpdateRagEngineConfigOperation from a given name.
+// The name must be that of a previously created UpdateRagEngineConfigOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) UpdateRagEngineConfigOperation(name string) *UpdateRagEngineConfigOperation {
+	return &UpdateRagEngineConfigOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

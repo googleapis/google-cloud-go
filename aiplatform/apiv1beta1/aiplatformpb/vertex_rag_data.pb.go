@@ -1932,7 +1932,9 @@ type RagManagedDbConfig struct {
 	// Types that are assignable to Tier:
 	//
 	//	*RagManagedDbConfig_Enterprise_
+	//	*RagManagedDbConfig_Scaled_
 	//	*RagManagedDbConfig_Basic_
+	//	*RagManagedDbConfig_Unprovisioned_
 	Tier isRagManagedDbConfig_Tier `protobuf_oneof:"tier"`
 }
 
@@ -1973,9 +1975,17 @@ func (m *RagManagedDbConfig) GetTier() isRagManagedDbConfig_Tier {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1beta1/vertex_rag_data.proto.
 func (x *RagManagedDbConfig) GetEnterprise() *RagManagedDbConfig_Enterprise {
 	if x, ok := x.GetTier().(*RagManagedDbConfig_Enterprise_); ok {
 		return x.Enterprise
+	}
+	return nil
+}
+
+func (x *RagManagedDbConfig) GetScaled() *RagManagedDbConfig_Scaled {
+	if x, ok := x.GetTier().(*RagManagedDbConfig_Scaled_); ok {
+		return x.Scaled
 	}
 	return nil
 }
@@ -1987,14 +1997,29 @@ func (x *RagManagedDbConfig) GetBasic() *RagManagedDbConfig_Basic {
 	return nil
 }
 
+func (x *RagManagedDbConfig) GetUnprovisioned() *RagManagedDbConfig_Unprovisioned {
+	if x, ok := x.GetTier().(*RagManagedDbConfig_Unprovisioned_); ok {
+		return x.Unprovisioned
+	}
+	return nil
+}
+
 type isRagManagedDbConfig_Tier interface {
 	isRagManagedDbConfig_Tier()
 }
 
 type RagManagedDbConfig_Enterprise_ struct {
+	// Deprecated: Please use `Scaled` tier instead.
 	// Sets the RagManagedDb to the Enterprise tier. This is the default tier
 	// if not explicitly chosen.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1beta1/vertex_rag_data.proto.
 	Enterprise *RagManagedDbConfig_Enterprise `protobuf:"bytes,1,opt,name=enterprise,proto3,oneof"`
+}
+
+type RagManagedDbConfig_Scaled_ struct {
+	// Sets the RagManagedDb to the Scaled tier.
+	Scaled *RagManagedDbConfig_Scaled `protobuf:"bytes,4,opt,name=scaled,proto3,oneof"`
 }
 
 type RagManagedDbConfig_Basic_ struct {
@@ -2002,9 +2027,18 @@ type RagManagedDbConfig_Basic_ struct {
 	Basic *RagManagedDbConfig_Basic `protobuf:"bytes,2,opt,name=basic,proto3,oneof"`
 }
 
+type RagManagedDbConfig_Unprovisioned_ struct {
+	// Sets the RagManagedDb to the Unprovisioned tier.
+	Unprovisioned *RagManagedDbConfig_Unprovisioned `protobuf:"bytes,3,opt,name=unprovisioned,proto3,oneof"`
+}
+
 func (*RagManagedDbConfig_Enterprise_) isRagManagedDbConfig_Tier() {}
 
+func (*RagManagedDbConfig_Scaled_) isRagManagedDbConfig_Tier() {}
+
 func (*RagManagedDbConfig_Basic_) isRagManagedDbConfig_Tier() {}
+
+func (*RagManagedDbConfig_Unprovisioned_) isRagManagedDbConfig_Tier() {}
 
 // Config for RagEngine.
 type RagEngineConfig struct {
@@ -3242,11 +3276,12 @@ func (x *RagFileParsingConfig_LlmParser) GetCustomParsingPrompt() string {
 	return ""
 }
 
+// Deprecated: Please use `Scaled` tier instead.
 // Enterprise tier offers production grade performance along with
 // autoscaling functionality. It is suitable for customers with large
 // amounts of data or performance sensitive workloads.
 //
-// NOTE: This is the default tier if not explicitly chosen.
+// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1beta1/vertex_rag_data.proto.
 type RagManagedDbConfig_Enterprise struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3283,12 +3318,53 @@ func (*RagManagedDbConfig_Enterprise) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_rawDescGZIP(), []int{14, 0}
 }
 
+// Scaled tier offers production grade performance along with
+// autoscaling functionality. It is suitable for customers with large
+// amounts of data or performance sensitive workloads.
+type RagManagedDbConfig_Scaled struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *RagManagedDbConfig_Scaled) Reset() {
+	*x = RagManagedDbConfig_Scaled{}
+	mi := &file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RagManagedDbConfig_Scaled) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RagManagedDbConfig_Scaled) ProtoMessage() {}
+
+func (x *RagManagedDbConfig_Scaled) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RagManagedDbConfig_Scaled.ProtoReflect.Descriptor instead.
+func (*RagManagedDbConfig_Scaled) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_rawDescGZIP(), []int{14, 1}
+}
+
 // Basic tier is a cost-effective and low compute tier suitable for
 // the following cases:
 // * Experimenting with RagManagedDb.
 // * Small data size.
 // * Latency insensitive workload.
 // * Only using RAG Engine with external vector DBs.
+//
+// NOTE: This is the default tier if not explicitly chosen.
 type RagManagedDbConfig_Basic struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3297,7 +3373,7 @@ type RagManagedDbConfig_Basic struct {
 
 func (x *RagManagedDbConfig_Basic) Reset() {
 	*x = RagManagedDbConfig_Basic{}
-	mi := &file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[36]
+	mi := &file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3309,7 +3385,7 @@ func (x *RagManagedDbConfig_Basic) String() string {
 func (*RagManagedDbConfig_Basic) ProtoMessage() {}
 
 func (x *RagManagedDbConfig_Basic) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[36]
+	mi := &file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3322,7 +3398,49 @@ func (x *RagManagedDbConfig_Basic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RagManagedDbConfig_Basic.ProtoReflect.Descriptor instead.
 func (*RagManagedDbConfig_Basic) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_rawDescGZIP(), []int{14, 1}
+	return file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_rawDescGZIP(), []int{14, 2}
+}
+
+// Disables the RAG Engine service and deletes all your data held
+// within this service. This will halt the billing of the service.
+//
+// NOTE: Once deleted the data cannot be recovered. To start using
+// RAG Engine again, you will need to update the tier by calling the
+// UpdateRagEngineConfig API.
+type RagManagedDbConfig_Unprovisioned struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *RagManagedDbConfig_Unprovisioned) Reset() {
+	*x = RagManagedDbConfig_Unprovisioned{}
+	mi := &file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RagManagedDbConfig_Unprovisioned) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RagManagedDbConfig_Unprovisioned) ProtoMessage() {}
+
+func (x *RagManagedDbConfig_Unprovisioned) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RagManagedDbConfig_Unprovisioned.ProtoReflect.Descriptor instead.
+func (*RagManagedDbConfig_Unprovisioned) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_rawDescGZIP(), []int{14, 3}
 }
 
 var File_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto protoreflect.FileDescriptor
@@ -3993,55 +4111,69 @@ var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_rawDesc = []byte{
 	0x6d, 0x70, 0x6f, 0x72, 0x74, 0x5f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x42, 0x16, 0x0a, 0x14,
 	0x70, 0x61, 0x72, 0x74, 0x69, 0x61, 0x6c, 0x5f, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x5f,
 	0x73, 0x69, 0x6e, 0x6b, 0x42, 0x14, 0x0a, 0x12, 0x69, 0x6d, 0x70, 0x6f, 0x72, 0x74, 0x5f, 0x72,
-	0x65, 0x73, 0x75, 0x6c, 0x74, 0x5f, 0x73, 0x69, 0x6e, 0x6b, 0x22, 0xe8, 0x01, 0x0a, 0x12, 0x52,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x5f, 0x73, 0x69, 0x6e, 0x6b, 0x22, 0xcc, 0x03, 0x0a, 0x12, 0x52,
 	0x61, 0x67, 0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x64, 0x44, 0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69,
-	0x67, 0x12, 0x60, 0x0a, 0x0a, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65, 0x18,
+	0x67, 0x12, 0x64, 0x0a, 0x0a, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
 	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e,
 	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x4d, 0x61, 0x6e, 0x61, 0x67,
 	0x65, 0x64, 0x44, 0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x45, 0x6e, 0x74, 0x65, 0x72,
-	0x70, 0x72, 0x69, 0x73, 0x65, 0x48, 0x00, 0x52, 0x0a, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x70, 0x72,
-	0x69, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x05, 0x62, 0x61, 0x73, 0x69, 0x63, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x39, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
+	0x70, 0x72, 0x69, 0x73, 0x65, 0x42, 0x02, 0x18, 0x01, 0x48, 0x00, 0x52, 0x0a, 0x65, 0x6e, 0x74,
+	0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65, 0x12, 0x54, 0x0a, 0x06, 0x73, 0x63, 0x61, 0x6c, 0x65,
+	0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x4d, 0x61, 0x6e,
+	0x61, 0x67, 0x65, 0x64, 0x44, 0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x53, 0x63, 0x61,
+	0x6c, 0x65, 0x64, 0x48, 0x00, 0x52, 0x06, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x64, 0x12, 0x51, 0x0a,
+	0x05, 0x62, 0x61, 0x73, 0x69, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x39, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c,
+	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x52,
+	0x61, 0x67, 0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x64, 0x44, 0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69,
+	0x67, 0x2e, 0x42, 0x61, 0x73, 0x69, 0x63, 0x48, 0x00, 0x52, 0x05, 0x62, 0x61, 0x73, 0x69, 0x63,
+	0x12, 0x69, 0x0a, 0x0d, 0x75, 0x6e, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x65,
+	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x41, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x4d, 0x61, 0x6e,
+	0x61, 0x67, 0x65, 0x64, 0x44, 0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x55, 0x6e, 0x70,
+	0x72, 0x6f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x65, 0x64, 0x48, 0x00, 0x52, 0x0d, 0x75, 0x6e,
+	0x70, 0x72, 0x6f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x65, 0x64, 0x1a, 0x10, 0x0a, 0x0a, 0x45,
+	0x6e, 0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65, 0x3a, 0x02, 0x18, 0x01, 0x1a, 0x08, 0x0a,
+	0x06, 0x53, 0x63, 0x61, 0x6c, 0x65, 0x64, 0x1a, 0x07, 0x0a, 0x05, 0x42, 0x61, 0x73, 0x69, 0x63,
+	0x1a, 0x0f, 0x0a, 0x0d, 0x55, 0x6e, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x65,
+	0x64, 0x42, 0x06, 0x0a, 0x04, 0x74, 0x69, 0x65, 0x72, 0x22, 0xa0, 0x02, 0x0a, 0x0f, 0x52, 0x61,
+	0x67, 0x45, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x17, 0x0a,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x08,
+	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x66, 0x0a, 0x15, 0x72, 0x61, 0x67, 0x5f, 0x6d, 0x61,
+	0x6e, 0x61, 0x67, 0x65, 0x64, 0x5f, 0x64, 0x62, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x33, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e,
+	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x4d, 0x61, 0x6e, 0x61, 0x67,
+	0x65, 0x64, 0x44, 0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x12, 0x72, 0x61, 0x67, 0x4d,
+	0x61, 0x6e, 0x61, 0x67, 0x65, 0x64, 0x44, 0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x3a, 0x8b,
+	0x01, 0xea, 0x41, 0x87, 0x01, 0x0a, 0x29, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x52, 0x61, 0x67, 0x45, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x12, 0x37, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b,
+	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x72, 0x61, 0x67, 0x45, 0x6e, 0x67,
+	0x69, 0x6e, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2a, 0x10, 0x72, 0x61, 0x67, 0x45, 0x6e,
+	0x67, 0x69, 0x6e, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x32, 0x0f, 0x72, 0x61, 0x67,
+	0x45, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0xe9, 0x01, 0x0a,
+	0x23, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
 	0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x64, 0x44,
-	0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x42, 0x61, 0x73, 0x69, 0x63, 0x48, 0x00, 0x52,
-	0x05, 0x62, 0x61, 0x73, 0x69, 0x63, 0x1a, 0x0c, 0x0a, 0x0a, 0x45, 0x6e, 0x74, 0x65, 0x72, 0x70,
-	0x72, 0x69, 0x73, 0x65, 0x1a, 0x07, 0x0a, 0x05, 0x42, 0x61, 0x73, 0x69, 0x63, 0x42, 0x06, 0x0a,
-	0x04, 0x74, 0x69, 0x65, 0x72, 0x22, 0xa0, 0x02, 0x0a, 0x0f, 0x52, 0x61, 0x67, 0x45, 0x6e, 0x67,
-	0x69, 0x6e, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x08, 0x52, 0x04, 0x6e, 0x61,
-	0x6d, 0x65, 0x12, 0x66, 0x0a, 0x15, 0x72, 0x61, 0x67, 0x5f, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65,
-	0x64, 0x5f, 0x64, 0x62, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x33, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65,
-	0x74, 0x61, 0x31, 0x2e, 0x52, 0x61, 0x67, 0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x64, 0x44, 0x62,
-	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x12, 0x72, 0x61, 0x67, 0x4d, 0x61, 0x6e, 0x61, 0x67,
-	0x65, 0x64, 0x44, 0x62, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x3a, 0x8b, 0x01, 0xea, 0x41, 0x87,
-	0x01, 0x0a, 0x29, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x52, 0x61, 0x67,
-	0x45, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x37, 0x70, 0x72,
-	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d,
-	0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x72, 0x61, 0x67, 0x45, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2a, 0x10, 0x72, 0x61, 0x67, 0x45, 0x6e, 0x67, 0x69, 0x6e, 0x65,
-	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x32, 0x0f, 0x72, 0x61, 0x67, 0x45, 0x6e, 0x67, 0x69,
-	0x6e, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0xe9, 0x01, 0x0a, 0x23, 0x63, 0x6f, 0x6d,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69,
-	0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x42, 0x12, 0x56, 0x65, 0x72, 0x74, 0x65, 0x78, 0x52, 0x61, 0x67, 0x44, 0x61, 0x74, 0x61, 0x50,
-	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x43, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c,
-	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61,
-	0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1f, 0x47, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61,
-	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0x42, 0x65, 0x74, 0x61, 0x31, 0xca, 0x02, 0x1f,
-	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50,
-	0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xea,
-	0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a,
-	0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x74, 0x61, 0x31, 0x42, 0x12, 0x56, 0x65, 0x72, 0x74, 0x65, 0x78, 0x52, 0x61, 0x67, 0x44,
+	0x61, 0x74, 0x61, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x43, 0x63, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f,
+	0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
+	0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa,
+	0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41,
+	0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0x42, 0x65, 0x74, 0x61,
+	0x31, 0xca, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64,
+	0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0xea, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c,
+	0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a,
+	0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4057,7 +4189,7 @@ func file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_rawDescGZIP() []
 }
 
 var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
+var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes = make([]protoimpl.MessageInfo, 39)
 var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_goTypes = []any{
 	(FileStatus_State)(0),                                      // 0: google.cloud.aiplatform.v1beta1.FileStatus.State
 	(CorpusStatus_State)(0),                                    // 1: google.cloud.aiplatform.v1beta1.CorpusStatus.State
@@ -4098,18 +4230,20 @@ var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_goTypes = []any{
 	(*RagFileParsingConfig_LayoutParser)(nil),                  // 36: google.cloud.aiplatform.v1beta1.RagFileParsingConfig.LayoutParser
 	(*RagFileParsingConfig_LlmParser)(nil),                     // 37: google.cloud.aiplatform.v1beta1.RagFileParsingConfig.LlmParser
 	(*RagManagedDbConfig_Enterprise)(nil),                      // 38: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Enterprise
-	(*RagManagedDbConfig_Basic)(nil),                           // 39: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Basic
-	(*ApiAuth)(nil),                                            // 40: google.cloud.aiplatform.v1beta1.ApiAuth
-	(*timestamppb.Timestamp)(nil),                              // 41: google.protobuf.Timestamp
-	(*EncryptionSpec)(nil),                                     // 42: google.cloud.aiplatform.v1beta1.EncryptionSpec
-	(*GcsSource)(nil),                                          // 43: google.cloud.aiplatform.v1beta1.GcsSource
-	(*GoogleDriveSource)(nil),                                  // 44: google.cloud.aiplatform.v1beta1.GoogleDriveSource
-	(*DirectUploadSource)(nil),                                 // 45: google.cloud.aiplatform.v1beta1.DirectUploadSource
-	(*SlackSource)(nil),                                        // 46: google.cloud.aiplatform.v1beta1.SlackSource
-	(*JiraSource)(nil),                                         // 47: google.cloud.aiplatform.v1beta1.JiraSource
-	(*SharePointSources)(nil),                                  // 48: google.cloud.aiplatform.v1beta1.SharePointSources
-	(*GcsDestination)(nil),                                     // 49: google.cloud.aiplatform.v1beta1.GcsDestination
-	(*BigQueryDestination)(nil),                                // 50: google.cloud.aiplatform.v1beta1.BigQueryDestination
+	(*RagManagedDbConfig_Scaled)(nil),                          // 39: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Scaled
+	(*RagManagedDbConfig_Basic)(nil),                           // 40: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Basic
+	(*RagManagedDbConfig_Unprovisioned)(nil),                   // 41: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Unprovisioned
+	(*ApiAuth)(nil),                                            // 42: google.cloud.aiplatform.v1beta1.ApiAuth
+	(*timestamppb.Timestamp)(nil),                              // 43: google.protobuf.Timestamp
+	(*EncryptionSpec)(nil),                                     // 44: google.cloud.aiplatform.v1beta1.EncryptionSpec
+	(*GcsSource)(nil),                                          // 45: google.cloud.aiplatform.v1beta1.GcsSource
+	(*GoogleDriveSource)(nil),                                  // 46: google.cloud.aiplatform.v1beta1.GoogleDriveSource
+	(*DirectUploadSource)(nil),                                 // 47: google.cloud.aiplatform.v1beta1.DirectUploadSource
+	(*SlackSource)(nil),                                        // 48: google.cloud.aiplatform.v1beta1.SlackSource
+	(*JiraSource)(nil),                                         // 49: google.cloud.aiplatform.v1beta1.JiraSource
+	(*SharePointSources)(nil),                                  // 50: google.cloud.aiplatform.v1beta1.SharePointSources
+	(*GcsDestination)(nil),                                     // 51: google.cloud.aiplatform.v1beta1.GcsDestination
+	(*BigQueryDestination)(nil),                                // 52: google.cloud.aiplatform.v1beta1.BigQueryDestination
 }
 var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_depIdxs = []int32{
 	19, // 0: google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.vertex_prediction_endpoint:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.VertexPredictionEndpoint
@@ -4119,7 +4253,7 @@ var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_depIdxs = []int32
 	25, // 4: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.pinecone:type_name -> google.cloud.aiplatform.v1beta1.RagVectorDbConfig.Pinecone
 	26, // 5: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.vertex_feature_store:type_name -> google.cloud.aiplatform.v1beta1.RagVectorDbConfig.VertexFeatureStore
 	27, // 6: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.vertex_vector_search:type_name -> google.cloud.aiplatform.v1beta1.RagVectorDbConfig.VertexVectorSearch
-	40, // 7: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.api_auth:type_name -> google.cloud.aiplatform.v1beta1.ApiAuth
+	42, // 7: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.api_auth:type_name -> google.cloud.aiplatform.v1beta1.ApiAuth
 	3,  // 8: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.rag_embedding_model_config:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig
 	0,  // 9: google.cloud.aiplatform.v1beta1.FileStatus.state:type_name -> google.cloud.aiplatform.v1beta1.FileStatus.State
 	1,  // 10: google.cloud.aiplatform.v1beta1.CorpusStatus.state:type_name -> google.cloud.aiplatform.v1beta1.CorpusStatus.State
@@ -4127,20 +4261,20 @@ var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_depIdxs = []int32
 	6,  // 12: google.cloud.aiplatform.v1beta1.RagCorpus.vertex_ai_search_config:type_name -> google.cloud.aiplatform.v1beta1.VertexAiSearchConfig
 	3,  // 13: google.cloud.aiplatform.v1beta1.RagCorpus.rag_embedding_model_config:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig
 	4,  // 14: google.cloud.aiplatform.v1beta1.RagCorpus.rag_vector_db_config:type_name -> google.cloud.aiplatform.v1beta1.RagVectorDbConfig
-	41, // 15: google.cloud.aiplatform.v1beta1.RagCorpus.create_time:type_name -> google.protobuf.Timestamp
-	41, // 16: google.cloud.aiplatform.v1beta1.RagCorpus.update_time:type_name -> google.protobuf.Timestamp
+	43, // 15: google.cloud.aiplatform.v1beta1.RagCorpus.create_time:type_name -> google.protobuf.Timestamp
+	43, // 16: google.cloud.aiplatform.v1beta1.RagCorpus.update_time:type_name -> google.protobuf.Timestamp
 	7,  // 17: google.cloud.aiplatform.v1beta1.RagCorpus.corpus_status:type_name -> google.cloud.aiplatform.v1beta1.CorpusStatus
-	42, // 18: google.cloud.aiplatform.v1beta1.RagCorpus.encryption_spec:type_name -> google.cloud.aiplatform.v1beta1.EncryptionSpec
+	44, // 18: google.cloud.aiplatform.v1beta1.RagCorpus.encryption_spec:type_name -> google.cloud.aiplatform.v1beta1.EncryptionSpec
 	30, // 19: google.cloud.aiplatform.v1beta1.RagCorpus.corpus_type_config:type_name -> google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig
-	43, // 20: google.cloud.aiplatform.v1beta1.RagFile.gcs_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
-	44, // 21: google.cloud.aiplatform.v1beta1.RagFile.google_drive_source:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource
-	45, // 22: google.cloud.aiplatform.v1beta1.RagFile.direct_upload_source:type_name -> google.cloud.aiplatform.v1beta1.DirectUploadSource
-	46, // 23: google.cloud.aiplatform.v1beta1.RagFile.slack_source:type_name -> google.cloud.aiplatform.v1beta1.SlackSource
-	47, // 24: google.cloud.aiplatform.v1beta1.RagFile.jira_source:type_name -> google.cloud.aiplatform.v1beta1.JiraSource
-	48, // 25: google.cloud.aiplatform.v1beta1.RagFile.share_point_sources:type_name -> google.cloud.aiplatform.v1beta1.SharePointSources
+	45, // 20: google.cloud.aiplatform.v1beta1.RagFile.gcs_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
+	46, // 21: google.cloud.aiplatform.v1beta1.RagFile.google_drive_source:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource
+	47, // 22: google.cloud.aiplatform.v1beta1.RagFile.direct_upload_source:type_name -> google.cloud.aiplatform.v1beta1.DirectUploadSource
+	48, // 23: google.cloud.aiplatform.v1beta1.RagFile.slack_source:type_name -> google.cloud.aiplatform.v1beta1.SlackSource
+	49, // 24: google.cloud.aiplatform.v1beta1.RagFile.jira_source:type_name -> google.cloud.aiplatform.v1beta1.JiraSource
+	50, // 25: google.cloud.aiplatform.v1beta1.RagFile.share_point_sources:type_name -> google.cloud.aiplatform.v1beta1.SharePointSources
 	2,  // 26: google.cloud.aiplatform.v1beta1.RagFile.rag_file_type:type_name -> google.cloud.aiplatform.v1beta1.RagFile.RagFileType
-	41, // 27: google.cloud.aiplatform.v1beta1.RagFile.create_time:type_name -> google.protobuf.Timestamp
-	41, // 28: google.cloud.aiplatform.v1beta1.RagFile.update_time:type_name -> google.protobuf.Timestamp
+	43, // 27: google.cloud.aiplatform.v1beta1.RagFile.create_time:type_name -> google.protobuf.Timestamp
+	43, // 28: google.cloud.aiplatform.v1beta1.RagFile.update_time:type_name -> google.protobuf.Timestamp
 	5,  // 29: google.cloud.aiplatform.v1beta1.RagFile.file_status:type_name -> google.cloud.aiplatform.v1beta1.FileStatus
 	33, // 30: google.cloud.aiplatform.v1beta1.RagChunk.page_span:type_name -> google.cloud.aiplatform.v1beta1.RagChunk.PageSpan
 	34, // 31: google.cloud.aiplatform.v1beta1.RagFileChunkingConfig.fixed_length_chunking:type_name -> google.cloud.aiplatform.v1beta1.RagFileChunkingConfig.FixedLengthChunking
@@ -4148,43 +4282,45 @@ var file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_depIdxs = []int32
 	35, // 33: google.cloud.aiplatform.v1beta1.RagFileParsingConfig.advanced_parser:type_name -> google.cloud.aiplatform.v1beta1.RagFileParsingConfig.AdvancedParser
 	36, // 34: google.cloud.aiplatform.v1beta1.RagFileParsingConfig.layout_parser:type_name -> google.cloud.aiplatform.v1beta1.RagFileParsingConfig.LayoutParser
 	37, // 35: google.cloud.aiplatform.v1beta1.RagFileParsingConfig.llm_parser:type_name -> google.cloud.aiplatform.v1beta1.RagFileParsingConfig.LlmParser
-	43, // 36: google.cloud.aiplatform.v1beta1.RagFileMetadataConfig.gcs_metadata_schema_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
-	44, // 37: google.cloud.aiplatform.v1beta1.RagFileMetadataConfig.google_drive_metadata_schema_source:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource
-	43, // 38: google.cloud.aiplatform.v1beta1.RagFileMetadataConfig.gcs_metadata_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
-	44, // 39: google.cloud.aiplatform.v1beta1.RagFileMetadataConfig.google_drive_metadata_source:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource
+	45, // 36: google.cloud.aiplatform.v1beta1.RagFileMetadataConfig.gcs_metadata_schema_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
+	46, // 37: google.cloud.aiplatform.v1beta1.RagFileMetadataConfig.google_drive_metadata_schema_source:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource
+	45, // 38: google.cloud.aiplatform.v1beta1.RagFileMetadataConfig.gcs_metadata_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
+	46, // 39: google.cloud.aiplatform.v1beta1.RagFileMetadataConfig.google_drive_metadata_source:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource
 	11, // 40: google.cloud.aiplatform.v1beta1.UploadRagFileConfig.rag_file_chunking_config:type_name -> google.cloud.aiplatform.v1beta1.RagFileChunkingConfig
 	12, // 41: google.cloud.aiplatform.v1beta1.UploadRagFileConfig.rag_file_transformation_config:type_name -> google.cloud.aiplatform.v1beta1.RagFileTransformationConfig
 	14, // 42: google.cloud.aiplatform.v1beta1.UploadRagFileConfig.rag_file_metadata_config:type_name -> google.cloud.aiplatform.v1beta1.RagFileMetadataConfig
 	13, // 43: google.cloud.aiplatform.v1beta1.UploadRagFileConfig.rag_file_parsing_config:type_name -> google.cloud.aiplatform.v1beta1.RagFileParsingConfig
-	43, // 44: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.gcs_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
-	44, // 45: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.google_drive_source:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource
-	46, // 46: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.slack_source:type_name -> google.cloud.aiplatform.v1beta1.SlackSource
-	47, // 47: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.jira_source:type_name -> google.cloud.aiplatform.v1beta1.JiraSource
-	48, // 48: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.share_point_sources:type_name -> google.cloud.aiplatform.v1beta1.SharePointSources
-	49, // 49: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.partial_failure_gcs_sink:type_name -> google.cloud.aiplatform.v1beta1.GcsDestination
-	50, // 50: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.partial_failure_bigquery_sink:type_name -> google.cloud.aiplatform.v1beta1.BigQueryDestination
-	49, // 51: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.import_result_gcs_sink:type_name -> google.cloud.aiplatform.v1beta1.GcsDestination
-	50, // 52: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.import_result_bigquery_sink:type_name -> google.cloud.aiplatform.v1beta1.BigQueryDestination
+	45, // 44: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.gcs_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
+	46, // 45: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.google_drive_source:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource
+	48, // 46: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.slack_source:type_name -> google.cloud.aiplatform.v1beta1.SlackSource
+	49, // 47: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.jira_source:type_name -> google.cloud.aiplatform.v1beta1.JiraSource
+	50, // 48: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.share_point_sources:type_name -> google.cloud.aiplatform.v1beta1.SharePointSources
+	51, // 49: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.partial_failure_gcs_sink:type_name -> google.cloud.aiplatform.v1beta1.GcsDestination
+	52, // 50: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.partial_failure_bigquery_sink:type_name -> google.cloud.aiplatform.v1beta1.BigQueryDestination
+	51, // 51: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.import_result_gcs_sink:type_name -> google.cloud.aiplatform.v1beta1.GcsDestination
+	52, // 52: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.import_result_bigquery_sink:type_name -> google.cloud.aiplatform.v1beta1.BigQueryDestination
 	11, // 53: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.rag_file_chunking_config:type_name -> google.cloud.aiplatform.v1beta1.RagFileChunkingConfig
 	12, // 54: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.rag_file_transformation_config:type_name -> google.cloud.aiplatform.v1beta1.RagFileTransformationConfig
 	13, // 55: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.rag_file_parsing_config:type_name -> google.cloud.aiplatform.v1beta1.RagFileParsingConfig
 	14, // 56: google.cloud.aiplatform.v1beta1.ImportRagFilesConfig.rag_file_metadata_config:type_name -> google.cloud.aiplatform.v1beta1.RagFileMetadataConfig
 	38, // 57: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.enterprise:type_name -> google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Enterprise
-	39, // 58: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.basic:type_name -> google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Basic
-	17, // 59: google.cloud.aiplatform.v1beta1.RagEngineConfig.rag_managed_db_config:type_name -> google.cloud.aiplatform.v1beta1.RagManagedDbConfig
-	22, // 60: google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.SparseEmbeddingConfig.bm25:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.SparseEmbeddingConfig.Bm25
-	20, // 61: google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.HybridSearchConfig.sparse_embedding_config:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.SparseEmbeddingConfig
-	19, // 62: google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.HybridSearchConfig.dense_embedding_model_prediction_endpoint:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.VertexPredictionEndpoint
-	28, // 63: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.RagManagedDb.knn:type_name -> google.cloud.aiplatform.v1beta1.RagVectorDbConfig.RagManagedDb.KNN
-	29, // 64: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.RagManagedDb.ann:type_name -> google.cloud.aiplatform.v1beta1.RagVectorDbConfig.RagManagedDb.ANN
-	31, // 65: google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.document_corpus:type_name -> google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.DocumentCorpus
-	32, // 66: google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.memory_corpus:type_name -> google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.MemoryCorpus
-	37, // 67: google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.MemoryCorpus.llm_parser:type_name -> google.cloud.aiplatform.v1beta1.RagFileParsingConfig.LlmParser
-	68, // [68:68] is the sub-list for method output_type
-	68, // [68:68] is the sub-list for method input_type
-	68, // [68:68] is the sub-list for extension type_name
-	68, // [68:68] is the sub-list for extension extendee
-	0,  // [0:68] is the sub-list for field type_name
+	39, // 58: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.scaled:type_name -> google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Scaled
+	40, // 59: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.basic:type_name -> google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Basic
+	41, // 60: google.cloud.aiplatform.v1beta1.RagManagedDbConfig.unprovisioned:type_name -> google.cloud.aiplatform.v1beta1.RagManagedDbConfig.Unprovisioned
+	17, // 61: google.cloud.aiplatform.v1beta1.RagEngineConfig.rag_managed_db_config:type_name -> google.cloud.aiplatform.v1beta1.RagManagedDbConfig
+	22, // 62: google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.SparseEmbeddingConfig.bm25:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.SparseEmbeddingConfig.Bm25
+	20, // 63: google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.HybridSearchConfig.sparse_embedding_config:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.SparseEmbeddingConfig
+	19, // 64: google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.HybridSearchConfig.dense_embedding_model_prediction_endpoint:type_name -> google.cloud.aiplatform.v1beta1.RagEmbeddingModelConfig.VertexPredictionEndpoint
+	28, // 65: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.RagManagedDb.knn:type_name -> google.cloud.aiplatform.v1beta1.RagVectorDbConfig.RagManagedDb.KNN
+	29, // 66: google.cloud.aiplatform.v1beta1.RagVectorDbConfig.RagManagedDb.ann:type_name -> google.cloud.aiplatform.v1beta1.RagVectorDbConfig.RagManagedDb.ANN
+	31, // 67: google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.document_corpus:type_name -> google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.DocumentCorpus
+	32, // 68: google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.memory_corpus:type_name -> google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.MemoryCorpus
+	37, // 69: google.cloud.aiplatform.v1beta1.RagCorpus.CorpusTypeConfig.MemoryCorpus.llm_parser:type_name -> google.cloud.aiplatform.v1beta1.RagFileParsingConfig.LlmParser
+	70, // [70:70] is the sub-list for method output_type
+	70, // [70:70] is the sub-list for method input_type
+	70, // [70:70] is the sub-list for extension type_name
+	70, // [70:70] is the sub-list for extension extendee
+	0,  // [0:70] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_init() }
@@ -4248,7 +4384,9 @@ func file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_init() {
 	}
 	file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[14].OneofWrappers = []any{
 		(*RagManagedDbConfig_Enterprise_)(nil),
+		(*RagManagedDbConfig_Scaled_)(nil),
 		(*RagManagedDbConfig_Basic_)(nil),
+		(*RagManagedDbConfig_Unprovisioned_)(nil),
 	}
 	file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_msgTypes[17].OneofWrappers = []any{
 		(*RagEmbeddingModelConfig_SparseEmbeddingConfig_Bm25_)(nil),
@@ -4268,7 +4406,7 @@ func file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1beta1_vertex_rag_data_proto_rawDesc,
 			NumEnums:      3,
-			NumMessages:   37,
+			NumMessages:   39,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
