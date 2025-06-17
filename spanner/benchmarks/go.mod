@@ -1,8 +1,6 @@
 module cloud.google.com/go/spanner/benchmarks
 
-go 1.23.8
-
-toolchain go1.23.10
+go 1.23.0
 
 replace cloud.google.com/go/spanner => ../
 
@@ -10,7 +8,7 @@ exclude google.golang.org/grpc v1.71.0
 
 require (
 	cloud.google.com/go/spanner v1.82.0
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.28.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.27.0
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/sdk v1.36.0
 	google.golang.org/api v0.237.0
@@ -26,7 +24,7 @@ require (
 	cloud.google.com/go/trace v1.11.6 // indirect
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.3 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.27.0 // indirect
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.52.0 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.51.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20250326154945-ae57f3c0d45f // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
