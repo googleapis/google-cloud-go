@@ -619,6 +619,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/bigquery/v2/apiv2": {
+    "api_shortname": "bigquery",
+    "distribution_name": "cloud.google.com/go/bigquery/v2/apiv2",
+    "description": "BigQuery API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/v2/latest/apiv2",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/bigtable": {
     "api_shortname": "bigtable",
     "distribution_name": "cloud.google.com/go/bigtable",
