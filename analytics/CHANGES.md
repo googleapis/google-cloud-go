@@ -1,5 +1,14 @@
 # Changes
 
+## [0.29.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.28.1...analytics/v0.29.0) (2025-06-17)
+
+
+### Features
+
+* **analytics/admin:** Add the `GetSubpropertySyncConfigRequest` method ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **analytics/admin:** Add the `ListSubpropertySyncConfigsRequest` method ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **analytics/admin:** Add the `UpdateSubpropertySyncConfigRequest` method ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
 ## [0.28.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.28.0...analytics/v0.28.1) (2025-05-06)
 
 

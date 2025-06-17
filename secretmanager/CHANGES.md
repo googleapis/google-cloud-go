@@ -2,6 +2,13 @@
 
 
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.7...secretmanager/v1.15.0) (2025-06-17)
+
+
+### Features
+
+* **secretmanager:** Update secret manager protos for tags ([#12406](https://github.com/googleapis/google-cloud-go/issues/12406)) ([feb078b](https://github.com/googleapis/google-cloud-go/commit/feb078b04ab541dd3bdceb2ac1f24938bb0354a3))
+
 ## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.6...secretmanager/v1.14.7) (2025-04-15)
 
 
