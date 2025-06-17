@@ -47,54 +47,64 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListEndpointPolicies []gax.CallOption
-	GetEndpointPolicy    []gax.CallOption
-	CreateEndpointPolicy []gax.CallOption
-	UpdateEndpointPolicy []gax.CallOption
-	DeleteEndpointPolicy []gax.CallOption
-	ListGateways         []gax.CallOption
-	GetGateway           []gax.CallOption
-	CreateGateway        []gax.CallOption
-	UpdateGateway        []gax.CallOption
-	DeleteGateway        []gax.CallOption
-	ListGrpcRoutes       []gax.CallOption
-	GetGrpcRoute         []gax.CallOption
-	CreateGrpcRoute      []gax.CallOption
-	UpdateGrpcRoute      []gax.CallOption
-	DeleteGrpcRoute      []gax.CallOption
-	ListHttpRoutes       []gax.CallOption
-	GetHttpRoute         []gax.CallOption
-	CreateHttpRoute      []gax.CallOption
-	UpdateHttpRoute      []gax.CallOption
-	DeleteHttpRoute      []gax.CallOption
-	ListTcpRoutes        []gax.CallOption
-	GetTcpRoute          []gax.CallOption
-	CreateTcpRoute       []gax.CallOption
-	UpdateTcpRoute       []gax.CallOption
-	DeleteTcpRoute       []gax.CallOption
-	ListTlsRoutes        []gax.CallOption
-	GetTlsRoute          []gax.CallOption
-	CreateTlsRoute       []gax.CallOption
-	UpdateTlsRoute       []gax.CallOption
-	DeleteTlsRoute       []gax.CallOption
-	ListServiceBindings  []gax.CallOption
-	GetServiceBinding    []gax.CallOption
-	CreateServiceBinding []gax.CallOption
-	DeleteServiceBinding []gax.CallOption
-	ListMeshes           []gax.CallOption
-	GetMesh              []gax.CallOption
-	CreateMesh           []gax.CallOption
-	UpdateMesh           []gax.CallOption
-	DeleteMesh           []gax.CallOption
-	GetLocation          []gax.CallOption
-	ListLocations        []gax.CallOption
-	GetIamPolicy         []gax.CallOption
-	SetIamPolicy         []gax.CallOption
-	TestIamPermissions   []gax.CallOption
-	CancelOperation      []gax.CallOption
-	DeleteOperation      []gax.CallOption
-	GetOperation         []gax.CallOption
-	ListOperations       []gax.CallOption
+	ListEndpointPolicies  []gax.CallOption
+	GetEndpointPolicy     []gax.CallOption
+	CreateEndpointPolicy  []gax.CallOption
+	UpdateEndpointPolicy  []gax.CallOption
+	DeleteEndpointPolicy  []gax.CallOption
+	ListGateways          []gax.CallOption
+	GetGateway            []gax.CallOption
+	CreateGateway         []gax.CallOption
+	UpdateGateway         []gax.CallOption
+	DeleteGateway         []gax.CallOption
+	ListGrpcRoutes        []gax.CallOption
+	GetGrpcRoute          []gax.CallOption
+	CreateGrpcRoute       []gax.CallOption
+	UpdateGrpcRoute       []gax.CallOption
+	DeleteGrpcRoute       []gax.CallOption
+	ListHttpRoutes        []gax.CallOption
+	GetHttpRoute          []gax.CallOption
+	CreateHttpRoute       []gax.CallOption
+	UpdateHttpRoute       []gax.CallOption
+	DeleteHttpRoute       []gax.CallOption
+	ListTcpRoutes         []gax.CallOption
+	GetTcpRoute           []gax.CallOption
+	CreateTcpRoute        []gax.CallOption
+	UpdateTcpRoute        []gax.CallOption
+	DeleteTcpRoute        []gax.CallOption
+	ListTlsRoutes         []gax.CallOption
+	GetTlsRoute           []gax.CallOption
+	CreateTlsRoute        []gax.CallOption
+	UpdateTlsRoute        []gax.CallOption
+	DeleteTlsRoute        []gax.CallOption
+	ListServiceBindings   []gax.CallOption
+	GetServiceBinding     []gax.CallOption
+	CreateServiceBinding  []gax.CallOption
+	UpdateServiceBinding  []gax.CallOption
+	DeleteServiceBinding  []gax.CallOption
+	ListMeshes            []gax.CallOption
+	GetMesh               []gax.CallOption
+	CreateMesh            []gax.CallOption
+	UpdateMesh            []gax.CallOption
+	DeleteMesh            []gax.CallOption
+	ListServiceLbPolicies []gax.CallOption
+	GetServiceLbPolicy    []gax.CallOption
+	CreateServiceLbPolicy []gax.CallOption
+	UpdateServiceLbPolicy []gax.CallOption
+	DeleteServiceLbPolicy []gax.CallOption
+	GetGatewayRouteView   []gax.CallOption
+	GetMeshRouteView      []gax.CallOption
+	ListGatewayRouteViews []gax.CallOption
+	ListMeshRouteViews    []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	CancelOperation       []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -213,6 +223,9 @@ func defaultCallOptions() *CallOptions {
 		CreateServiceBinding: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpdateServiceBinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteServiceBinding: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -229,6 +242,33 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteMesh: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListServiceLbPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetServiceLbPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateServiceLbPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateServiceLbPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteServiceLbPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGatewayRouteView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetMeshRouteView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListGatewayRouteViews: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListMeshRouteViews: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:        []gax.CallOption{},
@@ -344,6 +384,9 @@ func defaultRESTCallOptions() *CallOptions {
 		CreateServiceBinding: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpdateServiceBinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteServiceBinding: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -360,6 +403,33 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteMesh: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListServiceLbPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetServiceLbPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateServiceLbPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateServiceLbPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteServiceLbPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGatewayRouteView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetMeshRouteView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListGatewayRouteViews: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListMeshRouteViews: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:        []gax.CallOption{},
@@ -431,6 +501,8 @@ type internalClient interface {
 	GetServiceBinding(context.Context, *networkservicespb.GetServiceBindingRequest, ...gax.CallOption) (*networkservicespb.ServiceBinding, error)
 	CreateServiceBinding(context.Context, *networkservicespb.CreateServiceBindingRequest, ...gax.CallOption) (*CreateServiceBindingOperation, error)
 	CreateServiceBindingOperation(name string) *CreateServiceBindingOperation
+	UpdateServiceBinding(context.Context, *networkservicespb.UpdateServiceBindingRequest, ...gax.CallOption) (*UpdateServiceBindingOperation, error)
+	UpdateServiceBindingOperation(name string) *UpdateServiceBindingOperation
 	DeleteServiceBinding(context.Context, *networkservicespb.DeleteServiceBindingRequest, ...gax.CallOption) (*DeleteServiceBindingOperation, error)
 	DeleteServiceBindingOperation(name string) *DeleteServiceBindingOperation
 	ListMeshes(context.Context, *networkservicespb.ListMeshesRequest, ...gax.CallOption) *MeshIterator
@@ -441,6 +513,18 @@ type internalClient interface {
 	UpdateMeshOperation(name string) *UpdateMeshOperation
 	DeleteMesh(context.Context, *networkservicespb.DeleteMeshRequest, ...gax.CallOption) (*DeleteMeshOperation, error)
 	DeleteMeshOperation(name string) *DeleteMeshOperation
+	ListServiceLbPolicies(context.Context, *networkservicespb.ListServiceLbPoliciesRequest, ...gax.CallOption) *ServiceLbPolicyIterator
+	GetServiceLbPolicy(context.Context, *networkservicespb.GetServiceLbPolicyRequest, ...gax.CallOption) (*networkservicespb.ServiceLbPolicy, error)
+	CreateServiceLbPolicy(context.Context, *networkservicespb.CreateServiceLbPolicyRequest, ...gax.CallOption) (*CreateServiceLbPolicyOperation, error)
+	CreateServiceLbPolicyOperation(name string) *CreateServiceLbPolicyOperation
+	UpdateServiceLbPolicy(context.Context, *networkservicespb.UpdateServiceLbPolicyRequest, ...gax.CallOption) (*UpdateServiceLbPolicyOperation, error)
+	UpdateServiceLbPolicyOperation(name string) *UpdateServiceLbPolicyOperation
+	DeleteServiceLbPolicy(context.Context, *networkservicespb.DeleteServiceLbPolicyRequest, ...gax.CallOption) (*DeleteServiceLbPolicyOperation, error)
+	DeleteServiceLbPolicyOperation(name string) *DeleteServiceLbPolicyOperation
+	GetGatewayRouteView(context.Context, *networkservicespb.GetGatewayRouteViewRequest, ...gax.CallOption) (*networkservicespb.GatewayRouteView, error)
+	GetMeshRouteView(context.Context, *networkservicespb.GetMeshRouteViewRequest, ...gax.CallOption) (*networkservicespb.MeshRouteView, error)
+	ListGatewayRouteViews(context.Context, *networkservicespb.ListGatewayRouteViewsRequest, ...gax.CallOption) *GatewayRouteViewIterator
+	ListMeshRouteViews(context.Context, *networkservicespb.ListMeshRouteViewsRequest, ...gax.CallOption) *MeshRouteViewIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -771,6 +855,17 @@ func (c *Client) CreateServiceBindingOperation(name string) *CreateServiceBindin
 	return c.internalClient.CreateServiceBindingOperation(name)
 }
 
+// UpdateServiceBinding updates the parameters of a single ServiceBinding.
+func (c *Client) UpdateServiceBinding(ctx context.Context, req *networkservicespb.UpdateServiceBindingRequest, opts ...gax.CallOption) (*UpdateServiceBindingOperation, error) {
+	return c.internalClient.UpdateServiceBinding(ctx, req, opts...)
+}
+
+// UpdateServiceBindingOperation returns a new UpdateServiceBindingOperation from a given name.
+// The name must be that of a previously created UpdateServiceBindingOperation, possibly from a different process.
+func (c *Client) UpdateServiceBindingOperation(name string) *UpdateServiceBindingOperation {
+	return c.internalClient.UpdateServiceBindingOperation(name)
+}
+
 // DeleteServiceBinding deletes a single ServiceBinding.
 func (c *Client) DeleteServiceBinding(ctx context.Context, req *networkservicespb.DeleteServiceBindingRequest, opts ...gax.CallOption) (*DeleteServiceBindingOperation, error) {
 	return c.internalClient.DeleteServiceBinding(ctx, req, opts...)
@@ -823,6 +918,69 @@ func (c *Client) DeleteMesh(ctx context.Context, req *networkservicespb.DeleteMe
 // The name must be that of a previously created DeleteMeshOperation, possibly from a different process.
 func (c *Client) DeleteMeshOperation(name string) *DeleteMeshOperation {
 	return c.internalClient.DeleteMeshOperation(name)
+}
+
+// ListServiceLbPolicies lists ServiceLbPolicies in a given project and location.
+func (c *Client) ListServiceLbPolicies(ctx context.Context, req *networkservicespb.ListServiceLbPoliciesRequest, opts ...gax.CallOption) *ServiceLbPolicyIterator {
+	return c.internalClient.ListServiceLbPolicies(ctx, req, opts...)
+}
+
+// GetServiceLbPolicy gets details of a single ServiceLbPolicy.
+func (c *Client) GetServiceLbPolicy(ctx context.Context, req *networkservicespb.GetServiceLbPolicyRequest, opts ...gax.CallOption) (*networkservicespb.ServiceLbPolicy, error) {
+	return c.internalClient.GetServiceLbPolicy(ctx, req, opts...)
+}
+
+// CreateServiceLbPolicy creates a new ServiceLbPolicy in a given project and location.
+func (c *Client) CreateServiceLbPolicy(ctx context.Context, req *networkservicespb.CreateServiceLbPolicyRequest, opts ...gax.CallOption) (*CreateServiceLbPolicyOperation, error) {
+	return c.internalClient.CreateServiceLbPolicy(ctx, req, opts...)
+}
+
+// CreateServiceLbPolicyOperation returns a new CreateServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created CreateServiceLbPolicyOperation, possibly from a different process.
+func (c *Client) CreateServiceLbPolicyOperation(name string) *CreateServiceLbPolicyOperation {
+	return c.internalClient.CreateServiceLbPolicyOperation(name)
+}
+
+// UpdateServiceLbPolicy updates the parameters of a single ServiceLbPolicy.
+func (c *Client) UpdateServiceLbPolicy(ctx context.Context, req *networkservicespb.UpdateServiceLbPolicyRequest, opts ...gax.CallOption) (*UpdateServiceLbPolicyOperation, error) {
+	return c.internalClient.UpdateServiceLbPolicy(ctx, req, opts...)
+}
+
+// UpdateServiceLbPolicyOperation returns a new UpdateServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created UpdateServiceLbPolicyOperation, possibly from a different process.
+func (c *Client) UpdateServiceLbPolicyOperation(name string) *UpdateServiceLbPolicyOperation {
+	return c.internalClient.UpdateServiceLbPolicyOperation(name)
+}
+
+// DeleteServiceLbPolicy deletes a single ServiceLbPolicy.
+func (c *Client) DeleteServiceLbPolicy(ctx context.Context, req *networkservicespb.DeleteServiceLbPolicyRequest, opts ...gax.CallOption) (*DeleteServiceLbPolicyOperation, error) {
+	return c.internalClient.DeleteServiceLbPolicy(ctx, req, opts...)
+}
+
+// DeleteServiceLbPolicyOperation returns a new DeleteServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created DeleteServiceLbPolicyOperation, possibly from a different process.
+func (c *Client) DeleteServiceLbPolicyOperation(name string) *DeleteServiceLbPolicyOperation {
+	return c.internalClient.DeleteServiceLbPolicyOperation(name)
+}
+
+// GetGatewayRouteView get a single RouteView of a Gateway.
+func (c *Client) GetGatewayRouteView(ctx context.Context, req *networkservicespb.GetGatewayRouteViewRequest, opts ...gax.CallOption) (*networkservicespb.GatewayRouteView, error) {
+	return c.internalClient.GetGatewayRouteView(ctx, req, opts...)
+}
+
+// GetMeshRouteView get a single RouteView of a Mesh.
+func (c *Client) GetMeshRouteView(ctx context.Context, req *networkservicespb.GetMeshRouteViewRequest, opts ...gax.CallOption) (*networkservicespb.MeshRouteView, error) {
+	return c.internalClient.GetMeshRouteView(ctx, req, opts...)
+}
+
+// ListGatewayRouteViews lists RouteViews
+func (c *Client) ListGatewayRouteViews(ctx context.Context, req *networkservicespb.ListGatewayRouteViewsRequest, opts ...gax.CallOption) *GatewayRouteViewIterator {
+	return c.internalClient.ListGatewayRouteViews(ctx, req, opts...)
+}
+
+// ListMeshRouteViews lists RouteViews
+func (c *Client) ListMeshRouteViews(ctx context.Context, req *networkservicespb.ListMeshRouteViewsRequest, opts ...gax.CallOption) *MeshRouteViewIterator {
+	return c.internalClient.ListMeshRouteViews(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -1902,6 +2060,26 @@ func (c *gRPCClient) CreateServiceBinding(ctx context.Context, req *networkservi
 	}, nil
 }
 
+func (c *gRPCClient) UpdateServiceBinding(ctx context.Context, req *networkservicespb.UpdateServiceBindingRequest, opts ...gax.CallOption) (*UpdateServiceBindingOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "service_binding.name", url.QueryEscape(req.GetServiceBinding().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateServiceBinding[0:len((*c.CallOptions).UpdateServiceBinding):len((*c.CallOptions).UpdateServiceBinding)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateServiceBinding, req, settings.GRPC, c.logger, "UpdateServiceBinding")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateServiceBindingOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) DeleteServiceBinding(ctx context.Context, req *networkservicespb.DeleteServiceBindingRequest, opts ...gax.CallOption) (*DeleteServiceBindingOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2044,6 +2222,258 @@ func (c *gRPCClient) DeleteMesh(ctx context.Context, req *networkservicespb.Dele
 	return &DeleteMeshOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) ListServiceLbPolicies(ctx context.Context, req *networkservicespb.ListServiceLbPoliciesRequest, opts ...gax.CallOption) *ServiceLbPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListServiceLbPolicies[0:len((*c.CallOptions).ListServiceLbPolicies):len((*c.CallOptions).ListServiceLbPolicies)], opts...)
+	it := &ServiceLbPolicyIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListServiceLbPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.ServiceLbPolicy, string, error) {
+		resp := &networkservicespb.ListServiceLbPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListServiceLbPolicies, req, settings.GRPC, c.logger, "ListServiceLbPolicies")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetServiceLbPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetServiceLbPolicy(ctx context.Context, req *networkservicespb.GetServiceLbPolicyRequest, opts ...gax.CallOption) (*networkservicespb.ServiceLbPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetServiceLbPolicy[0:len((*c.CallOptions).GetServiceLbPolicy):len((*c.CallOptions).GetServiceLbPolicy)], opts...)
+	var resp *networkservicespb.ServiceLbPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetServiceLbPolicy, req, settings.GRPC, c.logger, "GetServiceLbPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateServiceLbPolicy(ctx context.Context, req *networkservicespb.CreateServiceLbPolicyRequest, opts ...gax.CallOption) (*CreateServiceLbPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateServiceLbPolicy[0:len((*c.CallOptions).CreateServiceLbPolicy):len((*c.CallOptions).CreateServiceLbPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateServiceLbPolicy, req, settings.GRPC, c.logger, "CreateServiceLbPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateServiceLbPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateServiceLbPolicy(ctx context.Context, req *networkservicespb.UpdateServiceLbPolicyRequest, opts ...gax.CallOption) (*UpdateServiceLbPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "service_lb_policy.name", url.QueryEscape(req.GetServiceLbPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateServiceLbPolicy[0:len((*c.CallOptions).UpdateServiceLbPolicy):len((*c.CallOptions).UpdateServiceLbPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateServiceLbPolicy, req, settings.GRPC, c.logger, "UpdateServiceLbPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateServiceLbPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteServiceLbPolicy(ctx context.Context, req *networkservicespb.DeleteServiceLbPolicyRequest, opts ...gax.CallOption) (*DeleteServiceLbPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteServiceLbPolicy[0:len((*c.CallOptions).DeleteServiceLbPolicy):len((*c.CallOptions).DeleteServiceLbPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteServiceLbPolicy, req, settings.GRPC, c.logger, "DeleteServiceLbPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteServiceLbPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetGatewayRouteView(ctx context.Context, req *networkservicespb.GetGatewayRouteViewRequest, opts ...gax.CallOption) (*networkservicespb.GatewayRouteView, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetGatewayRouteView[0:len((*c.CallOptions).GetGatewayRouteView):len((*c.CallOptions).GetGatewayRouteView)], opts...)
+	var resp *networkservicespb.GatewayRouteView
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetGatewayRouteView, req, settings.GRPC, c.logger, "GetGatewayRouteView")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetMeshRouteView(ctx context.Context, req *networkservicespb.GetMeshRouteViewRequest, opts ...gax.CallOption) (*networkservicespb.MeshRouteView, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetMeshRouteView[0:len((*c.CallOptions).GetMeshRouteView):len((*c.CallOptions).GetMeshRouteView)], opts...)
+	var resp *networkservicespb.MeshRouteView
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetMeshRouteView, req, settings.GRPC, c.logger, "GetMeshRouteView")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListGatewayRouteViews(ctx context.Context, req *networkservicespb.ListGatewayRouteViewsRequest, opts ...gax.CallOption) *GatewayRouteViewIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListGatewayRouteViews[0:len((*c.CallOptions).ListGatewayRouteViews):len((*c.CallOptions).ListGatewayRouteViews)], opts...)
+	it := &GatewayRouteViewIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListGatewayRouteViewsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.GatewayRouteView, string, error) {
+		resp := &networkservicespb.ListGatewayRouteViewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGatewayRouteViews, req, settings.GRPC, c.logger, "ListGatewayRouteViews")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGatewayRouteViews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListMeshRouteViews(ctx context.Context, req *networkservicespb.ListMeshRouteViewsRequest, opts ...gax.CallOption) *MeshRouteViewIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListMeshRouteViews[0:len((*c.CallOptions).ListMeshRouteViews):len((*c.CallOptions).ListMeshRouteViews)], opts...)
+	it := &MeshRouteViewIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListMeshRouteViewsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.MeshRouteView, string, error) {
+		resp := &networkservicespb.ListMeshRouteViewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListMeshRouteViews, req, settings.GRPC, c.logger, "ListMeshRouteViews")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMeshRouteViews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -2284,6 +2714,9 @@ func (c *restClient) ListEndpointPolicies(ctx context.Context, req *networkservi
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2903,6 +3336,9 @@ func (c *restClient) ListGrpcRoutes(ctx context.Context, req *networkservicespb.
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -3211,6 +3647,9 @@ func (c *restClient) ListHttpRoutes(ctx context.Context, req *networkservicespb.
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3521,6 +3960,9 @@ func (c *restClient) ListTcpRoutes(ctx context.Context, req *networkservicespb.L
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -3829,6 +4271,9 @@ func (c *restClient) ListTlsRoutes(ctx context.Context, req *networkservicespb.L
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -4299,6 +4744,73 @@ func (c *restClient) CreateServiceBinding(ctx context.Context, req *networkservi
 	}, nil
 }
 
+// UpdateServiceBinding updates the parameters of a single ServiceBinding.
+func (c *restClient) UpdateServiceBinding(ctx context.Context, req *networkservicespb.UpdateServiceBindingRequest, opts ...gax.CallOption) (*UpdateServiceBindingOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetServiceBinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServiceBinding().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "service_binding.name", url.QueryEscape(req.GetServiceBinding().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateServiceBinding")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateServiceBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DeleteServiceBinding deletes a single ServiceBinding.
 func (c *restClient) DeleteServiceBinding(ctx context.Context, req *networkservicespb.DeleteServiceBindingRequest, opts ...gax.CallOption) (*DeleteServiceBindingOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4380,6 +4892,9 @@ func (c *restClient) ListMeshes(ctx context.Context, req *networkservicespb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -4659,6 +5174,571 @@ func (c *restClient) DeleteMesh(ctx context.Context, req *networkservicespb.Dele
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// ListServiceLbPolicies lists ServiceLbPolicies in a given project and location.
+func (c *restClient) ListServiceLbPolicies(ctx context.Context, req *networkservicespb.ListServiceLbPoliciesRequest, opts ...gax.CallOption) *ServiceLbPolicyIterator {
+	it := &ServiceLbPolicyIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListServiceLbPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.ServiceLbPolicy, string, error) {
+		resp := &networkservicespb.ListServiceLbPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/serviceLbPolicies", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServiceLbPolicies")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetServiceLbPolicies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetServiceLbPolicy gets details of a single ServiceLbPolicy.
+func (c *restClient) GetServiceLbPolicy(ctx context.Context, req *networkservicespb.GetServiceLbPolicyRequest, opts ...gax.CallOption) (*networkservicespb.ServiceLbPolicy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetServiceLbPolicy[0:len((*c.CallOptions).GetServiceLbPolicy):len((*c.CallOptions).GetServiceLbPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkservicespb.ServiceLbPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetServiceLbPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateServiceLbPolicy creates a new ServiceLbPolicy in a given project and location.
+func (c *restClient) CreateServiceLbPolicy(ctx context.Context, req *networkservicespb.CreateServiceLbPolicyRequest, opts ...gax.CallOption) (*CreateServiceLbPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetServiceLbPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/serviceLbPolicies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("serviceLbPolicyId", fmt.Sprintf("%v", req.GetServiceLbPolicyId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateServiceLbPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateServiceLbPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateServiceLbPolicy updates the parameters of a single ServiceLbPolicy.
+func (c *restClient) UpdateServiceLbPolicy(ctx context.Context, req *networkservicespb.UpdateServiceLbPolicyRequest, opts ...gax.CallOption) (*UpdateServiceLbPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetServiceLbPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServiceLbPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "service_lb_policy.name", url.QueryEscape(req.GetServiceLbPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateServiceLbPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateServiceLbPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteServiceLbPolicy deletes a single ServiceLbPolicy.
+func (c *restClient) DeleteServiceLbPolicy(ctx context.Context, req *networkservicespb.DeleteServiceLbPolicyRequest, opts ...gax.CallOption) (*DeleteServiceLbPolicyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteServiceLbPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteServiceLbPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetGatewayRouteView get a single RouteView of a Gateway.
+func (c *restClient) GetGatewayRouteView(ctx context.Context, req *networkservicespb.GetGatewayRouteViewRequest, opts ...gax.CallOption) (*networkservicespb.GatewayRouteView, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetGatewayRouteView[0:len((*c.CallOptions).GetGatewayRouteView):len((*c.CallOptions).GetGatewayRouteView)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkservicespb.GatewayRouteView{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGatewayRouteView")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetMeshRouteView get a single RouteView of a Mesh.
+func (c *restClient) GetMeshRouteView(ctx context.Context, req *networkservicespb.GetMeshRouteViewRequest, opts ...gax.CallOption) (*networkservicespb.MeshRouteView, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetMeshRouteView[0:len((*c.CallOptions).GetMeshRouteView):len((*c.CallOptions).GetMeshRouteView)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkservicespb.MeshRouteView{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMeshRouteView")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListGatewayRouteViews lists RouteViews
+func (c *restClient) ListGatewayRouteViews(ctx context.Context, req *networkservicespb.ListGatewayRouteViewsRequest, opts ...gax.CallOption) *GatewayRouteViewIterator {
+	it := &GatewayRouteViewIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListGatewayRouteViewsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.GatewayRouteView, string, error) {
+		resp := &networkservicespb.ListGatewayRouteViewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/routeViews", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGatewayRouteViews")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGatewayRouteViews(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListMeshRouteViews lists RouteViews
+func (c *restClient) ListMeshRouteViews(ctx context.Context, req *networkservicespb.ListMeshRouteViewsRequest, opts ...gax.CallOption) *MeshRouteViewIterator {
+	it := &MeshRouteViewIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListMeshRouteViewsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.MeshRouteView, string, error) {
+		resp := &networkservicespb.ListMeshRouteViewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/routeViews", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMeshRouteViews")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetMeshRouteViews(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetLocation gets information about a location.
@@ -5283,6 +6363,24 @@ func (c *restClient) CreateServiceBindingOperation(name string) *CreateServiceBi
 	}
 }
 
+// CreateServiceLbPolicyOperation returns a new CreateServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created CreateServiceLbPolicyOperation, possibly from a different process.
+func (c *gRPCClient) CreateServiceLbPolicyOperation(name string) *CreateServiceLbPolicyOperation {
+	return &CreateServiceLbPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateServiceLbPolicyOperation returns a new CreateServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created CreateServiceLbPolicyOperation, possibly from a different process.
+func (c *restClient) CreateServiceLbPolicyOperation(name string) *CreateServiceLbPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateServiceLbPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateTcpRouteOperation returns a new CreateTcpRouteOperation from a given name.
 // The name must be that of a previously created CreateTcpRouteOperation, possibly from a different process.
 func (c *gRPCClient) CreateTcpRouteOperation(name string) *CreateTcpRouteOperation {
@@ -5427,6 +6525,24 @@ func (c *restClient) DeleteServiceBindingOperation(name string) *DeleteServiceBi
 	}
 }
 
+// DeleteServiceLbPolicyOperation returns a new DeleteServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created DeleteServiceLbPolicyOperation, possibly from a different process.
+func (c *gRPCClient) DeleteServiceLbPolicyOperation(name string) *DeleteServiceLbPolicyOperation {
+	return &DeleteServiceLbPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteServiceLbPolicyOperation returns a new DeleteServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created DeleteServiceLbPolicyOperation, possibly from a different process.
+func (c *restClient) DeleteServiceLbPolicyOperation(name string) *DeleteServiceLbPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteServiceLbPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteTcpRouteOperation returns a new DeleteTcpRouteOperation from a given name.
 // The name must be that of a previously created DeleteTcpRouteOperation, possibly from a different process.
 func (c *gRPCClient) DeleteTcpRouteOperation(name string) *DeleteTcpRouteOperation {
@@ -5548,6 +6664,42 @@ func (c *gRPCClient) UpdateMeshOperation(name string) *UpdateMeshOperation {
 func (c *restClient) UpdateMeshOperation(name string) *UpdateMeshOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateMeshOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateServiceBindingOperation returns a new UpdateServiceBindingOperation from a given name.
+// The name must be that of a previously created UpdateServiceBindingOperation, possibly from a different process.
+func (c *gRPCClient) UpdateServiceBindingOperation(name string) *UpdateServiceBindingOperation {
+	return &UpdateServiceBindingOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateServiceBindingOperation returns a new UpdateServiceBindingOperation from a given name.
+// The name must be that of a previously created UpdateServiceBindingOperation, possibly from a different process.
+func (c *restClient) UpdateServiceBindingOperation(name string) *UpdateServiceBindingOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateServiceBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateServiceLbPolicyOperation returns a new UpdateServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created UpdateServiceLbPolicyOperation, possibly from a different process.
+func (c *gRPCClient) UpdateServiceLbPolicyOperation(name string) *UpdateServiceLbPolicyOperation {
+	return &UpdateServiceLbPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateServiceLbPolicyOperation returns a new UpdateServiceLbPolicyOperation from a given name.
+// The name must be that of a previously created UpdateServiceLbPolicyOperation, possibly from a different process.
+func (c *restClient) UpdateServiceLbPolicyOperation(name string) *UpdateServiceLbPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateServiceLbPolicyOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
