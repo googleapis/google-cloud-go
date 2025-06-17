@@ -36,6 +36,8 @@ type monoClient struct {
 	tblClient   *bigquery.TableClient
 }
 
+// NewClient creates a new monoclient based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*monoClient, error) {
 	var errs []error
 	var err error
@@ -74,6 +76,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*monoClient, e
 	return mc, nil
 }
 
+// NewClient creates a new monoclient based on REST.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*monoClient, error) {
 	var errs []error
 	var err error
