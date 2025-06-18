@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package webrisk_test
-
-import (
-	webrisk "cloud.google.com/go/webrisk/apiv1beta1"
-)
