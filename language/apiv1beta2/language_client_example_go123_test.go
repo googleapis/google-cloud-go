@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package language_test
+
+import (
+	language "cloud.google.com/go/language/apiv1beta2"
+)
