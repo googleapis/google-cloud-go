@@ -50,11 +50,6 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
-
-	// Install google-c2p resolver, which is required for direct path.
-	_ "google.golang.org/grpc/xds/googledirectpath"
-	// Install RLS load balancer policy, which is needed for gRPC RLS.
-	_ "google.golang.org/grpc/balancer/rls"
 )
 
 const (
