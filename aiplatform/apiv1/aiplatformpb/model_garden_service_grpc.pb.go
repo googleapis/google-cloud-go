@@ -21,6 +21,7 @@
 package aiplatformpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +35,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	ModelGardenService_GetPublisherModel_FullMethodName = "/google.cloud.aiplatform.v1.ModelGardenService/GetPublisherModel"
+	ModelGardenService_Deploy_FullMethodName            = "/google.cloud.aiplatform.v1.ModelGardenService/Deploy"
 )
 
 // ModelGardenServiceClient is the client API for ModelGardenService service.
@@ -42,6 +44,8 @@ const (
 type ModelGardenServiceClient interface {
 	// Gets a Model Garden publisher model.
 	GetPublisherModel(ctx context.Context, in *GetPublisherModelRequest, opts ...grpc.CallOption) (*PublisherModel, error)
+	// Deploys a model to a new endpoint.
+	Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type modelGardenServiceClient struct {
@@ -61,12 +65,23 @@ func (c *modelGardenServiceClient) GetPublisherModel(ctx context.Context, in *Ge
 	return out, nil
 }
 
+func (c *modelGardenServiceClient) Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ModelGardenService_Deploy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ModelGardenServiceServer is the server API for ModelGardenService service.
 // All implementations should embed UnimplementedModelGardenServiceServer
 // for forward compatibility
 type ModelGardenServiceServer interface {
 	// Gets a Model Garden publisher model.
 	GetPublisherModel(context.Context, *GetPublisherModelRequest) (*PublisherModel, error)
+	// Deploys a model to a new endpoint.
+	Deploy(context.Context, *DeployRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedModelGardenServiceServer should be embedded to have forward compatible implementations.
@@ -75,6 +90,9 @@ type UnimplementedModelGardenServiceServer struct {
 
 func (UnimplementedModelGardenServiceServer) GetPublisherModel(context.Context, *GetPublisherModelRequest) (*PublisherModel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPublisherModel not implemented")
+}
+func (UnimplementedModelGardenServiceServer) Deploy(context.Context, *DeployRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Deploy not implemented")
 }
 
 // UnsafeModelGardenServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -106,6 +124,24 @@ func _ModelGardenService_GetPublisherModel_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ModelGardenService_Deploy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeployRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ModelGardenServiceServer).Deploy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ModelGardenService_Deploy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ModelGardenServiceServer).Deploy(ctx, req.(*DeployRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ModelGardenService_ServiceDesc is the grpc.ServiceDesc for ModelGardenService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -116,6 +152,10 @@ var ModelGardenService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPublisherModel",
 			Handler:    _ModelGardenService_GetPublisherModel_Handler,
+		},
+		{
+			MethodName: "Deploy",
+			Handler:    _ModelGardenService_Deploy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

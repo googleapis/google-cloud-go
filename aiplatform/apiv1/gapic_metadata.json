@@ -1997,6 +1997,11 @@
                 "DeleteOperation"
               ]
             },
+            "Deploy": {
+              "methods": [
+                "Deploy"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
