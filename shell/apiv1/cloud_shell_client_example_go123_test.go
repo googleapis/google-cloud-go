@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package shell_test
+
+import (
+	shell "cloud.google.com/go/shell/apiv1"
+)
