@@ -23,6 +23,6 @@ import (
 
 // GetServiceAccount rPC to get the service account for a project used for interactions with
 // Google Cloud KMS
-func (mc *BigQueryClient) GetServiceAccount(ctx context.Context, req *bigquerypb.GetServiceAccountRequest, opts ...gax.CallOption) (*bigquerypb.GetServiceAccountResponse, error) {
+func (mc *Client) GetServiceAccount(ctx context.Context, req *bigquerypb.GetServiceAccountRequest, opts ...gax.CallOption) (*bigquerypb.GetServiceAccountResponse, error) {
 	return mc.projClient.GetServiceAccount(ctx, req, opts...)
 }

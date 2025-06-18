@@ -24,34 +24,34 @@ import (
 )
 
 // GetRoutine gets the specified routine resource by routine ID.
-func (mc *BigQueryClient) GetRoutine(ctx context.Context, req *bigquerypb.GetRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
+func (mc *Client) GetRoutine(ctx context.Context, req *bigquerypb.GetRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return mc.routClient.GetRoutine(ctx, req, opts...)
 }
 
 // InsertRoutine creates a new routine in the dataset.
-func (mc *BigQueryClient) InsertRoutine(ctx context.Context, req *bigquerypb.InsertRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
+func (mc *Client) InsertRoutine(ctx context.Context, req *bigquerypb.InsertRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return mc.routClient.InsertRoutine(ctx, req, opts...)
 }
 
 // UpdateRoutine updates information in an existing routine. The update method replaces the
 // entire Routine resource.
-func (mc *BigQueryClient) UpdateRoutine(ctx context.Context, req *bigquerypb.UpdateRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
+func (mc *Client) UpdateRoutine(ctx context.Context, req *bigquerypb.UpdateRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return mc.routClient.UpdateRoutine(ctx, req, opts...)
 }
 
 // PatchRoutine patches information in an existing routine. The patch method does a partial
 // update to an existing Routine resource.
-func (mc *BigQueryClient) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
+func (mc *Client) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return mc.routClient.PatchRoutine(ctx, req, opts...)
 }
 
 // DeleteRoutine deletes the routine specified by routineId from the dataset.
-func (mc *BigQueryClient) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
+func (mc *Client) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
 	return mc.routClient.DeleteRoutine(ctx, req, opts...)
 }
 
 // ListRoutines lists all routines in the specified dataset. Requires the READER dataset
 // role.
-func (mc *BigQueryClient) ListRoutines(ctx context.Context, req *bigquerypb.ListRoutinesRequest, opts ...gax.CallOption) *bigquery.RoutineIterator {
+func (mc *Client) ListRoutines(ctx context.Context, req *bigquerypb.ListRoutinesRequest, opts ...gax.CallOption) *bigquery.RoutineIterator {
 	return mc.routClient.ListRoutines(ctx, req, opts...)
 }

@@ -27,7 +27,9 @@ import (
 	"google.golang.org/api/option"
 )
 
-type BigQueryClient struct {
+// Client represents the aggregate client which manages the various per-RPC service
+// clients.
+type Client struct {
 	dsClient    *bigquery.DatasetClient
 	jobClient   *bigquery.JobClient
 	modelClient *bigquery.ModelClient
@@ -37,12 +39,12 @@ type BigQueryClient struct {
 	tblClient   *bigquery.TableClient
 }
 
-// NewBigQueryClient creates a new BigQueryClient based on gRPC.
+// NewClient creates a new Client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
-func NewBigQueryClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryClient, error) {
+func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var errs []error
 	var err error
-	mc := &BigQueryClient{}
+	mc := &Client{}
 	mc.dsClient, err = bigquery.NewDatasetClient(ctx, opts...)
 	if err != nil {
 		errs = append(errs, fmt.Errorf("NewDatasetClient: %w", err))
@@ -77,12 +79,12 @@ func NewBigQueryClient(ctx context.Context, opts ...option.ClientOption) (*BigQu
 	return mc, nil
 }
 
-// NewBigQueryRESTClient creates a new BigQueryClient based on REST.
+// NewRESTClient creates a new Client based on REST.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
-func NewBigQueryRESTClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryClient, error) {
+func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var errs []error
 	var err error
-	mc := &BigQueryClient{}
+	mc := &Client{}
 	mc.dsClient, err = bigquery.NewDatasetRESTClient(ctx, opts...)
 	if err != nil {
 		errs = append(errs, fmt.Errorf("NewDatasetRESTClient: %w", err))
@@ -119,7 +121,7 @@ func NewBigQueryRESTClient(ctx context.Context, opts ...option.ClientOption) (*B
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (mc *BigQueryClient) Close() error {
+func (mc *Client) Close() error {
 	var errs []error
 	err := mc.dsClient.Close()
 	if err != nil {

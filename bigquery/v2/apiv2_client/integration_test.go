@@ -21,7 +21,7 @@ import (
 
 func TestGRPCClient(t *testing.T) {
 	ctx := context.Background()
-	client, err := NewBigQueryClient(ctx)
+	client, err := NewClient(ctx)
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
 	}
@@ -32,7 +32,7 @@ func TestGRPCClient(t *testing.T) {
 
 func TestRESTClient(t *testing.T) {
 	ctx := context.Background()
-	client, err := NewBigQueryRESTClient(ctx)
+	client, err := NewRESTClient(ctx)
 	if err != nil {
 		t.Fatalf("NewRESTClient failed: %v", err)
 	}
