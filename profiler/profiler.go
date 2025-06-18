@@ -49,6 +49,7 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/profiler/internal"
@@ -64,6 +65,24 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
+
+// ProfileSaver defines a struct for saving profiles to BigQuery.
+type ProfileSaver struct {
+	ProjectID string
+	DatasetID string
+	TableID   string
+	Data      []byte
+}
+
+// Save implements the bigquery.ValueSaver interface.
+func (ps *ProfileSaver) Save() (map[string]bigquery.Value, string, error) {
+	return map[string]bigquery.Value{
+		"project_id": ps.ProjectID,
+		"dataset_id": ps.DatasetID,
+		"table_id":   ps.TableID,
+		"data":       ps.Data,
+	}, "", nil
+}
 
 var (
 	config       Config
@@ -186,6 +205,15 @@ type Config struct {
 	// the metadata server is present but is flaky or otherwise misbehave.
 	Zone string
 
+	// BigQueryProjectID is the BigQuery project ID to use for exporting profiles.
+	BigQueryProjectID string
+
+	// BigQueryDatasetID is the BigQuery dataset ID to use for exporting profiles.
+	BigQueryDatasetID string
+
+	// BigQueryTableID is the BigQuery table ID to use for exporting profiles.
+	BigQueryTableID string
+
 	// numProfiles is the number of profiles which should be collected before
 	// the profile collection loop exits.When numProfiles is 0, profiles will
 	// be collected for the duration of the program. For testing only.
@@ -261,7 +289,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 		return err
 	}
 
-	a, err := initializeAgent(pb.NewProfilerServiceClient(connPool))
+	a, err := initializeAgent(pb.NewProfilerServiceClient(connPool), cfg)
 	if err != nil {
 		debugLog("failed to start the profiling agent: %v", err)
 		return err
@@ -283,6 +311,7 @@ type agent struct {
 	deployment    *pb.Deployment
 	profileLabels map[string]string
 	profileTypes  []pb.ProfileType
+	bigqueryClient *bigquery.Client
 }
 
 // abortedBackoffDuration retrieves the retry duration from gRPC trailing
@@ -420,6 +449,22 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 
 	p.ProfileBytes = prof.Bytes()
 	p.Labels = a.profileLabels
+
+	if a.bigqueryClient != nil {
+		uploader := a.bigqueryClient.Dataset(config.BigQueryDatasetID).Table(config.BigQueryTableID).Uploader()
+		profileSaver := &ProfileSaver{
+			ProjectID: config.BigQueryProjectID,
+			DatasetID: config.BigQueryDatasetID,
+			TableID:   config.BigQueryTableID,
+			Data:      p.ProfileBytes,
+		}
+
+		if err := uploader.Put(ctx, profileSaver); err != nil {
+			debugLog("failed to insert profile into BigQuery: %v", err)
+		}
+		return
+	}
+
 	req := pb.UpdateProfileRequest{Profile: p}
 
 	// Upload profile, discard profile in case of error.
@@ -482,37 +527,37 @@ func withXGoogHeader(ctx context.Context, keyval ...string) context.Context {
 // initializeAgent initializes the profiling agent. It returns an error if
 // profile collection should not be started because collection is disabled
 // for all profile types.
-func initializeAgent(c pb.ProfilerServiceClient) (*agent, error) {
+func initializeAgent(c pb.ProfilerServiceClient, cfg Config) (*agent, error) {
 	labels := map[string]string{languageLabel: "go"}
-	if config.Zone != "" {
-		labels[zoneNameLabel] = config.Zone
+	if cfg.Zone != "" {
+		labels[zoneNameLabel] = cfg.Zone
 	}
-	if config.ServiceVersion != "" {
-		labels[versionLabel] = config.ServiceVersion
+	if cfg.ServiceVersion != "" {
+		labels[versionLabel] = cfg.ServiceVersion
 	}
 	d := &pb.Deployment{
-		ProjectId: config.ProjectID,
-		Target:    config.Service,
+		ProjectId: cfg.ProjectID,
+		Target:    cfg.Service,
 		Labels:    labels,
 	}
 
 	profileLabels := map[string]string{}
 
-	if config.Instance != "" {
-		profileLabels[instanceLabel] = config.Instance
+	if cfg.Instance != "" {
+		profileLabels[instanceLabel] = cfg.Instance
 	}
 
 	var profileTypes []pb.ProfileType
-	if !config.NoCPUProfiling {
+	if !cfg.NoCPUProfiling {
 		profileTypes = append(profileTypes, pb.ProfileType_CPU)
 	}
-	if !config.NoHeapProfiling {
+	if !cfg.NoHeapProfiling {
 		profileTypes = append(profileTypes, pb.ProfileType_HEAP)
 	}
-	if !config.NoGoroutineProfiling {
+	if !cfg.NoGoroutineProfiling {
 		profileTypes = append(profileTypes, pb.ProfileType_THREADS)
 	}
-	if !config.NoAllocProfiling {
+	if !cfg.NoAllocProfiling {
 		profileTypes = append(profileTypes, pb.ProfileType_HEAP_ALLOC)
 	}
 	if mutexEnabled {
@@ -523,11 +568,21 @@ func initializeAgent(c pb.ProfilerServiceClient) (*agent, error) {
 		return nil, fmt.Errorf("collection is not enabled for any profile types")
 	}
 
+	var bqClient *bigquery.Client
+	var err error
+	if cfg.BigQueryProjectID != "" && cfg.BigQueryDatasetID != "" && cfg.BigQueryTableID != "" {
+		bqClient, err = bigquery.NewClient(context.Background(), cfg.BigQueryProjectID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create BigQuery client: %v", err)
+		}
+	}
+
 	return &agent{
 		client:        c,
 		deployment:    d,
 		profileLabels: profileLabels,
 		profileTypes:  profileTypes,
+		bigqueryClient: bqClient,
 	}, nil
 }
 

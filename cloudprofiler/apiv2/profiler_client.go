@@ -363,7 +363,77 @@ func (c *profilerGRPCClient) CreateProfile(ctx context.Context, req *cloudprofil
 	return resp, nil
 }
 
+import (
+	"bytes"
+	"context"
+	"flag"
+	"fmt"
+	"log/slog"
+	"math"
+	"net/http"
+	"net/url"
+	"time"
+
+	"cloud.google.com/go/bigquery"
+	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
+	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
+)
+
+var (
+	bigqueryProjectID = flag.String("bigquery-project-id", "", "BigQuery project ID")
+	bigqueryDatasetID = flag.String("bigquery-dataset-id", "", "BigQuery dataset ID")
+	bigqueryTableID   = flag.String("bigquery-table-id", "", "BigQuery table ID")
+)
+
+// ProfileSaver defines a struct for saving profiles to BigQuery.
+type ProfileSaver struct {
+	ProjectID string
+	DatasetID string
+	TableID   string
+	Data      []byte
+}
+
+// Save implements the bigquery.ValueSaver interface.
+func (ps *ProfileSaver) Save() (map[string]bigquery.Value, string, error) {
+	return map[string]bigquery.Value{
+		"project_id": ps.ProjectID,
+		"dataset_id": ps.DatasetID,
+		"table_id":   ps.TableID,
+		"data":       ps.Data,
+	}, "", nil
+}
+
 func (c *profilerGRPCClient) CreateOfflineProfile(ctx context.Context, req *cloudprofilerpb.CreateOfflineProfileRequest, opts ...gax.CallOption) (*cloudprofilerpb.Profile, error) {
+	flag.Parse()
+
+	if *bigqueryProjectID != "" && *bigqueryDatasetID != "" && *bigqueryTableID != "" {
+		client, err := bigquery.NewClient(ctx, *bigqueryProjectID)
+		if err != nil {
+			return nil, fmt.Errorf("bigquery.NewClient: %v", err)
+		}
+		defer client.Close()
+
+		uploader := client.Dataset(*bigqueryDatasetID).Table(*bigqueryTableID).Uploader()
+		profileSaver := &ProfileSaver{
+			ProjectID: *bigqueryProjectID,
+			DatasetID: *bigqueryDatasetID,
+			TableID:   *bigqueryTableID,
+			Data:      req.GetProfile().GetProfileBytes(),
+		}
+
+		if err := uploader.Put(ctx, profileSaver); err != nil {
+			return nil, fmt.Errorf("failed to insert profile into BigQuery: %v", err)
+		}
+
+		return req.GetProfile(), nil
+	}
+
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
