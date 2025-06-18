@@ -112,11 +112,13 @@ func NewBigQueryRESTClient(ctx context.Context, opts ...option.ClientOption) (*B
 		errs = append(errs, fmt.Errorf("NewTableRESTClient: %w", err))
 	}
 	if len(errs) > 0 {
-		return nil, fmt.Errorf("NewClient: %d errors during instantiation, first error: %w", len(errs), errs[0])
+		return nil, errors.Join(errs...)
 	}
 	return mc, nil
 }
 
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
 func (mc *BigQueryClient) Close() error {
 	var errs []error
 	err := mc.dsClient.Close()
@@ -148,7 +150,7 @@ func (mc *BigQueryClient) Close() error {
 		errs = append(errs, fmt.Errorf("TableClient: %w", err))
 	}
 	if len(errs) > 0 {
-		return fmt.Errorf("closing subclients yielded %d errors, first error: %w", len(errs), errs[0])
+		return errors.Join(errs...)
 	}
 	return nil
 }
