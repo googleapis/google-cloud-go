@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	"cloud.google.com/go/bigquery"
+	"flag"
 	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -362,28 +364,6 @@ func (c *profilerGRPCClient) CreateProfile(ctx context.Context, req *cloudprofil
 	}
 	return resp, nil
 }
-
-import (
-	"bytes"
-	"context"
-	"flag"
-	"fmt"
-	"log/slog"
-	"math"
-	"net/http"
-	"net/url"
-	"time"
-
-	"cloud.google.com/go/bigquery"
-	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
-	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
-	gtransport "google.golang.org/api/transport/grpc"
-	httptransport "google.golang.org/api/transport/http"
-	"google.golang.org/grpc"
-	"google.golang.org/protobuf/encoding/protojson"
-)
 
 var (
 	bigqueryProjectID = flag.String("bigquery-project-id", "", "BigQuery project ID")
