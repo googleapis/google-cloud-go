@@ -23,8 +23,11 @@ modules:
   - baremetalsolution
   - batch
   - beyondcorp
-  - bigquery
+  # List the bigquery/v2 module before the bigquery module so that the contents
+  # are processed using the correct inner module boundary.
+  # More info: https://github.com/googleapis/google-cloud-go/issues/12452
   - bigquery/v2
+  - bigquery
   - bigtable
   - billing
   - binaryauthorization

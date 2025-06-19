@@ -4309,6 +4309,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSubpropertySyncConfig_sync",
+      "title": "analyticsadmin GetSubpropertySyncConfig Sample",
+      "description": "GetSubpropertySyncConfig lookup for a single Subproperty Sync Config.",
+      "file": "AnalyticsAdminClient/GetSubpropertySyncConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSubpropertySyncConfig",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetSubpropertySyncConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetSubpropertySyncConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SubpropertySyncConfig",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetSubpropertySyncConfig",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertySyncConfig",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccessBindings_sync",
       "title": "analyticsadmin ListAccessBindings Sample",
       "description": "ListAccessBindings lists all access bindings on an account or property.",
@@ -5581,6 +5627,52 @@
         "method": {
           "shortName": "ListSubpropertyEventFilters",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertyEventFilters",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListSubpropertySyncConfigs_sync",
+      "title": "analyticsadmin ListSubpropertySyncConfigs Sample",
+      "description": "ListSubpropertySyncConfigs list all Subproperty Sync Configs on a property.",
+      "file": "AnalyticsAdminClient/ListSubpropertySyncConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubpropertySyncConfigs",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListSubpropertySyncConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListSubpropertySyncConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubpropertySyncConfigIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListSubpropertySyncConfigs",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertySyncConfigs",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -7144,6 +7236,52 @@
         "method": {
           "shortName": "UpdateSubpropertyEventFilter",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertyEventFilter",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateSubpropertySyncConfig_sync",
+      "title": "analyticsadmin UpdateSubpropertySyncConfig Sample",
+      "description": "UpdateSubpropertySyncConfig updates a Subproperty Sync Config.",
+      "file": "AnalyticsAdminClient/UpdateSubpropertySyncConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSubpropertySyncConfig",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateSubpropertySyncConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateSubpropertySyncConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SubpropertySyncConfig",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateSubpropertySyncConfig",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertySyncConfig",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
