@@ -1,6 +1,31 @@
 # Changes
 
 
+## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.55.0...storage/v1.56.0) (2025-06-19)
+
+
+### Features
+
+* **storage/internal:** Add option in IpFilter to allow all P4SA access to bucket ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **storage/internal:** Add option to enable object retention in CreateBucket API ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **storage/internal:** Add option to override unlocked retention in UpdateObject API ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **storage/internal:** Add support for object retention config in Bucket ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **storage/internal:** Added support for encryption enforcement config in Bucket ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **storage:** Add IpFilter to bucketAttrs ([#12020](https://github.com/googleapis/google-cloud-go/issues/12020)) ([942c770](https://github.com/googleapis/google-cloud-go/commit/942c7707bd5119a62a4e7d92803179f6af865eaa))
+
+
+### Bug Fixes
+
+* **storage:** Avoid integration test segfaults. ([#12419](https://github.com/googleapis/google-cloud-go/issues/12419)) ([a9dec07](https://github.com/googleapis/google-cloud-go/commit/a9dec0763f85f083cc1da451249caae7ad97d904))
+* **storage:** Current object generation takeover. ([#12383](https://github.com/googleapis/google-cloud-go/issues/12383)) ([9ca8e01](https://github.com/googleapis/google-cloud-go/commit/9ca8e015405a523bbe68cbff2defbdff3dac0a61))
+
+
+### Documentation
+
+* **storage/internal:** Fix broken link for message `CustomPlacementConfig` ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **storage:** Fix typo in storage/doc.go ([#12391](https://github.com/googleapis/google-cloud-go/issues/12391)) ([bf74408](https://github.com/googleapis/google-cloud-go/commit/bf744088f0ed23ea510b914c994e1754ca1fc7c4))
+* **storage:** Improve error inspection documentation ([#12301](https://github.com/googleapis/google-cloud-go/issues/12301)) ([420da1a](https://github.com/googleapis/google-cloud-go/commit/420da1a64ac4040c8b2e6d6f0d66e7633426ac25))
+
 ## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.54.0...storage/v1.55.0) (2025-05-29)
 
 
