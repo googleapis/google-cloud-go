@@ -452,24 +452,23 @@ func TestToOtelMetricAttrs(t *testing.T) {
 			desc:       "Unknown metric",
 			mt:         mt,
 			metricName: "unknown_metric",
-			wantAttrs: []attribute.KeyValue{
-				attribute.String(monitoredResLabelKeyTable, "my-table"),
-				attribute.String(metricLabelKeyMethod, "ReadRows"),
-				attribute.String(monitoredResLabelKeyCluster, clusterID1),
-				attribute.String(monitoredResLabelKeyZone, zoneID1),
-			},
-			wantError: fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
+			wantAttrs:  []attribute.KeyValue{}, // Expect empty slice on error
+			wantError:  fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
 		},
 	}
 
 	lessKeyValue := func(a, b attribute.KeyValue) bool { return a.Key < b.Key }
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotAttrs, gotErr := test.mt.toOtelMetricAttrs(test.metricName)
+			gotAttrSet, gotErr := test.mt.toOtelMetricAttrs(test.metricName)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
-			if diff := testutil.Diff(gotAttrs, test.wantAttrs,
+			gotAttrsSlice := gotAttrSet.ToSlice() // Convert Set to Slice
+			if gotAttrsSlice == nil {             // Ensure nil slice is treated as empty slice for comparison
+				gotAttrsSlice = []attribute.KeyValue{}
+			}
+			if diff := testutil.Diff(gotAttrsSlice, test.wantAttrs,
 				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{}),
 				cmpopts.SortSlices(lessKeyValue)); diff != "" {
 				t.Errorf("got=-, want=+ \n%v", diff)
