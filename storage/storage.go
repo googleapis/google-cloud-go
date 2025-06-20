@@ -51,7 +51,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
-	htransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/stats/opentelemetry"
@@ -149,86 +148,17 @@ func (c Client) credsJSON() ([]byte, bool) {
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	var creds *auth.Credentials
-
-	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
-	// since raw.NewService configures the correct default endpoints when initializing the
-	// internal http client. However, in our case, "NewRangeReader" in reader.go needs to
-	// access the http client directly to make requests, so we create the client manually
-	// here so it can be re-used by both reader.go and raw.NewService. This means we need to
-	// manually configure the default endpoint options on the http client. Furthermore, we
-	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
-	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
-		// Prepend default options to avoid overriding options passed by the user.
-		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, opts...)
-
-		opts = append(opts, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
-			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
-			internaloption.WithDefaultUniverseDomain("googleapis.com"),
-			internaloption.EnableNewAuthLibrary(),
-		)
-
-		// Don't error out here. The user may have passed in their own HTTP
-		// client which does not auth with ADC or other common conventions.
-		c, err := internaloption.AuthCreds(ctx, opts)
-		if err == nil {
-			creds = c
-			opts = append(opts, option.WithAuthCredentials(creds))
-		}
-	} else {
-		var hostURL *url.URL
-
-		if strings.Contains(host, "://") {
-			h, err := url.Parse(host)
-			if err != nil {
-				return nil, err
-			}
-			hostURL = h
-		} else {
-			// Add scheme for user if not supplied in STORAGE_EMULATOR_HOST
-			// URL is only parsed correctly if it has a scheme, so we build it ourselves
-			hostURL = &url.URL{Scheme: "http", Host: host}
-		}
-
-		hostURL.Path = "storage/v1/"
-		endpoint := hostURL.String()
-
-		// Append the emulator host as default endpoint for the user
-		opts = append([]option.ClientOption{
-			option.WithoutAuthentication(),
-			internaloption.SkipDialSettingsValidation(),
-			internaloption.WithDefaultEndpointTemplate(endpoint),
-			internaloption.WithDefaultMTLSEndpoint(endpoint),
-		}, opts...)
-	}
-
-	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
-	hc, ep, err := htransport.NewClient(ctx, opts...)
-	if err != nil {
-		return nil, fmt.Errorf("dialing: %w", err)
-	}
-	// RawService should be created with the chosen endpoint to take account of user override.
-	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
-	if err != nil {
-		return nil, fmt.Errorf("storage client: %w", err)
-	}
-	// Update xmlHost and scheme with the chosen endpoint.
-	u, err := url.Parse(ep)
-	if err != nil {
-		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
-	}
-
 	tc, err := newHTTPStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
 		return nil, fmt.Errorf("storage: %w", err)
 	}
 
 	return &Client{
-		hc:      hc,
-		raw:     rawService,
-		scheme:  u.Scheme,
-		xmlHost: u.Host,
-		creds:   creds,
+		hc:      tc.hc,
+		raw:     tc.raw,
+		scheme:  tc.scheme,
+		xmlHost: tc.xmlHost,
+		creds:   tc.creds,
 		tc:      tc,
 	}, nil
 }
@@ -246,6 +176,13 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package.
 func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	var creds *auth.Credentials
+
+	c, err := internaloption.AuthCreds(ctx, opts)
+	if err == nil {
+		creds = c
+	}
+
 	tc, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
 		return nil, err
@@ -253,6 +190,7 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	return &Client{
 		tc:                    tc,
 		grpcAppendableUploads: tc.config.grpcAppendableUploads,
+		creds:                 creds,
 	}, nil
 }
 
