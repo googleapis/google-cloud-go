@@ -33,9 +33,9 @@ func ExampleNewCredentials_serviceAccount() {
 		log.Fatal(err)
 	}
 
-	// TODO(codyoss): link to option once it exists.
-
-	// Use this Credentials with a client library
+	// Use this Credentials with a client library like
+	// cloud.google.com/go/storage and WithAuthCredentials ClientOption
+	// from the google.golang.org/api/option package.
 	_ = creds
 }
 
