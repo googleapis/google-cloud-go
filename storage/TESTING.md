@@ -35,5 +35,19 @@ If you don't specify the `-run` filter, this will also run unit tests.
 
 ## Running live service integration tests
 
-TBD
+See the [general setup instructions](../CONTRIBUTING.md#local-setup) for more
+details. The GCS integration tests require:
 
+- A project configured such that all bucket types can be created (e.g. with and
+  without UBLA, with and without HNS). A dedicated project which only stores
+  test data is recommended.
+- A JSON key file for a service account with most GCS privileges in that
+  project.
+- A VM in that project.
+
+Run with:
+
+```bash
+GCLOUD_TESTS_GOLANG_PROJECT_ID="${PROJECT_ID?}" GCLOUD_TESTS_GOLANG_KEY="${KEYFILE?}" \
+  go test ./google-cloud-go/storage -run="^Test.*Integration"
+```
