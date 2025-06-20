@@ -2659,3 +2659,304 @@ func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 }
+
+func TestIntegration_Transforms(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type TransformEntity struct {
+		I    int
+		F    float64
+		T    time.Time
+		S    []string
+		Nums []int
+	}
+
+	// === Test Increment ===
+	t.Run("Increment", func(t *testing.T) {
+		k, err := client.Put(ctx, IncompleteKey("Transform", nil), &TransformEntity{I: 10, F: 20.5})
+		if err != nil {
+			t.Fatalf("Put: %v", err)
+		}
+		defer client.Delete(ctx, k)
+
+		inc, err := Increment("I", 5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		incFloat, err := Increment("F", -2.0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		req := &PutRequest{
+			Key:        k,
+			Entity:     &TransformEntity{}, // Src can be empty when only applying transforms
+			Transforms: []PropertyTransform{inc, incFloat},
+		}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(Increment): %v", err)
+		}
+
+		var final TransformEntity
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if final.I != 15 {
+			t.Errorf("got I=%d, want 15", final.I)
+		}
+		if final.F != 18.5 {
+			t.Errorf("got F=%f, want 18.5", final.F)
+		}
+	})
+
+	// === Test SetToServerTime ===
+	t.Run("SetToServerTime", func(t *testing.T) {
+		k, err := client.Put(ctx, IncompleteKey("Transform", nil), &TransformEntity{})
+		if err != nil {
+			t.Fatalf("Put: %v", err)
+		}
+		defer client.Delete(ctx, k)
+
+		req := &PutRequest{
+			Key:        k,
+			Entity:     &TransformEntity{},
+			Transforms: []PropertyTransform{SetToServerTime("T")},
+		}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(SetToServerTime): %v", err)
+		}
+
+		var final TransformEntity
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if time.Since(final.T) > 15*time.Second {
+			t.Errorf("Expected timestamp to be recent, but got %v", final.T)
+		}
+	})
+
+	// === Test Maximum/Minimum ===
+	t.Run("MaxMin", func(t *testing.T) {
+		k, err := client.Put(ctx, IncompleteKey("Transform", nil), &TransformEntity{I: 100})
+		if err != nil {
+			t.Fatalf("Put: %v", err)
+		}
+		defer client.Delete(ctx, k)
+
+		// Maximum with a larger value
+		max, err := Maximum("I", 150)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req := &PutRequest{Key: k, Entity: &TransformEntity{}, Transforms: []PropertyTransform{max}}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(Maximum): %v", err)
+		}
+		var final TransformEntity
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if final.I != 150 {
+			t.Errorf("Maximum: got %d, want 150", final.I)
+		}
+
+		// Maximum with a smaller value
+		max, err = Maximum("I", 120)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req = &PutRequest{Key: k, Entity: &TransformEntity{}, Transforms: []PropertyTransform{max}}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(Maximum): %v", err)
+		}
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if final.I != 150 {
+			t.Errorf("Maximum(smaller): got %d, want 150", final.I)
+		}
+
+		// Minimum with a smaller value
+		min, err := Minimum("I", 50)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req = &PutRequest{Key: k, Entity: &TransformEntity{}, Transforms: []PropertyTransform{min}}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(Minimum): %v", err)
+		}
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if final.I != 50 {
+			t.Errorf("Minimum: got %d, want 50", final.I)
+		}
+
+		// Minimum with a larger value
+		min, err = Minimum("I", 80)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req = &PutRequest{Key: k, Entity: &TransformEntity{}, Transforms: []PropertyTransform{min}}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(Minimum): %v", err)
+		}
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if final.I != 50 {
+			t.Errorf("Minimum(larger): got %d, want 50", final.I)
+		}
+	})
+
+	// === Test AppendMissingElements ===
+	t.Run("AppendMissingElements", func(t *testing.T) {
+		k, err := client.Put(ctx, IncompleteKey("Transform", nil), &TransformEntity{S: []string{"a", "b"}})
+		if err != nil {
+			t.Fatalf("Put: %v", err)
+		}
+		defer client.Delete(ctx, k)
+
+		// Append new elements
+		append1, err := AppendMissingElements("S", "c", "d")
+		if err != nil {
+			t.Fatal(err)
+		}
+		req := &PutRequest{Key: k, Entity: &TransformEntity{}, Transforms: []PropertyTransform{append1}}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(Append1): %v", err)
+		}
+		var final TransformEntity
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if !testutil.Equal(final.S, []string{"a", "b", "c", "d"}) {
+			t.Errorf("Append1: got %v, want [a b c d]", final.S)
+		}
+
+		// Append mixed new and existing elements
+		append2, err := AppendMissingElements("S", "d", "e", "a")
+		if err != nil {
+			t.Fatal(err)
+		}
+		req = &PutRequest{Key: k, Entity: &TransformEntity{}, Transforms: []PropertyTransform{append2}}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(Append2): %v", err)
+		}
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		sort.Strings(final.S)
+		if !testutil.Equal(final.S, []string{"a", "b", "c", "d", "e"}) {
+			t.Errorf("Append2: got %v, want [a b c d e]", final.S)
+		}
+	})
+
+	// === Test RemoveAllFromArray ===
+	t.Run("RemoveAllFromArray", func(t *testing.T) {
+		k, err := client.Put(ctx, IncompleteKey("Transform", nil), &TransformEntity{Nums: []int{1, 2, 3, 2, 4, 1}})
+		if err != nil {
+			t.Fatalf("Put: %v", err)
+		}
+		defer client.Delete(ctx, k)
+
+		remove, err := RemoveAllFromArray("Nums", 1, 3)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req := &PutRequest{Key: k, Entity: &TransformEntity{}, Transforms: []PropertyTransform{remove}}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions(Remove): %v", err)
+		}
+
+		var final TransformEntity
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		sort.Ints(final.Nums)
+		if !testutil.Equal(final.Nums, []int{2, 2, 4}) {
+			t.Errorf("Remove: got %v, want [2 2 4]", final.Nums)
+		}
+	})
+
+	// === Test Transaction with PutMultiWithOptions ===
+	t.Run("Transaction", func(t *testing.T) {
+		keys := []*Key{
+			IncompleteKey("TransformTx", nil),
+			IncompleteKey("TransformTx", nil),
+		}
+		pkeys, err := client.PutMulti(ctx, keys, []*TransformEntity{
+			{I: 50}, {Nums: []int{10, 20}},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer client.DeleteMulti(ctx, pkeys)
+
+		inc, err := Increment("I", 10)
+		if err != nil {
+			t.Fatal(err)
+		}
+		append, err := AppendMissingElements("Nums", 30)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// Test both transaction.PutWithOptions and transaction.PutMultiWithOptions
+		_, err = client.RunInTransaction(ctx, func(tx *Transaction) error {
+			if _, err := tx.PutWithOptions(&PutRequest{Key: pkeys[0], Entity: &TransformEntity{}, Transforms: []PropertyTransform{inc}}); err != nil {
+				return err
+			}
+			reqs := []*PutRequest{
+				{Key: pkeys[1], Entity: &TransformEntity{}, Transforms: []PropertyTransform{append}},
+			}
+			_, err := tx.PutMultiWithOptions(reqs)
+			return err
+		})
+
+		if err != nil {
+			t.Fatalf("RunInTransaction: %v", err)
+		}
+
+		var results [2]TransformEntity
+		if err := client.GetMulti(ctx, pkeys, results[:]); err != nil {
+			t.Fatalf("GetMulti: %v", err)
+		}
+
+		if results[0].I != 60 {
+			t.Errorf("Tx Increment: got %d, want 60", results[0].I)
+		}
+		if !testutil.Equal(results[1].Nums, []int{10, 20, 30}) {
+			t.Errorf("Tx Append: got %v, want [10 20 30]", results[1].Nums)
+		}
+	})
+
+	// === Test Mutation.WithTransforms ===
+	t.Run("Mutate", func(t *testing.T) {
+		k, err := client.Put(ctx, IncompleteKey("Transform", nil), &TransformEntity{I: 10})
+		if err != nil {
+			t.Fatalf("Put: %v", err)
+		}
+		defer client.Delete(ctx, k)
+
+		inc, err := Increment("I", -5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		mut := NewUpdate(k, &TransformEntity{}).WithTransforms(inc)
+
+		if _, err := client.Mutate(ctx, mut); err != nil {
+			t.Fatalf("Mutate: %v", err)
+		}
+
+		var final TransformEntity
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if final.I != 5 {
+			t.Errorf("got I=%d, want 5", final.I)
+		}
+	})
+}
