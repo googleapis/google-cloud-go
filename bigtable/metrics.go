@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -40,6 +41,7 @@ const (
 	serverTimingMDKey     = "server-timing"
 	serverTimingValPrefix = "gfet4t7; dur="
 
+	metricMethodPrefix = "Bigtable."
 	// Monitored resource labels
 	monitoredResLabelKeyProject  = "project_id"
 	monitoredResLabelKeyInstance = "instance"
@@ -60,6 +62,7 @@ const (
 	metricNameOperationLatencies = "operation_latencies"
 	metricNameAttemptLatencies   = "attempt_latencies"
 	metricNameServerLatencies    = "server_latencies"
+	metricNameFirstRespLatencies = "first_response_latencies"
 	metricNameRetryCount         = "retry_count"
 	metricNameDebugTags          = "debug_tags"
 
@@ -106,6 +109,12 @@ var (
 				metricLabelKeyStreamingOperation,
 			},
 			recordedPerAttempt: true,
+		},
+		metricNameFirstRespLatencies: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: false,
 		},
 		metricNameRetryCount: {
 			additionalAttrs: []string{
@@ -160,8 +169,10 @@ type builtinMetricsTracerFactory struct {
 	operationLatencies metric.Float64Histogram
 	serverLatencies    metric.Float64Histogram
 	attemptLatencies   metric.Float64Histogram
-	retryCount         metric.Int64Counter
-	debugTags          metric.Int64Counter
+	firstRespLatencies metric.Float64Histogram
+
+	retryCount metric.Int64Counter
+	debugTags  metric.Int64Counter
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -261,6 +272,17 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
+	// Create first_response_latencies
+	tf.firstRespLatencies, err = meter.Float64Histogram(
+		metricNameFirstRespLatencies,
+		metric.WithDescription("Latency from operation start until the response headers were received. The publishing of the measurement will be delayed until the attempt response has been received."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
+	}
+
 	// Create retry_count
 	tf.retryCount, err = meter.Int64Counter(
 		metricNameRetryCount,
@@ -294,6 +316,7 @@ type builtinMetricsTracer struct {
 	instrumentOperationLatencies metric.Float64Histogram
 	instrumentServerLatencies    metric.Float64Histogram
 	instrumentAttemptLatencies   metric.Float64Histogram
+	instrumentFirstRespLatencies metric.Float64Histogram
 	instrumentRetryCount         metric.Int64Counter
 	instrumentDebugTags          metric.Int64Counter
 
@@ -305,7 +328,7 @@ type builtinMetricsTracer struct {
 }
 
 func (b *builtinMetricsTracer) setMethod(m string) {
-	b.method = "Bigtable." + m
+	b.method = metricMethodPrefix + m
 }
 
 // opTracer is used to record metrics for the entire operation, including retries.
@@ -316,6 +339,10 @@ type opTracer struct {
 
 	startTime time.Time
 
+	// Only for ReadRows. Time when the response headers are received in a streaming RPC.
+	firstRespTime     time.Time
+	firstRespTimeOnce sync.Once
+
 	// gRPC status code of last completed attempt
 	status string
 
@@ -324,6 +351,12 @@ type opTracer struct {
 
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
+}
+
+func (o *opTracer) setFirstRespTime(t time.Time) {
+	o.firstRespTimeOnce.Do(func() {
+		o.firstRespTime = t
+	})
 }
 
 func (o *opTracer) setStatus(status string) {
@@ -347,7 +380,7 @@ type attemptTracer struct {
 	// Server latency in ms
 	serverLatency float64
 
-	// Error seen while getting server latency from headers
+	// Error seen while getting server latency from headers / trailers
 	serverLatencyErr error
 }
 
@@ -391,6 +424,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentOperationLatencies: tf.operationLatencies,
 		instrumentServerLatencies:    tf.serverLatencies,
 		instrumentAttemptLatencies:   tf.attemptLatencies,
+		instrumentFirstRespLatencies: tf.firstRespLatencies,
 		instrumentRetryCount:         tf.retryCount,
 		instrumentDebugTags:          tf.debugTags,
 
