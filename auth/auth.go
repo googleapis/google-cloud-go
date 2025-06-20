@@ -99,6 +99,29 @@ type Token struct {
 	// Metadata  may include, but is not limited to, the body of the token
 	// response returned by the server.
 	Metadata map[string]interface{} // TODO(codyoss): maybe make a method to flatten metadata to avoid []string for url.Values
+	// TrustBoundaryData represents the trust boundary data associated with the token.
+	// It contains information about the regions or environments where the token is valid.
+	// This data is used to enforce trust boundary restrictions on requests made with the token.
+	// TrustBoundaryData is a value type for immutability after token creation.
+	TrustBoundaryData TrustBoundaryData
+}
+
+// TrustBoundaryData represents the trust boundary data associated with a token.
+// It contains information about the regions or environments where the token is valid.
+type TrustBoundaryData struct {
+	// Locations is the list of locations that the token is allowed to be used in.
+	Locations []string
+	// EncodedLocations represents the locations in an encoded format.
+	EncodedLocations string
+}
+
+// IsNoOpOrEmpty reports whether the trust boundary is a no-op or empty.
+func (t *TrustBoundaryData) IsNoOpOrEmpty() bool {
+	if t == nil {
+		return true
+	}
+	// This value is a constant indicating no trust boundary is enforced.
+	return t.EncodedLocations == "0x0" || t.EncodedLocations == ""
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -227,6 +250,18 @@ type CredentialsOptions struct {
 	QuotaProjectIDProvider CredentialsPropertyProvider
 	// UniverseDomainProvider resolves the universe domain with the credentials.
 	UniverseDomainProvider CredentialsPropertyProvider
+	// TrustBoundaryDataProvider is used to fetch trust boundary data.
+	// This data defines location restrictions for credential usage.
+	// Not all credential types utilize this provider; if it's nil, no trust boundary
+	// restrictions are applied via this mechanism.
+	TrustBoundaryDataProvider TrustBoundaryDataProvider
+}
+
+// TrustBoundaryDataProvider provides an interface for fetching trust boundary data.
+type TrustBoundaryDataProvider interface {
+	// GetTrustBoundaryData retrieves the trust boundary data.
+	// The accessToken is the bearer token used to authenticate the lookup request.
+	GetTrustBoundaryData(ctx context.Context, accessToken string) (*TrustBoundaryData, error)
 }
 
 // NewCredentials returns new [Credentials] from the provided options.
@@ -485,6 +520,8 @@ type Options2LO struct {
 	Audience string
 	// PrivateClaims allows specifying any custom claims for the JWT. Optional.
 	PrivateClaims map[string]interface{}
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	UniverseDomain string
 
 	// Client is the client to be used to make the underlying token requests.
 	// Optional.
@@ -497,6 +534,14 @@ type Options2LO struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
+	// TrustBoundaryDataProvider is used to fetch trust boundary data.
+	// This data defines the regions or environments where the credential (and subsequently the tokens
+	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
+	// The provider pattern allows for dynamic fetching and caching of this data,
+	// which is particularly relevant for credential types like service accounts
+	// where trust boundaries are enforced to limit usage to authorized locations.
+	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
+	TrustBoundaryDataProvider TrustBoundaryDataProvider
 }
 
 func (o *Options2LO) client() *http.Client {
@@ -613,6 +658,13 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 			return nil, fmt.Errorf("auth: response doesn't have JWT token")
 		}
 		token.Value = tokenRes.IDToken
+	}
+	if tp.opts.TrustBoundaryDataProvider != nil {
+		trustBoundaryData, err := tp.opts.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token.Value)
+		if err != nil {
+			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
+		}
+		token.TrustBoundaryData = *trustBoundaryData
 	}
 	return token, nil
 }
