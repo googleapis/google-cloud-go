@@ -2237,14 +2237,14 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 
 	// Record operation_latencies
 	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
-	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
+	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(opLatAttrs))
 
 	// Record retry_count
 	retryCntAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)
 	if mt.currOp.attemptCount > 1 {
 		// Only record when retry count is greater than 0 so the retry
 		// graph will be less confusing
-		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributes(retryCntAttrs...))
+		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributeSet(retryCntAttrs))
 	}
 }
 
@@ -2315,15 +2315,15 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 
 	// Record attempt_latencies
 	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
-	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
+	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLatAttrs))
 
 	// Record server_latencies and connectivity_error_count
 	connErrCountAttrs, _ := mt.toOtelMetricAttrs(metricNameConnErrCount)
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
-		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributes(serverLatAttrs...))
-		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributes(connErrCountAttrs...))
+		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributeSet(serverLatAttrs))    
+		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributeSet(connErrCountAttrs))
 	} else {
-		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributes(connErrCountAttrs...))
+		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributeSet(connErrCountAttrs))
 	}
 }

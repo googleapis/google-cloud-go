@@ -1,6 +1,29 @@
 # Changes
 
 
+## [1.91.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.90.0...aiplatform/v1.91.0) (2025-06-17)
+
+
+### Features
+
+* **aiplatform:** Add dns_peering_configs to PscInterfaceConfig ([a013575](https://github.com/googleapis/google-cloud-go/commit/a01357592a61b05c19ee2c520ed59f02504c371a))
+* **aiplatform:** Add dns_peering_configs to PscInterfaceConfig ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **aiplatform:** Add DnsPeeringConfig in service_networking.proto ([a013575](https://github.com/googleapis/google-cloud-go/commit/a01357592a61b05c19ee2c520ed59f02504c371a))
+* **aiplatform:** Add DnsPeeringConfig in service_networking.proto ([#12421](https://github.com/googleapis/google-cloud-go/issues/12421)) ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **aiplatform:** Add EncryptionSpec field for RagCorpus CMEK feature to v1 ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **aiplatform:** Add RagEngineConfig update/get APIs to v1 ([a013575](https://github.com/googleapis/google-cloud-go/commit/a01357592a61b05c19ee2c520ed59f02504c371a))
+* **aiplatform:** Add Scaled tier for RagEngineConfig to v1beta, equivalent to Enterprise ([#12460](https://github.com/googleapis/google-cloud-go/issues/12460)) ([a013575](https://github.com/googleapis/google-cloud-go/commit/a01357592a61b05c19ee2c520ed59f02504c371a))
+* **aiplatform:** Add Unprovisioned tier to RagEngineConfig in v1beta1 that can disable RagEngine service and delete all data within the service ([a013575](https://github.com/googleapis/google-cloud-go/commit/a01357592a61b05c19ee2c520ed59f02504c371a))
+* **aiplatform:** Add Unprovisioned tier to RagEngineConfig to disable RagEngine service and delete all data within the service. ([a013575](https://github.com/googleapis/google-cloud-go/commit/a01357592a61b05c19ee2c520ed59f02504c371a))
+* **aiplatform:** Expose UrlContextMetadata API to v1 ([feb078b](https://github.com/googleapis/google-cloud-go/commit/feb078b04ab541dd3bdceb2ac1f24938bb0354a3))
+* **aiplatform:** Expose UrlContextMetadata API to v1beta1 ([feb078b](https://github.com/googleapis/google-cloud-go/commit/feb078b04ab541dd3bdceb2ac1f24938bb0354a3))
+* **aiplatform:** Introduce RagFileMetadataConfig for importing metadata to Rag ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
+
+### Documentation
+
+* **aiplatform:** Enterprise tier in RagEngineConfig, use Scaled tier instead. ([a013575](https://github.com/googleapis/google-cloud-go/commit/a01357592a61b05c19ee2c520ed59f02504c371a))
+
 ## [1.90.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.89.0...aiplatform/v1.90.0) (2025-06-04)
 
 
