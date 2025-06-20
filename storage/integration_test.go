@@ -1777,6 +1777,73 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	})
 }
 
+func TestIntegration_TrailingChecksumsGRPC(t *testing.T) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		name := uidSpaceObjects.New()
+		obj := client.Bucket(bucket).Object(name).Retryer(WithPolicy(RetryAlways))
+		defer h.mustDeleteObject(obj)
+
+		// Use a larger blob to test multi-message logic. This is a little over 5MB.
+		content := bytes.Repeat([]byte("a"), 5<<20)
+
+		var (
+			w    = obj.NewWriter(ctx)
+			crcW = crc32.New(crc32cTable)
+			mw   = io.MultiWriter(w, crcW)
+		)
+
+		// Force multiple requests.
+		w.ChunkSize = 1 << 20
+
+		w.ProgressFunc = func(p int64) {
+			t.Logf("%s: committed %d\n", t.Name(), p)
+		}
+		w.SendCRC32C = true
+		got, err := mw.Write(content)
+		if err != nil {
+			t.Fatalf("Writer.Write: %v", err)
+		}
+
+		// Send checksum after the upload is complete.
+		expChecksum := crcW.Sum32()
+		w.CRC32C = expChecksum
+
+		// Flush the buffer to finish the upload.
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
+
+		want := len(content)
+		if got != want {
+			t.Errorf("While writing got: %d want %d", got, want)
+		}
+
+		// Read back the Object for verification.
+		reader, err := client.Bucket(bucket).Object(name).NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer reader.Close()
+
+		gotCrc := reader.Attrs.CRC32C
+		if gotCrc != expChecksum {
+			t.Errorf("got CRC32C = %d, want %d", gotCrc, expChecksum)
+		}
+
+		buf := make([]byte, want+4<<10)
+		b := bytes.NewBuffer(buf)
+		gotr, err := io.Copy(b, reader)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if gotr != int64(want) {
+			t.Errorf("While reading got: %d want %d", gotr, want)
+		}
+	})
+}
+
 func TestIntegration_MultiChunkWrite(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
