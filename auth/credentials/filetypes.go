@@ -15,6 +15,7 @@
 package credentials
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -27,6 +28,29 @@ import (
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/trustboundary"
 )
+
+// internalDataProviderAdapter wraps the internal trustboundary.DataProvider
+// and implements the public auth.TrustBoundaryDataProvider interface.
+type internalDataProviderAdapter struct {
+	internalProvider trustboundary.DataProvider
+}
+
+// GetTrustBoundaryData calls the internal provider and converts the internal
+// trustboundary.Data to the public auth.TrustBoundaryData.
+func (a *internalDataProviderAdapter) GetTrustBoundaryData(ctx context.Context, accessToken string) (*auth.TrustBoundaryData, error) {
+	internalData, err := a.internalProvider.GetTrustBoundaryData(ctx, accessToken)
+	if err != nil {
+		return nil, err
+	}
+	if internalData == nil {
+		return nil, nil
+	}
+	// Convert the internal struct to the public one.
+	return &auth.TrustBoundaryData{
+		Locations:        internalData.Locations,
+		EncodedLocations: internalData.EncodedLocations,
+	}, nil
+}
 
 func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	fileType, err := credsfile.ParseFileType(b)
@@ -150,11 +174,11 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 	}
 	if trustBoundaryEnabled {
 		saTrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(opts2LO.Email, opts2LO.UniverseDomain)
-		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts2LO.Client, saTrustBoundaryConfig)
+		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), saTrustBoundaryConfig, opts.logger())
 		if err != nil {
 			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider: %w", err)
 		}
-		opts2LO.TrustBoundaryDataProvider = tbProvider
+		opts2LO.TrustBoundaryDataProvider = &internalDataProviderAdapter{internalProvider: tbProvider}
 	}
 	return auth.New2LOTokenProvider(opts2LO)
 }
@@ -240,12 +264,11 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	}
 	if trustBoundaryEnabled {
 		targetSATrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(targetSAEmail, impOpts.UniverseDomain)
-		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), targetSATrustBoundaryConfig)
+		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), targetSATrustBoundaryConfig, opts.logger())
 		if err != nil {
 			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for impersonation: %w", err)
 		}
-		impOpts.TrustBoundaryDataProvider = tbProvider
-
+		impOpts.TrustBoundaryDataProvider = &internalDataProviderAdapter{internalProvider: tbProvider}
 	}
 	return impersonate.NewTokenProvider(impOpts)
 }

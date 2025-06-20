@@ -255,5 +255,5 @@ func setTrustBoundaryHeader(token *auth.Token, req *http.Request) {
 	if token.TrustBoundaryData.IsNoOpOrEmpty() {
 		return
 	}
-	req.Header.Set("x-allowed-locations", token.TrustBoundaryData.EncodedLocations())
+	req.Header.Set("x-allowed-locations", token.TrustBoundaryData.EncodedLocations)
 }

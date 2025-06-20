@@ -26,9 +26,21 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/compute/metadata"
 )
+
+// internalToPublicAuthData converts an internal *Data to the public auth.TrustBoundaryData.
+func internalToPublicAuthData(internalData *Data) auth.TrustBoundaryData {
+	if internalData == nil {
+		return auth.TrustBoundaryData{}
+	}
+	return auth.TrustBoundaryData{
+		Locations:        internalData.Locations,
+		EncodedLocations: internalData.EncodedLocations,
+	}
+}
 
 func TestNewNoOpTrustBoundaryData(t *testing.T) {
 	data := NewNoOpTrustBoundaryData()
@@ -37,75 +49,70 @@ func TestNewNoOpTrustBoundaryData(t *testing.T) {
 		t.Fatal("NewNoOpTrustBoundaryData() returned nil")
 	}
 
-	if got := data.EncodedLocations(); got != NoOpEncodedLocations {
-		t.Errorf("NewNoOpTrustBoundaryData().EncodedLocations() = %q, want %q", got, NoOpEncodedLocations)
+	if got := data.EncodedLocations; got != NoOpEncodedLocations {
+		t.Errorf("NewNoOpTrustBoundaryData().EncodedLocations = %q, want %q", got, NoOpEncodedLocations)
 	}
 
 	// Expect an empty slice, not nil.
 	expectedLocations := []string{}
-	if got := data.Locations(); !reflect.DeepEqual(got, expectedLocations) {
-		t.Errorf("NewNoOpTrustBoundaryData().Locations() = %v, want %v", got, expectedLocations)
+	if got := data.Locations; !reflect.DeepEqual(got, expectedLocations) {
+		t.Errorf("NewNoOpTrustBoundaryData().Locations = %v, want %v", got, expectedLocations)
 	}
 
-	if !data.IsNoOpOrEmpty() {
-		t.Errorf("NewNoOpTrustBoundaryData().IsNoOpOrEmpty() = false, want true")
+	publicData := internalToPublicAuthData(data)
+	if !publicData.IsNoOpOrEmpty() {
+		t.Errorf("internalToPublicAuthData(NewNoOpTrustBoundaryData()).IsNoOpOrEmpty() = false, want true")
 	}
 }
 
 func TestNewTrustBoundaryData(t *testing.T) {
 	tests := []struct {
-		name               string
-		locations          []string
-		encodedLocations   string
-		wantLocations      []string
-		wantEncoded        string
-		wantIsNoOpOrEmpty  bool
-		modifyReturnedLocs bool // to test if the returned slice is a copy
+		name              string
+		locations         []string
+		encodedLocations  string
+		wantLocations     []string
+		wantEncoded       string
+		wantIsNoOpOrEmpty bool
 	}{
 		{
-			name:               "Standard data",
-			locations:          []string{"us-central1", "europe-west1"},
-			encodedLocations:   "0xABC123",
-			wantLocations:      []string{"us-central1", "europe-west1"},
-			wantEncoded:        "0xABC123",
-			wantIsNoOpOrEmpty:  false,
-			modifyReturnedLocs: true,
+			name:              "Standard data",
+			locations:         []string{"us-central1", "europe-west1"},
+			encodedLocations:  "0xABC123",
+			wantLocations:     []string{"us-central1", "europe-west1"},
+			wantEncoded:       "0xABC123",
+			wantIsNoOpOrEmpty: false,
 		},
 		{
-			name:               "Empty locations, not no-op encoded",
-			locations:          []string{},
-			encodedLocations:   "0xDEF456",
-			wantLocations:      []string{},
-			wantEncoded:        "0xDEF456",
-			wantIsNoOpOrEmpty:  false,
-			modifyReturnedLocs: false,
+			name:              "Empty locations, not no-op encoded",
+			locations:         []string{},
+			encodedLocations:  "0xDEF456",
+			wantLocations:     []string{},
+			wantEncoded:       "0xDEF456",
+			wantIsNoOpOrEmpty: false,
 		},
 		{
-			name:               "Nil locations, not no-op encoded",
-			locations:          nil,
-			encodedLocations:   "0xGHI789",
-			wantLocations:      []string{}, // Expect empty slice, not nil
-			wantEncoded:        "0xGHI789",
-			wantIsNoOpOrEmpty:  false,
-			modifyReturnedLocs: false,
+			name:              "Nil locations, not no-op encoded",
+			locations:         nil,
+			encodedLocations:  "0xGHI789",
+			wantLocations:     []string{}, // Expect empty slice, not nil
+			wantEncoded:       "0xGHI789",
+			wantIsNoOpOrEmpty: false,
 		},
 		{
-			name:               "No-op encoded locations",
-			locations:          []string{"us-east1"},
-			encodedLocations:   NoOpEncodedLocations,
-			wantLocations:      []string{"us-east1"},
-			wantEncoded:        NoOpEncodedLocations,
-			wantIsNoOpOrEmpty:  true,
-			modifyReturnedLocs: true,
+			name:              "No-op encoded locations",
+			locations:         []string{"us-east1"},
+			encodedLocations:  NoOpEncodedLocations,
+			wantLocations:     []string{"us-east1"},
+			wantEncoded:       NoOpEncodedLocations,
+			wantIsNoOpOrEmpty: true,
 		},
 		{
-			name:               "Empty string encoded locations",
-			locations:          []string{},
-			encodedLocations:   "",
-			wantLocations:      []string{},
-			wantEncoded:        "",
-			wantIsNoOpOrEmpty:  true,
-			modifyReturnedLocs: false,
+			name:              "Empty string encoded locations",
+			locations:         []string{},
+			encodedLocations:  "",
+			wantLocations:     []string{},
+			wantEncoded:       "",
+			wantIsNoOpOrEmpty: true,
 		},
 	}
 
@@ -113,25 +120,18 @@ func TestNewTrustBoundaryData(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			data := NewTrustBoundaryData(tt.locations, tt.encodedLocations)
 
-			if got := data.EncodedLocations(); got != tt.wantEncoded {
-				t.Errorf("NewTrustBoundaryData().EncodedLocations() = %q, want %q", got, tt.wantEncoded)
+			if got := data.EncodedLocations; got != tt.wantEncoded {
+				t.Errorf("NewTrustBoundaryData().EncodedLocations = %q, want %q", got, tt.wantEncoded)
 			}
 
-			gotLocations := data.Locations()
+			gotLocations := data.Locations
 			if !reflect.DeepEqual(gotLocations, tt.wantLocations) {
-				t.Errorf("NewTrustBoundaryData().Locations() = %v, want %v", gotLocations, tt.wantLocations)
+				t.Errorf("NewTrustBoundaryData().Locations = %v, want %v", gotLocations, tt.wantLocations)
 			}
 
-			// Test that Locations() returns a copy
-			if tt.modifyReturnedLocs && len(gotLocations) > 0 {
-				gotLocations[0] = "modified-location"
-				if reflect.DeepEqual(data.Locations(), gotLocations) {
-					t.Errorf("Modifying returned Locations() slice affected internal slice. Original: %v, Internal after mod: %v", tt.wantLocations, data.Locations())
-				}
-			}
-
-			if got := data.IsNoOpOrEmpty(); got != tt.wantIsNoOpOrEmpty {
-				t.Errorf("NewTrustBoundaryData().IsNoOpOrEmpty() = %v, want %v", got, tt.wantIsNoOpOrEmpty)
+			publicData := internalToPublicAuthData(data)
+			if got := publicData.IsNoOpOrEmpty(); got != tt.wantIsNoOpOrEmpty {
+				t.Errorf("internalToPublicAuthData(NewTrustBoundaryData(...)).IsNoOpOrEmpty() = %v, want %v", got, tt.wantIsNoOpOrEmpty)
 			}
 		})
 	}
@@ -140,16 +140,9 @@ func TestNewTrustBoundaryData(t *testing.T) {
 func TestData_Methods_NilReceiver(t *testing.T) {
 	var data *Data = nil
 
-	if got := data.Locations(); got != nil {
-		t.Errorf("nil.Locations() = %v, want nil", got)
-	}
-
-	if got := data.EncodedLocations(); got != "" {
-		t.Errorf("nil.EncodedLocations() = %q, want \"\"", got)
-	}
-
-	if !data.IsNoOpOrEmpty() {
-		t.Errorf("nil.IsNoOpOrEmpty() = false, want true")
+	publicData := internalToPublicAuthData(data)
+	if !publicData.IsNoOpOrEmpty() {
+		t.Errorf("internalToPublicAuthData(nil).IsNoOpOrEmpty() = false, want true")
 	}
 }
 
@@ -302,7 +295,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				client = http.DefaultClient
 			}
 
-			data, err := fetchTrustBoundaryData(tt.ctx, client, url, tt.accessToken)
+			data, err := fetchTrustBoundaryData(tt.ctx, client, url, tt.accessToken, nil)
 
 			if tt.wantErr != "" {
 				if err == nil {
@@ -641,7 +634,7 @@ func TestNewTrustBoundaryDataProvider(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewTrustBoundaryDataProvider(tt.client, tt.configProvider)
+			_, err := NewTrustBoundaryDataProvider(tt.client, tt.configProvider, nil)
 			if tt.wantErr != "" {
 				if err == nil {
 					t.Fatalf("NewTrustBoundaryDataProvider() error = nil, want %q", tt.wantErr)
@@ -785,7 +778,7 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				client = server.Client() // Use the test server's client
 			}
 
-			provider, err := NewTrustBoundaryDataProvider(client, tt.mockConfig)
+			provider, err := NewTrustBoundaryDataProvider(client, tt.mockConfig, nil)
 			if err != nil {
 				t.Fatalf("NewTrustBoundaryDataProvider() failed: %v", err)
 			}

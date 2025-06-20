@@ -20,9 +20,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 const (
@@ -61,43 +63,15 @@ type AllowedLocationsResponse struct {
 // Data represents the trust boundary data.
 type Data struct {
 	// Locations is the list of locations that the token is allowed to be used in.
-	locations []string
+	Locations []string
 	// EncodedLocations represents the locations in an encoded format.
-	encodedLocations string
-}
-
-// Locations returns a read-only copy of the allowed locations.
-func (t *Data) Locations() []string {
-	if t == nil {
-		return nil
-	}
-	locs := make([]string, len(t.locations))
-	copy(locs, t.locations)
-	return locs
-}
-
-// EncodedLocations returns the encoded representation of the allowed locations.
-func (t *Data) EncodedLocations() string {
-	if t == nil {
-		return ""
-	}
-	return t.encodedLocations
-}
-
-// IsNoOpOrEmpty reports whether the trust boundary is a no-op or empty.
-// A no-op trust boundary is one where no restrictions are enforced.
-// An empty trust boundary is one where no locations are specified.
-func (t *Data) IsNoOpOrEmpty() bool {
-	if t == nil {
-		return true
-	}
-	return t.encodedLocations == NoOpEncodedLocations || t.encodedLocations == ""
+	EncodedLocations string
 }
 
 // NewNoOpTrustBoundaryData returns a new TrustBoundaryData with no restrictions.
 func NewNoOpTrustBoundaryData() *Data {
 	return &Data{
-		encodedLocations: NoOpEncodedLocations,
+		EncodedLocations: NoOpEncodedLocations,
 	}
 }
 
@@ -106,13 +80,13 @@ func NewTrustBoundaryData(locations []string, encodedLocations string) *Data {
 	locationsCopy := make([]string, len(locations))
 	copy(locationsCopy, locations)
 	return &Data{
-		locations:        locationsCopy,
-		encodedLocations: encodedLocations,
+		Locations:        locationsCopy,
+		EncodedLocations: encodedLocations,
 	}
 }
 
 // fetchTrustBoundaryData fetches the trust boundary data from the API.
-func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string, accessToken string) (*Data, error) {
+func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string, accessToken string, logger *slog.Logger) (*Data, error) {
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client is required")
 	}
@@ -131,6 +105,8 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 	}
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
+	logger.DebugContext(ctx, "trust boundary request", "request", internallog.HTTPRequest(req, nil))
+
 	response, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("trustboundary: failed to fetch trust boundary: %w", err)
@@ -141,6 +117,8 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 	if err != nil {
 		return nil, fmt.Errorf("trustboundary: failed to read trust boundary response: %w", err)
 	}
+
+	logger.DebugContext(ctx, "trust boundary response", "response", internallog.HTTPResponse(response, body))
 
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("trustboundary: trust boundary request failed with status: %s, body: %s", response.Status, string(body))
@@ -202,12 +180,13 @@ type dataProvider struct {
 	client         *http.Client
 	configProvider ConfigProvider
 	data           *Data
+	logger         *slog.Logger
 }
 
 // NewTrustBoundaryDataProvider creates a new DataProvider.
 // It will use the provided HTTP client to make requests and the configProvider
 // to determine the correct endpoint and universe domain for trust boundary lookups.
-func NewTrustBoundaryDataProvider(client *http.Client, configProvider ConfigProvider) (DataProvider, error) {
+func NewTrustBoundaryDataProvider(client *http.Client, configProvider ConfigProvider, logger *slog.Logger) (DataProvider, error) {
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client cannot be nil for TrustBoundaryDataProvider")
 	}
@@ -217,6 +196,7 @@ func NewTrustBoundaryDataProvider(client *http.Client, configProvider ConfigProv
 	return &dataProvider{
 		client:         client,
 		configProvider: configProvider,
+		logger:         internallog.New(logger),
 	}, nil
 }
 
@@ -233,7 +213,7 @@ func (p *dataProvider) GetTrustBoundaryData(ctx context.Context, accessToken str
 		return nil, fmt.Errorf("trustboundary: error getting universe domain: %w", err)
 	}
 	if uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
-		if p.data == nil || p.data.EncodedLocations() != NoOpEncodedLocations {
+		if p.data == nil || p.data.EncodedLocations != NoOpEncodedLocations {
 			p.data = NewNoOpTrustBoundaryData()
 		}
 		return p.data, nil
@@ -241,7 +221,7 @@ func (p *dataProvider) GetTrustBoundaryData(ctx context.Context, accessToken str
 
 	// Check cache for a no-op result from a previous API call.
 	cachedData := p.data
-	if cachedData != nil && cachedData.EncodedLocations() == NoOpEncodedLocations {
+	if cachedData != nil && cachedData.EncodedLocations == NoOpEncodedLocations {
 		return cachedData, nil
 	}
 
@@ -252,7 +232,7 @@ func (p *dataProvider) GetTrustBoundaryData(ctx context.Context, accessToken str
 	}
 
 	// Proceed to fetch new data.
-	newData, fetchErr := fetchTrustBoundaryData(ctx, p.client, url, accessToken)
+	newData, fetchErr := fetchTrustBoundaryData(ctx, p.client, url, accessToken, p.logger)
 
 	if fetchErr != nil {
 		// Fetch failed. Fallback to cachedData if available.

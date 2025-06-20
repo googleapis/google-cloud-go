@@ -455,7 +455,7 @@ func setTrustBoundaryMetadata(token *auth.Token, m map[string]string) {
 	if token.TrustBoundaryData.IsNoOpOrEmpty() {
 		return
 	}
-	m["x-allowed-locations"] = token.TrustBoundaryData.EncodedLocations()
+	m["x-allowed-locations"] = token.TrustBoundaryData.EncodedLocations
 }
 
 func (c *grpcCredentialsProvider) RequireTransportSecurity() bool {

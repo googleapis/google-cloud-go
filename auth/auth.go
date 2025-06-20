@@ -33,7 +33,6 @@ import (
 
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/jwt"
-	"cloud.google.com/go/auth/internal/trustboundary"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -104,7 +103,25 @@ type Token struct {
 	// It contains information about the regions or environments where the token is valid.
 	// This data is used to enforce trust boundary restrictions on requests made with the token.
 	// TrustBoundaryData is a value type for immutability after token creation.
-	TrustBoundaryData trustboundary.Data
+	TrustBoundaryData TrustBoundaryData
+}
+
+// TrustBoundaryData represents the trust boundary data associated with a token.
+// It contains information about the regions or environments where the token is valid.
+type TrustBoundaryData struct {
+	// Locations is the list of locations that the token is allowed to be used in.
+	Locations []string
+	// EncodedLocations represents the locations in an encoded format.
+	EncodedLocations string
+}
+
+// IsNoOpOrEmpty reports whether the trust boundary is a no-op or empty.
+func (t *TrustBoundaryData) IsNoOpOrEmpty() bool {
+	if t == nil {
+		return true
+	}
+	// This value is a constant indicating no trust boundary is enforced.
+	return t.EncodedLocations == "0x0" || t.EncodedLocations == ""
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -237,7 +254,14 @@ type CredentialsOptions struct {
 	// This data defines location restrictions for credential usage.
 	// Not all credential types utilize this provider; if it's nil, no trust boundary
 	// restrictions are applied via this mechanism.
-	TrustBoundaryDataProvider trustboundary.DataProvider
+	TrustBoundaryDataProvider TrustBoundaryDataProvider
+}
+
+// TrustBoundaryDataProvider provides an interface for fetching trust boundary data.
+type TrustBoundaryDataProvider interface {
+	// GetTrustBoundaryData retrieves the trust boundary data.
+	// The accessToken is the bearer token used to authenticate the lookup request.
+	GetTrustBoundaryData(ctx context.Context, accessToken string) (*TrustBoundaryData, error)
 }
 
 // NewCredentials returns new [Credentials] from the provided options.
@@ -517,7 +541,7 @@ type Options2LO struct {
 	// which is particularly relevant for credential types like service accounts
 	// where trust boundaries are enforced to limit usage to authorized locations.
 	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
-	TrustBoundaryDataProvider trustboundary.DataProvider
+	TrustBoundaryDataProvider TrustBoundaryDataProvider
 }
 
 func (o *Options2LO) client() *http.Client {

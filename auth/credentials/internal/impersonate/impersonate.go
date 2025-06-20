@@ -27,7 +27,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/trustboundary"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -35,6 +34,8 @@ const (
 	defaultTokenLifetime = "3600s"
 	authHeaderKey        = "Authorization"
 )
+
+var serviceAccountEmailRegex = regexp.MustCompile(`serviceAccounts/(.+?):generateAccessToken`)
 
 // generateAccesstokenReq is used for service account impersonation
 type generateAccessTokenReq struct {
@@ -87,7 +88,7 @@ type Options struct {
 	// This data defines the regions or environments where the credential (and subsequently the tokens
 	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
 	// If nil, no trust boundary restrictions are applied or fetched for this flow.
-	TrustBoundaryDataProvider trustboundary.DataProvider
+	TrustBoundaryDataProvider auth.TrustBoundaryDataProvider
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	UniverseDomain string
 }
@@ -167,11 +168,10 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 // https://iamcredentials.googleapis.com/v1/projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}:generateAccessToken
 // Returns an error if the email cannot be extracted.
 func ExtractServiceAccountEmail(impersonationURL string) (string, error) {
-	re := regexp.MustCompile(`serviceAccounts/(.+?):generateAccessToken`)
-	matches := re.FindStringSubmatch(impersonationURL)
+	matches := serviceAccountEmailRegex.FindStringSubmatch(impersonationURL)
 
 	if len(matches) < 2 {
-		return "", fmt.Errorf("invalid impersonation URL format: %s", impersonationURL)
+		return "", fmt.Errorf("credentials: invalid impersonation URL format: %s", impersonationURL)
 	}
 
 	return matches[1], nil

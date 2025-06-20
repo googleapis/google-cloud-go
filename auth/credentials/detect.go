@@ -22,6 +22,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -51,8 +52,17 @@ var (
 	// for testing
 	allowOnGCECheck = true
 	// trustBoundaryEnabled controls whether the trust boundary feature is enabled.
-	trustBoundaryEnabled = os.Getenv("ENABLE_TRUST_BOUNDARY") == "true"
+	trustBoundaryEnabled = isTrustBoundaryEnabled()
 )
+
+// isTrustBoundaryEnabled checks if the trust boundary feature is enabled via
+// environment variable.
+func isTrustBoundaryEnabled() bool {
+	// An error is returned if the value is not a valid boolean. In that case,
+	// it is treated as false.
+	enabled, _ := strconv.ParseBool(os.Getenv("ENABLE_TRUST_BOUNDARY"))
+	return enabled
+}
 
 // TokenBindingType specifies the type of binding used when requesting a token
 // whether to request a hard-bound token using mTLS or an instance identity
@@ -125,22 +135,27 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			MetadataClient: metadataClient,
 		}
 
-		var tbDataProvider trustboundary.DataProvider
+		var internalTBProvider trustboundary.DataProvider
+		var publicTBProvider auth.TrustBoundaryDataProvider
+
 		if trustBoundaryEnabled {
 			gceTBConfigProvider := trustboundary.NewGCETrustBoundaryConfigProvider(gceUniverseDomainProvider)
 			var err error
-			tbDataProvider, err = trustboundary.NewTrustBoundaryDataProvider(opts.client(), gceTBConfigProvider)
+			internalTBProvider, err = trustboundary.NewTrustBoundaryDataProvider(opts.client(), gceTBConfigProvider, opts.logger())
 			if err != nil {
 				return nil, fmt.Errorf("credentials: failed to initialize GCE trust boundary provider: %w", err)
 			}
+			if internalTBProvider != nil {
+				publicTBProvider = &internalDataProviderAdapter{internalProvider: internalTBProvider}
+			}
 		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
-			TokenProvider: computeTokenProvider(opts, metadataClient),
+			TokenProvider: computeTokenProvider(opts, metadataClient, publicTBProvider),
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
 				return metadataClient.ProjectIDWithContext(ctx)
 			}),
 			UniverseDomainProvider:    gceUniverseDomainProvider,
-			TrustBoundaryDataProvider: tbDataProvider,
+			TrustBoundaryDataProvider: publicTBProvider,
 		}), nil
 	}
 
