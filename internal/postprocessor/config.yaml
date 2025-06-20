@@ -92,6 +92,7 @@ modules:
   - logging
   - longrunning
   - lustre
+  - maintenance
   - managedidentities
   - managedkafka
   - maps
@@ -698,6 +699,9 @@ service-configs:
   - input-directory: google/cloud/lustre/v1
     service-config: lustre_v1.yaml
     import-path: cloud.google.com/go/lustre/apiv1
+  - input-directory: google/cloud/maintenance/api/v1beta
+    service-config: maintenance_v1beta.yaml
+    import-path: cloud.google.com/go/maintenance/api/apiv1beta
   - input-directory: google/cloud/managedidentities/v1
     service-config: managedidentities_v1.yaml
     import-path: cloud.google.com/go/managedidentities/apiv1
