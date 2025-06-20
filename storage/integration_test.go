@@ -7000,31 +7000,18 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	// Direct connectivity is not supported yet for this feature.
 	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
 	t.Setenv(disableDP, "true")
-
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
-	universeDomain := os.Getenv(testUniverseDomain)
-	if universeDomain == "" {
-		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
-	}
-	credFile := os.Getenv(testUniverseCreds)
-	if credFile == "" {
-		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
-	}
-	project := os.Getenv(testUniverseProject)
-	if project == "" {
-		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
-	}
-	location := os.Getenv(testUniverseLocation)
-	if location == "" {
-		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	udTestVars, err := UniverseDomainTestVars()
+	if err != nil {
+		t.Fatalf("Cannot get Universe Domain vars, err: %v", err)
 	}
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		bucket := client.Bucket(prefix + uidSpace.New())
-		h.mustCreate(bucket, project, &BucketAttrs{Location: location})
+		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
 		defer h.mustDeleteBucket(bucket)
 
 		obj := bucket.Object(uidSpaceObjects.New())
@@ -7037,7 +7024,96 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 		if !bytes.Equal(got, contents) {
 			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
 		}
-	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(credFile))
+	}, option.WithUniverseDomain(udTestVars.universeDomain), option.WithCredentialsFile(udTestVars.credFile))
+}
+
+func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	// Direct connectivity is not supported yet for this feature.
+	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+	t.Setenv(disableDP, "true")
+
+	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+
+	udTestVars, err := UniverseDomainTestVars()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
+
+	// Get new Auth creds
+	newAuthCreds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		Scopes:           scopes,
+		CredentialsFile:  udTestVars.credFile,
+		UniverseDomain:   udTestVars.universeDomain,
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatalf("cannot get Auth Credentials to create client, err: %v", err)
+	}
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucket := client.Bucket(prefix + uidSpace.New())
+
+		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
+		defer h.mustDeleteBucket(bucket)
+
+		obj := uidSpaceObjects.New()
+		contents := []byte("test")
+		if err := writeObject(ctx, bucket.Object(obj), "text/plain", contents); err != nil {
+			t.Fatalf("writing: %v", err)
+		}
+
+		defer h.mustDeleteObject(bucket.Object(obj))
+
+		opts := SignedURLOptions{
+			Method:  "GET",
+			Expires: time.Now().Add(30 * time.Second),
+		}
+
+		url, err := bucket.SignedURL(obj, &opts)
+		if err != nil {
+			t.Fatalf("unable to create signed URL: %v", err)
+		}
+
+		if err := verifySignedURL(url, nil, contents); err != nil {
+			t.Fatalf("problem with the signed URL: %v", err)
+		}
+	}, option.WithAuthCredentials(newAuthCreds), option.WithUniverseDomain(udTestVars.universeDomain))
+}
+
+type UniverseDomainVars struct {
+	universeDomain string
+	credFile       string
+	project        string
+	location       string
+}
+
+// Gets Universe Domain environment variables for Universe Domain tests
+// Returns universeDomainTestVars pointer for easy access
+func UniverseDomainTestVars() (*UniverseDomainVars, error) {
+	universeDomain := os.Getenv(testUniverseDomain)
+	if universeDomain == "" {
+		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
+	}
+	credFile := os.Getenv(testUniverseCreds)
+	if credFile == "" {
+		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
+	}
+	project := os.Getenv(testUniverseProject)
+	if project == "" {
+		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
+	}
+	location := os.Getenv(testUniverseLocation)
+	if location == "" {
+		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	}
+	return &UniverseDomainVars{universeDomain: universeDomain, credFile: credFile, project: project, location: location}, nil
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
