@@ -1053,14 +1053,38 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	})
 }
 
-// Read fetches the contents of the table.
-func (t *Table) Read(ctx context.Context) *RowIterator {
-	return t.read(ctx, fetchPage)
+type tableReadOption struct {
+	readSessionProjectID string
 }
 
-func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
+// TableReadOption allows requests to alter the behavior of reading from a table.
+type TableReadOption func(*tableReadOption)
+
+// WithReadSessionProjectID allows to create the read session with the specified project that has the necessary permissions to do so.
+func WithReadSessionProjectID(project string) TableReadOption {
+	return func(tro *tableReadOption) {
+		tro.readSessionProjectID = project
+	}
+}
+
+// Read fetches the contents of the table.
+func (t *Table) Read(ctx context.Context, opts ...TableReadOption) *RowIterator {
+	return t.read(ctx, fetchPage, opts...)
+}
+
+func (t *Table) read(ctx context.Context, pf pageFetcher, opts ...TableReadOption) *RowIterator {
+	tro := &tableReadOption{}
+	for _, o := range opts {
+		o(tro)
+	}
+
+	//  fallback to the client's project ID.
+	if tro.readSessionProjectID == "" {
+		tro.readSessionProjectID = t.c.projectID
+	}
+
 	if t.c.isStorageReadAvailable() {
-		it, err := newStorageRowIteratorFromTable(ctx, t, t.c.projectID, false)
+		it, err := newStorageRowIteratorFromTable(ctx, t, tro.readSessionProjectID, false)
 		if err == nil {
 			return it
 		}
