@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package metricsscope_test
-
-import (
-	metricsscope "cloud.google.com/go/monitoring/metricsscope/apiv1"
-)
