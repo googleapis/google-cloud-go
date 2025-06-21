@@ -25,6 +25,8 @@ import (
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -41,6 +43,7 @@ var newModelGardenClientHook clientHook
 // ModelGardenCallOptions contains the retry settings for each method of ModelGardenClient.
 type ModelGardenCallOptions struct {
 	GetPublisherModel  []gax.CallOption
+	Deploy             []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -71,6 +74,7 @@ func defaultModelGardenGRPCClientOptions() []option.ClientOption {
 func defaultModelGardenCallOptions() *ModelGardenCallOptions {
 	return &ModelGardenCallOptions{
 		GetPublisherModel:  []gax.CallOption{},
+		Deploy:             []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -90,6 +94,8 @@ type internalModelGardenClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	GetPublisherModel(context.Context, *aiplatformpb.GetPublisherModelRequest, ...gax.CallOption) (*aiplatformpb.PublisherModel, error)
+	Deploy(context.Context, *aiplatformpb.DeployRequest, ...gax.CallOption) (*DeployOperation, error)
+	DeployOperation(name string) *DeployOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -112,6 +118,11 @@ type ModelGardenClient struct {
 
 	// The call options for this service.
 	CallOptions *ModelGardenCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -140,6 +151,17 @@ func (c *ModelGardenClient) Connection() *grpc.ClientConn {
 // GetPublisherModel gets a Model Garden publisher model.
 func (c *ModelGardenClient) GetPublisherModel(ctx context.Context, req *aiplatformpb.GetPublisherModelRequest, opts ...gax.CallOption) (*aiplatformpb.PublisherModel, error) {
 	return c.internalClient.GetPublisherModel(ctx, req, opts...)
+}
+
+// Deploy deploys a model to a new endpoint.
+func (c *ModelGardenClient) Deploy(ctx context.Context, req *aiplatformpb.DeployRequest, opts ...gax.CallOption) (*DeployOperation, error) {
+	return c.internalClient.Deploy(ctx, req, opts...)
+}
+
+// DeployOperation returns a new DeployOperation from a given name.
+// The name must be that of a previously created DeployOperation, possibly from a different process.
+func (c *ModelGardenClient) DeployOperation(name string) *DeployOperation {
+	return c.internalClient.DeployOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -216,6 +238,11 @@ type modelGardenGRPCClient struct {
 	// The gRPC API client.
 	modelGardenClient aiplatformpb.ModelGardenServiceClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	iamPolicyClient iampb.IAMPolicyClient
@@ -261,6 +288,17 @@ func NewModelGardenClient(ctx context.Context, opts ...option.ClientOption) (*Mo
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -305,6 +343,26 @@ func (c *modelGardenGRPCClient) GetPublisherModel(ctx context.Context, req *aipl
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *modelGardenGRPCClient) Deploy(ctx context.Context, req *aiplatformpb.DeployRequest, opts ...gax.CallOption) (*DeployOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "destination", url.QueryEscape(req.GetDestination()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).Deploy[0:len((*c.CallOptions).Deploy):len((*c.CallOptions).Deploy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.modelGardenClient.Deploy, req, settings.GRPC, c.logger, "Deploy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeployOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *modelGardenGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -533,4 +591,12 @@ func (c *modelGardenGRPCClient) WaitOperation(ctx context.Context, req *longrunn
 		return nil, err
 	}
 	return resp, nil
+}
+
+// DeployOperation returns a new DeployOperation from a given name.
+// The name must be that of a previously created DeployOperation, possibly from a different process.
+func (c *modelGardenGRPCClient) DeployOperation(name string) *DeployOperation {
+	return &DeployOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
