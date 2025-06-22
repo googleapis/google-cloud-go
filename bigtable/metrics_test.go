@@ -328,7 +328,7 @@ func TestConnectivityErrorCount(t *testing.T) {
 	origCreateExporterOptions := createExporterOptions
 	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
 		return []option.ClientOption{
-			option.WithEndpoint(monitoringServer.Endpoint), // Connect to mock
+			option.WithEndpoint(monitoringServer.Endpoint),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		}
@@ -337,17 +337,47 @@ func TestConnectivityErrorCount(t *testing.T) {
 		createExporterOptions = origCreateExporterOptions
 	}()
 
-	// Setup fake Bigtable server that returns Unavailable for the first ReadRows call,
-	// and a non-retriable error on the second to stop the retry loop.
-	var attemptCount int32
+	// Control structure for mock server behavior during the specific ReadRows call.
+	// We use a channel to signal the interceptor that the ReadRows call under test is active.
+	readRowsCallActive := make(chan bool, 1)
+	var testSpecificAttemptCount int32
+
 	serverStreamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if strings.HasSuffix(info.FullMethod, "ReadRows") {
-			currentAttempt := atomic.AddInt32(&attemptCount, 1)
-			if currentAttempt == 1 {
-				return status.Error(codes.Unavailable, "Mock Unavailable error for connectivity test")
+			select {
+			case <-readRowsCallActive:
+				currentTestAttempt := atomic.AddInt32(&testSpecificAttemptCount, 1)
+				if currentTestAttempt == 1 {
+					// Put the token back for subsequent retries of this specific call.
+					readRowsCallActive <- true
+					return status.Error(codes.Unavailable, "Mock Unavailable error for connectivity test")
+				}
+				if currentTestAttempt == 2 {
+					header := metadata.New(map[string]string{
+						locationMDKey: string(testHeaders),
+					})
+					if errH := ss.SendHeader(header); errH != nil {
+						t.Errorf("[ServerInterceptor Attempt 2] Error sending header: %v", errH)
+					}
+
+					// Send a minimal successful message to ensure headers are processed by the client.
+					emptyResp := &btpb.ReadRowsResponse{}
+					if errS := ss.SendMsg(emptyResp); errS != nil {
+						t.Errorf("[ServerInterceptor Attempt 2] Error sending empty message: %v", errS)
+						return status.Errorf(codes.Internal, "mock server failed to send empty message: %v", errS)
+					}
+
+					readRowsCallActive <- true
+					return status.Error(codes.Unavailable, "Mock Unavailable error with location headers")
+				}
+
+				// On the third and final attempt, cause a non-retriable error.
+				atomic.StoreInt32(&testSpecificAttemptCount, 0)
+				// Do not put the token back, as this is the final attempt for this ReadRows sequence.
+				return status.Error(codes.Internal, "non-retriable error")
+			default:
+				return handler(srv, ss)
 			}
-			// This non-retriable error will stop the client's retry loop.
-			return status.Error(codes.Internal, "non-retriable error")
 		}
 		return handler(srv, ss)
 	}
@@ -361,9 +391,15 @@ func TestConnectivityErrorCount(t *testing.T) {
 
 	// Pop out any old requests from the monitoring server to ensure a clean state.
 	monitoringServer.CreateServiceTimeSeriesRequests()
+	atomic.StoreInt32(&testSpecificAttemptCount, 0)
 
-	// Perform read rows operation. The first attempt will fail with Unavailable,
-	// the second with Internal. The overall operation will fail with Internal.
+	readRowsCallActive <- true
+
+	// Perform a read rows operation that will undergo a specific retry sequence:
+	// Attempt 1: Fails with Unavailable (no server headers) -> conn error count = 1
+	// Attempt 2: Fails with Unavailable (with location header) -> conn error count = 0
+	// Attempt 3: Fails with Internal (no server headers) -> conn error count = 1
+	// The overall operation fails with the final Internal error.
 	err = tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool { return true })
 	if err == nil {
 		t.Fatal("ReadRows: got nil error, want an error")
@@ -372,65 +408,55 @@ func TestConnectivityErrorCount(t *testing.T) {
 		t.Fatalf("ReadRows: got error code %v, want %v", status.Code(err), codes.Internal)
 	}
 
-	// Poll for metrics until expected conditions are met or timeout.
-	var cumulativeTotalConnectivityErrors int64
-	cumulativeStatusesFound := make(map[string]bool)
-	foundConnectivityErrorMetric := false // To ensure the metric type is seen at all.
+	// Wait a bit for metrics to be exported. The defaultSamplePeriod is 500ms,
+	// so waiting slightly longer should be sufficient.
+	// If tests are flaky, this might need adjustment or a more sophisticated wait.
+	time.Sleep(defaultSamplePeriod + 200*time.Millisecond)
 
-	pollDuration := 5 * time.Second
-	pollInterval := 200 * time.Millisecond
-	deadline := time.Now().Add(pollDuration)
+	var totalConnectivityErrorsFromMetrics int64
+	statusesReported := make(map[string]int64)
+	foundConnErrMetricForTest := false
 
-	for time.Now().Before(deadline) {
-		newlyFetchedBatches := monitoringServer.CreateServiceTimeSeriesRequests()
-		for _, call := range newlyFetchedBatches {
-			for _, ts := range call.TimeSeries {
-				if strings.HasSuffix(ts.Metric.Type, metricNameConnErrCount) {
-					foundConnectivityErrorMetric = true // Mark that we've seen the metric type
-					status := ts.Metric.Labels[metricLabelKeyStatus]
-					cumulativeStatusesFound[status] = true
-					for _, point := range ts.Points {
-						cumulativeTotalConnectivityErrors += point.GetValue().GetInt64Value()
-					}
+	exportedMetricBatches := monitoringServer.CreateServiceTimeSeriesRequests()
+	for _, batch := range exportedMetricBatches {
+		for _, ts := range batch.TimeSeries {
+			if strings.HasSuffix(ts.Metric.Type, metricNameConnErrCount) {
+				methodLabel, ok := ts.Metric.Labels[metricLabelKeyMethod]
+				if !ok || methodLabel != "Bigtable.ReadRows" {
+					continue
+				}
+				foundConnErrMetricForTest = true
+				statusKey := ts.Metric.Labels[metricLabelKeyStatus]
+				for _, point := range ts.Points {
+					// Summing up values from points. For a counter, this is the delta.
+					// We expect each reported error to be a single point with a value of 1.
+					statusesReported[statusKey] += point.GetValue().GetInt64Value()
+					totalConnectivityErrorsFromMetrics += point.GetValue().GetInt64Value()
 				}
 			}
 		}
-
-		if len(cumulativeStatusesFound) == 2 &&
-			cumulativeStatusesFound[codes.Unavailable.String()] &&
-			cumulativeStatusesFound[codes.Internal.String()] &&
-			cumulativeTotalConnectivityErrors == 2 {
-			break // Metrics are as expected
-		}
-
-		time.Sleep(pollInterval)
 	}
 
-	// Final assertions after polling.
-	if !foundConnectivityErrorMetric {
-		// If no connectivity_error_count metrics were ever found after polling.
-		// CreateServiceTimeSeriesRequests called multiple times, so pass the last known set (which would be empty if none found)
-		// or indicate it was empty.
-		allRequests := monitoringServer.CreateServiceTimeSeriesRequests() // Get any remaining, though buffer should be empty if loop ran.
-		t.Fatalf("Metric %s was not found in exported metrics after polling. All received calls: %+v", metricNameConnErrCount, allRequests)
+	if !foundConnErrMetricForTest {
+		t.Fatalf("Metric %s for method Bigtable.ReadRows was not found in exported metrics. Batches received: %+v", metricNameConnErrCount, exportedMetricBatches)
 	}
 
-	if !cumulativeStatusesFound[codes.Unavailable.String()] {
-		t.Errorf("Metric %s: status %s was not found after polling", metricNameConnErrCount, codes.Unavailable.String())
+	if statusesReported[codes.Unavailable.String()] != 1 {
+		t.Errorf("Metric %s for status %s: got cumulative value %d, want 1. All statuses: %v",
+			metricNameConnErrCount, codes.Unavailable.String(), statusesReported[codes.Unavailable.String()], statusesReported)
 	}
-	if !cumulativeStatusesFound[codes.Internal.String()] {
-		t.Errorf("Metric %s: status %s was not found after polling", metricNameConnErrCount, codes.Internal.String())
+	if statusesReported[codes.Internal.String()] != 1 {
+		t.Errorf("Metric %s for status %s: got cumulative value %d, want 1. All statuses: %v",
+			metricNameConnErrCount, codes.Internal.String(), statusesReported[codes.Internal.String()], statusesReported)
 	}
 
-	// Both the retriable Unavailable and the final non-retriable Internal error contribute to the count.
-	// Each error type (Unavailable, Internal) should be reported once with a value of 1.
-	if cumulativeTotalConnectivityErrors != 2 {
-		// Get all requests seen during polling for debugging, if condition not met.
-		// For simplicity, the error message will just show the final counts.
-		t.Errorf("Metric %s: got cumulative count %d, want 2 after polling.", metricNameConnErrCount, cumulativeTotalConnectivityErrors)
+	// The total connectivity errors should be 2.
+	// Attempt 2 (Unavailable, with location) should not increment the error count.
+	if totalConnectivityErrorsFromMetrics != 2 {
+		t.Errorf("Metric %s: got cumulative value %d, want 2. Statuses reported: %v",
+			metricNameConnErrCount, totalConnectivityErrorsFromMetrics, statusesReported)
 	}
 }
-
 func setMockErrorHandler(t *testing.T, mockErrorHandler *MockErrorHandler) {
 	origErrHandler := otel.GetErrorHandler()
 	otel.SetErrorHandler(mockErrorHandler)

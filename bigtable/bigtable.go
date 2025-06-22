@@ -2317,13 +2317,25 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLatAttrs))
 
-	// Record server_latencies and connectivity_error_count
-	connErrCountAttrs, _ := mt.toOtelMetricAttrs(metricNameConnErrCount)
+	// Record server_latencies
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
-		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributeSet(serverLatAttrs))    
-		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributeSet(connErrCountAttrs))
-	} else {
+		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributeSet(serverLatAttrs))
+	}
+
+	// Record connectivity_error_count
+	connErrCountAttrs, _ := mt.toOtelMetricAttrs(metricNameConnErrCount)
+	// Determine if connection error should be incremented.
+	// A true connectivity error occurs only when we receive NO server-side signals.
+	// 1. Server latency (from server-timing header) is a signal, but absent in DirectPath.
+	// 2. Location (from x-goog-ext header) is a signal present in both paths.
+	// Therefore, we only count an error if BOTH signals are missing.
+	isServerLatencyEffectivelyEmpty := mt.currOp.currAttempt.serverLatencyErr != nil || mt.currOp.currAttempt.serverLatency == 0
+	isLocationEmpty := mt.currOp.currAttempt.clusterID == defaultCluster
+	if isServerLatencyEffectivelyEmpty && isLocationEmpty {
+		// This is a connectivity error: the request likely never reached Google's network.
 		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributeSet(connErrCountAttrs))
+	} else {
+		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributeSet(connErrCountAttrs))
 	}
 }
