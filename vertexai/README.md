@@ -2,6 +2,11 @@
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/vertexai.svg)](https://pkg.go.dev/cloud.google.com/go/vertexai)
 
+> [!NOTE] A new Go SDK, `google.golang.org/genai`
+> ([github](http://pkg.go.dev/google.golang.org/genai)), is currently
+> available in a *GA launch* - designed to work with Gemini
+> 2.0 features and support both the Gemini API and the Vertex API.
+
 The Vertex AI Go SDK enables developers to use Google's state-of-the-art 
 generative AI models (like Gemini) to build AI-powered features and applications.
 
