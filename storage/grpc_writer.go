@@ -268,7 +268,9 @@ type gRPCWriter struct {
 	appendGen             int64
 	finalizeOnClose       bool
 
-	buf              []byte
+	buf []byte
+	// A writeQuantum is the largest quantity of data which can be sent to the
+	// service in a single message.
 	writeQuantum     int
 	lastSegmentStart int
 	sendableUnits    int
@@ -337,7 +339,7 @@ func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
 // Returns the number of bytes sent. Returns true if all desired requests were
 // delivered, and false if cs.completions was closed before all requests could
 // be delivered.
-func (w *gRPCWriter) sendBufferToTarget(cs gRPCCommandHandleChans, buf []byte, baseOffset int64, flushAt int, willAttempt func(gRPCBidiWriteRequest), handleCompletion func(gRPCBidiWriteCompletion)) (int, bool) {
+func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []byte, baseOffset int64, flushAt int, willAttempt func(gRPCBidiWriteRequest), handleCompletion func(gRPCBidiWriteCompletion)) (int, bool) {
 	sent := 0
 	if len(buf) > flushAt {
 		buf = buf[:flushAt]
@@ -406,7 +408,7 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 	}
 	requests := make(chan gRPCBidiWriteRequest, w.sendableUnits)
 	completions := make(chan gRPCBidiWriteCompletion, w.sendableUnits)
-	chcs := gRPCCommandHandleChans{requests, completions}
+	chcs := gRPCWriterCommandHandleChans{requests, completions}
 	bscs := gRPCBufSenderChans{requests, completions}
 	w.streamSender.connect(ctx, bscs, w.settings.gax...)
 
@@ -479,11 +481,18 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 	return w.streamSender.err()
 }
 
-type gRPCCommandHandleChans struct {
+// gRPCWriterCommandHandleChans contains the channels that a gRPCWriterCommand
+// implementation must use to send requests and get notified of completions.
+// Requests are delivered on a write-only channel and completions arrive on a
+// read-only channel.
+type gRPCWriterCommandHandleChans struct {
 	requests    chan<- gRPCBidiWriteRequest
 	completions <-chan gRPCBidiWriteCompletion
 }
 
+// gRPCBufSenderChans contains the channels that a gRPCBidiWriteBufferSender
+// must use to get notified of requests and deliver completions. Requests arrive
+// on a read-only channel and completions are delivered on a write-only channel.
 type gRPCBufSenderChans struct {
 	requests    <-chan gRPCBidiWriteRequest
 	completions chan<- gRPCBidiWriteCompletion
@@ -495,7 +504,7 @@ type gRPCBufSenderChans struct {
 //
 // Returns true if request was successfully enqueued, and false if completions
 // was closed first.
-func (cs gRPCCommandHandleChans) deliverRequestUnlessCompleted(req gRPCBidiWriteRequest, handleCompletion func(gRPCBidiWriteCompletion)) bool {
+func (cs gRPCWriterCommandHandleChans) deliverRequestUnlessCompleted(req gRPCBidiWriteRequest, handleCompletion func(gRPCBidiWriteCompletion)) bool {
 	for {
 		select {
 		case cs.requests <- req:
@@ -515,8 +524,8 @@ type gRPCWriterCommand interface {
 	//
 	// Implementations may terminate false if they are not done and the completion
 	// channel is closed. In that case, the command may be retried with a new
-	// gRPCCommandHandleChans instance.
-	handle(*gRPCWriter, gRPCCommandHandleChans) bool
+	// gRPCWriterCommandHandleChans instance.
+	handle(*gRPCWriter, gRPCWriterCommandHandleChans) bool
 }
 
 type gRPCWriterCommandWrite struct {
@@ -524,7 +533,7 @@ type gRPCWriterCommandWrite struct {
 	done chan struct{}
 }
 
-func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCCommandHandleChans) bool {
+func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) bool {
 	if len(c.p) == 0 {
 		// No data to write.
 		close(c.done)
@@ -649,7 +658,7 @@ type gRPCWriterCommandFlush struct {
 	done chan int64
 }
 
-func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCCommandHandleChans) bool {
+func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) bool {
 	flushTarget := w.bufBaseOffset + int64(len(w.buf))
 	// We know that there are at most w.writeQuantum bytes in
 	// w.buf[w.bufUnsentIdx:], because we send anything more inline when handling
