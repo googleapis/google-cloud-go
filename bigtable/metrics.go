@@ -65,6 +65,7 @@ const (
 	metricNameFirstRespLatencies = "first_response_latencies"
 	metricNameRetryCount         = "retry_count"
 	metricNameDebugTags          = "debug_tags"
+	metricNameConnErrCount       = "connectivity_error_count"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -122,6 +123,12 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
+		metricNameConnErrCount: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: true,
+		},
 	}
 
 	// Generates unique client ID in the format go-<random UUID>@<hostname>
@@ -171,8 +178,9 @@ type builtinMetricsTracerFactory struct {
 	attemptLatencies   metric.Float64Histogram
 	firstRespLatencies metric.Float64Histogram
 
-	retryCount metric.Int64Counter
-	debugTags  metric.Int64Counter
+	retryCount   metric.Int64Counter
+	connErrCount metric.Int64Counter
+	debugTags    metric.Int64Counter
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -293,6 +301,13 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
+	// Create connectivity_error_count
+	tf.connErrCount, err = meter.Int64Counter(
+		metricNameConnErrCount,
+		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
+		metric.WithUnit(metricUnitCount),
+	)
+
 	// Create debug_tags
 	tf.debugTags, err = meter.Int64Counter(
 		metricNameDebugTags,
@@ -318,6 +333,7 @@ type builtinMetricsTracer struct {
 	instrumentAttemptLatencies   metric.Float64Histogram
 	instrumentFirstRespLatencies metric.Float64Histogram
 	instrumentRetryCount         metric.Int64Counter
+	instrumentConnErrCount       metric.Int64Counter
 	instrumentDebugTags          metric.Int64Counter
 
 	tableName   string
@@ -426,6 +442,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentAttemptLatencies:   tf.attemptLatencies,
 		instrumentFirstRespLatencies: tf.firstRespLatencies,
 		instrumentRetryCount:         tf.retryCount,
+		instrumentConnErrCount:       tf.connErrCount,
 		instrumentDebugTags:          tf.debugTags,
 
 		tableName:   tableName,
