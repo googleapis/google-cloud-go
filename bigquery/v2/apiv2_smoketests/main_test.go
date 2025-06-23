@@ -34,17 +34,17 @@ var testProjectID string
 var defaultTestTimeout = 30 * time.Second
 
 func TestMain(m *testing.M) {
-	err := setup(context.Background())
-	if err != nil {
-		log.Printf("failure setting up test environment, skipping test execution: %v", err)
-		os.Exit(1)
-	}
+	cleanup := setup(context.Background())
 	code := m.Run()
-	shutdown()
+	if cleanup != nil {
+		cleanup()
+	}
 	os.Exit(code)
 }
 
-func setup(ctx context.Context) error {
+// setup establishes integration test env, and returns a cleanup func responsible
+// closing closing clients
+func setup(ctx context.Context) func() {
 	projID := testutil.ProjID()
 	if projID == "" {
 		log.Fatal("Integration tests skipped due to undetected project ID. See CONTRIBUTING.md for details")
@@ -61,21 +61,21 @@ func setup(ctx context.Context) error {
 
 	testClients["GRPC"], err = apiv2_client.NewClient(ctx, opts...)
 	if err != nil {
-		return err
+		testClients = nil
+		return nil
 	}
 	//opts = append(opts, option.WithHTTPClient(&c))
 	testClients["REST"], err = apiv2_client.NewRESTClient(ctx, opts...)
 	if err != nil {
 		testClients["GRPC"].Close()
-		return err
+		testClients = nil
+		return nil
 	}
-	return nil
-}
-
-func shutdown() {
-	for k, v := range testClients {
-		if err := v.Close(); err != nil {
-			log.Printf("closing client %q had error: %v", k, err)
+	return func() {
+		for k, v := range testClients {
+			if err := v.Close(); err != nil {
+				log.Printf("closing client %q had error: %v", k, err)
+			}
 		}
 	}
 }

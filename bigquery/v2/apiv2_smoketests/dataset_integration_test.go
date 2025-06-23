@@ -30,6 +30,9 @@ import (
 )
 
 func TestDatasetLifeCycle(t *testing.T) {
+	if testClients == nil {
+		t.Skip("integration tests skipped")
+	}
 	for k, client := range testClients {
 		t.Run(k, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
@@ -38,8 +41,6 @@ func TestDatasetLifeCycle(t *testing.T) {
 				ProjectId: testProjectID,
 				DatasetId: fmt.Sprintf("testdataset_%s_%d", k, time.Now().UnixNano()),
 			}
-			t.Logf("target dataset ID: %q", dsRef.GetDatasetId())
-
 			req := &bigquerypb.InsertDatasetRequest{
 				ProjectId: testProjectID,
 				Dataset: &bigquerypb.Dataset{

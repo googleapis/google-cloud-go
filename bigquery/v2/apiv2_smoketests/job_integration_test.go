@@ -23,6 +23,9 @@ import (
 )
 
 func TestInitStatelessQuery(t *testing.T) {
+	if testClients == nil {
+		t.Skip("integration tests skipped")
+	}
 	for k, client := range testClients {
 		t.Run(k, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
