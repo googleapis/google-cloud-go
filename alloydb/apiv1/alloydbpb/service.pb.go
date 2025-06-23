@@ -1751,6 +1751,7 @@ func (x *PromoteClusterRequest) GetValidateOnly() bool {
 
 // Message for restoring a Cluster from a backup or another cluster at a given
 // point in time.
+// NEXT_ID: 11
 type RestoreClusterRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5380,7 +5381,7 @@ func (x *UpgradeClusterResponse_StageInfo) GetLogsUrl() string {
 	return ""
 }
 
-// Details regarding the upgrade of instaces associated with a cluster.
+// Details regarding the upgrade of instances associated with a cluster.
 type UpgradeClusterResponse_InstanceUpgradeDetails struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
