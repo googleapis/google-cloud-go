@@ -442,12 +442,14 @@ type TranslateTextRequest struct {
 	MimeType string `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
 	// Optional. The ISO-639 language code of the input text if
 	// known, for example, "en-US" or "sr-Latn". Supported language codes are
-	// listed in Language Support. If the source language isn't specified, the API
-	// attempts to identify the source language automatically and returns the
-	// source language within the response.
+	// listed in [Language
+	// Support](https://cloud.google.com/translate/docs/languages). If the source
+	// language isn't specified, the API attempts to identify the source language
+	// automatically and returns the source language within the response.
 	SourceLanguageCode string `protobuf:"bytes,4,opt,name=source_language_code,json=sourceLanguageCode,proto3" json:"source_language_code,omitempty"`
 	// Required. The ISO-639 language code to use for translation of the input
-	// text, set to one of the language codes listed in Language Support.
+	// text, set to one of the language codes listed in [Language
+	// Support](https://cloud.google.com/translate/docs/languages).
 	TargetLanguageCode string `protobuf:"bytes,5,opt,name=target_language_code,json=targetLanguageCode,proto3" json:"target_language_code,omitempty"`
 	// Required. Project or location to make a call. Must refer to a caller's
 	// project.
@@ -759,9 +761,12 @@ type RomanizeTextRequest struct {
 	// Required. The content of the input in string format.
 	Contents []string `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
 	// Optional. The ISO-639 language code of the input text if
-	// known, for example, "hi" or "zh". If the source language isn't specified,
-	// the API attempts to identify the source language automatically and returns
-	// the source language for each content in the response.
+	// known, for example, "hi" or "zh". Supported language codes are
+	// listed in [Language
+	// Support](https://cloud.google.com/translate/docs/languages#roman). If the
+	// source language isn't specified, the API attempts to identify the source
+	// language automatically and returns the source language for each content in
+	// the response.
 	SourceLanguageCode string `protobuf:"bytes,2,opt,name=source_language_code,json=sourceLanguageCode,proto3" json:"source_language_code,omitempty"`
 }
 
@@ -1978,13 +1983,15 @@ type TranslateDocumentRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The ISO-639 language code of the input document if known, for
 	// example, "en-US" or "sr-Latn". Supported language codes are listed in
-	// Language Support. If the source language isn't specified, the API attempts
-	// to identify the source language automatically and returns the source
-	// language within the response. Source language must be specified if the
-	// request contains a glossary or a custom model.
+	// [Language Support] (https://cloud.google.com/translate/docs/languages). If
+	// the source language isn't specified, the API attempts to identify the
+	// source language automatically and returns the source language within the
+	// response. Source language must be specified if the request contains a
+	// glossary or a custom model.
 	SourceLanguageCode string `protobuf:"bytes,2,opt,name=source_language_code,json=sourceLanguageCode,proto3" json:"source_language_code,omitempty"`
 	// Required. The ISO-639 language code to use for translation of the input
-	// document, set to one of the language codes listed in Language Support.
+	// document, set to one of the language codes listed in [Language Support]
+	// (https://cloud.google.com/translate/docs/languages).
 	TargetLanguageCode string `protobuf:"bytes,3,opt,name=target_language_code,json=targetLanguageCode,proto3" json:"target_language_code,omitempty"`
 	// Required. Input configurations.
 	DocumentInputConfig *DocumentInputConfig `protobuf:"bytes,4,opt,name=document_input_config,json=documentInputConfig,proto3" json:"document_input_config,omitempty"`
@@ -2323,9 +2330,13 @@ type BatchTranslateTextRequest struct {
 	// the same location-id) can be used, otherwise an INVALID_ARGUMENT (400)
 	// error is returned.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. Source language code.
+	// Required. Source language code. Supported language codes are listed in
+	// [Language
+	// Support](https://cloud.google.com/translate/docs/languages).
 	SourceLanguageCode string `protobuf:"bytes,2,opt,name=source_language_code,json=sourceLanguageCode,proto3" json:"source_language_code,omitempty"`
-	// Required. Specify up to 10 language codes here.
+	// Required. Specify up to 10 language codes here. Supported language codes
+	// are listed in [Language
+	// Support](https://cloud.google.com/translate/docs/languages).
 	TargetLanguageCodes []string `protobuf:"bytes,3,rep,name=target_language_codes,json=targetLanguageCodes,proto3" json:"target_language_codes,omitempty"`
 	// Optional. The models to use for translation. Map's key is target language
 	// code. Map's value is model name. Value can be a built-in general model,
@@ -3829,7 +3840,9 @@ type BatchTranslateDocumentRequest struct {
 	// [Language Support](https://cloud.google.com/translate/docs/languages).
 	SourceLanguageCode string `protobuf:"bytes,2,opt,name=source_language_code,json=sourceLanguageCode,proto3" json:"source_language_code,omitempty"`
 	// Required. The ISO-639 language code to use for translation of the input
-	// document. Specify up to 10 language codes here.
+	// document. Specify up to 10 language codes here. Supported language codes
+	// are listed in [Language
+	// Support](https://cloud.google.com/translate/docs/languages).
 	TargetLanguageCodes []string `protobuf:"bytes,3,rep,name=target_language_codes,json=targetLanguageCodes,proto3" json:"target_language_codes,omitempty"`
 	// Required. Input configurations.
 	// The total number of files matched should be <= 100.
@@ -6020,7 +6033,7 @@ var file_google_cloud_translate_v3_translation_service_proto_rawDesc = []byte{
 	0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
 	0x61, 0x75, 0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x74, 0x72, 0x61, 0x6e, 0x73,
-	0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0xd9, 0x01, 0x0a, 0x1d, 0x63, 0x6f, 0x6d, 0x2e, 0x67,
+	0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0xd6, 0x01, 0x0a, 0x1d, 0x63, 0x6f, 0x6d, 0x2e, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x74, 0x72, 0x61, 0x6e,
 	0x73, 0x6c, 0x61, 0x74, 0x65, 0x2e, 0x76, 0x33, 0x42, 0x17, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6c,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x50, 0x72, 0x6f, 0x74,
@@ -6028,13 +6041,13 @@ var file_google_cloud_translate_v3_translation_service_proto_rawDesc = []byte{
 	0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61,
 	0x74, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x33, 0x2f, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61,
 	0x74, 0x65, 0x70, 0x62, 0x3b, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74, 0x65, 0x70, 0x62,
-	0xf8, 0x01, 0x01, 0xa2, 0x02, 0x05, 0x43, 0x54, 0x52, 0x4c, 0x33, 0xaa, 0x02, 0x19, 0x47, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x54, 0x72, 0x61, 0x6e, 0x73,
-	0x6c, 0x61, 0x74, 0x65, 0x2e, 0x56, 0x33, 0xca, 0x02, 0x19, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74, 0x65,
-	0x5c, 0x56, 0x33, 0xea, 0x02, 0x1c, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c,
-	0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74, 0x65, 0x3a, 0x3a,
-	0x56, 0x33, 0x50, 0x00, 0x50, 0x01, 0x50, 0x02, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0xa2, 0x02, 0x05, 0x43, 0x54, 0x52, 0x4c, 0x33, 0xaa, 0x02, 0x19, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74,
+	0x65, 0x2e, 0x56, 0x33, 0xca, 0x02, 0x19, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c,
+	0x6f, 0x75, 0x64, 0x5c, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74, 0x65, 0x5c, 0x56, 0x33,
+	0xea, 0x02, 0x1c, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64,
+	0x3a, 0x3a, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74, 0x65, 0x3a, 0x3a, 0x56, 0x33, 0x50,
+	0x00, 0x50, 0x01, 0x50, 0x02, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

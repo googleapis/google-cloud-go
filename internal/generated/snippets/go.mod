@@ -550,3 +550,5 @@ replace cloud.google.com/go/lustre => ../../../lustre
 replace cloud.google.com/go/chronicle => ../../../chronicle
 
 replace cloud.google.com/go/storagebatchoperations => ../../../storagebatchoperations
+
+replace cloud.google.com/go/maintenance => ../../../maintenance

@@ -1079,8 +1079,12 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					continue
 				}
 				prevRowKey = row.Key()
+
+				appBlockingLatencyStart := time.Now()
 				continueReading := f(row)
 				numRowsRead++
+				mt.currOp.incrementAppBlockingLatency(convertToMs(time.Since(appBlockingLatencyStart)))
+
 				if !continueReading {
 					// Cancel and drain stream.
 					cancel()
@@ -2246,6 +2250,10 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 		// graph will be less confusing
 		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributeSet(retryCntAttrs))
 	}
+
+	// Record application_latencies
+	appBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAppBlockingLatencies)
+	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
 }
 
 // gaxInvokeWithRecorder:
@@ -2321,5 +2329,21 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
 		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributeSet(serverLatAttrs))
+	}
+
+	// Record connectivity_error_count
+	connErrCountAttrs, _ := mt.toOtelMetricAttrs(metricNameConnErrCount)
+	// Determine if connection error should be incremented.
+	// A true connectivity error occurs only when we receive NO server-side signals.
+	// 1. Server latency (from server-timing header) is a signal, but absent in DirectPath.
+	// 2. Location (from x-goog-ext header) is a signal present in both paths.
+	// Therefore, we only count an error if BOTH signals are missing.
+	isServerLatencyEffectivelyEmpty := mt.currOp.currAttempt.serverLatencyErr != nil || mt.currOp.currAttempt.serverLatency == 0
+	isLocationEmpty := mt.currOp.currAttempt.clusterID == defaultCluster
+	if isServerLatencyEffectivelyEmpty && isLocationEmpty {
+		// This is a connectivity error: the request likely never reached Google's network.
+		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributeSet(connErrCountAttrs))
+	} else {
+		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributeSet(connErrCountAttrs))
 	}
 }
