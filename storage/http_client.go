@@ -59,7 +59,8 @@ type httpStorageClient struct {
 // Storage API.
 func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
-	defaults, err := defaultHTTPOptions(ctx)
+	o := s.clientOption
+	defaults, err := defaultHTTPOptions(ctx, o...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,11 +110,8 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 
 // defaultHTTPOptions returns a set of the default client options
 // for http client initialization.
-func defaultHTTPOptions(ctx context.Context) ([]option.ClientOption, error) {
-	defaults := []option.ClientOption{
-		option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"),
-		option.WithUserAgent(userAgent),
-	}
+func defaultHTTPOptions(ctx context.Context, defaults ...option.ClientOption) ([]option.ClientOption, error) {
+
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
 	// internal http client. However, in our case, "NewRangeReader" in reader.go needs to
@@ -123,6 +121,8 @@ func defaultHTTPOptions(ctx context.Context) ([]option.ClientOption, error) {
 	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		// Prepend default options to avoid overriding options passed by the user.
+		defaults = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, defaults...)
+
 		defaults = append(defaults, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
 			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
 			internaloption.WithDefaultUniverseDomain("googleapis.com"),
@@ -145,11 +145,10 @@ func defaultHTTPOptions(ctx context.Context) ([]option.ClientOption, error) {
 		endpoint := hostURL.String()
 
 		// Append the emulator host as default endpoint for the user
-		defaults = append([]option.ClientOption{
-			option.WithoutAuthentication(),
-			internaloption.WithDefaultEndpointTemplate(endpoint),
-			internaloption.WithDefaultMTLSEndpoint(endpoint),
-		}, defaults...)
+		defaults = append([]option.ClientOption{option.WithoutAuthentication()}, defaults...)
+
+		defaults = append(defaults, internaloption.WithDefaultEndpointTemplate(endpoint))
+		defaults = append(defaults, internaloption.WithDefaultMTLSEndpoint(endpoint))
 	}
 
 	return defaults, nil
