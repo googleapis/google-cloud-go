@@ -63,6 +63,7 @@ const (
 	metricNameAppBlockingLatencies = "application_latencies"
 	metricNameRetryCount           = "retry_count"
 	metricNameDebugTags            = "debug_tags"
+	metricNameConnErrCount         = "connectivity_error_count"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -110,6 +111,12 @@ var (
 		},
 		metricNameAppBlockingLatencies: {},
 		metricNameRetryCount: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: true,
+		},
+		metricNameConnErrCount: {
 			additionalAttrs: []string{
 				metricLabelKeyStatus,
 			},
@@ -164,6 +171,7 @@ type builtinMetricsTracerFactory struct {
 	attemptLatencies     metric.Float64Histogram
 	appBlockingLatencies metric.Float64Histogram
 	retryCount           metric.Int64Counter
+	connErrCount         metric.Int64Counter
 	debugTags            metric.Int64Counter
 }
 
@@ -285,6 +293,13 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
+	// Create connectivity_error_count
+	tf.connErrCount, err = meter.Int64Counter(
+		metricNameConnErrCount,
+		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
+		metric.WithUnit(metricUnitCount),
+	)
+
 	// Create debug_tags
 	tf.debugTags, err = meter.Int64Counter(
 		metricNameDebugTags,
@@ -310,6 +325,7 @@ type builtinMetricsTracer struct {
 	instrumentAttemptLatencies     metric.Float64Histogram
 	instrumentAppBlockingLatencies metric.Float64Histogram
 	instrumentRetryCount           metric.Int64Counter
+	instrumentConnErrCount         metric.Int64Counter
 	instrumentDebugTags            metric.Int64Counter
 
 	tableName   string
@@ -414,6 +430,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentAttemptLatencies:     tf.attemptLatencies,
 		instrumentAppBlockingLatencies: tf.appBlockingLatencies,
 		instrumentRetryCount:           tf.retryCount,
+		instrumentConnErrCount:         tf.connErrCount,
 		instrumentDebugTags:            tf.debugTags,
 
 		tableName:   tableName,
