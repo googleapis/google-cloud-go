@@ -112,10 +112,6 @@ func setClientHeader(headers http.Header) {
 // Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 type Client struct {
-	hc  *http.Client
-	raw *raw.Service
-	// Scheme describes the scheme under the current host.
-	scheme string
 	// xmlHost is the default host used for XML requests.
 	xmlHost string
 	// May be nil.
@@ -148,17 +144,22 @@ func (c Client) credsJSON() ([]byte, bool) {
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	var creds *auth.Credentials
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
+		c, err := internaloption.AuthCreds(ctx, opts)
+		if err == nil {
+			creds = c
+		}
+	}
+
 	tc, err := newHTTPStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
 		return nil, fmt.Errorf("storage: %w", err)
 	}
 
 	return &Client{
-		hc:      tc.hc,
-		raw:     tc.raw,
-		scheme:  tc.scheme,
-		xmlHost: tc.xmlHost,
-		creds:   tc.creds,
+		xmlHost: tc.(*httpStorageClient).xmlHost,
+		creds:   creds,
 		tc:      tc,
 	}, nil
 }
@@ -177,7 +178,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // package.
 func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
-
 	c, err := internaloption.AuthCreds(ctx, opts)
 	if err == nil {
 		creds = c
@@ -255,8 +255,6 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 // Close need not be called at program exit.
 func (c *Client) Close() error {
 	// Set fields to nil so that subsequent uses will panic.
-	c.hc = nil
-	c.raw = nil
 	c.creds = nil
 	if c.tc != nil {
 		return c.tc.Close()
@@ -377,6 +375,22 @@ func stripScheme(host string) string {
 		host = strings.SplitN(host, "://", 2)[1]
 	}
 	return host
+}
+
+func parseURL(host string) (*url.URL, error) {
+	var h *url.URL
+	var err error
+	if strings.Contains(host, "://") {
+		h, err = url.Parse(host)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// Add scheme for user if not supplied in STORAGE_EMULATOR_HOST
+		// URL is only parsed correctly if it has a scheme, so we build it ourselves
+		h = &url.URL{Scheme: "http", Host: host}
+	}
+	return h, nil
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.

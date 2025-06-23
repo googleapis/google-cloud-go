@@ -319,7 +319,7 @@ func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, 
 	return func(in []byte) ([]byte, error) {
 		ctx := context.Background()
 
-		opts := []option.ClientOption{option.WithHTTPClient(b.c.hc)}
+		opts := []option.ClientOption{option.WithHTTPClient(b.c.tc.(*httpStorageClient).hc)}
 
 		if b.c.creds != nil {
 			universeDomain, err := b.c.creds.UniverseDomain(ctx)

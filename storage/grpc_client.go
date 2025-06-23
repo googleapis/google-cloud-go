@@ -22,6 +22,7 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
+	"net/url"
 	"os"
 	"sync"
 
@@ -68,7 +69,7 @@ const (
 
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
-func defaultGRPCOptions() []option.ClientOption {
+func defaultGRPCOptions() ([]option.ClientOption, error) {
 	defaults := []option.ClientOption{
 		option.WithGRPCConnectionPool(defaultConnPoolSize),
 	}
@@ -85,10 +86,17 @@ func defaultGRPCOptions() []option.ClientOption {
 	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
 		// Strip the scheme from the emulator host. WithEndpoint does not take a
 		// scheme for gRPC.
-		host = stripScheme(host)
+		var hostURL *url.URL
+		var err error
+
+		hostURL, err = parseURL(host)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse STORAGE_EMULATOR_HOST_GRPC: %v", host)
+		}
+		endpoint := hostURL.Host
 
 		defaults = append(defaults,
-			option.WithEndpoint(host),
+			option.WithEndpoint(endpoint),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
 			WithDisabledClientMetrics(),
@@ -101,7 +109,7 @@ func defaultGRPCOptions() []option.ClientOption {
 			internaloption.EnableDirectPathXds())
 	}
 
-	return defaults
+	return defaults, nil
 }
 
 // grpcStorageClient is the gRPC API implementation of the transport-agnostic
@@ -134,13 +142,22 @@ func enableClientMetrics(ctx context.Context, s *settings, config storageConfig)
 // Storage API.
 func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStorageClient, error) {
 	s := initSettings(opts...)
-	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
+	defaults, err := defaultGRPCOptions()
+	if err != nil {
+		return nil, err
+	}
+	s.clientOption = append(defaults, s.clientOption...)
 	// Disable all gax-level retries in favor of retry logic in the veneer client.
 	s.gax = append(s.gax, gax.WithRetry(nil))
 
 	config := newStorageConfig(s.clientOption...)
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
+	}
+
+	g, err := gapic.NewClient(ctx, s.clientOption...)
+	if err != nil {
+		return nil, err
 	}
 
 	if !config.disableClientMetrics {
@@ -151,10 +168,6 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStor
 		} else {
 			log.Printf("Failed to enable client metrics: %v", err)
 		}
-	}
-	g, err := gapic.NewClient(ctx, s.clientOption...)
-	if err != nil {
-		return nil, err
 	}
 
 	return &grpcStorageClient{
