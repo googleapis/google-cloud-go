@@ -32,6 +32,7 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"cloud.google.com/go/bigtable/bttest"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel"
@@ -42,6 +43,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"google.golang.org/grpc/metadata"
 )
@@ -80,6 +82,97 @@ func equalErrs(gotErr error, wantErr error) bool {
 	return strings.Contains(gotErr.Error(), wantErr.Error())
 }
 
+// readRowsWithAppBlockingDelayLogic implements the core logic for a ReadRows RPC that introduces
+// sendTwoRowsHandler is a simple server-side stream handler that sends two predefined rows.
+func sendTwoRowsHandler(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+	// 1. Send headers immediately
+	if err := stream.SendHeader(metadata.MD{
+		locationMDKey: []string{string(testHeaders)}, // Send cluster/zone info
+	}); err != nil {
+		return err
+	}
+
+	// 2. Send first chunk/response
+	if err := stream.Send(&btpb.ReadRowsResponse{
+		Chunks: []*btpb.ReadRowsResponse_CellChunk{
+			{
+				RowKey:     []byte("row1"),
+				FamilyName: &wrapperspb.StringValue{Value: "cf"},
+				Qualifier:  &wrapperspb.BytesValue{Value: []byte("q1")},
+				Value:      []byte("val1"),
+				RowStatus:  &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
+			},
+		},
+	}); err != nil {
+		return err
+	}
+
+	// 3. Send second chunk/response
+	if err := stream.Send(&btpb.ReadRowsResponse{
+		Chunks: []*btpb.ReadRowsResponse_CellChunk{
+			{
+				RowKey:     []byte("row2"),
+				FamilyName: &wrapperspb.StringValue{Value: "cf"},
+				Qualifier:  &wrapperspb.BytesValue{Value: []byte("q2")},
+				Value:      []byte("val2"),
+				RowStatus:  &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
+			},
+		},
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+// bigtableReadRowsServerWrapper wraps a generic grpc.ServerStream to implement the
+// btpb.Bigtable_ReadRowsServer interface, specifically the Send(*ReadRowsResponse) error method.
+type bigtableReadRowsServerWrapper struct {
+	grpc.ServerStream
+}
+
+func (x *bigtableReadRowsServerWrapper) Send(m *btpb.ReadRowsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+// setupFakeServerWithCustomHandler sets up a fake server with a custom stream handler for ReadRows.
+// It returns a configured Table, a cleanup function, and any error during setup.
+func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientConfig,
+	customReadRowsHandler func(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error) (*Table, func(), error) {
+	streamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if info.FullMethod == "/google.bigtable.v2.Bigtable/ReadRows" {
+			// req is nil because ReadRowsWithDelayLogic does not use the request argument.
+			// Wrap the generic ServerStream with our specific wrapper.
+			wrappedStream := &bigtableReadRowsServerWrapper{ss}
+			return customReadRowsHandler(nil, wrappedStream)
+		}
+		return handler(srv, ss) // Default handling for other methods
+	}
+	rawGrpcServer, err := bttest.NewServer("localhost:0", grpc.StreamInterceptor(streamInterceptor))
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to start bttest server: %w", err)
+	}
+	conn, err := grpc.Dial(rawGrpcServer.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	if err != nil {
+		rawGrpcServer.Close()
+		return nil, nil, fmt.Errorf("failed to dial test server: %w", err)
+	}
+	clientOpts := []option.ClientOption{option.WithGRPCConn(conn)}
+	ctx := context.Background()
+	client, err := NewClientWithConfig(ctx, projectID, instanceID, cfg, clientOpts...)
+	if err != nil {
+		conn.Close()
+		rawGrpcServer.Close()
+		return nil, nil, fmt.Errorf("failed to create client: %w", err)
+	}
+	tbl := client.Open("test-table")
+	cleanup := func() {
+		client.Close()
+		conn.Close()
+		rawGrpcServer.Close()
+	}
+	return tbl, cleanup, nil
+}
+
 func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	ctx := context.Background()
 	project := "test-project"
@@ -94,11 +187,12 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		attribute.String(metricLabelKeyClientUID, clientUID),
 		attribute.String(metricLabelKeyClientName, clientName),
 	}
-	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameConnErrCount, metricNameConnErrCount, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies}
+	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameConnErrCount, metricNameConnErrCount, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies, metricNameAppBlockingLatencies}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
 		wantMetricTypesGCM = append(wantMetricTypesGCM, builtInMetricsMeterName+wantMetricName)
 	}
+	sort.Strings(wantMetricTypesGCM)
 
 	// Reduce sampling period to reduce test run time
 	origSamplePeriod := defaultSamplePeriod
@@ -212,6 +306,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			gotNonNilInstruments := gotClient.metricsTracerFactory.operationLatencies != nil &&
 				gotClient.metricsTracerFactory.serverLatencies != nil &&
 				gotClient.metricsTracerFactory.attemptLatencies != nil &&
+				gotClient.metricsTracerFactory.appBlockingLatencies != nil &&
 				gotClient.metricsTracerFactory.retryCount != nil &&
 				gotClient.metricsTracerFactory.connErrCount != nil
 			if test.wantBuiltinEnabled != gotNonNilInstruments {
@@ -676,5 +771,153 @@ func TestCreateExporterOptionsFiltering(t *testing.T) {
 
 	if len(filteredOpts) != 2 {
 		t.Errorf("Expected 2 options to be returned, got %d", len(filteredOpts))
+	}
+}
+
+func TestApplicationLatencies(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	tableID := "test-table" // Defined for assertion consistency
+	appProfile := "test-app-profile-app-latency"
+	clientUID := "test-uid-app-latency" // Unique UID for this test
+	// appProcessingDelay will be used in the ReadRows callback
+	const appProcessingDelay = 150 * time.Millisecond
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 100 * time.Millisecond // Shorter for quicker metric export
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// return constant client UID instead of random, so that attributes can be compared
+	origGenerateClientUID := generateClientUID
+	generateClientUID = func() (string, error) {
+		return clientUID, nil
+	}
+	defer func() {
+		generateClientUID = origGenerateClientUID
+	}()
+
+	// Set up a mock error handler to swallow expected shutdown errors
+	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
+	origErrHandler := otel.GetErrorHandler()
+	otel.SetErrorHandler(mer)
+	t.Cleanup(func() {
+		otel.SetErrorHandler(origErrHandler)
+	})
+
+	// Setup mock monitoring server
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("Error setting up metrics test server: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	// Override exporter options
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() {
+		createExporterOptions = origCreateExporterOptions
+	}()
+
+	// Setup fake Bigtable server with delayed stream handler
+	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, sendTwoRowsHandler)
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("setupFakeServerWithMock error: got: %v, want: nil", err)
+		return
+	}
+
+	// Pop out any old requests from other tests
+	monitoringServer.CreateServiceTimeSeriesRequests()
+
+	// Perform read rows operation
+	var rowsProcessed int
+	readErr := tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+		// Simulate application processing time for each row
+		time.Sleep(appProcessingDelay)
+		rowsProcessed++
+		return rowsProcessed < 2 // Process 2 rows
+	})
+	if readErr != nil {
+		t.Fatalf("ReadRows failed: %v", readErr)
+	}
+
+	// Allow time for metrics to be exported
+	// Wait for at least 3 export cycles to be reasonably sure metrics are flushed.
+	// Increased sleep duration to see if it's a timing issue.
+	time.Sleep(defaultSamplePeriod * 10)
+
+	// Fetch and analyze metrics
+	requests := monitoringServer.CreateServiceTimeSeriesRequests()
+	if len(requests) == 0 {
+		t.Fatalf("No CreateTimeSeriesRequests received from mock monitoring server")
+	}
+
+	foundAppLatencyMetric := false
+	expectedMetricType := builtInMetricsMeterName + metricNameAppBlockingLatencies
+	expectedTotalAppLatency := float64(rowsProcessed) * float64(appProcessingDelay/time.Millisecond)
+	epsilon := 50.0 // Epsilon in milliseconds, allow for some overhead
+
+	for _, req := range requests {
+		for _, ts := range req.TimeSeries {
+			metricType := ts.GetMetric().GetType()
+			metricLabels := ts.GetMetric().GetLabels()
+
+			if clientUIDLabel, ok := metricLabels[metricLabelKeyClientUID]; !ok || clientUIDLabel != clientUID {
+				continue // Not for this client
+			}
+
+			if metricType == expectedMetricType {
+				foundAppLatencyMetric = true
+				points := ts.GetPoints()
+				if len(points) == 0 {
+					t.Errorf("No points found for metric %s", expectedMetricType)
+					continue
+				}
+				distVal := points[0].GetValue().GetDistributionValue()
+				if distVal == nil {
+					t.Errorf("DistributionValue is nil for metric %s", expectedMetricType)
+					continue
+				}
+
+				if distVal.GetCount() != 1 {
+					t.Errorf("GetCount(): got %d, want 1 for metric %s", distVal.GetCount(), expectedMetricType)
+				}
+
+				recordedMean := distVal.GetMean()
+				if recordedMean < expectedTotalAppLatency-epsilon || recordedMean > expectedTotalAppLatency+epsilon {
+					t.Errorf("App latency mean: got %v, want within %v ± %v", recordedMean, expectedTotalAppLatency, epsilon)
+				}
+
+				// Assert standard labels
+				if method, ok := metricLabels[metricLabelKeyMethod]; !ok || method != "Bigtable.ReadRows" {
+					t.Errorf("Label %s: got %v, want Bigtable.ReadRows", metricLabelKeyMethod, method)
+				}
+
+				// Assert streaming label is not present (as per metricsDetails)
+				if _, exists := metricLabels[metricLabelKeyStreamingOperation]; exists {
+					t.Errorf("Label %s should not be present for %s", metricLabelKeyStreamingOperation, expectedMetricType)
+				}
+
+				resLabels := ts.GetResource().GetLabels()
+				if tblName, ok := resLabels[monitoredResLabelKeyTable]; (ok && tblName != tableID && tblName != "") || !ok {
+					t.Errorf("Label %s: got %q, want %q for resource %s", monitoredResLabelKeyTable, tblName, tableID, ts.GetResource())
+				}
+			}
+		}
+	}
+
+	if !foundAppLatencyMetric {
+		t.Errorf("Failed to find metric %s for client UID %s", expectedMetricType, clientUID)
 	}
 }

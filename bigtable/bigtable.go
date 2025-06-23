@@ -1079,8 +1079,12 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					continue
 				}
 				prevRowKey = row.Key()
+
+				appBlockingLatencyStart := time.Now()
 				continueReading := f(row)
 				numRowsRead++
+				mt.currOp.incrementAppBlockingLatency(convertToMs(time.Since(appBlockingLatencyStart)))
+
 				if !continueReading {
 					// Cancel and drain stream.
 					cancel()
@@ -2246,6 +2250,10 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 		// graph will be less confusing
 		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributeSet(retryCntAttrs))
 	}
+
+	// Record application_latencies
+	appBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAppBlockingLatencies)
+	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
 }
 
 // gaxInvokeWithRecorder:
