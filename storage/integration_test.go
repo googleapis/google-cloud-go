@@ -6925,7 +6925,7 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	t.Setenv(disableDP, "true")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
-	udTestVars, err := UniverseDomainTestVars()
+	udTestVars, err := universeDomainTestVars()
 	if err != nil {
 		t.Fatalf("Cannot get Universe Domain vars, err: %v", err)
 	}
@@ -6961,7 +6961,7 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 
 	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 
-	udTestVars, err := UniverseDomainTestVars()
+	udTestVars, err := universeDomainTestVars()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -7019,7 +7019,7 @@ type UniverseDomainVars struct {
 
 // Gets Universe Domain environment variables for Universe Domain tests
 // Returns universeDomainTestVars pointer for easy access
-func UniverseDomainTestVars() (*UniverseDomainVars, error) {
+func universeDomainTestVars() (*UniverseDomainVars, error) {
 	universeDomain := os.Getenv(testUniverseDomain)
 	if universeDomain == "" {
 		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
