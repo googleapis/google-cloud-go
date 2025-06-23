@@ -2253,7 +2253,7 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 
 	// Record application_latencies
 	appBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAppBlockingLatencies)
-	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributes(appBlockingLatAttrs...))
+	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
 }
 
 // gaxInvokeWithRecorder:
