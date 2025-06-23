@@ -106,6 +106,7 @@ use (
 	./logging
 	./longrunning
 	./lustre
+	./maintenance
 	./managedidentities
 	./managedkafka
 	./maps
