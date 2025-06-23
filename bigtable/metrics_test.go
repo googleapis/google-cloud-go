@@ -22,6 +22,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"reflect"
 	"slices"
 	"sort"
 	"strings"
@@ -451,28 +452,73 @@ func TestToOtelMetricAttrs(t *testing.T) {
 			desc:       "Unknown metric",
 			mt:         mt,
 			metricName: "unknown_metric",
-			wantAttrs: []attribute.KeyValue{
-				attribute.String(monitoredResLabelKeyTable, "my-table"),
-				attribute.String(metricLabelKeyMethod, "ReadRows"),
-				attribute.String(monitoredResLabelKeyCluster, clusterID1),
-				attribute.String(monitoredResLabelKeyZone, zoneID1),
-			},
-			wantError: fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
+			wantAttrs:  []attribute.KeyValue{}, // Expect empty slice on error
+			wantError:  fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
 		},
 	}
 
 	lessKeyValue := func(a, b attribute.KeyValue) bool { return a.Key < b.Key }
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotAttrs, gotErr := test.mt.toOtelMetricAttrs(test.metricName)
+			gotAttrSet, gotErr := test.mt.toOtelMetricAttrs(test.metricName)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
-			if diff := testutil.Diff(gotAttrs, test.wantAttrs,
+			gotAttrsSlice := gotAttrSet.ToSlice() // Convert Set to Slice
+			if gotAttrsSlice == nil {             // Ensure nil slice is treated as empty slice for comparison
+				gotAttrsSlice = []attribute.KeyValue{}
+			}
+			if diff := testutil.Diff(gotAttrsSlice, test.wantAttrs,
 				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{}),
 				cmpopts.SortSlices(lessKeyValue)); diff != "" {
 				t.Errorf("got=-, want=+ \n%v", diff)
 			}
 		})
+	}
+}
+
+func TestCreateExporterOptionsFiltering(t *testing.T) {
+	endpointOpt := option.WithEndpoint("test.endpoint")
+	apiKeyOpt := option.WithAPIKey("test.apikey")
+	audiencesOpt := option.WithAudiences("test.audience")
+
+	inputOpts := []option.ClientOption{
+		endpointOpt,
+		apiKeyOpt,
+		audiencesOpt,
+	}
+
+	filteredOpts := createExporterOptions(inputOpts...)
+
+	foundEndpointOpt := false
+	foundAPIKeyOpt := false
+	foundAudiencesOpt := false
+
+	for _, opt := range filteredOpts {
+		if reflect.TypeOf(opt) == reflect.TypeOf(endpointOpt) {
+			foundEndpointOpt = true
+		}
+		if reflect.TypeOf(opt) == reflect.TypeOf(apiKeyOpt) {
+			foundAPIKeyOpt = true
+		}
+		if reflect.TypeOf(opt) == reflect.TypeOf(audiencesOpt) {
+			foundAudiencesOpt = true
+		}
+	}
+
+	if foundEndpointOpt {
+		t.Errorf("option.WithEndpoint was found in filtered options, but it should have been filtered out")
+	}
+
+	if !foundAPIKeyOpt {
+		t.Errorf("option.WithAPIKey was not found in filtered options, but it should have been preserved")
+	}
+
+	if !foundAudiencesOpt {
+		t.Errorf("option.WithAudiences was not found in filtered options, but it should have been preserved")
+	}
+
+	if len(filteredOpts) != 2 {
+		t.Errorf("Expected 2 options to be returned, got %d", len(filteredOpts))
 	}
 }

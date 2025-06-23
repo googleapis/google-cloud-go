@@ -884,6 +884,9 @@ func (c *storageControlGRPCClient) RenameFolder(ctx context.Context, req *contro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).RenameFolder[0:len((*c.CallOptions).RenameFolder):len((*c.CallOptions).RenameFolder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1084,6 +1087,9 @@ func (c *storageControlGRPCClient) CreateAnywhereCache(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).CreateAnywhereCache[0:len((*c.CallOptions).CreateAnywhereCache):len((*c.CallOptions).CreateAnywhereCache)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1113,6 +1119,9 @@ func (c *storageControlGRPCClient) UpdateAnywhereCache(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).UpdateAnywhereCache[0:len((*c.CallOptions).UpdateAnywhereCache):len((*c.CallOptions).UpdateAnywhereCache)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
