@@ -47,12 +47,14 @@ func TestMain(m *testing.M) {
 func setup(ctx context.Context) func() {
 	projID := testutil.ProjID()
 	if projID == "" {
-		log.Fatal("Integration tests skipped due to undetected project ID. See CONTRIBUTING.md for details")
+		log.Printf("project ID undetected")
+		return nil
 	}
 	testProjectID = projID
 	ts := testutil.TokenSource(ctx, bigquery.DefaultAuthScopes()...)
 	if ts == nil {
-		log.Fatal("Integration tests skipped due to bad token source. See CONTRIBUTING.md for details")
+		log.Printf("invalid token source")
+		return nil
 	}
 	var opts []option.ClientOption
 	opts = append(opts, option.WithTokenSource(ts))
