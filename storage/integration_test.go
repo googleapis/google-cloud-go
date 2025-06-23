@@ -6923,12 +6923,9 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	// Direct connectivity is not supported yet for this feature.
 	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
 	t.Setenv(disableDP, "true")
-	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
-	udTestVars, err := universeDomainTestVars()
-	if err != nil {
-		t.Fatalf("Cannot get Universe Domain vars, err: %v", err)
-	}
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	udTestVars := universeDomainTestVars(t)
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -6960,12 +6957,7 @@ func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
 	t.Setenv(disableDP, "true")
 
 	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
-
-	udTestVars, err := universeDomainTestVars()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	udTestVars := universeDomainTestVars(t)
 	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
 
 	// Get new Auth creds
@@ -7019,24 +7011,24 @@ type UniverseDomainVars struct {
 
 // Gets Universe Domain environment variables for Universe Domain tests
 // Returns universeDomainTestVars pointer for easy access
-func universeDomainTestVars() (*UniverseDomainVars, error) {
+func universeDomainTestVars(t *testing.T) *UniverseDomainVars {
 	universeDomain := os.Getenv(testUniverseDomain)
 	if universeDomain == "" {
-		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
+		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
 	}
 	credFile := os.Getenv(testUniverseCreds)
 	if credFile == "" {
-		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
+		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
 	}
 	project := os.Getenv(testUniverseProject)
 	if project == "" {
-		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
+		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
 	}
 	location := os.Getenv(testUniverseLocation)
 	if location == "" {
-		return nil, fmt.Errorf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
 	}
-	return &UniverseDomainVars{universeDomain: universeDomain, credFile: credFile, project: project, location: location}, nil
+	return &UniverseDomainVars{universeDomain: universeDomain, credFile: credFile, project: project, location: location}
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
