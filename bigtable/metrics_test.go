@@ -27,6 +27,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -93,7 +94,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		attribute.String(metricLabelKeyClientUID, clientUID),
 		attribute.String(metricLabelKeyClientName, clientName),
 	}
-	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies}
+	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameConnErrCount, metricNameConnErrCount, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
 		wantMetricTypesGCM = append(wantMetricTypesGCM, builtInMetricsMeterName+wantMetricName)
@@ -211,7 +212,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			gotNonNilInstruments := gotClient.metricsTracerFactory.operationLatencies != nil &&
 				gotClient.metricsTracerFactory.serverLatencies != nil &&
 				gotClient.metricsTracerFactory.attemptLatencies != nil &&
-				gotClient.metricsTracerFactory.retryCount != nil
+				gotClient.metricsTracerFactory.retryCount != nil &&
+				gotClient.metricsTracerFactory.connErrCount != nil
 			if test.wantBuiltinEnabled != gotNonNilInstruments {
 				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
 			}
@@ -301,6 +303,160 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 }
 
+func TestConnectivityErrorCount(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	appProfile := "test-app-profile"
+
+	// Increase sampling period to simulate potential delays
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 500 * time.Millisecond
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// Setup mock monitoring server
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("Error setting up metrics test server: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	// Override exporter options to connect to the mock server
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() {
+		createExporterOptions = origCreateExporterOptions
+	}()
+
+	// Control structure for mock server behavior during the specific ReadRows call.
+	// We use a channel to signal the interceptor that the ReadRows call under test is active.
+	readRowsCallActive := make(chan bool, 1)
+	var testSpecificAttemptCount int32
+
+	serverStreamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "ReadRows") {
+			select {
+			case <-readRowsCallActive:
+				currentTestAttempt := atomic.AddInt32(&testSpecificAttemptCount, 1)
+				if currentTestAttempt == 1 {
+					// Put the token back for subsequent retries of this specific call.
+					readRowsCallActive <- true
+					return status.Error(codes.Unavailable, "Mock Unavailable error for connectivity test")
+				}
+				if currentTestAttempt == 2 {
+					header := metadata.New(map[string]string{
+						locationMDKey: string(testHeaders),
+					})
+					if errH := ss.SendHeader(header); errH != nil {
+						t.Errorf("[ServerInterceptor Attempt 2] Error sending header: %v", errH)
+					}
+
+					// Send a minimal successful message to ensure headers are processed by the client.
+					emptyResp := &btpb.ReadRowsResponse{}
+					if errS := ss.SendMsg(emptyResp); errS != nil {
+						t.Errorf("[ServerInterceptor Attempt 2] Error sending empty message: %v", errS)
+						return status.Errorf(codes.Internal, "mock server failed to send empty message: %v", errS)
+					}
+
+					readRowsCallActive <- true
+					return status.Error(codes.Unavailable, "Mock Unavailable error with location headers")
+				}
+
+				// On the third and final attempt, cause a non-retriable error.
+				atomic.StoreInt32(&testSpecificAttemptCount, 0)
+				// Do not put the token back, as this is the final attempt for this ReadRows sequence.
+				return status.Error(codes.Internal, "non-retriable error")
+			default:
+				return handler(srv, ss)
+			}
+		}
+		return handler(srv, ss)
+	}
+
+	config := ClientConfig{AppProfile: appProfile}
+	tbl, cleanup, gotErr := setupFakeServer(project, instance, config, grpc.StreamInterceptor(serverStreamInterceptor))
+	defer cleanup()
+	if gotErr != nil {
+		t.Fatalf("setupFakeServer error: got: %v, want: nil", gotErr)
+	}
+
+	// Pop out any old requests from the monitoring server to ensure a clean state.
+	monitoringServer.CreateServiceTimeSeriesRequests()
+	atomic.StoreInt32(&testSpecificAttemptCount, 0)
+
+	readRowsCallActive <- true
+
+	// Perform a read rows operation that will undergo a specific retry sequence:
+	// Attempt 1: Fails with Unavailable (no server headers) -> conn error count = 1
+	// Attempt 2: Fails with Unavailable (with location header) -> conn error count = 0
+	// Attempt 3: Fails with Internal (no server headers) -> conn error count = 1
+	// The overall operation fails with the final Internal error.
+	err = tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool { return true })
+	if err == nil {
+		t.Fatal("ReadRows: got nil error, want an error")
+	}
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("ReadRows: got error code %v, want %v", status.Code(err), codes.Internal)
+	}
+
+	// Wait a bit for metrics to be exported. The defaultSamplePeriod is 500ms,
+	// so waiting slightly longer should be sufficient.
+	// If tests are flaky, this might need adjustment or a more sophisticated wait.
+	time.Sleep(defaultSamplePeriod + 200*time.Millisecond)
+
+	var totalConnectivityErrorsFromMetrics int64
+	statusesReported := make(map[string]int64)
+	foundConnErrMetricForTest := false
+
+	exportedMetricBatches := monitoringServer.CreateServiceTimeSeriesRequests()
+	for _, batch := range exportedMetricBatches {
+		for _, ts := range batch.TimeSeries {
+			if strings.HasSuffix(ts.Metric.Type, metricNameConnErrCount) {
+				methodLabel, ok := ts.Metric.Labels[metricLabelKeyMethod]
+				if !ok || methodLabel != "Bigtable.ReadRows" {
+					continue
+				}
+				foundConnErrMetricForTest = true
+				statusKey := ts.Metric.Labels[metricLabelKeyStatus]
+				for _, point := range ts.Points {
+					// Summing up values from points. For a counter, this is the delta.
+					// We expect each reported error to be a single point with a value of 1.
+					statusesReported[statusKey] += point.GetValue().GetInt64Value()
+					totalConnectivityErrorsFromMetrics += point.GetValue().GetInt64Value()
+				}
+			}
+		}
+	}
+
+	if !foundConnErrMetricForTest {
+		t.Fatalf("Metric %s for method Bigtable.ReadRows was not found in exported metrics. Batches received: %+v", metricNameConnErrCount, exportedMetricBatches)
+	}
+
+	if statusesReported[codes.Unavailable.String()] != 1 {
+		t.Errorf("Metric %s for status %s: got cumulative value %d, want 1. All statuses: %v",
+			metricNameConnErrCount, codes.Unavailable.String(), statusesReported[codes.Unavailable.String()], statusesReported)
+	}
+	if statusesReported[codes.Internal.String()] != 1 {
+		t.Errorf("Metric %s for status %s: got cumulative value %d, want 1. All statuses: %v",
+			metricNameConnErrCount, codes.Internal.String(), statusesReported[codes.Internal.String()], statusesReported)
+	}
+
+	// The total connectivity errors should be 2.
+	// Attempt 2 (Unavailable, with location) should not increment the error count.
+	if totalConnectivityErrorsFromMetrics != 2 {
+		t.Errorf("Metric %s: got cumulative value %d, want 2. Statuses reported: %v",
+			metricNameConnErrCount, totalConnectivityErrorsFromMetrics, statusesReported)
+	}
+}
 func setMockErrorHandler(t *testing.T, mockErrorHandler *MockErrorHandler) {
 	origErrHandler := otel.GetErrorHandler()
 	otel.SetErrorHandler(mockErrorHandler)
