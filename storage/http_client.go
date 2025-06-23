@@ -147,8 +147,11 @@ func defaultHTTPOptions(ctx context.Context, defaults ...option.ClientOption) ([
 		// Append the emulator host as default endpoint for the user
 		defaults = append([]option.ClientOption{option.WithoutAuthentication()}, defaults...)
 
-		defaults = append(defaults, internaloption.WithDefaultEndpointTemplate(endpoint))
-		defaults = append(defaults, internaloption.WithDefaultMTLSEndpoint(endpoint))
+		defaults = append(defaults, internaloption.SkipDialSettingsValidation(),
+			internaloption.WithDefaultEndpointTemplate(endpoint),
+			internaloption.WithDefaultMTLSEndpoint(endpoint),
+		)
+
 	}
 
 	return defaults, nil
