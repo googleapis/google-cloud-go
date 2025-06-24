@@ -66,7 +66,6 @@ func setup(ctx context.Context) func() {
 		testClients = nil
 		return nil
 	}
-	//opts = append(opts, option.WithHTTPClient(&c))
 	testClients["REST"], err = apiv2_client.NewRESTClient(ctx, opts...)
 	if err != nil {
 		testClients["GRPC"].Close()
