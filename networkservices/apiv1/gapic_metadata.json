@@ -15,6 +15,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAuthzExtension": {
+              "methods": [
+                "CreateAuthzExtension"
+              ]
+            },
             "CreateLbRouteExtension": {
               "methods": [
                 "CreateLbRouteExtension"
@@ -23,6 +28,11 @@
             "CreateLbTrafficExtension": {
               "methods": [
                 "CreateLbTrafficExtension"
+              ]
+            },
+            "DeleteAuthzExtension": {
+              "methods": [
+                "DeleteAuthzExtension"
               ]
             },
             "DeleteLbRouteExtension": {
@@ -38,6 +48,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GetAuthzExtension": {
+              "methods": [
+                "GetAuthzExtension"
               ]
             },
             "GetIamPolicy": {
@@ -63,6 +78,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListAuthzExtensions": {
+              "methods": [
+                "ListAuthzExtensions"
               ]
             },
             "ListLbRouteExtensions": {
@@ -93,6 +113,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAuthzExtension": {
+              "methods": [
+                "UpdateAuthzExtension"
               ]
             },
             "UpdateLbRouteExtension": {
@@ -115,6 +140,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAuthzExtension": {
+              "methods": [
+                "CreateAuthzExtension"
+              ]
+            },
             "CreateLbRouteExtension": {
               "methods": [
                 "CreateLbRouteExtension"
@@ -123,6 +153,11 @@
             "CreateLbTrafficExtension": {
               "methods": [
                 "CreateLbTrafficExtension"
+              ]
+            },
+            "DeleteAuthzExtension": {
+              "methods": [
+                "DeleteAuthzExtension"
               ]
             },
             "DeleteLbRouteExtension": {
@@ -138,6 +173,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GetAuthzExtension": {
+              "methods": [
+                "GetAuthzExtension"
               ]
             },
             "GetIamPolicy": {
@@ -163,6 +203,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListAuthzExtensions": {
+              "methods": [
+                "ListAuthzExtensions"
               ]
             },
             "ListLbRouteExtensions": {
@@ -193,6 +238,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAuthzExtension": {
+              "methods": [
+                "UpdateAuthzExtension"
               ]
             },
             "UpdateLbRouteExtension": {
@@ -264,6 +314,16 @@
                 "CreateTlsRoute"
               ]
             },
+            "CreateWasmPlugin": {
+              "methods": [
+                "CreateWasmPlugin"
+              ]
+            },
+            "CreateWasmPluginVersion": {
+              "methods": [
+                "CreateWasmPluginVersion"
+              ]
+            },
             "DeleteEndpointPolicy": {
               "methods": [
                 "DeleteEndpointPolicy"
@@ -312,6 +372,16 @@
             "DeleteTlsRoute": {
               "methods": [
                 "DeleteTlsRoute"
+              ]
+            },
+            "DeleteWasmPlugin": {
+              "methods": [
+                "DeleteWasmPlugin"
+              ]
+            },
+            "DeleteWasmPluginVersion": {
+              "methods": [
+                "DeleteWasmPluginVersion"
               ]
             },
             "GetEndpointPolicy": {
@@ -384,6 +454,16 @@
                 "GetTlsRoute"
               ]
             },
+            "GetWasmPlugin": {
+              "methods": [
+                "GetWasmPlugin"
+              ]
+            },
+            "GetWasmPluginVersion": {
+              "methods": [
+                "GetWasmPluginVersion"
+              ]
+            },
             "ListEndpointPolicies": {
               "methods": [
                 "ListEndpointPolicies"
@@ -449,6 +529,16 @@
                 "ListTlsRoutes"
               ]
             },
+            "ListWasmPluginVersions": {
+              "methods": [
+                "ListWasmPluginVersions"
+              ]
+            },
+            "ListWasmPlugins": {
+              "methods": [
+                "ListWasmPlugins"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -502,6 +592,11 @@
             "UpdateTlsRoute": {
               "methods": [
                 "UpdateTlsRoute"
+              ]
+            },
+            "UpdateWasmPlugin": {
+              "methods": [
+                "UpdateWasmPlugin"
               ]
             }
           }
@@ -559,6 +654,16 @@
                 "CreateTlsRoute"
               ]
             },
+            "CreateWasmPlugin": {
+              "methods": [
+                "CreateWasmPlugin"
+              ]
+            },
+            "CreateWasmPluginVersion": {
+              "methods": [
+                "CreateWasmPluginVersion"
+              ]
+            },
             "DeleteEndpointPolicy": {
               "methods": [
                 "DeleteEndpointPolicy"
@@ -607,6 +712,16 @@
             "DeleteTlsRoute": {
               "methods": [
                 "DeleteTlsRoute"
+              ]
+            },
+            "DeleteWasmPlugin": {
+              "methods": [
+                "DeleteWasmPlugin"
+              ]
+            },
+            "DeleteWasmPluginVersion": {
+              "methods": [
+                "DeleteWasmPluginVersion"
               ]
             },
             "GetEndpointPolicy": {
@@ -679,6 +794,16 @@
                 "GetTlsRoute"
               ]
             },
+            "GetWasmPlugin": {
+              "methods": [
+                "GetWasmPlugin"
+              ]
+            },
+            "GetWasmPluginVersion": {
+              "methods": [
+                "GetWasmPluginVersion"
+              ]
+            },
             "ListEndpointPolicies": {
               "methods": [
                 "ListEndpointPolicies"
@@ -744,6 +869,16 @@
                 "ListTlsRoutes"
               ]
             },
+            "ListWasmPluginVersions": {
+              "methods": [
+                "ListWasmPluginVersions"
+              ]
+            },
+            "ListWasmPlugins": {
+              "methods": [
+                "ListWasmPlugins"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -797,6 +932,11 @@
             "UpdateTlsRoute": {
               "methods": [
                 "UpdateTlsRoute"
+              ]
+            },
+            "UpdateWasmPlugin": {
+              "methods": [
+                "UpdateWasmPlugin"
               ]
             }
           }
