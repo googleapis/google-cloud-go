@@ -30,7 +30,7 @@ import (
 )
 
 func TestDatasetLifeCycle(t *testing.T) {
-	if testClients == nil {
+	if len(testClients) == 0 {
 		t.Skip("integration tests skipped")
 	}
 	for k, client := range testClients {
