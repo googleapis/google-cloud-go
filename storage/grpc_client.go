@@ -1654,8 +1654,19 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	msg := res.decoder.msg
 	obj := msg.GetMetadata()
 	handle := ReadHandle(msg.GetReadHandle().GetHandle())
+
 	// This is the size of the entire object, even if only a range was requested.
+	// Object size can be out of date in the case of unfinalized objects.
 	size := obj.GetSize()
+
+	finalized := obj.GetFinalizeTime() != nil
+	negativeOffset := params.offset < 0
+	if !finalized && negativeOffset {
+		// Fix the offset and length of a negative-offset read at time of first
+		// response to ensure data integrity.
+		params.offset = obj.Size + params.offset
+		params.length = obj.Size - params.offset
+	}
 
 	// Only support checksums when reading an entire object, not a range.
 	var (
@@ -1704,11 +1715,13 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			cancel: cancel,
 			size:   size,
 			// Preserve the decoder to read out object data when Read/WriteTo is called.
-			currMsg:   res.decoder,
-			settings:  s,
-			zeroRange: params.length == 0,
-			wantCRC:   wantCRC,
-			checkCRC:  checkCRC,
+			currMsg:        res.decoder,
+			settings:       s,
+			zeroRange:      params.length == 0,
+			wantCRC:        wantCRC,
+			checkCRC:       checkCRC,
+			finalized:      finalized,
+			negativeOffset: negativeOffset,
 		},
 		checkCRC: checkCRC,
 		handle:   &handle,
@@ -1850,17 +1863,19 @@ type bidiReadStreamResponse struct {
 
 // gRPCReader is used by storage.Reader if the experimental option WithGRPCBidiReads is passed.
 type gRPCReader struct {
-	seen, size int64
-	zeroRange  bool
-	stream     storagepb.Storage_BidiReadObjectClient
-	reopen     func(seen int64) (*readStreamResponse, context.CancelFunc, error)
-	leftovers  []byte
-	currMsg    *readResponseDecoder // decoder for the current message
-	cancel     context.CancelFunc
-	settings   *settings
-	checkCRC   bool   // should we check the CRC?
-	wantCRC    uint32 // the CRC32c value the server sent in the header
-	gotCRC     uint32 // running crc
+	seen, size     int64
+	zeroRange      bool
+	finalized      bool // if we are reading from a finalized object; in this case, remain and size may be inaccurate
+	negativeOffset bool
+	stream         storagepb.Storage_BidiReadObjectClient
+	reopen         func(seen int64) (*readStreamResponse, context.CancelFunc, error)
+	leftovers      []byte
+	currMsg        *readResponseDecoder // decoder for the current message
+	cancel         context.CancelFunc
+	settings       *settings
+	checkCRC       bool   // should we check the CRC?
+	wantCRC        uint32 // the CRC32c value the server sent in the header
+	gotCRC         uint32 // running crc
 }
 
 // Update the running CRC with the data in the slice, if CRC checking was enabled.
@@ -1882,7 +1897,7 @@ func (r *gRPCReader) runCRCCheck() error {
 func (r *gRPCReader) Read(p []byte) (int, error) {
 	// The entire object has been read by this reader, check the checksum if
 	// necessary and return EOF.
-	if r.size == r.seen || r.zeroRange {
+	if (r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
@@ -1937,7 +1952,7 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	// The entire object has been read by this reader, check the checksum if
 	// necessary and return nil.
-	if r.size == r.seen || r.zeroRange {
+	if (r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
