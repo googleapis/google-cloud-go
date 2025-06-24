@@ -38,6 +38,8 @@ types:
     Candidate_FinishReason:
       name: FinishReason
       protoPrefix: Candidate_
+      valueNames:
+        Candidate_SPII: FinishReasonSPII
 
     GenerateContentResponse_PromptFeedback_BlockedReason:
       name: BlockedReason
