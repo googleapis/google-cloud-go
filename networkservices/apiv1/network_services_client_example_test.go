@@ -331,6 +331,66 @@ func ExampleClient_CreateTlsRoute() {
 	_ = resp
 }
 
+func ExampleClient_CreateWasmPlugin() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.CreateWasmPluginRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#CreateWasmPluginRequest.
+	}
+	op, err := c.CreateWasmPlugin(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateWasmPluginVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.CreateWasmPluginVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#CreateWasmPluginVersionRequest.
+	}
+	op, err := c.CreateWasmPluginVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_DeleteEndpointPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -573,6 +633,62 @@ func ExampleClient_DeleteTlsRoute() {
 		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#DeleteTlsRouteRequest.
 	}
 	op, err := c.DeleteTlsRoute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteWasmPlugin() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.DeleteWasmPluginRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#DeleteWasmPluginRequest.
+	}
+	op, err := c.DeleteWasmPlugin(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteWasmPluginVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.DeleteWasmPluginVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#DeleteWasmPluginVersionRequest.
+	}
+	op, err := c.DeleteWasmPluginVersion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -851,6 +967,56 @@ func ExampleClient_GetTlsRoute() {
 		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#GetTlsRouteRequest.
 	}
 	resp, err := c.GetTlsRoute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetWasmPlugin() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.GetWasmPluginRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#GetWasmPluginRequest.
+	}
+	resp, err := c.GetWasmPlugin(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetWasmPluginVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.GetWasmPluginVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#GetWasmPluginVersionRequest.
+	}
+	resp, err := c.GetWasmPluginVersion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -1265,6 +1431,80 @@ func ExampleClient_ListTlsRoutes() {
 	}
 }
 
+func ExampleClient_ListWasmPluginVersions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.ListWasmPluginVersionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#ListWasmPluginVersionsRequest.
+	}
+	it := c.ListWasmPluginVersions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*networkservicespb.ListWasmPluginVersionsResponse)
+	}
+}
+
+func ExampleClient_ListWasmPlugins() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.ListWasmPluginsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#ListWasmPluginsRequest.
+	}
+	it := c.ListWasmPlugins(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*networkservicespb.ListWasmPluginsResponse)
+	}
+}
+
 func ExampleClient_UpdateEndpointPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1523,6 +1763,36 @@ func ExampleClient_UpdateTlsRoute() {
 		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#UpdateTlsRouteRequest.
 	}
 	op, err := c.UpdateTlsRoute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateWasmPlugin() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.UpdateWasmPluginRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#UpdateWasmPluginRequest.
+	}
+	op, err := c.UpdateWasmPlugin(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
