@@ -382,7 +382,7 @@ func TestLiveREST(t *testing.T) {
 }
 
 func TestLiveGlobalEndpoint(t *testing.T) {
-	projectID := "cloud-llm-preview1" // os.Getenv("VERTEX_PROJECT_ID")
+	projectID := os.Getenv("VERTEX_PROJECT_ID")
 	if testing.Short() {
 		t.Skip("skipping live test in -short mode")
 	}
@@ -409,7 +409,7 @@ func TestLiveGlobalEndpoint(t *testing.T) {
 }
 
 func TestLiveGlobalEndpointREST(t *testing.T) {
-	projectID := "cloud-llm-preview1" // os.Getenv("VERTEX_PROJECT_ID")
+	projectID := os.Getenv("VERTEX_PROJECT_ID")
 	if testing.Short() {
 		t.Skip("skipping live test in -short mode")
 	}
