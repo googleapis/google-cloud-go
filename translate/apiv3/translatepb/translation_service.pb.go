@@ -1983,15 +1983,15 @@ type TranslateDocumentRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The ISO-639 language code of the input document if known, for
 	// example, "en-US" or "sr-Latn". Supported language codes are listed in
-	// [Language Support] (https://cloud.google.com/translate/docs/languages). If
+	// [Language Support](https://cloud.google.com/translate/docs/languages). If
 	// the source language isn't specified, the API attempts to identify the
 	// source language automatically and returns the source language within the
 	// response. Source language must be specified if the request contains a
 	// glossary or a custom model.
 	SourceLanguageCode string `protobuf:"bytes,2,opt,name=source_language_code,json=sourceLanguageCode,proto3" json:"source_language_code,omitempty"`
 	// Required. The ISO-639 language code to use for translation of the input
-	// document, set to one of the language codes listed in [Language Support]
-	// (https://cloud.google.com/translate/docs/languages).
+	// document, set to one of the language codes listed in [Language
+	// Support](https://cloud.google.com/translate/docs/languages).
 	TargetLanguageCode string `protobuf:"bytes,3,opt,name=target_language_code,json=targetLanguageCode,proto3" json:"target_language_code,omitempty"`
 	// Required. Input configurations.
 	DocumentInputConfig *DocumentInputConfig `protobuf:"bytes,4,opt,name=document_input_config,json=documentInputConfig,proto3" json:"document_input_config,omitempty"`

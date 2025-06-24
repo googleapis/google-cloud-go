@@ -434,6 +434,9 @@ type JobStatistics struct {
 	// Edition is the name of edition corresponding to the reservation for this job
 	// at the time of this update.
 	Edition ReservationEdition
+
+	// Job progress (0.0 -> 1.0) for LOAD and EXTRACT jobs.
+	CompletionRatio float64
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -1264,6 +1267,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		SessionInfo:            bqToSessionInfo(s.SessionInfo),
 		FinalExecutionDuration: time.Duration(s.FinalExecutionDurationMs) * time.Millisecond,
 		Edition:                ReservationEdition(s.Edition),
+		CompletionRatio:        s.CompletionRatio,
 	}
 	switch {
 	case s.Extract != nil:

@@ -54,11 +54,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &networkservicespb.CreateLbRouteExtensionRequest{
+//	req := &networkservicespb.CreateAuthzExtensionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#CreateLbRouteExtensionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#CreateAuthzExtensionRequest.
 //	}
-//	op, err := c.CreateLbRouteExtension(ctx, req)
+//	op, err := c.CreateAuthzExtension(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
