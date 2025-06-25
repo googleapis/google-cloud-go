@@ -2,6 +2,13 @@
 
 
 
+## [0.121.3](https://github.com/googleapis/google-cloud-go/compare/v0.121.2...v0.121.3) (2025-06-25)
+
+
+### Documentation
+
+* **impersonate:** Address TODO in impersonate/example_test.go ([#12401](https://github.com/googleapis/google-cloud-go/issues/12401)) ([dd096ec](https://github.com/googleapis/google-cloud-go/commit/dd096ec81944e785b9245fda7e7b46e9908cfe8f))
+
 ## [0.121.2](https://github.com/googleapis/google-cloud-go/compare/v0.121.1...v0.121.2) (2025-05-21)
 
 
