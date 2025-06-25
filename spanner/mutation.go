@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"fmt"
 	"math/rand"
 	"reflect"
 	"time"
@@ -141,6 +142,10 @@ type Mutation struct {
 	// values specifies the new values for the target columns
 	// named by Columns.
 	values []interface{}
+
+	// wrapped is the protobuf mutation that is the source for this Mutation.
+	// This is only set if the [WrapMutation] function was used to create the Mutation.
+	wrapped *sppb.Mutation
 }
 
 // A MutationGroup is a list of Mutation to be committed atomically.
@@ -356,6 +361,37 @@ func Delete(table string, ks KeySet) *Mutation {
 	}
 }
 
+// WrapMutation creates a mutation that wraps an existing protobuf mutation object.
+func WrapMutation(proto *sppb.Mutation) (*Mutation, error) {
+	if proto == nil {
+		return nil, fmt.Errorf("protobuf mutation may not be nil")
+	}
+	op, table, err := getTableAndSpannerOperation(proto)
+	if err != nil {
+		return nil, err
+	}
+	return &Mutation{
+		op:      op,
+		table:   table,
+		wrapped: proto,
+	}, nil
+}
+
+func getTableAndSpannerOperation(proto *sppb.Mutation) (op, string, error) {
+	if proto.GetInsert() != nil {
+		return opInsert, proto.GetInsert().Table, nil
+	} else if proto.GetUpdate() != nil {
+		return opUpdate, proto.GetUpdate().Table, nil
+	} else if proto.GetReplace() != nil {
+		return opReplace, proto.GetReplace().Table, nil
+	} else if proto.GetDelete() != nil {
+		return opDelete, proto.GetDelete().Table, nil
+	} else if proto.GetInsertOrUpdate() != nil {
+		return opInsertOrUpdate, proto.GetInsertOrUpdate().Table, nil
+	}
+	return 0, "", spannerErrorf(codes.InvalidArgument, "unknown op type: %d", proto.Operation)
+}
+
 // prepareWrite generates sppb.Mutation_Write from table name, column names
 // and new column values.
 func prepareWrite(table string, columns []string, vals []interface{}) (*sppb.Mutation_Write, error) {
@@ -375,9 +411,13 @@ func errInvdMutationOp(m Mutation) error {
 	return spannerErrorf(codes.InvalidArgument, "Unknown op type: %d", m.op)
 }
 
-// proto converts spanner.Mutation to sppb.Mutation, in preparation to send
+// proto converts a spanner.Mutation to sppb.Mutation, in preparation to send
 // RPCs.
 func (m Mutation) proto() (*sppb.Mutation, error) {
+	if m.wrapped != nil {
+		return m.wrapped, nil
+	}
+
 	var pb *sppb.Mutation
 	switch m.op {
 	case opDelete:

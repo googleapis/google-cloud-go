@@ -710,7 +710,7 @@ func TestRequestIDHeader_clientBatchWrite(t *testing.T) {
 
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}, nil},
 		}},
 	}
 	iter := sc.BatchWrite(context.Background(), mutationGroups)
@@ -777,7 +777,7 @@ func TestRequestIDHeader_ClientBatchWriteWithSessionNotFound(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}, nil},
 		}},
 	}
 	iter := sc.BatchWrite(context.Background(), mutationGroups)
@@ -849,7 +849,7 @@ func TestRequestIDHeader_ClientBatchWriteWithError(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}, nil},
 		}},
 	}
 	iter := sc.BatchWrite(context.Background(), mutationGroups)
