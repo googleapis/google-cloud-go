@@ -90,4 +90,4 @@ fi
 
 # Run tests
 
-go test -v -timeout 17m ./ ./dataflux -run="^Test(RetryConformance|.*Emulated)$" -short -race 2>&1 | tee -a sponge_log.log
+go test -v -timeout 17m ./ ./dataflux -run="^Test(RetryConformance|.*Emulated|Emulated_SoftDelete)$" -short -race 2>&1 | tee -a sponge_log.log
