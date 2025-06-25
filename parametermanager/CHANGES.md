@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/parametermanager/v0.2.1...parametermanager/v0.3.0) (2025-06-25)
+
+
+### Features
+
+* **parametermanager:** KMS key resource_definition `cloudkms.googleapis.com/CryptoKey is added ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/parametermanager/v0.2.0...parametermanager/v0.2.1) (2025-04-15)
 
 

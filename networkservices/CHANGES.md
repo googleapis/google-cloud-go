@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.3.0...networkservices/v0.4.0) (2025-06-25)
+
+
+### Features
+
+* **networkservices:** Add support for WasmPlugin resource in NetworkServices API ([#12485](https://github.com/googleapis/google-cloud-go/issues/12485)) ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+
+
+### Documentation
+
+* **networkservices:** A comment for enum `LoadBalancingScheme` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `authority` in message `.google.cloud.networkservices.v1.ExtensionChain` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `extensions` in message `.google.cloud.networkservices.v1.ExtensionChain` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `forwarding_rules` in message `.google.cloud.networkservices.v1.LbRouteExtension` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `forwarding_rules` in message `.google.cloud.networkservices.v1.LbTrafficExtension` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `load_balancing_scheme` in message `.google.cloud.networkservices.v1.LbRouteExtension` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `load_balancing_scheme` in message `.google.cloud.networkservices.v1.LbTrafficExtension` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `metadata` in message `.google.cloud.networkservices.v1.LbRouteExtension` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `metadata` in message `.google.cloud.networkservices.v1.LbTrafficExtension` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `order_by` in message `.google.cloud.networkservices.v1.ListLbRouteExtensionsRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `order_by` in message `.google.cloud.networkservices.v1.ListLbTrafficExtensionsRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `parent` in message `.google.cloud.networkservices.v1.ListLbRouteExtensionsRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `parent` in message `.google.cloud.networkservices.v1.ListLbTrafficExtensionsRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `request_id` in message `.google.cloud.networkservices.v1.CreateLbRouteExtensionRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `request_id` in message `.google.cloud.networkservices.v1.CreateLbTrafficExtensionRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `request_id` in message `.google.cloud.networkservices.v1.DeleteLbRouteExtensionRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `request_id` in message `.google.cloud.networkservices.v1.DeleteLbTrafficExtensionRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `request_id` in message `.google.cloud.networkservices.v1.UpdateLbRouteExtensionRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `request_id` in message `.google.cloud.networkservices.v1.UpdateLbTrafficExtensionRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `service` in message `.google.cloud.networkservices.v1.ExtensionChain` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `supported_events` in message `.google.cloud.networkservices.v1.ExtensionChain` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `timeout` in message `.google.cloud.networkservices.v1.ExtensionChain` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `update_mask` in message `.google.cloud.networkservices.v1.UpdateLbRouteExtensionRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **networkservices:** A comment for field `update_mask` in message `.google.cloud.networkservices.v1.UpdateLbTrafficExtensionRequest` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.2.5...networkservices/v0.3.0) (2025-06-17)
 
 

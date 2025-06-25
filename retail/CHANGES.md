@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.21.0...retail/v1.22.0) (2025-06-25)
+
+
+### Features
+
+* **retail:** Add a user_attributes field in SearchRequest that can be used for personalization ([#12494](https://github.com/googleapis/google-cloud-go/issues/12494)) ([2d66d4f](https://github.com/googleapis/google-cloud-go/commit/2d66d4f5b26a488b015be82733b242ce611c0fe3))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.20.0...retail/v1.21.0) (2025-05-29)
 
 
