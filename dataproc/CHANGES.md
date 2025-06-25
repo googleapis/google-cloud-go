@@ -1,5 +1,12 @@
 # Changes
 
+## [2.13.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.12.0...dataproc/v2.13.0) (2025-06-17)
+
+
+### Features
+
+* **dataproc:** Added support for DELTA, ICEBERG, PIG components ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
 ## [2.12.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.11.2...dataproc/v2.12.0) (2025-06-04)
 
 

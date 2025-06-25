@@ -58,6 +58,9 @@ func partFromProto(p *pb.Part) Part {
 		panic("FunctionResponse unimplemented")
 
 	default:
+		if p.Thought && p.ThoughtSignature != nil {
+			return ThoughtSignature(p.ThoughtSignature)
+		}
 		panic(fmt.Errorf("unknown Part.Data type %T", p.Data))
 	}
 }
@@ -100,6 +103,17 @@ func (f FunctionResponse) toPart() *pb.Part {
 		Data: &pb.Part_FunctionResponse{
 			FunctionResponse: f.toProto(),
 		},
+	}
+}
+
+// ThoughtSignature is an opaque signature for the thought
+// so it can be reused in subsequent requests.
+type ThoughtSignature []byte
+
+func (t ThoughtSignature) toPart() *pb.Part {
+	return &pb.Part{
+		ThoughtSignature: t,
+		Thought:          true,
 	}
 }
 

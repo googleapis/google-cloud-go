@@ -28,13 +28,15 @@ import (
 
 // CreateAnywhereCacheOperation manages a long-running operation from CreateAnywhereCache.
 type CreateAnywhereCacheOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateAnywhereCacheOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp controlpb.AnywhereCache
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -52,6 +54,7 @@ func (op *CreateAnywhereCacheOperation) Wait(ctx context.Context, opts ...gax.Ca
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateAnywhereCacheOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp controlpb.AnywhereCache
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -89,13 +92,15 @@ func (op *CreateAnywhereCacheOperation) Name() string {
 
 // RenameFolderOperation manages a long-running operation from RenameFolder.
 type RenameFolderOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *RenameFolderOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*controlpb.Folder, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp controlpb.Folder
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -113,6 +118,7 @@ func (op *RenameFolderOperation) Wait(ctx context.Context, opts ...gax.CallOptio
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *RenameFolderOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*controlpb.Folder, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp controlpb.Folder
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -150,13 +156,15 @@ func (op *RenameFolderOperation) Name() string {
 
 // UpdateAnywhereCacheOperation manages a long-running operation from UpdateAnywhereCache.
 type UpdateAnywhereCacheOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateAnywhereCacheOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp controlpb.AnywhereCache
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -174,6 +182,7 @@ func (op *UpdateAnywhereCacheOperation) Wait(ctx context.Context, opts ...gax.Ca
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateAnywhereCacheOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*controlpb.AnywhereCache, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp controlpb.AnywhereCache
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

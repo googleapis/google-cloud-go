@@ -1997,6 +1997,11 @@
                 "DeleteOperation"
               ]
             },
+            "Deploy": {
+              "methods": [
+                "Deploy"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -3261,6 +3266,11 @@
                 "GetRagCorpus"
               ]
             },
+            "GetRagEngineConfig": {
+              "methods": [
+                "GetRagEngineConfig"
+              ]
+            },
             "GetRagFile": {
               "methods": [
                 "GetRagFile"
@@ -3304,6 +3314,11 @@
             "UpdateRagCorpus": {
               "methods": [
                 "UpdateRagCorpus"
+              ]
+            },
+            "UpdateRagEngineConfig": {
+              "methods": [
+                "UpdateRagEngineConfig"
               ]
             },
             "UploadRagFile": {

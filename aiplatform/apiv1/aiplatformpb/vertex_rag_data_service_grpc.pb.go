@@ -34,16 +34,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	VertexRagDataService_CreateRagCorpus_FullMethodName = "/google.cloud.aiplatform.v1.VertexRagDataService/CreateRagCorpus"
-	VertexRagDataService_UpdateRagCorpus_FullMethodName = "/google.cloud.aiplatform.v1.VertexRagDataService/UpdateRagCorpus"
-	VertexRagDataService_GetRagCorpus_FullMethodName    = "/google.cloud.aiplatform.v1.VertexRagDataService/GetRagCorpus"
-	VertexRagDataService_ListRagCorpora_FullMethodName  = "/google.cloud.aiplatform.v1.VertexRagDataService/ListRagCorpora"
-	VertexRagDataService_DeleteRagCorpus_FullMethodName = "/google.cloud.aiplatform.v1.VertexRagDataService/DeleteRagCorpus"
-	VertexRagDataService_UploadRagFile_FullMethodName   = "/google.cloud.aiplatform.v1.VertexRagDataService/UploadRagFile"
-	VertexRagDataService_ImportRagFiles_FullMethodName  = "/google.cloud.aiplatform.v1.VertexRagDataService/ImportRagFiles"
-	VertexRagDataService_GetRagFile_FullMethodName      = "/google.cloud.aiplatform.v1.VertexRagDataService/GetRagFile"
-	VertexRagDataService_ListRagFiles_FullMethodName    = "/google.cloud.aiplatform.v1.VertexRagDataService/ListRagFiles"
-	VertexRagDataService_DeleteRagFile_FullMethodName   = "/google.cloud.aiplatform.v1.VertexRagDataService/DeleteRagFile"
+	VertexRagDataService_CreateRagCorpus_FullMethodName       = "/google.cloud.aiplatform.v1.VertexRagDataService/CreateRagCorpus"
+	VertexRagDataService_UpdateRagCorpus_FullMethodName       = "/google.cloud.aiplatform.v1.VertexRagDataService/UpdateRagCorpus"
+	VertexRagDataService_GetRagCorpus_FullMethodName          = "/google.cloud.aiplatform.v1.VertexRagDataService/GetRagCorpus"
+	VertexRagDataService_ListRagCorpora_FullMethodName        = "/google.cloud.aiplatform.v1.VertexRagDataService/ListRagCorpora"
+	VertexRagDataService_DeleteRagCorpus_FullMethodName       = "/google.cloud.aiplatform.v1.VertexRagDataService/DeleteRagCorpus"
+	VertexRagDataService_UploadRagFile_FullMethodName         = "/google.cloud.aiplatform.v1.VertexRagDataService/UploadRagFile"
+	VertexRagDataService_ImportRagFiles_FullMethodName        = "/google.cloud.aiplatform.v1.VertexRagDataService/ImportRagFiles"
+	VertexRagDataService_GetRagFile_FullMethodName            = "/google.cloud.aiplatform.v1.VertexRagDataService/GetRagFile"
+	VertexRagDataService_ListRagFiles_FullMethodName          = "/google.cloud.aiplatform.v1.VertexRagDataService/ListRagFiles"
+	VertexRagDataService_DeleteRagFile_FullMethodName         = "/google.cloud.aiplatform.v1.VertexRagDataService/DeleteRagFile"
+	VertexRagDataService_UpdateRagEngineConfig_FullMethodName = "/google.cloud.aiplatform.v1.VertexRagDataService/UpdateRagEngineConfig"
+	VertexRagDataService_GetRagEngineConfig_FullMethodName    = "/google.cloud.aiplatform.v1.VertexRagDataService/GetRagEngineConfig"
 )
 
 // VertexRagDataServiceClient is the client API for VertexRagDataService service.
@@ -70,6 +72,10 @@ type VertexRagDataServiceClient interface {
 	ListRagFiles(ctx context.Context, in *ListRagFilesRequest, opts ...grpc.CallOption) (*ListRagFilesResponse, error)
 	// Deletes a RagFile.
 	DeleteRagFile(ctx context.Context, in *DeleteRagFileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a RagEngineConfig.
+	UpdateRagEngineConfig(ctx context.Context, in *UpdateRagEngineConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets a RagEngineConfig.
+	GetRagEngineConfig(ctx context.Context, in *GetRagEngineConfigRequest, opts ...grpc.CallOption) (*RagEngineConfig, error)
 }
 
 type vertexRagDataServiceClient struct {
@@ -170,6 +176,24 @@ func (c *vertexRagDataServiceClient) DeleteRagFile(ctx context.Context, in *Dele
 	return out, nil
 }
 
+func (c *vertexRagDataServiceClient) UpdateRagEngineConfig(ctx context.Context, in *UpdateRagEngineConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, VertexRagDataService_UpdateRagEngineConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) GetRagEngineConfig(ctx context.Context, in *GetRagEngineConfigRequest, opts ...grpc.CallOption) (*RagEngineConfig, error) {
+	out := new(RagEngineConfig)
+	err := c.cc.Invoke(ctx, VertexRagDataService_GetRagEngineConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VertexRagDataServiceServer is the server API for VertexRagDataService service.
 // All implementations should embed UnimplementedVertexRagDataServiceServer
 // for forward compatibility
@@ -194,6 +218,10 @@ type VertexRagDataServiceServer interface {
 	ListRagFiles(context.Context, *ListRagFilesRequest) (*ListRagFilesResponse, error)
 	// Deletes a RagFile.
 	DeleteRagFile(context.Context, *DeleteRagFileRequest) (*longrunningpb.Operation, error)
+	// Updates a RagEngineConfig.
+	UpdateRagEngineConfig(context.Context, *UpdateRagEngineConfigRequest) (*longrunningpb.Operation, error)
+	// Gets a RagEngineConfig.
+	GetRagEngineConfig(context.Context, *GetRagEngineConfigRequest) (*RagEngineConfig, error)
 }
 
 // UnimplementedVertexRagDataServiceServer should be embedded to have forward compatible implementations.
@@ -229,6 +257,12 @@ func (UnimplementedVertexRagDataServiceServer) ListRagFiles(context.Context, *Li
 }
 func (UnimplementedVertexRagDataServiceServer) DeleteRagFile(context.Context, *DeleteRagFileRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRagFile not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) UpdateRagEngineConfig(context.Context, *UpdateRagEngineConfigRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRagEngineConfig not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) GetRagEngineConfig(context.Context, *GetRagEngineConfigRequest) (*RagEngineConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRagEngineConfig not implemented")
 }
 
 // UnsafeVertexRagDataServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -422,6 +456,42 @@ func _VertexRagDataService_DeleteRagFile_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VertexRagDataService_UpdateRagEngineConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRagEngineConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).UpdateRagEngineConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_UpdateRagEngineConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).UpdateRagEngineConfig(ctx, req.(*UpdateRagEngineConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_GetRagEngineConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRagEngineConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).GetRagEngineConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_GetRagEngineConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).GetRagEngineConfig(ctx, req.(*GetRagEngineConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VertexRagDataService_ServiceDesc is the grpc.ServiceDesc for VertexRagDataService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -468,6 +538,14 @@ var VertexRagDataService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteRagFile",
 			Handler:    _VertexRagDataService_DeleteRagFile_Handler,
+		},
+		{
+			MethodName: "UpdateRagEngineConfig",
+			Handler:    _VertexRagDataService_UpdateRagEngineConfig_Handler,
+		},
+		{
+			MethodName: "GetRagEngineConfig",
+			Handler:    _VertexRagDataService_GetRagEngineConfig_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

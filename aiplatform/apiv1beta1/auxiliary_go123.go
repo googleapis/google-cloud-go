@@ -215,6 +215,12 @@ func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *MemoryIterator) All() iter.Seq2[*aiplatformpb.Memory, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *MetadataSchemaIterator) All() iter.Seq2[*aiplatformpb.MetadataSchema, error] {
 	return iterator.RangeAdapter(it.Next)
 }

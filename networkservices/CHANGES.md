@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.2.5...networkservices/v0.3.0) (2025-06-17)
+
+
+### Features
+
+* **networkservices:** Update NetworkServices protos ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
+
+### Documentation
+
+* **networkservices:** A comment for field `address` in message `.google.cloud.networkservices.v1.TcpRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `fault_injection_policy` in message `.google.cloud.networkservices.v1.GrpcRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `matches` in message `.google.cloud.networkservices.v1.TlsRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `metadata_label_match_criteria` in message `.google.cloud.networkservices.v1.EndpointMatcher` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.DeleteServiceBindingRequest` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.EndpointPolicy` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.Gateway` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.GetServiceBindingRequest` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.GrpcRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.HttpRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.Mesh` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.ServiceBinding` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.TcpRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `name` in message `.google.cloud.networkservices.v1.TlsRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `parent` in message `.google.cloud.networkservices.v1.CreateServiceBindingRequest` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `parent` in message `.google.cloud.networkservices.v1.ListServiceBindingsRequest` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `ports` in message `.google.cloud.networkservices.v1.Gateway` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `scope` in message `.google.cloud.networkservices.v1.Gateway` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `service` in message `.google.cloud.networkservices.v1.ServiceBinding` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `sni_host` in message `.google.cloud.networkservices.v1.TlsRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for field `weight` in message `.google.cloud.networkservices.v1.TlsRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for message `GrpcRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for message `HttpRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for message `ServiceBinding` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **networkservices:** A comment for message `TlsRoute` is changed ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.2.4...networkservices/v0.2.5) (2025-04-15)
 
 

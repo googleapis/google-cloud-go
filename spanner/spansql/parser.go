@@ -4310,6 +4310,7 @@ ascending order of precedence:
 	parseExpr
 	orParser
 	andParser
+	parseExistsOp
 	parseIsOp
 	parseInOp
 	parseComparisonOp
@@ -4418,13 +4419,34 @@ func newBinArithParser(opStr string, op ArithOperator, nextPrec func(*parser) (E
 
 func (p *parser) parseLogicalNot() (Expr, *parseError) {
 	if !p.eat("NOT") {
-		return p.parseIsOp()
+		return p.parseExistsOp()
 	}
 	be, err := p.parseBoolExpr()
 	if err != nil {
 		return nil, err
 	}
 	return LogicalOp{Op: Not, RHS: be}, nil
+}
+
+func (p *parser) parseExistsOp() (Expr, *parseError) {
+	debugf("parseExistsOp: %v", p)
+
+	if !p.eat("EXISTS") {
+		return p.parseIsOp()
+	}
+
+	if err := p.expect("("); err != nil {
+		return nil, err
+	}
+	subq, err := p.parseQuery()
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect(")"); err != nil {
+		return nil, err
+	}
+
+	return ExistsOp{Subquery: subq}, nil
 }
 
 func (p *parser) parseIsOp() (Expr, *parseError) {

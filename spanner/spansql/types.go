@@ -808,6 +808,13 @@ const (
 	NotBetween
 )
 
+type ExistsOp struct {
+	Subquery Query
+}
+
+func (ExistsOp) isBoolExpr() {} // usually
+func (ExistsOp) isExpr()     {}
+
 type InOp struct {
 	LHS    Expr
 	Neg    bool

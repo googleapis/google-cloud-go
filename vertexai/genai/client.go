@@ -23,6 +23,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strings"
 
@@ -54,8 +55,14 @@ type Client struct {
 // [google.golang.org/api/option] package. You may also use options defined in
 // this package, such as [WithREST].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
+	log.Println(`WARNING:  Starting on June 24, 2025, the cloud.google.com/go/vertexai/genai package is deprecated and will be removed on June 24, 2026, except cloud.google.com/go/vertexai/genai/tokenizer.
+New users are encouraged to use the Google GenAI Go SDK available at [google.golang.org/genai](http://pkg.go.dev/google.golang.org/genai).
+For information about migrating to the Google Gen AI SDK, see [Vertex AI SDK migration guide](https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk)`)
 	location = inferLocation(location)
 	endpoint := fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)
+	if location == "global" {
+		endpoint = "aiplatform.googleapis.com:443"
+	}
 	conf := newConfig(opts...)
 	return newClient(ctx, projectID, location, endpoint, conf, opts)
 }

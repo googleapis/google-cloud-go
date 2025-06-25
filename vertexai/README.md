@@ -2,11 +2,13 @@
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/vertexai.svg)](https://pkg.go.dev/cloud.google.com/go/vertexai)
 
+> [!NOTE] Starting on June 24, 2025, the cloud.google.com/go/vertexai/genai package is deprecated and will be removed on June 24, 2026, except cloud.google.com/go/vertexai/genai/tokenizer.
+> New users are encouraged to use the Google GenAI Go SDK available at [google.golang.org/genai](http://pkg.go.dev/google.golang.org/genai)
+> For information about migrating to the Google Gen AI SDK, see [Vertex AI SDK migration guide](https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk).
+
 The Vertex AI Go SDK enables developers to use Google's state-of-the-art 
 generative AI models (like Gemini) to build AI-powered features and applications.
 
-New users are encouraged to use the Google GenAI Go SDK available at
-[google.golang.org/genai](http://pkg.go.dev/google.golang.org/genai)
 
 This SDK supports use cases like:
 - Generate text from text-only input
