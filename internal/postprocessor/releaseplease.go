@@ -34,6 +34,7 @@ var individuallyReleasedModules map[string]bool = map[string]bool{
 	"auth":             true,
 	"auth/oauth2adapt": true,
 	"bigquery":         true,
+	"bigquery/v2":      true,
 	"bigtable":         true,
 	"datastore":        true,
 	"errorreporting":   true,
