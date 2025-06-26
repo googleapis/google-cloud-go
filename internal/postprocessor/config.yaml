@@ -118,6 +118,7 @@ modules:
   - privatecatalog
   - privilegedaccessmanager
   - profiler
+  - pubsub/v2
   - pubsub
   - pubsublite
   - rapidmigrationassessment
