@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.93.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.92.0...aiplatform/v1.93.0) (2025-06-26)
+
+
+### Features
+
+* **aiplatform:** Add invoke_route_prefix to ModelContainerSpec in aiplatform v1 models.proto ([#12502](https://github.com/googleapis/google-cloud-go/issues/12502)) ([8f25e1c](https://github.com/googleapis/google-cloud-go/commit/8f25e1cf971c01402c88df505ab3bdcce2c543d6))
+
 ## [1.92.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.91.0...aiplatform/v1.92.0) (2025-06-25)
 
 
