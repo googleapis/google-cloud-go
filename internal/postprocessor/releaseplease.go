@@ -41,6 +41,7 @@ var individuallyReleasedModules map[string]bool = map[string]bool{
 	"logging":          true,
 	"profiler":         true,
 	"pubsub":           true,
+	"pubsub/v2":        true,
 	"pubsublite":       true,
 	"spanner":          true,
 	"storage":          true,
