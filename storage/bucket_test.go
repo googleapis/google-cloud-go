@@ -487,7 +487,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 			Mode:                "disabled",
 			VpcNetworkSources:   []*raw.BucketIpFilterVpcNetworkSources{},
 			PublicNetworkSource: nil,
-			ForceSendFields:     []string{"VpcNetworkSources", "PublicNetworkSource"},
+			ForceSendFields:     []string{"AllowAllServiceAgentAccess", "VpcNetworkSources", "PublicNetworkSource"},
 			NullFields:          []string{"VpcNetworkSources", "PublicNetworkSource"},
 		},
 	}

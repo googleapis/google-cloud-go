@@ -2366,10 +2366,19 @@ func toRawIPFilter(p *IPFilter) *raw.BucketIpFilter {
 		Mode:                       p.Mode,
 		AllowAllServiceAgentAccess: p.AllowAllServiceAgentAccess,
 	}
-
 	// Always force send AllowAllServiceAgentAccess field as it's required by the API
 	rawIPFilter.ForceSendFields = []string{"AllowAllServiceAgentAccess"}
 
+	// When mode is "disabled", we need to clear both VpcNetworkSources and PublicNetworkSource
+	// and use ForceSendFields/NullFields to ensure they're properly sent as empty/null values
+	if p.Mode == "disabled" {
+		rawIPFilter.VpcNetworkSources = []*raw.BucketIpFilterVpcNetworkSources{}
+		rawIPFilter.PublicNetworkSource = nil
+		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "VpcNetworkSources")
+		rawIPFilter.ForceSendFields = append(rawIPFilter.ForceSendFields, "PublicNetworkSource")
+		rawIPFilter.NullFields = []string{"VpcNetworkSources", "PublicNetworkSource"}
+		return rawIPFilter
+	}
 	// Handle VPCNetworkSource
 	if len(p.VPCNetworkSource) == 0 {
 		rawIPFilter.VpcNetworkSources = []*raw.BucketIpFilterVpcNetworkSources{}
