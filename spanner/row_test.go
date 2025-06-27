@@ -2279,6 +2279,7 @@ func TestSelectAll(t *testing.T) {
 		Col1 int64
 		COL2 float64
 		Col3 CustomType[string]
+		Col4 *CustomType[string]
 	}
 
 	type testStructWithTag struct {
@@ -2451,7 +2452,7 @@ func TestSelectAll(t *testing.T) {
 			},
 		},
 		{
-			name: "success: using destination with custom type with custom decoder with some null columns",
+			name: "success: using destination with custom type with custom decoder with some null columns and pointer decoder",
 			args: args{
 				destination: &[]*testStructWithCustom{},
 				mock: newMockIterator(
@@ -2460,32 +2461,35 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col1", Type: intType()},
 							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(3), floatProto(3.3), stringProto("value3")},
+						[]*proto3.Value{intProto(3), floatProto(3.3), stringProto("value3"), stringProto("test3")},
 					},
 					&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Col1", Type: intType()},
 							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), nullProto()},
+						[]*proto3.Value{intProto(1), floatProto(1.1), nullProto(), nullProto()},
 					},
 					&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Col1", Type: intType()},
 							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")},
+						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), stringProto("test2")},
 					},
 					iterator.Done,
 				),
 			},
 			want: &[]*testStructWithCustom{
-				{Col1: 3, COL2: 3.3, Col3: CustomType[string]{"value3"}},
-				{Col1: 1, COL2: 1.1, Col3: CustomType[string]{}},
-				{Col1: 2, COL2: 2.2, Col3: CustomType[string]{"value2"}},
+				{Col1: 3, COL2: 3.3, Col3: CustomType[string]{"value3"}, Col4: &CustomType[string]{"test3"}},
+				{Col1: 1, COL2: 1.1, Col3: CustomType[string]{}, Col4: nil},
+				{Col1: 2, COL2: 2.2, Col3: CustomType[string]{"value2"}, Col4: &CustomType[string]{"test2"}},
 			},
 		},
 		{
