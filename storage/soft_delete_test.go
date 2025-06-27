@@ -33,7 +33,7 @@ func TestEmulated_SoftDelete(t *testing.T) {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
 
-	projectID := "storage-sdks-madisonhall"
+	projectID := "my-project-id"
 	transports := []string{"http", "grpc"}
 	for _, transport := range transports {
 		t.Run(transport, func(t *testing.T) {
@@ -90,7 +90,7 @@ func TestEmulated_SoftDelete(t *testing.T) {
 			}
 
 			// Create an object.
-			objName := "test-object-" + uidSpaceObjects.New()
+			objName := fmt.Sprintf("test-object-%s", bucketIDs.New())
 			obj := bucket.Object(objName)
 
 			// Write test data.
