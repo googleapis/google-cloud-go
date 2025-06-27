@@ -283,6 +283,60 @@
         }
       }
     },
+    "CheckoutSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CheckoutSettingsClient",
+          "rpcs": {
+            "CreateCheckoutSettings": {
+              "methods": [
+                "CreateCheckoutSettings"
+              ]
+            },
+            "DeleteCheckoutSettings": {
+              "methods": [
+                "DeleteCheckoutSettings"
+              ]
+            },
+            "GetCheckoutSettings": {
+              "methods": [
+                "GetCheckoutSettings"
+              ]
+            },
+            "UpdateCheckoutSettings": {
+              "methods": [
+                "UpdateCheckoutSettings"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CheckoutSettingsClient",
+          "rpcs": {
+            "CreateCheckoutSettings": {
+              "methods": [
+                "CreateCheckoutSettings"
+              ]
+            },
+            "DeleteCheckoutSettings": {
+              "methods": [
+                "DeleteCheckoutSettings"
+              ]
+            },
+            "GetCheckoutSettings": {
+              "methods": [
+                "GetCheckoutSettings"
+              ]
+            },
+            "UpdateCheckoutSettings": {
+              "methods": [
+                "UpdateCheckoutSettings"
+              ]
+            }
+          }
+        }
+      }
+    },
     "EmailPreferencesService": {
       "clients": {
         "grpc": {
