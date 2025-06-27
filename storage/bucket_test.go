@@ -139,7 +139,8 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			}},
 		},
 		IPFilter: &IPFilter{
-			Mode: "disabled",
+			Mode:                       "disabled",
+			AllowAllServiceAgentAccess: false,
 			PublicNetworkSource: &PublicNetworkSource{
 				AllowedIPCidrRanges: []string{"1.2.3.4/32", "5.6.7.8/32"},
 			},
@@ -268,7 +269,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			Mode:                "disabled",
 			PublicNetworkSource: nil,
 			VpcNetworkSources:   []*raw.BucketIpFilterVpcNetworkSources{},
-			ForceSendFields:     []string{"VpcNetworkSources", "PublicNetworkSource"},
+			ForceSendFields:     []string{"AllowAllServiceAgentAccess", "VpcNetworkSources", "PublicNetworkSource"},
 			NullFields:          []string{"VpcNetworkSources", "PublicNetworkSource"},
 		},
 	}
