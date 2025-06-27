@@ -1,5 +1,25 @@
 # Changes
 
+## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.49.0...pubsub/v1.50.0) (2025-06-27)
+
+
+### Features
+
+* **pubsub/v2:** Add MessageTransformationFailureReason to IngestionFailureEvent ([208745b](https://github.com/googleapis/google-cloud-go/commit/208745bbc1f4fc9122ec71d6cf42f512ae570d13))
+* **pubsub/v2:** Add SchemaViolationReason to IngestionFailureEvent ([d8ae687](https://github.com/googleapis/google-cloud-go/commit/d8ae6874a54b48fce49968664f14db63c055c6e2))
+* **pubsub/v2:** Generate renamed go pubsub admin clients ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+
+### Bug Fixes
+
+* **pubsub:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+
+### Documentation
+
+* **pubsub/v2:** Document that the `acknowledge_confirmation` and `modify_ack_deadline_confirmation` fields in message `.google.pubsub.v1.StreamingPullResponse` are not guaranteed to be populated ([208745b](https://github.com/googleapis/google-cloud-go/commit/208745bbc1f4fc9122ec71d6cf42f512ae570d13))
+* **pubsub/v2:** Standardize spelling of "acknowledgment" in Pub/Sub protos ([d8ae687](https://github.com/googleapis/google-cloud-go/commit/d8ae6874a54b48fce49968664f14db63c055c6e2))
+
 ## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.48.1...pubsub/v1.49.0) (2025-04-07)
 
 
