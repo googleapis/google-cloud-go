@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -28,16 +29,21 @@ func TestEmulated_SoftDelete(t *testing.T) {
 
 			// Create client based on transport type.
 			if transport == "grpc" {
+				println("Using gRPC transport for test")
 				client, err = NewGRPCClient(ctx, experimental.WithGRPCBidiReads())
 			} else {
+				println("Using HTTP transport for test")
 				client, err = NewClient(ctx)
 			}
 			if err != nil {
-				t.Fatalf("NewClient: %v", err)
+				t.Fatalf("storage.NewClient: %v", err)
+			}
+			if client == nil {
+				t.Fatal("NewClient returned nil client")
 			}
 			defer client.Close()
 
-			bucketName := "test-soft-delete-" + uidSpace.New()
+			bucketName := fmt.Sprintf("test-soft-delete-%s", bucketIDs.New())
 			bucket := client.Bucket(bucketName)
 
 			// Ensure bucket cleanup happens even if test is skipped
