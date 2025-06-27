@@ -5329,7 +5329,8 @@ func TestIntegration_BucketIPFilter(t *testing.T) {
 		fmt.Printf("Creating bucket %q\n", bucketName)
 		bucket := client.Bucket(bucketName)
 		want := &IPFilter{
-			Mode: "Disabled",
+			Mode:                       "Disabled",
+			AllowAllServiceAgentAccess: false,
 		}
 
 		h.mustCreate(bucket, projID, &BucketAttrs{
