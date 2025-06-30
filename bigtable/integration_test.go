@@ -4998,7 +4998,7 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Getting schema bundle: %v", err)
 	}
-	if got, want := sbInfo.SchemaBundle, content; cmp.Equal(got, want) {
+	if got, want := sbInfo.SchemaBundle, content; !reflect.DeepEqual(got, want) {
 		t.Errorf("ProtoSchema: %v, want: %v", got, want)
 	}
 
