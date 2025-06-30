@@ -145,6 +145,12 @@ func (c Client) credsJSON() ([]byte, bool) {
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
+	defaults, err := defaultHTTPOptions(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+	opts = append(defaults, opts...)
+
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		c, err := internaloption.AuthCreds(ctx, opts)
 		if err == nil {
@@ -178,6 +184,13 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // package.
 func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
+
+	defaults, err := defaultGRPCOptions()
+	if err != nil {
+		return nil, err
+	}
+	opts = append(defaults, opts...)
+
 	c, err := internaloption.AuthCreds(ctx, opts)
 	if err == nil {
 		creds = c
@@ -187,6 +200,7 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	if err != nil {
 		return nil, err
 	}
+
 	return &Client{
 		tc:                    tc,
 		grpcAppendableUploads: tc.config.grpcAppendableUploads,
@@ -377,20 +391,11 @@ func stripScheme(host string) string {
 	return host
 }
 
-func parseURL(host string) (*url.URL, error) {
-	var h *url.URL
-	var err error
+func parseEmulatorURL(host string) (*url.URL, error) {
 	if strings.Contains(host, "://") {
-		h, err = url.Parse(host)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// Add scheme for user if not supplied in STORAGE_EMULATOR_HOST
-		// URL is only parsed correctly if it has a scheme, so we build it ourselves
-		h = &url.URL{Scheme: "http", Host: host}
+		return url.Parse(host)
 	}
-	return h, nil
+	return &url.URL{Scheme: "http", Host: host}, nil
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.

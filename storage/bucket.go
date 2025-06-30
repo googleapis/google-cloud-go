@@ -318,8 +318,13 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, error) {
 	return func(in []byte) ([]byte, error) {
 		ctx := context.Background()
+		var opts []option.ClientOption
 
-		opts := []option.ClientOption{option.WithHTTPClient(b.c.tc.(*httpStorageClient).hc)}
+		if _, ok := b.c.tc.(*httpStorageClient); ok {
+			opts = []option.ClientOption{option.WithHTTPClient(b.c.tc.(*httpStorageClient).hc)}
+		} else {
+			opts = []option.ClientOption{}
+		}
 
 		if b.c.creds != nil {
 			universeDomain, err := b.c.creds.UniverseDomain(ctx)

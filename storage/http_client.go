@@ -59,12 +59,6 @@ type httpStorageClient struct {
 // Storage API.
 func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
-	o := s.clientOption
-	defaults, err := defaultHTTPOptions(ctx, o...)
-	if err != nil {
-		return nil, err
-	}
-	s.clientOption = append(defaults, s.clientOption...)
 	config := newStorageConfig(s.clientOption...)
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
@@ -136,7 +130,7 @@ func defaultHTTPOptions(ctx context.Context, defaults ...option.ClientOption) ([
 		var hostURL *url.URL
 		var err error
 
-		hostURL, err = parseURL(host)
+		hostURL, err = parseEmulatorURL(host)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse STORAGE_EMULATOR_HOST: %v", host)
 		}

@@ -22,7 +22,6 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
-	"net/url"
 	"os"
 	"sync"
 
@@ -86,14 +85,7 @@ func defaultGRPCOptions() ([]option.ClientOption, error) {
 	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
 		// Strip the scheme from the emulator host. WithEndpoint does not take a
 		// scheme for gRPC.
-		var hostURL *url.URL
-		var err error
-
-		hostURL, err = parseURL(host)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse STORAGE_EMULATOR_HOST_GRPC: %v", host)
-		}
-		endpoint := hostURL.Host
+		endpoint := stripScheme(host)
 
 		defaults = append(defaults,
 			option.WithEndpoint(endpoint),
@@ -142,11 +134,7 @@ func enableClientMetrics(ctx context.Context, s *settings, config storageConfig)
 // Storage API.
 func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStorageClient, error) {
 	s := initSettings(opts...)
-	defaults, err := defaultGRPCOptions()
-	if err != nil {
-		return nil, err
-	}
-	s.clientOption = append(defaults, s.clientOption...)
+
 	// Disable all gax-level retries in favor of retry logic in the veneer client.
 	s.gax = append(s.gax, gax.WithRetry(nil))
 
