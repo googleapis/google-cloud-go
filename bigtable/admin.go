@@ -3427,6 +3427,7 @@ func (iac *InstanceAdminClient) DeleteMaterializedView(ctx context.Context, inst
 	return err
 }
 
+// SchemaBundleConf contains information about a schema bundle.
 type SchemaBundleConf struct {
 	TableID        string
 	SchemaBundleID string
@@ -3463,7 +3464,7 @@ func (ac *AdminClient) CreateSchemaBundle(ctx context.Context, conf *SchemaBundl
 	return err
 }
 
-// SchemaBundleIndo contains schema bundle metadata. This struct is read-only.
+// SchemaBundleInfo contains schema bundle metadata. This struct is read-only.
 type SchemaBundleInfo struct {
 	TableID        string
 	SchemaBundleID string
