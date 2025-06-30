@@ -2,11 +2,11 @@ module cloud.google.com/go/maintenance
 
 go 1.23.0
 
-toolchain go1.23.9
+toolchain go1.24.4
 
 require (
 	github.com/googleapis/gax-go/v2 v2.14.2
-	google.golang.org/api v0.238.0
+	google.golang.org/api v0.239.0
 	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
 	google.golang.org/genproto/googleapis/api v0.0.0-20250603155806-513f23925822
 	google.golang.org/grpc v1.73.0
