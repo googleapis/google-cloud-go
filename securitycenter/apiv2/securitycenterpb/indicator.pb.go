@@ -172,6 +172,8 @@ type Indicator_ProcessSignature struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The signature.
+	//
 	// Types that are assignable to Signature:
 	//
 	//	*Indicator_ProcessSignature_MemoryHashSignature_

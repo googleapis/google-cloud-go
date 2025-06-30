@@ -41,6 +41,8 @@ type LogEntry struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The log entry.
+	//
 	// Types that are assignable to LogEntry:
 	//
 	//	*LogEntry_CloudLoggingEntry
