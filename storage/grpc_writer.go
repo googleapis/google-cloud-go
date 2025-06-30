@@ -298,13 +298,11 @@ func (w *gRPCWriter) initializeSender() {
 	}
 	w.streamSender = w.pickBufferSender()
 
-	runWriteLoop := func(ctx context.Context) error {
-		w.lastErr = w.writeLoop(ctx)
-		return w.lastErr
-	}
-
 	go func() {
-		w.streamResult = checkCanceled(run(w.preRunCtx, runWriteLoop, w.settings.retry, w.settings.idempotent))
+		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx, context.Context) error {
+			w.lastErr = w.writeLoop(ctx)
+			return w.lastErr
+		}, w.settings.retry, w.settings.idempotent))
 		if w.forcedStreamResult != nil {
 			w.streamResult = w.forcedStreamResult
 		}
