@@ -4927,6 +4927,109 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	}
 }
 
+func TestIntegration_AdminSchemaBundle(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support schemaBundles")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create schema bundle
+	schemaBundleUUID := uid.NewSpace("schemaBundle-", &uid.Options{})
+	schemaBundle := schemaBundleUUID.New()
+	defer adminClient.DeleteSchemaBundle(ctx, tblConf.TableID, schemaBundle)
+
+	schemaBundleConf := SchemaBundleConf{
+		TableID:        tblConf.TableID,
+		SchemaBundleID: schemaBundle,
+		ProtoFile:      "proto_schema_bundle.pb",
+	}
+	content, err := os.ReadFile(schemaBundleConf.ProtoFile)
+	if err != nil {
+		t.Fatalf("Error reading the file: %v", err)
+	}
+
+	if err = adminClient.CreateSchemaBundle(ctx, &schemaBundleConf); err != nil {
+		t.Fatalf("Creating schema bundle: %v", err)
+	}
+
+	// List schema bundles
+	schemaBundles, err := adminClient.SchemaBundles(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Listing schema bundles: %v", err)
+	}
+	if got, want := len(schemaBundles), 1; got != want {
+		t.Fatalf("Listing schema bundles count: %d, want: != %d", got, want)
+	}
+	if got, want := schemaBundles[0], schemaBundle; got != want {
+		t.Errorf("SchemaBundle Name: %s, want: %s", got, want)
+	}
+
+	// Get schema bundle
+	sbInfo, err := adminClient.GetSchemaBundle(ctx, tblConf.TableID, schemaBundle)
+	if err != nil {
+		t.Fatalf("Getting schema bundle: %v", err)
+	}
+	if got, want := sbInfo.SchemaBundle, content; cmp.Equal(got, want) {
+		t.Errorf("ProtoSchema: %v, want: %v", got, want)
+	}
+
+	// Update schema bundle
+	newSchemaBundleConf := SchemaBundleConf{
+		TableID:        tblConf.TableID,
+		SchemaBundleID: schemaBundle,
+		ProtoFile:      "updated_proto_schema_bundle.pb",
+	}
+	err = adminClient.UpdateSchemaBundle(ctx, UpdateSchemaBundleConf{
+		SchemaBundleConf: newSchemaBundleConf,
+	})
+	if err != nil {
+		t.Fatalf("UpdateSchemaBundle failed: %v", err)
+	}
+
+	// Delete schema bundle
+	if err = adminClient.DeleteSchemaBundle(ctx, tblConf.TableID, schemaBundle); err != nil {
+		t.Fatalf("DeleteSchemaBundle: %v", err)
+	}
+
+	// Verify the schema bundle was deleted.
+	schemaBundles, err = adminClient.SchemaBundles(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Listing schema bundles: %v", err)
+	}
+	if got, want := len(schemaBundles), 0; got != want {
+		t.Fatalf("Listing schema bundles count: %d, want: != %d", got, want)
+	}
+}
+
 func TestIntegration_DataMaterializedView(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -5250,12 +5353,10 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 	if got, want := mvInfo.Query, materializedViewInfo.Query; got != want {
 		t.Errorf("MaterializedView Query: %q, want: %q", got, want)
 	}
-	// Cannot delete the authorized view because it is deletion protected
+	// Cannot delete the materialized view because it is deletion protected
 	if err = instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView); err == nil {
 		t.Fatalf("DeleteMaterializedView: %v", err)
 	}
-
-	// Update authorized view
 
 	// Update materialized view
 	newMaterializedViewInfo := MaterializedViewInfo{

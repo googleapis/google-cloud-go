@@ -1,0 +1,11 @@
+// The `updated_proto_schema_bundle.pb` binary is generated from this source file, via command:
+// protoc --include_imports --descriptor_set_out=updated_proto_schema_bundle.pb updated_proto_schema_bundle.proto
+
+syntax = "proto3";
+
+package gcloud.bigtable.schema_bundles.test;
+
+message Author {
+  string first_name = 1;
+  string last_name = 2;
+}
