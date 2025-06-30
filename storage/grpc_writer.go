@@ -299,7 +299,7 @@ func (w *gRPCWriter) initializeSender() {
 	w.streamSender = w.pickBufferSender()
 
 	go func() {
-		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx, context.Context) error {
+		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
 		}, w.settings.retry, w.settings.idempotent))
