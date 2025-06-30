@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.121.2 // indirect
+	cloud.google.com/go v0.121.3 // indirect
 	cloud.google.com/go/accessapproval v1.8.6
 	cloud.google.com/go/accesscontextmanager v1.9.6
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
@@ -130,7 +130,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.6
 	cloud.google.com/go/workflows v1.14.2
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.237.0
+	google.golang.org/api v0.239.0
 	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
 )
 
@@ -153,6 +153,7 @@ require (
 	cloud.google.com/go/financialservices v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/identitytoolkit v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/lustre v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/maintenance v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/managedkafka v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/memorystore v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/migrationcenter v0.0.0-00010101000000-000000000000
