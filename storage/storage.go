@@ -145,11 +145,10 @@ func (c Client) credsJSON() ([]byte, bool) {
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
-	defaults, err := defaultHTTPOptions(ctx, opts...)
+	opts, err := defaultHTTPOptions(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
-	opts = append(defaults, opts...)
 
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		c, err := internaloption.AuthCreds(ctx, opts)
