@@ -5015,6 +5015,20 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 		t.Fatalf("UpdateSchemaBundle failed: %v", err)
 	}
 
+	content, err = os.ReadFile(newSchemaBundleConf.ProtoFile)
+	if err != nil {
+		t.Fatalf("Error reading the file: %v", err)
+	}
+
+	// Get schema bundle
+	sbInfo, err = adminClient.GetSchemaBundle(ctx, tblConf.TableID, schemaBundle)
+	if err != nil {
+		t.Fatalf("Getting schema bundle: %v", err)
+	}
+	if got, want := sbInfo.SchemaBundle, content; !reflect.DeepEqual(got, want) {
+		t.Errorf("ProtoSchema: %v, want: %v", got, want)
+	}
+
 	// Delete schema bundle
 	if err = adminClient.DeleteSchemaBundle(ctx, tblConf.TableID, schemaBundle); err != nil {
 		t.Fatalf("DeleteSchemaBundle: %v", err)
