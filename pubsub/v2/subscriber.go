@@ -148,6 +148,17 @@ type ReceiveSettings struct {
 	// function passed to Receive on them. To limit the number of messages being
 	// processed concurrently, set MaxOutstandingMessages.
 	NumGoroutines int
+
+	// ShutdownTimeout specifies the time the subscriber should wait
+	// to shutdown before killing the process.
+	// Set to 0 to immediately shutdown.
+	// Set to negative value to disable a duration.
+	// Defaults to disabled.
+	ShutdownTimeout time.Duration
+
+	// ShutdownBehavior defines the strategy the subscriber should use when
+	// shutting down (graceful shutdown vs nack messages).
+	ShutdownBehavior ShutdownBehavior
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
