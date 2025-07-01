@@ -33,7 +33,7 @@ func TestClient_ApplyClientConfig(t *testing.T) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
 	// Add a retry for an obscure error.
-	pco := &vkit.TopicAdminCallOptions{
+	tco := &vkit.TopicAdminCallOptions{
 		Publish: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -47,7 +47,7 @@ func TestClient_ApplyClientConfig(t *testing.T) {
 		},
 	}
 	c, err := NewClientWithConfig(ctx, "P", &ClientConfig{
-		TopicAdminCallOptions: pco,
+		TopicAdminCallOptions: tco,
 	},
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
