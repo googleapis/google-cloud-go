@@ -47,7 +47,7 @@ func TestClient_ApplyClientConfig(t *testing.T) {
 		},
 	}
 	c, err := NewClientWithConfig(ctx, "P", &ClientConfig{
-		PublisherCallOptions: pco,
+		TopicAdminCallOptions: pco,
 	},
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),

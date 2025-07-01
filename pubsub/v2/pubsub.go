@@ -65,8 +65,17 @@ type Client struct {
 
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
-	PublisherCallOptions  *vkit.TopicAdminCallOptions
-	SubscriberCallOptions *vkit.SubscriptionAdminCallOptions
+	// TopicAdminCallOptions controls the behavior (e.g. retries) of RPC
+	// calls for the underlying gRPC publisher/topic admin client.
+	// This includes both admin and data plane calls, even though
+	// this is just named SubscriptionAdminCallOptions.
+	TopicAdminCallOptions *vkit.TopicAdminCallOptions
+
+	// SubscriptionAdminCallOptions controls the behavior (e.g. retries)
+	// of RPC calls for the underlying gRPC subscriber/subscription admin client.
+	// This includes both admin and data plane calls, even though
+	// this is just named SubscriptionAdminCallOptions.
+	SubscriptionAdminCallOptions *vkit.SubscriptionAdminCallOptions
 
 	// EnableOpenTelemetryTracing enables tracing for this client.
 	// This option allows selectively disabling Pub/Sub traces.
@@ -77,9 +86,9 @@ type ClientConfig struct {
 	EnableOpenTelemetryTracing bool
 }
 
-// mergePublisherCallOptions merges two PublisherCallOptions into one and the first argument has
+// mergeTopicCallOptions merges two TopicAdminCallOptions into one and the first argument has
 // a lower order of precedence than the second one. If either is nil, return the other.
-func mergePublisherCallOptions(a *vkit.TopicAdminCallOptions, b *vkit.TopicAdminCallOptions) *vkit.TopicAdminCallOptions {
+func mergeTopicCallOptions(a *vkit.TopicAdminCallOptions, b *vkit.TopicAdminCallOptions) *vkit.TopicAdminCallOptions {
 	if a == nil {
 		return b
 	}
@@ -105,9 +114,9 @@ func mergePublisherCallOptions(a *vkit.TopicAdminCallOptions, b *vkit.TopicAdmin
 	return res
 }
 
-// mergeSubscribercallOptions merges two SubscriberCallOptions into one and the first argument has
+// mergeSubCallOptions merges two subscription call options into one and the first argument has
 // a lower order of precedence than the second one. If either is nil, the other is used.
-func mergeSubscriberCallOptions(a *vkit.SubscriptionAdminCallOptions, b *vkit.SubscriptionAdminCallOptions) *vkit.SubscriptionAdminCallOptions {
+func mergeSubCallOptions(a *vkit.SubscriptionAdminCallOptions, b *vkit.SubscriptionAdminCallOptions) *vkit.SubscriptionAdminCallOptions {
 	if a == nil {
 		return b
 	}
@@ -192,8 +201,8 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 		return nil, fmt.Errorf("pubsub(subscriber): %w", err)
 	}
 	if config != nil {
-		pubc.CallOptions = mergePublisherCallOptions(pubc.CallOptions, config.PublisherCallOptions)
-		subc.CallOptions = mergeSubscriberCallOptions(subc.CallOptions, config.SubscriberCallOptions)
+		pubc.CallOptions = mergeTopicCallOptions(pubc.CallOptions, config.TopicAdminCallOptions)
+		subc.CallOptions = mergeSubCallOptions(subc.CallOptions, config.SubscriptionAdminCallOptions)
 	}
 	pubc.SetGoogleClientInfo("gccl", internal.Version)
 	subc.SetGoogleClientInfo("gccl", internal.Version)
