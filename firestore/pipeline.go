@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -97,4 +98,60 @@ func (p *Pipeline) append(s pipelineStage) *Pipeline {
 // Limit limits the maximum number of documents returned by previous stages.
 func (p *Pipeline) Limit(limit int) *Pipeline {
 	return p.append(newLimitStage(limit))
+}
+
+// Select selects or creates a set of fields from the outputs of previous stages.
+// The selected fields are defined using [Selectable] expressions, which can be:
+//   - Field: References an existing field.
+//   - Function: Represents the result of a function with an assigned alias name using [Function.As].
+//
+// If no selections are provided, the output of this stage is empty.
+func (p *Pipeline) Select(selectables ...Selectable) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	stage, err := newSelectStage(selectables...)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// SelectPaths provides a convenient way to select a set of fields by their names.
+// It is a shorthand for p.Select(FieldOf("field1"), FieldOf("field2"), FieldOf("field3.field4") ...).
+// Each path argument can be a single field or a dot-separated sequence of
+// fields which do not contain any of the runes "˜*/[]".
+func (p *Pipeline) SelectPaths(paths ...string) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	selectables := make([]Selectable, len(paths))
+	for i, name := range paths {
+		if name == "" {
+			p.err = errors.New("firestore: field name in SelectFields cannot be empty")
+			return p
+		}
+		selectables[i] = FieldOf(name)
+	}
+	return p.Select(selectables...)
+}
+
+// AddFields adds new fields to outputs from previous stages.
+//
+// This stage allows you to compute values on-the-fly based on existing data from previous
+// stages or constants. You can use this to create new fields or overwrite existing ones (if there
+// is name overlaps).
+//
+// The added fields are defined using [Selectable]s
+func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	stage, err := newAddFieldsStage(selectables...)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
 }

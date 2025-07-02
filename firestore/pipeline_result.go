@@ -213,6 +213,10 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		if err != nil {
 			return nil, err
 		}
+
+		ctx := withResourceHeader(it.ctx, client.path())
+		ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(client.path()))
+
 		it.streamClient, err = client.c.ExecutePipeline(it.ctx, req)
 		if err != nil {
 			return nil, err
@@ -246,7 +250,7 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 	it.currRespResultsIdx++
 
 	var docRef *DocumentRef
-	if len(docProto.GetName()) == 0 {
+	if len(docProto.GetName()) != 0 {
 		var pathErr error
 		docRef, pathErr = pathToDoc(docProto.GetName(), client)
 		if pathErr != nil {
