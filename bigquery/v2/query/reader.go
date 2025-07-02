@@ -36,13 +36,24 @@ func (qr *QueryReader) WithReadClient(rc *storagepb.BigQueryReadClient) *QueryRe
 // Read reads the results of a query job.
 func (qr *QueryReader) Read(ctx context.Context, jobRef *bigquerypb.JobReference, schema *bigquerypb.TableSchema, opts ...ReadOption) (*RowIterator, error) {
 	// TODO: use storage read API
-	it := &RowIterator{
-		c:      qr.c,
-		query:  newQueryJobFromJobReference(qr.c, schema, jobRef),
-		schema: schema,
+	query, err := newQueryJobFromJobReference(qr.c, schema, jobRef)
+	if err != nil {
+		return nil, err
 	}
-	// TODO: get page token from opts
-	err := it.fetchRows(ctx)
+
+	initState := &readState{}
+	for _, opt := range opts {
+		opt(initState)
+	}
+
+	it := &RowIterator{
+		c:         qr.c,
+		query:     query,
+		pageToken: initState.pageToken,
+		schema:    newSchema(schema),
+	}
+
+	err = it.fetchRows(ctx)
 	if err != nil {
 		return nil, err
 	}

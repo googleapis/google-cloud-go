@@ -36,7 +36,7 @@ func (qr *QueryRunner) StartQuery(ctx context.Context, req *bigquerypb.PostQuery
 		return nil, fmt.Errorf("failed to run query: %w", err)
 	}
 
-	return newQueryJobFromQueryResponse(qr.c, res), nil
+	return newQueryJobFromQueryResponse(qr.c, res)
 }
 
 // StartQueryRequest runs a query and returns a QueryJob handle.
@@ -60,5 +60,5 @@ func (qr *QueryRunner) StartQueryJob(ctx context.Context, job *bigquerypb.Job, o
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert query: %w", err)
 	}
-	return newQueryJobFromJob(qr.c, job), nil
+	return newQueryJobFromJob(qr.c, job)
 }

@@ -17,21 +17,19 @@ package query
 import (
 	"encoding/json"
 
-	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // Row represents a single row in the query results.
 type Row struct {
-	raw  *structpb.Struct
-	json []byte
+	raw   *structpb.Struct // TODO use arrow.Record internally ?
+	value []Value
+	json  []byte
 }
 
-func newRowFromFieldValueStruct(v *structpb.Struct, schema *bigquerypb.TableSchema) *Row {
+func newRowFromValues(values []Value) *Row {
 	r := &Row{
-		raw: v,
-		// TODO: convert from field Value format to a json value
-		json: []byte{},
+		value: values,
 	}
 	return r
 }
@@ -39,6 +37,11 @@ func newRowFromFieldValueStruct(v *structpb.Struct, schema *bigquerypb.TableSche
 // AsJSON returns the row as a JSON object.
 func (r *Row) AsJSON() (map[string]interface{}, error) {
 	return r.raw.AsMap(), nil
+}
+
+// AsValue decodes the row into an array of Value.
+func (r *Row) AsValue() ([]Value, error) {
+	return r.value, nil
 }
 
 // AsStruct decodes the row into a struct.

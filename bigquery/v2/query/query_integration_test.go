@@ -33,7 +33,7 @@ func TestStatelessQuery(t *testing.T) {
 			defer cancel()
 
 			qrun := client.NewQueryRunner()
-			req := client.QueryFromSQL("SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar")
+			req := client.QueryFromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
 
 			q, err := qrun.StartQuery(ctx, req)
 			if err != nil {
@@ -68,7 +68,7 @@ func TestReadQueryJob(t *testing.T) {
 			defer cancel()
 
 			qrun := client.NewQueryRunner()
-			req := client.QueryFromSQL("SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar")
+			req := client.QueryFromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
 
 			q, err := qrun.StartQuery(ctx, req)
 			if err != nil {
@@ -109,7 +109,7 @@ func TestInsertQueryJob(t *testing.T) {
 			q, err := qrun.StartQueryJob(ctx, &bigquerypb.Job{
 				Configuration: &bigquerypb.JobConfiguration{
 					Query: &bigquerypb.JobConfigurationQuery{
-						Query:        "SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar",
+						Query:        "SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar",
 						UseLegacySql: wrapperspb.Bool(false),
 					},
 				},

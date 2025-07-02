@@ -17,7 +17,6 @@ package query
 import (
 	"context"
 
-	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -28,7 +27,7 @@ type RowIterator struct {
 	rows      []*Row
 	query     *QueryJob
 	totalRows uint64
-	schema    *bigquerypb.TableSchema
+	schema    *schema
 	pageToken string
 }
 
@@ -58,14 +57,19 @@ func (it *RowIterator) fetchRows(ctx context.Context) error {
 	if res.TotalRows != nil {
 		it.totalRows = res.TotalRows.Value
 	}
-	it.schema = res.Schema
+	if it.schema == nil {
+		it.schema = newSchema(res.Schema)
+	}
 
 	rows := res.GetRows()
 	if len(rows) == 0 {
 		return iterator.Done
 	}
 
-	it.rows = fieldValueRowsToRowList(rows, it.schema)
+	it.rows, err = fieldValueRowsToRowList(rows, it.schema)
+	if err != nil {
+		return err
+	}
 	it.pageToken = res.GetPageToken()
 
 	return nil
@@ -80,10 +84,14 @@ func (it *RowIterator) dequeueRow() *Row {
 	return row
 }
 
-func fieldValueRowsToRowList(rows []*structpb.Struct, schema *bigquerypb.TableSchema) []*Row {
-	nrows := make([]*Row, len(rows))
-	for i, row := range rows {
-		nrows[i] = newRowFromFieldValueStruct(row, schema)
+func fieldValueRowsToRowList(rows []*structpb.Struct, schema *schema) ([]*Row, error) {
+	values, err := convertRows(rows, schema)
+	if err != nil {
+		return nil, err
 	}
-	return nrows
+	nrows := make([]*Row, len(rows))
+	for i := range rows {
+		nrows[i] = newRowFromValues(values[i])
+	}
+	return nrows, nil
 }
