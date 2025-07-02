@@ -1,5 +1,12 @@
 # Changes
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.38.0...bigtable/v1.39.0) (2025-07-02)
+
+
+### Features
+
+* **bigtable/spanner:** Allow disable gRPC DirectPath deps ([#12469](https://github.com/googleapis/google-cloud-go/issues/12469)) ([2205d27](https://github.com/googleapis/google-cloud-go/commit/2205d27d8fff56c0b25facfc60daa766f4d10ee8))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.37.0...bigtable/v1.38.0) (2025-06-27)
 
 
