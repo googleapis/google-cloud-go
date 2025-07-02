@@ -29,8 +29,8 @@ func (ps *PipelineSource) Collection(path string) *Pipeline {
 // of collections that include the given ID, regardless of parent document.
 //
 // For example, consider:
-// France/Cities/Paris = {population: 100}
-// Canada/Cities/Montreal = {population: 90}
+// Countries/France/Cities/Paris = {population: 100}
+// Countries/Canada/Cities/Montreal = {population: 90}
 //
 // CollectionGroup can be used to query across all "Cities" regardless of
 // its parent "Countries".
@@ -42,9 +42,9 @@ func (ps *PipelineSource) CollectionGroup(collectionID string) *Pipeline {
 // of collections that include the given ID, that are underneath a given document.
 //
 // For example, consider:
-// /continents/Europe/Germany/Cities/Paris = {population: 100}
-// /continents/Europe/France/Cities/Paris = {population: 100}
-// /continents/NorthAmerica/Canada/Cities/Montreal = {population: 90}
+// /continents/Europe/Countries/Germany/Cities/Paris = {population: 100}
+// /continents/Europe/Countries/France/Cities/Paris = {population: 100}
+// /continents/NorthAmerica/Countries/Canada/Cities/Montreal = {population: 90}
 //
 // CollectionGroupWithAncestor can be used to query across all "Cities" in "/continents/Europe".
 // TODO(bhshkh): Subcollections are not yet supported in enterprise DB. Check with Firestore team whether ancestors should be added.

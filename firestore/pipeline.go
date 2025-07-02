@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -97,4 +98,54 @@ func (p *Pipeline) append(s pipelineStage) *Pipeline {
 // Limit limits the maximum number of documents returned by previous stages.
 func (p *Pipeline) Limit(limit int) *Pipeline {
 	return p.append(newLimitStage(limit))
+}
+
+// Select projects a set of fields from the input documents, potentially renaming
+// or computing them. The output documents will only contain the fields specified.
+// Example: p.Select(FieldOf("author"), FieldOf("price").As("cost"))
+func (p *Pipeline) Select(selectables ...Selectable) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	stage, err := newSelectStage(selectables...)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// SelectFields provides a convenient way to select a set of fields by their names.
+// It is a shorthand for p.Select(FieldOf("field1"), FieldOf("field2"), FieldOf("field3.field4") ...).
+// Each path argument can be a single field or a dot-separated sequence of
+// fields which do not contain any of the runes "˜*/[]".
+func (p *Pipeline) SelectFields(paths ...string) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	selectables := make([]Selectable, len(paths))
+	for i, name := range paths {
+		if name == "" {
+			p.err = errors.New("firestore: field name in SelectFields cannot be empty")
+			return p
+		}
+		selectables[i] = FieldOf(name)
+	}
+	return p.Select(selectables...)
+}
+
+// AddFields adds new fields to output documents.
+// Each Selectable defines a new field: its alias (or original name if not aliased)
+// becomes the field name, and its expression is evaluated to produce the field value.
+// This can overwrite existing fields if there are name overlaps.
+func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	stage, err := newAddFieldsStage(selectables...)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
 }
