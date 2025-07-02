@@ -349,7 +349,7 @@ func drainInboundStream(stream storagepb.Storage_BidiWriteObjectClient) (object 
 	return object, err
 }
 
-func bidiWriteObjectRequest(buf []byte, offset int64, flush, finishWrite bool) *storagepb.BidiWriteObjectRequest {
+func bidiWriteObjectRequest(buf []byte, offset int64, flush, finishWrite bool, objectChecksums *storagepb.ObjectChecksums) *storagepb.BidiWriteObjectRequest {
 	var data *storagepb.BidiWriteObjectRequest_ChecksummedData
 	if buf != nil {
 		data = &storagepb.BidiWriteObjectRequest_ChecksummedData{
@@ -359,11 +359,12 @@ func bidiWriteObjectRequest(buf []byte, offset int64, flush, finishWrite bool) *
 		}
 	}
 	req := &storagepb.BidiWriteObjectRequest{
-		Data:        data,
-		WriteOffset: offset,
-		FinishWrite: finishWrite,
-		Flush:       flush,
-		StateLookup: flush,
+		Data:            data,
+		WriteOffset:     offset,
+		FinishWrite:     finishWrite,
+		Flush:           flush,
+		StateLookup:     flush,
+		ObjectChecksums: objectChecksums,
 	}
 	return req
 }
@@ -393,9 +394,6 @@ func (w *gRPCWriter) newGRPCOneshotBidiWriteBufferSender() (*gRPCOneshotBidiWrit
 		},
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
 		// For a non-resumable upload, checksums must be sent in this message.
-		// TODO: Currently the checksums are only sent on the first message
-		// of the stream, but in the future, we must also support sending it
-		// on the *last* message of the stream (instead of the first).
 		ObjectChecksums: toProtoChecksums(w.sendCRC32C, w.attrs),
 	}
 
@@ -415,7 +413,7 @@ func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(ctx context.Context, buf [
 		}
 		firstMessage = s.firstMessage
 	}
-	req := bidiWriteObjectRequest(buf, offset, flush, finishWrite)
+	req := bidiWriteObjectRequest(buf, offset, flush, finishWrite, nil)
 	if firstMessage != nil {
 		proto.Merge(req, firstMessage)
 	}
@@ -453,16 +451,15 @@ type gRPCResumableBidiWriteBufferSender struct {
 	stream            storagepb.Storage_BidiWriteObjectClient
 	flushOffset       int64
 	settings          *settings
+	writer            *gRPCWriter
 }
 
 func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender(ctx context.Context) (*gRPCResumableBidiWriteBufferSender, error) {
 	req := &storagepb.StartResumableWriteRequest{
 		WriteObjectSpec:           w.spec,
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
-		// TODO: Currently the checksums are only sent on the request to initialize
-		// the upload, but in the future, we must also support sending it
-		// on the *last* message of the stream.
-		ObjectChecksums: toProtoChecksums(w.sendCRC32C, w.attrs),
+		// For resumable uploads, checksums are only sent in the final
+		// BidiWriteObjectRequest with finish_write=true, not here.
 	}
 
 	var upid string
@@ -491,6 +488,7 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender(ctx context.Context) 
 		forceFirstMessage: true,
 		stream:            stream,
 		settings:          w.settings,
+		writer:            w,
 	}, nil
 }
 
@@ -539,7 +537,11 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 		return nil, nil
 	}
 
-	req := bidiWriteObjectRequest(buf, offset, flush, finishWrite)
+	var checksums *storagepb.ObjectChecksums
+	if finishWrite && s.writer != nil && s.writer.sendCRC32C {
+		checksums = toProtoChecksums(s.writer.sendCRC32C, s.writer.attrs)
+	}
+	req := bidiWriteObjectRequest(buf, offset, flush, finishWrite, checksums)
 	if s.forceFirstMessage {
 		req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
 		s.forceFirstMessage = false
@@ -927,9 +929,9 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 	finalizeObject := finishWrite && s.finalizeOnClose
 	if finishWrite {
 		// Always flush when finishing the Write, even if not finalizing.
-		req = bidiWriteObjectRequest(buf, offset, true, finalizeObject)
+		req = bidiWriteObjectRequest(buf, offset, true, finalizeObject, nil)
 	} else {
-		req = bidiWriteObjectRequest(buf, offset, flush, false)
+		req = bidiWriteObjectRequest(buf, offset, flush, false, nil)
 	}
 	if finalizeObject {
 		// appendable objects pass checksums on the finalize message only
