@@ -36,6 +36,7 @@ var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
 // Each field is read-only.
 type ReaderObjectAttrs struct {
 	// Size is the length of the object's content.
+	// Size may be out of date for unfinalized objects.
 	Size int64
 
 	// StartOffset is the byte offset within the object
