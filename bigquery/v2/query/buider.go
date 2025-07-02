@@ -25,6 +25,9 @@ func QueryFromSQL(projectID, sql string) *bigquerypb.PostQueryRequest {
 		QueryRequest: &bigquerypb.QueryRequest{
 			Query:        sql,
 			UseLegacySql: wrapperspb.Bool(false),
+			FormatOptions: &bigquerypb.DataFormatOptions{
+				UseInt64Timestamp: true,
+			},
 		},
 		ProjectId: projectID,
 	}
