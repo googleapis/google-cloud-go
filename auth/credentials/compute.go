@@ -37,11 +37,12 @@ var (
 
 // computeTokenProvider creates a [cloud.google.com/go/auth.TokenProvider] that
 // uses the metadata service to retrieve tokens.
-func computeTokenProvider(opts *DetectOptions, client *metadata.Client) auth.TokenProvider {
+func computeTokenProvider(opts *DetectOptions, client *metadata.Client, tbDataProvider auth.TrustBoundaryDataProvider) auth.TokenProvider {
 	return auth.NewCachedTokenProvider(&computeProvider{
-		scopes:           opts.Scopes,
-		client:           client,
-		tokenBindingType: opts.TokenBindingType,
+		scopes:                    opts.Scopes,
+		client:                    client,
+		tokenBindingType:          opts.TokenBindingType,
+		trustBoundaryDataProvider: tbDataProvider,
 	}, &auth.CachedTokenProviderOptions{
 		ExpireEarly:         opts.EarlyTokenRefresh,
 		DisableAsyncRefresh: opts.DisableAsyncRefresh,
@@ -50,9 +51,10 @@ func computeTokenProvider(opts *DetectOptions, client *metadata.Client) auth.Tok
 
 // computeProvider fetches tokens from the google cloud metadata service.
 type computeProvider struct {
-	scopes           []string
-	client           *metadata.Client
-	tokenBindingType TokenBindingType
+	scopes                    []string
+	client                    *metadata.Client
+	tokenBindingType          TokenBindingType
+	trustBoundaryDataProvider auth.TrustBoundaryDataProvider
 }
 
 type metadataTokenResp struct {
@@ -92,11 +94,20 @@ func (cs *computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 	if res.ExpiresInSec == 0 || res.AccessToken == "" {
 		return nil, errors.New("credentials: incomplete token received from metadata")
 	}
-	return &auth.Token{
+	token := &auth.Token{
 		Value:    res.AccessToken,
 		Type:     res.TokenType,
 		Expiry:   time.Now().Add(time.Duration(res.ExpiresInSec) * time.Second),
 		Metadata: computeTokenMetadata,
-	}, nil
-
+	}
+	if cs.trustBoundaryDataProvider != nil {
+		trustBoundaryData, err := cs.trustBoundaryDataProvider.GetTrustBoundaryData(ctx, token.Value)
+		if err != nil {
+			return nil, fmt.Errorf("credentials: error fetching the trust bounday data: %w", err)
+		}
+		if trustBoundaryData != nil {
+			token.TrustBoundaryData = *trustBoundaryData
+		}
+	}
+	return token, nil
 }
