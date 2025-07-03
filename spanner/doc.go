@@ -338,10 +338,14 @@ NULL-able STRUCT values.
 # DML and Partitioned DML
 
 Spanner supports DML statements like INSERT, UPDATE and DELETE. Use
-ReadWriteTransaction.Update to run DML statements. It returns the number of rows
-affected. (You can call use ReadWriteTransaction.Query with a DML statement. The
-first call to Next on the resulting RowIterator will return iterator.Done, and
-the RowCount field of the iterator will hold the number of affected rows.)
+ReadWriteTransaction.Update to run simple DML statements and
+ReadWriteTransaction.Query to run DML statements containing "THEN RETURN"
+(GoogleSQL dialect) or "RETURNING" (PostgreSQL dialect) clauses.
+ReadWriteTransaction.Update returns the number of rows affected. When using
+ReadWriteTransaction.Query the number of rows affected is available via
+RowIterator.RowCount after RowIterator.Next returns iterator.Done. (You can call
+ReadWriteTransaction.Query with a simple DML statement as well. In this case
+the first call to Next on the resulting RowIterator will return iterator.Done.)
 
 For large databases, it may be more efficient to partition the DML statement.
 Use client.PartitionedUpdate to run a DML statement in this way. Not all DML
