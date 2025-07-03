@@ -51,6 +51,7 @@ func (fv FieldValue) List() []FieldValue {
 		arr := []FieldValue{}
 		for _, v := range l {
 			arr = append(arr, FieldValue{
+				Type:  fv.Type,
 				Value: v,
 			})
 		}
