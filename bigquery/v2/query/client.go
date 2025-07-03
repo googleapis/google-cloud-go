@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/v2/apiv2_client"
 	"google.golang.org/api/option"
 )
@@ -25,6 +26,7 @@ import (
 // QueryClient is a client for running queries in BigQuery.
 type QueryClient struct {
 	c                *apiv2_client.Client
+	rc               *storagepb.BigQueryReadClient
 	projectID        string
 	billingProjectID string
 }
@@ -59,8 +61,15 @@ func (c *QueryClient) NewQueryRunner() *QueryRunner {
 }
 
 // NewQueryReader creates a new QueryReader.
-func (c *QueryClient) NewQueryReader() *QueryReader {
-	return &QueryReader{
-		c: c,
+func (c *QueryClient) NewQueryReader(opts ...option.ClientOption) *QueryReader {
+	qr := &QueryReader{
+		c:          c,
+		readClient: c.rc,
 	}
+	for _, opt := range opts {
+		if cOpt, ok := opt.(*customClientOption); ok {
+			cOpt.ApplyCustomReaderOpt(qr)
+		}
+	}
+	return qr
 }

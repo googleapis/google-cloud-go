@@ -27,12 +27,6 @@ type QueryReader struct {
 	readClient *storagepb.BigQueryReadClient
 }
 
-// WithReadClient sets the read client for the query reader.
-func (qr *QueryReader) WithReadClient(rc *storagepb.BigQueryReadClient) *QueryReader {
-	qr.readClient = rc
-	return qr
-}
-
 // Read reads the results of a query job.
 func (qr *QueryReader) Read(ctx context.Context, jobRef *bigquerypb.JobReference, schema *bigquerypb.TableSchema, opts ...ReadOption) (*RowIterator, error) {
 	// TODO: use storage read API
