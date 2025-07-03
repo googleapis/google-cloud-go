@@ -61,12 +61,26 @@ func TestReadNestedObject(t *testing.T) {
 			rows, _ := readRows(t, ctx, it)
 			if msg, ok := compareReadMap(rows, []map[string]Value{{
 				"age": int64(40),
-				"nested": map[string]Value{
-					"a": "1",
-					"b": "2",
+				"nested": []Value{
+					map[string]Value{
+						"object": map[string]Value{
+							"a": "1",
+							"b": "2",
+						},
+					},
 				},
 			}}); !ok {
 				t.Fatal(msg)
+			}
+
+			if rows[0].GetColumnAtIndex(0).String() != "40" {
+				t.Fatalf("expected to read `age` column as string")
+			}
+			if rows[0].GetColumnName("nested").List()[0].Record().GetColumnName("object").Record().GetColumnName("a").String() != "1" {
+				t.Fatalf("expected to read `nested.object.a` column as string")
+			}
+			if rows[0].GetColumnName("nested").List()[0].Record().GetColumnName("object").Record().GetColumnName("b").String() != "2" {
+				t.Fatalf("expected to read `nested.object.a` column as string")
 			}
 		})
 	}

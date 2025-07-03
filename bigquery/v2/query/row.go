@@ -24,6 +24,9 @@ type Row struct {
 	value  map[string]Value
 }
 
+// A Record behaves like Row, but it's embedded within a row
+type Record = Row
+
 func newRow(schema *schema) *Row {
 	return &Row{
 		schema: schema,
@@ -33,6 +36,29 @@ func newRow(schema *schema) *Row {
 
 func (r *Row) setValue(columnIndex int, columnName string, value Value) {
 	r.value[columnName] = value
+}
+
+func (r *Row) GetColumnAtIndex(idx int) *FieldValue {
+	if idx >= r.schema.len() {
+		return nil
+	}
+	f := r.schema.pb.Fields[idx]
+	return &FieldValue{
+		Type:  FieldType(f.Type),
+		Value: r.value[f.Name],
+	}
+}
+
+func (r *Row) GetColumnName(name string) *FieldValue {
+	for _, f := range r.schema.pb.Fields {
+		if f.Name == name {
+			return &FieldValue{
+				Type:  FieldType(f.Type),
+				Value: r.value[f.Name],
+			}
+		}
+	}
+	return nil
 }
 
 // AsMap returns the row as a JSON object.

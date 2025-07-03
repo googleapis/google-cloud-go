@@ -28,6 +28,44 @@ import (
 
 type Value any
 
+type FieldValue struct {
+	Type  FieldType
+	Value Value
+}
+
+func (fv FieldValue) String() string {
+	if s, ok := fv.Value.(string); ok {
+		return s
+	}
+	if b, ok := fv.Value.([]byte); ok {
+		return base64.StdEncoding.EncodeToString(b)
+	}
+	if str, ok := fv.Value.(fmt.Stringer); ok {
+		return str.String()
+	}
+	return fmt.Sprintf("%v", fv.Value)
+}
+
+func (fv FieldValue) List() []FieldValue {
+	if l, ok := fv.Value.([]Value); ok {
+		arr := []FieldValue{}
+		for _, v := range l {
+			arr = append(arr, FieldValue{
+				Value: v,
+			})
+		}
+		return arr
+	}
+	return nil
+}
+
+func (fv FieldValue) Record() *Record {
+	if r, ok := fv.Value.(*Row); ok {
+		return r
+	}
+	return nil
+}
+
 // convertRows converts a series of TableRows into a series of Value slices.
 // schema is used to interpret the data from rows; its length must match the
 // length of each row.
