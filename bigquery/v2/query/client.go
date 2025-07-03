@@ -27,15 +27,19 @@ import (
 
 // QueryClient is a client for running queries in BigQuery.
 type QueryClient struct {
-	c                *apiv2_client.Client
-	rc               *storagepb.BigQueryReadClient
-	projectID        string
-	billingProjectID string
+	c                      *apiv2_client.Client
+	rc                     *storagepb.BigQueryReadClient
+	projectID              string
+	billingProjectID       string
+	defaultJobCreationMode bigquerypb.QueryRequest_JobCreationMode
 }
 
 // NewClient creates a new query client.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*QueryClient, error) {
-	qc := &QueryClient{projectID: projectID, billingProjectID: projectID}
+	qc := &QueryClient{
+		projectID:        projectID,
+		billingProjectID: projectID,
+	}
 	for _, opt := range opts {
 		if cOpt, ok := opt.(*customClientOption); ok {
 			cOpt.ApplyCustomClientOpt(qc)
@@ -53,6 +57,9 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 
 // StartQuery runs a query and returns a QueryJob handle.
 func (qc *QueryClient) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
+	if req.QueryRequest.JobCreationMode == bigquerypb.QueryRequest_JOB_CREATION_MODE_UNSPECIFIED {
+		req.QueryRequest.JobCreationMode = qc.defaultJobCreationMode
+	}
 	res, err := qc.c.Query(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run query: %w", err)

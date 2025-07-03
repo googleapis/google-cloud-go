@@ -16,6 +16,7 @@ package query
 
 import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"cloud.google.com/go/bigquery/v2/apiv2_client"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -31,6 +32,11 @@ func WithBillingProjectID(projectID string) option.ClientOption {
 	return &customClientOption{billingProjectID: projectID}
 }
 
+// WithDefaultJobCreationMode sets default job mode creation.
+func WithDefaultJobCreationMode(mode bigquerypb.QueryRequest_JobCreationMode) option.ClientOption {
+	return &customClientOption{defaultJobCreationMode: mode}
+}
+
 // WithReadClient sets the read client for the query reader.
 func WithReadClient(rc *storagepb.BigQueryReadClient) option.ClientOption {
 	return &customClientOption{readClient: rc}
@@ -38,9 +44,10 @@ func WithReadClient(rc *storagepb.BigQueryReadClient) option.ClientOption {
 
 type customClientOption struct {
 	internaloption.EmbeddableAdapter
-	client           *apiv2_client.Client
-	readClient       *storagepb.BigQueryReadClient
-	billingProjectID string
+	client                 *apiv2_client.Client
+	readClient             *storagepb.BigQueryReadClient
+	defaultJobCreationMode bigquerypb.QueryRequest_JobCreationMode
+	billingProjectID       string
 }
 
 func (s *customClientOption) ApplyCustomClientOpt(c *QueryClient) {
@@ -50,6 +57,7 @@ func (s *customClientOption) ApplyCustomClientOpt(c *QueryClient) {
 	if s.billingProjectID != "" {
 		c.billingProjectID = s.billingProjectID
 	}
+	c.defaultJobCreationMode = s.defaultJobCreationMode
 	if s.readClient != nil {
 		c.rc = s.readClient
 	}
