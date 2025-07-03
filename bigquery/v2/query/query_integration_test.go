@@ -32,10 +32,9 @@ func TestStatelessQuery(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			qrun := client.NewQueryRunner()
 			req := client.QueryFromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
 
-			q, err := qrun.StartQuery(ctx, req)
+			q, err := client.StartQuery(ctx, req)
 			if err != nil {
 				t.Fatalf("Run() error: %v", err)
 			}
@@ -67,10 +66,9 @@ func TestReadQueryJob(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			qrun := client.NewQueryRunner()
 			req := client.QueryFromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
 
-			q, err := qrun.StartQuery(ctx, req)
+			q, err := client.StartQuery(ctx, req)
 			if err != nil {
 				t.Fatalf("Run() error: %v", err)
 			}
@@ -105,8 +103,7 @@ func TestInsertQueryJob(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			qrun := client.NewQueryRunner()
-			q, err := qrun.StartQueryJob(ctx, &bigquerypb.Job{
+			q, err := client.StartQueryJob(ctx, &bigquerypb.Job{
 				Configuration: &bigquerypb.JobConfiguration{
 					Query: &bigquerypb.JobConfigurationQuery{
 						Query:        "SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar",

@@ -37,10 +37,9 @@ func TestReadNestedObject(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			qrun := client.NewQueryRunner()
 			req := client.QueryFromSQL("SELECT 40 as age, [STRUCT(STRUCT('1' as a, '2' as b) as object)] as nested")
 
-			q, err := qrun.StartQuery(ctx, req)
+			q, err := client.StartQuery(ctx, req)
 			if err != nil {
 				t.Fatalf("Run() error: %v", err)
 			}
@@ -92,7 +91,6 @@ func TestReadTypes(t *testing.T) {
 	}
 	for k, client := range testClients {
 		t.Run(k, func(t *testing.T) {
-			qrun := client.NewQueryRunner()
 			tcs := queryParameterTestCases()
 			for _, tc := range tcs {
 				t.Run(tc.name, func(t *testing.T) {
@@ -102,7 +100,7 @@ func TestReadTypes(t *testing.T) {
 					req := client.QueryFromSQL(tc.query)
 					req.QueryRequest.QueryParameters = tc.parameters
 
-					q, err := qrun.StartQuery(ctx, req)
+					q, err := client.StartQuery(ctx, req)
 					if err != nil {
 						t.Fatalf("Run() error: %v", err)
 					}

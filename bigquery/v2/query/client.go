@@ -19,7 +19,9 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"cloud.google.com/go/bigquery/v2/apiv2_client"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 )
 
@@ -49,15 +51,42 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return qc, nil
 }
 
-func (c *QueryClient) Close() error {
-	return c.c.Close()
+// StartQuery runs a query and returns a QueryJob handle.
+func (qc *QueryClient) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
+	res, err := qc.c.Query(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to run query: %w", err)
+	}
+
+	return newQueryJobFromQueryResponse(qc, res)
 }
 
-// NewQueryRunner creates a new QueryRunner.
-func (c *QueryClient) NewQueryRunner() *QueryRunner {
-	return &QueryRunner{
-		c: c,
+// StartQueryRequest runs a query and returns a QueryJob handle.
+func (qc *QueryClient) StartQueryRequest(ctx context.Context, req *bigquerypb.QueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
+	return qc.StartQuery(ctx, &bigquerypb.PostQueryRequest{
+		QueryRequest: req,
+		ProjectId:    qc.billingProjectID,
+	})
+}
+
+// StartJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
+func (qc *QueryClient) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*QueryJob, error) {
+	qconfig := job.Configuration.Query
+	if qconfig == nil {
+		return nil, fmt.Errorf("job is not a query")
 	}
+	job, err := qc.c.InsertJob(ctx, &bigquerypb.InsertJobRequest{
+		ProjectId: qc.billingProjectID,
+		Job:       job,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to insert query: %w", err)
+	}
+	return newQueryJobFromJob(qc, job)
+}
+
+func (c *QueryClient) Close() error {
+	return c.c.Close()
 }
 
 // NewQueryReader creates a new QueryReader.
