@@ -2,7 +2,6 @@ package query
 
 import (
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
-	"github.com/apache/arrow/go/v15/arrow"
 )
 
 // FieldType is the type of field.
@@ -61,12 +60,11 @@ const (
 // internal schema struct with some optimization to parse row data
 // we should steers users on using bigquerypb.Schema externally
 type schema struct {
-	pb          *bigquerypb.TableSchema
-	arrowSchema *arrow.Schema
+	pb *bigquerypb.TableSchema
 }
 
 func newSchema(pb *bigquerypb.TableSchema) *schema {
-	return &schema{pb: pb, arrowSchema: arrowSchemaFromBigQuerySchema(pb)}
+	return &schema{pb: pb}
 }
 
 func newSchemaFromField(field *bigquerypb.TableFieldSchema) *schema {
@@ -78,83 +76,4 @@ func newSchemaFromField(field *bigquerypb.TableFieldSchema) *schema {
 
 func (s *schema) len() int {
 	return len(s.pb.Fields)
-}
-
-func arrowSchemaFromBigQuerySchema(pb *bigquerypb.TableSchema) *arrow.Schema {
-	if pb == nil {
-		return nil
-	}
-	fields := arrowFieldsFromFields(pb.Fields)
-	schema := arrow.NewSchema(fields, nil)
-	return schema
-}
-
-func arrowFieldsFromFields(fields []*bigquerypb.TableFieldSchema) []arrow.Field {
-	arfields := []arrow.Field{}
-	for _, f := range fields {
-		arfields = append(arfields, arrow.Field{
-			Name:     f.Name,
-			Type:     arrowTypeFromField(f),
-			Nullable: f.Mode == string(ModeNullable),
-		})
-	}
-	return arfields
-}
-
-// based on BigQuery Storage API conversion
-// https://cloud.google.com/bigquery/docs/reference/storage#arrow_schema_details
-func arrowTypeFromField(f *bigquerypb.TableFieldSchema) arrow.DataType {
-	var baseType arrow.DataType
-	switch FieldType(f.Type) {
-	case StringFieldType:
-		baseType = arrow.BinaryTypes.String
-	case BytesFieldType:
-		baseType = arrow.BinaryTypes.Binary
-	case IntegerFieldType:
-		baseType = arrow.PrimitiveTypes.Int64
-	case FloatFieldType:
-		baseType = arrow.PrimitiveTypes.Float64
-	case BooleanFieldType:
-		baseType = arrow.FixedWidthTypes.Boolean
-	case TimestampFieldType:
-		baseType = &arrow.TimestampType{
-			Unit:     arrow.Microsecond,
-			TimeZone: "UTC",
-		}
-	case DateFieldType:
-		baseType = arrow.FixedWidthTypes.Date32
-	case TimeFieldType:
-		baseType = arrow.FixedWidthTypes.Time64us
-	case DateTimeFieldType:
-		baseType = &arrow.TimestampType{
-			Unit:     arrow.Microsecond,
-			TimeZone: "",
-		}
-	case NumericFieldType:
-		baseType = &arrow.Decimal128Type{
-			Precision: int32(f.Precision),
-			Scale:     int32(f.Scale),
-		}
-	case BigNumericFieldType:
-		baseType = &arrow.Decimal256Type{
-			Precision: int32(f.Precision),
-			Scale:     int32(f.Scale),
-		}
-	case RecordFieldType:
-		fields := arrowFieldsFromFields(f.Fields)
-		baseType = arrow.StructOf(fields...)
-	case GeographyFieldType:
-		baseType = arrow.BinaryTypes.String
-	case JSONFieldType:
-		baseType = arrow.BinaryTypes.String
-	case RangeFieldType:
-		panic("range not supported yet")
-	case IntervalFieldType:
-		panic("internal not supported yet")
-	}
-
-	if f.Mode == string(ModeRepeated) {
-		return arrow.ListOf(baseType)
-	}
-	return baseType
 }
