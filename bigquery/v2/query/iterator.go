@@ -85,13 +85,5 @@ func (it *RowIterator) dequeueRow() *Row {
 }
 
 func fieldValueRowsToRowList(rows []*structpb.Struct, schema *schema) ([]*Row, error) {
-	values, err := convertRows(rows, schema)
-	if err != nil {
-		return nil, err
-	}
-	nrows := make([]*Row, len(rows))
-	for i := range rows {
-		nrows[i] = newRowFromValues(values[i])
-	}
-	return nrows, nil
+	return convertRows(rows, schema)
 }

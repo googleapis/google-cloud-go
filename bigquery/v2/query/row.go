@@ -15,36 +15,75 @@
 package query
 
 import (
-	"encoding/json"
-
-	"google.golang.org/protobuf/types/known/structpb"
+	"fmt"
 )
 
 // Row represents a single row in the query results.
 type Row struct {
-	raw   *structpb.Struct // TODO use arrow.Record internally ?
-	value []Value
-	json  []byte
+	schema *schema
+	value  map[string]Value
 }
 
-func newRowFromValues(values []Value) *Row {
-	r := &Row{
-		value: values,
+func newRow(schema *schema) *Row {
+	return &Row{
+		schema: schema,
+		value:  map[string]Value{},
 	}
-	return r
 }
 
-// AsJSON returns the row as a JSON object.
-func (r *Row) AsJSON() (map[string]interface{}, error) {
-	return r.raw.AsMap(), nil
+func (r *Row) setValue(columnIndex int, columnName string, value Value) {
+	r.value[columnName] = value
+}
+
+// AsMap returns the row as a JSON object.
+func (r *Row) AsMap() map[string]Value {
+	values := map[string]Value{}
+	for _, f := range r.schema.pb.Fields {
+		fval := r.value[f.Name]
+		if input, ok := fval.(*Row); ok {
+			fval = input.AsMap()
+		}
+		if input, ok := fval.([]Value); ok {
+			arr := []Value{}
+			for _, row := range input {
+				if input, ok := row.(*Row); ok {
+					arr = append(arr, input.AsMap())
+				} else {
+					arr = append(arr, row)
+				}
+			}
+			fval = arr
+		}
+		values[f.Name] = fval
+	}
+	return values
 }
 
 // AsValue decodes the row into an array of Value.
-func (r *Row) AsValue() ([]Value, error) {
-	return r.value, nil
+func (r *Row) AsValues() []Value {
+	values := []Value{}
+	for _, f := range r.schema.pb.Fields {
+		v := r.value[f.Name]
+		if input, ok := v.(*Row); ok {
+			v = input.AsValues()
+		}
+		if input, ok := v.([]Value); ok {
+			arr := []Value{}
+			for _, row := range input {
+				if input, ok := row.(*Row); ok {
+					arr = append(arr, input.AsValues())
+				} else {
+					arr = append(arr, row)
+				}
+			}
+			v = arr
+		}
+		values = append(values, v)
+	}
+	return values
 }
 
 // AsStruct decodes the row into a struct.
-func (r *Row) AsStruct(v interface{}) error {
-	return json.Unmarshal(r.json, &v)
+func (r *Row) AsStruct(v any) error {
+	return fmt.Errorf("not implemented yet")
 }

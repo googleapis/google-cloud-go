@@ -31,8 +31,8 @@ type Value any
 // convertRows converts a series of TableRows into a series of Value slices.
 // schema is used to interpret the data from rows; its length must match the
 // length of each row.
-func convertRows(rows []*structpb.Struct, schema *schema) ([][]Value, error) {
-	var rs [][]Value
+func convertRows(rows []*structpb.Struct, schema *schema) ([]*Row, error) {
+	var rs []*Row
 	for _, r := range rows {
 		row, err := convertRow(r, schema)
 		if err != nil {
@@ -43,7 +43,7 @@ func convertRows(rows []*structpb.Struct, schema *schema) ([][]Value, error) {
 	return rs, nil
 }
 
-func convertRow(r *structpb.Struct, schema *schema) ([]Value, error) {
+func convertRow(r *structpb.Struct, schema *schema) (*Row, error) {
 	fields, err := getFieldList(r)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func convertRow(r *structpb.Struct, schema *schema) ([]Value, error) {
 	if schema.len() != len(fields) {
 		return nil, errors.New("schema length does not match row length")
 	}
-	var values []Value
+	row := newRow(schema)
 	for i, cell := range fields {
 		cellValue, err := getFieldValue(cell)
 		if err != nil {
@@ -67,9 +67,9 @@ func convertRow(r *structpb.Struct, schema *schema) ([]Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		values = append(values, v)
+		row.setValue(i, fs.Name, v)
 	}
-	return values, nil
+	return row, nil
 }
 
 func convertValue(val *structpb.Value, typ FieldType, schema *schema) (Value, error) {
@@ -115,7 +115,7 @@ func convertNestedRecord(val *structpb.Struct, schema *schema) (Value, error) {
 		return nil, errors.New("schema length does not match row length")
 	}
 
-	var values []Value
+	values := newRow(schema)
 	for i, cell := range record {
 		// each cell contains a single entry, keyed by "v"
 		val, err := getFieldValue(cell)
@@ -127,7 +127,7 @@ func convertNestedRecord(val *structpb.Struct, schema *schema) (Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		values = append(values, v)
+		values.setValue(i, fs.Name, v)
 	}
 	return values, nil
 }
