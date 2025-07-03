@@ -15,6 +15,8 @@
 package query
 
 import (
+	"fmt"
+
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -35,5 +37,20 @@ func QueryFromSQL(projectID, sql string) *bigquerypb.PostQueryRequest {
 
 // QueryFromSQL creates a query configuration from a SQL string.
 func (c *QueryClient) QueryFromSQL(sql string) *bigquerypb.PostQueryRequest {
-	return QueryFromSQL(c.billingProjectID, sql)
+	req := QueryFromSQL(c.billingProjectID, sql)
+	req.QueryRequest.JobCreationMode = c.defaultJobCreationMode
+	return req
+}
+
+func InferQueryParam(name string, value any) *bigquerypb.QueryParameter {
+	// TODO: infer types like we do in bigquery/v1/params.go
+	return &bigquerypb.QueryParameter{
+		Name: name,
+		ParameterType: &bigquerypb.QueryParameterType{
+			Type: "STRING",
+		},
+		ParameterValue: &bigquerypb.QueryParameterValue{
+			Value: wrapperspb.String(fmt.Sprintf("%v", value)),
+		},
+	}
 }
