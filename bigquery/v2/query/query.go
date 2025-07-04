@@ -165,14 +165,8 @@ func (j *QueryJob) Complete() bool {
 
 // Read returns a RowIterator for the query results.
 func (j *QueryJob) Read(ctx context.Context) (*RowIterator, error) {
-	return &RowIterator{
-		query:     j,
-		c:         j.c,
-		rows:      j.cachedRows,
-		totalRows: j.cachedTotalRows,
-		schema:    j.cachedSchema,
-		pageToken: j.cachedPageToken,
-	}, nil
+	qr := j.c.NewQueryReader()
+	return qr.readQuery(ctx, j, WithPageToken(j.cachedPageToken))
 }
 
 func (j *QueryJob) getRows(ctx context.Context, pageToken string) (*bigquerypb.GetQueryResultsResponse, error) {

@@ -35,23 +35,34 @@ func (qr *QueryReader) Read(ctx context.Context, jobRef *bigquerypb.JobReference
 		return nil, err
 	}
 
-	initState := &readState{}
+	return qr.readQuery(ctx, query, opts...)
+}
+
+func (qr *QueryReader) readQuery(ctx context.Context, j *QueryJob, opts ...ReadOption) (*RowIterator, error) {
+	initState := &readState{
+		pageToken: j.cachedPageToken,
+	}
 	for _, opt := range opts {
 		opt(initState)
 	}
 
 	it := &RowIterator{
 		c:         qr.c,
-		query:     query,
+		query:     j,
 		pageToken: initState.pageToken,
-		schema:    newSchema(schema),
+		rows:      j.cachedRows,
+		totalRows: j.cachedTotalRows,
+		schema:    j.cachedSchema,
 	}
 
-	err = it.fetchRows(ctx)
+	if len(it.query.cachedRows) > 0 {
+		return it, nil
+	}
+
+	err := it.fetchRows(ctx)
 	if err != nil {
 		return nil, err
 	}
-
 	return it, nil
 }
 
