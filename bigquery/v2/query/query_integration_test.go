@@ -33,6 +33,7 @@ func TestStatelessQuery(t *testing.T) {
 			defer cancel()
 
 			req := client.QueryFromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
+			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL
 
 			q, err := client.StartQuery(ctx, req)
 			if err != nil {
@@ -67,6 +68,7 @@ func TestReadQueryJob(t *testing.T) {
 			defer cancel()
 
 			req := client.QueryFromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
+			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_REQUIRED
 
 			q, err := client.StartQuery(ctx, req)
 			if err != nil {
