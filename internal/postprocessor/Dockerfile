@@ -19,7 +19,7 @@ ENV GO_VERSION 1.23.0
 ENV PATH /usr/local/go/bin:$PATH
 
 RUN apt-get update && \
-    apt-get install -y wget ca-certificates && \
+    apt-get install -y wget ca-certificates git && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
