@@ -92,6 +92,7 @@ deep-remove-regex:
   - /confidentialcomputing/apiv1
   - /confidentialcomputing/apiv1alpha1
   - /config/apiv1/
+  - /config/configdelivery/apiv1beta/
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
   - /containeranalysis/apiv1beta1/
@@ -236,6 +237,8 @@ deep-remove-regex:
   - /internal/generated/snippets/compute/apiv1beta
   - /internal/generated/snippets/confidentialcomputing/apiv1
   - /internal/generated/snippets/confidentialcomputing/apiv1alpha1
+  - /internal/generated/snippets/config/apiv1/
+  - /internal/generated/snippets/config/configdelivery/apiv1beta/
   - /internal/generated/snippets/contactcenterinsights/apiv1/
   - /internal/generated/snippets/container/apiv1/
   - /internal/generated/snippets/containeranalysis/apiv1beta1/
@@ -840,6 +843,8 @@ deep-copy-regex:
   - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go
     dest: /
   - source: /google/cloud/config/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/configdelivery/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go
     dest: /
