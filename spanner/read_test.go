@@ -30,9 +30,11 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/metric/noop"
 	"google.golang.org/api/iterator"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
@@ -1518,6 +1520,127 @@ func TestGrpcReconnect(t *testing.T) {
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
 			Err:         status.Errorf(codes.Unavailable, "server is unavailable"),
+		},
+	)
+
+	// The retry is counted from the second call.
+	r := -1
+	// Establish a stream to mock cloud spanner server.
+	iter := stream(context.Background(), nil, c.metricsTracerFactory,
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
+			r++
+			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+				Session:     session.Name,
+				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+				ResumeToken: resumeToken,
+			}, opts...)
+
+		},
+		nil,
+		func(error) {}, mc.(*grpcSpannerClient))
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			err = nil
+			break
+		}
+		if err != nil {
+			break
+		}
+	}
+	if r != 1 {
+		t.Errorf("retry count = %v, want 1", r)
+	}
+}
+
+func TestRetryResourceExhaustedWithoutRetryInfo(t *testing.T) {
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
+
+	server, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
+	}
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
+
+	// Simulate an unavailable error to interrupt the stream of PartialResultSet
+	// in order to test the grpc retrying mechanism.
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Errorf(codes.ResourceExhausted, "server is unavailable"),
+		},
+	)
+
+	// The retry is counted from the second call.
+	r := -1
+	// Establish a stream to mock cloud spanner server.
+	iter := stream(context.Background(), nil, c.metricsTracerFactory,
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
+			r++
+			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+				Session:     session.Name,
+				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+				ResumeToken: resumeToken,
+			}, opts...)
+
+		},
+		nil,
+		func(error) {}, mc.(*grpcSpannerClient))
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			err = nil
+			break
+		}
+		if err != nil {
+			break
+		}
+	}
+	if r != 0 {
+		t.Errorf("retry count = %v, want 0", r)
+	}
+}
+
+// Verify that streaming query get retried upon ResourceExhausted real gRPC server
+// transport failures.
+func TestRetryResourceExhaustedWithRetryInfo(t *testing.T) {
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
+
+	server, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
+	}
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
+
+	// Simulate an unavailable error to interrupt the stream of PartialResultSet
+	// in order to test the grpc retrying mechanism.
+	st := status.New(codes.ResourceExhausted, "server is unavailable")
+	retry := &errdetails.RetryInfo{
+		RetryDelay: durationpb.New(time.Nanosecond),
+	}
+	st, _ = st.WithDetails(retry)
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         st.Err(),
 		},
 	)
 
