@@ -50,7 +50,7 @@ type customClientOption struct {
 	billingProjectID       string
 }
 
-func (s *customClientOption) ApplyCustomClientOpt(c *QueryClient) {
+func (s *customClientOption) ApplyCustomClientOpt(c *Client) {
 	if s.client != nil {
 		c.c = s.client
 	}
@@ -63,8 +63,8 @@ func (s *customClientOption) ApplyCustomClientOpt(c *QueryClient) {
 	}
 }
 
-func (s *customClientOption) ApplyCustomReaderOpt(qr *QueryReader) {
+func (s *customClientOption) ApplyCustomReaderOpt(r *Reader) {
 	if s.readClient != nil {
-		qr.readClient = s.readClient
+		r.readClient = s.readClient
 	}
 }

@@ -32,7 +32,7 @@ func TestStatelessQuery(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			req := client.QueryFromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
+			req := client.FromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
 			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL
 
 			q, err := client.StartQuery(ctx, req)
@@ -53,7 +53,7 @@ func TestStatelessQuery(t *testing.T) {
 				t.Fatalf("Read() error: %v", err)
 			}
 
-			assertRowCount(t, ctx, it, 1)
+			assertRowCount(ctx, t, it, 1)
 		})
 	}
 }
@@ -67,7 +67,7 @@ func TestReadQueryJob(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			req := client.QueryFromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
+			req := client.FromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
 			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_REQUIRED
 
 			q, err := client.StartQuery(ctx, req)
@@ -83,15 +83,15 @@ func TestReadQueryJob(t *testing.T) {
 				t.Fatalf("expected job to be complete")
 			}
 
-			qread := client.NewQueryReader()
+			r := client.NewReader()
 			jobRef := q.JobReference()
 			schema := q.Schema()
-			it, err := qread.Read(ctx, jobRef, schema)
+			it, err := r.Read(ctx, jobRef, schema)
 			if err != nil {
 				t.Fatalf("Read() error: %v", err)
 			}
 
-			assertRowCount(t, ctx, it, 1)
+			assertRowCount(ctx, t, it, 1)
 		})
 	}
 }
@@ -130,19 +130,19 @@ func TestInsertQueryJob(t *testing.T) {
 				t.Fatalf("Read() error: %v", err)
 			}
 
-			assertRowCount(t, ctx, it, 1)
+			assertRowCount(ctx, t, it, 1)
 		})
 	}
 }
 
-func assertRowCount(t *testing.T, ctx context.Context, it *RowIterator, n int) {
-	_, total := readRows(t, ctx, it)
+func assertRowCount(ctx context.Context, t *testing.T, it *RowIterator, n int) {
+	_, total := readRows(ctx, t, it)
 	if total != uint64(n) {
 		t.Errorf("expected %d row of data, got %d", n, total)
 	}
 }
 
-func readRows(t *testing.T, ctx context.Context, it *RowIterator) ([]*Row, uint64) {
+func readRows(ctx context.Context, t *testing.T, it *RowIterator) ([]*Row, uint64) {
 	rows := []*Row{}
 	for {
 		row, err := it.Next(ctx)

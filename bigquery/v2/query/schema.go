@@ -63,11 +63,11 @@ const (
 type FieldMode string
 
 const (
-	// ModeNullable
+	// ModeNullable marks the field as nullable.
 	ModeNullable FieldMode = "NULLABLE"
-	// ModeRequired
+	// ModeRequired marks the field as required.
 	ModeRequired FieldMode = "REQUIRED"
-	// IntegerFieldType is a integer field type.
+	// ModeRepeated marks the field as an array.
 	ModeRepeated FieldMode = "REPEATED"
 )
 

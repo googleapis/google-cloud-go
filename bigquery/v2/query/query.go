@@ -22,9 +22,9 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// Query represents a query job.
+// QueryJob represents a query job.
 type QueryJob struct {
-	c         *QueryClient
+	c         *Client
 	complete  bool
 	projectID string
 	jobID     string
@@ -36,7 +36,7 @@ type QueryJob struct {
 	cachedSchema    *schema
 }
 
-func newQueryJobFromQueryResponse(c *QueryClient, res *bigquerypb.QueryResponse) (*QueryJob, error) {
+func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*QueryJob, error) {
 	schema := newSchema(res.Schema)
 	j := &QueryJob{
 		c:               c,
@@ -67,11 +67,11 @@ func newQueryJobFromQueryResponse(c *QueryClient, res *bigquerypb.QueryResponse)
 	return j, nil
 }
 
-func newQueryJobFromJob(c *QueryClient, job *bigquerypb.Job) (*QueryJob, error) {
+func newQueryJobFromJob(c *Client, job *bigquerypb.Job) (*QueryJob, error) {
 	return newQueryJobFromJobReference(c, nil, job.JobReference)
 }
 
-func newQueryJobFromJobReference(c *QueryClient, schema *bigquerypb.TableSchema, jobRef *bigquerypb.JobReference) (*QueryJob, error) {
+func newQueryJobFromJobReference(c *Client, schema *bigquerypb.TableSchema, jobRef *bigquerypb.JobReference) (*QueryJob, error) {
 	res := &bigquerypb.QueryResponse{
 		Schema:       schema,
 		JobReference: jobRef,
@@ -145,7 +145,7 @@ func (j *QueryJob) Wait(ctx context.Context) error {
 	return nil
 }
 
-// GetJobReference returns the job reference.
+// JobReference returns the job reference.
 func (j *QueryJob) JobReference() *bigquerypb.JobReference {
 	return &bigquerypb.JobReference{
 		ProjectId: j.projectID,
@@ -154,19 +154,20 @@ func (j *QueryJob) JobReference() *bigquerypb.JobReference {
 	}
 }
 
-// GetSchema returns the schema of the query results.
+// Schema returns the schema of the query results.
 func (j *QueryJob) Schema() *bigquerypb.TableSchema {
 	return j.cachedSchema.pb
 }
 
+// Complete to check is job finished execution
 func (j *QueryJob) Complete() bool {
 	return j.complete
 }
 
 // Read returns a RowIterator for the query results.
 func (j *QueryJob) Read(ctx context.Context) (*RowIterator, error) {
-	qr := j.c.NewQueryReader()
-	return qr.readQuery(ctx, j)
+	r := j.c.NewReader()
+	return r.readQuery(ctx, j)
 }
 
 func (j *QueryJob) getRows(ctx context.Context, pageToken string) (*bigquerypb.GetQueryResultsResponse, error) {

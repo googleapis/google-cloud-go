@@ -38,6 +38,7 @@ func (r *Row) setValue(columnIndex int, columnName string, value Value) {
 	r.value[columnName] = value
 }
 
+// GetColumnAtIndex get a FieldValue by column index.
 func (r *Row) GetColumnAtIndex(idx int) *FieldValue {
 	if idx >= r.schema.len() {
 		return nil
@@ -49,6 +50,7 @@ func (r *Row) GetColumnAtIndex(idx int) *FieldValue {
 	}
 }
 
+// GetColumnName get a FieldValue by column name.
 func (r *Row) GetColumnName(name string) *FieldValue {
 	for _, f := range r.schema.pb.Fields {
 		if f.Name == name {
@@ -85,7 +87,7 @@ func (r *Row) AsMap() map[string]Value {
 	return values
 }
 
-// AsValue decodes the row into an array of Value.
+// AsValues decodes the row into an array of Value.
 func (r *Row) AsValues() []Value {
 	values := []Value{}
 	for _, f := range r.schema.pb.Fields {

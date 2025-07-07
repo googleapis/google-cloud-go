@@ -37,7 +37,7 @@ func TestReadNestedObject(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			req := client.QueryFromSQL("SELECT 40 as age, [STRUCT(STRUCT('1' as a, '2' as b) as object)] as nested")
+			req := client.FromSQL("SELECT 40 as age, [STRUCT(STRUCT('1' as a, '2' as b) as object)] as nested")
 
 			q, err := client.StartQuery(ctx, req)
 			if err != nil {
@@ -57,7 +57,7 @@ func TestReadNestedObject(t *testing.T) {
 				t.Fatalf("Read() error: %v", err)
 			}
 
-			rows, _ := readRows(t, ctx, it)
+			rows, _ := readRows(ctx, t, it)
 			if msg, ok := compareReadMap(rows, []map[string]Value{{
 				"age": int64(40),
 				"nested": []Value{
@@ -97,7 +97,7 @@ func TestReadTypes(t *testing.T) {
 					ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 					defer cancel()
 
-					req := client.QueryFromSQL(tc.query)
+					req := client.FromSQL(tc.query)
 					req.QueryRequest.QueryParameters = tc.parameters
 
 					q, err := client.StartQuery(ctx, req)
@@ -118,7 +118,7 @@ func TestReadTypes(t *testing.T) {
 						t.Fatalf("Read() error: %v", err)
 					}
 
-					rows, _ := readRows(t, ctx, it)
+					rows, _ := readRows(ctx, t, it)
 					if msg, ok := compareReadMap(rows, []map[string]Value{tc.wantRowMap}); !ok {
 						t.Fatal(msg)
 					}

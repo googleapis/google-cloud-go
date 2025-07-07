@@ -23,7 +23,7 @@ import (
 
 // RowIterator is an iterator over the results of a query.
 type RowIterator struct {
-	c         *QueryClient
+	c         *Client
 	rows      []*Row
 	query     *QueryJob
 	totalRows uint64

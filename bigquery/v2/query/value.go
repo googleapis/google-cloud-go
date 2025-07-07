@@ -33,6 +33,7 @@ type FieldValue struct {
 	Value Value
 }
 
+// String gets the field as a STRING.
 func (fv FieldValue) String() string {
 	if s, ok := fv.Value.(string); ok {
 		return s
@@ -46,6 +47,8 @@ func (fv FieldValue) String() string {
 	return fmt.Sprintf("%v", fv.Value)
 }
 
+// List gets the field as an array of FieldValue.
+// The field should be an REPEATED field.
 func (fv FieldValue) List() []FieldValue {
 	if l, ok := fv.Value.([]Value); ok {
 		arr := []FieldValue{}
@@ -60,6 +63,8 @@ func (fv FieldValue) List() []FieldValue {
 	return nil
 }
 
+// Record gets the field as a RECORD.
+// The field should be a RECORD field.
 func (fv FieldValue) Record() *Record {
 	if r, ok := fv.Value.(*Row); ok {
 		return r

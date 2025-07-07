@@ -25,8 +25,8 @@ import (
 	"google.golang.org/api/option"
 )
 
-// QueryClient is a client for running queries in BigQuery.
-type QueryClient struct {
+// Client is a client for running queries in BigQuery.
+type Client struct {
 	c                      *apiv2_client.Client
 	rc                     *storagepb.BigQueryReadClient
 	projectID              string
@@ -35,8 +35,8 @@ type QueryClient struct {
 }
 
 // NewClient creates a new query client.
-func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*QueryClient, error) {
-	qc := &QueryClient{
+func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	qc := &Client{
 		projectID:        projectID,
 		billingProjectID: projectID,
 	}
@@ -56,56 +56,58 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 }
 
 // StartQuery runs a query and returns a QueryJob handle.
-func (qc *QueryClient) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
+func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
 	if req.QueryRequest.JobCreationMode == bigquerypb.QueryRequest_JOB_CREATION_MODE_UNSPECIFIED {
-		req.QueryRequest.JobCreationMode = qc.defaultJobCreationMode
+		req.QueryRequest.JobCreationMode = c.defaultJobCreationMode
 	}
-	res, err := qc.c.Query(ctx, req)
+	res, err := c.c.Query(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run query: %w", err)
 	}
 
-	return newQueryJobFromQueryResponse(qc, res)
+	return newQueryJobFromQueryResponse(c, res)
 }
 
 // StartQueryRequest runs a query and returns a QueryJob handle.
-func (qc *QueryClient) StartQueryRequest(ctx context.Context, req *bigquerypb.QueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
-	return qc.StartQuery(ctx, &bigquerypb.PostQueryRequest{
+func (c *Client) StartQueryRequest(ctx context.Context, req *bigquerypb.QueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
+	return c.StartQuery(ctx, &bigquerypb.PostQueryRequest{
 		QueryRequest: req,
-		ProjectId:    qc.billingProjectID,
+		ProjectId:    c.billingProjectID,
 	})
 }
 
-// StartJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
-func (qc *QueryClient) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*QueryJob, error) {
+// StartQueryJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
+func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*QueryJob, error) {
 	qconfig := job.Configuration.Query
 	if qconfig == nil {
 		return nil, fmt.Errorf("job is not a query")
 	}
-	job, err := qc.c.InsertJob(ctx, &bigquerypb.InsertJobRequest{
-		ProjectId: qc.billingProjectID,
+	job, err := c.c.InsertJob(ctx, &bigquerypb.InsertJobRequest{
+		ProjectId: c.billingProjectID,
 		Job:       job,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert query: %w", err)
 	}
-	return newQueryJobFromJob(qc, job)
+	return newQueryJobFromJob(c, job)
 }
 
-func (c *QueryClient) Close() error {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
 	return c.c.Close()
 }
 
-// NewQueryReader creates a new QueryReader.
-func (c *QueryClient) NewQueryReader(opts ...option.ClientOption) *QueryReader {
-	qr := &QueryReader{
+// NewReader creates a new Reader.
+func (c *Client) NewReader(opts ...option.ClientOption) *Reader {
+	r := &Reader{
 		c:          c,
 		readClient: c.rc,
 	}
 	for _, opt := range opts {
 		if cOpt, ok := opt.(*customClientOption); ok {
-			cOpt.ApplyCustomReaderOpt(qr)
+			cOpt.ApplyCustomReaderOpt(r)
 		}
 	}
-	return qr
+	return r
 }

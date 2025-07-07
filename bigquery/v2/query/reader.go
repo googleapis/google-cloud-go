@@ -21,24 +21,24 @@ import (
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 )
 
-// QueryReader is used to read the results of a query.
-type QueryReader struct {
-	c          *QueryClient
+// Reader is used to read the results of a query.
+type Reader struct {
+	c          *Client
 	readClient *storagepb.BigQueryReadClient
 }
 
 // Read reads the results of a query job.
-func (qr *QueryReader) Read(ctx context.Context, jobRef *bigquerypb.JobReference, schema *bigquerypb.TableSchema, opts ...ReadOption) (*RowIterator, error) {
+func (r *Reader) Read(ctx context.Context, jobRef *bigquerypb.JobReference, schema *bigquerypb.TableSchema, opts ...ReadOption) (*RowIterator, error) {
 	// TODO: use storage read API
-	query, err := newQueryJobFromJobReference(qr.c, schema, jobRef)
+	query, err := newQueryJobFromJobReference(r.c, schema, jobRef)
 	if err != nil {
 		return nil, err
 	}
 
-	return qr.readQuery(ctx, query, opts...)
+	return r.readQuery(ctx, query, opts...)
 }
 
-func (qr *QueryReader) readQuery(ctx context.Context, j *QueryJob, opts ...ReadOption) (*RowIterator, error) {
+func (r *Reader) readQuery(ctx context.Context, j *QueryJob, opts ...ReadOption) (*RowIterator, error) {
 	initState := &readState{
 		pageToken: j.cachedPageToken,
 	}
@@ -47,7 +47,7 @@ func (qr *QueryReader) readQuery(ctx context.Context, j *QueryJob, opts ...ReadO
 	}
 
 	it := &RowIterator{
-		c:         qr.c,
+		c:         r.c,
 		query:     j,
 		pageToken: initState.pageToken,
 		rows:      j.cachedRows,

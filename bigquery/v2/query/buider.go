@@ -21,8 +21,8 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// QueryFromSQL creates a query configuration from a SQL string.
-func QueryFromSQL(projectID, sql string) *bigquerypb.PostQueryRequest {
+// FromSQL creates a query configuration from a SQL string.
+func FromSQL(projectID, sql string) *bigquerypb.PostQueryRequest {
 	return &bigquerypb.PostQueryRequest{
 		QueryRequest: &bigquerypb.QueryRequest{
 			Query:        sql,
@@ -36,12 +36,13 @@ func QueryFromSQL(projectID, sql string) *bigquerypb.PostQueryRequest {
 }
 
 // QueryFromSQL creates a query configuration from a SQL string.
-func (c *QueryClient) QueryFromSQL(sql string) *bigquerypb.PostQueryRequest {
-	req := QueryFromSQL(c.billingProjectID, sql)
+func (c *Client) FromSQL(sql string) *bigquerypb.PostQueryRequest {
+	req := FromSQL(c.billingProjectID, sql)
 	req.QueryRequest.JobCreationMode = c.defaultJobCreationMode
 	return req
 }
 
+// InferQueryParam converts a basic Go type to a bigquerypb.QueryParameter
 func InferQueryParam(name string, value any) *bigquerypb.QueryParameter {
 	// TODO: infer types like we do in bigquery/v1/params.go
 	return &bigquerypb.QueryParameter{

@@ -28,7 +28,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-var testClients map[string]*QueryClient
+var testClients map[string]*Client
 var testProjectID string
 var defaultTestTimeout = 30 * time.Second
 
@@ -57,7 +57,7 @@ func setup(ctx context.Context) func() {
 	}
 	var opts []option.ClientOption
 	opts = append(opts, option.WithTokenSource(ts))
-	testClients = make(map[string]*QueryClient)
+	testClients = make(map[string]*Client)
 	var err error
 
 	grpcClient, err := apiv2_client.NewClient(ctx, opts...)
