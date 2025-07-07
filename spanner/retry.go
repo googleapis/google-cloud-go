@@ -61,13 +61,13 @@ func onCodes(bo gax.Backoff, cc ...codes.Code) gax.Retryer {
 func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 	errCode := status.Code(err)
 	if errCode == codes.Internal &&
-			!strings.Contains(err.Error(), "stream terminated by RST_STREAM") &&
-			// See b/25451313.
-			!strings.Contains(err.Error(), "HTTP/2 error code: INTERNAL_ERROR") &&
-			// See b/27794742.
-			!strings.Contains(err.Error(), "Connection closed with unknown cause") &&
-			!strings.Contains(err.Error(), "Received unexpected EOS on DATA frame from server") &&
-			!strings.Contains(err.Error(), "Authentication backend internal server error. Please retry") {
+		!strings.Contains(err.Error(), "stream terminated by RST_STREAM") &&
+		// See b/25451313.
+		!strings.Contains(err.Error(), "HTTP/2 error code: INTERNAL_ERROR") &&
+		// See b/27794742.
+		!strings.Contains(err.Error(), "Connection closed with unknown cause") &&
+		!strings.Contains(err.Error(), "Received unexpected EOS on DATA frame from server") &&
+		!strings.Contains(err.Error(), "Authentication backend internal server error. Please retry") {
 		return 0, false
 	}
 
