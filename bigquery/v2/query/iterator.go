@@ -25,7 +25,7 @@ import (
 type RowIterator struct {
 	c         *Client
 	rows      []*Row
-	query     *QueryJob
+	query     *Query
 	totalRows uint64
 	schema    *schema
 	pageToken string

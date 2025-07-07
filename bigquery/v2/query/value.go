@@ -26,8 +26,10 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// Value stores the contents of a row field value from a BigQuery result.
 type Value any
 
+// FielValue represents a row field with typed value.
 type FieldValue struct {
 	Type  FieldType
 	Value Value

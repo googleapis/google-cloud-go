@@ -22,8 +22,8 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// QueryJob represents a query job.
-type QueryJob struct {
+// Query represents a query job.
+type Query struct {
 	c         *Client
 	complete  bool
 	projectID string
@@ -36,42 +36,42 @@ type QueryJob struct {
 	cachedSchema    *schema
 }
 
-func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*QueryJob, error) {
+func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*Query, error) {
 	schema := newSchema(res.Schema)
-	j := &QueryJob{
+	q := &Query{
 		c:               c,
 		cachedSchema:    schema,
 		cachedPageToken: res.PageToken,
 	}
 	if res.TotalRows != nil {
-		j.cachedTotalRows = res.TotalRows.Value
+		q.cachedTotalRows = res.TotalRows.Value
 	}
 	if res.JobComplete != nil {
-		j.complete = res.JobComplete.Value
+		q.complete = res.JobComplete.Value
 	}
 	if res.Rows != nil {
 		var err error
-		j.cachedRows, err = fieldValueRowsToRowList(res.Rows, schema)
+		q.cachedRows, err = fieldValueRowsToRowList(res.Rows, schema)
 		if err != nil {
 			return nil, err
 		}
 	}
 	if res.JobReference != nil {
 		jobRef := res.JobReference
-		j.projectID = jobRef.ProjectId
-		j.jobID = jobRef.JobId
+		q.projectID = jobRef.ProjectId
+		q.jobID = jobRef.JobId
 		if jobRef.Location != nil {
-			j.location = jobRef.Location.GetValue()
+			q.location = jobRef.Location.GetValue()
 		}
 	}
-	return j, nil
+	return q, nil
 }
 
-func newQueryJobFromJob(c *Client, job *bigquerypb.Job) (*QueryJob, error) {
+func newQueryJobFromJob(c *Client, job *bigquerypb.Job) (*Query, error) {
 	return newQueryJobFromJobReference(c, nil, job.JobReference)
 }
 
-func newQueryJobFromJobReference(c *Client, schema *bigquerypb.TableSchema, jobRef *bigquerypb.JobReference) (*QueryJob, error) {
+func newQueryJobFromJobReference(c *Client, schema *bigquerypb.TableSchema, jobRef *bigquerypb.JobReference) (*Query, error) {
 	res := &bigquerypb.QueryResponse{
 		Schema:       schema,
 		JobReference: jobRef,
@@ -91,11 +91,11 @@ const (
 	Done state = "DONE"
 )
 
-func (j *QueryJob) checkStatus(ctx context.Context) error {
-	res, err := j.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
-		ProjectId:  j.projectID,
-		JobId:      j.jobID,
-		Location:   j.location,
+func (q *Query) checkStatus(ctx context.Context) error {
+	res, err := q.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
+		ProjectId:  q.projectID,
+		JobId:      q.jobID,
+		Location:   q.location,
 		MaxResults: wrapperspb.UInt32(0),
 		FormatOptions: &bigquerypb.DataFormatOptions{
 			UseInt64Timestamp: true,
@@ -105,7 +105,7 @@ func (j *QueryJob) checkStatus(ctx context.Context) error {
 		return err
 	}
 
-	err = j.consumeQueryResponse(res)
+	err = q.consumeQueryResponse(res)
 	if err != nil {
 		return err
 	}
@@ -113,26 +113,26 @@ func (j *QueryJob) checkStatus(ctx context.Context) error {
 	return nil
 }
 
-func (j *QueryJob) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) error {
-	j.cachedPageToken = res.PageToken
+func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) error {
+	q.cachedPageToken = res.PageToken
 	schema := newSchema(res.Schema)
 	var err error
-	j.cachedRows, err = fieldValueRowsToRowList(res.Rows, schema)
+	q.cachedRows, err = fieldValueRowsToRowList(res.Rows, schema)
 	if err != nil {
 		return err
 	}
-	j.cachedSchema = schema
-	j.cachedTotalRows = res.TotalRows.Value
+	q.cachedSchema = schema
+	q.cachedTotalRows = res.TotalRows.Value
 	if res.JobComplete != nil {
-		j.complete = res.JobComplete.Value
+		q.complete = res.JobComplete.Value
 	}
 	return nil
 }
 
 // Wait waits for the query to complete.
-func (j *QueryJob) Wait(ctx context.Context) error {
-	for !j.complete {
-		err := j.checkStatus(ctx)
+func (q *Query) Wait(ctx context.Context) error {
+	for !q.complete {
+		err := q.checkStatus(ctx)
 		if err != nil {
 			return err
 		}
@@ -146,38 +146,38 @@ func (j *QueryJob) Wait(ctx context.Context) error {
 }
 
 // JobReference returns the job reference.
-func (j *QueryJob) JobReference() *bigquerypb.JobReference {
+func (q *Query) JobReference() *bigquerypb.JobReference {
 	return &bigquerypb.JobReference{
-		ProjectId: j.projectID,
-		JobId:     j.jobID,
-		Location:  wrapperspb.String(j.location),
+		ProjectId: q.projectID,
+		JobId:     q.jobID,
+		Location:  wrapperspb.String(q.location),
 	}
 }
 
 // Schema returns the schema of the query results.
-func (j *QueryJob) Schema() *bigquerypb.TableSchema {
-	return j.cachedSchema.pb
+func (q *Query) Schema() *bigquerypb.TableSchema {
+	return q.cachedSchema.pb
 }
 
 // Complete to check is job finished execution
-func (j *QueryJob) Complete() bool {
-	return j.complete
+func (q *Query) Complete() bool {
+	return q.complete
 }
 
 // Read returns a RowIterator for the query results.
-func (j *QueryJob) Read(ctx context.Context) (*RowIterator, error) {
-	r := j.c.NewReader()
-	return r.readQuery(ctx, j)
+func (q *Query) Read(ctx context.Context) (*RowIterator, error) {
+	r := q.c.NewReader()
+	return r.readQuery(ctx, q)
 }
 
-func (j *QueryJob) getRows(ctx context.Context, pageToken string) (*bigquerypb.GetQueryResultsResponse, error) {
-	return j.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
+func (q *Query) getRows(ctx context.Context, pageToken string) (*bigquerypb.GetQueryResultsResponse, error) {
+	return q.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
 		FormatOptions: &bigquerypb.DataFormatOptions{
 			UseInt64Timestamp: true,
 		},
-		JobId:     j.jobID,
-		ProjectId: j.projectID,
-		Location:  j.location,
+		JobId:     q.jobID,
+		ProjectId: q.projectID,
+		Location:  q.location,
 		PageToken: pageToken,
 	})
 }

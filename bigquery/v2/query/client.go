@@ -56,7 +56,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 }
 
 // StartQuery runs a query and returns a QueryJob handle.
-func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
+func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*Query, error) {
 	if req.QueryRequest.JobCreationMode == bigquerypb.QueryRequest_JOB_CREATION_MODE_UNSPECIFIED {
 		req.QueryRequest.JobCreationMode = c.defaultJobCreationMode
 	}
@@ -69,7 +69,7 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 }
 
 // StartQueryRequest runs a query and returns a QueryJob handle.
-func (c *Client) StartQueryRequest(ctx context.Context, req *bigquerypb.QueryRequest, opts ...gax.CallOption) (*QueryJob, error) {
+func (c *Client) StartQueryRequest(ctx context.Context, req *bigquerypb.QueryRequest, opts ...gax.CallOption) (*Query, error) {
 	return c.StartQuery(ctx, &bigquerypb.PostQueryRequest{
 		QueryRequest: req,
 		ProjectId:    c.billingProjectID,
@@ -77,7 +77,7 @@ func (c *Client) StartQueryRequest(ctx context.Context, req *bigquerypb.QueryReq
 }
 
 // StartQueryJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
-func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*QueryJob, error) {
+func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*Query, error) {
 	qconfig := job.Configuration.Query
 	if qconfig == nil {
 		return nil, fmt.Errorf("job is not a query")

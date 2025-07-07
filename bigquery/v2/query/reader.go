@@ -38,9 +38,9 @@ func (r *Reader) Read(ctx context.Context, jobRef *bigquerypb.JobReference, sche
 	return r.readQuery(ctx, query, opts...)
 }
 
-func (r *Reader) readQuery(ctx context.Context, j *QueryJob, opts ...ReadOption) (*RowIterator, error) {
+func (r *Reader) readQuery(ctx context.Context, q *Query, opts ...ReadOption) (*RowIterator, error) {
 	initState := &readState{
-		pageToken: j.cachedPageToken,
+		pageToken: q.cachedPageToken,
 	}
 	for _, opt := range opts {
 		opt(initState)
@@ -48,11 +48,11 @@ func (r *Reader) readQuery(ctx context.Context, j *QueryJob, opts ...ReadOption)
 
 	it := &RowIterator{
 		c:         r.c,
-		query:     j,
+		query:     q,
 		pageToken: initState.pageToken,
-		rows:      j.cachedRows,
-		totalRows: j.cachedTotalRows,
-		schema:    j.cachedSchema,
+		rows:      q.cachedRows,
+		totalRows: q.cachedTotalRows,
+		schema:    q.cachedSchema,
 	}
 
 	if len(it.query.cachedRows) > 0 {

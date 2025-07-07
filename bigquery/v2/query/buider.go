@@ -35,7 +35,7 @@ func FromSQL(projectID, sql string) *bigquerypb.PostQueryRequest {
 	}
 }
 
-// QueryFromSQL creates a query configuration from a SQL string.
+// FromSQL creates a query configuration from a SQL string.
 func (c *Client) FromSQL(sql string) *bigquerypb.PostQueryRequest {
 	req := FromSQL(c.billingProjectID, sql)
 	req.QueryRequest.JobCreationMode = c.defaultJobCreationMode
