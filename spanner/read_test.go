@@ -1570,7 +1570,7 @@ func TestRetryResourceExhaustedWithoutRetryInfo(t *testing.T) {
 		t.Fatalf("failed to create a session")
 	}
 
-	// Simulate an unavailable error to interrupt the stream of PartialResultSet
+	// Simulate an ResourceExhausted error to interrupt the stream of PartialResultSet
 	// in order to test the grpc retrying mechanism.
 	server.TestSpanner.AddPartialResultSetError(
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
@@ -1629,7 +1629,7 @@ func TestRetryResourceExhaustedWithRetryInfo(t *testing.T) {
 		t.Fatalf("failed to create a session")
 	}
 
-	// Simulate an unavailable error to interrupt the stream of PartialResultSet
+	// Simulate an ResourceExhausted error to interrupt the stream of PartialResultSet
 	// in order to test the grpc retrying mechanism.
 	st := status.New(codes.ResourceExhausted, "server is unavailable")
 	retry := &errdetails.RetryInfo{
