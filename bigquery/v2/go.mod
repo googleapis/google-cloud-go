@@ -3,10 +3,10 @@ module cloud.google.com/go/bigquery/v2
 go 1.23.0
 
 require (
-	cloud.google.com/go v0.121.0
+	cloud.google.com/go v0.121.3
 	cloud.google.com/go/bigquery v1.69.0
 	github.com/googleapis/gax-go/v2 v2.14.2
-	google.golang.org/api v0.237.0
+	google.golang.org/api v0.239.0
 	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
 	google.golang.org/genproto/googleapis/api v0.0.0-20250603155806-513f23925822
 	google.golang.org/grpc v1.73.0
