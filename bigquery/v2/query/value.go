@@ -29,7 +29,7 @@ import (
 // Value stores the contents of a row field value from a BigQuery result.
 type Value any
 
-// FielValue represents a row field with typed value.
+// FieldValue represents a row field with typed value.
 type FieldValue struct {
 	Type  FieldType
 	Value Value
