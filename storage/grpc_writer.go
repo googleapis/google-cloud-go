@@ -405,9 +405,11 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 		return fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %w", w.chunkRetryDeadline, w.attempts, w.lastErr)
 	}
 	requests := make(chan gRPCBidiWriteRequest, w.sendableUnits)
+	// only one request will be outstanding at a time.
+	requestAcks := make(chan struct{}, 1)
 	completions := make(chan gRPCBidiWriteCompletion, w.sendableUnits)
-	chcs := gRPCWriterCommandHandleChans{requests, completions}
-	bscs := gRPCBufSenderChans{requests, completions}
+	chcs := gRPCWriterCommandHandleChans{requests, requestAcks, completions}
+	bscs := gRPCBufSenderChans{requests, requestAcks, completions}
 	w.streamSender.connect(ctx, bscs, w.settings.gax...)
 
 	// Send any full quantum in w.buf, possibly including a flush
@@ -481,18 +483,21 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 
 // gRPCWriterCommandHandleChans contains the channels that a gRPCWriterCommand
 // implementation must use to send requests and get notified of completions.
-// Requests are delivered on a write-only channel and completions arrive on a
-// read-only channel.
+// Requests are delivered on a write-only channel, request acks and completions
+// arrive on read-only channels.
 type gRPCWriterCommandHandleChans struct {
 	requests    chan<- gRPCBidiWriteRequest
+	requestAcks <-chan struct{}
 	completions <-chan gRPCBidiWriteCompletion
 }
 
 // gRPCBufSenderChans contains the channels that a gRPCBidiWriteBufferSender
 // must use to get notified of requests and deliver completions. Requests arrive
-// on a read-only channel and completions are delivered on a write-only channel.
+// on a read-only channel, request acks and completions are delivered on
+// write-only channels.
 type gRPCBufSenderChans struct {
 	requests    <-chan gRPCBidiWriteRequest
+	requestAcks chan<- struct{}
 	completions chan<- gRPCBidiWriteCompletion
 }
 
@@ -503,9 +508,25 @@ type gRPCBufSenderChans struct {
 // Returns true if request was successfully enqueued, and false if completions
 // was closed first.
 func (cs gRPCWriterCommandHandleChans) deliverRequestUnlessCompleted(req gRPCBidiWriteRequest, handleCompletion func(gRPCBidiWriteCompletion)) bool {
+	deliverOk := func() bool {
+		for {
+			select {
+			case cs.requests <- req:
+				return true
+			case c, ok := <-cs.completions:
+				if !ok {
+					return false
+				}
+				handleCompletion(c)
+			}
+		}
+	}()
+	if !deliverOk {
+		return false
+	}
 	for {
 		select {
-		case cs.requests <- req:
+		case <-cs.requestAcks:
 			return true
 		case c, ok := <-cs.completions:
 			if !ok {
@@ -842,7 +863,9 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 				firstSend = false
 			}
 
-			if err := stream.Send(req); err != nil {
+			err := stream.Send(req)
+			cs.requestAcks <- struct{}{}
+			if err != nil {
 				_, s.streamErr = drainInboundStream(stream)
 				if err != io.EOF {
 					s.streamErr = err
@@ -954,7 +977,9 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 							req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
 							firstSend = false
 						}
-						if err := stream.Send(req); err != nil {
+						err := stream.Send(req)
+						cs.requestAcks <- struct{}{}
+						if err != nil {
 							return err
 						}
 						if r.finishWrite {
@@ -1062,6 +1087,7 @@ func (s *gRPCAppendBidiWriteBufferSender) handleStream(stream storagepb.Storage_
 						return nil
 					}
 					err := s.send(stream, r.buf, r.offset, r.flush, r.finishWrite, firstSend)
+					cs.requestAcks <- struct{}{}
 					firstSend = false
 					if err != nil {
 						return err
