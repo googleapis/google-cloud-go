@@ -16,7 +16,7 @@ FROM marketplace.gcr.io/google/debian12:latest
 
 # Set environment variables for the Go version and installation
 ENV GO_VERSION 1.23.0
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH /usr/local/go/bin:/root/go/bin:$PATH
 
 RUN apt-get update && \
     apt-get install -y wget ca-certificates git && \
