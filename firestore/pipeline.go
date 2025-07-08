@@ -52,11 +52,14 @@ func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 // TODO: Accept PipelineOptions
 func (p *Pipeline) Execute(ctx context.Context) *PipelineResultIterator {
 	return &PipelineResultIterator{
-		iter: newStreamPipelineResultIterator(ctx, p),
+		iter: newStreamPipelineResultIterator(withResourceHeader(ctx, p.c.path()), p),
 	}
 }
 
 func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error) {
+	if p.err != nil {
+		return nil, p.err
+	}
 	protoStages := make([]*pb.Pipeline_Stage, len(p.stages))
 	for i, s := range p.stages {
 		ps, err := s.toProto()
@@ -77,6 +80,7 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 		},
 		// TODO: Add consistencyselector
 	}
+
 	return req, nil
 }
 
@@ -97,4 +101,125 @@ func (p *Pipeline) append(s pipelineStage) *Pipeline {
 // Limit limits the maximum number of documents returned by previous stages.
 func (p *Pipeline) Limit(limit int) *Pipeline {
 	return p.append(newLimitStage(limit))
+}
+
+// Select selects or creates a set of fields from the outputs of previous stages.
+// The selected fields are defined using field path string, [FieldPath] or [Selectable] expressions.
+// [Selectable] expressions can be:
+//   - Field: References an existing field.
+//   - Function: Represents the result of a function with an assigned alias name using [Function.As].
+//
+// Example:
+//
+//		client.Pipeline().Collection("users").Select("info.email")
+//		client.Pipeline().Collection("users").Select(FieldOf("info.email"))
+//		client.Pipeline().Collection("users").Select(FieldOfPath([]string{"info", "email"}))
+//		client.Pipeline().Collection("users").Select(FieldOfPath([]string{"info", "email"}))
+//	 	client.Pipeline().Collection("users").Select(Add("age", 5).As("agePlus5"))
+func (p *Pipeline) Select(fieldsOrSelectables ...any) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	stage, err := newSelectStage(fieldsOrSelectables...)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// AddFields adds new fields to outputs from previous stages.
+//
+// This stage allows you to compute values on-the-fly based on existing data from previous
+// stages or constants. You can use this to create new fields or overwrite existing ones (if there
+// is name overlaps).
+//
+// The added fields are defined using [Selectable]s
+func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	stage, err := newAddFieldsStage(selectables...)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// Where filters the documents from previous stages to only include those matching the specified [FilterCondition].
+//
+// This stage allows you to apply conditions to the data, similar to a "WHERE" clause in SQL.
+func (p *Pipeline) Where(condition FilterCondition) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	stage, err := newWhereStage(condition)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// AggregateSpec is used to perform aggregation operations.
+type AggregateSpec struct {
+	groups     []Selectable
+	accTargets []*AccumulatorTarget
+	err        error
+}
+
+// NewAggregateSpec creates a new AggregateSpec with the given accumulator targets.
+func NewAggregateSpec(accumulators ...*AccumulatorTarget) *AggregateSpec {
+	return &AggregateSpec{accTargets: accumulators}
+}
+
+// WithGroups sets the grouping keys for the aggregation.
+func (a *AggregateSpec) WithGroups(fieldsOrSelectables ...any) *AggregateSpec {
+	a.groups, a.err = fieldsOrSelectablesToSelectables(fieldsOrSelectables...)
+	return a
+}
+
+// Aggregate performs aggregation operations on the documents from previous stages.
+// This stage allows you to calculate aggregate values over a set of documents. You define the
+// aggregations to perform using [AccumulatorTarget] expressions which are typically results of
+// calling [AccumulatorTarget.As] on [AccumulatorTarget] instances.
+// Example:
+//
+//	client.Pipeline().Collection("users").
+//		Aggregate(Sum("age").As("age_sum"))
+func (p *Pipeline) Aggregate(accumulators ...*AccumulatorTarget) *Pipeline {
+	a := NewAggregateSpec(accumulators...)
+	aggStage, err := newAggregateStage(a)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(aggStage)
+}
+
+// AggregateWithSpec performs optionally grouped aggregation operations on the documents from previous stages.
+// This stage allows you to calculate aggregate values over a set of documents, optionally
+// grouped by one or more fields or functions. You can specify:
+//   - Grouping Fields or Functions: One or more fields or functions to group the documents
+//     by. For each distinct combination of values in these fields, a separate group is created.
+//     If no grouping fields are provided, a single group containing all documents is used. Not
+//     specifying groups is the same as putting the entire inputs into one group.
+//   - Accumulator targets: One or more accumulation operations to perform within each group. These
+//     are defined using [AccumulatorTarget] expressions which are typically results of calling
+//     [AccumulatorTarget.As] on [AccumulatorTarget] instances. Each aggregation
+//     calculates a value (e.g., sum, average, count) based on the documents within its group.
+//
+// Example:
+//
+//		// Calculate the average rating for each genre.
+//		client.Pipeline().Collection("books").
+//	        AggregateWithSpec(NewAggregateSpec(Avg("rating").As("avg_rating")).WithGroups("genre"))
+func (p *Pipeline) AggregateWithSpec(spec *AggregateSpec) *Pipeline {
+	aggStage, err := newAggregateStage(spec)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(aggStage)
 }

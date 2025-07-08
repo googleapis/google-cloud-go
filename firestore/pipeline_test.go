@@ -66,8 +66,8 @@ func (m *mockExecutePipelineClient) SendHeader(md metadata.MD) error {
 }
 func (m *mockExecutePipelineClient) SetHeader(md metadata.MD) error { return nil }
 func (m *mockExecutePipelineClient) SetTrailer(md metadata.MD)      {}
-func (m *mockExecutePipelineClient) SendMsg(i interface{}) error    { return nil }
-func (m *mockExecutePipelineClient) RecvMsg(i interface{}) error    { return nil }
+func (m *mockExecutePipelineClient) SendMsg(i any) error            { return nil }
+func (m *mockExecutePipelineClient) RecvMsg(i any) error            { return nil }
 
 // Test helper to create a minimal Client for non-RPC tests
 func newTestClient() *Client {

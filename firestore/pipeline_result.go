@@ -86,9 +86,9 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 // Data returns the PipelineResult's fields as a map.
 // It is equivalent to
 //
-//	var m map[string]interface{}
+//	var m map[string]any
 //	p.DataTo(&m)
-func (p *PipelineResult) Data() (map[string]interface{}, error) {
+func (p *PipelineResult) Data() (map[string]any, error) {
 	if p == nil {
 		return nil, status.Errorf(codes.NotFound, "result does not exist")
 	}
@@ -101,9 +101,9 @@ func (p *PipelineResult) Data() (map[string]interface{}, error) {
 }
 
 // DataTo uses the PipelineResult's fields to populate v, which can be a pointer to a
-// map[string]interface{} or a pointer to a struct.
+// map[string]any or a pointer to a struct.
 // This is similar to [DocumentSnapshot.DataTo]
-func (p *PipelineResult) DataTo(v interface{}) error {
+func (p *PipelineResult) DataTo(v any) error {
 	if p == nil {
 		return status.Errorf(codes.NotFound, "document does not exist")
 	}
@@ -213,7 +213,9 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		if err != nil {
 			return nil, err
 		}
-		it.streamClient, err = client.c.ExecutePipeline(it.ctx, req)
+
+		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
+		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 		if err != nil {
 			return nil, err
 		}
@@ -246,7 +248,7 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 	it.currRespResultsIdx++
 
 	var docRef *DocumentRef
-	if len(docProto.GetName()) == 0 {
+	if len(docProto.GetName()) != 0 {
 		var pathErr error
 		docRef, pathErr = pathToDoc(docProto.GetName(), client)
 		if pathErr != nil {
