@@ -15,21 +15,17 @@
 package firestore
 
 import (
+	"fmt"
 	"reflect"
+	"time"
+
+	"google.golang.org/genproto/googleapis/type/latlng"
+	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Constant represents a constant value that can be used in a Firestore pipeline expression.
 type Constant struct {
 	*baseExpr
-}
-
-func newConstant(val any) (*Constant, error) {
-	pbVal, _, err := toProtoValue(reflect.ValueOf(val))
-	if err != nil {
-		return nil, err
-	}
-
-	return &Constant{baseExpr: &baseExpr{pbVal: pbVal}}, nil
 }
 
 // As assigns an alias to Constant.
@@ -40,15 +36,28 @@ func (c *Constant) As(alias string) Selectable {
 
 // ConstantOf creates a new Constant expression from a Go value.
 func ConstantOf(value any) *Constant {
-	c, err := newConstant(value)
-	if err != nil {
-		return &Constant{baseExpr: &baseExpr{err: err}}
+	if value == nil {
+		return ConstantOfNull()
 	}
-	return c
+
+	switch value := value.(type) {
+	case *Constant:
+		return value
+	case string, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, time.Time, *ts.Timestamp, []byte, Vector32, Vector64, *latlng.LatLng:
+		pbVal, _, err := toProtoValue(reflect.ValueOf(value))
+		if err != nil {
+			return &Constant{baseExpr: &baseExpr{err: err}}
+		}
+		return &Constant{baseExpr: &baseExpr{pbVal: pbVal}}
+	default:
+		return &Constant{baseExpr: &baseExpr{err: fmt.Errorf("firestore: unknown Constant type: %T", value)}}
+	}
+
 }
 
 // ConstantOfNull creates a new Constant expression representing a null value.
 func ConstantOfNull() *Constant {
+	// TODO: Find out if this works
 	return &Constant{baseExpr: &baseExpr{}}
 }
 

@@ -16,10 +16,10 @@ package firestore
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // Pipeline class provides a flexible and expressive framework for building complex data
@@ -53,11 +53,14 @@ func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 // TODO: Accept PipelineOptions
 func (p *Pipeline) Execute(ctx context.Context) *PipelineResultIterator {
 	return &PipelineResultIterator{
-		iter: newStreamPipelineResultIterator(ctx, p),
+		iter: newStreamPipelineResultIterator(withResourceHeader(ctx, p.c.path()), p),
 	}
 }
 
 func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error) {
+	if p.err != nil {
+		return nil, p.err
+	}
 	protoStages := make([]*pb.Pipeline_Stage, len(p.stages))
 	for i, s := range p.stages {
 		ps, err := s.toProto()
@@ -78,6 +81,9 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 		},
 		// TODO: Add consistencyselector
 	}
+
+	bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(req)
+	fmt.Println(string(bytes))
 	return req, nil
 }
 
@@ -118,23 +124,31 @@ func (p *Pipeline) Select(selectables ...Selectable) *Pipeline {
 	return p.append(stage)
 }
 
-// SelectPaths provides a convenient way to select a set of fields by their names.
+// SelectFields provides a convenient way to select a set of fields by their names.
 // It is a shorthand for p.Select(FieldOf("field1"), FieldOf("field2"), FieldOf("field3.field4") ...).
 // Each path argument can be a single field or a dot-separated sequence of
 // fields which do not contain any of the runes "˜*/[]".
-func (p *Pipeline) SelectPaths(paths ...string) *Pipeline {
+func (p *Pipeline) SelectFields(paths ...string) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	selectables := make([]Selectable, len(paths))
-	for i, name := range paths {
-		if name == "" {
-			p.err = errors.New("firestore: field name in SelectFields cannot be empty")
-			return p
-		}
-		selectables[i] = FieldOf(name)
+	selectables, err := stringPathsToSelectables(paths...)
+	if err != nil {
+		p.err = err
+		return p
 	}
 	return p.Select(selectables...)
+}
+
+// SelectFields provides a convenient way to select a set of fields by their names.
+// It is a shorthand for p.Select(FieldOf("field1"), FieldOf("field2"), FieldOf("field3.field4") ...).
+// Each path argument can be a single field or a dot-separated sequence of
+// fields which do not contain any of the runes "˜*/[]".
+func (p *Pipeline) SelectPaths(paths ...FieldPath) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	return p.Select(fieldPathsToSelectables(paths...)...)
 }
 
 // AddFields adds new fields to outputs from previous stages.
@@ -154,4 +168,66 @@ func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
 		return p
 	}
 	return p.append(stage)
+}
+
+// Where filters the documents from previous stages to only include those matching the specified [FilterCondition].
+//
+// This stage allows you to apply conditions to the data, similar to a "WHERE" clause in SQL.
+func (p *Pipeline) Where(condition FilterCondition) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	stage, err := newWhereStage(condition)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// AggregateStage performs aggregation operations.
+type AggregateSpec struct {
+	groups       []Selectable
+	accumulators []*AccumulatorTarget
+	err          error
+}
+
+func NewAggregateSpec(accumulators ...*AccumulatorTarget) *AggregateSpec {
+	return &AggregateSpec{accumulators: accumulators}
+}
+
+func (a *AggregateSpec) WithGroups(selectables ...Selectable) *AggregateSpec {
+	a.groups = selectables
+	return a
+}
+
+func (a *AggregateSpec) WithGroupFields(paths ...string) *AggregateSpec {
+	a.groups, a.err = stringPathsToSelectables(paths...)
+	return a
+}
+
+func (a *AggregateSpec) WithGroupPaths(fieldpaths ...FieldPath) *AggregateSpec {
+	a.groups = fieldPathsToSelectables(fieldpaths...)
+	return a
+}
+
+// Aggregate performs aggregation operations.
+func (p *Pipeline) Aggregate(accumulators ...*AccumulatorTarget) *Pipeline {
+	a := NewAggregateSpec(accumulators...)
+	aggStage, err := newAggregateStage(a)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(aggStage)
+}
+
+// Aggregate performs aggregation operations.
+func (p *Pipeline) AggregateWithSpec(spec *AggregateSpec) *Pipeline {
+	aggStage, err := newAggregateStage(spec)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(aggStage)
 }

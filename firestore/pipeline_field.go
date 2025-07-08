@@ -56,6 +56,6 @@ func (f *Field) As(alias string) Selectable {
 	return newExprWithAlias(f, alias)
 }
 
-func (f *Field) getSelectionDetails() (string, Expr, error) {
-	return f.fieldPath.toServiceFieldPath(), f, nil
+func (f *Field) getSelectionDetails() (string, Expr) {
+	return f.fieldPath.toServiceFieldPath(), f
 }

@@ -33,7 +33,10 @@ type baseFunction struct {
 // Ensure that baseFunction implements the Function interface.
 var _ Function = (*baseFunction)(nil)
 
-func newBaseFunction(name string, params ...Expr) *baseFunction {
+func newBaseFunction(name string, params []Expr, err error) *baseFunction {
+	if err != nil {
+		return &baseFunction{baseExpr: &baseExpr{err: err}}
+	}
 	argsPbVals := make([]*pb.Value, len(params))
 	for i, param := range params {
 		var err error
@@ -59,18 +62,119 @@ func (f *baseFunction) As(alias string) Selectable {
 	return newExprWithAlias(f, alias)
 }
 
-type AddFunc struct {
-	*baseFunction
-}
+type AddFunc struct{ *baseFunction }
 
-func Add(left, right Expr) *AddFunc {
+// Add creates an expression that adds two expressions together.
+//
+// left can be a fieldname or an [Expr].
+// right can be a constant or an [Expr].
+//
+// E.g. Add 5 to the value of the 'age' field.
+//
+//	Add("age", 5)
+//
+// E.g. Add 'height' to 'weight' field.
+//
+//	Add(FieldOf("height"), FieldOf("weight"))
+func Add(left, right any) *AddFunc {
 	return &AddFunc{baseFunction: leftRightToBaseFunction("add", left, right)}
 }
 
-type SubtractFunc struct {
-	*baseFunction
+type SubtractFunc struct{ *baseFunction }
+
+func Subtract(left, right any) *SubtractFunc {
+	return &SubtractFunc{baseFunction: leftRightToBaseFunction("subtract", left, right)}
 }
 
-func Subtract(left, right Expr) *SubtractFunc {
-	return &SubtractFunc{baseFunction: leftRightToBaseFunction("subtract", left, right)}
+type DivideFunc struct{ *baseFunction }
+
+func Divide(left, right any) *DivideFunc {
+	return &DivideFunc{baseFunction: leftRightToBaseFunction("subtract", left, right)}
+}
+
+type MultiplyFunc struct{ *baseFunction }
+
+func Multiply(left, right any) *MultiplyFunc {
+	return &MultiplyFunc{baseFunction: leftRightToBaseFunction("subtract", left, right)}
+}
+
+type ModFunc struct{ *baseFunction }
+
+func Mod(left, right any) *ModFunc {
+	return &ModFunc{baseFunction: leftRightToBaseFunction("subtract", left, right)}
+}
+
+type ArrayConcatFunc struct{ *baseFunction }
+
+func ArrayConcat(fieldOrExpr any, elements ...any) *ArrayConcatFunc {
+	exprs, err := toExprList(fieldOrExpr, elements...)
+	return &ArrayConcatFunc{baseFunction: newBaseFunction("array_concat", exprs, err)}
+}
+
+type ArrayLengthFunc struct{ *baseFunction }
+
+func ArrayLength(fieldOrExpr any) *ArrayLengthFunc {
+	expr, err := toExprOrField(fieldOrExpr)
+	return &ArrayLengthFunc{baseFunction: newBaseFunction("array_length", []Expr{expr}, err)}
+}
+
+type ArrayReverseFunc struct{ *baseFunction }
+
+func ArrayReverse(fieldOrExpr any) *ArrayReverseFunc {
+	expr, err := toExprOrField(fieldOrExpr)
+	return &ArrayReverseFunc{baseFunction: newBaseFunction("array_reverse", []Expr{expr}, err)}
+}
+
+type ByteLengthFunc struct{ *baseFunction }
+
+func ByteLength(fieldOrExpr any) *ByteLengthFunc {
+	expr, err := toExprOrField(fieldOrExpr)
+	return &ByteLengthFunc{baseFunction: newBaseFunction("byte_length", []Expr{expr}, err)}
+}
+
+type CharLengthFunc struct{ *baseFunction }
+
+func CharLength(fieldOrExpr any) *CharLengthFunc {
+	expr, err := toExprOrField(fieldOrExpr)
+	return &CharLengthFunc{baseFunction: newBaseFunction("char_length", []Expr{expr}, err)}
+}
+
+type CosineDistanceFunc struct{ *baseFunction }
+
+func CosineDistance(fieldOrExpr, other any) *CosineDistanceFunc {
+	var exprs []Expr
+	var err error
+
+	// other can be []float32, []float64, Expr, Vector32 or Vector64
+	switch other.(type) {
+	case []float32, []float64, Expr, Vector32, Vector64:
+		exprs, err = toExprList(fieldOrExpr, other)
+	default:
+		return &CosineDistanceFunc{
+			baseFunction: newBaseFunction("cosine_distance", nil,
+				fmt.Errorf("firestore: invalid type for parameter 'other': expected []float32, []float64, Expr, Vector32 or Vector64, but got %T", other)),
+		}
+	}
+
+	return &CosineDistanceFunc{baseFunction: newBaseFunction("cosine_distance", exprs, err)}
+}
+
+type DotDistanceFunc struct{ *baseFunction }
+
+func DotDistance(fieldOrExpr, other any) *DotDistanceFunc {
+	var exprs []Expr
+	var err error
+
+	// other can be []float32, []float64, Expr, Vector32 or Vector64
+	switch other.(type) {
+	case []float32, []float64, Expr, Vector32, Vector64:
+		exprs, err = toExprList(fieldOrExpr, other)
+	default:
+		return &DotDistanceFunc{
+			baseFunction: newBaseFunction("cosine_distance", nil,
+				fmt.Errorf("firestore: invalid type for parameter 'other': expected []float32, []float64, Expr, Vector32 or Vector64, but got %T", other)),
+		}
+	}
+
+	return &DotDistanceFunc{baseFunction: newBaseFunction("dot_product", exprs, err)}
 }
