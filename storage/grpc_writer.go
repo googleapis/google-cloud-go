@@ -331,13 +331,12 @@ func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
 // bytes into the object. Slices are sent until flushAt bytes have sent, in
 // which case the final request is a flush, or until len(buf) < w.writeQuantum.
 //
-// Before each request attempt, willAttempt is called with the request.
 // handleCompletion is called for any completions that arrive during sends.
 //
-// Returns the number of bytes sent. Returns true if all desired requests were
+// Returns the last byte offset sent. Returns true if all desired requests were
 // delivered, and false if cs.completions was closed before all requests could
 // be delivered.
-func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []byte, baseOffset int64, flushAt int, willAttempt func(gRPCBidiWriteRequest), handleCompletion func(gRPCBidiWriteCompletion)) (int, bool) {
+func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []byte, baseOffset int64, flushAt int, handleCompletion func(gRPCBidiWriteCompletion)) (int64, bool) {
 	sent := 0
 	if len(buf) > flushAt {
 		buf = buf[:flushAt]
@@ -352,14 +351,13 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 			offset: baseOffset + int64(sent),
 			flush:  q == flushAt-sent,
 		}
-		willAttempt(req)
 		if !cs.deliverRequestUnlessCompleted(req, handleCompletion) {
-			return sent, false
+			return baseOffset + int64(sent), false
 		}
 		buf = buf[q:]
 		sent += q
 	}
-	return sent, true
+	return baseOffset + int64(sent), true
 }
 
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
@@ -373,10 +371,6 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	}
 
 	w.bufFlushedIdx = int(c.flushOffset - w.bufBaseOffset)
-	if w.bufFlushedIdx > w.bufUnsentIdx {
-		// This is allowed if we are sending from a write command's internal buffer
-		w.bufUnsentIdx = w.bufFlushedIdx
-	}
 	if w.bufFlushedIdx >= len(w.buf) {
 		// We can clear w.buf
 		w.bufBaseOffset = c.flushOffset
@@ -405,7 +399,7 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 		return fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %w", w.chunkRetryDeadline, w.attempts, w.lastErr)
 	}
 	requests := make(chan gRPCBidiWriteRequest, w.sendableUnits)
-	// only one request will be outstanding at a time.
+	// Only one request ack will be outstanding at a time.
 	requestAcks := make(chan struct{}, 1)
 	completions := make(chan gRPCBidiWriteCompletion, w.sendableUnits)
 	chcs := gRPCWriterCommandHandleChans{requests, requestAcks, completions}
@@ -413,13 +407,13 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 	w.streamSender.connect(ctx, bscs, w.settings.gax...)
 
 	// Send any full quantum in w.buf, possibly including a flush
-	w.bufUnsentIdx = 0
 	if err := w.withCommandRetryDeadline(func() error {
-		if _, ok := w.sendBufferToTarget(chcs, w.buf, w.bufBaseOffset, cap(w.buf),
-			func(r gRPCBidiWriteRequest) { w.bufUnsentIdx += len(r.buf) },
-			w.handleCompletion); !ok {
+		sentOffset, ok := w.sendBufferToTarget(chcs, w.buf, w.bufBaseOffset, cap(w.buf),
+			w.handleCompletion)
+		if !ok {
 			return w.streamSender.err()
 		}
+		w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 		return nil
 	}); err != nil {
 		return err
@@ -508,25 +502,9 @@ type gRPCBufSenderChans struct {
 // Returns true if request was successfully enqueued, and false if completions
 // was closed first.
 func (cs gRPCWriterCommandHandleChans) deliverRequestUnlessCompleted(req gRPCBidiWriteRequest, handleCompletion func(gRPCBidiWriteCompletion)) bool {
-	deliverOk := func() bool {
-		for {
-			select {
-			case cs.requests <- req:
-				return true
-			case c, ok := <-cs.completions:
-				if !ok {
-					return false
-				}
-				handleCompletion(c)
-			}
-		}
-	}()
-	if !deliverOk {
-		return false
-	}
 	for {
 		select {
-		case <-cs.requestAcks:
+		case cs.requests <- req:
 			return true
 		case c, ok := <-cs.completions:
 			if !ok {
@@ -579,10 +557,12 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		// Now that it's in w.buf, clear it from the command in case we retry.
 		c.p = c.p[copied:]
 		sending := w.buf[w.bufUnsentIdx:]
-		if _, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
-			func(r gRPCBidiWriteRequest) { w.bufUnsentIdx += len(r.buf) }, w.handleCompletion); !ok {
+		sentOffset, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
+			w.handleCompletion)
+		if !ok {
 			return false
 		}
+		w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 		close(c.done)
 		return true
 	}
@@ -593,7 +573,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	// tail of w.buf. Send that quantum...
 	toNextWriteQuantum := func() int {
 		if wblen > w.lastSegmentStart {
-			return cap(w.buf) - w.lastSegmentStart
+			return cap(w.buf) - wblen
 		}
 		if wblen%w.writeQuantum == 0 {
 			return 0
@@ -606,15 +586,17 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	firstFullBufFromCmd := cap(w.buf) - len(w.buf)
 
 	sending := w.buf[w.bufUnsentIdx:]
-	if _, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
-		func(r gRPCBidiWriteRequest) { w.bufUnsentIdx += len(r.buf) }, w.handleCompletion); !ok {
+	sentOffset, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
+		w.handleCompletion)
+	if !ok {
 		return false
 	}
+	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 
 	// ...then send the prefix of c.p which could fill w.buf
 	cmdBaseOffset := w.bufBaseOffset + int64(len(w.buf))
 	cmdBuf := c.p
-	updateCmdBaseOffset := func(cmp gRPCBidiWriteCompletion) {
+	trimCommandBuf := func(cmp gRPCBidiWriteCompletion) {
 		w.handleCompletion(cmp)
 		// After a completion, keep c.p up to date with w.buf's tail.
 		bufTail := w.bufBaseOffset + int64(len(w.buf))
@@ -629,46 +611,52 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		cmdBaseOffset = bufTail
 	}
 	offset := cmdBaseOffset
-	sent, ok := w.sendBufferToTarget(cs, cmdBuf, cmdBaseOffset, firstFullBufFromCmd,
-		func(r gRPCBidiWriteRequest) { offset += int64(len(r.buf)) }, updateCmdBaseOffset)
+	sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, firstFullBufFromCmd,
+		trimCommandBuf)
 	if !ok {
 		return false
 	}
-	cmdBuf = cmdBuf[sent:]
+	cmdBuf = cmdBuf[int(sentOffset-offset):]
+	offset = sentOffset
 
 	// Remaining full buffers can be satisfied entirely from cmdBuf with no copies.
 	for i := 0; i < fullBufs-1; i++ {
-		sent, ok := w.sendBufferToTarget(cs, cmdBuf, offset, cap(w.buf),
-			func(r gRPCBidiWriteRequest) { offset += int64(len(r.buf)) }, updateCmdBaseOffset)
+		sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, cap(w.buf),
+			trimCommandBuf)
 		if !ok {
 			return false
 		}
-		cmdBuf = cmdBuf[sent:]
+		cmdBuf = cmdBuf[int(sentOffset-offset):]
+		offset = sentOffset
 	}
 
-	// Send the last partial buffer, but first remember what we've sent to. That's
-	// what we need to see flushed before we can copy into w.buf and complete this
-	// command.
-	flushTarget := offset
-	sent, ok = w.sendBufferToTarget(cs, cmdBuf, offset, cap(w.buf),
-		func(r gRPCBidiWriteRequest) { offset += int64(len(r.buf)) }, updateCmdBaseOffset)
+	// Send the last partial buffer. We need to flush to offset before we can copy
+	// the rest of cmdBuf into w.buf and complete this command.
+	sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, cap(w.buf),
+		trimCommandBuf)
 	if !ok {
 		return false
 	}
-
-	for w.bufBaseOffset < flushTarget {
-		cmp, ok := <-cs.completions
-		if !ok {
-			return false
-		}
-		updateCmdBaseOffset(cmp)
+	// Finally, we need the sender to ack to let us know c.p can be released.
+	if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, w.handleCompletion) {
+		return false
 	}
-	tciStart := w.bufBaseOffset - flushTarget
-	sent -= int(tciStart)
-	tci := cmdBuf[tciStart:]
-	w.buf = w.buf[:len(tci)]
-	copy(w.buf, tci)
-	w.bufUnsentIdx = sent
+	ackOutstanding := true
+	for ackOutstanding || (w.bufBaseOffset+int64(w.bufFlushedIdx)) < offset {
+		select {
+		case cmp, ok := <-cs.completions:
+			if !ok {
+				return false
+			}
+			trimCommandBuf(cmp)
+		case <-cs.requestAcks:
+			ackOutstanding = false
+		}
+	}
+	toCopyIn := cmdBuf[int(w.bufBaseOffset-offset):]
+	w.buf = w.buf[:len(toCopyIn)]
+	copy(w.buf, toCopyIn)
+	w.bufUnsentIdx = int(sentOffset - offset)
 	close(c.done)
 	return true
 }
@@ -682,18 +670,17 @@ func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	// We know that there are at most w.writeQuantum bytes in
 	// w.buf[w.bufUnsentIdx:], because we send anything more inline when handling
 	// a write.
-	start := w.bufUnsentIdx
-	w.bufUnsentIdx = len(w.buf)
 	req := gRPCBidiWriteRequest{
-		buf:         w.buf[start:],
-		offset:      w.bufBaseOffset + int64(start),
+		buf:         w.buf[w.bufUnsentIdx:],
+		offset:      w.bufBaseOffset + int64(w.bufUnsentIdx),
 		flush:       true,
 		finishWrite: false,
 	}
 	if !cs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 		return false
 	}
-	for w.bufBaseOffset+int64(w.bufFlushedIdx) < flushTarget {
+	// Successful flushes will clear w.buf.
+	for (w.bufBaseOffset + int64(w.bufFlushedIdx)) < flushTarget {
 		c, ok := <-cs.completions
 		if !ok {
 			// Stream failure
@@ -741,6 +728,10 @@ type gRPCBidiWriteRequest struct {
 	offset      int64
 	flush       bool
 	finishWrite bool
+	// If requestAck is true, no other message fields may be set. Buffer senders
+	// must ack on the requestAcks channel if all prior messages on the requests
+	// channel have been delivered to gRPC.
+	requestAck bool
 }
 
 type gRPCBidiWriteCompletion struct {
@@ -857,15 +848,18 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 	go func() {
 		firstSend := true
 		for r := range cs.requests {
+			if r.requestAck {
+				cs.requestAcks <- struct{}{}
+				continue
+			}
+
 			req := bidiWriteObjectRequest(r.buf, r.offset, r.flush, r.finishWrite)
 			if firstSend {
 				proto.Merge(req, s.firstMessage)
 				firstSend = false
 			}
 
-			err := stream.Send(req)
-			cs.requestAcks <- struct{}{}
-			if err != nil {
+			if err := stream.Send(req); err != nil {
 				_, s.streamErr = drainInboundStream(stream)
 				if err != io.EOF {
 					s.streamErr = err
@@ -972,14 +966,16 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 							stream.CloseSend()
 							return nil
 						}
+						if r.requestAck {
+							cs.requestAcks <- struct{}{}
+							continue
+						}
 						req := bidiWriteObjectRequest(r.buf, r.offset, r.flush, r.finishWrite)
 						if firstSend {
 							req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
 							firstSend = false
 						}
-						err := stream.Send(req)
-						cs.requestAcks <- struct{}{}
-						if err != nil {
+						if err := stream.Send(req); err != nil {
 							return err
 						}
 						if r.finishWrite {
@@ -1086,8 +1082,11 @@ func (s *gRPCAppendBidiWriteBufferSender) handleStream(stream storagepb.Storage_
 						stream.CloseSend()
 						return nil
 					}
+					if r.requestAck {
+						cs.requestAcks <- struct{}{}
+						continue
+					}
 					err := s.send(stream, r.buf, r.offset, r.flush, r.finishWrite, firstSend)
-					cs.requestAcks <- struct{}{}
 					firstSend = false
 					if err != nil {
 						return err
