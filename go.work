@@ -23,6 +23,7 @@ use (
 	./assuredworkloads
 	./auth
 	./auth/oauth2adapt
+	./auth/optionadapt
 	./automl
 	./backupdr
 	./baremetalsolution
