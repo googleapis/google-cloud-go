@@ -66,6 +66,11 @@ const (
 	BigtableTableAdmin_GetIamPolicy_FullMethodName             = "/google.bigtable.admin.v2.BigtableTableAdmin/GetIamPolicy"
 	BigtableTableAdmin_SetIamPolicy_FullMethodName             = "/google.bigtable.admin.v2.BigtableTableAdmin/SetIamPolicy"
 	BigtableTableAdmin_TestIamPermissions_FullMethodName       = "/google.bigtable.admin.v2.BigtableTableAdmin/TestIamPermissions"
+	BigtableTableAdmin_CreateSchemaBundle_FullMethodName       = "/google.bigtable.admin.v2.BigtableTableAdmin/CreateSchemaBundle"
+	BigtableTableAdmin_UpdateSchemaBundle_FullMethodName       = "/google.bigtable.admin.v2.BigtableTableAdmin/UpdateSchemaBundle"
+	BigtableTableAdmin_GetSchemaBundle_FullMethodName          = "/google.bigtable.admin.v2.BigtableTableAdmin/GetSchemaBundle"
+	BigtableTableAdmin_ListSchemaBundles_FullMethodName        = "/google.bigtable.admin.v2.BigtableTableAdmin/ListSchemaBundles"
+	BigtableTableAdmin_DeleteSchemaBundle_FullMethodName       = "/google.bigtable.admin.v2.BigtableTableAdmin/DeleteSchemaBundle"
 )
 
 // BigtableTableAdminClient is the client API for BigtableTableAdmin service.
@@ -185,16 +190,26 @@ type BigtableTableAdminClient interface {
 	// Copy a Cloud Bigtable backup to a new backup in the destination cluster
 	// located in the destination instance and project.
 	CopyBackup(ctx context.Context, in *CopyBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Gets the access control policy for a Table or Backup resource.
+	// Gets the access control policy for a Bigtable resource.
 	// Returns an empty policy if the resource exists but does not have a policy
 	// set.
 	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
-	// Sets the access control policy on a Table or Backup resource.
+	// Sets the access control policy on a Bigtable resource.
 	// Replaces any existing policy.
 	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
-	// Returns permissions that the caller has on the specified Table or Backup
+	// Returns permissions that the caller has on the specified Bigtable
 	// resource.
 	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	// Creates a new schema bundle in the specified table.
+	CreateSchemaBundle(ctx context.Context, in *CreateSchemaBundleRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a schema bundle in the specified table.
+	UpdateSchemaBundle(ctx context.Context, in *UpdateSchemaBundleRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets metadata information about the specified schema bundle.
+	GetSchemaBundle(ctx context.Context, in *GetSchemaBundleRequest, opts ...grpc.CallOption) (*SchemaBundle, error)
+	// Lists all schema bundles associated with the specified table.
+	ListSchemaBundles(ctx context.Context, in *ListSchemaBundlesRequest, opts ...grpc.CallOption) (*ListSchemaBundlesResponse, error)
+	// Deletes a schema bundle in the specified table.
+	DeleteSchemaBundle(ctx context.Context, in *DeleteSchemaBundleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type bigtableTableAdminClient struct {
@@ -475,6 +490,51 @@ func (c *bigtableTableAdminClient) TestIamPermissions(ctx context.Context, in *i
 	return out, nil
 }
 
+func (c *bigtableTableAdminClient) CreateSchemaBundle(ctx context.Context, in *CreateSchemaBundleRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BigtableTableAdmin_CreateSchemaBundle_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bigtableTableAdminClient) UpdateSchemaBundle(ctx context.Context, in *UpdateSchemaBundleRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BigtableTableAdmin_UpdateSchemaBundle_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bigtableTableAdminClient) GetSchemaBundle(ctx context.Context, in *GetSchemaBundleRequest, opts ...grpc.CallOption) (*SchemaBundle, error) {
+	out := new(SchemaBundle)
+	err := c.cc.Invoke(ctx, BigtableTableAdmin_GetSchemaBundle_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bigtableTableAdminClient) ListSchemaBundles(ctx context.Context, in *ListSchemaBundlesRequest, opts ...grpc.CallOption) (*ListSchemaBundlesResponse, error) {
+	out := new(ListSchemaBundlesResponse)
+	err := c.cc.Invoke(ctx, BigtableTableAdmin_ListSchemaBundles_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bigtableTableAdminClient) DeleteSchemaBundle(ctx context.Context, in *DeleteSchemaBundleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, BigtableTableAdmin_DeleteSchemaBundle_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BigtableTableAdminServer is the server API for BigtableTableAdmin service.
 // All implementations should embed UnimplementedBigtableTableAdminServer
 // for forward compatibility
@@ -592,16 +652,26 @@ type BigtableTableAdminServer interface {
 	// Copy a Cloud Bigtable backup to a new backup in the destination cluster
 	// located in the destination instance and project.
 	CopyBackup(context.Context, *CopyBackupRequest) (*longrunningpb.Operation, error)
-	// Gets the access control policy for a Table or Backup resource.
+	// Gets the access control policy for a Bigtable resource.
 	// Returns an empty policy if the resource exists but does not have a policy
 	// set.
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
-	// Sets the access control policy on a Table or Backup resource.
+	// Sets the access control policy on a Bigtable resource.
 	// Replaces any existing policy.
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
-	// Returns permissions that the caller has on the specified Table or Backup
+	// Returns permissions that the caller has on the specified Bigtable
 	// resource.
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
+	// Creates a new schema bundle in the specified table.
+	CreateSchemaBundle(context.Context, *CreateSchemaBundleRequest) (*longrunningpb.Operation, error)
+	// Updates a schema bundle in the specified table.
+	UpdateSchemaBundle(context.Context, *UpdateSchemaBundleRequest) (*longrunningpb.Operation, error)
+	// Gets metadata information about the specified schema bundle.
+	GetSchemaBundle(context.Context, *GetSchemaBundleRequest) (*SchemaBundle, error)
+	// Lists all schema bundles associated with the specified table.
+	ListSchemaBundles(context.Context, *ListSchemaBundlesRequest) (*ListSchemaBundlesResponse, error)
+	// Deletes a schema bundle in the specified table.
+	DeleteSchemaBundle(context.Context, *DeleteSchemaBundleRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedBigtableTableAdminServer should be embedded to have forward compatible implementations.
@@ -697,6 +767,21 @@ func (UnimplementedBigtableTableAdminServer) SetIamPolicy(context.Context, *iamp
 }
 func (UnimplementedBigtableTableAdminServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
+}
+func (UnimplementedBigtableTableAdminServer) CreateSchemaBundle(context.Context, *CreateSchemaBundleRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSchemaBundle not implemented")
+}
+func (UnimplementedBigtableTableAdminServer) UpdateSchemaBundle(context.Context, *UpdateSchemaBundleRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSchemaBundle not implemented")
+}
+func (UnimplementedBigtableTableAdminServer) GetSchemaBundle(context.Context, *GetSchemaBundleRequest) (*SchemaBundle, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSchemaBundle not implemented")
+}
+func (UnimplementedBigtableTableAdminServer) ListSchemaBundles(context.Context, *ListSchemaBundlesRequest) (*ListSchemaBundlesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSchemaBundles not implemented")
+}
+func (UnimplementedBigtableTableAdminServer) DeleteSchemaBundle(context.Context, *DeleteSchemaBundleRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSchemaBundle not implemented")
 }
 
 // UnsafeBigtableTableAdminServer may be embedded to opt out of forward compatibility for this service.
@@ -1250,6 +1335,96 @@ func _BigtableTableAdmin_TestIamPermissions_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BigtableTableAdmin_CreateSchemaBundle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSchemaBundleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BigtableTableAdminServer).CreateSchemaBundle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BigtableTableAdmin_CreateSchemaBundle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BigtableTableAdminServer).CreateSchemaBundle(ctx, req.(*CreateSchemaBundleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BigtableTableAdmin_UpdateSchemaBundle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSchemaBundleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BigtableTableAdminServer).UpdateSchemaBundle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BigtableTableAdmin_UpdateSchemaBundle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BigtableTableAdminServer).UpdateSchemaBundle(ctx, req.(*UpdateSchemaBundleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BigtableTableAdmin_GetSchemaBundle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSchemaBundleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BigtableTableAdminServer).GetSchemaBundle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BigtableTableAdmin_GetSchemaBundle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BigtableTableAdminServer).GetSchemaBundle(ctx, req.(*GetSchemaBundleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BigtableTableAdmin_ListSchemaBundles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSchemaBundlesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BigtableTableAdminServer).ListSchemaBundles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BigtableTableAdmin_ListSchemaBundles_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BigtableTableAdminServer).ListSchemaBundles(ctx, req.(*ListSchemaBundlesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BigtableTableAdmin_DeleteSchemaBundle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSchemaBundleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BigtableTableAdminServer).DeleteSchemaBundle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BigtableTableAdmin_DeleteSchemaBundle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BigtableTableAdminServer).DeleteSchemaBundle(ctx, req.(*DeleteSchemaBundleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BigtableTableAdmin_ServiceDesc is the grpc.ServiceDesc for BigtableTableAdmin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1376,6 +1551,26 @@ var BigtableTableAdmin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TestIamPermissions",
 			Handler:    _BigtableTableAdmin_TestIamPermissions_Handler,
+		},
+		{
+			MethodName: "CreateSchemaBundle",
+			Handler:    _BigtableTableAdmin_CreateSchemaBundle_Handler,
+		},
+		{
+			MethodName: "UpdateSchemaBundle",
+			Handler:    _BigtableTableAdmin_UpdateSchemaBundle_Handler,
+		},
+		{
+			MethodName: "GetSchemaBundle",
+			Handler:    _BigtableTableAdmin_GetSchemaBundle_Handler,
+		},
+		{
+			MethodName: "ListSchemaBundles",
+			Handler:    _BigtableTableAdmin_ListSchemaBundles_Handler,
+		},
+		{
+			MethodName: "DeleteSchemaBundle",
+			Handler:    _BigtableTableAdmin_DeleteSchemaBundle_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

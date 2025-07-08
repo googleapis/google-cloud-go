@@ -57,6 +57,11 @@ type DepCallOptions struct {
 	CreateLbRouteExtension   []gax.CallOption
 	UpdateLbRouteExtension   []gax.CallOption
 	DeleteLbRouteExtension   []gax.CallOption
+	ListAuthzExtensions      []gax.CallOption
+	GetAuthzExtension        []gax.CallOption
+	CreateAuthzExtension     []gax.CallOption
+	UpdateAuthzExtension     []gax.CallOption
+	DeleteAuthzExtension     []gax.CallOption
 	GetLocation              []gax.CallOption
 	ListLocations            []gax.CallOption
 	GetIamPolicy             []gax.CallOption
@@ -115,6 +120,21 @@ func defaultDepCallOptions() *DepCallOptions {
 		DeleteLbRouteExtension: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListAuthzExtensions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAuthzExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAuthzExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAuthzExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAuthzExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -159,6 +179,21 @@ func defaultDepRESTCallOptions() *DepCallOptions {
 		DeleteLbRouteExtension: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListAuthzExtensions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAuthzExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAuthzExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAuthzExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAuthzExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -192,6 +227,14 @@ type internalDepClient interface {
 	UpdateLbRouteExtensionOperation(name string) *UpdateLbRouteExtensionOperation
 	DeleteLbRouteExtension(context.Context, *networkservicespb.DeleteLbRouteExtensionRequest, ...gax.CallOption) (*DeleteLbRouteExtensionOperation, error)
 	DeleteLbRouteExtensionOperation(name string) *DeleteLbRouteExtensionOperation
+	ListAuthzExtensions(context.Context, *networkservicespb.ListAuthzExtensionsRequest, ...gax.CallOption) *AuthzExtensionIterator
+	GetAuthzExtension(context.Context, *networkservicespb.GetAuthzExtensionRequest, ...gax.CallOption) (*networkservicespb.AuthzExtension, error)
+	CreateAuthzExtension(context.Context, *networkservicespb.CreateAuthzExtensionRequest, ...gax.CallOption) (*CreateAuthzExtensionOperation, error)
+	CreateAuthzExtensionOperation(name string) *CreateAuthzExtensionOperation
+	UpdateAuthzExtension(context.Context, *networkservicespb.UpdateAuthzExtensionRequest, ...gax.CallOption) (*UpdateAuthzExtensionOperation, error)
+	UpdateAuthzExtensionOperation(name string) *UpdateAuthzExtensionOperation
+	DeleteAuthzExtension(context.Context, *networkservicespb.DeleteAuthzExtensionRequest, ...gax.CallOption) (*DeleteAuthzExtensionOperation, error)
+	DeleteAuthzExtensionOperation(name string) *DeleteAuthzExtensionOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -328,6 +371,51 @@ func (c *DepClient) DeleteLbRouteExtension(ctx context.Context, req *networkserv
 // The name must be that of a previously created DeleteLbRouteExtensionOperation, possibly from a different process.
 func (c *DepClient) DeleteLbRouteExtensionOperation(name string) *DeleteLbRouteExtensionOperation {
 	return c.internalClient.DeleteLbRouteExtensionOperation(name)
+}
+
+// ListAuthzExtensions lists AuthzExtension resources in a given project and location.
+func (c *DepClient) ListAuthzExtensions(ctx context.Context, req *networkservicespb.ListAuthzExtensionsRequest, opts ...gax.CallOption) *AuthzExtensionIterator {
+	return c.internalClient.ListAuthzExtensions(ctx, req, opts...)
+}
+
+// GetAuthzExtension gets details of the specified AuthzExtension resource.
+func (c *DepClient) GetAuthzExtension(ctx context.Context, req *networkservicespb.GetAuthzExtensionRequest, opts ...gax.CallOption) (*networkservicespb.AuthzExtension, error) {
+	return c.internalClient.GetAuthzExtension(ctx, req, opts...)
+}
+
+// CreateAuthzExtension creates a new AuthzExtension resource in a given project
+// and location.
+func (c *DepClient) CreateAuthzExtension(ctx context.Context, req *networkservicespb.CreateAuthzExtensionRequest, opts ...gax.CallOption) (*CreateAuthzExtensionOperation, error) {
+	return c.internalClient.CreateAuthzExtension(ctx, req, opts...)
+}
+
+// CreateAuthzExtensionOperation returns a new CreateAuthzExtensionOperation from a given name.
+// The name must be that of a previously created CreateAuthzExtensionOperation, possibly from a different process.
+func (c *DepClient) CreateAuthzExtensionOperation(name string) *CreateAuthzExtensionOperation {
+	return c.internalClient.CreateAuthzExtensionOperation(name)
+}
+
+// UpdateAuthzExtension updates the parameters of the specified AuthzExtension
+// resource.
+func (c *DepClient) UpdateAuthzExtension(ctx context.Context, req *networkservicespb.UpdateAuthzExtensionRequest, opts ...gax.CallOption) (*UpdateAuthzExtensionOperation, error) {
+	return c.internalClient.UpdateAuthzExtension(ctx, req, opts...)
+}
+
+// UpdateAuthzExtensionOperation returns a new UpdateAuthzExtensionOperation from a given name.
+// The name must be that of a previously created UpdateAuthzExtensionOperation, possibly from a different process.
+func (c *DepClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzExtensionOperation {
+	return c.internalClient.UpdateAuthzExtensionOperation(name)
+}
+
+// DeleteAuthzExtension deletes the specified AuthzExtension resource.
+func (c *DepClient) DeleteAuthzExtension(ctx context.Context, req *networkservicespb.DeleteAuthzExtensionRequest, opts ...gax.CallOption) (*DeleteAuthzExtensionOperation, error) {
+	return c.internalClient.DeleteAuthzExtension(ctx, req, opts...)
+}
+
+// DeleteAuthzExtensionOperation returns a new DeleteAuthzExtensionOperation from a given name.
+// The name must be that of a previously created DeleteAuthzExtensionOperation, possibly from a different process.
+func (c *DepClient) DeleteAuthzExtensionOperation(name string) *DeleteAuthzExtensionOperation {
+	return c.internalClient.DeleteAuthzExtensionOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -823,6 +911,130 @@ func (c *depGRPCClient) DeleteLbRouteExtension(ctx context.Context, req *network
 		return nil, err
 	}
 	return &DeleteLbRouteExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *depGRPCClient) ListAuthzExtensions(ctx context.Context, req *networkservicespb.ListAuthzExtensionsRequest, opts ...gax.CallOption) *AuthzExtensionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAuthzExtensions[0:len((*c.CallOptions).ListAuthzExtensions):len((*c.CallOptions).ListAuthzExtensions)], opts...)
+	it := &AuthzExtensionIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListAuthzExtensionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.AuthzExtension, string, error) {
+		resp := &networkservicespb.ListAuthzExtensionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.depClient.ListAuthzExtensions, req, settings.GRPC, c.logger, "ListAuthzExtensions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAuthzExtensions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *depGRPCClient) GetAuthzExtension(ctx context.Context, req *networkservicespb.GetAuthzExtensionRequest, opts ...gax.CallOption) (*networkservicespb.AuthzExtension, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAuthzExtension[0:len((*c.CallOptions).GetAuthzExtension):len((*c.CallOptions).GetAuthzExtension)], opts...)
+	var resp *networkservicespb.AuthzExtension
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.depClient.GetAuthzExtension, req, settings.GRPC, c.logger, "GetAuthzExtension")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *depGRPCClient) CreateAuthzExtension(ctx context.Context, req *networkservicespb.CreateAuthzExtensionRequest, opts ...gax.CallOption) (*CreateAuthzExtensionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAuthzExtension[0:len((*c.CallOptions).CreateAuthzExtension):len((*c.CallOptions).CreateAuthzExtension)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.depClient.CreateAuthzExtension, req, settings.GRPC, c.logger, "CreateAuthzExtension")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateAuthzExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *depGRPCClient) UpdateAuthzExtension(ctx context.Context, req *networkservicespb.UpdateAuthzExtensionRequest, opts ...gax.CallOption) (*UpdateAuthzExtensionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "authz_extension.name", url.QueryEscape(req.GetAuthzExtension().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateAuthzExtension[0:len((*c.CallOptions).UpdateAuthzExtension):len((*c.CallOptions).UpdateAuthzExtension)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.depClient.UpdateAuthzExtension, req, settings.GRPC, c.logger, "UpdateAuthzExtension")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateAuthzExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *depGRPCClient) DeleteAuthzExtension(ctx context.Context, req *networkservicespb.DeleteAuthzExtensionRequest, opts ...gax.CallOption) (*DeleteAuthzExtensionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteAuthzExtension[0:len((*c.CallOptions).DeleteAuthzExtension):len((*c.CallOptions).DeleteAuthzExtension)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.depClient.DeleteAuthzExtension, req, settings.GRPC, c.logger, "DeleteAuthzExtension")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteAuthzExtensionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1686,6 +1898,332 @@ func (c *depRESTClient) DeleteLbRouteExtension(ctx context.Context, req *network
 	}, nil
 }
 
+// ListAuthzExtensions lists AuthzExtension resources in a given project and location.
+func (c *depRESTClient) ListAuthzExtensions(ctx context.Context, req *networkservicespb.ListAuthzExtensionsRequest, opts ...gax.CallOption) *AuthzExtensionIterator {
+	it := &AuthzExtensionIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListAuthzExtensionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.AuthzExtension, string, error) {
+		resp := &networkservicespb.ListAuthzExtensionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/authzExtensions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAuthzExtensions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAuthzExtensions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetAuthzExtension gets details of the specified AuthzExtension resource.
+func (c *depRESTClient) GetAuthzExtension(ctx context.Context, req *networkservicespb.GetAuthzExtensionRequest, opts ...gax.CallOption) (*networkservicespb.AuthzExtension, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetAuthzExtension[0:len((*c.CallOptions).GetAuthzExtension):len((*c.CallOptions).GetAuthzExtension)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkservicespb.AuthzExtension{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAuthzExtension")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateAuthzExtension creates a new AuthzExtension resource in a given project
+// and location.
+func (c *depRESTClient) CreateAuthzExtension(ctx context.Context, req *networkservicespb.CreateAuthzExtensionRequest, opts ...gax.CallOption) (*CreateAuthzExtensionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAuthzExtension()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/authzExtensions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("authzExtensionId", fmt.Sprintf("%v", req.GetAuthzExtensionId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAuthzExtension")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateAuthzExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateAuthzExtension updates the parameters of the specified AuthzExtension
+// resource.
+func (c *depRESTClient) UpdateAuthzExtension(ctx context.Context, req *networkservicespb.UpdateAuthzExtensionRequest, opts ...gax.CallOption) (*UpdateAuthzExtensionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAuthzExtension()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAuthzExtension().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "authz_extension.name", url.QueryEscape(req.GetAuthzExtension().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAuthzExtension")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateAuthzExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteAuthzExtension deletes the specified AuthzExtension resource.
+func (c *depRESTClient) DeleteAuthzExtension(ctx context.Context, req *networkservicespb.DeleteAuthzExtensionRequest, opts ...gax.CallOption) (*DeleteAuthzExtensionOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAuthzExtension")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteAuthzExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *depRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2200,6 +2738,24 @@ func (c *depRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return it
 }
 
+// CreateAuthzExtensionOperation returns a new CreateAuthzExtensionOperation from a given name.
+// The name must be that of a previously created CreateAuthzExtensionOperation, possibly from a different process.
+func (c *depGRPCClient) CreateAuthzExtensionOperation(name string) *CreateAuthzExtensionOperation {
+	return &CreateAuthzExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateAuthzExtensionOperation returns a new CreateAuthzExtensionOperation from a given name.
+// The name must be that of a previously created CreateAuthzExtensionOperation, possibly from a different process.
+func (c *depRESTClient) CreateAuthzExtensionOperation(name string) *CreateAuthzExtensionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateAuthzExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateLbRouteExtensionOperation returns a new CreateLbRouteExtensionOperation from a given name.
 // The name must be that of a previously created CreateLbRouteExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) CreateLbRouteExtensionOperation(name string) *CreateLbRouteExtensionOperation {
@@ -2236,6 +2792,24 @@ func (c *depRESTClient) CreateLbTrafficExtensionOperation(name string) *CreateLb
 	}
 }
 
+// DeleteAuthzExtensionOperation returns a new DeleteAuthzExtensionOperation from a given name.
+// The name must be that of a previously created DeleteAuthzExtensionOperation, possibly from a different process.
+func (c *depGRPCClient) DeleteAuthzExtensionOperation(name string) *DeleteAuthzExtensionOperation {
+	return &DeleteAuthzExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteAuthzExtensionOperation returns a new DeleteAuthzExtensionOperation from a given name.
+// The name must be that of a previously created DeleteAuthzExtensionOperation, possibly from a different process.
+func (c *depRESTClient) DeleteAuthzExtensionOperation(name string) *DeleteAuthzExtensionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAuthzExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteLbRouteExtensionOperation returns a new DeleteLbRouteExtensionOperation from a given name.
 // The name must be that of a previously created DeleteLbRouteExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) DeleteLbRouteExtensionOperation(name string) *DeleteLbRouteExtensionOperation {
@@ -2267,6 +2841,24 @@ func (c *depGRPCClient) DeleteLbTrafficExtensionOperation(name string) *DeleteLb
 func (c *depRESTClient) DeleteLbTrafficExtensionOperation(name string) *DeleteLbTrafficExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteLbTrafficExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateAuthzExtensionOperation returns a new UpdateAuthzExtensionOperation from a given name.
+// The name must be that of a previously created UpdateAuthzExtensionOperation, possibly from a different process.
+func (c *depGRPCClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzExtensionOperation {
+	return &UpdateAuthzExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateAuthzExtensionOperation returns a new UpdateAuthzExtensionOperation from a given name.
+// The name must be that of a previously created UpdateAuthzExtensionOperation, possibly from a different process.
+func (c *depRESTClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzExtensionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateAuthzExtensionOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

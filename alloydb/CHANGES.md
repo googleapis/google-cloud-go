@@ -3,6 +3,30 @@
 
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.17.0...alloydb/v1.18.0) (2025-06-25)
+
+
+### Features
+
+* **alloydb:** Backup.create_completion_time output field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Backup.create_completion_time output field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Cluster.DenyMaintenancePeriod field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Cluster.DenyMaintenancePeriod field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Instance.ActivationPolicy field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Instance.ActivationPolicy field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** InstanceNetworkConfig.allocated_ip_range_override field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** InstanceNetworkConfig.allocated_ip_range_override field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** InstanceNetworkConfig.network output field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** InstanceNetworkConfig.network output field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
+
+### Documentation
+
+* **alloydb:** A comment for field `earliest_restorable_time` ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** A comment for field `earliest_restorable_time` ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** A comment for field `status` in message `PscAutoConnectionConfig` ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** A comment for field `status` in message `PscAutoConnectionConfig` ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.16.1...alloydb/v1.17.0) (2025-06-17)
 
 

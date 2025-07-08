@@ -5893,6 +5893,11 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 }
 
 func TestIntegration_GFE_Latency(t *testing.T) {
+	if directPathEnabled, found := os.LookupEnv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); found {
+		if enabled, _ := strconv.ParseBool(directPathEnabled); enabled {
+			t.Skip("Skipping GFE tests when DirectPath is enabled")
+		}
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 

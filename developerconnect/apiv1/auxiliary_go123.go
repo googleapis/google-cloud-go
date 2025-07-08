@@ -29,6 +29,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *AccountConnectorIterator) All() iter.Seq2[*developerconnectpb.AccountConnector, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ConnectionIterator) All() iter.Seq2[*developerconnectpb.Connection, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -36,6 +42,12 @@ func (it *ConnectionIterator) All() iter.Seq2[*developerconnectpb.Connection, er
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *GitRepositoryLinkIterator) All() iter.Seq2[*developerconnectpb.GitRepositoryLink, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InsightsConfigIterator) All() iter.Seq2[*developerconnectpb.InsightsConfig, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -60,5 +72,11 @@ func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *StringIterator) All() iter.Seq2[string, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserIterator) All() iter.Seq2[*developerconnectpb.User, error] {
 	return iterator.RangeAdapter(it.Next)
 }

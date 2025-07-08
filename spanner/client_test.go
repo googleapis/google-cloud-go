@@ -44,6 +44,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
@@ -659,10 +660,27 @@ func TestClient_Single(t *testing.T) {
 
 func TestClient_Single_Unavailable(t *testing.T) {
 	t.Parallel()
-	err := testSingleQuery(t, status.Error(codes.Unavailable, "Temporary unavailable"))
+	err := testSingleQuery(t, serverErrorWithMinimalRetryDelay(codes.Unavailable, "Temporary unavailable"))
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestClient_Single_ResourceExhausted(t *testing.T) {
+	t.Parallel()
+	err := testSingleQuery(t, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "Temporary server overload"))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func serverErrorWithMinimalRetryDelay(code codes.Code, msg string) error {
+	st := status.New(code, msg)
+	retry := &errdetails.RetryInfo{
+		RetryDelay: durationpb.New(time.Nanosecond),
+	}
+	st, _ = st.WithDetails(retry)
+	return st.Err()
 }
 
 func TestClient_Single_InvalidArgument(t *testing.T) {
@@ -1174,8 +1192,18 @@ func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo
 
 func testSingleQuery(t *testing.T, serverError error) error {
 	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 1}})
 	defer teardown()
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
+		}
+		return nil
+	})
 
 	if serverError != nil {
 		server.TestSpanner.SetError(serverError)
@@ -5937,7 +5965,7 @@ func TestClient_BatchWrite(t *testing.T) {
 	defer teardown()
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -5972,7 +6000,7 @@ func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6010,7 +6038,7 @@ func TestClient_BatchWrite_Error(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6085,7 +6113,7 @@ func TestClient_BatchWrite_Options(t *testing.T) {
 
 			mutationGroups := []*MutationGroup{
 				{[]*Mutation{
-					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 				}},
 			}
 			iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, tt.write)
@@ -6131,7 +6159,7 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6683,7 +6711,7 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, BatchWriteOptions{ExcludeTxnFromChangeStreams: true})

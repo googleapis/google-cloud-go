@@ -47,64 +47,73 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListEndpointPolicies  []gax.CallOption
-	GetEndpointPolicy     []gax.CallOption
-	CreateEndpointPolicy  []gax.CallOption
-	UpdateEndpointPolicy  []gax.CallOption
-	DeleteEndpointPolicy  []gax.CallOption
-	ListGateways          []gax.CallOption
-	GetGateway            []gax.CallOption
-	CreateGateway         []gax.CallOption
-	UpdateGateway         []gax.CallOption
-	DeleteGateway         []gax.CallOption
-	ListGrpcRoutes        []gax.CallOption
-	GetGrpcRoute          []gax.CallOption
-	CreateGrpcRoute       []gax.CallOption
-	UpdateGrpcRoute       []gax.CallOption
-	DeleteGrpcRoute       []gax.CallOption
-	ListHttpRoutes        []gax.CallOption
-	GetHttpRoute          []gax.CallOption
-	CreateHttpRoute       []gax.CallOption
-	UpdateHttpRoute       []gax.CallOption
-	DeleteHttpRoute       []gax.CallOption
-	ListTcpRoutes         []gax.CallOption
-	GetTcpRoute           []gax.CallOption
-	CreateTcpRoute        []gax.CallOption
-	UpdateTcpRoute        []gax.CallOption
-	DeleteTcpRoute        []gax.CallOption
-	ListTlsRoutes         []gax.CallOption
-	GetTlsRoute           []gax.CallOption
-	CreateTlsRoute        []gax.CallOption
-	UpdateTlsRoute        []gax.CallOption
-	DeleteTlsRoute        []gax.CallOption
-	ListServiceBindings   []gax.CallOption
-	GetServiceBinding     []gax.CallOption
-	CreateServiceBinding  []gax.CallOption
-	UpdateServiceBinding  []gax.CallOption
-	DeleteServiceBinding  []gax.CallOption
-	ListMeshes            []gax.CallOption
-	GetMesh               []gax.CallOption
-	CreateMesh            []gax.CallOption
-	UpdateMesh            []gax.CallOption
-	DeleteMesh            []gax.CallOption
-	ListServiceLbPolicies []gax.CallOption
-	GetServiceLbPolicy    []gax.CallOption
-	CreateServiceLbPolicy []gax.CallOption
-	UpdateServiceLbPolicy []gax.CallOption
-	DeleteServiceLbPolicy []gax.CallOption
-	GetGatewayRouteView   []gax.CallOption
-	GetMeshRouteView      []gax.CallOption
-	ListGatewayRouteViews []gax.CallOption
-	ListMeshRouteViews    []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
-	GetIamPolicy          []gax.CallOption
-	SetIamPolicy          []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	CancelOperation       []gax.CallOption
-	DeleteOperation       []gax.CallOption
-	GetOperation          []gax.CallOption
-	ListOperations        []gax.CallOption
+	ListEndpointPolicies    []gax.CallOption
+	GetEndpointPolicy       []gax.CallOption
+	CreateEndpointPolicy    []gax.CallOption
+	UpdateEndpointPolicy    []gax.CallOption
+	DeleteEndpointPolicy    []gax.CallOption
+	ListWasmPluginVersions  []gax.CallOption
+	GetWasmPluginVersion    []gax.CallOption
+	CreateWasmPluginVersion []gax.CallOption
+	DeleteWasmPluginVersion []gax.CallOption
+	ListWasmPlugins         []gax.CallOption
+	GetWasmPlugin           []gax.CallOption
+	CreateWasmPlugin        []gax.CallOption
+	UpdateWasmPlugin        []gax.CallOption
+	DeleteWasmPlugin        []gax.CallOption
+	ListGateways            []gax.CallOption
+	GetGateway              []gax.CallOption
+	CreateGateway           []gax.CallOption
+	UpdateGateway           []gax.CallOption
+	DeleteGateway           []gax.CallOption
+	ListGrpcRoutes          []gax.CallOption
+	GetGrpcRoute            []gax.CallOption
+	CreateGrpcRoute         []gax.CallOption
+	UpdateGrpcRoute         []gax.CallOption
+	DeleteGrpcRoute         []gax.CallOption
+	ListHttpRoutes          []gax.CallOption
+	GetHttpRoute            []gax.CallOption
+	CreateHttpRoute         []gax.CallOption
+	UpdateHttpRoute         []gax.CallOption
+	DeleteHttpRoute         []gax.CallOption
+	ListTcpRoutes           []gax.CallOption
+	GetTcpRoute             []gax.CallOption
+	CreateTcpRoute          []gax.CallOption
+	UpdateTcpRoute          []gax.CallOption
+	DeleteTcpRoute          []gax.CallOption
+	ListTlsRoutes           []gax.CallOption
+	GetTlsRoute             []gax.CallOption
+	CreateTlsRoute          []gax.CallOption
+	UpdateTlsRoute          []gax.CallOption
+	DeleteTlsRoute          []gax.CallOption
+	ListServiceBindings     []gax.CallOption
+	GetServiceBinding       []gax.CallOption
+	CreateServiceBinding    []gax.CallOption
+	UpdateServiceBinding    []gax.CallOption
+	DeleteServiceBinding    []gax.CallOption
+	ListMeshes              []gax.CallOption
+	GetMesh                 []gax.CallOption
+	CreateMesh              []gax.CallOption
+	UpdateMesh              []gax.CallOption
+	DeleteMesh              []gax.CallOption
+	ListServiceLbPolicies   []gax.CallOption
+	GetServiceLbPolicy      []gax.CallOption
+	CreateServiceLbPolicy   []gax.CallOption
+	UpdateServiceLbPolicy   []gax.CallOption
+	DeleteServiceLbPolicy   []gax.CallOption
+	GetGatewayRouteView     []gax.CallOption
+	GetMeshRouteView        []gax.CallOption
+	ListGatewayRouteViews   []gax.CallOption
+	ListMeshRouteViews      []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	GetIamPolicy            []gax.CallOption
+	SetIamPolicy            []gax.CallOption
+	TestIamPermissions      []gax.CallOption
+	CancelOperation         []gax.CallOption
+	DeleteOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -137,6 +146,33 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteEndpointPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListWasmPluginVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetWasmPluginVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateWasmPluginVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWasmPluginVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListWasmPlugins: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetWasmPlugin: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateWasmPlugin: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWasmPlugin: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWasmPlugin: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListGateways: []gax.CallOption{
@@ -300,6 +336,33 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteEndpointPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListWasmPluginVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetWasmPluginVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateWasmPluginVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWasmPluginVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListWasmPlugins: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetWasmPlugin: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateWasmPlugin: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWasmPlugin: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWasmPlugin: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListGateways: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -457,6 +520,20 @@ type internalClient interface {
 	UpdateEndpointPolicyOperation(name string) *UpdateEndpointPolicyOperation
 	DeleteEndpointPolicy(context.Context, *networkservicespb.DeleteEndpointPolicyRequest, ...gax.CallOption) (*DeleteEndpointPolicyOperation, error)
 	DeleteEndpointPolicyOperation(name string) *DeleteEndpointPolicyOperation
+	ListWasmPluginVersions(context.Context, *networkservicespb.ListWasmPluginVersionsRequest, ...gax.CallOption) *WasmPluginVersionIterator
+	GetWasmPluginVersion(context.Context, *networkservicespb.GetWasmPluginVersionRequest, ...gax.CallOption) (*networkservicespb.WasmPluginVersion, error)
+	CreateWasmPluginVersion(context.Context, *networkservicespb.CreateWasmPluginVersionRequest, ...gax.CallOption) (*CreateWasmPluginVersionOperation, error)
+	CreateWasmPluginVersionOperation(name string) *CreateWasmPluginVersionOperation
+	DeleteWasmPluginVersion(context.Context, *networkservicespb.DeleteWasmPluginVersionRequest, ...gax.CallOption) (*DeleteWasmPluginVersionOperation, error)
+	DeleteWasmPluginVersionOperation(name string) *DeleteWasmPluginVersionOperation
+	ListWasmPlugins(context.Context, *networkservicespb.ListWasmPluginsRequest, ...gax.CallOption) *WasmPluginIterator
+	GetWasmPlugin(context.Context, *networkservicespb.GetWasmPluginRequest, ...gax.CallOption) (*networkservicespb.WasmPlugin, error)
+	CreateWasmPlugin(context.Context, *networkservicespb.CreateWasmPluginRequest, ...gax.CallOption) (*CreateWasmPluginOperation, error)
+	CreateWasmPluginOperation(name string) *CreateWasmPluginOperation
+	UpdateWasmPlugin(context.Context, *networkservicespb.UpdateWasmPluginRequest, ...gax.CallOption) (*UpdateWasmPluginOperation, error)
+	UpdateWasmPluginOperation(name string) *UpdateWasmPluginOperation
+	DeleteWasmPlugin(context.Context, *networkservicespb.DeleteWasmPluginRequest, ...gax.CallOption) (*DeleteWasmPluginOperation, error)
+	DeleteWasmPluginOperation(name string) *DeleteWasmPluginOperation
 	ListGateways(context.Context, *networkservicespb.ListGatewaysRequest, ...gax.CallOption) *GatewayIterator
 	GetGateway(context.Context, *networkservicespb.GetGatewayRequest, ...gax.CallOption) (*networkservicespb.Gateway, error)
 	CreateGateway(context.Context, *networkservicespb.CreateGatewayRequest, ...gax.CallOption) (*CreateGatewayOperation, error)
@@ -617,6 +694,85 @@ func (c *Client) DeleteEndpointPolicy(ctx context.Context, req *networkservicesp
 // The name must be that of a previously created DeleteEndpointPolicyOperation, possibly from a different process.
 func (c *Client) DeleteEndpointPolicyOperation(name string) *DeleteEndpointPolicyOperation {
 	return c.internalClient.DeleteEndpointPolicyOperation(name)
+}
+
+// ListWasmPluginVersions lists WasmPluginVersion resources in a given project and
+// location.
+func (c *Client) ListWasmPluginVersions(ctx context.Context, req *networkservicespb.ListWasmPluginVersionsRequest, opts ...gax.CallOption) *WasmPluginVersionIterator {
+	return c.internalClient.ListWasmPluginVersions(ctx, req, opts...)
+}
+
+// GetWasmPluginVersion gets details of the specified WasmPluginVersion resource.
+func (c *Client) GetWasmPluginVersion(ctx context.Context, req *networkservicespb.GetWasmPluginVersionRequest, opts ...gax.CallOption) (*networkservicespb.WasmPluginVersion, error) {
+	return c.internalClient.GetWasmPluginVersion(ctx, req, opts...)
+}
+
+// CreateWasmPluginVersion creates a new WasmPluginVersion resource in a given project
+// and location.
+func (c *Client) CreateWasmPluginVersion(ctx context.Context, req *networkservicespb.CreateWasmPluginVersionRequest, opts ...gax.CallOption) (*CreateWasmPluginVersionOperation, error) {
+	return c.internalClient.CreateWasmPluginVersion(ctx, req, opts...)
+}
+
+// CreateWasmPluginVersionOperation returns a new CreateWasmPluginVersionOperation from a given name.
+// The name must be that of a previously created CreateWasmPluginVersionOperation, possibly from a different process.
+func (c *Client) CreateWasmPluginVersionOperation(name string) *CreateWasmPluginVersionOperation {
+	return c.internalClient.CreateWasmPluginVersionOperation(name)
+}
+
+// DeleteWasmPluginVersion deletes the specified WasmPluginVersion resource.
+func (c *Client) DeleteWasmPluginVersion(ctx context.Context, req *networkservicespb.DeleteWasmPluginVersionRequest, opts ...gax.CallOption) (*DeleteWasmPluginVersionOperation, error) {
+	return c.internalClient.DeleteWasmPluginVersion(ctx, req, opts...)
+}
+
+// DeleteWasmPluginVersionOperation returns a new DeleteWasmPluginVersionOperation from a given name.
+// The name must be that of a previously created DeleteWasmPluginVersionOperation, possibly from a different process.
+func (c *Client) DeleteWasmPluginVersionOperation(name string) *DeleteWasmPluginVersionOperation {
+	return c.internalClient.DeleteWasmPluginVersionOperation(name)
+}
+
+// ListWasmPlugins lists WasmPlugin resources in a given project and
+// location.
+func (c *Client) ListWasmPlugins(ctx context.Context, req *networkservicespb.ListWasmPluginsRequest, opts ...gax.CallOption) *WasmPluginIterator {
+	return c.internalClient.ListWasmPlugins(ctx, req, opts...)
+}
+
+// GetWasmPlugin gets details of the specified WasmPlugin resource.
+func (c *Client) GetWasmPlugin(ctx context.Context, req *networkservicespb.GetWasmPluginRequest, opts ...gax.CallOption) (*networkservicespb.WasmPlugin, error) {
+	return c.internalClient.GetWasmPlugin(ctx, req, opts...)
+}
+
+// CreateWasmPlugin creates a new WasmPlugin resource in a given project
+// and location.
+func (c *Client) CreateWasmPlugin(ctx context.Context, req *networkservicespb.CreateWasmPluginRequest, opts ...gax.CallOption) (*CreateWasmPluginOperation, error) {
+	return c.internalClient.CreateWasmPlugin(ctx, req, opts...)
+}
+
+// CreateWasmPluginOperation returns a new CreateWasmPluginOperation from a given name.
+// The name must be that of a previously created CreateWasmPluginOperation, possibly from a different process.
+func (c *Client) CreateWasmPluginOperation(name string) *CreateWasmPluginOperation {
+	return c.internalClient.CreateWasmPluginOperation(name)
+}
+
+// UpdateWasmPlugin updates the parameters of the specified WasmPlugin resource.
+func (c *Client) UpdateWasmPlugin(ctx context.Context, req *networkservicespb.UpdateWasmPluginRequest, opts ...gax.CallOption) (*UpdateWasmPluginOperation, error) {
+	return c.internalClient.UpdateWasmPlugin(ctx, req, opts...)
+}
+
+// UpdateWasmPluginOperation returns a new UpdateWasmPluginOperation from a given name.
+// The name must be that of a previously created UpdateWasmPluginOperation, possibly from a different process.
+func (c *Client) UpdateWasmPluginOperation(name string) *UpdateWasmPluginOperation {
+	return c.internalClient.UpdateWasmPluginOperation(name)
+}
+
+// DeleteWasmPlugin deletes the specified WasmPlugin resource.
+func (c *Client) DeleteWasmPlugin(ctx context.Context, req *networkservicespb.DeleteWasmPluginRequest, opts ...gax.CallOption) (*DeleteWasmPluginOperation, error) {
+	return c.internalClient.DeleteWasmPlugin(ctx, req, opts...)
+}
+
+// DeleteWasmPluginOperation returns a new DeleteWasmPluginOperation from a given name.
+// The name must be that of a previously created DeleteWasmPluginOperation, possibly from a different process.
+func (c *Client) DeleteWasmPluginOperation(name string) *DeleteWasmPluginOperation {
+	return c.internalClient.DeleteWasmPluginOperation(name)
 }
 
 // ListGateways lists Gateways in a given project and location.
@@ -1352,6 +1508,234 @@ func (c *gRPCClient) DeleteEndpointPolicy(ctx context.Context, req *networkservi
 		return nil, err
 	}
 	return &DeleteEndpointPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListWasmPluginVersions(ctx context.Context, req *networkservicespb.ListWasmPluginVersionsRequest, opts ...gax.CallOption) *WasmPluginVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListWasmPluginVersions[0:len((*c.CallOptions).ListWasmPluginVersions):len((*c.CallOptions).ListWasmPluginVersions)], opts...)
+	it := &WasmPluginVersionIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListWasmPluginVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.WasmPluginVersion, string, error) {
+		resp := &networkservicespb.ListWasmPluginVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListWasmPluginVersions, req, settings.GRPC, c.logger, "ListWasmPluginVersions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetWasmPluginVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetWasmPluginVersion(ctx context.Context, req *networkservicespb.GetWasmPluginVersionRequest, opts ...gax.CallOption) (*networkservicespb.WasmPluginVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetWasmPluginVersion[0:len((*c.CallOptions).GetWasmPluginVersion):len((*c.CallOptions).GetWasmPluginVersion)], opts...)
+	var resp *networkservicespb.WasmPluginVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetWasmPluginVersion, req, settings.GRPC, c.logger, "GetWasmPluginVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateWasmPluginVersion(ctx context.Context, req *networkservicespb.CreateWasmPluginVersionRequest, opts ...gax.CallOption) (*CreateWasmPluginVersionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateWasmPluginVersion[0:len((*c.CallOptions).CreateWasmPluginVersion):len((*c.CallOptions).CreateWasmPluginVersion)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateWasmPluginVersion, req, settings.GRPC, c.logger, "CreateWasmPluginVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateWasmPluginVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteWasmPluginVersion(ctx context.Context, req *networkservicespb.DeleteWasmPluginVersionRequest, opts ...gax.CallOption) (*DeleteWasmPluginVersionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteWasmPluginVersion[0:len((*c.CallOptions).DeleteWasmPluginVersion):len((*c.CallOptions).DeleteWasmPluginVersion)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteWasmPluginVersion, req, settings.GRPC, c.logger, "DeleteWasmPluginVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteWasmPluginVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListWasmPlugins(ctx context.Context, req *networkservicespb.ListWasmPluginsRequest, opts ...gax.CallOption) *WasmPluginIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListWasmPlugins[0:len((*c.CallOptions).ListWasmPlugins):len((*c.CallOptions).ListWasmPlugins)], opts...)
+	it := &WasmPluginIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListWasmPluginsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.WasmPlugin, string, error) {
+		resp := &networkservicespb.ListWasmPluginsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListWasmPlugins, req, settings.GRPC, c.logger, "ListWasmPlugins")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetWasmPlugins(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetWasmPlugin(ctx context.Context, req *networkservicespb.GetWasmPluginRequest, opts ...gax.CallOption) (*networkservicespb.WasmPlugin, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetWasmPlugin[0:len((*c.CallOptions).GetWasmPlugin):len((*c.CallOptions).GetWasmPlugin)], opts...)
+	var resp *networkservicespb.WasmPlugin
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetWasmPlugin, req, settings.GRPC, c.logger, "GetWasmPlugin")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateWasmPlugin(ctx context.Context, req *networkservicespb.CreateWasmPluginRequest, opts ...gax.CallOption) (*CreateWasmPluginOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateWasmPlugin[0:len((*c.CallOptions).CreateWasmPlugin):len((*c.CallOptions).CreateWasmPlugin)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateWasmPlugin, req, settings.GRPC, c.logger, "CreateWasmPlugin")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateWasmPluginOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateWasmPlugin(ctx context.Context, req *networkservicespb.UpdateWasmPluginRequest, opts ...gax.CallOption) (*UpdateWasmPluginOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "wasm_plugin.name", url.QueryEscape(req.GetWasmPlugin().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateWasmPlugin[0:len((*c.CallOptions).UpdateWasmPlugin):len((*c.CallOptions).UpdateWasmPlugin)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateWasmPlugin, req, settings.GRPC, c.logger, "UpdateWasmPlugin")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateWasmPluginOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteWasmPlugin(ctx context.Context, req *networkservicespb.DeleteWasmPluginRequest, opts ...gax.CallOption) (*DeleteWasmPluginOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteWasmPlugin[0:len((*c.CallOptions).DeleteWasmPlugin):len((*c.CallOptions).DeleteWasmPlugin)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteWasmPlugin, req, settings.GRPC, c.logger, "DeleteWasmPlugin")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteWasmPluginOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2993,6 +3377,564 @@ func (c *restClient) DeleteEndpointPolicy(ctx context.Context, req *networkservi
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteEndpointPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListWasmPluginVersions lists WasmPluginVersion resources in a given project and
+// location.
+func (c *restClient) ListWasmPluginVersions(ctx context.Context, req *networkservicespb.ListWasmPluginVersionsRequest, opts ...gax.CallOption) *WasmPluginVersionIterator {
+	it := &WasmPluginVersionIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListWasmPluginVersionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.WasmPluginVersion, string, error) {
+		resp := &networkservicespb.ListWasmPluginVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWasmPluginVersions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetWasmPluginVersions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetWasmPluginVersion gets details of the specified WasmPluginVersion resource.
+func (c *restClient) GetWasmPluginVersion(ctx context.Context, req *networkservicespb.GetWasmPluginVersionRequest, opts ...gax.CallOption) (*networkservicespb.WasmPluginVersion, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetWasmPluginVersion[0:len((*c.CallOptions).GetWasmPluginVersion):len((*c.CallOptions).GetWasmPluginVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkservicespb.WasmPluginVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWasmPluginVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateWasmPluginVersion creates a new WasmPluginVersion resource in a given project
+// and location.
+func (c *restClient) CreateWasmPluginVersion(ctx context.Context, req *networkservicespb.CreateWasmPluginVersionRequest, opts ...gax.CallOption) (*CreateWasmPluginVersionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetWasmPluginVersion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("wasmPluginVersionId", fmt.Sprintf("%v", req.GetWasmPluginVersionId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateWasmPluginVersion")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateWasmPluginVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteWasmPluginVersion deletes the specified WasmPluginVersion resource.
+func (c *restClient) DeleteWasmPluginVersion(ctx context.Context, req *networkservicespb.DeleteWasmPluginVersionRequest, opts ...gax.CallOption) (*DeleteWasmPluginVersionOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteWasmPluginVersion")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteWasmPluginVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListWasmPlugins lists WasmPlugin resources in a given project and
+// location.
+func (c *restClient) ListWasmPlugins(ctx context.Context, req *networkservicespb.ListWasmPluginsRequest, opts ...gax.CallOption) *WasmPluginIterator {
+	it := &WasmPluginIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListWasmPluginsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.WasmPlugin, string, error) {
+		resp := &networkservicespb.ListWasmPluginsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/wasmPlugins", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWasmPlugins")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetWasmPlugins(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetWasmPlugin gets details of the specified WasmPlugin resource.
+func (c *restClient) GetWasmPlugin(ctx context.Context, req *networkservicespb.GetWasmPluginRequest, opts ...gax.CallOption) (*networkservicespb.WasmPlugin, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetView() != 0 {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetWasmPlugin[0:len((*c.CallOptions).GetWasmPlugin):len((*c.CallOptions).GetWasmPlugin)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkservicespb.WasmPlugin{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWasmPlugin")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateWasmPlugin creates a new WasmPlugin resource in a given project
+// and location.
+func (c *restClient) CreateWasmPlugin(ctx context.Context, req *networkservicespb.CreateWasmPluginRequest, opts ...gax.CallOption) (*CreateWasmPluginOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetWasmPlugin()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/wasmPlugins", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("wasmPluginId", fmt.Sprintf("%v", req.GetWasmPluginId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateWasmPlugin")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateWasmPluginOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateWasmPlugin updates the parameters of the specified WasmPlugin resource.
+func (c *restClient) UpdateWasmPlugin(ctx context.Context, req *networkservicespb.UpdateWasmPluginRequest, opts ...gax.CallOption) (*UpdateWasmPluginOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetWasmPlugin()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetWasmPlugin().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "wasm_plugin.name", url.QueryEscape(req.GetWasmPlugin().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateWasmPlugin")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateWasmPluginOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteWasmPlugin deletes the specified WasmPlugin resource.
+func (c *restClient) DeleteWasmPlugin(ctx context.Context, req *networkservicespb.DeleteWasmPluginRequest, opts ...gax.CallOption) (*DeleteWasmPluginOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteWasmPlugin")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteWasmPluginOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -6417,6 +7359,42 @@ func (c *restClient) CreateTlsRouteOperation(name string) *CreateTlsRouteOperati
 	}
 }
 
+// CreateWasmPluginOperation returns a new CreateWasmPluginOperation from a given name.
+// The name must be that of a previously created CreateWasmPluginOperation, possibly from a different process.
+func (c *gRPCClient) CreateWasmPluginOperation(name string) *CreateWasmPluginOperation {
+	return &CreateWasmPluginOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateWasmPluginOperation returns a new CreateWasmPluginOperation from a given name.
+// The name must be that of a previously created CreateWasmPluginOperation, possibly from a different process.
+func (c *restClient) CreateWasmPluginOperation(name string) *CreateWasmPluginOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateWasmPluginOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateWasmPluginVersionOperation returns a new CreateWasmPluginVersionOperation from a given name.
+// The name must be that of a previously created CreateWasmPluginVersionOperation, possibly from a different process.
+func (c *gRPCClient) CreateWasmPluginVersionOperation(name string) *CreateWasmPluginVersionOperation {
+	return &CreateWasmPluginVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateWasmPluginVersionOperation returns a new CreateWasmPluginVersionOperation from a given name.
+// The name must be that of a previously created CreateWasmPluginVersionOperation, possibly from a different process.
+func (c *restClient) CreateWasmPluginVersionOperation(name string) *CreateWasmPluginVersionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateWasmPluginVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteEndpointPolicyOperation returns a new DeleteEndpointPolicyOperation from a given name.
 // The name must be that of a previously created DeleteEndpointPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEndpointPolicyOperation(name string) *DeleteEndpointPolicyOperation {
@@ -6579,6 +7557,42 @@ func (c *restClient) DeleteTlsRouteOperation(name string) *DeleteTlsRouteOperati
 	}
 }
 
+// DeleteWasmPluginOperation returns a new DeleteWasmPluginOperation from a given name.
+// The name must be that of a previously created DeleteWasmPluginOperation, possibly from a different process.
+func (c *gRPCClient) DeleteWasmPluginOperation(name string) *DeleteWasmPluginOperation {
+	return &DeleteWasmPluginOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteWasmPluginOperation returns a new DeleteWasmPluginOperation from a given name.
+// The name must be that of a previously created DeleteWasmPluginOperation, possibly from a different process.
+func (c *restClient) DeleteWasmPluginOperation(name string) *DeleteWasmPluginOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteWasmPluginOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteWasmPluginVersionOperation returns a new DeleteWasmPluginVersionOperation from a given name.
+// The name must be that of a previously created DeleteWasmPluginVersionOperation, possibly from a different process.
+func (c *gRPCClient) DeleteWasmPluginVersionOperation(name string) *DeleteWasmPluginVersionOperation {
+	return &DeleteWasmPluginVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteWasmPluginVersionOperation returns a new DeleteWasmPluginVersionOperation from a given name.
+// The name must be that of a previously created DeleteWasmPluginVersionOperation, possibly from a different process.
+func (c *restClient) DeleteWasmPluginVersionOperation(name string) *DeleteWasmPluginVersionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteWasmPluginVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // UpdateEndpointPolicyOperation returns a new UpdateEndpointPolicyOperation from a given name.
 // The name must be that of a previously created UpdateEndpointPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateEndpointPolicyOperation(name string) *UpdateEndpointPolicyOperation {
@@ -6736,6 +7750,24 @@ func (c *gRPCClient) UpdateTlsRouteOperation(name string) *UpdateTlsRouteOperati
 func (c *restClient) UpdateTlsRouteOperation(name string) *UpdateTlsRouteOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateTlsRouteOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateWasmPluginOperation returns a new UpdateWasmPluginOperation from a given name.
+// The name must be that of a previously created UpdateWasmPluginOperation, possibly from a different process.
+func (c *gRPCClient) UpdateWasmPluginOperation(name string) *UpdateWasmPluginOperation {
+	return &UpdateWasmPluginOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateWasmPluginOperation returns a new UpdateWasmPluginOperation from a given name.
+// The name must be that of a previously created UpdateWasmPluginOperation, possibly from a different process.
+func (c *restClient) UpdateWasmPluginOperation(name string) *UpdateWasmPluginOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateWasmPluginOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

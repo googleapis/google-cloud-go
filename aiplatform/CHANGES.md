@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.92.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.91.0...aiplatform/v1.92.0) (2025-06-25)
+
+
+### Features
+
+* **aiplatform:** Add GenAiAdvancedFeaturesConfig to endpoint.proto ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **aiplatform:** Add invoke_route_prefix to ModelContainerSpec in aiplatform v1beta1 models.proto ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **aiplatform:** Add Model Garden deploy OSS model API ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **aiplatform:** Add PSCAutomationConfig to PrivateServiceConnectConfig in service_networking.proto ([#12467](https://github.com/googleapis/google-cloud-go/issues/12467)) ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **aiplatform:** Reasoning Engine v1beta1 subresource updates ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
+
+### Documentation
+
+* **aiplatform:** Clarify that the names for sessions and session_events are no longer required. ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **aiplatform:** Update dedicateEndpointDns documentation ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
 ## [1.91.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.90.0...aiplatform/v1.91.0) (2025-06-17)
 
 
