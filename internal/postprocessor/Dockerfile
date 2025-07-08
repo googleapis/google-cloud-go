@@ -42,4 +42,4 @@ RUN (export GOTOOLCHAIN='auto' && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest)
 
-CMD [ "/postprocessor/post_processor"]
+CMD /postprocessor/post_processor
