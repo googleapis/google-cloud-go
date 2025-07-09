@@ -1071,6 +1071,10 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewMultiRangeDownloader")
 	defer func() { trace.EndSpan(ctx, err) }()
 	s := callSettings(c.settings, opts...)
+	// Force the use of the custom codec to enable zero-copy reads.
+	s.gax = append(s.gax, gax.WithGRPCOptions(
+		grpc.ForceCodecV2(bytesCodecV2{}),
+	))
 
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -1110,7 +1114,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			}
 		}
 		var stream storagepb.Storage_BidiReadObjectClient
-		var resp *storagepb.BidiReadObjectResponse
+		//var resp *storagepb.BidiReadObjectResponse
+		var decoder *readResponseDecoder
 		cc, cancel := context.WithCancel(ctx)
 		err = run(cc, func(ctx context.Context) error {
 			stream, err = c.raw.BidiReadObject(ctx, s.gax...)
@@ -1135,11 +1140,19 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			if err != nil {
 				return err
 			}
-			resp, err = stream.Recv()
+			// Use RecvMsg to get the raw buffer slice instead of Recv().
+			databufs := mem.BufferSlice{}
+			err = stream.RecvMsg(&databufs)
 			if err != nil {
 				return err
 			}
-			return nil
+
+			// Use the custom decoder to parse the raw buffer without copying object data.
+			decoder = &readResponseDecoder{
+				databufs: databufs,
+			}
+			err = decoder.readFullObjectResponse()
+			return err
 		}, s.retry, s.idempotent)
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
@@ -1147,7 +1160,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			cancel()
 			return nil, nil, err
 		}
-		return &bidiReadStreamResponse{stream: stream, response: resp}, cancel, nil
+		return &bidiReadStreamResponse{stream: stream, decoder: decoder}, cancel, nil
 	}
 
 	// For the first time open stream without adding any range.
@@ -1158,7 +1171,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	// The first message was Recv'd on stream open, use it to populate the
 	// object metadata.
-	msg := resp.response
+	msg := resp.decoder.msg
 	obj := msg.GetMetadata()
 
 	mrd := &gRPCBidiReader{
@@ -1245,7 +1258,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	// receives ranges responses on the stream and executes the callback.
 	receiver := func() {
-		var resp *storagepb.BidiReadObjectResponse
 		var err error
 		for {
 			select {
@@ -1259,13 +1271,13 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			default:
 				// This function reads the data sent for a particular range request and has a callback
 				// to indicate that output buffer is filled.
-				resp, err = mrd.stream.Recv()
-				if resp.GetReadHandle().GetHandle() != nil {
-					mrd.readHandle = resp.GetReadHandle().GetHandle()
-				}
+				databufs := mem.BufferSlice{}
+				err = mrd.stream.RecvMsg(&databufs)
+				// TODO: update read handle?
 				if err == io.EOF {
 					err = nil
 				}
+				// TODO: handle not found error?
 				if err != nil {
 					// cancel stream and reopen the stream again.
 					// Incase again an error is thrown close the streamManager goroutine.
@@ -1273,6 +1285,18 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				}
 
 				if err == nil {
+					// Use the custom decoder to parse the message.
+					decoder := &readResponseDecoder{databufs: databufs}
+					if err := decoder.readFullObjectResponse(); err != nil {
+						mrd.retrier(err, "receiver")
+						continue // Move to next iteration after retry
+					}
+					msg := decoder.msg
+
+					if msg.GetReadHandle().GetHandle() != nil {
+						mrd.readHandle = msg.GetReadHandle().GetHandle()
+					}
+
 					mrd.mu.Lock()
 					if len(mrd.activeRanges) == 0 && mrd.numActiveRanges == 0 {
 						mrd.closeReceiver <- true
@@ -1280,8 +1304,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						return
 					}
 					mrd.mu.Unlock()
-					arr := resp.GetObjectDataRanges()
-					for _, val := range arr {
+					for _, val := range msg.GetObjectDataRanges() {
 						id := val.GetReadRange().GetReadId()
 						mrd.mu.Lock()
 						_, ok := mrd.activeRanges[id]
@@ -1289,7 +1312,13 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 							// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
 							continue
 						}
-						_, err = mrd.activeRanges[id].writer.Write(val.GetChecksummedData().GetContent())
+
+						// The decoder holds the object content. writeToAndUpdateCRC writes
+						// it to the user's buffer without an intermediate copy.
+						written, _, err := decoder.writeToAndUpdateCRC(mrd.activeRanges[id].writer, id, func(b []byte) {
+							// crc update logic can be added here if needed
+						})
+
 						if err != nil {
 							mrd.activeRanges[id].callback(mrd.activeRanges[id].offset, mrd.activeRanges[id].totalBytesWritten, err)
 							mrd.numActiveRanges--
@@ -1300,8 +1329,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 								writer:              mrd.activeRanges[id].writer,
 								offset:              mrd.activeRanges[id].offset,
 								limit:               mrd.activeRanges[id].limit,
-								currentBytesWritten: mrd.activeRanges[id].currentBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
-								totalBytesWritten:   mrd.activeRanges[id].totalBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
+								currentBytesWritten: mrd.activeRanges[id].currentBytesWritten + written,
+								totalBytesWritten:   mrd.activeRanges[id].totalBytesWritten + written,
 								callback:            mrd.activeRanges[id].callback,
 							}
 						}
@@ -1312,6 +1341,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						}
 						mrd.mu.Unlock()
 					}
+					// Free the buffers once the message has been processed.
+					decoder.databufs.Free()
 				}
 			}
 		}
@@ -1444,7 +1475,41 @@ func (mrd *gRPCBidiReader) reopenStream(failSpec []mrdRange) error {
 	}
 	mrd.stream = res.stream
 	mrd.cancel = cancel
-	mrd.readHandle = res.response.GetReadHandle().GetHandle()
+	msg := res.decoder.msg
+	if msg.GetReadHandle().GetHandle() != nil {
+		mrd.readHandle = msg.GetReadHandle().GetHandle()
+	}
+
+	// Process any data ranges that came back in the initial response.
+	// This prevents data loss from the first message on the new stream.
+	for _, val := range msg.GetObjectDataRanges() {
+		id := val.GetReadRange().GetReadId()
+		mrd.mu.Lock()
+		activeRange, ok := mrd.activeRanges[id]
+		if !ok {
+			mrd.mu.Unlock()
+			continue
+		}
+
+		// Use the decoder's zero-copy write method.
+		written, _, writeErr := res.decoder.writeToAndUpdateCRC(activeRange.writer, id, nil)
+		if writeErr != nil {
+			activeRange.callback(activeRange.offset, activeRange.totalBytesWritten, writeErr)
+			mrd.numActiveRanges--
+			delete(mrd.activeRanges, id)
+		} else {
+			activeRange.currentBytesWritten += written
+			activeRange.totalBytesWritten += written
+			mrd.activeRanges[id] = activeRange
+		}
+
+		if val.GetRangeEnd() {
+			activeRange.callback(activeRange.offset, activeRange.totalBytesWritten, nil)
+			mrd.numActiveRanges--
+			delete(mrd.activeRanges, id)
+		}
+		mrd.mu.Unlock()
+	}
 	if failSpec != nil {
 		mrd.rangesToRead <- failSpec
 	}
@@ -1843,8 +1908,8 @@ type readStreamResponse struct {
 }
 
 type bidiReadStreamResponse struct {
-	stream   storagepb.Storage_BidiReadObjectClient
-	response *storagepb.BidiReadObjectResponse
+	stream  storagepb.Storage_BidiReadObjectClient
+	decoder *readResponseDecoder
 }
 
 // gRPCReader is used by storage.Reader if the experimental option WithGRPCBidiReads is passed.
@@ -1896,39 +1961,30 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 		return 0, fmt.Errorf("storage: reader has been closed")
 	}
 
-	var n int
+	for {
+		// If there is data remaining in the current message, try to read from it.
+		if r.currMsg != nil && !r.currMsg.done {
+			n, found := r.currMsg.readAndUpdateCRC(p, 1, func(b []byte) {
+				r.updateCRC(b)
+			})
 
-	// If there is data remaining in the current message, return what was
-	// available to conform to the Reader
-	// interface: https://pkg.go.dev/io#Reader.
-	if !r.currMsg.done {
-		n = r.currMsg.readAndUpdateCRC(p, func(b []byte) {
-			r.updateCRC(b)
-		})
-		r.seen += int64(n)
-		return n, nil
+			// If data for our readID was found, we can update `seen` and return.
+			if found {
+				r.seen += int64(n)
+				return n, nil
+			}
+			// If not found, this message is exhausted for our purposes.
+			// Fall through to recv() to get a new one.
+		}
+
+		// Get the next message from the stream.
+		err := r.recv()
+		if err != nil {
+			// This correctly handles io.EOF, context canceled, and other terminal errors.
+			return 0, err
+		}
+		// The loop will now restart and try to read from the new r.currMsg.
 	}
-
-	// Attempt to Recv the next message on the stream.
-	// This will update r.currMsg with the decoder for the new message.
-	err := r.recv()
-	if err != nil {
-		return 0, err
-	}
-
-	// TODO: Determine if we need to capture incremental CRC32C for this
-	// chunk. The Object CRC32C checksum is captured when directed to read
-	// the entire Object. If directed to read a range, we may need to
-	// calculate the range's checksum for verification if the checksum is
-	// present in the response here.
-	// TODO: Figure out if we need to support decompressive transcoding
-	// https://cloud.google.com/storage/docs/transcoding.
-
-	n = r.currMsg.readAndUpdateCRC(p, func(b []byte) {
-		r.updateCRC(b)
-	})
-	r.seen += int64(n)
-	return n, nil
 }
 
 // WriteTo writes all the data requested by the Reader into w, implementing
@@ -1956,47 +2012,38 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 
 	// Write any already received message to the stream. There will be some leftovers from the
 	// original NewRangeReader call.
-	if r.currMsg != nil && !r.currMsg.done {
-		written, err := r.currMsg.writeToAndUpdateCRC(w, func(b []byte) {
-			r.updateCRC(b)
-		})
-		r.seen += int64(written)
-		r.currMsg = nil
-		if err != nil {
-			return r.seen - alreadySeen, err
-		}
-	}
-
-	// Loop and receive additional messages until the entire data is written.
 	for {
+		// Write any data from the current message buffer.
+		if r.currMsg != nil && !r.currMsg.done {
+			written, _, err := r.currMsg.writeToAndUpdateCRC(w, 1, func(b []byte) {
+				r.updateCRC(b)
+			})
+			r.seen += written
+			if err != nil {
+				return r.seen - alreadySeen, err
+			}
+			// If no data was found, we still need to fetch the next message.
+			// If data was found, we also need the next message. So we always fall through.
+		}
+
 		// Attempt to receive the next message on the stream.
-		// Will terminate with io.EOF once data has all come through.
-		// recv() handles stream reopening and retry logic so no need for retries here.
 		err := r.recv()
 		if err != nil {
 			if err == io.EOF {
-				// We are done; check the checksum if necessary and return.
+				// We are done; check the checksum if necessary and break the loop.
 				err = r.runCRCCheck()
+				break
 			}
 			return r.seen - alreadySeen, err
 		}
-
-		// TODO: Determine if we need to capture incremental CRC32C for this
-		// chunk. The Object CRC32C checksum is captured when directed to read
-		// the entire Object. If directed to read a range, we may need to
-		// calculate the range's checksum for verification if the checksum is
-		// present in the response here.
-		// TODO: Figure out if we need to support decompressive transcoding
-		// https://cloud.google.com/storage/docs/transcoding.
-		written, err := r.currMsg.writeToAndUpdateCRC(w, func(b []byte) {
-			r.updateCRC(b)
-		})
-		r.seen += int64(written)
-		if err != nil {
-			return r.seen - alreadySeen, err
-		}
+		// Continue loop to process the new message.
 	}
-
+	// Propagate any checksum error.
+	var finalErr error
+	if err := r.runCRCCheck(); err != nil {
+		finalErr = err
+	}
+	return r.seen - alreadySeen, finalErr
 }
 
 // Close cancels the read stream's context in order for it to be closed and
@@ -2005,6 +2052,7 @@ func (r *gRPCReader) Close() error {
 	if r.cancel != nil {
 		r.cancel()
 	}
+
 	r.currMsg = nil
 	return nil
 }
@@ -2065,9 +2113,11 @@ type readResponseDecoder struct {
 	currBuf int    // index of the current buffer being processed
 	currOff uint64 // offset in the current buffer
 	// Processed data
-	msg         *storagepb.BidiReadObjectResponse // processed response message with all fields other than object data populated
-	dataOffsets bufferSliceOffsets                // offsets of the object data in the message.
-	done        bool                              // true if the data has been completely read.
+	msg *storagepb.BidiReadObjectResponse // processed response message with all fields other than object data populated
+	// The original dataOffsets field is replaced with a map to handle multiple ranges.
+	// dataOffsets bufferSliceOffsets
+	dataOffsets map[int64]bufferSliceOffsets // New field: map ReadId to its data offsets
+	done        bool                         // true if the data has been completely read.
 }
 
 type bufferSliceOffsets struct {
@@ -2152,69 +2202,99 @@ func (d *readResponseDecoder) advanceOffset(n uint64) error {
 // This copies object data from the message into the buffer and returns the number of
 // bytes copied. The data offsets are incremented in the message. The updateCRC
 // function is called on the copied bytes.
-func (d *readResponseDecoder) readAndUpdateCRC(p []byte, updateCRC func([]byte)) int {
-	// For a completely empty message, just return 0
+func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC func([]byte)) (n int, found bool) {
+	// For a completely empty message, just return 0.
 	if len(d.databufs) == 0 {
-		return 0
+		return 0, true
 	}
-	databuf := d.databufs[d.dataOffsets.currBuf]
-	startOff := d.dataOffsets.currOff
+
+	// HIGHLIGHT START
+	// Look up the specific offsets for the requested readID.
+	offsets, ok := d.dataOffsets[readID]
+	if !ok {
+		// If the message contains no data for this ID, return 0 bytes read.
+		return 0, false
+	}
+	// HIGHLIGHT END
+
+	databuf := d.databufs[offsets.currBuf]
+	startOff := offsets.currOff
 	var b []byte
-	if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
-		b = databuf.ReadOnlyData()[startOff:d.dataOffsets.endOff]
+	if offsets.currBuf == offsets.endBuf {
+		b = databuf.ReadOnlyData()[startOff:offsets.endOff]
 	} else {
 		b = databuf.ReadOnlyData()[startOff:]
 	}
-	n := copy(p, b)
-	updateCRC(b[:n])
-	d.dataOffsets.currOff += uint64(n)
+	n = copy(p, b)
+	if updateCRC != nil {
+		updateCRC(b[:n])
+	}
+	offsets.currOff += uint64(n)
 
-	// We've read all the data from this message. Free the underlying buffers.
-	if d.dataOffsets.currBuf == d.dataOffsets.endBuf && d.dataOffsets.currOff == d.dataOffsets.endOff {
-		d.done = true
-		d.databufs.Free()
+	// We've read all the data for this specific range from this message.
+	if offsets.currBuf == offsets.endBuf && offsets.currOff == offsets.endOff {
+		d.done = true // Mark as done for this read, though the overall message might have more data.
 	}
-	// We are at the end of the current buffer
-	if d.dataOffsets.currBuf != d.dataOffsets.endBuf && d.dataOffsets.currOff == uint64(databuf.Len()) {
-		d.dataOffsets.currOff = 0
-		d.dataOffsets.currBuf++
+	// We are at the end of the current buffer for this range.
+	if offsets.currBuf != offsets.endBuf && offsets.currOff == uint64(databuf.Len()) {
+		offsets.currOff = 0
+		offsets.currBuf++
 	}
-	return n
+
+	// Update the map with the new offsets.
+	d.dataOffsets[readID] = offsets
+
+	return n, true
 }
 
-func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC func([]byte)) (int64, error) {
+func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, updateCRC func([]byte)) (totalWritten int64, found bool, err error) {
 	// For a completely empty message, just return 0
 	if len(d.databufs) == 0 {
-		return 0, nil
+		return 0, true, nil
 	}
-	var written int64
-	for !d.done {
-		databuf := d.databufs[d.dataOffsets.currBuf]
-		startOff := d.dataOffsets.currOff
-		var b []byte
-		if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
-			b = databuf.ReadOnlyData()[startOff:d.dataOffsets.endOff]
-		} else {
-			b = databuf.ReadOnlyData()[startOff:]
+	// Look up the specific offsets for the requested readID.
+	offsets, ok := d.dataOffsets[readID]
+	if !ok {
+		// It's normal for a message to not contain data for every active range,
+		// so we return 0 bytes written and no error.
+		return 0, false, nil
+	}
+
+	// Loop from the starting buffer to the ending buffer for this specific data range.
+	for i := offsets.startBuf; i <= offsets.endBuf; i++ {
+		databuf := d.databufs[i]
+
+		// Determine the start and end of the data slice for the current buffer.
+		start := uint64(0)
+		if i == offsets.startBuf {
+			start = offsets.startOff
 		}
-		var n int
-		// Write all remaining data from the current buffer
-		n, err := w.Write(b)
-		written += int64(n)
-		updateCRC(b)
+
+		end := uint64(databuf.Len())
+		if i == offsets.endBuf {
+			end = offsets.endOff
+		}
+
+		// It's possible for a buffer to be empty in some edge cases.
+		if start >= end {
+			continue
+		}
+
+		dataSlice := databuf.ReadOnlyData()[start:end]
+
+		// Write the data slice to the user's writer.
+		n, err := w.Write(dataSlice)
+		totalWritten += int64(n)
+		if updateCRC != nil {
+			updateCRC(dataSlice[:n])
+		}
 		if err != nil {
-			return written, err
-		}
-		d.dataOffsets.currOff = 0
-		// We've read all the data from this message.
-		if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
-			d.done = true
-			d.databufs.Free()
-		} else {
-			d.dataOffsets.currBuf++
+			// Return immediately on a write error.
+			return totalWritten, true, err
 		}
 	}
-	return written, nil
+
+	return totalWritten, true, nil
 }
 
 // Consume the next available tag in the input data and return the field number and type.
@@ -2357,6 +2437,8 @@ func (d *readResponseDecoder) consumeBytesCopy() ([]byte, error) {
 // Unmarshal that does that, this function can be dropped.
 func (d *readResponseDecoder) readFullObjectResponse() error {
 	msg := &storagepb.BidiReadObjectResponse{}
+	// Initialize the new map.
+	d.dataOffsets = make(map[int64]bufferSliceOffsets)
 
 	// Loop over the entire message, extracting fields as we go. This does not
 	// handle field concatenation, in which the contents of a single field
@@ -2378,7 +2460,15 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 		case fieldNum == objectRangeDataField && fieldType == protowire.BytesType:
 			// The object data field was found. Initialize the data ranges assuming
 			// exactly one range in the message.
-			msg.ObjectDataRanges = []*storagepb.ObjectRangeData{{ChecksummedData: &storagepb.ChecksummedData{}, ReadRange: &storagepb.ReadRange{}}}
+			// Create a new ObjectRangeData for each instance of this repeated field.
+			newRangeData := &storagepb.ObjectRangeData{ChecksummedData: &storagepb.ChecksummedData{}, ReadRange: &storagepb.ReadRange{}}
+			msg.ObjectDataRanges = append(msg.ObjectDataRanges, newRangeData)
+			// Get a reference to the newly added element to populate it.
+			currentRange := msg.ObjectDataRanges[len(msg.ObjectDataRanges)-1]
+			// This variable will temporarily hold the data offsets until the ReadId is known.
+			var contentOffsets bufferSliceOffsets
+			var hasContent bool
+
 			bytesFieldLen, err := d.consumeVarint()
 			if err != nil {
 				return fmt.Errorf("consuming bytes: %w", err)
@@ -2405,16 +2495,18 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 						switch {
 						case gotNum == checksummedDataContentField && gotTyp == protowire.BytesType:
 							// Get the offsets of the content bytes.
-							d.dataOffsets, err = d.consumeBytes()
+							contentOffsets, err = d.consumeBytes()
 							if err != nil {
 								return fmt.Errorf("invalid BidiReadObjectResponse.ChecksummedData.Content: %w", err)
 							}
+							hasContent = true
+
 						case gotNum == checksummedDataCRC32CField && gotTyp == protowire.Fixed32Type:
 							v, err := d.consumeFixed32()
 							if err != nil {
 								return fmt.Errorf("invalid BidiReadObjectResponse.ChecksummedData.Crc32C: %w", err)
 							}
-							msg.ObjectDataRanges[0].ChecksummedData.Crc32C = &v
+							currentRange.ChecksummedData.Crc32C = &v
 						default:
 							err := d.consumeFieldValue(gotNum, gotTyp)
 							if err != nil {
@@ -2428,7 +2520,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 						return fmt.Errorf("invalid ObjectDataRange.ReadRange: %w", err)
 					}
 
-					if err := proto.Unmarshal(buf, msg.ObjectDataRanges[0].ReadRange); err != nil {
+					if err := proto.Unmarshal(buf, currentRange.ReadRange); err != nil {
 						return err
 					}
 				case gotNum == rangeEndField && gotTyp == protowire.VarintType: // proto encodes bool as int32
@@ -2436,9 +2528,13 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 					if err != nil {
 						return fmt.Errorf("invalid ObjectDataRange.RangeEnd: %w", err)
 					}
-					msg.ObjectDataRanges[0].RangeEnd = protowire.DecodeBool(b)
+					currentRange.RangeEnd = protowire.DecodeBool(b)
 				}
 
+			}
+			if hasContent {
+				// Store the offsets in the map, keyed by the ReadId of the current range.
+				d.dataOffsets[currentRange.ReadRange.GetReadId()] = contentOffsets
 			}
 		case fieldNum == metadataField && fieldType == protowire.BytesType:
 			msg.Metadata = &storagepb.Object{}
