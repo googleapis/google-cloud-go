@@ -3508,8 +3508,8 @@ func (ac *AdminClient) GetSchemaBundle(ctx context.Context, tableID, schemaBundl
 }
 
 // SchemaBundles returns a list of the schema bundles in the table.
-func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]string, error) {
-	names := []string{}
+func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]SchemaBundleInfo, error) {
+	bundles := []SchemaBundleInfo{}
 	prefix := fmt.Sprintf("%s/tables/%s", ac.instancePrefix(), tableID)
 
 	req := &btapb.ListSchemaBundlesRequest{
@@ -3525,10 +3525,18 @@ func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]str
 		return nil, err
 	}
 
-	for _, av := range res.SchemaBundles {
-		names = append(names, strings.TrimPrefix(av.Name, prefix+"/schemaBundles/"))
+	for _, res := range res.SchemaBundles {
+		sb := SchemaBundleInfo{
+			TableID:        tableID,
+			SchemaBundleID: strings.TrimPrefix(res.Name, prefix+"/schemaBundles/"),
+			Etag:           res.Etag,
+		}
+		if len(res.GetProtoSchema().GetProtoDescriptors()) > 0 {
+			sb.SchemaBundle = res.GetProtoSchema().GetProtoDescriptors()
+		}
+		bundles = append(bundles, sb)
 	}
-	return names, nil
+	return bundles, nil
 }
 
 // UpdateSchemaBundleConf contains all the information necessary to update or partial update a schema bundle.
