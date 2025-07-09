@@ -2,6 +2,13 @@
 
 
 
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.21.0...maps/v1.21.1) (2025-07-09)
+
+
+### Documentation
+
+* **maps/places:** Clarify behavior of primary types and weekday text ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.4...maps/v1.21.0) (2025-05-21)
 
 

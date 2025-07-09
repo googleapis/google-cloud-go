@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.18.5...security/v1.19.0) (2025-07-09)
+
+
+### Features
+
+* **security:** Add RDN sequence ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [1.18.5](https://github.com/googleapis/google-cloud-go/compare/security/v1.18.4...security/v1.18.5) (2025-04-15)
 
 
