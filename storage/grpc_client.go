@@ -1160,8 +1160,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	// object metadata.
 	msg := resp.response
 	obj := msg.GetMetadata()
-	// This is the size of the entire object, even if only a range was requested.
-	size := obj.GetSize()
 
 	mrd := &gRPCBidiReader{
 		stream:           resp.stream,
@@ -1359,16 +1357,12 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		mrd.mu.Unlock()
 	}
 
-	mrd.mu.Lock()
-	mrd.objectSize = size
-	mrd.mu.Unlock()
-
 	go sender()
 	go receiver()
 
 	return &MultiRangeDownloader{
 		Attrs: ReaderObjectAttrs{
-			Size:            size,
+			Size:            obj.GetSize(), // this is the size of the entire object, even if only a range was requested.
 			ContentType:     obj.GetContentType(),
 			ContentEncoding: obj.GetContentEncoding(),
 			CacheControl:    obj.GetCacheControl(),
@@ -1389,7 +1383,6 @@ type gRPCBidiReader struct {
 	readIDGenerator *readIDGenerator
 	reopen          func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
 	readSpec        *storagepb.BidiReadObjectSpec
-	objectSize      int64 // always use the mutex when accessing this variable
 	closeReceiver   chan bool
 	closeSender     chan bool
 	senderRetry     chan bool
