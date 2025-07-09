@@ -3460,15 +3460,21 @@ func (ac *AdminClient) CreateSchemaBundle(ctx context.Context, conf *SchemaBundl
 		SchemaBundleId: conf.SchemaBundleID,
 		SchemaBundle:   schemaBundle,
 	}
-	_, err := ac.tClient.CreateSchemaBundle(ctx, req)
-	return err
+	op, err := ac.tClient.CreateSchemaBundle(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.SchemaBundle{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
 }
 
-// SchemaBundleInfo contains schema bundle metadata. This struct is read-only.
+// SchemaBundleInfo represents information about a schema bundle. Schema bundle is a named collection of related schemas.
+// This struct is read-only.
 type SchemaBundleInfo struct {
 	TableID        string
 	SchemaBundleID string
 
+	Etag         string
 	SchemaBundle []byte
 }
 
@@ -3485,7 +3491,6 @@ func (ac *AdminClient) GetSchemaBundle(ctx context.Context, tableID, schemaBundl
 		res, err = ac.tClient.GetSchemaBundle(ctx, req)
 		return err
 	}, adminRetryOptions...)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3493,6 +3498,7 @@ func (ac *AdminClient) GetSchemaBundle(ctx context.Context, tableID, schemaBundl
 	sb := &SchemaBundleInfo{
 		TableID:        tableID,
 		SchemaBundleID: schemaBundleID,
+		Etag:           res.Etag,
 	}
 	if len(res.GetProtoSchema().GetProtoDescriptors()) > 0 {
 		sb.SchemaBundle = res.GetProtoSchema().GetProtoDescriptors()

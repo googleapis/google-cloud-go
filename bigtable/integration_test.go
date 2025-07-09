@@ -4970,7 +4970,7 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 	schemaBundleConf := SchemaBundleConf{
 		TableID:        tblConf.TableID,
 		SchemaBundleID: schemaBundle,
-		ProtoFile:      "proto_schema_bundle.pb",
+		ProtoFile:      "testdata/proto_schema_bundle.pb",
 	}
 	content, err := os.ReadFile(schemaBundleConf.ProtoFile)
 	if err != nil {
@@ -5006,7 +5006,7 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 	newSchemaBundleConf := SchemaBundleConf{
 		TableID:        tblConf.TableID,
 		SchemaBundleID: schemaBundle,
-		ProtoFile:      "updated_proto_schema_bundle.pb",
+		ProtoFile:      "testdata/updated_proto_schema_bundle.pb",
 	}
 	err = adminClient.UpdateSchemaBundle(ctx, UpdateSchemaBundleConf{
 		SchemaBundleConf: newSchemaBundleConf,
