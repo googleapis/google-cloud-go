@@ -28394,6 +28394,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_ReservationSubBlocks_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance allows customers to perform maintenance on a reservation subBlock",
+      "file": "ReservationSubBlocksClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocks.PerformMaintenance",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Reservations_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",

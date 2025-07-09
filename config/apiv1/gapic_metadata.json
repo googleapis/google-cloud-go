@@ -95,6 +95,16 @@
                 "GetResource"
               ]
             },
+            "GetResourceChange": {
+              "methods": [
+                "GetResourceChange"
+              ]
+            },
+            "GetResourceDrift": {
+              "methods": [
+                "GetResourceDrift"
+              ]
+            },
             "GetRevision": {
               "methods": [
                 "GetRevision"
@@ -128,6 +138,16 @@
             "ListPreviews": {
               "methods": [
                 "ListPreviews"
+              ]
+            },
+            "ListResourceChanges": {
+              "methods": [
+                "ListResourceChanges"
+              ]
+            },
+            "ListResourceDrifts": {
+              "methods": [
+                "ListResourceDrifts"
               ]
             },
             "ListResources": {
@@ -260,6 +280,16 @@
                 "GetResource"
               ]
             },
+            "GetResourceChange": {
+              "methods": [
+                "GetResourceChange"
+              ]
+            },
+            "GetResourceDrift": {
+              "methods": [
+                "GetResourceDrift"
+              ]
+            },
             "GetRevision": {
               "methods": [
                 "GetRevision"
@@ -293,6 +323,16 @@
             "ListPreviews": {
               "methods": [
                 "ListPreviews"
+              ]
+            },
+            "ListResourceChanges": {
+              "methods": [
+                "ListResourceChanges"
+              ]
+            },
+            "ListResourceDrifts": {
+              "methods": [
+                "ListResourceDrifts"
               ]
             },
             "ListResources": {

@@ -3778,6 +3778,11 @@
               "methods": [
                 "List"
               ]
+            },
+            "PerformMaintenance": {
+              "methods": [
+                "PerformMaintenance"
+              ]
             }
           }
         }
