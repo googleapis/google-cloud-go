@@ -414,6 +414,12 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 			return w.streamSender.err()
 		}
 		w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
+		// We may have observed a completion that is after all of w.buf if we also
+		// have a write command in w.currentCommand which sent a flush, but failed
+		// before the completion could be delivered.
+		if w.bufUnsentIdx < 0 {
+			w.bufUnsentIdx = 0
+		}
 		return nil
 	}); err != nil {
 		return err
@@ -459,7 +465,6 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 		flush:       true,
 		finishWrite: true,
 	}
-	w.bufUnsentIdx = len(w.buf)
 	if err := w.withCommandRetryDeadline(func() error {
 		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 			return w.streamSender.err()
@@ -591,7 +596,6 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	if !ok {
 		return false
 	}
-	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 
 	// ...then send the prefix of c.p which could fill w.buf
 	cmdBaseOffset := w.bufBaseOffset + int64(len(w.buf))
@@ -638,7 +642,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		return false
 	}
 	// Finally, we need the sender to ack to let us know c.p can be released.
-	if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, w.handleCompletion) {
+	if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, trimCommandBuf) {
 		return false
 	}
 	ackOutstanding := true
@@ -656,7 +660,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	toCopyIn := cmdBuf[int(w.bufBaseOffset-offset):]
 	w.buf = w.buf[:len(toCopyIn)]
 	copy(w.buf, toCopyIn)
-	w.bufUnsentIdx = int(sentOffset - offset)
+	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 	close(c.done)
 	return true
 }
@@ -688,6 +692,7 @@ func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		}
 		w.handleCompletion(c)
 	}
+	// handleCompletion has cleared w.buf and updated w.bufUnsentIdx by now.
 	c.done <- flushTarget
 	return true
 }
