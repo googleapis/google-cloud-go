@@ -3439,7 +3439,7 @@ type SchemaBundleConf struct {
 // CreateSchemaBundle creates a new schema bundle in a table.
 func (ac *AdminClient) CreateSchemaBundle(ctx context.Context, conf *SchemaBundleConf) error {
 	if conf.TableID == "" || conf.SchemaBundleID == "" {
-		return errors.New("both SchemaBundleID and TableID are required")
+		return errors.New("both SchemaBundleID and TableID are required in SchemaBundleConf")
 	}
 	schemaBundle := &btapb.SchemaBundle{}
 	if conf.ProtoFile != "" {
