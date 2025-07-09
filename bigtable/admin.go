@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -3427,14 +3426,26 @@ func (iac *InstanceAdminClient) DeleteMaterializedView(ctx context.Context, inst
 	return err
 }
 
-// SchemaBundleConf contains information about a schema bundle.
+// SchemaBundles
+
+// SchemaBundleConf contains the information necessary to create or update a schema bundle.
 type SchemaBundleConf struct {
 	TableID        string
 	SchemaBundleID string
-	ProtoFile      string
+	ProtoSchema    *ProtoSchemaInfo
+
+	// Etag is used for optimistic concurrency control during updates.
+	// Ignored during creation.
+	Etag string
 }
 
-// SchemaBundles
+// ProtoSchemaInfo represents a protobuf schema.
+type ProtoSchemaInfo struct {
+	// Contains a protobuf-serialized
+	// [google.protobuf.FileDescriptorSet](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/descriptor.proto),
+	// which could include multiple proto files.
+	ProtoDescriptors []byte
+}
 
 // CreateSchemaBundle creates a new schema bundle in a table.
 func (ac *AdminClient) CreateSchemaBundle(ctx context.Context, conf *SchemaBundleConf) error {
@@ -3442,14 +3453,10 @@ func (ac *AdminClient) CreateSchemaBundle(ctx context.Context, conf *SchemaBundl
 		return errors.New("both SchemaBundleID and TableID are required in SchemaBundleConf")
 	}
 	schemaBundle := &btapb.SchemaBundle{}
-	if conf.ProtoFile != "" {
-		content, err := os.ReadFile(conf.ProtoFile)
-		if err != nil {
-			return err
-		}
+	if len(conf.ProtoSchema.ProtoDescriptors) > 0 {
 		schemaBundle.Type = &btapb.SchemaBundle_ProtoSchema{
 			ProtoSchema: &btapb.ProtoSchema{
-				ProtoDescriptors: content,
+				ProtoDescriptors: conf.ProtoSchema.ProtoDescriptors,
 			},
 		}
 	}
@@ -3552,19 +3559,17 @@ func (ac *AdminClient) UpdateSchemaBundle(ctx context.Context, conf UpdateSchema
 		return errors.New("both SchemaBundleID and TableID is required")
 	}
 	sb := &btapb.SchemaBundle{
-		Name: ac.schemaBundlePath(conf.SchemaBundleConf.TableID, conf.SchemaBundleConf.SchemaBundleID)}
+		Name: ac.schemaBundlePath(conf.SchemaBundleConf.TableID, conf.SchemaBundleConf.SchemaBundleID),
+		Etag: conf.SchemaBundleConf.Etag,
+	}
 
 	updateMask := &field_mask.FieldMask{
 		Paths: []string{},
 	}
-	if conf.SchemaBundleConf.ProtoFile != "" {
-		content, err := os.ReadFile(conf.SchemaBundleConf.ProtoFile)
-		if err != nil {
-			return err
-		}
+	if len(conf.SchemaBundleConf.ProtoSchema.ProtoDescriptors) > 0 {
 		sb.Type = &btapb.SchemaBundle_ProtoSchema{
 			ProtoSchema: &btapb.ProtoSchema{
-				ProtoDescriptors: content,
+				ProtoDescriptors: conf.SchemaBundleConf.ProtoSchema.ProtoDescriptors,
 			},
 		}
 		updateMask.Paths = append(updateMask.Paths, "proto_schema")

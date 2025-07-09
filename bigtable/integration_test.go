@@ -4967,14 +4967,17 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 	schemaBundle := schemaBundleUUID.New()
 	defer adminClient.DeleteSchemaBundle(ctx, tblConf.TableID, schemaBundle)
 
+	content, err := os.ReadFile("testdata/proto_schema_bundle.pb")
+	if err != nil {
+		t.Fatalf("Error reading the file: %v", err)
+	}
+
 	schemaBundleConf := SchemaBundleConf{
 		TableID:        tblConf.TableID,
 		SchemaBundleID: schemaBundle,
-		ProtoFile:      "testdata/proto_schema_bundle.pb",
-	}
-	content, err := os.ReadFile(schemaBundleConf.ProtoFile)
-	if err != nil {
-		t.Fatalf("Error reading the file: %v", err)
+		ProtoSchema: &ProtoSchemaInfo{
+			ProtoDescriptors: content,
+		},
 	}
 
 	if err = adminClient.CreateSchemaBundle(ctx, &schemaBundleConf); err != nil {
@@ -5005,22 +5008,25 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 		t.Errorf("ProtoSchema: %v, want: %v", got, want)
 	}
 
+	content, err = os.ReadFile("testdata/updated_proto_schema_bundle.pb")
+	if err != nil {
+		t.Fatalf("Error reading the file: %v", err)
+	}
+
 	// Update schema bundle
 	newSchemaBundleConf := SchemaBundleConf{
 		TableID:        tblConf.TableID,
 		SchemaBundleID: schemaBundle,
-		ProtoFile:      "testdata/updated_proto_schema_bundle.pb",
+		Etag:           sbInfo.Etag,
+		ProtoSchema: &ProtoSchemaInfo{
+			ProtoDescriptors: content,
+		},
 	}
 	err = adminClient.UpdateSchemaBundle(ctx, UpdateSchemaBundleConf{
 		SchemaBundleConf: newSchemaBundleConf,
 	})
 	if err != nil {
 		t.Fatalf("UpdateSchemaBundle failed: %v", err)
-	}
-
-	content, err = os.ReadFile(newSchemaBundleConf.ProtoFile)
-	if err != nil {
-		t.Fatalf("Error reading the file: %v", err)
 	}
 
 	// Get schema bundle
