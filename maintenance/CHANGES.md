@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/maintenance/v0.1.0...maintenance/v0.1.1) (2025-07-09)
+
+
+### Documentation
+
+* **maintenance/api:** Add missing comments for messages ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## 0.1.0 (2025-06-25)
 
 
