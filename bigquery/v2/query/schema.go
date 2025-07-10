@@ -16,6 +16,7 @@ package query
 
 import (
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // FieldType is the type of field.
@@ -90,4 +91,24 @@ func newSchemaFromField(field *bigquerypb.TableFieldSchema) *schema {
 
 func (s *schema) len() int {
 	return len(s.pb.Fields)
+}
+
+func (s *schema) newStruct() *structpb.Struct {
+	fields := map[string]*structpb.Value{}
+	for _, f := range s.pb.Fields {
+		value := structpb.NewNullValue()
+		if f.Fields != nil {
+			subschema := newSchemaFromField(f)
+			value = structpb.NewStructValue(subschema.newStruct())
+		}
+		if f.Mode == string(ModeRepeated) {
+			value = structpb.NewListValue(&structpb.ListValue{
+				Values: []*structpb.Value{},
+			})
+		}
+		fields[f.Name] = value
+	}
+	return &structpb.Struct{
+		Fields: fields,
+	}
 }

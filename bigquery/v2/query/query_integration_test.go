@@ -23,7 +23,7 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func TestStatelessQuery(t *testing.T) {
+func TestRunQuery(t *testing.T) {
 	if len(testClients) == 0 {
 		t.Skip("integration tests skipped")
 	}
@@ -86,6 +86,7 @@ func TestReadQueryJob(t *testing.T) {
 			r := client.NewReader()
 			jobRef := q.JobReference()
 			schema := q.Schema()
+			// q := client.FromJobReference().Read()
 			it, err := r.Read(ctx, jobRef, schema)
 			if err != nil {
 				t.Fatalf("Read() error: %v", err)

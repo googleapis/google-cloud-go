@@ -56,7 +56,7 @@ func civilDateString(d civil.Date) string {
 }
 
 func civilDateTimeString(dt civil.DateTime) string {
-	return dt.Date.String() + " " + civilTimeString(dt.Time)
+	return dt.Date.String() + "T" + civilTimeString(dt.Time)
 }
 
 func timestampString(ts time.Time) string {

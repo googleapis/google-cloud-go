@@ -15,64 +15,12 @@
 package query
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
-	"math/big"
 	"strconv"
-	"time"
 
-	"cloud.google.com/go/civil"
 	"google.golang.org/protobuf/types/known/structpb"
 )
-
-// Value stores the contents of a row field value from a BigQuery result.
-type Value any
-
-// FieldValue represents a row field with typed value.
-type FieldValue struct {
-	Type  FieldType
-	Value Value
-}
-
-// String gets the field as a STRING.
-func (fv FieldValue) String() string {
-	if s, ok := fv.Value.(string); ok {
-		return s
-	}
-	if b, ok := fv.Value.([]byte); ok {
-		return base64.StdEncoding.EncodeToString(b)
-	}
-	if str, ok := fv.Value.(fmt.Stringer); ok {
-		return str.String()
-	}
-	return fmt.Sprintf("%v", fv.Value)
-}
-
-// List gets the field as an array of FieldValue.
-// The field should be an REPEATED field.
-func (fv FieldValue) List() []FieldValue {
-	if l, ok := fv.Value.([]Value); ok {
-		arr := []FieldValue{}
-		for _, v := range l {
-			arr = append(arr, FieldValue{
-				Type:  fv.Type,
-				Value: v,
-			})
-		}
-		return arr
-	}
-	return nil
-}
-
-// Record gets the field as a RECORD.
-// The field should be a RECORD field.
-func (fv FieldValue) Record() *Record {
-	if r, ok := fv.Value.(*Row); ok {
-		return r
-	}
-	return nil
-}
 
 // convertRows converts a series of TableRows into a series of Value slices.
 // schema is used to interpret the data from rows; its length must match the
@@ -104,7 +52,7 @@ func convertRow(r *structpb.Struct, schema *schema) (*Row, error) {
 			return nil, err
 		}
 		fs := schema.pb.Fields[i]
-		var v Value
+		var v *structpb.Value
 		if fs.Type == string(RangeFieldType) {
 			panic("range not supported yet")
 		} else {
@@ -113,12 +61,12 @@ func convertRow(r *structpb.Struct, schema *schema) (*Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		row.setValue(i, fs.Name, v)
+		row.setValue(fs.Name, v)
 	}
 	return row, nil
 }
 
-func convertValue(val *structpb.Value, typ FieldType, schema *schema) (Value, error) {
+func convertValue(val *structpb.Value, typ FieldType, schema *schema) (*structpb.Value, error) {
 	switch val.Kind.(type) {
 	case *structpb.Value_NullValue:
 		return nil, nil
@@ -133,8 +81,8 @@ func convertValue(val *structpb.Value, typ FieldType, schema *schema) (Value, er
 	}
 }
 
-func convertRepeatedRecord(vals *structpb.ListValue, typ FieldType, schema *schema) (Value, error) {
-	var values []Value
+func convertRepeatedRecord(vals *structpb.ListValue, typ FieldType, schema *schema) (*structpb.Value, error) {
+	var values []*structpb.Value
 	for _, cell := range vals.Values {
 		// each cell contains a single entry, keyed by "v"
 		val, err := getFieldValue(cell)
@@ -147,10 +95,12 @@ func convertRepeatedRecord(vals *structpb.ListValue, typ FieldType, schema *sche
 		}
 		values = append(values, v)
 	}
-	return values, nil
+	return structpb.NewListValue(&structpb.ListValue{
+		Values: values,
+	}), nil
 }
 
-func convertNestedRecord(val *structpb.Struct, schema *schema) (Value, error) {
+func convertNestedRecord(val *structpb.Struct, schema *schema) (*structpb.Value, error) {
 	// convertNestedRecord is similar to convertRow, as a record has the same structure as a row.
 	// Nested records are wrapped in a map with a single key, "f".
 	record, err := getFieldList(val)
@@ -161,7 +111,7 @@ func convertNestedRecord(val *structpb.Struct, schema *schema) (Value, error) {
 		return nil, errors.New("schema length does not match row length")
 	}
 
-	values := newRow(schema)
+	r := newRow(schema)
 	for i, cell := range record {
 		// each cell contains a single entry, keyed by "v"
 		val, err := getFieldValue(cell)
@@ -173,52 +123,56 @@ func convertNestedRecord(val *structpb.Struct, schema *schema) (Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		values.setValue(i, fs.Name, v)
+		r.setValue(fs.Name, v)
 	}
-	return values, nil
+	s, err := r.AsStruct()
+	if err != nil {
+		return nil, err
+	}
+	return structpb.NewStructValue(s), nil
 }
 
 // convertBasicType returns val as an interface with a concrete type specified by typ.
-func convertBasicType(val string, typ FieldType) (Value, error) {
+func convertBasicType(val string, typ FieldType) (*structpb.Value, error) {
 	switch typ {
 	case StringFieldType:
-		return val, nil
+		return structpb.NewStringValue(val), nil
 	case BytesFieldType:
-		return base64.StdEncoding.DecodeString(val)
+		return structpb.NewStringValue(val), nil
 	case IntegerFieldType:
-		return strconv.ParseInt(val, 10, 64)
-	case FloatFieldType:
-		return strconv.ParseFloat(val, 64)
-	case BooleanFieldType:
-		return strconv.ParseBool(val)
-	case TimestampFieldType:
-		i, err := strconv.ParseInt(val, 10, 64)
+		v, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		return time.UnixMicro(i).UTC(), nil
+		return structpb.NewNumberValue(float64(v)), nil
+	case FloatFieldType:
+		v, err := strconv.ParseFloat(val, 64)
+		if err != nil {
+			return nil, err
+		}
+		return structpb.NewNumberValue(float64(v)), nil
+	case BooleanFieldType:
+		v, err := strconv.ParseBool(val)
+		if err != nil {
+			return nil, err
+		}
+		return structpb.NewBoolValue(v), nil
+	case TimestampFieldType:
+		return structpb.NewStringValue(val), nil
 	case DateFieldType:
-		return parseCivilDate(val)
+		return structpb.NewStringValue(val), nil
 	case TimeFieldType:
-		return civil.ParseTime(val)
+		return structpb.NewStringValue(val), nil
 	case DateTimeFieldType:
-		return civil.ParseDateTime(val)
+		return structpb.NewStringValue(val), nil
 	case NumericFieldType:
-		r, ok := (&big.Rat{}).SetString(val)
-		if !ok {
-			return nil, fmt.Errorf("bigquery: invalid NUMERIC value %q", val)
-		}
-		return Value(r), nil
+		return structpb.NewStringValue(val), nil
 	case BigNumericFieldType:
-		r, ok := (&big.Rat{}).SetString(val)
-		if !ok {
-			return nil, fmt.Errorf("bigquery: invalid BIGNUMERIC value %q", val)
-		}
-		return Value(r), nil
+		return structpb.NewStringValue(val), nil
 	case GeographyFieldType:
-		return val, nil
+		return structpb.NewStringValue(val), nil
 	case JSONFieldType:
-		return val, nil
+		return structpb.NewStringValue(val), nil
 	case IntervalFieldType:
 		panic("interval not supported yet")
 	default:

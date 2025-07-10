@@ -58,11 +58,11 @@ func TestReadNestedObject(t *testing.T) {
 			}
 
 			rows, _ := readRows(ctx, t, it)
-			if msg, ok := compareReadMap(rows, []map[string]Value{{
-				"age": int64(40),
-				"nested": []Value{
-					map[string]Value{
-						"object": map[string]Value{
+			if msg, ok := compareReadMap(rows, []map[string]any{{
+				"age": float64(40),
+				"nested": []any{
+					map[string]any{
+						"object": map[string]any{
 							"a": "1",
 							"b": "2",
 						},
@@ -72,14 +72,43 @@ func TestReadNestedObject(t *testing.T) {
 				t.Fatal(msg)
 			}
 
-			if rows[0].GetColumnAtIndex(0).String() != "40" {
-				t.Fatalf("expected to read `age` column as string")
+			s, err := rows[0].AsStruct()
+			if err != nil {
+				t.Fatalf("AsStruct() error: %v", err)
 			}
-			if rows[0].GetColumnName("nested").List()[0].Record().GetColumnName("object").Record().GetColumnName("a").String() != "1" {
+
+			if s.Fields["age"].GetNumberValue() != 40 {
+				t.Fatalf("expected to read `age` column as number")
+			}
+			if s.Fields["nested"].GetListValue().Values[0].GetStructValue().Fields["object"].GetStructValue().Fields["a"].GetStringValue() != "1" {
 				t.Fatalf("expected to read `nested.object.a` column as string")
 			}
-			if rows[0].GetColumnName("nested").List()[0].Record().GetColumnName("object").Record().GetColumnName("b").String() != "2" {
+			if s.Fields["nested"].GetListValue().Values[0].GetStructValue().Fields["object"].GetStructValue().Fields["b"].GetStringValue() != "2" {
+				t.Fatalf("expected to read `nested.object.b` column as string")
+			}
+
+			type MyStruct struct {
+				Age    int
+				Nested []struct {
+					Object struct {
+						A string
+						B string
+					}
+				}
+			}
+			var ms MyStruct
+			err = rows[0].Decode(&ms)
+			if err != nil {
+				t.Fatalf("Decode() error: %v", err)
+			}
+			if ms.Age != 40 {
+				t.Fatalf("expected to read `Age` column as number")
+			}
+			if ms.Nested[0].Object.A != "1" {
 				t.Fatalf("expected to read `nested.object.a` column as string")
+			}
+			if ms.Nested[0].Object.B != "2" {
+				t.Fatalf("expected to read `nested.object.b` column as string")
 			}
 		})
 	}
@@ -119,10 +148,10 @@ func TestReadTypes(t *testing.T) {
 					}
 
 					rows, _ := readRows(ctx, t, it)
-					if msg, ok := compareReadMap(rows, []map[string]Value{tc.wantRowMap}); !ok {
+					if msg, ok := compareReadMap(rows, []map[string]any{tc.wantRowMap}); !ok {
 						t.Fatal(msg)
 					}
-					if msg, ok := compareReadValues(rows, [][]Value{tc.wantRowValues}); !ok {
+					if msg, ok := compareReadValues(rows, [][]any{tc.wantRowValues}); !ok {
 						t.Fatal(msg)
 					}
 				})
@@ -135,20 +164,24 @@ type queryParameterTestCase struct {
 	name          string
 	query         string
 	parameters    []*bigquerypb.QueryParameter
-	wantRowMap    map[string]Value
-	wantRowValues []Value
+	wantRowMap    map[string]any
+	wantRowValues []any
 }
 
 func queryParameterTestCases() []queryParameterTestCase {
 	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	ds := civilDateString(d)
 	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
-	rtm := tm
-	rtm.Nanosecond = 3000 // round to microseconds
+	tm.Nanosecond = 3000 // round to microseconds
+	tms := civilTimeString(tm)
 	dtm := civil.DateTime{Date: d, Time: tm}
 	dtm.Time.Nanosecond = 3000 // round to microseconds
+	dtms := civilDateTimeString(dtm)
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
-	rat := big.NewRat(13, 10)
-	nrat := big.NewRat(-13, 10)
+	tsInt64 := fmt.Sprintf("%v", ts.UnixMicro())
+	rat := big.NewRat(13, 10).FloatString(1)
+	nrat := big.NewRat(-13, 10).FloatString(1)
+	byteValue := base64.StdEncoding.EncodeToString([]byte("foo"))
 	/*rangeTimestamp1 := &RangeValue{
 		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
 	}
@@ -182,8 +215,8 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 				},
 			},
-			map[string]Value{"f0_": int64(1)},
-			[]Value{int64(1)},
+			map[string]any{"f0_": float64(1)},
+			[]any{float64(1)},
 		},
 		{
 			"FloatParam",
@@ -199,8 +232,8 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 				},
 			},
-			map[string]Value{"f0_": 1.3},
-			[]Value{1.3},
+			map[string]any{"f0_": 1.3},
+			[]any{1.3},
 		},
 		{
 			"BigRatParam",
@@ -208,19 +241,19 @@ func queryParameterTestCases() []queryParameterTestCase {
 			[]*bigquerypb.QueryParameter{{
 				Name:           "val",
 				ParameterType:  &bigquerypb.QueryParameterType{Type: "BIGNUMERIC"},
-				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: bigNumericString(rat)}},
+				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: rat}},
 			}},
-			map[string]Value{"f0_": rat},
-			[]Value{rat},
+			map[string]any{"f0_": rat},
+			[]any{rat},
 		},
 		{
 			"NegativeBigRatParam",
 			"SELECT @val",
 			[]*bigquerypb.QueryParameter{{Name: "val",
 				ParameterType:  &bigquerypb.QueryParameterType{Type: "BIGNUMERIC"},
-				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: bigNumericString(nrat)}}}},
-			map[string]Value{"f0_": nrat},
-			[]Value{nrat},
+				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: nrat}}}},
+			map[string]any{"f0_": nrat},
+			[]any{nrat},
 		},
 		{
 			"BoolParam",
@@ -230,8 +263,8 @@ func queryParameterTestCases() []queryParameterTestCase {
 					Type: "BOOL",
 				},
 				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: "true"}}}},
-			map[string]Value{"f0_": true},
-			[]Value{true},
+			map[string]any{"f0_": true},
+			[]any{true},
 		},
 		{
 			"StringParam",
@@ -241,8 +274,8 @@ func queryParameterTestCases() []queryParameterTestCase {
 					Type: "STRING",
 				},
 				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: "ABC"}}}},
-			map[string]Value{"f0_": "ABC"},
-			[]Value{"ABC"},
+			map[string]any{"f0_": "ABC"},
+			[]any{"ABC"},
 		},
 		{
 			"ByteParam",
@@ -255,20 +288,20 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 					ParameterValue: &bigquerypb.QueryParameterValue{
 						Value: &wrapperspb.StringValue{
-							Value: base64.StdEncoding.EncodeToString([]byte("foo")),
+							Value: byteValue,
 						},
 					},
 				},
 			},
-			map[string]Value{"f0_": []byte("foo")},
-			[]Value{[]byte("foo")},
+			map[string]any{"f0_": byteValue},
+			[]any{byteValue},
 		},
 		{
 			"TimestampParam",
 			"SELECT @val",
 			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "TIMESTAMP"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: timestampString(ts)}}}},
-			map[string]Value{"f0_": ts},
-			[]Value{ts},
+			map[string]any{"f0_": tsInt64},
+			[]any{tsInt64},
 		},
 		{
 			"TimestampArrayParam",
@@ -287,29 +320,29 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 				},
 			}},
-			map[string]Value{"f0_": []Value{ts, ts}},
-			[]Value{[]Value{ts, ts}},
+			map[string]any{"f0_": []any{tsInt64, tsInt64}},
+			[]any{[]any{tsInt64, tsInt64}},
 		},
 		{
 			"DatetimeParam",
 			"SELECT @val",
-			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "DATETIME"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: civilDateTimeString(dtm)}}}},
-			map[string]Value{"f0_": civil.DateTime{Date: d, Time: rtm}},
-			[]Value{civil.DateTime{Date: d, Time: rtm}},
+			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "DATETIME"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: dtms}}}},
+			map[string]any{"f0_": dtms},
+			[]any{dtms},
 		},
 		{
 			"DateParam",
 			"SELECT @val",
-			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "DATE"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: civilDateString(d)}}}},
-			map[string]Value{"f0_": d},
-			[]Value{d},
+			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "DATE"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: ds}}}},
+			map[string]any{"f0_": ds},
+			[]any{ds},
 		},
 		{
 			"TimeParam",
 			"SELECT @val",
-			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "TIME"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: civilTimeString(tm)}}}},
-			map[string]Value{"f0_": rtm},
-			[]Value{rtm},
+			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "TIME"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: tms}}}},
+			map[string]any{"f0_": tms},
+			[]any{tms},
 		},
 		{
 			"JsonParam",
@@ -327,8 +360,8 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 				},
 			},
-			map[string]Value{"f0_": "{\"alpha\":\"beta\"}"},
-			[]Value{"{\"alpha\":\"beta\"}"},
+			map[string]any{"f0_": "{\"alpha\":\"beta\"}"},
+			[]any{"{\"alpha\":\"beta\"}"},
 		},
 		/*{
 			"RangeUnboundedStart",
@@ -508,31 +541,31 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 				},
 			},
-			map[string]Value{
-				"f0_": map[string]Value{
-					"Datetime":    dtm,
-					"StringArray": []Value{"a", "b"},
-					"SubStruct": map[string]Value{
+			map[string]any{
+				"f0_": map[string]any{
+					"Datetime":    dtms,
+					"StringArray": []any{"a", "b"},
+					"SubStruct": map[string]any{
 						"String": "c",
 					},
-					"SubStructArray": []Value{
-						map[string]Value{
+					"SubStructArray": []any{
+						map[string]any{
 							"String": "d",
 						},
-						map[string]Value{
+						map[string]any{
 							"String": "e",
 						},
 					},
 				},
 			},
-			[]Value{[]Value{dtm, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
+			[]any{[]any{dtms, []any{"a", "b"}, []any{"c"}, []any{[]any{"d"}, []any{"e"}}}},
 		},
 	}
 
 	return queryParameterTestCases
 }
 
-func compareReadMap(actual []*Row, want []map[string]Value) (msg string, ok bool) {
+func compareReadMap(actual []*Row, want []map[string]any) (msg string, ok bool) {
 	if len(actual) != len(want) {
 		return fmt.Sprintf("got %d rows, want %d", len(actual), len(want)), false
 	}
@@ -546,7 +579,7 @@ func compareReadMap(actual []*Row, want []map[string]Value) (msg string, ok bool
 	return "", true
 }
 
-func compareReadValues(actual []*Row, want [][]Value) (msg string, ok bool) {
+func compareReadValues(actual []*Row, want [][]any) (msg string, ok bool) {
 	if len(actual) != len(want) {
 		return fmt.Sprintf("got %d rows, want %d", len(actual), len(want)), false
 	}
