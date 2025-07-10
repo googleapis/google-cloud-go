@@ -1277,6 +1277,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					if len(mrd.activeRanges) == 0 && mrd.numActiveRanges == 0 {
 						mrd.closeReceiver <- true
 						mrd.closeSender <- true
+						mrd.mu.Unlock()
 						return
 					}
 					mrd.mu.Unlock()
@@ -1287,6 +1288,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						_, ok := mrd.activeRanges[id]
 						if !ok {
 							// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
+							mrd.mu.Unlock()
 							continue
 						}
 						_, err = mrd.activeRanges[id].writer.Write(val.GetChecksummedData().GetContent())
@@ -1465,8 +1467,8 @@ func (mrd *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback f
 		spec := mrdRange{readID: id, writer: output, offset: offset, limit: limit, currentBytesWritten: 0, totalBytesWritten: 0, callback: callback}
 		mrd.mu.Lock()
 		mrd.numActiveRanges++
-		mrd.rangesToRead <- []mrdRange{spec}
 		mrd.mu.Unlock()
+		mrd.rangesToRead <- []mrdRange{spec}
 	} else {
 		callback(offset, 0, errors.New("storage: cannot add range because the stream is closed"))
 	}
