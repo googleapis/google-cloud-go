@@ -97,7 +97,7 @@ func TestSetHeadersFromContext(t *testing.T) {
 
 func TestAppendableWriteUnsupported(t *testing.T) {
 	ctx := context.Background()
-	c, err := newHTTPStorageClient(ctx)
+	c, err := NewClient(ctx)
 	if err != nil {
 		t.Fatalf("failed to create HTTP client: %v", err)
 	}
@@ -120,7 +120,7 @@ func TestAppendableWriteUnsupported(t *testing.T) {
 		progress: func(_ int64) {},        // no-op
 		setObj:   func(_ *ObjectAttrs) {}, // no-op
 	}
-	_, err = c.OpenWriter(params)
+	_, err = c.tc.OpenWriter(params)
 	if err == nil {
 		t.Errorf("OpenWriter: got ok; want error")
 	}
