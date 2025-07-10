@@ -186,9 +186,14 @@ func (c *ProductInputsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// InsertProductInput uploads a product input to your Merchant Center account. If an input
-// with the same contentLanguage, offerId, and dataSource already exists,
-// this method replaces that entry.
+// InsertProductInput Uploads a product input to your Merchant Center
+// account (at /merchant/api/guides/products/overview#upload-product-input). You
+// must have a products data source to be able to insert a product. The unique
+// identifier of the data source is passed as a query parameter in the request
+// URL.
+//
+// If an input with the same contentLanguage, offerId, and dataSource already
+// exists, this method replaces that entry.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.
@@ -417,9 +422,14 @@ func (c *productInputsGRPCClient) DeleteProductInput(ctx context.Context, req *p
 	return err
 }
 
-// InsertProductInput uploads a product input to your Merchant Center account. If an input
-// with the same contentLanguage, offerId, and dataSource already exists,
-// this method replaces that entry.
+// InsertProductInput Uploads a product input to your Merchant Center
+// account (at /merchant/api/guides/products/overview#upload-product-input). You
+// must have a products data source to be able to insert a product. The unique
+// identifier of the data source is passed as a query parameter in the request
+// URL.
+//
+// If an input with the same contentLanguage, offerId, and dataSource already
+// exists, this method replaces that entry.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.
