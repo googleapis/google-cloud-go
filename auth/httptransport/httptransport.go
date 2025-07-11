@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	detect "cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
@@ -234,26 +233,4 @@ func NewClient(opts *Options) (*http.Client, error) {
 	return &http.Client{
 		Transport: trans,
 	}, nil
-}
-
-// SetAuthHeader uses the provided token to set the Authorization header on a
-// request. If the token.Type is empty, the type is assumed to be Bearer.
-func SetAuthHeader(token *auth.Token, req *http.Request) {
-	typ := token.Type
-	if typ == "" {
-		typ = internal.TokenTypeBearer
-	}
-	req.Header.Set("Authorization", typ+" "+token.Value)
-}
-
-// setTrustBoundaryHeader adds the "x-allowed-locations" header to the HTTP request if the token contains trust boundary data.
-// If the token's TrustBoundaryData is nil, empty, or indicates a no-op (no restrictions),
-// this function does nothing.
-// The "x-allowed-locations" header contains the encoded representation of the allowed locations
-// where the token can be used, as specified in the TrustBoundaryData.
-func setTrustBoundaryHeader(token *auth.Token, req *http.Request) {
-	if token.TrustBoundaryData.IsNoOpOrEmpty() {
-		return
-	}
-	req.Header.Set("x-allowed-locations", token.TrustBoundaryData.EncodedLocations)
 }

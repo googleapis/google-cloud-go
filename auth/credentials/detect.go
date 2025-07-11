@@ -22,7 +22,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -52,16 +52,35 @@ var (
 	// for testing
 	allowOnGCECheck = true
 	// trustBoundaryEnabled controls whether the trust boundary feature is enabled.
-	trustBoundaryEnabled = isTrustBoundaryEnabled()
+	trustBoundaryEnabled, trustBoundaryEnabledErr = isTrustBoundaryEnabled()
 )
 
 // isTrustBoundaryEnabled checks if the trust boundary feature is enabled via
-// environment variable.
-func isTrustBoundaryEnabled() bool {
-	// An error is returned if the value is not a valid boolean. In that case,
-	// it is treated as false.
-	enabled, _ := strconv.ParseBool(os.Getenv("ENABLE_TRUST_BOUNDARY"))
-	return enabled
+// GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED environment variable.
+//
+// If the environment variable is not set, it is considered false.
+//
+// The environment variable is interpreted as a boolean with the following
+// (case-insensitive) rules:
+//   - "true", "1" are considered true.
+//   - "false", "0" are considered false.
+//
+// Any other values will return an error.
+func isTrustBoundaryEnabled() (bool, error) {
+	const envVar = "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
+	val, ok := os.LookupEnv(envVar)
+	if !ok {
+		return false, nil
+	}
+	val = strings.ToLower(val)
+	switch val {
+	case "true", "1":
+		return true, nil
+	case "false", "0":
+		return false, nil
+	default:
+		return false, fmt.Errorf("invalid value for %s: %q. Must be one of \"true\", \"false\", \"1\", or \"0\"", envVar, val)
+	}
 }
 
 // TokenBindingType specifies the type of binding used when requesting a token
@@ -107,6 +126,9 @@ func OnGCE() bool {
 func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
+	}
+	if trustBoundaryEnabledErr != nil {
+		return nil, trustBoundaryEnabledErr
 	}
 	if len(opts.CredentialsJSON) > 0 {
 		return readCredentialsFileJSON(opts.CredentialsJSON, opts)

@@ -124,9 +124,11 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, fmt.Errorf("credentials: unable to create impersonation request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	if err := setAuthHeader(ctx, o.Tp, req); err != nil {
+	sourceToken, err := o.Tp.Token(ctx)
+	if err != nil {
 		return nil, err
 	}
+	auth.SetAuthHeader(sourceToken, req)
 	logger.DebugContext(ctx, "impersonated token request", "request", internallog.HTTPRequest(req, b))
 	resp, body, err := internal.DoRequest(o.Client, req)
 	if err != nil {
@@ -152,11 +154,13 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	}
 	// Fetch trust boundary data if a provider is configured, and attach it to the token.
 	if o.TrustBoundaryDataProvider != nil {
-		trustBoundaryData, err := o.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token.Value)
+		trustBoundaryData, err := o.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
 		if err != nil {
 			return nil, fmt.Errorf("credentials: error fetching the trust boundary data: %w", err)
 		}
-		token.TrustBoundaryData = *trustBoundaryData
+		if trustBoundaryData != nil {
+			token.TrustBoundaryData = *trustBoundaryData
+		}
 	}
 	return token, nil
 }
@@ -175,17 +179,4 @@ func ExtractServiceAccountEmail(impersonationURL string) (string, error) {
 	}
 
 	return matches[1], nil
-}
-
-func setAuthHeader(ctx context.Context, tp auth.TokenProvider, r *http.Request) error {
-	t, err := tp.Token(ctx)
-	if err != nil {
-		return err
-	}
-	typ := t.Type
-	if typ == "" {
-		typ = internal.TokenTypeBearer
-	}
-	r.Header.Set(authHeaderKey, typ+" "+t.Value)
-	return nil
 }

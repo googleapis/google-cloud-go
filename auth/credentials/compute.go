@@ -101,7 +101,7 @@ func (cs *computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Metadata: computeTokenMetadata,
 	}
 	if cs.trustBoundaryDataProvider != nil {
-		trustBoundaryData, err := cs.trustBoundaryDataProvider.GetTrustBoundaryData(ctx, token.Value)
+		trustBoundaryData, err := cs.trustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
 		if err != nil {
 			return nil, fmt.Errorf("credentials: error fetching the trust bounday data: %w", err)
 		}

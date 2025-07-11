@@ -60,59 +60,68 @@ func TestNewNoOpTrustBoundaryData(t *testing.T) {
 	}
 
 	publicData := internalToPublicAuthData(data)
-	if !publicData.IsNoOpOrEmpty() {
-		t.Errorf("internalToPublicAuthData(NewNoOpTrustBoundaryData()).IsNoOpOrEmpty() = false, want true")
+	if !publicData.IsNoOp() {
+		t.Errorf("internalToPublicAuthData(NewNoOpTrustBoundaryData()).IsNoOp() = false, want true")
+	}
+	if publicData.IsEmpty() {
+		t.Errorf("internalToPublicAuthData(NewNoOpTrustBoundaryData()).IsEmpty() = true, want false")
 	}
 }
 
 func TestNewTrustBoundaryData(t *testing.T) {
 	tests := []struct {
-		name              string
-		locations         []string
-		encodedLocations  string
-		wantLocations     []string
-		wantEncoded       string
-		wantIsNoOpOrEmpty bool
+		name             string
+		locations        []string
+		encodedLocations string
+		wantLocations    []string
+		wantEncoded      string
+		wantIsNoOp       bool
+		wantIsEmpty      bool
 	}{
 		{
-			name:              "Standard data",
-			locations:         []string{"us-central1", "europe-west1"},
-			encodedLocations:  "0xABC123",
-			wantLocations:     []string{"us-central1", "europe-west1"},
-			wantEncoded:       "0xABC123",
-			wantIsNoOpOrEmpty: false,
+			name:             "Standard data",
+			locations:        []string{"us-central1", "europe-west1"},
+			encodedLocations: "0xABC123",
+			wantLocations:    []string{"us-central1", "europe-west1"},
+			wantEncoded:      "0xABC123",
+			wantIsNoOp:       false,
+			wantIsEmpty:      false,
 		},
 		{
-			name:              "Empty locations, not no-op encoded",
-			locations:         []string{},
-			encodedLocations:  "0xDEF456",
-			wantLocations:     []string{},
-			wantEncoded:       "0xDEF456",
-			wantIsNoOpOrEmpty: false,
+			name:             "Empty locations, not no-op encoded",
+			locations:        []string{},
+			encodedLocations: "0xDEF456",
+			wantLocations:    []string{},
+			wantEncoded:      "0xDEF456",
+			wantIsNoOp:       false,
+			wantIsEmpty:      false,
 		},
 		{
-			name:              "Nil locations, not no-op encoded",
-			locations:         nil,
-			encodedLocations:  "0xGHI789",
-			wantLocations:     []string{}, // Expect empty slice, not nil
-			wantEncoded:       "0xGHI789",
-			wantIsNoOpOrEmpty: false,
+			name:             "Nil locations, not no-op encoded",
+			locations:        nil,
+			encodedLocations: "0xGHI789",
+			wantLocations:    []string{}, // Expect empty slice, not nil
+			wantEncoded:      "0xGHI789",
+			wantIsNoOp:       false,
+			wantIsEmpty:      false,
 		},
 		{
-			name:              "No-op encoded locations",
-			locations:         []string{"us-east1"},
-			encodedLocations:  NoOpEncodedLocations,
-			wantLocations:     []string{"us-east1"},
-			wantEncoded:       NoOpEncodedLocations,
-			wantIsNoOpOrEmpty: true,
+			name:             "No-op encoded locations",
+			locations:        []string{"us-east1"},
+			encodedLocations: NoOpEncodedLocations,
+			wantLocations:    []string{"us-east1"},
+			wantEncoded:      NoOpEncodedLocations,
+			wantIsNoOp:       true,
+			wantIsEmpty:      false,
 		},
 		{
-			name:              "Empty string encoded locations",
-			locations:         []string{},
-			encodedLocations:  "",
-			wantLocations:     []string{},
-			wantEncoded:       "",
-			wantIsNoOpOrEmpty: true,
+			name:             "Empty string encoded locations",
+			locations:        []string{},
+			encodedLocations: "",
+			wantLocations:    []string{},
+			wantEncoded:      "",
+			wantIsNoOp:       false,
+			wantIsEmpty:      true,
 		},
 	}
 
@@ -130,8 +139,11 @@ func TestNewTrustBoundaryData(t *testing.T) {
 			}
 
 			publicData := internalToPublicAuthData(data)
-			if got := publicData.IsNoOpOrEmpty(); got != tt.wantIsNoOpOrEmpty {
-				t.Errorf("internalToPublicAuthData(NewTrustBoundaryData(...)).IsNoOpOrEmpty() = %v, want %v", got, tt.wantIsNoOpOrEmpty)
+			if got := publicData.IsNoOp(); got != tt.wantIsNoOp {
+				t.Errorf("internalToPublicAuthData(NewTrustBoundaryData(...)).IsNoOp() = %v, want %v", got, tt.wantIsNoOp)
+			}
+			if got := publicData.IsEmpty(); got != tt.wantIsEmpty {
+				t.Errorf("internalToPublicAuthData(NewTrustBoundaryData(...)).IsEmpty() = %v, want %v", got, tt.wantIsEmpty)
 			}
 		})
 	}
@@ -141,8 +153,11 @@ func TestData_Methods_NilReceiver(t *testing.T) {
 	var data *Data = nil
 
 	publicData := internalToPublicAuthData(data)
-	if !publicData.IsNoOpOrEmpty() {
-		t.Errorf("internalToPublicAuthData(nil).IsNoOpOrEmpty() = false, want true")
+	if publicData.IsNoOp() {
+		t.Errorf("internalToPublicAuthData(nil).IsNoOp() = true, want false")
+	}
+	if !publicData.IsEmpty() {
+		t.Errorf("internalToPublicAuthData(nil).IsEmpty() = false, want true")
 	}
 }
 
@@ -155,7 +170,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 	tests := []struct {
 		name           string
 		serverResponse *serverResponse
-		accessToken    string
+		token          *auth.Token
 		urlOverride    *string // To test empty URL
 		useNilClient   bool
 		ctx            context.Context
@@ -169,9 +184,9 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": ["us-central1"], "encodedLocations": "0xABC"}`,
 			},
-			accessToken: "test-token",
-			ctx:         context.Background(),
-			wantData:    NewTrustBoundaryData([]string{"us-central1"}, "0xABC"),
+			token:    &auth.Token{Value: "test-token"},
+			ctx:      context.Background(),
+			wantData: NewTrustBoundaryData([]string{"us-central1"}, "0xABC"),
 			wantReqHeaders: map[string]string{
 				"Authorization": "Bearer test-token",
 			},
@@ -182,9 +197,9 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"encodedLocations": "0x0"}`,
 			},
-			accessToken: "test-token",
-			ctx:         context.Background(),
-			wantData:    NewTrustBoundaryData(nil, "0x0"),
+			token:    &auth.Token{Value: "test-token"},
+			ctx:      context.Background(),
+			wantData: NewTrustBoundaryData(nil, "0x0"),
 		},
 		{
 			name: "Success - OK No-Op response with empty locations array",
@@ -192,9 +207,9 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": [], "encodedLocations": "0x0"}`,
 			},
-			accessToken: "test-token",
-			ctx:         context.Background(),
-			wantData:    NewTrustBoundaryData([]string{}, "0x0"),
+			token:    &auth.Token{Value: "test-token"},
+			ctx:      context.Background(),
+			wantData: NewTrustBoundaryData([]string{}, "0x0"),
 		},
 		{
 			name: "Error - Non-200 Status",
@@ -202,9 +217,9 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				status: http.StatusInternalServerError,
 				body:   "server error",
 			},
-			accessToken: "test-token",
-			ctx:         context.Background(),
-			wantErr:     "trust boundary request failed with status: 500 Internal Server Error, body: server error",
+			token:   &auth.Token{Value: "test-token"},
+			ctx:     context.Background(),
+			wantErr: "trust boundary request failed with status: 500 Internal Server Error, body: server error",
 		},
 		{
 			name: "Error - Malformed JSON",
@@ -212,9 +227,9 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"encodedLocations": "0x123", malformed`,
 			},
-			accessToken: "test-token",
-			ctx:         context.Background(),
-			wantErr:     "failed to unmarshal trust boundary response",
+			token:   &auth.Token{Value: "test-token"},
+			ctx:     context.Background(),
+			wantErr: "failed to unmarshal trust boundary response",
 		},
 		{
 			name: "Error - Missing encodedLocations",
@@ -222,9 +237,9 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": ["us-east1"]}`,
 			},
-			accessToken: "test-token",
-			ctx:         context.Background(),
-			wantErr:     "invalid API response: encodedLocations is empty",
+			token:   &auth.Token{Value: "test-token"},
+			ctx:     context.Background(),
+			wantErr: "invalid API response: encodedLocations is empty",
 		},
 		{
 			name: "Error - Empty encodedLocations string",
@@ -232,21 +247,21 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": [], "encodedLocations": ""}`,
 			},
-			accessToken: "test-token",
-			ctx:         context.Background(),
-			wantErr:     "invalid API response: encodedLocations is empty",
+			token:   &auth.Token{Value: "test-token"},
+			ctx:     context.Background(),
+			wantErr: "invalid API response: encodedLocations is empty",
 		},
 		{
 			name:         "Error - Nil HTTP client",
 			useNilClient: true,
-			accessToken:  "test-token",
+			token:        &auth.Token{Value: "test-token"},
 			ctx:          context.Background(),
 			wantErr:      "HTTP client is required",
 		},
 		{
 			name:        "Error - Empty URL",
 			urlOverride: new(string),
-			accessToken: "test-token",
+			token:       &auth.Token{Value: "test-token"},
 			ctx:         context.Background(),
 			wantErr:     "URL cannot be empty",
 		},
@@ -256,9 +271,9 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"encodedLocations": "0x0"}`,
 			},
-			accessToken: "",
-			ctx:         context.Background(),
-			wantErr:     "access token required for lookup API authentication",
+			token:   &auth.Token{Value: ""},
+			ctx:     context.Background(),
+			wantErr: "access token required for lookup API authentication",
 		},
 	}
 
@@ -295,7 +310,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				client = http.DefaultClient
 			}
 
-			data, err := fetchTrustBoundaryData(tt.ctx, client, url, tt.accessToken, nil)
+			data, err := fetchTrustBoundaryData(tt.ctx, client, url, tt.token, nil)
 
 			if tt.wantErr != "" {
 				if err == nil {
@@ -581,6 +596,42 @@ func TestGCETrustBoundaryConfigProvider(t *testing.T) {
 	}
 }
 
+func TestGCETrustBoundaryConfigProvider_CachesResults(t *testing.T) {
+	originalGCEHost := os.Getenv("GCE_METADATA_HOST")
+	defer os.Setenv("GCE_METADATA_HOST", originalGCEHost)
+
+	var requestCount int
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestCount++
+		switch r.URL.Path {
+		case "/computeMetadata/v1/instance/service-accounts/default/email":
+			w.Write([]byte("test-sa@example.com"))
+		case "/computeMetadata/v1/universe/universe-domain":
+			w.Write([]byte("example.com"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	parsedURL, _ := url.Parse(server.URL)
+	os.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	mdClient := metadata.NewClient(server.Client())
+	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
+	provider := NewGCETrustBoundaryConfigProvider(udp)
+
+	for i := 0; i < 5; i++ {
+		t.Run(fmt.Sprintf("call-%d", i+1), func(t *testing.T) {
+			provider.GetTrustBoundaryEndpoint(context.Background())
+			provider.GetUniverseDomain(context.Background())
+			// The actual number of requests to the metadata server is 2 (one for email, one for UD)
+			if requestCount > 2 {
+				t.Errorf("expected metadata server to be called at most 2 times, but was called %d times", requestCount)
+			}
+		})
+	}
+}
+
 type mockTrustBoundaryConfigProvider struct {
 	endpointCallCount   int
 	universeCallCount   int
@@ -651,7 +702,7 @@ func TestNewTrustBoundaryDataProvider(t *testing.T) {
 
 func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 	ctx := context.Background()
-	defaultAccessToken := "test-access-token"
+	defaultToken := &auth.Token{Value: "test-access-token"}
 
 	type serverResponse struct {
 		status int
@@ -787,7 +838,7 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				internalProvider.data = tt.initialCachedData
 			}
 
-			gotData, err := provider.GetTrustBoundaryData(ctx, defaultAccessToken)
+			gotData, err := provider.GetTrustBoundaryData(ctx, defaultToken)
 
 			if tt.wantErr != "" {
 				if err == nil {
@@ -816,4 +867,74 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestTrustBoundaryDataProvider_CacheFallback(t *testing.T) {
+	ctx := context.Background()
+	defaultToken := &auth.Token{Value: "test-access-token"}
+	successBody := `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`
+	wantData := NewTrustBoundaryData([]string{"us-east1"}, "0xABC")
+
+	// Use a variable to control server response.
+	var serverResponseStatus int
+	var serverResponseBody string
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(serverResponseStatus)
+		fmt.Fprintln(w, serverResponseBody)
+	}))
+	defer server.Close()
+
+	mockConfigProvider := &mockTrustBoundaryConfigProvider{
+		universeToReturn: internal.DefaultUniverseDomain,
+		endpointToReturn: server.URL,
+	}
+
+	provider, err := NewTrustBoundaryDataProvider(server.Client(), mockConfigProvider, nil)
+	if err != nil {
+		t.Fatalf("NewTrustBoundaryDataProvider() failed: %v", err)
+	}
+
+	// 1. First call: successful fetch, populates cache.
+	t.Run("SuccessfulFirstFetch", func(t *testing.T) {
+		mockConfigProvider.Reset()
+		serverResponseStatus = http.StatusOK
+		serverResponseBody = successBody
+
+		gotData, err := provider.GetTrustBoundaryData(ctx, defaultToken)
+		if err != nil {
+			t.Fatalf("GetTrustBoundaryData() first call failed unexpectedly: %v", err)
+		}
+		if !reflect.DeepEqual(gotData, wantData) {
+			t.Errorf("GetTrustBoundaryData() first call data = %+v, want %+v", gotData, wantData)
+		}
+		if mockConfigProvider.universeCallCount != 1 {
+			t.Errorf("GetUniverseDomain call count = %d, want 1", mockConfigProvider.universeCallCount)
+		}
+		if mockConfigProvider.endpointCallCount != 1 {
+			t.Errorf("GetTrustBoundaryEndpoint call count = %d, want 1", mockConfigProvider.endpointCallCount)
+		}
+	})
+
+	// 2. Second call: fetch fails, should return cached data.
+	t.Run("FailedSecondFetchReturnsCache", func(t *testing.T) {
+		serverResponseStatus = http.StatusInternalServerError
+		serverResponseBody = "server error"
+		mockConfigProvider.Reset() // Reset call counts for this sub-test.
+
+		gotData, err := provider.GetTrustBoundaryData(ctx, defaultToken)
+		if err != nil {
+			t.Fatalf("GetTrustBoundaryData() second call returned an unexpected error: %v", err)
+		}
+		if !reflect.DeepEqual(gotData, wantData) {
+			t.Errorf("GetTrustBoundaryData() second call data = %+v, want %+v (cached data)", gotData, wantData)
+		}
+		if mockConfigProvider.universeCallCount != 1 {
+			t.Errorf("GetUniverseDomain call count = %d, want 1", mockConfigProvider.universeCallCount)
+		}
+		if mockConfigProvider.endpointCallCount != 1 {
+			t.Errorf("GetTrustBoundaryEndpoint call count = %d, want 1", mockConfigProvider.endpointCallCount)
+		}
+	})
 }

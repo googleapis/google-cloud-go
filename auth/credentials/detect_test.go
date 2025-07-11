@@ -171,7 +171,7 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 			t.Fatal(err)
 		}
 	}))
-	f.ServiceAccountImpersonationURL = ts.URL
+	f.ServiceAccountImpersonationURL = ts.URL + "/v1/projects/-/serviceAccounts/sa3@developer.gserviceaccount.com:generateAccessToken"
 	b, err = json.Marshal(f)
 	if err != nil {
 		t.Fatal(err)
@@ -584,6 +584,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	impersonatePath := "/v1/projects/-/serviceAccounts/impersonated-sa@fake_project.iam.gserviceaccount.com:generateAccessToken"
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		if r.URL.Path == "/token" {
@@ -611,7 +612,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 			if err := json.NewEncoder(w).Encode(&resp); err != nil {
 				t.Error(err)
 			}
-		} else if r.URL.Path == "/impersonate" {
+		} else if r.URL.Path == impersonatePath {
 			if want := "a_fake_token_sts"; !strings.Contains(r.Header.Get("Authorization"), want) {
 				t.Errorf("missing sts token: got %q, want %q", r.Header.Get("Authorization"), want)
 			}
@@ -630,7 +631,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 			t.Errorf("unexpected call to %q", r.URL.Path)
 		}
 	}))
-	f.ServiceAccountImpersonationURL = ts.URL + "/impersonate"
+	f.ServiceAccountImpersonationURL = ts.URL + impersonatePath
 	f.CredentialSource.URL = ts.URL + "/token"
 	f.TokenURL = ts.URL + "/sts"
 	b, err = json.Marshal(f)
@@ -971,6 +972,93 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 			}
 			if ud != tt.want {
 				t.Fatalf("got %q, want %q", ud, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsTrustBoundaryEnabled(t *testing.T) {
+	tests := []struct {
+		name    string
+		envVal  string
+		setEnv  bool
+		want    bool
+		wantErr bool
+	}{
+		{
+			name:   "unset",
+			setEnv: false,
+			want:   false,
+		},
+		{
+			name:    "empty",
+			envVal:  "",
+			setEnv:  true,
+			wantErr: true,
+		},
+		{
+			name:   "true",
+			envVal: "true",
+			setEnv: true,
+			want:   true,
+		},
+		{
+			name:   "TRUE",
+			envVal: "TRUE",
+			setEnv: true,
+			want:   true,
+		},
+		{
+			name:   "1",
+			envVal: "1",
+			setEnv: true,
+			want:   true,
+		},
+		{
+			name:   "false",
+			envVal: "false",
+			setEnv: true,
+			want:   false,
+		},
+		{
+			name:   "FALSE",
+			envVal: "FALSE",
+			setEnv: true,
+			want:   false,
+		},
+		{
+			name:   "0",
+			envVal: "0",
+			setEnv: true,
+			want:   false,
+		},
+		{
+			name:    "invalid",
+			envVal:  "invalid",
+			setEnv:  true,
+			wantErr: true,
+		},
+	}
+	origEnabled := trustBoundaryEnabled
+	origErr := trustBoundaryEnabledErr
+	t.Cleanup(func() {
+		trustBoundaryEnabled = origEnabled
+		trustBoundaryEnabledErr = origErr
+	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setEnv {
+				t.Setenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED", tt.envVal)
+			} else {
+				os.Unsetenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED")
+			}
+			var err error
+			trustBoundaryEnabled, err = isTrustBoundaryEnabled()
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("isTrustBoundaryEnabled() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if trustBoundaryEnabled != tt.want {
+				t.Errorf("isTrustBoundaryEnabled() = %v, want %v", trustBoundaryEnabled, tt.want)
 			}
 		})
 	}

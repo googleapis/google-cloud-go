@@ -37,8 +37,8 @@ type internalDataProviderAdapter struct {
 
 // GetTrustBoundaryData calls the internal provider and converts the internal
 // trustboundary.Data to the public auth.TrustBoundaryData.
-func (a *internalDataProviderAdapter) GetTrustBoundaryData(ctx context.Context, accessToken string) (*auth.TrustBoundaryData, error) {
-	internalData, err := a.internalProvider.GetTrustBoundaryData(ctx, accessToken)
+func (a *internalDataProviderAdapter) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*auth.TrustBoundaryData, error) {
+	internalData, err := a.internalProvider.GetTrustBoundaryData(ctx, token)
 	if err != nil {
 		return nil, err
 	}
@@ -172,6 +172,9 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 	if opts2LO.TokenURL == "" {
 		opts2LO.TokenURL = jwtTokenURL
 	}
+	if trustBoundaryEnabledErr != nil {
+		return nil, trustBoundaryEnabledErr
+	}
 	if trustBoundaryEnabled {
 		saTrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(opts2LO.Email, opts2LO.UniverseDomain)
 		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), saTrustBoundaryConfig, opts.logger())
@@ -261,6 +264,9 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	targetSAEmail, err := impersonate.ExtractServiceAccountEmail(f.ServiceAccountImpersonationURL)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: could not extract target service account email for trust boundary: %w", err)
+	}
+	if trustBoundaryEnabledErr != nil {
+		return nil, trustBoundaryEnabledErr
 	}
 	if trustBoundaryEnabled {
 		targetSATrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(targetSAEmail, impOpts.UniverseDomain)
