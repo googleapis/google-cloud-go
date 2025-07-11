@@ -6,10 +6,10 @@ require (
 	cloud.google.com/go v0.121.3
 	cloud.google.com/go/longrunning v0.6.7
 	github.com/google/go-cmp v0.7.0
-	github.com/googleapis/gax-go/v2 v2.14.2
-	google.golang.org/api v0.239.0
-	google.golang.org/genproto v0.0.0-20250505200425-f936aa4a68b2
-	google.golang.org/genproto/googleapis/api v0.0.0-20250603155806-513f23925822
+	github.com/googleapis/gax-go/v2 v2.15.0
+	google.golang.org/api v0.241.0
+	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
+	google.golang.org/genproto/googleapis/api v0.0.0-20250707201910-8d1bb00bc6a7
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
 )
