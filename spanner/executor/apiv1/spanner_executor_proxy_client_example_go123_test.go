@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package executor_test
+
+import (
+	executor "cloud.google.com/go/spanner/executor/apiv1"
+)
