@@ -85,7 +85,7 @@ func mergePublisherCallOptions(a *vkit.PublisherCallOptions, b *vkit.PublisherCa
 
 	t := aVal.Type()
 
-	for i := 0; i < aVal.NumField(); i++ {
+	for i := range aVal.NumField() {
 		fieldName := t.Field(i).Name
 
 		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
@@ -113,7 +113,7 @@ func mergeSubscriberCallOptions(a *vkit.SubscriberCallOptions, b *vkit.Subscribe
 
 	t := aVal.Type()
 
-	for i := 0; i < aVal.NumField(); i++ {
+	for i := range aVal.NumField() {
 		fieldName := t.Field(i).Name
 
 		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
