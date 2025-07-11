@@ -1,6 +1,31 @@
 # Changes
 
 
+## [1.93.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.92.0...aiplatform/v1.93.0) (2025-07-09)
+
+
+### Features
+
+* **aiplatform:** Add computer use support to tools ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** Add computer use support to tools ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** Add invoke_route_prefix to ModelContainerSpec in aiplatform v1 models.proto ([#12502](https://github.com/googleapis/google-cloud-go/issues/12502)) ([8f25e1c](https://github.com/googleapis/google-cloud-go/commit/8f25e1cf971c01402c88df505ab3bdcce2c543d6))
+* **aiplatform:** Add message ColabImage, add field colab_image to NotebookSoftwareConfig ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** Add message ColabImage, add field colab_image to NotebookSoftwareConfig ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** Allow user input for schedule_resource_name in NotebookExecutionJob ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** Allow user input for schedule_resource_name in NotebookExecutionJob ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** Expose task_unique_name in pipeline task details for pipeline rerun ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** Expose task_unique_name in pipeline task details for pipeline rerun ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+
+### Documentation
+
+* **aiplatform:** A comment for enum value BEING_STARTED in enum NotebookRuntime.RuntimeState is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** A comment for enum value BEING_STARTED in enum NotebookRuntime.RuntimeState is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** A comment for message NotebookRuntime is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** A comment for message NotebookRuntime is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** A comment for message NotebookSoftwareConfig is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **aiplatform:** A comment for message NotebookSoftwareConfig is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [1.92.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.91.0...aiplatform/v1.92.0) (2025-06-25)
 
 

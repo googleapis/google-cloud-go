@@ -76,7 +76,11 @@ type Product struct {
 	// 639-1](http://en.wikipedia.org/wiki/ISO_639-1) language code for the
 	// product.
 	ContentLanguage string `protobuf:"bytes,4,opt,name=content_language,json=contentLanguage,proto3" json:"content_language,omitempty"`
-	// Output only. The feed label for the product.
+	// Output only. The feed label lets you categorize and identify your products.
+	// The maximum allowed characters is 20 and the supported characters are`A-Z`,
+	// `0-9`, hyphen and underscore. The feed label must not include any spaces.
+	// For more information, see [Using feed
+	// labels](//support.google.com/merchants/answer/14994087)
 	FeedLabel string `protobuf:"bytes,5,opt,name=feed_label,json=feedLabel,proto3" json:"feed_label,omitempty"`
 	// Output only. The primary data source of the product.
 	DataSource string `protobuf:"bytes,6,opt,name=data_source,json=dataSource,proto3" json:"data_source,omitempty"`
@@ -280,7 +284,7 @@ type ListProductsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of products to return. The service may return fewer than
 	// this value.
-	// The maximum value is 250; values above 250 will be coerced to 250.
+	// The maximum value is 1000; values above 1000 will be coerced to 1000.
 	// If unspecified, the maximum number of products will be returned.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous `ListProducts` call.

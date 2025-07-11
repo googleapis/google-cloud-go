@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.23.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.22.0...shopping/v0.23.0) (2025-07-09)
+
+
+### Features
+
+* **shopping/merchant/accounts:** Add CheckoutSettings service ([#12505](https://github.com/googleapis/google-cloud-go/issues/12505)) ([208745b](https://github.com/googleapis/google-cloud-go/commit/208745bbc1f4fc9122ec71d6cf42f512ae570d13))
+
 ## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.21.0...shopping/v0.22.0) (2025-06-04)
 
 

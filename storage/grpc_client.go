@@ -183,9 +183,6 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 		// TO-DO: implement ObjectRetention once available - see b/308194853
 		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
 	}
-	if attrs != nil && attrs.IPFilter != nil {
-		return nil, status.Errorf(codes.Unimplemented, "storage: IPFilter is not supported in gRPC")
-	}
 
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
@@ -308,9 +305,6 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	return battrs, formatBucketError(err)
 }
 func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
-	if uattrs != nil && uattrs.IPFilter != nil {
-		return nil, status.Errorf(codes.Unimplemented, "storage: IPFilter is not supported in gRPC")
-	}
 	s := callSettings(c.settings, opts...)
 	b := uattrs.toProtoBucket()
 	b.Name = bucketResourceName(globalProjectAlias, bucket)
@@ -1160,8 +1154,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	// object metadata.
 	msg := resp.response
 	obj := msg.GetMetadata()
-	// This is the size of the entire object, even if only a range was requested.
-	size := obj.GetSize()
 
 	mrd := &gRPCBidiReader{
 		stream:           resp.stream,
@@ -1359,16 +1351,12 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		mrd.mu.Unlock()
 	}
 
-	mrd.mu.Lock()
-	mrd.objectSize = size
-	mrd.mu.Unlock()
-
 	go sender()
 	go receiver()
 
 	return &MultiRangeDownloader{
 		Attrs: ReaderObjectAttrs{
-			Size:            size,
+			Size:            obj.GetSize(), // this is the size of the entire object, even if only a range was requested.
 			ContentType:     obj.GetContentType(),
 			ContentEncoding: obj.GetContentEncoding(),
 			CacheControl:    obj.GetCacheControl(),
@@ -1389,7 +1377,6 @@ type gRPCBidiReader struct {
 	readIDGenerator *readIDGenerator
 	reopen          func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
 	readSpec        *storagepb.BidiReadObjectSpec
-	objectSize      int64 // always use the mutex when accessing this variable
 	closeReceiver   chan bool
 	closeSender     chan bool
 	senderRetry     chan bool
