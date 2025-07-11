@@ -49,6 +49,9 @@ const (
 	defaultExpiryDelta = 225 * time.Second
 
 	universeDomainDefault = "googleapis.com"
+
+	// trustBoundaryNoOp is a constant indicating no trust boundary is enforced.
+	trustBoundaryNoOp = "0x0"
 )
 
 // tokenState represents different states for a [Token].
@@ -99,6 +102,106 @@ type Token struct {
 	// Metadata  may include, but is not limited to, the body of the token
 	// response returned by the server.
 	Metadata map[string]interface{} // TODO(codyoss): maybe make a method to flatten metadata to avoid []string for url.Values
+	// TrustBoundaryData represents the trust boundary data associated with the token.
+	// It contains information about the regions or environments where the token is valid.
+	// This data is used to enforce trust boundary restrictions on requests made with the token.
+	// TrustBoundaryData is a value type for immutability after token creation.
+	TrustBoundaryData TrustBoundaryData
+}
+
+// SetAuthHeader uses the provided token to set the Authorization and trust
+// boundary headers on a request. If the token.Type is empty, the type is
+// assumed to be Bearer.
+func SetAuthHeader(token *Token, req *http.Request) {
+	typ := token.Type
+	if typ == "" {
+		typ = internal.TokenTypeBearer
+	}
+	req.Header.Set("Authorization", typ+" "+token.Value)
+
+	headerVal, setHeader := token.TrustBoundaryData.trustBoundaryHeader()
+	if setHeader {
+		req.Header.Set("x-allowed-locations", headerVal)
+	}
+}
+
+// SetAuthMetadata uses the provided token to set the Authorization and trust
+// boundary metadata. If the token.Type is empty, the type is assumed to be
+// Bearer.
+func SetAuthMetadata(token *Token, m map[string]string) {
+	typ := token.Type
+	if typ == "" {
+		typ = internal.TokenTypeBearer
+	}
+	m["authorization"] = typ + " " + token.Value
+
+	headerVal, setHeader := token.TrustBoundaryData.trustBoundaryHeader()
+	if setHeader {
+		m["x-allowed-locations"] = headerVal
+	}
+}
+
+// ApplyTrustBoundaryData fetches trust boundary data using the provider and applies it to the token.
+// It's a helper method to consolidate the logic used by different token providers.
+func ApplyTrustBoundaryData(ctx context.Context, provider TrustBoundaryDataProvider, token *Token) error {
+	if provider == nil {
+		return nil
+	}
+	data, err := provider.GetTrustBoundaryData(ctx, token)
+	if err != nil {
+		return err
+	}
+	if data != nil {
+		token.TrustBoundaryData = *data
+	}
+	return nil
+}
+
+// TrustBoundaryData represents the trust boundary data associated with a token.
+// It contains information about the regions or environments where the token is valid.
+type TrustBoundaryData struct {
+	// Locations is the list of locations that the token is allowed to be used in.
+	Locations []string
+	// EncodedLocations represents the locations in an encoded format.
+	EncodedLocations string
+}
+
+// IsNoOp reports whether the trust boundary has a no-op value.
+func (t *TrustBoundaryData) IsNoOp() bool {
+	if t == nil {
+		return false
+	}
+	return t.EncodedLocations == trustBoundaryNoOp
+}
+
+// IsEmpty reports whether the trust boundary is empty.
+func (t *TrustBoundaryData) IsEmpty() bool {
+	if t == nil {
+		return true
+	}
+	return t.EncodedLocations == ""
+}
+
+// trustBoundaryHeader returns the value for the x-allowed-locations header and a bool
+// indicating if the header should be set. The return values are structured to
+// handle three distinct states required by the backend:
+// 1. Header not set: (value="", present=false) -> data is empty.
+// 2. Header set to an empty string: (value="", present=true) -> data is a no-op.
+// 3. Header set to a value: (value="...", present=true) -> data has locations.
+func (t *TrustBoundaryData) trustBoundaryHeader() (value string, present bool) {
+	if t.IsEmpty() {
+		// If the data is empty, the header should not be present.
+		return "", false
+	}
+
+	// If data is not empty, the header should always be present.
+	present = true
+	value = ""
+	if !t.IsNoOp() {
+		value = t.EncodedLocations
+	}
+	// For a no-op, the backend requires an empty string.
+	return value, present
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -227,6 +330,18 @@ type CredentialsOptions struct {
 	QuotaProjectIDProvider CredentialsPropertyProvider
 	// UniverseDomainProvider resolves the universe domain with the credentials.
 	UniverseDomainProvider CredentialsPropertyProvider
+	// TrustBoundaryDataProvider is used to fetch trust boundary data.
+	// This data defines location restrictions for credential usage.
+	// Not all credential types utilize this provider; if it's nil, no trust boundary
+	// restrictions are applied via this mechanism.
+	TrustBoundaryDataProvider TrustBoundaryDataProvider
+}
+
+// TrustBoundaryDataProvider provides an interface for fetching trust boundary data.
+type TrustBoundaryDataProvider interface {
+	// GetTrustBoundaryData retrieves the trust boundary data.
+	// The provided token is used to authenticate the lookup request.
+	GetTrustBoundaryData(ctx context.Context, token *Token) (*TrustBoundaryData, error)
 }
 
 // NewCredentials returns new [Credentials] from the provided options.
@@ -485,6 +600,8 @@ type Options2LO struct {
 	Audience string
 	// PrivateClaims allows specifying any custom claims for the JWT. Optional.
 	PrivateClaims map[string]interface{}
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	UniverseDomain string
 
 	// Client is the client to be used to make the underlying token requests.
 	// Optional.
@@ -497,6 +614,14 @@ type Options2LO struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
+	// TrustBoundaryDataProvider is used to fetch trust boundary data.
+	// This data defines the regions or environments where the credential (and subsequently the tokens
+	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
+	// The provider pattern allows for dynamic fetching and caching of this data,
+	// which is particularly relevant for credential types like service accounts
+	// where trust boundaries are enforced to limit usage to authorized locations.
+	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
+	TrustBoundaryDataProvider TrustBoundaryDataProvider
 }
 
 func (o *Options2LO) client() *http.Client {
@@ -613,6 +738,9 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 			return nil, fmt.Errorf("auth: response doesn't have JWT token")
 		}
 		token.Value = tokenRes.IDToken
+	}
+	if err := ApplyTrustBoundaryData(ctx, tp.opts.TrustBoundaryDataProvider, token); err != nil {
+		return nil, fmt.Errorf("auth: error fetching the trust boundary data: %w", err)
 	}
 	return token, nil
 }
