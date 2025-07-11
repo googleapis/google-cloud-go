@@ -234,7 +234,13 @@ func TestBytesCodecV2(t *testing.T) {
 
 					// Read out the data and compare length and content.
 					buf := &bytes.Buffer{}
-					n, err := decoder.writeToAndUpdateCRC(buf, func([]byte) {})
+					n, found, err := decoder.writeToAndUpdateCRC(buf, 1, func([]byte) {})
+					if err != nil {
+						t.Fatalf("decoder.writeToAndUpdateCRC: %v", err)
+					}
+					if len(test.resp.ObjectDataRanges) > 0 && test.resp.ObjectDataRanges[0].ReadRange != nil && !found {
+						t.Fatalf("decoder.writeToAndUpdateCRC: range not found")
+					}
 					if n != int64(len(test.wantContent)) {
 						t.Errorf("mismatched content length: got %d, want %d, offsets %+v", n, len(content), decoder.dataOffsets)
 					}
