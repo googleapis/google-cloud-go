@@ -234,3 +234,12 @@ func NewClient(opts *Options) (*http.Client, error) {
 		Transport: trans,
 	}, nil
 }
+
+// SetAuthHeader uses the provided token to set the Authorization header.
+//
+// Deprecated: use cloud.google.com/go/auth.SetAuthHeader instead.
+func SetAuthHeader(token *auth.Token, req *http.Request) {
+	// This function is a compatibility wrapper. It forwards the call to the
+	// new, consolidated function in the auth package.
+	auth.SetAuthHeader(token, req)
+}

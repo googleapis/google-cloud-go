@@ -141,6 +141,22 @@ func SetAuthMetadata(token *Token, m map[string]string) {
 	}
 }
 
+// ApplyTrustBoundaryData fetches trust boundary data using the provider and applies it to the token.
+// It's a helper method to consolidate the logic used by different token providers.
+func ApplyTrustBoundaryData(ctx context.Context, provider TrustBoundaryDataProvider, token *Token) error {
+	if provider == nil {
+		return nil
+	}
+	data, err := provider.GetTrustBoundaryData(ctx, token)
+	if err != nil {
+		return err
+	}
+	if data != nil {
+		token.TrustBoundaryData = *data
+	}
+	return nil
+}
+
 // TrustBoundaryData represents the trust boundary data associated with a token.
 // It contains information about the regions or environments where the token is valid.
 type TrustBoundaryData struct {
@@ -723,14 +739,8 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		}
 		token.Value = tokenRes.IDToken
 	}
-	if tp.opts.TrustBoundaryDataProvider != nil {
-		trustBoundaryData, err := tp.opts.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
-		if err != nil {
-			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
-		}
-		if trustBoundaryData != nil {
-			token.TrustBoundaryData = *trustBoundaryData
-		}
+	if err := ApplyTrustBoundaryData(ctx, tp.opts.TrustBoundaryDataProvider, token); err != nil {
+		return nil, fmt.Errorf("auth: error fetching the trust boundary data: %w", err)
 	}
 	return token, nil
 }
