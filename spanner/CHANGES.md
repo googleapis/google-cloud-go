@@ -1,5 +1,12 @@
 # Changes
 
+## [1.83.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.83.0...spanner/v1.83.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* **spanner:** Fix blind retry for ResourceExhausted ([#12523](https://github.com/googleapis/google-cloud-go/issues/12523)) ([f9b6e88](https://github.com/googleapis/google-cloud-go/commit/f9b6e88bd3fce735ea58f70e3a7634837886d393))
+
 ## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.82.0...spanner/v1.83.0) (2025-06-27)
 
 
