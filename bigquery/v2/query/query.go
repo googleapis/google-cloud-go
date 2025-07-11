@@ -79,17 +79,11 @@ func newQueryJobFromJobReference(c *Client, schema *bigquerypb.TableSchema, jobR
 	return newQueryJobFromQueryResponse(c, res)
 }
 
-// state is one of a sequence of states that a Job progresses through as it is processed.
-type state = string
-
-const (
-	// Pending is a state that describes that the job is pending.
-	Pending state = "PENDING"
-	// Running is a state that describes that the job is running.
-	Running state = "RUNNING"
-	// Done is a state that describes that the job is done.
-	Done state = "DONE"
-)
+// Read returns a RowIterator for the query results.
+func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, error) {
+	r := newReaderFromQuery(q.c, q)
+	return r.read(ctx, opts...)
+}
 
 func (q *Query) checkStatus(ctx context.Context) error {
 	res, err := q.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
@@ -162,22 +156,4 @@ func (q *Query) Schema() *bigquerypb.TableSchema {
 // Complete to check is job finished execution
 func (q *Query) Complete() bool {
 	return q.complete
-}
-
-// Read returns a RowIterator for the query results.
-func (q *Query) Read(ctx context.Context) (*RowIterator, error) {
-	r := q.c.NewReader()
-	return r.readQuery(ctx, q)
-}
-
-func (q *Query) getRows(ctx context.Context, pageToken string) (*bigquerypb.GetQueryResultsResponse, error) {
-	return q.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
-		FormatOptions: &bigquerypb.DataFormatOptions{
-			UseInt64Timestamp: true,
-		},
-		JobId:     q.jobID,
-		ProjectId: q.projectID,
-		Location:  q.location,
-		PageToken: pageToken,
-	})
 }

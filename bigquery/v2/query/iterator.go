@@ -23,9 +23,8 @@ import (
 
 // RowIterator is an iterator over the results of a query.
 type RowIterator struct {
-	c         *Client
+	r         *reader
 	rows      []*Row
-	query     *Query
 	totalRows uint64
 	schema    *schema
 	pageToken string
@@ -49,7 +48,7 @@ func (it *RowIterator) Next(ctx context.Context) (*Row, error) {
 }
 
 func (it *RowIterator) fetchRows(ctx context.Context) error {
-	res, err := it.query.getRows(ctx, it.pageToken)
+	res, err := it.r.getRows(ctx, it.pageToken)
 	if err != nil {
 		return err
 	}

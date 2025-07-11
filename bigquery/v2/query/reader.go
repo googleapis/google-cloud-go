@@ -21,41 +21,39 @@ import (
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 )
 
-// Reader is used to read the results of a query.
-type Reader struct {
+// reader is used to read the results of a query.
+type reader struct {
 	c          *Client
 	readClient *storagepb.BigQueryReadClient
+	q          *Query
 }
 
-// Read reads the results of a query job.
-func (r *Reader) Read(ctx context.Context, jobRef *bigquerypb.JobReference, schema *bigquerypb.TableSchema, opts ...ReadOption) (*RowIterator, error) {
-	// TODO: use storage read API
-	query, err := newQueryJobFromJobReference(r.c, schema, jobRef)
-	if err != nil {
-		return nil, err
+func newReaderFromQuery(c *Client, q *Query) *reader {
+	r := &reader{
+		c:          c,
+		readClient: c.rc,
+		q:          q,
 	}
-
-	return r.readQuery(ctx, query, opts...)
+	return r
 }
 
-func (r *Reader) readQuery(ctx context.Context, q *Query, opts ...ReadOption) (*RowIterator, error) {
+func (r *reader) read(ctx context.Context, opts ...ReadOption) (*RowIterator, error) {
 	initState := &readState{
-		pageToken: q.cachedPageToken,
+		pageToken: r.q.cachedPageToken,
 	}
 	for _, opt := range opts {
 		opt(initState)
 	}
 
 	it := &RowIterator{
-		c:         r.c,
-		query:     q,
+		r:         r,
 		pageToken: initState.pageToken,
-		rows:      q.cachedRows,
-		totalRows: q.cachedTotalRows,
-		schema:    q.cachedSchema,
+		rows:      r.q.cachedRows,
+		totalRows: r.q.cachedTotalRows,
+		schema:    r.q.cachedSchema,
 	}
 
-	if len(it.query.cachedRows) > 0 {
+	if len(r.q.cachedRows) > 0 {
 		return it, nil
 	}
 
@@ -78,4 +76,16 @@ func WithPageToken(t string) ReadOption {
 	return func(s *readState) {
 		s.pageToken = t
 	}
+}
+
+func (r *reader) getRows(ctx context.Context, pageToken string) (*bigquerypb.GetQueryResultsResponse, error) {
+	return r.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
+		FormatOptions: &bigquerypb.DataFormatOptions{
+			UseInt64Timestamp: true,
+		},
+		JobId:     r.q.jobID,
+		ProjectId: r.q.projectID,
+		Location:  r.q.location,
+		PageToken: pageToken,
+	})
 }

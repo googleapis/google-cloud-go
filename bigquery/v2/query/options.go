@@ -62,9 +62,3 @@ func (s *customClientOption) ApplyCustomClientOpt(c *Client) {
 		c.rc = s.readClient
 	}
 }
-
-func (s *customClientOption) ApplyCustomReaderOpt(r *Reader) {
-	if s.readClient != nil {
-		r.readClient = s.readClient
-	}
-}

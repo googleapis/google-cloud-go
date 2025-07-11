@@ -83,11 +83,14 @@ func TestReadQueryJob(t *testing.T) {
 				t.Fatalf("expected job to be complete")
 			}
 
-			r := client.NewReader()
 			jobRef := q.JobReference()
 			schema := q.Schema()
-			// q := client.FromJobReference().Read()
-			it, err := r.Read(ctx, jobRef, schema)
+			q, err = client.AttachJob(ctx, jobRef, schema)
+			if err != nil {
+				t.Fatalf("AttachJob() error: %v", err)
+			}
+
+			it, err := q.Read(ctx)
 			if err != nil {
 				t.Fatalf("Read() error: %v", err)
 			}

@@ -92,22 +92,14 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	return newQueryJobFromJob(c, job)
 }
 
+// AttachJob set up a query job to be read from an existing one.
+func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, schema *bigquerypb.TableSchema, opts ...ReadOption) (*Query, error) {
+	// TODO: use storage read API
+	return newQueryJobFromJobReference(c, schema, jobRef)
+}
+
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.c.Close()
-}
-
-// NewReader creates a new Reader.
-func (c *Client) NewReader(opts ...option.ClientOption) *Reader {
-	r := &Reader{
-		c:          c,
-		readClient: c.rc,
-	}
-	for _, opt := range opts {
-		if cOpt, ok := opt.(*customClientOption); ok {
-			cOpt.ApplyCustomReaderOpt(r)
-		}
-	}
-	return r
 }
