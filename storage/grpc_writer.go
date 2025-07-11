@@ -378,6 +378,7 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		w.bufFlushedIdx = 0
 		w.buf = w.buf[:0]
 	}
+	w.setSize(c.flushOffset)
 	w.progress(c.flushOffset)
 }
 
