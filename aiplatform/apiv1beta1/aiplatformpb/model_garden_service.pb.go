@@ -383,6 +383,7 @@ type DeployRequest struct {
 	//
 	//	*DeployRequest_PublisherModelName
 	//	*DeployRequest_HuggingFaceModelId
+	//	*DeployRequest_CustomModel_
 	Artifacts isDeployRequest_Artifacts `protobuf_oneof:"artifacts"`
 	// Required. The resource name of the Location to deploy the model in.
 	// Format: `projects/{project}/locations/{location}`
@@ -449,6 +450,13 @@ func (x *DeployRequest) GetHuggingFaceModelId() string {
 	return ""
 }
 
+func (x *DeployRequest) GetCustomModel() *DeployRequest_CustomModel {
+	if x, ok := x.GetArtifacts().(*DeployRequest_CustomModel_); ok {
+		return x.CustomModel
+	}
+	return nil
+}
+
 func (x *DeployRequest) GetDestination() string {
 	if x != nil {
 		return x.Destination
@@ -495,9 +503,16 @@ type DeployRequest_HuggingFaceModelId struct {
 	HuggingFaceModelId string `protobuf:"bytes,2,opt,name=hugging_face_model_id,json=huggingFaceModelId,proto3,oneof"`
 }
 
+type DeployRequest_CustomModel_ struct {
+	// The custom model to deploy from a Google Cloud Storage URI.
+	CustomModel *DeployRequest_CustomModel `protobuf:"bytes,3,opt,name=custom_model,json=customModel,proto3,oneof"`
+}
+
 func (*DeployRequest_PublisherModelName) isDeployRequest_Artifacts() {}
 
 func (*DeployRequest_HuggingFaceModelId) isDeployRequest_Artifacts() {}
+
+func (*DeployRequest_CustomModel_) isDeployRequest_Artifacts() {}
 
 // Request message for
 // [ModelGardenService.DeployPublisherModel][google.cloud.aiplatform.v1beta1.ModelGardenService.DeployPublisherModel].
@@ -1290,6 +1305,77 @@ func (x *PublisherModelEulaAcceptance) GetPublisherModelEulaAcked() bool {
 	return false
 }
 
+// The custom model to deploy from model weights in a Google Cloud Storage URI
+// or Model Registry model.
+type DeployRequest_CustomModel struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The source of the custom model.
+	//
+	// Types that are assignable to ModelSource:
+	//
+	//	*DeployRequest_CustomModel_GcsUri
+	ModelSource isDeployRequest_CustomModel_ModelSource `protobuf_oneof:"model_source"`
+}
+
+func (x *DeployRequest_CustomModel) Reset() {
+	*x = DeployRequest_CustomModel{}
+	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeployRequest_CustomModel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeployRequest_CustomModel) ProtoMessage() {}
+
+func (x *DeployRequest_CustomModel) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeployRequest_CustomModel.ProtoReflect.Descriptor instead.
+func (*DeployRequest_CustomModel) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (m *DeployRequest_CustomModel) GetModelSource() isDeployRequest_CustomModel_ModelSource {
+	if m != nil {
+		return m.ModelSource
+	}
+	return nil
+}
+
+func (x *DeployRequest_CustomModel) GetGcsUri() string {
+	if x, ok := x.GetModelSource().(*DeployRequest_CustomModel_GcsUri); ok {
+		return x.GcsUri
+	}
+	return ""
+}
+
+type isDeployRequest_CustomModel_ModelSource interface {
+	isDeployRequest_CustomModel_ModelSource()
+}
+
+type DeployRequest_CustomModel_GcsUri struct {
+	// Immutable. The Google Cloud Storage URI of the custom model, storing
+	// weights and config files (which can be used to infer the base model).
+	GcsUri string `protobuf:"bytes,2,opt,name=gcs_uri,json=gcsUri,proto3,oneof"`
+}
+
+func (*DeployRequest_CustomModel_GcsUri) isDeployRequest_CustomModel_ModelSource() {}
+
 // The model config to use for the deployment.
 type DeployRequest_ModelConfig struct {
 	state         protoimpl.MessageState
@@ -1316,7 +1402,7 @@ type DeployRequest_ModelConfig struct {
 
 func (x *DeployRequest_ModelConfig) Reset() {
 	*x = DeployRequest_ModelConfig{}
-	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[15]
+	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1328,7 +1414,7 @@ func (x *DeployRequest_ModelConfig) String() string {
 func (*DeployRequest_ModelConfig) ProtoMessage() {}
 
 func (x *DeployRequest_ModelConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[15]
+	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1341,7 +1427,7 @@ func (x *DeployRequest_ModelConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeployRequest_ModelConfig.ProtoReflect.Descriptor instead.
 func (*DeployRequest_ModelConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDescGZIP(), []int{3, 0}
+	return file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDescGZIP(), []int{3, 1}
 }
 
 func (x *DeployRequest_ModelConfig) GetAcceptEula() bool {
@@ -1399,7 +1485,7 @@ type DeployRequest_EndpointConfig struct {
 
 func (x *DeployRequest_EndpointConfig) Reset() {
 	*x = DeployRequest_EndpointConfig{}
-	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[16]
+	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1411,7 +1497,7 @@ func (x *DeployRequest_EndpointConfig) String() string {
 func (*DeployRequest_EndpointConfig) ProtoMessage() {}
 
 func (x *DeployRequest_EndpointConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[16]
+	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1424,7 +1510,7 @@ func (x *DeployRequest_EndpointConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeployRequest_EndpointConfig.ProtoReflect.Descriptor instead.
 func (*DeployRequest_EndpointConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDescGZIP(), []int{3, 1}
+	return file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDescGZIP(), []int{3, 2}
 }
 
 func (x *DeployRequest_EndpointConfig) GetEndpointDisplayName() string {
@@ -1460,7 +1546,7 @@ type DeployRequest_DeployConfig struct {
 
 func (x *DeployRequest_DeployConfig) Reset() {
 	*x = DeployRequest_DeployConfig{}
-	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[17]
+	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1472,7 +1558,7 @@ func (x *DeployRequest_DeployConfig) String() string {
 func (*DeployRequest_DeployConfig) ProtoMessage() {}
 
 func (x *DeployRequest_DeployConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[17]
+	mi := &file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1485,7 +1571,7 @@ func (x *DeployRequest_DeployConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeployRequest_DeployConfig.ProtoReflect.Descriptor instead.
 func (*DeployRequest_DeployConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDescGZIP(), []int{3, 2}
+	return file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDescGZIP(), []int{3, 3}
 }
 
 func (x *DeployRequest_DeployConfig) GetDedicatedResources() *DedicatedResources {
@@ -1603,7 +1689,7 @@ var file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDesc = []
 	0x6c, 0x52, 0x0f, 0x70, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x65, 0x72, 0x4d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x12, 0x26, 0x0a, 0x0f, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x70, 0x61, 0x67, 0x65, 0x5f,
 	0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x6e, 0x65, 0x78,
-	0x74, 0x50, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0xff, 0x0a, 0x0a, 0x0d, 0x44,
+	0x74, 0x50, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x9f, 0x0c, 0x0a, 0x0d, 0x44,
 	0x65, 0x70, 0x6c, 0x6f, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x61, 0x0a, 0x14,
 	0x70, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x65, 0x72, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x5f,
 	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2d, 0xfa, 0x41, 0x2a, 0x0a,
@@ -1614,31 +1700,41 @@ var file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDesc = []
 	0x33, 0x0a, 0x15, 0x68, 0x75, 0x67, 0x67, 0x69, 0x6e, 0x67, 0x5f, 0x66, 0x61, 0x63, 0x65, 0x5f,
 	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00,
 	0x52, 0x12, 0x68, 0x75, 0x67, 0x67, 0x69, 0x6e, 0x67, 0x46, 0x61, 0x63, 0x65, 0x4d, 0x6f, 0x64,
-	0x65, 0x6c, 0x49, 0x64, 0x12, 0x4b, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x29, 0xe0, 0x41, 0x02, 0xfa, 0x41,
-	0x23, 0x0a, 0x21, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x62, 0x0a, 0x0c, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69,
-	0x67, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
-	0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x43, 0x6f, 0x6e,
-	0x66, 0x69, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0b, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x6b, 0x0a, 0x0f, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e,
-	0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3d,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69,
-	0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x2e, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x45,
-	0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0,
-	0x41, 0x01, 0x52, 0x0e, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x43, 0x6f, 0x6e, 0x66,
-	0x69, 0x67, 0x12, 0x65, 0x0a, 0x0d, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x5f, 0x63, 0x6f, 0x6e,
-	0x66, 0x69, 0x67, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3b, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66,
-	0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x70, 0x6c,
-	0x6f, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79,
-	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x64, 0x65, 0x70,
-	0x6c, 0x6f, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x1a, 0xc9, 0x02, 0x0a, 0x0b, 0x4d, 0x6f,
+	0x65, 0x6c, 0x49, 0x64, 0x12, 0x5f, 0x0a, 0x0c, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x5f, 0x6d,
+	0x6f, 0x64, 0x65, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x70,
+	0x6c, 0x6f, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x43, 0x75, 0x73, 0x74, 0x6f,
+	0x6d, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x48, 0x00, 0x52, 0x0b, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d,
+	0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x4b, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x29, 0xe0, 0x41, 0x02, 0xfa,
+	0x41, 0x23, 0x0a, 0x21, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x62, 0x0a, 0x0c, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x5f, 0x63, 0x6f, 0x6e, 0x66,
+	0x69, 0x67, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f,
+	0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x70, 0x6c, 0x6f,
+	0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0b, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
+	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x6b, 0x0a, 0x0f, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69,
+	0x6e, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x3d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61,
+	0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0x2e, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e,
+	0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03,
+	0xe0, 0x41, 0x01, 0x52, 0x0e, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x67, 0x12, 0x65, 0x0a, 0x0d, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x5f, 0x63, 0x6f,
+	0x6e, 0x66, 0x69, 0x67, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3b, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x70,
+	0x6c, 0x6f, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x44, 0x65, 0x70, 0x6c, 0x6f,
+	0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x64, 0x65,
+	0x70, 0x6c, 0x6f, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x1a, 0x3d, 0x0a, 0x0b, 0x43, 0x75,
+	0x73, 0x74, 0x6f, 0x6d, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x1e, 0x0a, 0x07, 0x67, 0x63, 0x73,
+	0x5f, 0x75, 0x72, 0x69, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x05, 0x48,
+	0x00, 0x52, 0x06, 0x67, 0x63, 0x73, 0x55, 0x72, 0x69, 0x42, 0x0e, 0x0a, 0x0c, 0x6d, 0x6f, 0x64,
+	0x65, 0x6c, 0x5f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x1a, 0xc9, 0x02, 0x0a, 0x0b, 0x4d, 0x6f,
 	0x64, 0x65, 0x6c, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x24, 0x0a, 0x0b, 0x61, 0x63, 0x63,
 	0x65, 0x70, 0x74, 0x5f, 0x65, 0x75, 0x6c, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03,
 	0xe0, 0x41, 0x01, 0x52, 0x0a, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x45, 0x75, 0x6c, 0x61, 0x12,
@@ -2015,7 +2111,7 @@ func file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDescGZIP
 }
 
 var file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_goTypes = []any{
 	(PublisherModelView)(0),                          // 0: google.cloud.aiplatform.v1beta1.PublisherModelView
 	(*GetPublisherModelRequest)(nil),                 // 1: google.cloud.aiplatform.v1beta1.GetPublisherModelRequest
@@ -2033,51 +2129,53 @@ var file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_goTypes = []
 	(*CheckPublisherModelEulaAcceptanceRequest)(nil), // 13: google.cloud.aiplatform.v1beta1.CheckPublisherModelEulaAcceptanceRequest
 	(*AcceptPublisherModelEulaRequest)(nil),          // 14: google.cloud.aiplatform.v1beta1.AcceptPublisherModelEulaRequest
 	(*PublisherModelEulaAcceptance)(nil),             // 15: google.cloud.aiplatform.v1beta1.PublisherModelEulaAcceptance
-	(*DeployRequest_ModelConfig)(nil),                // 16: google.cloud.aiplatform.v1beta1.DeployRequest.ModelConfig
-	(*DeployRequest_EndpointConfig)(nil),             // 17: google.cloud.aiplatform.v1beta1.DeployRequest.EndpointConfig
-	(*DeployRequest_DeployConfig)(nil),               // 18: google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig
-	nil,                                              // 19: google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig.SystemLabelsEntry
-	(*PublisherModel)(nil),                           // 20: google.cloud.aiplatform.v1beta1.PublisherModel
-	(*DedicatedResources)(nil),                       // 21: google.cloud.aiplatform.v1beta1.DedicatedResources
-	(*GenericOperationMetadata)(nil),                 // 22: google.cloud.aiplatform.v1beta1.GenericOperationMetadata
-	(*GcsDestination)(nil),                           // 23: google.cloud.aiplatform.v1beta1.GcsDestination
-	(*ModelContainerSpec)(nil),                       // 24: google.cloud.aiplatform.v1beta1.ModelContainerSpec
-	(*longrunningpb.Operation)(nil),                  // 25: google.longrunning.Operation
+	(*DeployRequest_CustomModel)(nil),                // 16: google.cloud.aiplatform.v1beta1.DeployRequest.CustomModel
+	(*DeployRequest_ModelConfig)(nil),                // 17: google.cloud.aiplatform.v1beta1.DeployRequest.ModelConfig
+	(*DeployRequest_EndpointConfig)(nil),             // 18: google.cloud.aiplatform.v1beta1.DeployRequest.EndpointConfig
+	(*DeployRequest_DeployConfig)(nil),               // 19: google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig
+	nil,                                              // 20: google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig.SystemLabelsEntry
+	(*PublisherModel)(nil),                           // 21: google.cloud.aiplatform.v1beta1.PublisherModel
+	(*DedicatedResources)(nil),                       // 22: google.cloud.aiplatform.v1beta1.DedicatedResources
+	(*GenericOperationMetadata)(nil),                 // 23: google.cloud.aiplatform.v1beta1.GenericOperationMetadata
+	(*GcsDestination)(nil),                           // 24: google.cloud.aiplatform.v1beta1.GcsDestination
+	(*ModelContainerSpec)(nil),                       // 25: google.cloud.aiplatform.v1beta1.ModelContainerSpec
+	(*longrunningpb.Operation)(nil),                  // 26: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.aiplatform.v1beta1.GetPublisherModelRequest.view:type_name -> google.cloud.aiplatform.v1beta1.PublisherModelView
 	0,  // 1: google.cloud.aiplatform.v1beta1.ListPublisherModelsRequest.view:type_name -> google.cloud.aiplatform.v1beta1.PublisherModelView
-	20, // 2: google.cloud.aiplatform.v1beta1.ListPublisherModelsResponse.publisher_models:type_name -> google.cloud.aiplatform.v1beta1.PublisherModel
-	16, // 3: google.cloud.aiplatform.v1beta1.DeployRequest.model_config:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.ModelConfig
-	17, // 4: google.cloud.aiplatform.v1beta1.DeployRequest.endpoint_config:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.EndpointConfig
-	18, // 5: google.cloud.aiplatform.v1beta1.DeployRequest.deploy_config:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig
-	21, // 6: google.cloud.aiplatform.v1beta1.DeployPublisherModelRequest.dedicated_resources:type_name -> google.cloud.aiplatform.v1beta1.DedicatedResources
-	22, // 7: google.cloud.aiplatform.v1beta1.DeployOperationMetadata.generic_metadata:type_name -> google.cloud.aiplatform.v1beta1.GenericOperationMetadata
-	22, // 8: google.cloud.aiplatform.v1beta1.DeployPublisherModelOperationMetadata.generic_metadata:type_name -> google.cloud.aiplatform.v1beta1.GenericOperationMetadata
-	22, // 9: google.cloud.aiplatform.v1beta1.ExportPublisherModelOperationMetadata.generic_metadata:type_name -> google.cloud.aiplatform.v1beta1.GenericOperationMetadata
-	23, // 10: google.cloud.aiplatform.v1beta1.ExportPublisherModelRequest.destination:type_name -> google.cloud.aiplatform.v1beta1.GcsDestination
-	24, // 11: google.cloud.aiplatform.v1beta1.DeployRequest.ModelConfig.container_spec:type_name -> google.cloud.aiplatform.v1beta1.ModelContainerSpec
-	21, // 12: google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig.dedicated_resources:type_name -> google.cloud.aiplatform.v1beta1.DedicatedResources
-	19, // 13: google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig.system_labels:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig.SystemLabelsEntry
-	1,  // 14: google.cloud.aiplatform.v1beta1.ModelGardenService.GetPublisherModel:input_type -> google.cloud.aiplatform.v1beta1.GetPublisherModelRequest
-	2,  // 15: google.cloud.aiplatform.v1beta1.ModelGardenService.ListPublisherModels:input_type -> google.cloud.aiplatform.v1beta1.ListPublisherModelsRequest
-	4,  // 16: google.cloud.aiplatform.v1beta1.ModelGardenService.Deploy:input_type -> google.cloud.aiplatform.v1beta1.DeployRequest
-	5,  // 17: google.cloud.aiplatform.v1beta1.ModelGardenService.DeployPublisherModel:input_type -> google.cloud.aiplatform.v1beta1.DeployPublisherModelRequest
-	12, // 18: google.cloud.aiplatform.v1beta1.ModelGardenService.ExportPublisherModel:input_type -> google.cloud.aiplatform.v1beta1.ExportPublisherModelRequest
-	13, // 19: google.cloud.aiplatform.v1beta1.ModelGardenService.CheckPublisherModelEulaAcceptance:input_type -> google.cloud.aiplatform.v1beta1.CheckPublisherModelEulaAcceptanceRequest
-	14, // 20: google.cloud.aiplatform.v1beta1.ModelGardenService.AcceptPublisherModelEula:input_type -> google.cloud.aiplatform.v1beta1.AcceptPublisherModelEulaRequest
-	20, // 21: google.cloud.aiplatform.v1beta1.ModelGardenService.GetPublisherModel:output_type -> google.cloud.aiplatform.v1beta1.PublisherModel
-	3,  // 22: google.cloud.aiplatform.v1beta1.ModelGardenService.ListPublisherModels:output_type -> google.cloud.aiplatform.v1beta1.ListPublisherModelsResponse
-	25, // 23: google.cloud.aiplatform.v1beta1.ModelGardenService.Deploy:output_type -> google.longrunning.Operation
-	25, // 24: google.cloud.aiplatform.v1beta1.ModelGardenService.DeployPublisherModel:output_type -> google.longrunning.Operation
-	25, // 25: google.cloud.aiplatform.v1beta1.ModelGardenService.ExportPublisherModel:output_type -> google.longrunning.Operation
-	15, // 26: google.cloud.aiplatform.v1beta1.ModelGardenService.CheckPublisherModelEulaAcceptance:output_type -> google.cloud.aiplatform.v1beta1.PublisherModelEulaAcceptance
-	15, // 27: google.cloud.aiplatform.v1beta1.ModelGardenService.AcceptPublisherModelEula:output_type -> google.cloud.aiplatform.v1beta1.PublisherModelEulaAcceptance
-	21, // [21:28] is the sub-list for method output_type
-	14, // [14:21] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	21, // 2: google.cloud.aiplatform.v1beta1.ListPublisherModelsResponse.publisher_models:type_name -> google.cloud.aiplatform.v1beta1.PublisherModel
+	16, // 3: google.cloud.aiplatform.v1beta1.DeployRequest.custom_model:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.CustomModel
+	17, // 4: google.cloud.aiplatform.v1beta1.DeployRequest.model_config:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.ModelConfig
+	18, // 5: google.cloud.aiplatform.v1beta1.DeployRequest.endpoint_config:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.EndpointConfig
+	19, // 6: google.cloud.aiplatform.v1beta1.DeployRequest.deploy_config:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig
+	22, // 7: google.cloud.aiplatform.v1beta1.DeployPublisherModelRequest.dedicated_resources:type_name -> google.cloud.aiplatform.v1beta1.DedicatedResources
+	23, // 8: google.cloud.aiplatform.v1beta1.DeployOperationMetadata.generic_metadata:type_name -> google.cloud.aiplatform.v1beta1.GenericOperationMetadata
+	23, // 9: google.cloud.aiplatform.v1beta1.DeployPublisherModelOperationMetadata.generic_metadata:type_name -> google.cloud.aiplatform.v1beta1.GenericOperationMetadata
+	23, // 10: google.cloud.aiplatform.v1beta1.ExportPublisherModelOperationMetadata.generic_metadata:type_name -> google.cloud.aiplatform.v1beta1.GenericOperationMetadata
+	24, // 11: google.cloud.aiplatform.v1beta1.ExportPublisherModelRequest.destination:type_name -> google.cloud.aiplatform.v1beta1.GcsDestination
+	25, // 12: google.cloud.aiplatform.v1beta1.DeployRequest.ModelConfig.container_spec:type_name -> google.cloud.aiplatform.v1beta1.ModelContainerSpec
+	22, // 13: google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig.dedicated_resources:type_name -> google.cloud.aiplatform.v1beta1.DedicatedResources
+	20, // 14: google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig.system_labels:type_name -> google.cloud.aiplatform.v1beta1.DeployRequest.DeployConfig.SystemLabelsEntry
+	1,  // 15: google.cloud.aiplatform.v1beta1.ModelGardenService.GetPublisherModel:input_type -> google.cloud.aiplatform.v1beta1.GetPublisherModelRequest
+	2,  // 16: google.cloud.aiplatform.v1beta1.ModelGardenService.ListPublisherModels:input_type -> google.cloud.aiplatform.v1beta1.ListPublisherModelsRequest
+	4,  // 17: google.cloud.aiplatform.v1beta1.ModelGardenService.Deploy:input_type -> google.cloud.aiplatform.v1beta1.DeployRequest
+	5,  // 18: google.cloud.aiplatform.v1beta1.ModelGardenService.DeployPublisherModel:input_type -> google.cloud.aiplatform.v1beta1.DeployPublisherModelRequest
+	12, // 19: google.cloud.aiplatform.v1beta1.ModelGardenService.ExportPublisherModel:input_type -> google.cloud.aiplatform.v1beta1.ExportPublisherModelRequest
+	13, // 20: google.cloud.aiplatform.v1beta1.ModelGardenService.CheckPublisherModelEulaAcceptance:input_type -> google.cloud.aiplatform.v1beta1.CheckPublisherModelEulaAcceptanceRequest
+	14, // 21: google.cloud.aiplatform.v1beta1.ModelGardenService.AcceptPublisherModelEula:input_type -> google.cloud.aiplatform.v1beta1.AcceptPublisherModelEulaRequest
+	21, // 22: google.cloud.aiplatform.v1beta1.ModelGardenService.GetPublisherModel:output_type -> google.cloud.aiplatform.v1beta1.PublisherModel
+	3,  // 23: google.cloud.aiplatform.v1beta1.ModelGardenService.ListPublisherModels:output_type -> google.cloud.aiplatform.v1beta1.ListPublisherModelsResponse
+	26, // 24: google.cloud.aiplatform.v1beta1.ModelGardenService.Deploy:output_type -> google.longrunning.Operation
+	26, // 25: google.cloud.aiplatform.v1beta1.ModelGardenService.DeployPublisherModel:output_type -> google.longrunning.Operation
+	26, // 26: google.cloud.aiplatform.v1beta1.ModelGardenService.ExportPublisherModel:output_type -> google.longrunning.Operation
+	15, // 27: google.cloud.aiplatform.v1beta1.ModelGardenService.CheckPublisherModelEulaAcceptance:output_type -> google.cloud.aiplatform.v1beta1.PublisherModelEulaAcceptance
+	15, // 28: google.cloud.aiplatform.v1beta1.ModelGardenService.AcceptPublisherModelEula:output_type -> google.cloud.aiplatform.v1beta1.PublisherModelEulaAcceptance
+	22, // [22:29] is the sub-list for method output_type
+	15, // [15:22] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_init() }
@@ -2093,6 +2191,10 @@ func file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_init() {
 	file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[3].OneofWrappers = []any{
 		(*DeployRequest_PublisherModelName)(nil),
 		(*DeployRequest_HuggingFaceModelId)(nil),
+		(*DeployRequest_CustomModel_)(nil),
+	}
+	file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_msgTypes[15].OneofWrappers = []any{
+		(*DeployRequest_CustomModel_GcsUri)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2100,7 +2202,7 @@ func file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1beta1_model_garden_service_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   19,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
