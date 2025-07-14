@@ -24,13 +24,16 @@ import (
 // execution.
 type Function interface {
 	Expr
+	isFunction()
 }
 
 type baseFunction struct {
 	*baseExpr
 }
 
-// Ensure that baseFunction implements the Function interface.
+func (b *baseFunction) isFunction() {}
+
+// Ensure that *baseFunction implements the Function interface.
 var _ Function = (*baseFunction)(nil)
 
 func newBaseFunction(name string, params []Expr, err error) *baseFunction {
@@ -55,17 +58,7 @@ func newBaseFunction(name string, params []Expr, err error) *baseFunction {
 	return &baseFunction{baseExpr: &baseExpr{pbVal: pbVal}}
 }
 
-// As assigns an alias to Function.
-// Aliases are useful for renaming fields in the output of a stage or for giving meaningful
-// names to calculated values.
-func (f *baseFunction) As(alias string) Selectable {
-	return newExprWithAlias(f, alias)
-}
-
-// AddFunc is the result of an Add operation.
-type AddFunc struct{ *baseFunction }
-
-// Add creates an expression that adds two expressions together.
+// Add creates an expression that adds two expressions together, returning it as an Expr.
 // - left can be a field path string, [FieldPath] or [Expr].
 // - right can be a constant or an [Expr].
 //
@@ -76,14 +69,11 @@ type AddFunc struct{ *baseFunction }
 //
 //	// Add 'height' to 'weight' field.
 //	Add(FieldOf("height"), FieldOf("weight"))
-func Add(left, right any) *AddFunc {
-	return &AddFunc{baseFunction: leftRightToBaseFunction("add", left, right)}
+func Add(left, right any) Expr {
+	return leftRightToBaseFunction("add", left, right)
 }
 
-// SubtractFunc is the result of a Subtract operation.
-type SubtractFunc struct{ *baseFunction }
-
-// Subtract creates an expression that subtracts the right expression from the left expression.
+// Subtract creates an expression that subtracts the right expression from the left expression, returning it as an Expr.
 // - left can be a field path string, [FieldPath] or [Expr].
 // - right can be a constant or an [Expr].
 //
@@ -94,6 +84,6 @@ type SubtractFunc struct{ *baseFunction }
 //
 //	// Subtract 'discount' from 'price' field.
 //	Subtract(FieldOf("price"), FieldOf("discount"))
-func Subtract(left, right any) *SubtractFunc {
-	return &SubtractFunc{baseFunction: leftRightToBaseFunction("subtract", left, right)}
+func Subtract(left, right any) Expr {
+	return leftRightToBaseFunction("subtract", left, right)
 }

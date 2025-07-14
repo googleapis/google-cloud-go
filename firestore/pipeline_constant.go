@@ -23,50 +23,53 @@ import (
 	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// Constant represents a constant value that can be used in a Firestore pipeline expression.
-type Constant struct {
+// constant represents a constant value that can be used in a Firestore pipeline expression.
+// It implements the [Expr] interface.
+type constant struct {
 	*baseExpr
 }
 
-// As assigns an alias to Constant.
-// Aliases are useful for renaming fields in the output of a stage.
-func (c *Constant) As(alias string) Selectable {
-	return newExprWithAlias(c, alias)
-}
-
-// ConstantOf creates a new Constant expression from a Go value.
-func ConstantOf(value any) *Constant {
+// ConstantOf creates a new constant [Expr] from a Go value.
+func ConstantOf(value any) Expr {
 	if value == nil {
 		return ConstantOfNull()
 	}
 
 	switch value := value.(type) {
-	case *Constant:
+	case *constant: // If it's already our private constant type
 		return value
+	case Expr:
+		// If it's already an Expr that isn't *constant, we create a new constant from it if possible.
+		// This path is primarily for if a user passes, e.g., a function result to ConstantOf.
+		// if it's not *constant, we fall through to scalar type checking.
+		break
+	}
+
+	// Handle known scalar types
+	switch value.(type) {
 	case string, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, time.Time, *ts.Timestamp, []byte, Vector32, Vector64, *latlng.LatLng:
 		pbVal, _, err := toProtoValue(reflect.ValueOf(value))
 		if err != nil {
-			return &Constant{baseExpr: &baseExpr{err: err}}
+			return &constant{baseExpr: &baseExpr{err: err}}
 		}
-		return &Constant{baseExpr: &baseExpr{pbVal: pbVal}}
+		return &constant{baseExpr: &baseExpr{pbVal: pbVal}}
 	default:
-		return &Constant{baseExpr: &baseExpr{err: fmt.Errorf("firestore: unknown Constant type: %T", value)}}
+		return &constant{baseExpr: &baseExpr{err: fmt.Errorf("firestore: unknown constant type: %T", value)}}
 	}
-
 }
 
-// ConstantOfNull creates a new Constant expression representing a null value.
-func ConstantOfNull() *Constant {
+// ConstantOfNull creates a new constant [Expr] representing a null value.
+func ConstantOfNull() Expr {
 	pbVal, _, err := toProtoValue(reflect.ValueOf(nil))
-	return &Constant{baseExpr: &baseExpr{pbVal: pbVal, err: err}}
+	return &constant{baseExpr: &baseExpr{pbVal: pbVal, err: err}}
 }
 
-// ConstantOfVector32 creates a new [Vector32] Constant expression from a slice of float32s.
-func ConstantOfVector32(value []float32) *Constant {
+// ConstantOfVector32 creates a new [Vector32] constant [Expr] from a slice of float32s.
+func ConstantOfVector32(value []float32) Expr {
 	return ConstantOf(Vector32(value))
 }
 
-// ConstantOfVector64 creates a new [Vector64] Constant expression from a slice of flot64s.
-func ConstantOfVector64(value []float64) *Constant {
+// ConstantOfVector64 creates a new [Vector64] constant [Expr] from a slice of float64s.
+func ConstantOfVector64(value []float64) Expr {
 	return ConstantOf(Vector64(value))
 }

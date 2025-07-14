@@ -14,26 +14,24 @@
 
 package firestore
 
-// FilterCondition is an interface that represents a filter condition in a pipeline expression.
-type FilterCondition interface {
+// BooleanExpr is an interface that represents a boolean expression in a pipeline.
+type BooleanExpr interface {
 	Expr // Embed Expr interface
-	isFilterCondition()
+	isBooleanExpr()
 }
 
-// baseFilterCondition provides common methods for all FilterCondition implementations.
-type baseFilterCondition struct {
+// baseBooleanExpr provides common methods for all BooleanExpr implementations.
+type baseBooleanExpr struct {
 	*baseFunction // Embed Function to get Expr methods and toProto
 }
 
-func (b *baseFilterCondition) isFilterCondition() {}
+func (b *baseBooleanExpr) isBooleanExpr() {}
 
-// Ensure that baseFilterCondition implements the FilterCondition interface.
-var _ FilterCondition = (*baseFilterCondition)(nil)
+// Ensure that baseBooleanExpr implements the BooleanExpr interface.
+var _ BooleanExpr = (*baseBooleanExpr)(nil)
 
-// EqCondition is the result of an Eq comparison.
-type EqCondition struct{ *baseFilterCondition }
-
-// Eq creates an expression that checks if field's value or an expression is equal to an expression or a constant value.
+// Eq creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
+// returning it as a BooleanExpr.
 //   - left: The field path string, [FieldPath] or [Expr] to compare.
 //   - right: The constant value or [Expr] to compare to.
 //
@@ -50,14 +48,12 @@ type EqCondition struct{ *baseFilterCondition }
 //
 //		// Check if the 'city' field is equal to string constant "London"
 //		Eq("city", "London")
-func Eq(left, right any) *EqCondition {
-	return &EqCondition{baseFilterCondition: &baseFilterCondition{baseFunction: leftRightToBaseFunction("eq", left, right)}}
+func Eq(left, right any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("eq", left, right)}
 }
 
-// NeqCondition is the result of a Neq comparison.
-type NeqCondition struct{ *baseFilterCondition }
-
-// Neq creates an expression that checks if field's value or an expression is not equal to an expression or a constant value.
+// Neq creates an expression that checks if field's value or an expression is not equal to an expression or a constant value,
+// returning it as a BooleanExpr.
 //   - left: The field path string, [FieldPath] or [Expr] to compare.
 //   - right: The constant value or [Expr] to compare to.
 //
@@ -74,6 +70,6 @@ type NeqCondition struct{ *baseFilterCondition }
 //
 //		// Check if the 'city' field is not equal to string constant "London"
 //		Neq("city", "London")
-func Neq(left, right any) *NeqCondition {
-	return &NeqCondition{baseFilterCondition: &baseFilterCondition{baseFunction: leftRightToBaseFunction("neq", left, right)}}
+func Neq(left, right any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("neq", left, right)}
 }

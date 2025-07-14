@@ -18,28 +18,29 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
-// Field represents a reference to a field in a Firestore document, or outputs of a [Pipeline] stage.
+// field represents a reference to a field in a Firestore document, or outputs of a [Pipeline] stage.
+// It implements the [Expr] and [Selectable] interfaces.
 //
 // Field references are used to access document field values in expressions and to specify fields
 // for sorting, filtering, and projecting data in Firestore pipelines.
-type Field struct {
+type field struct {
 	*baseExpr
 	fieldPath FieldPath
 }
 
-// FieldOf creates a new Field expression from a field path string.
-func FieldOf(path string) *Field {
+// FieldOf creates a new field [Expr] from a field path string.
+func FieldOf(path string) Expr {
 	fieldPath, err := parseDotSeparatedString(path)
 	if err != nil {
-		return &Field{baseExpr: &baseExpr{err: err}}
+		return &field{baseExpr: &baseExpr{err: err}}
 	}
 	return FieldOfPath(fieldPath)
 }
 
-// FieldOfPath creates a new Field expression for the given [FieldPath].
-func FieldOfPath(fieldPath FieldPath) *Field {
+// FieldOfPath creates a new field [Expr] for the given [FieldPath].
+func FieldOfPath(fieldPath FieldPath) Expr {
 	if err := fieldPath.validate(); err != nil {
-		return &Field{baseExpr: &baseExpr{err: err}}
+		return &field{baseExpr: &baseExpr{err: err}}
 	}
 
 	pbVal := &pb.Value{
@@ -47,15 +48,16 @@ func FieldOfPath(fieldPath FieldPath) *Field {
 			FieldReferenceValue: fieldPath.toServiceFieldPath(),
 		},
 	}
-	return &Field{fieldPath: fieldPath, baseExpr: &baseExpr{pbVal: pbVal}}
+	return &field{fieldPath: fieldPath, baseExpr: &baseExpr{pbVal: pbVal}}
 }
 
-// As assigns an alias to Constant.
-// Aliases are useful for renaming fields in the output of a stage.
-func (f *Field) As(alias string) Selectable {
-	return newExprWithAlias(f, alias)
-}
-
-func (f *Field) getSelectionDetails() (string, Expr) {
+// getSelectionDetails returns the field path string as the default alias and the field expression itself.
+// This allows a field [Expr] to satisfy the [Selectable] interface, making it directly usable
+// in `Select` or `AddFields` stages without explicit aliasing if the original field name is desired.
+func (f *field) getSelectionDetails() (string, Expr) {
+	// For Selectable, the alias is the field path itself if not otherwise aliased by `As`.
+	// This makes `FieldOf("name")` selectable as "name".
 	return f.fieldPath.toServiceFieldPath(), f
 }
+
+func (f *field) isSelectable() {}

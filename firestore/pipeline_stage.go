@@ -110,14 +110,16 @@ func newSelectStage(fieldsOrSelectables ...any) (*selectStage, error) {
 	if err != nil {
 		return nil, err
 	}
-	argsPb, err := selectablesToPbVals(selectables)
+
+	mapVal, err := projectionsToMapValue(selectables)
 	if err != nil {
 		return nil, err
 	}
+
 	return &selectStage{
 		stagePb: &pb.Pipeline_Stage{
 			Name: stageNameSelect,
-			Args: argsPb,
+			Args: []*pb.Value{mapVal},
 		},
 	}, nil
 }
@@ -130,14 +132,15 @@ type addFieldsStage struct {
 }
 
 func newAddFieldsStage(selectables ...Selectable) (*addFieldsStage, error) {
-	argsPb, err := selectablesToPbVals(selectables)
+	mapVal, err := projectionsToMapValue(selectables)
 	if err != nil {
 		return nil, err
 	}
+
 	return &addFieldsStage{
 		stagePb: &pb.Pipeline_Stage{
 			Name: stageNameAddFields,
-			Args: argsPb,
+			Args: []*pb.Value{mapVal},
 		},
 	}, nil
 }
@@ -148,7 +151,7 @@ type whereStage struct {
 	stagePb *pb.Pipeline_Stage
 }
 
-func newWhereStage(condition FilterCondition) (*whereStage, error) {
+func newWhereStage(condition BooleanExpr) (*whereStage, error) {
 	argsPb, err := condition.toProto()
 	if err != nil {
 		return nil, err
@@ -172,12 +175,12 @@ func newAggregateStage(a *AggregateSpec) (*aggregateStage, error) {
 	if a.err != nil {
 		return nil, a.err
 	}
-	targetsPb, err := selectablesToPbVal(a.accTargets)
+	targetsPb, err := aliasedAggregatesToMapValue(a.accTargets)
 	if err != nil {
 		return nil, err
 	}
 
-	groupsPb, err := selectablesToPbVal(a.groups)
+	groupsPb, err := projectionsToMapValue(a.groups)
 	if err != nil {
 		return nil, err
 	}

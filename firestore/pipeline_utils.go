@@ -30,8 +30,8 @@ func toExprOrConstant(val any) Expr {
 	return ConstantOf(val)
 }
 
-// toExprOrField converts a plain Go value or an existing Expr into an Expr.
-// Plain strings are wrapped in a Field.
+// toExprOrField converts a plain Go string or FieldPath into a field expression.
+// If the value is already an Expr, it's returned directly.
 func toExprOrField(val any) (Expr, error) {
 	switch v := val.(type) {
 	case Expr:
@@ -41,13 +41,12 @@ func toExprOrField(val any) (Expr, error) {
 	case string:
 		return FieldOf(v), nil
 	default:
-		return nil, fmt.Errorf("firestore: %v is not a string or an Expr", val)
+		return nil, fmt.Errorf("firestore: value must be a string, FieldPath, or Expr, but got %T", val)
 	}
 }
 
-// leftRightToBaseFunction creates a baseFunction from a function name and two operands.
-// The left operand must be a field path string, FieldPath, or Expr.
-// The right operand can be a constant value or an Expr.
+// leftRightToBaseFunction is a helper for creating binary functions like Add or Eq.
+// It ensures the left operand is a field-like expression and the right is a constant-like expression.
 func leftRightToBaseFunction(name string, left, right any) *baseFunction {
 	leftExpr, err := toExprOrField(left)
 	if err != nil {
@@ -56,68 +55,55 @@ func leftRightToBaseFunction(name string, left, right any) *baseFunction {
 	return newBaseFunction(name, []Expr{leftExpr, toExprOrConstant(right)}, nil)
 }
 
-func selectablesToPbVals[T []Selectable | []*AccumulatorTarget](selectables T) ([]*pb.Value, error) {
-	pbVal, err := selectablesToPbVal(selectables)
-	if err != nil {
-		return nil, err
-	}
-
-	return []*pb.Value{pbVal}, nil
-}
-
-// selectablesToPbVal converts a slice of Selectable or AccumulatorTarget to a single protobuf Value.
-// The returned Value will be a MapValue where keys are aliases and values are the expression protos.
-func selectablesToPbVal[T []Selectable | []*AccumulatorTarget](selectables T) (*pb.Value, error) {
+// projectionsToMapValue converts a slice of Selectable items into a single
+// protobuf MapValue.
+func projectionsToMapValue(selectables []Selectable) (*pb.Value, error) {
 	if selectables == nil {
 		return &pb.Value{ValueType: &pb.Value_MapValue{}}, nil
 	}
-	fields := make(map[string]bool, len(selectables))
 	fieldsProto := make(map[string]*pb.Value, len(selectables))
+	for _, s := range selectables {
+		alias, expr := s.getSelectionDetails()
+		if _, exists := fieldsProto[alias]; exists {
+			return nil, fmt.Errorf("firestore: duplicate alias or field name %q in selectables", alias)
+		}
 
-	process := func(alias string, protoVal *pb.Value, err error) error {
+		protoVal, err := expr.toProto()
 		if err != nil {
-			return err
+			return nil, fmt.Errorf("firestore: error processing expression for alias %q: %w", alias, err)
 		}
-		if _, exists := fields[alias]; exists {
-			return fmt.Errorf("firestore: duplicate alias or field name %q in selectables", alias)
-		}
-		fields[alias] = true
 		fieldsProto[alias] = protoVal
-		return nil
 	}
-
-	switch v := any(selectables).(type) {
-	case []*AccumulatorTarget:
-		for _, s := range v {
-			alias, protoVal, err := selectableToPbVal(s)
-			if err := process(alias, protoVal, err); err != nil {
-				return nil, err
-			}
-		}
-	case []Selectable:
-		for _, s := range v {
-			alias, protoVal, err := selectableToPbVal(s)
-			if err := process(alias, protoVal, err); err != nil {
-				return nil, err
-			}
-		}
-	}
-
 	return &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: fieldsProto}}}, nil
 }
 
-// selectableToPbVal converts a single Selectable to its alias and protobuf Value.
-func selectableToPbVal(s Selectable) (string, *pb.Value, error) {
-	alias, expr := s.getSelectionDetails()
-	protoVal, err := expr.toProto()
-	if err != nil {
-		return alias, nil, fmt.Errorf("error processing expression for alias %q: %w", alias, err)
+// aliasedAggregatesToMapValue converts a slice of AliasedAggregate items into a single
+// protobuf MapValue.
+func aliasedAggregatesToMapValue(aggregates []*AliasedAggregate) (*pb.Value, error) {
+	if aggregates == nil {
+		return &pb.Value{ValueType: &pb.Value_MapValue{}}, nil
 	}
-	return alias, protoVal, nil
+	fieldsProto := make(map[string]*pb.Value, len(aggregates))
+	for _, agg := range aggregates {
+		if _, exists := fieldsProto[agg.alias]; exists {
+			return nil, fmt.Errorf("firestore: duplicate alias %q in aggregations", agg.alias)
+		}
+
+		base := agg.getBaseAggregateFunction()
+		if base.err != nil {
+			return nil, fmt.Errorf("error in aggregate expression for alias %q: %w", agg.alias, base.err)
+		}
+		protoVal, err := base.toProto()
+		if err != nil {
+			return nil, fmt.Errorf("firestore: error converting aggregate for alias %q to proto: %w", agg.alias, err)
+		}
+		fieldsProto[agg.alias] = protoVal
+	}
+	return &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: fieldsProto}}}, nil
 }
 
-// fieldsOrSelectablesToSelectables converts a variadic list of field paths (string), FieldPath, or Selectable
-// to a slice of Selectable.
+// fieldsOrSelectablesToSelectables converts a user-provided list of mixed types
+// (string, FieldPath, Selectable) into a uniform []Selectable slice.
 func fieldsOrSelectablesToSelectables(fieldsOrSelectables ...any) ([]Selectable, error) {
 	selectables := make([]Selectable, 0, len(fieldsOrSelectables))
 	for _, f := range fieldsOrSelectables {
@@ -127,13 +113,13 @@ func fieldsOrSelectablesToSelectables(fieldsOrSelectables ...any) ([]Selectable,
 			if v == "" {
 				return nil, errors.New("firestore: path cannot be empty")
 			}
-			s = FieldOf(v)
+			s = FieldOf(v).(*field)
 		case FieldPath:
-			s = FieldOfPath(v)
+			s = FieldOfPath(v).(*field)
 		case Selectable:
 			s = v
 		default:
-			return nil, fmt.Errorf("firestore: %v is not a string, FieldPath, or Selectable", f)
+			return nil, fmt.Errorf("firestore: value must be a string, FieldPath, or Selectable, but got %T", v)
 		}
 		selectables = append(selectables, s)
 	}
@@ -144,7 +130,7 @@ func fieldsOrSelectablesToSelectables(fieldsOrSelectables ...any) ([]Selectable,
 // If the expression is nil, it returns a Null Value.
 func exprToProtoValue(expr Expr) (*pb.Value, error) {
 	if expr == nil {
-		return ConstantOfNull().pbVal, nil
+		return ConstantOfNull().getBaseExpr().pbVal, nil
 	}
 	return expr.toProto()
 }

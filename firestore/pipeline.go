@@ -147,10 +147,10 @@ func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
 	return p.append(stage)
 }
 
-// Where filters the documents from previous stages to only include those matching the specified [FilterCondition].
+// Where filters the documents from previous stages to only include those matching the specified [BooleanExpr].
 //
 // This stage allows you to apply conditions to the data, similar to a "WHERE" clause in SQL.
-func (p *Pipeline) Where(condition FilterCondition) *Pipeline {
+func (p *Pipeline) Where(condition BooleanExpr) *Pipeline {
 	if p.err != nil {
 		return p
 	}
@@ -165,12 +165,12 @@ func (p *Pipeline) Where(condition FilterCondition) *Pipeline {
 // AggregateSpec is used to perform aggregation operations.
 type AggregateSpec struct {
 	groups     []Selectable
-	accTargets []*AccumulatorTarget
+	accTargets []*AliasedAggregate
 	err        error
 }
 
 // NewAggregateSpec creates a new AggregateSpec with the given accumulator targets.
-func NewAggregateSpec(accumulators ...*AccumulatorTarget) *AggregateSpec {
+func NewAggregateSpec(accumulators ...*AliasedAggregate) *AggregateSpec {
 	return &AggregateSpec{accTargets: accumulators}
 }
 
@@ -182,13 +182,13 @@ func (a *AggregateSpec) WithGroups(fieldsOrSelectables ...any) *AggregateSpec {
 
 // Aggregate performs aggregation operations on the documents from previous stages.
 // This stage allows you to calculate aggregate values over a set of documents. You define the
-// aggregations to perform using [AccumulatorTarget] expressions which are typically results of
-// calling [AccumulatorTarget.As] on [AccumulatorTarget] instances.
+// aggregations to perform using [AliasedAggregate] expressions which are typically results of
+// calling [AggregateFunction.As] on [AggregateFunction] instances.
 // Example:
 //
 //	client.Pipeline().Collection("users").
 //		Aggregate(Sum("age").As("age_sum"))
-func (p *Pipeline) Aggregate(accumulators ...*AccumulatorTarget) *Pipeline {
+func (p *Pipeline) Aggregate(accumulators ...*AliasedAggregate) *Pipeline {
 	a := NewAggregateSpec(accumulators...)
 	aggStage, err := newAggregateStage(a)
 	if err != nil {
@@ -206,8 +206,8 @@ func (p *Pipeline) Aggregate(accumulators ...*AccumulatorTarget) *Pipeline {
 //     If no grouping fields are provided, a single group containing all documents is used. Not
 //     specifying groups is the same as putting the entire inputs into one group.
 //   - Accumulator targets: One or more accumulation operations to perform within each group. These
-//     are defined using [AccumulatorTarget] expressions which are typically results of calling
-//     [AccumulatorTarget.As] on [AccumulatorTarget] instances. Each aggregation
+//     are defined using [AliasedAggregate] expressions which are typically results of calling
+//     [AggregateFunction.As] on [AggregateFunction] instances. Each aggregation
 //     calculates a value (e.g., sum, average, count) based on the documents within its group.
 //
 // Example:
