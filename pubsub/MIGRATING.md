@@ -22,7 +22,7 @@ The following is an overview of the migration process. You can find more details
 
 1. Import the new [cloud.google.com/go/v2](http://cloud.google.com/go/v2) package.
 
-2. Migrate admin operations such as CreateTopic and DeleteTopic to the v2 version admin API.
+2. Migrate admin operations such as `CreateTopic` and `DeleteTopic` to the v2 version admin API.
 
 3. Replace all instances of `Topic()` and `Subscription()` calls with `Publisher()` and `Subscriber()`.
 
@@ -195,7 +195,7 @@ In this case, you have to instantiate a `DeleteTopicRequest` struct and pass tha
 
 When trying to update resources, you will need to declare the new object you are modifying by creating a proto object, and explicitly defining the field name.
 
-You may need to specify a [FieldMask protobuf type](https://pkg.go.dev/google.golang.org/protobuf/types/known/fieldmaskpb) along with the resource you are modifying if you only want to edit specific fields and leave the others the same. The strings to pass into the update field mask must be the name of the field of the resource you are editing, written in snake\_case (such as `enable_exactly_once_delivery` or message\_storage\_policy). These must match the field names in the [resource message definition in proto](https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto).
+You may need to specify a [FieldMask protobuf type](https://pkg.go.dev/google.golang.org/protobuf/types/known/fieldmaskpb) along with the resource you are modifying if you only want to edit specific fields and leave the others the same. The strings to pass into the update field mask must be the name of the field of the resource you are editing, written in `snake_case` (such as `enable_exactly_once_delivery` or `message_storage_policy`). These must match the field names in the [resource message definition in proto](https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto).
 
 If a field mask is not present on update, the operation applies to all fields (as if a field mask of all fields has been specified) and overrides the entire resource.
 
@@ -234,7 +234,9 @@ sub, err := client.SubscriptionAdminClient.UpdateSubscription(ctx, updateReq)
 
 ### Exists method removed
 
-The Exists method for topic, subscription, and schema is removed in the v2 version. You can check if a topic or subscription exists by performing a GetTopic or GetSubscription call. However, we recommend following the pattern of [optimistically expecting a resource to exist](https://cloud.google.com/pubsub/docs/samples/pubsub-optimistic-subscribe#pubsub_optimistic_subscribe-go) and then handling the `NOT_FOUND` error, which saves a network call most of the time.
+The `Exists` methods for topic, subscription, and schema are removed in the v2 version. You can check if a resource exists by performing a Get call: (e.g. `GetTopic`). 
+
+For publishing and subscribing, we recommend following the pattern of [optimistically expecting a resource to exist](https://cloud.google.com/pubsub/docs/samples/pubsub-optimistic-subscribe#pubsub_optimistic_subscribe-go) and then handling the `NOT_FOUND` error, which saves a network call if the resource does exist.
 
 ### RPCs involving one-of fields
 
@@ -287,7 +289,7 @@ topicpb := &pb.Topic{
 topic, err := client.TopicAdminClient.CreateTopic(ctx, topicpb)
 ```
 
-In the above example, `IngestionDataSourceSettings\_AwsKinesis\_` is a wrapper struct around `IngestionDataSourceSettings\_AwsKinesis`. The former satisfies the interface type of being an ingestion data source, while the latter contains the actual fields of the settings.
+In the above example, `IngestionDataSourceSettings_AwsKinesis_` is a wrapper struct around `IngestionDataSourceSettings_AwsKinesis`. The former satisfies the interface type of being an ingestion data source, while the latter contains the actual fields of the settings.
 
 Another example of an instantiation is with [Single Message Transforms](https://cloud.google.com/pubsub/docs/smts/smts-overview).
 
@@ -340,13 +342,14 @@ topicpb := &pb.Topic{
 topic, err := client.TopicAdminClient.CreateTopic(ctx, topicpb)
 ```
 
-In this case, `MessageTransform\_JavascriptUdf` satisfies the interface, while `JavascriptUdf` holds the actual strings relevant for the message transform.
+In this case, `MessageTransform_JavascriptUdf` satisfies the interface, while `JavascriptUdf` holds the actual strings relevant for the message transform.
 
 ### Call Options (retries and timeouts)
 
 In the v2, [pubsub.NewClientWithConfig](https://pkg.go.dev/cloud.google.com/go/pubsub#NewClientWithConfig) is still the correct method to invoke to add RPC specific retries and timeouts. However, the helper struct is renamed from `ClientConfig.PublisherCallOptions`  to `TopicAdminCallOptions`. The same is true for Subscription calls, which is now named `SubscriptionAdminCallOptions.`
 
 ```go
+// Simplified v2 code
 import (
 	opts "cloud.google.com/go/pubsub/v2/apiv1"
 	"cloud.google.com/go/pubsub/v2"
@@ -377,6 +380,7 @@ defer client.Close()
 The existing `Schema` client is replaced by a new `SchemaClient`, which behaves similarly to the topic and subscription admin clients in the new v2 version. Since schemas are less commonly used than publishing and subscribing, the Pub/Sub client does not preinitialize these for you. Instead, you must call the `NewSchemaClient` method in [cloud.google.com/go/pubsub/v2/apiv1](http://cloud.google.com/go/pubsub/v2/apiv1).
 
 ```go
+// Simplified v2 code
 import (
 	pubsub "cloud.google.com/go/pubsub/v2/apiv1"
 	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
@@ -406,7 +410,7 @@ The main difference with the new auto generated schema client is that you cannot
 
 In contrast with admin operations that deal with resource management, the data plane deals with **publishing** and **receiving** messages.
 
-In the current v1 version, the data plane clients are intermixed with the admin plane structs: [Topic](https://pkg.go.dev/cloud.google.com/go/pubsub#Topic) and [Subscription](https://pkg.go.dev/cloud.google.com/go/pubsub#Subscription). For example, the Topic struct has the [Publish](https://pkg.go.dev/cloud.google.com/go/pubsub#Topic.Publish) method.
+In the current v1 version, the data plane clients are intermixed with the admin plane structs: [Topic](https://pkg.go.dev/cloud.google.com/go/pubsub#Topic) and [Subscription](https://pkg.go.dev/cloud.google.com/go/pubsub#Subscription). For example, the `Topic` struct has the [Publish](https://pkg.go.dev/cloud.google.com/go/pubsub#Topic.Publish) method.
 
 ```go
 // Simplified v1 code
@@ -429,6 +433,7 @@ publisher.Publish(ctx, "message")
 Similarly, the v1 version Subscription has [Receive](https://pkg.go.dev/cloud.google.com/go/pubsub#Subscription.Receive) for pulling messages. Replace `Subscription` with `Subscriber` to pull messages.
 
 ```go
+// Simplified v2 code
 client, err := pubsub.NewClient(ctx, projectID)
 ...
 subscriber := client.Subscriber("my-subscription")
