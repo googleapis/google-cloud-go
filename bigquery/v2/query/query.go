@@ -37,33 +37,25 @@ type Query struct {
 }
 
 func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*Query, error) {
-	schema := newSchema(res.Schema)
 	q := &Query{
-		c:               c,
-		cachedSchema:    schema,
-		cachedPageToken: res.PageToken,
+		c: c,
 	}
-	if res.TotalRows != nil {
-		q.cachedTotalRows = res.TotalRows.Value
+	err := q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
+		Schema:              res.Schema,
+		PageToken:           res.PageToken,
+		TotalRows:           res.TotalRows,
+		JobReference:        res.JobReference,
+		Rows:                res.Rows,
+		JobComplete:         res.JobComplete,
+		Errors:              res.Errors,
+		CacheHit:            res.CacheHit,
+		TotalBytesProcessed: res.TotalBytesProcessed,
+		NumDmlAffectedRows:  res.NumDmlAffectedRows,
+	})
+	if err != nil {
+		return nil, err
 	}
-	if res.JobComplete != nil {
-		q.complete = res.JobComplete.Value
-	}
-	if res.Rows != nil {
-		var err error
-		q.cachedRows, err = fieldValueRowsToRowList(res.Rows, schema)
-		if err != nil {
-			return nil, err
-		}
-	}
-	if res.JobReference != nil {
-		jobRef := res.JobReference
-		q.projectID = jobRef.ProjectId
-		q.jobID = jobRef.JobId
-		if jobRef.Location != nil {
-			q.location = jobRef.Location.GetValue()
-		}
-	}
+
 	return q, nil
 }
 
@@ -86,7 +78,23 @@ func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, err
 	return r.start(ctx, state)
 }
 
-func (q *Query) checkStatus(ctx context.Context) error {
+// Wait waits for the query to complete.
+func (q *Query) Wait(ctx context.Context) error {
+	for !q.complete {
+		err := q.waitForQuery(ctx)
+		if err != nil {
+			return err
+		}
+		select {
+		case <-time.After(1 * time.Second): // TODO: exponetial backoff
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+	return nil
+}
+
+func (q *Query) waitForQuery(ctx context.Context) error {
 	res, err := q.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
 		ProjectId:  q.projectID,
 		JobId:      q.jobID,
@@ -100,43 +108,45 @@ func (q *Query) checkStatus(ctx context.Context) error {
 		return err
 	}
 
-	err = q.consumeQueryResponse(res)
-	if err != nil {
-		return err
-	}
+	q.consumeQueryResponse(res)
 
 	return nil
 }
 
 func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) error {
-	q.cachedPageToken = res.PageToken
-	schema := newSchema(res.Schema)
-	var err error
-	q.cachedRows, err = fieldValueRowsToRowList(res.Rows, schema)
-	if err != nil {
-		return err
+	if q.cachedSchema == nil {
+		schema := newSchema(res.Schema)
+		q.cachedSchema = schema
 	}
-	q.cachedSchema = schema
-	q.cachedTotalRows = res.TotalRows.Value
+	q.cachedPageToken = res.PageToken
+
 	if res.JobComplete != nil {
 		q.complete = res.JobComplete.Value
 	}
-	return nil
-}
+	if res.TotalRows != nil {
+		q.cachedTotalRows = res.TotalRows.Value
+	}
+	if res.JobComplete != nil {
+		q.complete = res.JobComplete.Value
+	}
 
-// Wait waits for the query to complete.
-func (q *Query) Wait(ctx context.Context) error {
-	for !q.complete {
-		err := q.checkStatus(ctx)
+	if res.Rows != nil {
+		var err error
+		q.cachedRows, err = fieldValueRowsToRowList(res.Rows, q.cachedSchema)
 		if err != nil {
 			return err
 		}
-		select {
-		case <-time.After(1 * time.Second): // TODO: exponetial backoff
-		case <-ctx.Done():
-			return ctx.Err()
+	}
+
+	if res.JobReference != nil {
+		jobRef := res.JobReference
+		q.projectID = jobRef.ProjectId
+		q.jobID = jobRef.JobId
+		if jobRef.Location != nil {
+			q.location = jobRef.Location.GetValue()
 		}
 	}
+
 	return nil
 }
 
