@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	cloud.google.com/go v0.121.3
 	cloud.google.com/go/bigquery v1.69.0
-	github.com/apache/arrow-go/v18 v18.3.1
+	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/googleapis/gax-go/v2 v2.14.2
 	golang.org/x/sync v0.15.0
 	google.golang.org/api v0.239.0
@@ -49,5 +49,6 @@ require (
 	golang.org/x/time v0.12.0 // indirect
 	golang.org/x/tools v0.33.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
+	gonum.org/v1/gonum v0.16.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect
 )
