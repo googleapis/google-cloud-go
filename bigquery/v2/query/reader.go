@@ -44,7 +44,14 @@ type jobsQueryReader struct {
 
 func newReaderFromQuery(ctx context.Context, c *Client, q *Query, state *readState) reader {
 	if c.rc != nil || state.readClient != nil {
-		// TODO: use storage reader
+		rc := c.rc
+		if rc == nil {
+			rc = state.readClient
+		}
+		r, err := newStorageReader(ctx, c, rc, q)
+		if err == nil {
+			return r
+		}
 	}
 	return newJobsQueryReader(c, q)
 }

@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
@@ -32,102 +33,17 @@ func TestReadNestedObject(t *testing.T) {
 	if len(testClients) == 0 {
 		t.Skip("integration tests skipped")
 	}
+
+	rotcs := readOptionTestCases(t)
+
 	for k, client := range testClients {
 		t.Run(k, func(t *testing.T) {
-			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
-			defer cancel()
-
-			req := client.FromSQL("SELECT 40 as age, [STRUCT(STRUCT('1' as a, '2' as b) as object)] as nested")
-
-			q, err := client.StartQuery(ctx, req)
-			if err != nil {
-				t.Fatalf("Run() error: %v", err)
-			}
-			err = q.Wait(ctx)
-			if err != nil {
-				t.Fatalf("Wait() error: %v", err)
-			}
-
-			if !q.Complete() {
-				t.Fatalf("expected job to be complete")
-			}
-
-			it, err := q.Read(ctx)
-			if err != nil {
-				t.Fatalf("Read() error: %v", err)
-			}
-
-			rows, _ := readRows(ctx, t, it)
-			if msg, ok := compareReadMap(rows, []map[string]any{{
-				"age": float64(40),
-				"nested": []any{
-					map[string]any{
-						"object": map[string]any{
-							"a": "1",
-							"b": "2",
-						},
-					},
-				},
-			}}); !ok {
-				t.Fatal(msg)
-			}
-
-			s, err := rows[0].AsStruct()
-			if err != nil {
-				t.Fatalf("AsStruct() error: %v", err)
-			}
-
-			if s.Fields["age"].GetNumberValue() != 40 {
-				t.Fatalf("expected to read `age` column as number")
-			}
-			if s.Fields["nested"].GetListValue().Values[0].GetStructValue().Fields["object"].GetStructValue().Fields["a"].GetStringValue() != "1" {
-				t.Fatalf("expected to read `nested.object.a` column as string")
-			}
-			if s.Fields["nested"].GetListValue().Values[0].GetStructValue().Fields["object"].GetStructValue().Fields["b"].GetStringValue() != "2" {
-				t.Fatalf("expected to read `nested.object.b` column as string")
-			}
-
-			type MyStruct struct {
-				Age    int
-				Nested []struct {
-					Object struct {
-						A string
-						B string
-					}
-				}
-			}
-			var ms MyStruct
-			err = rows[0].Decode(&ms)
-			if err != nil {
-				t.Fatalf("Decode() error: %v", err)
-			}
-			if ms.Age != 40 {
-				t.Fatalf("expected to read `Age` column as number")
-			}
-			if ms.Nested[0].Object.A != "1" {
-				t.Fatalf("expected to read `nested.object.a` column as string")
-			}
-			if ms.Nested[0].Object.B != "2" {
-				t.Fatalf("expected to read `nested.object.b` column as string")
-			}
-		})
-	}
-}
-
-func TestReadTypes(t *testing.T) {
-	if len(testClients) == 0 {
-		t.Skip("integration tests skipped")
-	}
-	for k, client := range testClients {
-		t.Run(k, func(t *testing.T) {
-			tcs := queryParameterTestCases()
-			for _, tc := range tcs {
-				t.Run(tc.name, func(t *testing.T) {
+			for _, roc := range rotcs {
+				t.Run(roc.name, func(t *testing.T) {
 					ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 					defer cancel()
 
-					req := client.FromSQL(tc.query)
-					req.QueryRequest.QueryParameters = tc.parameters
+					req := client.FromSQL("SELECT 40 as age, [STRUCT(STRUCT('1' as a, '2' as b) as object)] as nested")
 
 					q, err := client.StartQuery(ctx, req)
 					if err != nil {
@@ -148,15 +64,137 @@ func TestReadTypes(t *testing.T) {
 					}
 
 					rows, _ := readRows(ctx, t, it)
-					if msg, ok := compareReadMap(rows, []map[string]any{tc.wantRowMap}); !ok {
+					if msg, ok := compareReadMap(rows, []map[string]any{{
+						"age": float64(40),
+						"nested": []any{
+							map[string]any{
+								"object": map[string]any{
+									"a": "1",
+									"b": "2",
+								},
+							},
+						},
+					}}); !ok {
 						t.Fatal(msg)
 					}
-					if msg, ok := compareReadValues(rows, [][]any{tc.wantRowValues}); !ok {
-						t.Fatal(msg)
+
+					s, err := rows[0].AsStruct()
+					if err != nil {
+						t.Fatalf("AsStruct() error: %v", err)
+					}
+
+					if s.Fields["age"].GetNumberValue() != 40 {
+						t.Fatalf("expected to read `age` column as number")
+					}
+					if s.Fields["nested"].GetListValue().Values[0].GetStructValue().Fields["object"].GetStructValue().Fields["a"].GetStringValue() != "1" {
+						t.Fatalf("expected to read `nested.object.a` column as string")
+					}
+					if s.Fields["nested"].GetListValue().Values[0].GetStructValue().Fields["object"].GetStructValue().Fields["b"].GetStringValue() != "2" {
+						t.Fatalf("expected to read `nested.object.b` column as string")
+					}
+
+					type MyStruct struct {
+						Age    int
+						Nested []struct {
+							Object struct {
+								A string
+								B string
+							}
+						}
+					}
+					var ms MyStruct
+					err = rows[0].Decode(&ms)
+					if err != nil {
+						t.Fatalf("Decode() error: %v", err)
+					}
+					if ms.Age != 40 {
+						t.Fatalf("expected to read `Age` column as number")
+					}
+					if ms.Nested[0].Object.A != "1" {
+						t.Fatalf("expected to read `nested.object.a` column as string")
+					}
+					if ms.Nested[0].Object.B != "2" {
+						t.Fatalf("expected to read `nested.object.b` column as string")
 					}
 				})
 			}
 		})
+	}
+}
+
+func TestReadTypes(t *testing.T) {
+	if len(testClients) == 0 {
+		t.Skip("integration tests skipped")
+	}
+
+	rotcs := readOptionTestCases(t)
+	tcs := queryParameterTestCases()
+
+	for k, client := range testClients {
+		t.Run(k, func(t *testing.T) {
+			for _, roc := range rotcs {
+				t.Run(roc.name, func(t *testing.T) {
+					for _, tc := range tcs {
+						t.Run(tc.name, func(t *testing.T) {
+							ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+							defer cancel()
+
+							req := client.FromSQL(tc.query)
+							req.QueryRequest.QueryParameters = tc.parameters
+
+							q, err := client.StartQuery(ctx, req)
+							if err != nil {
+								t.Fatalf("Run() error: %v", err)
+							}
+							err = q.Wait(ctx)
+							if err != nil {
+								t.Fatalf("Wait() error: %v", err)
+							}
+
+							if !q.Complete() {
+								t.Fatalf("expected job to be complete")
+							}
+
+							it, err := q.Read(ctx, roc.opts...)
+							if err != nil {
+								t.Fatalf("Read() error: %v", err)
+							}
+
+							rows, _ := readRows(ctx, t, it)
+							if msg, ok := compareReadMap(rows, []map[string]any{tc.wantRowMap}); !ok {
+								t.Fatal(msg)
+							}
+							if msg, ok := compareReadValues(rows, [][]any{tc.wantRowValues}); !ok {
+								t.Fatal(msg)
+							}
+						})
+					}
+				})
+			}
+		})
+	}
+}
+
+type readOptionTestCase struct {
+	name string
+	opts []ReadOption
+}
+
+func readOptionTestCases(t *testing.T) []readOptionTestCase {
+	ctx := context.Background()
+	rc, err := storage.NewBigQueryReadClient(ctx)
+	if err != nil {
+		t.Fatalf("NewBigQueryReadClient() error: %v", err)
+	}
+	return []readOptionTestCase{
+		{
+			name: "jobs.query",
+			opts: []ReadOption{},
+		},
+		{
+			name: "storage-read-api",
+			opts: []ReadOption{WithStorageReadClient(rc)},
+		},
 	}
 }
 
