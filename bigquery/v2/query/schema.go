@@ -79,6 +79,9 @@ type schema struct {
 }
 
 func newSchema(pb *bigquerypb.TableSchema) *schema {
+	if pb == nil {
+		return nil
+	}
 	return &schema{pb: pb}
 }
 

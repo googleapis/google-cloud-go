@@ -89,12 +89,12 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert query: %w", err)
 	}
-	return newQueryJobFromJob(c, job)
+	return newQueryJobFromJobReference(c, job.JobReference)
 }
 
 // AttachJob set up a query job to be read from an existing one.
-func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, schema *bigquerypb.TableSchema, opts ...ReadOption) (*Query, error) {
-	return newQueryJobFromJobReference(c, schema, jobRef)
+func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...ReadOption) (*Query, error) {
+	return newQueryJobFromJobReference(c, jobRef)
 }
 
 // Close closes the connection to the API service. The user should invoke this when

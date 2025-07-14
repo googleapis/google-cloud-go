@@ -67,13 +67,8 @@ func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*Qu
 	return q, nil
 }
 
-func newQueryJobFromJob(c *Client, job *bigquerypb.Job) (*Query, error) {
-	return newQueryJobFromJobReference(c, nil, job.JobReference)
-}
-
-func newQueryJobFromJobReference(c *Client, schema *bigquerypb.TableSchema, jobRef *bigquerypb.JobReference) (*Query, error) {
+func newQueryJobFromJobReference(c *Client, jobRef *bigquerypb.JobReference) (*Query, error) {
 	res := &bigquerypb.QueryResponse{
-		Schema:       schema,
 		JobReference: jobRef,
 	}
 	return newQueryJobFromQueryResponse(c, res)

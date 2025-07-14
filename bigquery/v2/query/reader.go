@@ -104,7 +104,13 @@ func (r *jobsQueryReader) nextPage(ctx context.Context, pageToken string) (*resu
 	}
 	r.gotFirstPage = true
 
-	rows, err := fieldValueRowsToRowList(res.Rows, r.q.cachedSchema)
+	schema := r.q.cachedSchema
+	if schema == nil {
+		schema = newSchema(res.Schema)
+		r.q.cachedSchema = schema
+	}
+
+	rows, err := fieldValueRowsToRowList(res.Rows, schema)
 	if err != nil {
 		return nil, err
 	}

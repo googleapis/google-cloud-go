@@ -84,8 +84,7 @@ func TestReadQueryJob(t *testing.T) {
 			}
 
 			jobRef := q.JobReference()
-			schema := q.Schema()
-			q, err = client.AttachJob(ctx, jobRef, schema)
+			q, err = client.AttachJob(ctx, jobRef)
 			if err != nil {
 				t.Fatalf("AttachJob() error: %v", err)
 			}
