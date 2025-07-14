@@ -1,4 +1,4 @@
-// Copyright 2016 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,54 +26,71 @@ connection pooling and similar aspects of this package.
 
 # Publishing
 
-Pub/Sub messages are published to topics. A [Topic] may be created
-using [Client.CreateTopic] like so:
+Pub/Sub messages are published to topics via publishers.
+A [Topic] may be created like so:
 
-	topic, err := pubsubClient.CreateTopic(context.Background(), "topic-name")
+	ctx := context.Background()
+	client, _ := pubsub.NewClient(ctx, "my-project")
+	topic, err := client.TopicAdminClient.CreateTopic(ctx, &pubsubpb.Topic{
+		Name: "projects/my-project/topics/my-topic",
+	})
 
-Messages may then be published to a [Topic]:
+A [Publisher] client can then be instantiated and used to publish messages.
 
-	res := topic.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
+	publisher := pubsubClient.Publisher(topic.GetName())
+	res := publisher.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
 
-[Topic.Publish] queues the message for publishing and returns immediately. When enough
+[Publisher.Publish] queues the message for publishing and returns immediately. When enough
 messages have accumulated, or enough time has elapsed, the batch of messages is
 sent to the Pub/Sub service.
 
-[Topic.Publish] returns a [PublishResult], which behaves like a future: its Get method
+[Publisher.Publish] returns a [PublishResult], which behaves like a future: its Get method
 blocks until the message has been sent to the service.
 
-The first time you call [Topic.Publish] on a [Topic], goroutines are started in the
-background. To clean up these goroutines, call [Topic.Stop]:
+The first time you call [Publisher.Publish] on a [Publisher], goroutines are started in the
+background. To clean up these goroutines, call [Publisher.Stop]:
 
-	topic.Stop()
+	publisher.Stop()
 
 # Receiving
 
-To receive messages published to a [Topic], clients create a [Subscription]
-for the topic. There may be more than one subscription per topic ; each message
+To receive messages published to a topic, clients create a subscription
+for the topic. There may be more than one subscription per topic; each message
 that is published to the topic will be delivered to all associated subscriptions.
 
-A [Subscription] may be created like so:
+You then need to create a [Subscriber] client to pull messages from a subscription.
 
-	 sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name",
-		pubsub.SubscriptionConfig{Topic: topic})
+A subscription may be created like so:
 
-Messages are then consumed from a [Subscription] via callback.
+	ctx := context.Background()
+	client, _ := pubsub.NewClient(ctx, "my-project")
+	subscription, err := client.SubscriptionAdminClient.CreateSubscription(ctx,
+		&pubsubpb.Subscription{
+			Name: "projects/my-project/subscriptions/my-sub",
+			Topic: "projects/my-project/topics/my-topic"}
+		),
+	}
 
-	 err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
+A [Subscriber] client can be instantiated like so:
+
+	sub := pubsubClient.Subscriber(subscription.GetName())
+
+You then provide a callback to [Subscriber] which processes the messages.
+
+	err := sub.Receive(ctx, func(ctx context.Context, m *Message) {
 		log.Printf("Got message: %s", m.Data)
 		m.Ack()
-	 })
-	 if err != nil && !errors.Is(err, context.Canceled) {
+	})
+	if err != nil && !errors.Is(err, context.Canceled) {
 		// Handle error.
-	 }
+	}
 
 The callback is invoked concurrently by multiple goroutines, maximizing
-throughput. To terminate a call to [Subscription.Receive], cancel its context.
+throughput. To terminate a call to [Subscriber.Receive], cancel its context.
 
 Once client code has processed the [Message], it must call Message.Ack or
 Message.Nack; otherwise the Message will eventually be redelivered. Ack/Nack
-MUST be called within the [Subscription.Receive] handler function, and not from a goroutine.
+MUST be called within the [Subscriber.Receive] handler function, and not from a goroutine.
 Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
 not be respected, and messages can get orphaned when cancelling Receive.
 
@@ -92,7 +109,7 @@ pull method.
 # Streams Management
 
 The number of StreamingPull connections can be configured by setting NumGoroutines in [ReceiveSettings].
-The default value of 10 means the client library will maintain 10 StreamingPull connections.
+The default value of 1 means the client library will maintain 1 StreamingPull connection.
 This is more than sufficient for most use cases, as StreamingPull connections can handle up to
 10 MB/s https://cloud.google.com/pubsub/quotas#resource_limits. In some cases, using too many streams
 can lead to client library behaving poorly as the application becomes I/O bound.
@@ -103,10 +120,10 @@ which is already excessive for most use cases.
 If you want to change the limits on the number of streams, you can change the number of connections
 in the gRPC connection pool as shown below:
 
-	 opts := []option.ClientOption{
+	opts := []option.ClientOption{
 		option.WithGRPCConnectionPool(2),
-	 }
-	 client, err := pubsub.NewClient(ctx, projID, opts...)
+	}
+	client, err := pubsub.NewClient(ctx, projID, opts...)
 
 # Ack Deadlines
 
@@ -146,9 +163,9 @@ AckDeadline for the MaxExtension value.
 
 # Slow Message Processing
 
-For use cases where message processing exceeds 30 minutes, we recommend using
-the base client in a pull model, since long-lived streams are periodically killed
-by firewalls. See the example at https://godoc.org/cloud.google.com/go/pubsub/apiv1#example-SubscriberClient-Pull-LengthyClientProcessing
+Since long-lived streams are periodically killed by firewalls, we recommend
+avoiding message processing that takes longer than 30 minutes. Otherwise,
+you are more likely to experience message redeliveries.
 
 # Emulator
 
@@ -168,7 +185,5 @@ and use a client as usual:
 		// TODO: Handle error.
 	}
 	defer client.Close()
-
-Deprecated: Please use cloud.google.com/go/pubsub/v2.
 */
-package pubsub // import "cloud.google.com/go/pubsub"
+package pubsub // import "cloud.google.com/go/pubsub/v2"
