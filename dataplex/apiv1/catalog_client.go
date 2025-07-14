@@ -877,7 +877,7 @@ func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -964,7 +964,7 @@ func defaultCatalogRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *catalogRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -3190,6 +3190,9 @@ func (c *catalogRESTClient) SearchEntries(ctx context.Context, req *dataplexpb.S
 		params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
 		if req.GetScope() != "" {
 			params.Add("scope", fmt.Sprintf("%v", req.GetScope()))
+		}
+		if req.GetSemanticSearch() {
+			params.Add("semanticSearch", fmt.Sprintf("%v", req.GetSemanticSearch()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

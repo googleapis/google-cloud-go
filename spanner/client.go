@@ -50,11 +50,6 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
-
-	// Install google-c2p resolver, which is required for direct path.
-	_ "google.golang.org/grpc/xds/googledirectpath"
-	// Install RLS load balancer policy, which is needed for gRPC RLS.
-	_ "google.golang.org/grpc/balancer/rls"
 )
 
 const (
@@ -83,6 +78,9 @@ const (
 	serverTimingHeaderKey = "server-timing"
 	gfeTimingHeader       = "gfet4t7"
 	afeTimingHeader       = "afe"
+
+	// MinSessions for Experimental Host connection
+	experimentalHostMinSessions = 0
 )
 
 const (
@@ -366,6 +364,9 @@ type ClientConfig struct {
 	//
 	// Default: false
 	DisableNativeMetrics bool
+
+	// Default: false
+	IsExperimentalHost bool
 }
 
 type openTelemetryConfig struct {
@@ -570,6 +571,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.enableMultiplexedSessionForPartitionedOps = config.enableMultiplexedSessionForPartitionedOps && config.SessionPoolConfig.enableMultiplexSession
 	}
 
+	if config.IsExperimentalHost {
+		config.SessionPoolConfig.enableMultiplexSession = true
+		config.enableMultiplexedSessionForRW = true
+		config.enableMultiplexedSessionForPartitionedOps = true
+		config.SessionPoolConfig.MinOpened = experimentalHostMinSessions
+	}
+
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 
@@ -667,6 +675,7 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowHardBoundTokens("ALTS"))
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -1100,13 +1109,34 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
 			t.setSessionEligibilityForLongRunning(sh)
 		}
-		if t.shouldExplicitBegin(attempt) {
+		initTx := func(t *ReadWriteTransaction) {
+			t.txReadOnly.sp = c.idleSessions
+			t.txReadOnly.txReadEnv = t
+			t.txReadOnly.qo = c.qo
+			t.txReadOnly.ro = c.ro
+			t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+			t.wb = []*Mutation{}
+			t.txOpts = c.txo.merge(options)
+			t.ct = c.ct
+			t.otConfig = c.otConfig
+		}
+		if t.shouldExplicitBegin(attempt, options) {
+			if t == nil {
+				t = &ReadWriteTransaction{
+					txReadyOrClosed: make(chan struct{}),
+				}
+			}
+			initTx(t)
 			// Make sure we set the current session handle before calling BeginTransaction.
 			// Note that the t.begin(ctx) call could change the session that is being used by the transaction, as the
 			// BeginTransaction RPC invocation will be retried on a new session if it returns SessionNotFound.
 			t.txReadOnly.sh = sh
 			if err = t.begin(ctx, nil); err != nil {
-				trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
+				if attempt > 0 {
+					trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
+				} else {
+					trace.TracePrintf(ctx, nil, "Error during the initial BeginTransaction for a ReadWrite transaction: %v", ToSpannerError(err))
+				}
 				return ToSpannerError(err)
 			}
 		} else {
@@ -1119,17 +1149,9 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 				previousTx:      previousTx,
 			}
 			t.txReadOnly.sh = sh
+			initTx(t)
 		}
 		attempt++
-		t.txReadOnly.sp = c.idleSessions
-		t.txReadOnly.txReadEnv = t
-		t.txReadOnly.qo = c.qo
-		t.txReadOnly.ro = c.ro
-		t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
-		t.wb = []*Mutation{}
-		t.txOpts = c.txo.merge(options)
-		t.ct = c.ct
-		t.otConfig = c.otConfig
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionSelector": t.getTransactionSelector().String()},
 			"Starting transaction attempt")
@@ -1503,7 +1525,7 @@ func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
 		for _, match := range matches {
 			if len(match) == 3 { // full match + 2 capture groups
 				metricName := match[1]
-				duration, err := strconv.ParseFloat(match[2], 10)
+				duration, err := strconv.ParseFloat(match[2], 64)
 				if err == nil {
 					metrics[metricName] = time.Duration(duration*1000) * time.Microsecond
 				}

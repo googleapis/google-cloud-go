@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.25.3...dataplex/v1.26.0) (2025-07-09)
+
+
+### Features
+
+* **dataplex:** A new field `semantic_search` is added to `message.google.cloud.dataplex.v1.SearchEntriesRequest` ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [1.25.3](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.25.2...dataplex/v1.25.3) (2025-05-13)
 
 

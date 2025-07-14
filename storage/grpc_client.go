@@ -1154,8 +1154,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	// object metadata.
 	msg := resp.response
 	obj := msg.GetMetadata()
-	// This is the size of the entire object, even if only a range was requested.
-	size := obj.GetSize()
 
 	mrd := &gRPCBidiReader{
 		stream:           resp.stream,
@@ -1353,16 +1351,12 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		mrd.mu.Unlock()
 	}
 
-	mrd.mu.Lock()
-	mrd.objectSize = size
-	mrd.mu.Unlock()
-
 	go sender()
 	go receiver()
 
 	return &MultiRangeDownloader{
 		Attrs: ReaderObjectAttrs{
-			Size:            size,
+			Size:            obj.GetSize(), // this is the size of the entire object, even if only a range was requested.
 			ContentType:     obj.GetContentType(),
 			ContentEncoding: obj.GetContentEncoding(),
 			CacheControl:    obj.GetCacheControl(),
@@ -1383,7 +1377,6 @@ type gRPCBidiReader struct {
 	readIDGenerator *readIDGenerator
 	reopen          func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
 	readSpec        *storagepb.BidiReadObjectSpec
-	objectSize      int64 // always use the mutex when accessing this variable
 	closeReceiver   chan bool
 	closeSender     chan bool
 	senderRetry     chan bool
@@ -1452,16 +1445,10 @@ func (mrd *gRPCBidiReader) reopenStream(failSpec []mrdRange) error {
 	return nil
 }
 
-// Add will add current range to stream.
+// add will add current range to stream. The size of the range is not validated
+// by add; if the client requests more bytes than are available in the object
+// the server will return an error.
 func (mrd *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback func(int64, int64, error)) {
-	mrd.mu.Lock()
-	objectSize := mrd.objectSize
-	mrd.mu.Unlock()
-
-	if offset > objectSize {
-		callback(offset, 0, fmt.Errorf("storage: offset should not be larger than the size of object (%v)", objectSize))
-		return
-	}
 	if limit < 0 {
 		callback(offset, 0, errors.New("storage: cannot add range because the limit cannot be negative"))
 		return

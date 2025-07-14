@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/issueresolution/apiv1beta",
-    "version": "0.20.0",
+    "version": "0.23.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_AggregateProductStatusesService_ListAggregateProductStatuses_sync",
+      "title": "merchantapi ListAggregateProductStatuses Sample",
+      "description": "ListAggregateProductStatuses lists the `AggregateProductStatuses` resources for your merchant account.\nThe response might contain fewer items than specified by `pageSize`.\nIf `pageToken` was returned in previous request, it can be used to obtain\nadditional results.",
+      "file": "AggregateProductStatusesClient/ListAggregateProductStatuses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAggregateProductStatuses",
+        "fullName": "google.shopping.merchant.issueresolution.v1beta.AggregateProductStatusesClient.ListAggregateProductStatuses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issueresolutionpb.ListAggregateProductStatusesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AggregateProductStatusIterator",
+        "client": {
+          "shortName": "AggregateProductStatusesClient",
+          "fullName": "google.shopping.merchant.issueresolution.v1beta.AggregateProductStatusesClient"
+        },
+        "method": {
+          "shortName": "ListAggregateProductStatuses",
+          "fullName": "google.shopping.merchant.issueresolution.v1beta.AggregateProductStatusesService.ListAggregateProductStatuses",
+          "service": {
+            "shortName": "AggregateProductStatusesService",
+            "fullName": "google.shopping.merchant.issueresolution.v1beta.AggregateProductStatusesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "merchantapi_v1beta_generated_IssueResolutionService_RenderAccountIssues_sync",
       "title": "merchantapi RenderAccountIssues Sample",

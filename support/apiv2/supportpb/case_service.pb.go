@@ -1081,229 +1081,22 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CaseServiceClient interface {
 	// Retrieve a case.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/16033687"
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$case"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	//
-	// request = supportApiService.cases().get(
-	//
-	//	name="projects/some-project/cases/43595344",
-	//
-	// )
-	// print(request.execute())
-	// ```
 	GetCase(ctx context.Context, in *GetCaseRequest, opts ...grpc.CallOption) (*Case, error)
 	// Retrieve all cases under a parent, but not its children.
 	//
 	// For example, listing cases under an organization only returns the cases
 	// that are directly parented by that organization. To retrieve cases
 	// under an organization and its projects, use `cases.search`.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// parent="projects/some-project"
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	//
-	// request =
-	//
-	//	supportApiService.cases().list(parent="projects/some-project")
-	//
-	// print(request.execute())
-	// ```
 	ListCases(ctx context.Context, in *ListCasesRequest, opts ...grpc.CallOption) (*ListCasesResponse, error)
 	// Search for cases using a query.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// parent="projects/some-project"
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases:search"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().search(
-	//
-	//	parent="projects/some-project", query="state=OPEN"
-	//
-	// )
-	// print(request.execute())
-	// ```
 	SearchCases(ctx context.Context, in *SearchCasesRequest, opts ...grpc.CallOption) (*SearchCasesResponse, error)
 	// Create a new case and associate it with a parent.
 	//
 	// It must have the following fields set: `display_name`, `description`,
 	// `classification`, and `priority`. If you're just testing the API and don't
 	// want to route your case to an agent, set `testCase=true`.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// parent="projects/some-project"
-	//
-	//	curl \
-	//	  --request POST \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  --header 'Content-Type: application/json' \
-	//	  --data '{
-	//	    "display_name": "Test case created by me.",
-	//	    "description": "a random test case, feel free to close",
-	//	    "classification": {
-	//	      "id":
-	//	      "100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8"
-	//	    },
-	//	    "time_zone": "-07:00",
-	//	    "subscriber_email_addresses": [
-	//	      "foo@domain.com",
-	//	      "bar@domain.com"
-	//	    ],
-	//	    "testCase": true,
-	//	    "priority": "P3"
-	//	  }' \
-	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().create(
-	//
-	//	parent="projects/some-project",
-	//	body={
-	//	    "displayName": "A Test Case",
-	//	    "description": "This is a test case.",
-	//	    "testCase": True,
-	//	    "priority": "P2",
-	//	    "classification": {
-	//	        "id":
-	//	          "100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8"
-	//	    },
-	//	},
-	//
-	// )
-	// print(request.execute())
-	// ```
 	CreateCase(ctx context.Context, in *CreateCaseRequest, opts ...grpc.CallOption) (*Case, error)
 	// Update a case. Only some fields can be updated.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/43595344"
-	//
-	//	curl \
-	//	  --request PATCH \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  --header "Content-Type: application/json" \
-	//	  --data '{
-	//	    "priority": "P1"
-	//	  }' \
-	//	  "https://cloudsupport.googleapis.com/v2/$case?updateMask=priority"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().patch(
-	//
-	//	name="projects/some-project/cases/43112854",
-	//	body={
-	//	    "displayName": "This is Now a New Title",
-	//	    "priority": "P2",
-	//	},
-	//
-	// )
-	// print(request.execute())
-	// ```
 	UpdateCase(ctx context.Context, in *UpdateCaseRequest, opts ...grpc.CallOption) (*Case, error)
 	// Escalate a case, starting the Google Cloud Support escalation management
 	// process.
@@ -1312,91 +1105,8 @@ type CaseServiceClient interface {
 	// https://cloud.google.com/support and look for 'Technical support
 	// escalations' in the feature list to find out which ones let you
 	// do that.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/43595344"
-	//
-	//	curl \
-	//	  --request POST \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  --header "Content-Type: application/json" \
-	//	  --data '{
-	//	    "escalation": {
-	//	      "reason": "BUSINESS_IMPACT",
-	//	      "justification": "This is a test escalation."
-	//	    }
-	//	  }' \
-	//	  "https://cloudsupport.googleapis.com/v2/$case:escalate"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().escalate(
-	//
-	//	name="projects/some-project/cases/43595344",
-	//	body={
-	//	    "escalation": {
-	//	        "reason": "BUSINESS_IMPACT",
-	//	        "justification": "This is a test escalation.",
-	//	    },
-	//	},
-	//
-	// )
-	// print(request.execute())
-	// ```
 	EscalateCase(ctx context.Context, in *EscalateCaseRequest, opts ...grpc.CallOption) (*Case, error)
 	// Close a case.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/43595344"
-	//
-	//	curl \
-	//	  --request POST \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$case:close"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().close(
-	//
-	//	name="projects/some-project/cases/43595344"
-	//
-	// )
-	// print(request.execute())
-	// ```
 	CloseCase(ctx context.Context, in *CloseCaseRequest, opts ...grpc.CallOption) (*Case, error)
 	// Retrieve valid classifications to use when creating a support case.
 	//
@@ -1408,38 +1118,6 @@ type CaseServiceClient interface {
 	// months. When a classification is deactivated, this endpoint immediately
 	// stops returning it. After six months, `case.create` requests using the
 	// classification will fail.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  'https://cloudsupport.googleapis.com/v2/caseClassifications:search?query=display_name:"*Compute%20Engine*"'
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version="v2",
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version=v2",
-	//
-	// )
-	// request = supportApiService.caseClassifications().search(
-	//
-	//	query='display_name:"*Compute Engine*"'
-	//
-	// )
-	// print(request.execute())
-	// ```
 	SearchCaseClassifications(ctx context.Context, in *SearchCaseClassificationsRequest, opts ...grpc.CallOption) (*SearchCaseClassificationsResponse, error)
 }
 
@@ -1526,229 +1204,22 @@ func (c *caseServiceClient) SearchCaseClassifications(ctx context.Context, in *S
 // CaseServiceServer is the server API for CaseService service.
 type CaseServiceServer interface {
 	// Retrieve a case.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/16033687"
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$case"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	//
-	// request = supportApiService.cases().get(
-	//
-	//	name="projects/some-project/cases/43595344",
-	//
-	// )
-	// print(request.execute())
-	// ```
 	GetCase(context.Context, *GetCaseRequest) (*Case, error)
 	// Retrieve all cases under a parent, but not its children.
 	//
 	// For example, listing cases under an organization only returns the cases
 	// that are directly parented by that organization. To retrieve cases
 	// under an organization and its projects, use `cases.search`.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// parent="projects/some-project"
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	//
-	// request =
-	//
-	//	supportApiService.cases().list(parent="projects/some-project")
-	//
-	// print(request.execute())
-	// ```
 	ListCases(context.Context, *ListCasesRequest) (*ListCasesResponse, error)
 	// Search for cases using a query.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// parent="projects/some-project"
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases:search"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().search(
-	//
-	//	parent="projects/some-project", query="state=OPEN"
-	//
-	// )
-	// print(request.execute())
-	// ```
 	SearchCases(context.Context, *SearchCasesRequest) (*SearchCasesResponse, error)
 	// Create a new case and associate it with a parent.
 	//
 	// It must have the following fields set: `display_name`, `description`,
 	// `classification`, and `priority`. If you're just testing the API and don't
 	// want to route your case to an agent, set `testCase=true`.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// parent="projects/some-project"
-	//
-	//	curl \
-	//	  --request POST \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  --header 'Content-Type: application/json' \
-	//	  --data '{
-	//	    "display_name": "Test case created by me.",
-	//	    "description": "a random test case, feel free to close",
-	//	    "classification": {
-	//	      "id":
-	//	      "100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8"
-	//	    },
-	//	    "time_zone": "-07:00",
-	//	    "subscriber_email_addresses": [
-	//	      "foo@domain.com",
-	//	      "bar@domain.com"
-	//	    ],
-	//	    "testCase": true,
-	//	    "priority": "P3"
-	//	  }' \
-	//	  "https://cloudsupport.googleapis.com/v2/$parent/cases"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().create(
-	//
-	//	parent="projects/some-project",
-	//	body={
-	//	    "displayName": "A Test Case",
-	//	    "description": "This is a test case.",
-	//	    "testCase": True,
-	//	    "priority": "P2",
-	//	    "classification": {
-	//	        "id":
-	//	          "100IK2AKCLHMGRJ9CDGMOCGP8DM6UTB4BT262T31BT1M2T31DHNMENPO6KS36CPJ786L2TBFEHGN6NPI64R3CDHN8880G08I1H3MURR7DHII0GRCDTQM8"
-	//	    },
-	//	},
-	//
-	// )
-	// print(request.execute())
-	// ```
 	CreateCase(context.Context, *CreateCaseRequest) (*Case, error)
 	// Update a case. Only some fields can be updated.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/43595344"
-	//
-	//	curl \
-	//	  --request PATCH \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  --header "Content-Type: application/json" \
-	//	  --data '{
-	//	    "priority": "P1"
-	//	  }' \
-	//	  "https://cloudsupport.googleapis.com/v2/$case?updateMask=priority"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().patch(
-	//
-	//	name="projects/some-project/cases/43112854",
-	//	body={
-	//	    "displayName": "This is Now a New Title",
-	//	    "priority": "P2",
-	//	},
-	//
-	// )
-	// print(request.execute())
-	// ```
 	UpdateCase(context.Context, *UpdateCaseRequest) (*Case, error)
 	// Escalate a case, starting the Google Cloud Support escalation management
 	// process.
@@ -1757,91 +1228,8 @@ type CaseServiceServer interface {
 	// https://cloud.google.com/support and look for 'Technical support
 	// escalations' in the feature list to find out which ones let you
 	// do that.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/43595344"
-	//
-	//	curl \
-	//	  --request POST \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  --header "Content-Type: application/json" \
-	//	  --data '{
-	//	    "escalation": {
-	//	      "reason": "BUSINESS_IMPACT",
-	//	      "justification": "This is a test escalation."
-	//	    }
-	//	  }' \
-	//	  "https://cloudsupport.googleapis.com/v2/$case:escalate"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().escalate(
-	//
-	//	name="projects/some-project/cases/43595344",
-	//	body={
-	//	    "escalation": {
-	//	        "reason": "BUSINESS_IMPACT",
-	//	        "justification": "This is a test escalation.",
-	//	    },
-	//	},
-	//
-	// )
-	// print(request.execute())
-	// ```
 	EscalateCase(context.Context, *EscalateCaseRequest) (*Case, error)
 	// Close a case.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	// case="projects/some-project/cases/43595344"
-	//
-	//	curl \
-	//	  --request POST \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  "https://cloudsupport.googleapis.com/v2/$case:close"
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// api_version = "v2"
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version=api_version,
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
-	//
-	// )
-	// request = supportApiService.cases().close(
-	//
-	//	name="projects/some-project/cases/43595344"
-	//
-	// )
-	// print(request.execute())
-	// ```
 	CloseCase(context.Context, *CloseCaseRequest) (*Case, error)
 	// Retrieve valid classifications to use when creating a support case.
 	//
@@ -1853,38 +1241,6 @@ type CaseServiceServer interface {
 	// months. When a classification is deactivated, this endpoint immediately
 	// stops returning it. After six months, `case.create` requests using the
 	// classification will fail.
-	//
-	// EXAMPLES:
-	//
-	// cURL:
-	//
-	// ```shell
-	//
-	//	curl \
-	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
-	//	  'https://cloudsupport.googleapis.com/v2/caseClassifications:search?query=display_name:"*Compute%20Engine*"'
-	//
-	// ```
-	//
-	// Python:
-	//
-	// ```python
-	// import googleapiclient.discovery
-	//
-	// supportApiService = googleapiclient.discovery.build(
-	//
-	//	serviceName="cloudsupport",
-	//	version="v2",
-	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version=v2",
-	//
-	// )
-	// request = supportApiService.caseClassifications().search(
-	//
-	//	query='display_name:"*Compute Engine*"'
-	//
-	// )
-	// print(request.execute())
-	// ```
 	SearchCaseClassifications(context.Context, *SearchCaseClassificationsRequest) (*SearchCaseClassificationsResponse, error)
 }
 

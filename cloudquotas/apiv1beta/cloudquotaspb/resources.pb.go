@@ -273,26 +273,26 @@ type QuotaInfo struct {
 
 	// Resource name of this QuotaInfo.
 	// The ID component following "locations/" must be "global".
-	// Example:
+	// For example,
 	// `projects/123/locations/global/services/compute.googleapis.com/quotaInfos/CpusPerProjectPerRegion`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The id of the quota, which is unquie within the service.
-	// Example: `CpusPerProjectPerRegion`
+	// For example, `CpusPerProjectPerRegion`
 	QuotaId string `protobuf:"bytes,2,opt,name=quota_id,json=quotaId,proto3" json:"quota_id,omitempty"`
 	// The metric of the quota. It specifies the resources consumption the quota
 	// is defined for.
-	// Example: `compute.googleapis.com/cpus`
+	// For example, `compute.googleapis.com/cpus`
 	Metric string `protobuf:"bytes,3,opt,name=metric,proto3" json:"metric,omitempty"`
 	// The name of the service in which the quota is defined.
-	// Example: `compute.googleapis.com`
+	// For example, `compute.googleapis.com`
 	Service string `protobuf:"bytes,4,opt,name=service,proto3" json:"service,omitempty"`
 	// Whether this is a precise quota. A precise quota is tracked with absolute
 	// precision. In contrast, an imprecise quota is not tracked with precision.
 	IsPrecise bool `protobuf:"varint,5,opt,name=is_precise,json=isPrecise,proto3" json:"is_precise,omitempty"`
 	// The reset time interval for the quota. Refresh interval applies to rate
 	// quota only.
-	// Example: "minute" for per minute, "day" for per day, or "10 seconds" for
-	// every 10 seconds.
+	// For example, "minute" for per minute, "day" for per day, or "10 seconds"
+	// for every 10 seconds.
 	RefreshInterval string `protobuf:"bytes,6,opt,name=refresh_interval,json=refreshInterval,proto3" json:"refresh_interval,omitempty"`
 	// The container type of the QuotaInfo.
 	ContainerType QuotaInfo_ContainerType `protobuf:"varint,7,opt,name=container_type,json=containerType,proto3,enum=google.api.cloudquotas.v1beta.QuotaInfo_ContainerType" json:"container_type,omitempty"`
@@ -530,24 +530,25 @@ type QuotaPreference struct {
 
 	// Required except in the CREATE requests.
 	// The resource name of the quota preference.
-	// The ID component following "locations/" must be "global".
-	// Example:
+	// The path that follows `/locations` must be `/global`.
+	// For example:
 	// `projects/123/locations/global/quotaPreferences/my-config-for-us-east1`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Immutable. The dimensions that this quota preference applies to. The key of
-	// the map entry is the name of a dimension, such as "region", "zone",
-	// "network_id", and the value of the map entry is the dimension value.
+	// the map entry is the name of a dimension, such as `region`, `zone`,
+	// `network_id`, and the value of the map entry is the dimension value.
 	//
 	// If a dimension is missing from the map of dimensions, the quota preference
 	// applies to all the dimension values except for those that have other quota
 	// preferences configured for the specific value.
 	//
-	// NOTE: QuotaPreferences can only be applied across all values of "user" and
-	// "resource" dimension. Do not set values for "user" or "resource" in the
+	// Note: QuotaPreferences can only be applied across all values of `user` and
+	// `resource` dimension. Do not set values for `user` or `resource` in the
 	// dimension map.
 	//
-	// Example: {"provider", "Foo Inc"} where "provider" is a service specific
-	// dimension.
+	// For example: `{"provider" : "Example Organization"}` where `provider` is a
+	// service-specific quota dimension and `Example Organization` is the provider
+	// name.
 	Dimensions map[string]string `protobuf:"bytes,2,rep,name=dimensions,proto3" json:"dimensions,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Required. Preferred quota configuration.
 	QuotaConfig *QuotaConfig `protobuf:"bytes,3,opt,name=quota_config,json=quotaConfig,proto3" json:"quota_config,omitempty"`
@@ -563,16 +564,16 @@ type QuotaPreference struct {
 	// Required. The name of the service to which the quota preference is applied.
 	Service string `protobuf:"bytes,7,opt,name=service,proto3" json:"service,omitempty"`
 	// Required. The id of the quota to which the quota preference is applied. A
-	// quota name is unique in the service. Example: `CpusPerProjectPerRegion`
+	// quota name is unique in the service. For example, `CpusPerProjectPerRegion`
 	QuotaId string `protobuf:"bytes,8,opt,name=quota_id,json=quotaId,proto3" json:"quota_id,omitempty"`
 	// Output only. Is the quota preference pending Google Cloud approval and
 	// fulfillment.
 	Reconciling bool `protobuf:"varint,10,opt,name=reconciling,proto3" json:"reconciling,omitempty"`
 	// The reason / justification for this quota preference.
 	Justification string `protobuf:"bytes,11,opt,name=justification,proto3" json:"justification,omitempty"`
-	// Input only. An email address that can be used to contact the the user, in
-	// case Google Cloud needs more information to make a decision before
-	// additional quota can be granted.
+	// Input only. An email address that can be used to contact the user, in case
+	// Google Cloud needs more information to make a decision before additional
+	// quota can be granted.
 	//
 	// When requesting a quota increase, the email address is required.
 	// When requesting a quota decrease, the email address is optional.
@@ -795,18 +796,19 @@ type DimensionsInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The map of dimensions for this dimensions info. The key of a map entry
-	// is "region", "zone" or the name of a service specific dimension, and the
-	// value of a map entry is the value of the dimension.  If a dimension does
+	// The map of dimensions in key-value pairs. The key of a map entry
+	// is "region", "zone", or the name of a service-specific dimension, and the
+	// value of a map entry is the value of the dimension. If a dimension does
 	// not appear in the map of dimensions, the dimensions info applies to all
-	// the dimension values except for those that have another DimenisonInfo
+	// the dimension values except for those that have another DimensionInfo
 	// instance configured for the specific value.
-	// Example: {"provider" : "Foo Inc"} where "provider" is a service specific
-	// dimension of a quota.
+	// For example: `{"provider" : "Example Organization"}` where `provider` is a
+	// service-specific quota dimension and `Example Organization` is the provider
+	// name.
 	Dimensions map[string]string `protobuf:"bytes,1,rep,name=dimensions,proto3" json:"dimensions,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Quota details for the specified dimensions.
 	Details *QuotaDetails `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
-	// The applicable regions or zones of this dimensions info. The field will be
+	// The applicable regions or zones of this dimension. The field is
 	// set to ['global'] for quotas that are not per region or per zone.
 	// Otherwise, it will be set to the list of locations this dimension info is
 	// applicable to.

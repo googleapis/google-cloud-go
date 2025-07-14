@@ -21,11 +21,7 @@
 package apigeeconnectpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -432,88 +428,4 @@ func file_google_cloud_apigeeconnect_v1_connection_proto_init() {
 	file_google_cloud_apigeeconnect_v1_connection_proto_rawDesc = nil
 	file_google_cloud_apigeeconnect_v1_connection_proto_goTypes = nil
 	file_google_cloud_apigeeconnect_v1_connection_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ConnectionServiceClient is the client API for ConnectionService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ConnectionServiceClient interface {
-	// Lists connections that are currently active for the given Apigee Connect
-	// endpoint.
-	ListConnections(ctx context.Context, in *ListConnectionsRequest, opts ...grpc.CallOption) (*ListConnectionsResponse, error)
-}
-
-type connectionServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewConnectionServiceClient(cc grpc.ClientConnInterface) ConnectionServiceClient {
-	return &connectionServiceClient{cc}
-}
-
-func (c *connectionServiceClient) ListConnections(ctx context.Context, in *ListConnectionsRequest, opts ...grpc.CallOption) (*ListConnectionsResponse, error) {
-	out := new(ListConnectionsResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.apigeeconnect.v1.ConnectionService/ListConnections", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ConnectionServiceServer is the server API for ConnectionService service.
-type ConnectionServiceServer interface {
-	// Lists connections that are currently active for the given Apigee Connect
-	// endpoint.
-	ListConnections(context.Context, *ListConnectionsRequest) (*ListConnectionsResponse, error)
-}
-
-// UnimplementedConnectionServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedConnectionServiceServer struct {
-}
-
-func (*UnimplementedConnectionServiceServer) ListConnections(context.Context, *ListConnectionsRequest) (*ListConnectionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListConnections not implemented")
-}
-
-func RegisterConnectionServiceServer(s *grpc.Server, srv ConnectionServiceServer) {
-	s.RegisterService(&_ConnectionService_serviceDesc, srv)
-}
-
-func _ConnectionService_ListConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListConnectionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ConnectionServiceServer).ListConnections(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.apigeeconnect.v1.ConnectionService/ListConnections",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConnectionServiceServer).ListConnections(ctx, req.(*ListConnectionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ConnectionService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.apigeeconnect.v1.ConnectionService",
-	HandlerType: (*ConnectionServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ListConnections",
-			Handler:    _ConnectionService_ListConnections_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/apigeeconnect/v1/connection.proto",
 }

@@ -1,5 +1,13 @@
 # Changes
 
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/iap/v1.11.1...iap/v1.11.2) (2025-05-29)
+
+
+### Documentation
+
+* **iap:** Add clarifications on IAP CorsSettings behavior ([#12325](https://github.com/googleapis/google-cloud-go/issues/12325)) ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **iap:** Minor updates on GcipSettings description ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/iap/v1.11.0...iap/v1.11.1) (2025-04-15)
 
 

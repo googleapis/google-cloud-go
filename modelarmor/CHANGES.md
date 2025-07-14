@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.3.0...modelarmor/v0.4.0) (2025-07-09)
+
+
+### Features
+
+* **modelarmor:** Add client libraries for v1beta API ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **modelarmor:** Add MultiLingual Support for Sanitize APIs ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **modelarmor:** Add MultiLingual Support for Sanitize APIs ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **modelarmor:** Support added for `TXT` and `CSV` files ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+
+### Documentation
+
+* **modelarmor:** Updated docs for Multi Language Detection Metadata ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.2.0...modelarmor/v0.3.0) (2025-05-29)
+
+
+### Features
+
+* **modelarmor:** New clients ([#12350](https://github.com/googleapis/google-cloud-go/issues/12350)) ([eeeeb82](https://github.com/googleapis/google-cloud-go/commit/eeeeb82aa2199b9ddf1bde62454ed7a93f0c6448))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.1.2...modelarmor/v0.2.0) (2025-05-06)
 
 

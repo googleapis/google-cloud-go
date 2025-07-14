@@ -801,10 +801,10 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	beforePreview := client.enableQueryPreview
+	beforeMode := client.customConfig.jobCreationMode
 	// ensure we restore the preview setting on test exit
 	defer func() {
-		client.enableQueryPreview = beforePreview
+		client.customConfig.jobCreationMode = beforeMode
 	}()
 	ctx := context.Background()
 
@@ -845,8 +845,8 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 		},
 	}
 
-	t.Run("nopreview_group", func(t *testing.T) {
-		client.enableQueryPreview = false
+	t.Run("jobrequired_group", func(t *testing.T) {
+		client.customConfig.jobCreationMode = JobCreationModeRequired
 		for _, tc := range testCases {
 			curCase := tc
 			t.Run(curCase.description, func(t *testing.T) {
@@ -860,8 +860,8 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			})
 		}
 	})
-	t.Run("preview_group", func(t *testing.T) {
-		client.enableQueryPreview = true
+	t.Run("joboptional_group", func(t *testing.T) {
+		client.customConfig.jobCreationMode = JobCreationModeOptional
 		for _, tc := range testCases {
 			curCase := tc
 			t.Run(curCase.description, func(t *testing.T) {

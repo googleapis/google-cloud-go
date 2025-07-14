@@ -15,6 +15,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAuthzExtension": {
+              "methods": [
+                "CreateAuthzExtension"
+              ]
+            },
             "CreateLbRouteExtension": {
               "methods": [
                 "CreateLbRouteExtension"
@@ -23,6 +28,11 @@
             "CreateLbTrafficExtension": {
               "methods": [
                 "CreateLbTrafficExtension"
+              ]
+            },
+            "DeleteAuthzExtension": {
+              "methods": [
+                "DeleteAuthzExtension"
               ]
             },
             "DeleteLbRouteExtension": {
@@ -38,6 +48,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GetAuthzExtension": {
+              "methods": [
+                "GetAuthzExtension"
               ]
             },
             "GetIamPolicy": {
@@ -63,6 +78,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListAuthzExtensions": {
+              "methods": [
+                "ListAuthzExtensions"
               ]
             },
             "ListLbRouteExtensions": {
@@ -93,6 +113,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAuthzExtension": {
+              "methods": [
+                "UpdateAuthzExtension"
               ]
             },
             "UpdateLbRouteExtension": {
@@ -115,6 +140,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAuthzExtension": {
+              "methods": [
+                "CreateAuthzExtension"
+              ]
+            },
             "CreateLbRouteExtension": {
               "methods": [
                 "CreateLbRouteExtension"
@@ -123,6 +153,11 @@
             "CreateLbTrafficExtension": {
               "methods": [
                 "CreateLbTrafficExtension"
+              ]
+            },
+            "DeleteAuthzExtension": {
+              "methods": [
+                "DeleteAuthzExtension"
               ]
             },
             "DeleteLbRouteExtension": {
@@ -138,6 +173,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GetAuthzExtension": {
+              "methods": [
+                "GetAuthzExtension"
               ]
             },
             "GetIamPolicy": {
@@ -163,6 +203,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListAuthzExtensions": {
+              "methods": [
+                "ListAuthzExtensions"
               ]
             },
             "ListLbRouteExtensions": {
@@ -193,6 +238,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAuthzExtension": {
+              "methods": [
+                "UpdateAuthzExtension"
               ]
             },
             "UpdateLbRouteExtension": {
@@ -249,6 +299,11 @@
                 "CreateServiceBinding"
               ]
             },
+            "CreateServiceLbPolicy": {
+              "methods": [
+                "CreateServiceLbPolicy"
+              ]
+            },
             "CreateTcpRoute": {
               "methods": [
                 "CreateTcpRoute"
@@ -257,6 +312,16 @@
             "CreateTlsRoute": {
               "methods": [
                 "CreateTlsRoute"
+              ]
+            },
+            "CreateWasmPlugin": {
+              "methods": [
+                "CreateWasmPlugin"
+              ]
+            },
+            "CreateWasmPluginVersion": {
+              "methods": [
+                "CreateWasmPluginVersion"
               ]
             },
             "DeleteEndpointPolicy": {
@@ -294,6 +359,11 @@
                 "DeleteServiceBinding"
               ]
             },
+            "DeleteServiceLbPolicy": {
+              "methods": [
+                "DeleteServiceLbPolicy"
+              ]
+            },
             "DeleteTcpRoute": {
               "methods": [
                 "DeleteTcpRoute"
@@ -304,6 +374,16 @@
                 "DeleteTlsRoute"
               ]
             },
+            "DeleteWasmPlugin": {
+              "methods": [
+                "DeleteWasmPlugin"
+              ]
+            },
+            "DeleteWasmPluginVersion": {
+              "methods": [
+                "DeleteWasmPluginVersion"
+              ]
+            },
             "GetEndpointPolicy": {
               "methods": [
                 "GetEndpointPolicy"
@@ -312,6 +392,11 @@
             "GetGateway": {
               "methods": [
                 "GetGateway"
+              ]
+            },
+            "GetGatewayRouteView": {
+              "methods": [
+                "GetGatewayRouteView"
               ]
             },
             "GetGrpcRoute": {
@@ -339,6 +424,11 @@
                 "GetMesh"
               ]
             },
+            "GetMeshRouteView": {
+              "methods": [
+                "GetMeshRouteView"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -347,6 +437,11 @@
             "GetServiceBinding": {
               "methods": [
                 "GetServiceBinding"
+              ]
+            },
+            "GetServiceLbPolicy": {
+              "methods": [
+                "GetServiceLbPolicy"
               ]
             },
             "GetTcpRoute": {
@@ -359,9 +454,24 @@
                 "GetTlsRoute"
               ]
             },
+            "GetWasmPlugin": {
+              "methods": [
+                "GetWasmPlugin"
+              ]
+            },
+            "GetWasmPluginVersion": {
+              "methods": [
+                "GetWasmPluginVersion"
+              ]
+            },
             "ListEndpointPolicies": {
               "methods": [
                 "ListEndpointPolicies"
+              ]
+            },
+            "ListGatewayRouteViews": {
+              "methods": [
+                "ListGatewayRouteViews"
               ]
             },
             "ListGateways": {
@@ -384,6 +494,11 @@
                 "ListLocations"
               ]
             },
+            "ListMeshRouteViews": {
+              "methods": [
+                "ListMeshRouteViews"
+              ]
+            },
             "ListMeshes": {
               "methods": [
                 "ListMeshes"
@@ -399,6 +514,11 @@
                 "ListServiceBindings"
               ]
             },
+            "ListServiceLbPolicies": {
+              "methods": [
+                "ListServiceLbPolicies"
+              ]
+            },
             "ListTcpRoutes": {
               "methods": [
                 "ListTcpRoutes"
@@ -407,6 +527,16 @@
             "ListTlsRoutes": {
               "methods": [
                 "ListTlsRoutes"
+              ]
+            },
+            "ListWasmPluginVersions": {
+              "methods": [
+                "ListWasmPluginVersions"
+              ]
+            },
+            "ListWasmPlugins": {
+              "methods": [
+                "ListWasmPlugins"
               ]
             },
             "SetIamPolicy": {
@@ -444,6 +574,16 @@
                 "UpdateMesh"
               ]
             },
+            "UpdateServiceBinding": {
+              "methods": [
+                "UpdateServiceBinding"
+              ]
+            },
+            "UpdateServiceLbPolicy": {
+              "methods": [
+                "UpdateServiceLbPolicy"
+              ]
+            },
             "UpdateTcpRoute": {
               "methods": [
                 "UpdateTcpRoute"
@@ -452,6 +592,11 @@
             "UpdateTlsRoute": {
               "methods": [
                 "UpdateTlsRoute"
+              ]
+            },
+            "UpdateWasmPlugin": {
+              "methods": [
+                "UpdateWasmPlugin"
               ]
             }
           }
@@ -494,6 +639,11 @@
                 "CreateServiceBinding"
               ]
             },
+            "CreateServiceLbPolicy": {
+              "methods": [
+                "CreateServiceLbPolicy"
+              ]
+            },
             "CreateTcpRoute": {
               "methods": [
                 "CreateTcpRoute"
@@ -502,6 +652,16 @@
             "CreateTlsRoute": {
               "methods": [
                 "CreateTlsRoute"
+              ]
+            },
+            "CreateWasmPlugin": {
+              "methods": [
+                "CreateWasmPlugin"
+              ]
+            },
+            "CreateWasmPluginVersion": {
+              "methods": [
+                "CreateWasmPluginVersion"
               ]
             },
             "DeleteEndpointPolicy": {
@@ -539,6 +699,11 @@
                 "DeleteServiceBinding"
               ]
             },
+            "DeleteServiceLbPolicy": {
+              "methods": [
+                "DeleteServiceLbPolicy"
+              ]
+            },
             "DeleteTcpRoute": {
               "methods": [
                 "DeleteTcpRoute"
@@ -549,6 +714,16 @@
                 "DeleteTlsRoute"
               ]
             },
+            "DeleteWasmPlugin": {
+              "methods": [
+                "DeleteWasmPlugin"
+              ]
+            },
+            "DeleteWasmPluginVersion": {
+              "methods": [
+                "DeleteWasmPluginVersion"
+              ]
+            },
             "GetEndpointPolicy": {
               "methods": [
                 "GetEndpointPolicy"
@@ -557,6 +732,11 @@
             "GetGateway": {
               "methods": [
                 "GetGateway"
+              ]
+            },
+            "GetGatewayRouteView": {
+              "methods": [
+                "GetGatewayRouteView"
               ]
             },
             "GetGrpcRoute": {
@@ -584,6 +764,11 @@
                 "GetMesh"
               ]
             },
+            "GetMeshRouteView": {
+              "methods": [
+                "GetMeshRouteView"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -592,6 +777,11 @@
             "GetServiceBinding": {
               "methods": [
                 "GetServiceBinding"
+              ]
+            },
+            "GetServiceLbPolicy": {
+              "methods": [
+                "GetServiceLbPolicy"
               ]
             },
             "GetTcpRoute": {
@@ -604,9 +794,24 @@
                 "GetTlsRoute"
               ]
             },
+            "GetWasmPlugin": {
+              "methods": [
+                "GetWasmPlugin"
+              ]
+            },
+            "GetWasmPluginVersion": {
+              "methods": [
+                "GetWasmPluginVersion"
+              ]
+            },
             "ListEndpointPolicies": {
               "methods": [
                 "ListEndpointPolicies"
+              ]
+            },
+            "ListGatewayRouteViews": {
+              "methods": [
+                "ListGatewayRouteViews"
               ]
             },
             "ListGateways": {
@@ -629,6 +834,11 @@
                 "ListLocations"
               ]
             },
+            "ListMeshRouteViews": {
+              "methods": [
+                "ListMeshRouteViews"
+              ]
+            },
             "ListMeshes": {
               "methods": [
                 "ListMeshes"
@@ -644,6 +854,11 @@
                 "ListServiceBindings"
               ]
             },
+            "ListServiceLbPolicies": {
+              "methods": [
+                "ListServiceLbPolicies"
+              ]
+            },
             "ListTcpRoutes": {
               "methods": [
                 "ListTcpRoutes"
@@ -652,6 +867,16 @@
             "ListTlsRoutes": {
               "methods": [
                 "ListTlsRoutes"
+              ]
+            },
+            "ListWasmPluginVersions": {
+              "methods": [
+                "ListWasmPluginVersions"
+              ]
+            },
+            "ListWasmPlugins": {
+              "methods": [
+                "ListWasmPlugins"
               ]
             },
             "SetIamPolicy": {
@@ -689,6 +914,16 @@
                 "UpdateMesh"
               ]
             },
+            "UpdateServiceBinding": {
+              "methods": [
+                "UpdateServiceBinding"
+              ]
+            },
+            "UpdateServiceLbPolicy": {
+              "methods": [
+                "UpdateServiceLbPolicy"
+              ]
+            },
             "UpdateTcpRoute": {
               "methods": [
                 "UpdateTcpRoute"
@@ -697,6 +932,11 @@
             "UpdateTlsRoute": {
               "methods": [
                 "UpdateTlsRoute"
+              ]
+            },
+            "UpdateWasmPlugin": {
+              "methods": [
+                "UpdateWasmPlugin"
               ]
             }
           }

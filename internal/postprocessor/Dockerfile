@@ -12,7 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.23 as builder
+FROM marketplace.gcr.io/google/debian12:latest
+
+# Set environment variables for the Go version and installation
+ENV GO_VERSION 1.23.0
+ENV PATH /usr/local/go/bin:/root/go/bin:$PATH
+
+RUN apt-get update && \
+    apt-get install -y wget ca-certificates git && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
+    tar -C /usr/local -xzf go.tar.gz && \
+    rm go.tar.gz
+
+RUN go version
 
 # Copy local code to the container image.
 COPY . /postprocessor/
@@ -28,4 +42,4 @@ RUN (export GOTOOLCHAIN='auto' && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest)
 
-CMD [ "/postprocessor/post_processor"]
+CMD /postprocessor/post_processor

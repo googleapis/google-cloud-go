@@ -2356,7 +2356,7 @@ func TestIntegration_Copy(t *testing.T) {
 		obj := bucketFrom.Object("copy-object-original" + uidSpaceObjects.New())
 
 		// Create an object to copy from
-		w := obj.NewWriter(ctx)
+		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 		c := randomContents()
 		for written := 0; written < minObjectSize; {
 			n, err := w.Write(c)
@@ -2422,7 +2422,7 @@ func TestIntegration_Copy(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				copyObj := test.toBucket.Object(test.toObj)
-				copier := copyObj.CopierFrom(obj)
+				copier := copyObj.If(Conditions{DoesNotExist: true}).CopierFrom(obj)
 
 				if attrs := test.copierAttrs; attrs != nil {
 					if attrs.contentEncoding != "" {
@@ -2682,7 +2682,7 @@ func TestIntegration_SignedURL(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		bkt := client.Bucket(bucket)
@@ -2803,7 +2803,7 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		bkt := client.Bucket(bucket)
@@ -2890,7 +2890,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		opts := &SignedURLOptions{
@@ -4048,6 +4048,10 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
+
 		// an account that has permissions on the project that owns the bucket
 		mainUserEmail := jwt.Email
 
@@ -6468,7 +6472,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		projectID := testutil.ProjID()
@@ -6651,6 +6655,9 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
 
 		obj := "testBucketSignedURL"
 		contents := []byte("test")
@@ -6745,6 +6752,9 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
 
 		statusCodeToRespond := 200
 
@@ -6810,7 +6820,7 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		signingFunc := func(b []byte) ([]byte, error) {
@@ -6910,9 +6920,98 @@ func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 }
 
 func TestIntegration_UniverseDomains(t *testing.T) {
-	t.Skip("this test is timing out in CI on the earliest version")
-	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	// Direct connectivity is not supported yet for this feature.
+	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+	t.Setenv(disableDP, "true")
 
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	udTestVars := universeDomainTestVars(t)
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		bucket := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
+		defer h.mustDeleteBucket(bucket)
+
+		obj := bucket.Object(uidSpaceObjects.New())
+		contents := generateRandomBytes(1024)
+		h.mustWrite(obj.NewWriter(ctx), contents)
+		defer h.mustDeleteObject(obj)
+
+		// Verify contents.
+		got := h.mustRead(obj)
+		if !bytes.Equal(got, contents) {
+			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
+		}
+	}, option.WithUniverseDomain(udTestVars.universeDomain), option.WithCredentialsFile(udTestVars.credFile))
+}
+
+func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	// Direct connectivity is not supported yet for this feature.
+	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+	t.Setenv(disableDP, "true")
+
+	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+	udTestVars := universeDomainTestVars(t)
+	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
+
+	// Get new Auth creds
+	newAuthCreds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		Scopes:           scopes,
+		CredentialsFile:  udTestVars.credFile,
+		UniverseDomain:   udTestVars.universeDomain,
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatalf("cannot get Auth Credentials to create client, err: %v", err)
+	}
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucket := client.Bucket(prefix + uidSpace.New())
+
+		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
+		defer h.mustDeleteBucket(bucket)
+
+		obj := uidSpaceObjects.New()
+		contents := []byte("test")
+		if err := writeObject(ctx, bucket.Object(obj), "text/plain", contents); err != nil {
+			t.Fatalf("writing: %v", err)
+		}
+
+		defer h.mustDeleteObject(bucket.Object(obj))
+
+		opts := SignedURLOptions{
+			Method:  "GET",
+			Expires: time.Now().Add(30 * time.Second),
+		}
+
+		url, err := bucket.SignedURL(obj, &opts)
+		if err != nil {
+			t.Fatalf("unable to create signed URL: %v", err)
+		}
+
+		if err := verifySignedURL(url, nil, contents); err != nil {
+			t.Fatalf("problem with the signed URL: %v", err)
+		}
+	}, option.WithAuthCredentials(newAuthCreds), option.WithUniverseDomain(udTestVars.universeDomain))
+}
+
+type UniverseDomainVars struct {
+	universeDomain string
+	credFile       string
+	project        string
+	location       string
+}
+
+// Gets Universe Domain environment variables for Universe Domain tests
+// Returns universeDomainTestVars pointer for easy access
+func universeDomainTestVars(t *testing.T) *UniverseDomainVars {
 	universeDomain := os.Getenv(testUniverseDomain)
 	if universeDomain == "" {
 		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
@@ -6929,25 +7028,7 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	if location == "" {
 		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
 	}
-
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
-		h := testHelper{t}
-
-		bucket := client.Bucket(prefix + uidSpace.New())
-		h.mustCreate(bucket, project, &BucketAttrs{Location: location})
-		defer h.mustDeleteBucket(bucket)
-
-		obj := bucket.Object(uidSpaceObjects.New())
-		contents := generateRandomBytes(1024)
-		h.mustWrite(obj.NewWriter(ctx), contents)
-		defer h.mustDeleteObject(obj)
-
-		// Verify contents.
-		got := h.mustRead(obj)
-		if !bytes.Equal(got, contents) {
-			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
-		}
-	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(credFile))
+	return &UniverseDomainVars{universeDomain: universeDomain, credFile: credFile, project: project, location: location}
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
@@ -7071,6 +7152,7 @@ type testHelper struct {
 
 func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttrs) {
 	h.t.Helper()
+	b = b.Retryer(WithMaxAttempts(10))
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
 		h.t.Fatalf("BucketHandle(%q).Create: %v", b.BucketName(), err)
 	}
@@ -7111,6 +7193,7 @@ func (h testHelper) mustDeleteBucket(b *BucketHandle) {
 
 func (h testHelper) mustBucketAttrs(b *BucketHandle) *BucketAttrs {
 	h.t.Helper()
+	b = b.Retryer(WithMaxAttempts(10))
 	attrs, err := b.Attrs(context.Background())
 	if err != nil {
 		h.t.Fatalf("BucketHandle(%q).Attrs: %v", b.BucketName(), err)
@@ -7138,6 +7221,7 @@ func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, me
 
 func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
 	h.t.Helper()
+	o = o.Retryer(WithMaxAttempts(10))
 	attrs, err := o.Attrs(context.Background())
 	if err != nil {
 		h.t.Fatalf("get object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
@@ -7163,6 +7247,7 @@ func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 // mustUpdateObject will assume success if it receives a failed precondition response.
 func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, metageneration int64) *ObjectAttrs {
 	h.t.Helper()
+	o = o.Retryer(WithMaxAttempts(10))
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
 		if errorIsStatusCode(err, http.StatusPreconditionFailed, codes.FailedPrecondition) {

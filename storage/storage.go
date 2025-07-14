@@ -165,6 +165,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		opts = append(opts, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
 			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
 			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+			internaloption.EnableNewAuthLibrary(),
 		)
 
 		// Don't error out here. The user may have passed in their own HTTP

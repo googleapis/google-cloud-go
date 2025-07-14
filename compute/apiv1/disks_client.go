@@ -45,6 +45,7 @@ type DisksCallOptions struct {
 	AddResourcePolicies       []gax.CallOption
 	AggregatedList            []gax.CallOption
 	BulkInsert                []gax.CallOption
+	BulkSetLabels             []gax.CallOption
 	CreateSnapshot            []gax.CallOption
 	Delete                    []gax.CallOption
 	Get                       []gax.CallOption
@@ -80,6 +81,9 @@ func defaultDisksRESTCallOptions() *DisksCallOptions {
 			}),
 		},
 		BulkInsert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BulkSetLabels: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		CreateSnapshot: []gax.CallOption{
@@ -165,6 +169,7 @@ type internalDisksClient interface {
 	AddResourcePolicies(context.Context, *computepb.AddResourcePoliciesDiskRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListDisksRequest, ...gax.CallOption) *DisksScopedListPairIterator
 	BulkInsert(context.Context, *computepb.BulkInsertDiskRequest, ...gax.CallOption) (*Operation, error)
+	BulkSetLabels(context.Context, *computepb.BulkSetLabelsDiskRequest, ...gax.CallOption) (*Operation, error)
 	CreateSnapshot(context.Context, *computepb.CreateSnapshotDiskRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteDiskRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetDiskRequest, ...gax.CallOption) (*computepb.Disk, error)
@@ -230,6 +235,11 @@ func (c *DisksClient) AggregatedList(ctx context.Context, req *computepb.Aggrega
 // BulkInsert bulk create a set of disks.
 func (c *DisksClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.BulkInsert(ctx, req, opts...)
+}
+
+// BulkSetLabels sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.
+func (c *DisksClient) BulkSetLabels(ctx context.Context, req *computepb.BulkSetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.BulkSetLabels(ctx, req, opts...)
 }
 
 // CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
@@ -376,7 +386,7 @@ func defaultDisksRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *disksRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -609,6 +619,76 @@ func (c *disksRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkIns
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BulkInsert")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// BulkSetLabels sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.
+func (c *disksRESTClient) BulkSetLabels(ctx context.Context, req *computepb.BulkSetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetBulkZoneSetLabelsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/bulkSetLabels", req.GetProject(), req.GetZone())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.Resource != nil {
+		params.Add("resource", fmt.Sprintf("%v", req.GetResource()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).BulkSetLabels[0:len((*c.CallOptions).BulkSetLabels):len((*c.CallOptions).BulkSetLabels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BulkSetLabels")
 		if err != nil {
 			return err
 		}
