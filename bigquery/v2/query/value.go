@@ -135,9 +135,9 @@ func convertNestedRecord(val *structpb.Struct, schema *schema) (*structpb.Value,
 // convertBasicType returns val as an interface with a concrete type specified by typ.
 func convertBasicType(val string, typ FieldType) (*structpb.Value, error) {
 	switch typ {
-	case StringFieldType:
-		return structpb.NewStringValue(val), nil
-	case BytesFieldType:
+	case StringFieldType, BytesFieldType, TimestampFieldType, DateFieldType, TimeFieldType,
+		DateTimeFieldType, NumericFieldType, BigNumericFieldType, GeographyFieldType,
+		JSONFieldType:
 		return structpb.NewStringValue(val), nil
 	case IntegerFieldType:
 		v, err := strconv.ParseInt(val, 10, 64)
@@ -157,27 +157,15 @@ func convertBasicType(val string, typ FieldType) (*structpb.Value, error) {
 			return nil, err
 		}
 		return structpb.NewBoolValue(v), nil
-	case TimestampFieldType:
-		return structpb.NewStringValue(val), nil
-	case DateFieldType:
-		return structpb.NewStringValue(val), nil
-	case TimeFieldType:
-		return structpb.NewStringValue(val), nil
-	case DateTimeFieldType:
-		return structpb.NewStringValue(val), nil
-	case NumericFieldType:
-		return structpb.NewStringValue(val), nil
-	case BigNumericFieldType:
-		return structpb.NewStringValue(val), nil
-	case GeographyFieldType:
-		return structpb.NewStringValue(val), nil
-	case JSONFieldType:
-		return structpb.NewStringValue(val), nil
 	case IntervalFieldType:
 		panic("interval not supported yet")
 	default:
 		return nil, fmt.Errorf("unrecognized type: %s", typ)
 	}
+}
+
+func fieldValueRowsToRowList(rows []*structpb.Struct, schema *schema) ([]*Row, error) {
+	return convertRows(rows, schema)
 }
 
 func getFieldList(r *structpb.Struct) ([]*structpb.Value, error) {

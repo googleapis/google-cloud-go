@@ -81,8 +81,14 @@ func newQueryJobFromJobReference(c *Client, schema *bigquerypb.TableSchema, jobR
 
 // Read returns a RowIterator for the query results.
 func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, error) {
-	r := newReaderFromQuery(q.c, q)
-	return r.read(ctx, opts...)
+	state := &readState{
+		pageToken: q.cachedPageToken,
+	}
+	for _, opt := range opts {
+		opt(state)
+	}
+	r := newReaderFromQuery(ctx, q.c, q, state)
+	return r.start(ctx, state)
 }
 
 func (q *Query) checkStatus(ctx context.Context) error {
@@ -153,7 +159,7 @@ func (q *Query) Schema() *bigquerypb.TableSchema {
 	return q.cachedSchema.pb
 }
 
-// Complete to check is job finished execution
+// Complete to check if job finished execution
 func (q *Query) Complete() bool {
 	return q.complete
 }

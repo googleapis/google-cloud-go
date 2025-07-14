@@ -15,7 +15,7 @@
 package query
 
 import (
-	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"cloud.google.com/go/bigquery/v2/apiv2_client"
 	"google.golang.org/api/option"
@@ -38,14 +38,14 @@ func WithDefaultJobCreationMode(mode bigquerypb.QueryRequest_JobCreationMode) op
 }
 
 // WithReadClient sets the read client for the query reader.
-func WithReadClient(rc *storagepb.BigQueryReadClient) option.ClientOption {
+func WithReadClient(rc *storage.BigQueryReadClient) option.ClientOption {
 	return &customClientOption{readClient: rc}
 }
 
 type customClientOption struct {
 	internaloption.EmbeddableAdapter
 	client                 *apiv2_client.Client
-	readClient             *storagepb.BigQueryReadClient
+	readClient             *storage.BigQueryReadClient
 	defaultJobCreationMode bigquerypb.QueryRequest_JobCreationMode
 	billingProjectID       string
 }
@@ -60,5 +60,27 @@ func (s *customClientOption) ApplyCustomClientOpt(c *Client) {
 	c.defaultJobCreationMode = s.defaultJobCreationMode
 	if s.readClient != nil {
 		c.rc = s.readClient
+	}
+}
+
+// ReadOption is an option for reading query results.
+type ReadOption func(*readState)
+
+type readState struct {
+	pageToken  string
+	readClient *storage.BigQueryReadClient
+}
+
+// WithPageToken sets the page token for reading query results.
+func WithPageToken(t string) ReadOption {
+	return func(s *readState) {
+		s.pageToken = t
+	}
+}
+
+// WithStorageReadClient reads the given query using the Storage Read API
+func WithStorageReadClient(rc *storage.BigQueryReadClient) ReadOption {
+	return func(s *readState) {
+		s.readClient = rc
 	}
 }

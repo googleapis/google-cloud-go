@@ -18,7 +18,7 @@ import (
 	"context"
 	"fmt"
 
-	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"cloud.google.com/go/bigquery/v2/apiv2_client"
 	"github.com/googleapis/gax-go/v2"
@@ -28,7 +28,7 @@ import (
 // Client is a client for running queries in BigQuery.
 type Client struct {
 	c                      *apiv2_client.Client
-	rc                     *storagepb.BigQueryReadClient
+	rc                     *storage.BigQueryReadClient
 	projectID              string
 	billingProjectID       string
 	defaultJobCreationMode bigquerypb.QueryRequest_JobCreationMode
@@ -94,7 +94,6 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 
 // AttachJob set up a query job to be read from an existing one.
 func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, schema *bigquerypb.TableSchema, opts ...ReadOption) (*Query, error) {
-	// TODO: use storage read API
 	return newQueryJobFromJobReference(c, schema, jobRef)
 }
 

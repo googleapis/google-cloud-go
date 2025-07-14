@@ -17,43 +17,57 @@ package query
 import (
 	"context"
 
-	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"google.golang.org/api/iterator"
 )
 
-// reader is used to read the results of a query.
-type reader struct {
-	c          *Client
-	readClient *storagepb.BigQueryReadClient
-	q          *Query
+type reader interface {
+	// start do all set up and make sure data can be read.
+	start(ctx context.Context, state *readState) (*RowIterator, error)
+	// nextPage fetchs new page of results. Can return iterator.Done if there is
+	// no more pages to be fetched.
+	nextPage(ctx context.Context, pageToken string) (*resultSet, error)
 }
 
-func newReaderFromQuery(c *Client, q *Query) *reader {
-	r := &reader{
-		c:          c,
-		readClient: c.rc,
-		q:          q,
+type resultSet struct {
+	totalRows uint64
+	pageToken string
+	rows      []*Row
+}
+
+// jobsQueryReader is used to read the results of a query using jobs.query API.
+type jobsQueryReader struct {
+	c            *Client
+	q            *Query
+	gotFirstPage bool
+}
+
+func newReaderFromQuery(ctx context.Context, c *Client, q *Query, state *readState) reader {
+	if c.rc != nil || state.readClient != nil {
+		// TODO: use storage reader
 	}
+	return newJobsQueryReader(c, q)
+}
+
+func newJobsQueryReader(c *Client, q *Query) *jobsQueryReader {
+	r := &jobsQueryReader{
+		c: c,
+		q: q,
+	}
+	r.gotFirstPage = len(q.cachedRows) > 0
+
 	return r
 }
 
-func (r *reader) read(ctx context.Context, opts ...ReadOption) (*RowIterator, error) {
-	initState := &readState{
-		pageToken: r.q.cachedPageToken,
-	}
-	for _, opt := range opts {
-		opt(initState)
-	}
-
+func (r *jobsQueryReader) start(ctx context.Context, state *readState) (*RowIterator, error) {
 	it := &RowIterator{
 		r:         r,
-		pageToken: initState.pageToken,
 		rows:      r.q.cachedRows,
+		pageToken: state.pageToken,
 		totalRows: r.q.cachedTotalRows,
-		schema:    r.q.cachedSchema,
 	}
 
-	if len(r.q.cachedRows) > 0 {
+	if len(it.rows) > 0 {
 		return it, nil
 	}
 
@@ -64,22 +78,12 @@ func (r *reader) read(ctx context.Context, opts ...ReadOption) (*RowIterator, er
 	return it, nil
 }
 
-// ReadOption is an option for reading query results.
-type ReadOption func(*readState)
-
-type readState struct {
-	pageToken string
-}
-
-// WithPageToken sets the page token for reading query results.
-func WithPageToken(t string) ReadOption {
-	return func(s *readState) {
-		s.pageToken = t
+func (r *jobsQueryReader) nextPage(ctx context.Context, pageToken string) (*resultSet, error) {
+	if pageToken == "" && r.gotFirstPage {
+		return nil, iterator.Done
 	}
-}
 
-func (r *reader) getRows(ctx context.Context, pageToken string) (*bigquerypb.GetQueryResultsResponse, error) {
-	return r.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
+	res, err := r.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
 		FormatOptions: &bigquerypb.DataFormatOptions{
 			UseInt64Timestamp: true,
 		},
@@ -88,4 +92,22 @@ func (r *reader) getRows(ctx context.Context, pageToken string) (*bigquerypb.Get
 		Location:  r.q.location,
 		PageToken: pageToken,
 	})
+	if err != nil {
+		return nil, err
+	}
+	r.gotFirstPage = true
+
+	rows, err := fieldValueRowsToRowList(res.Rows, r.q.cachedSchema)
+	if err != nil {
+		return nil, err
+	}
+	rs := &resultSet{
+		rows:      rows,
+		pageToken: res.PageToken,
+		totalRows: 0,
+	}
+	if res.TotalRows != nil {
+		rs.totalRows = res.TotalRows.Value
+	}
+	return rs, nil
 }

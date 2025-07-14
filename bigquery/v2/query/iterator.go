@@ -18,15 +18,13 @@ import (
 	"context"
 
 	"google.golang.org/api/iterator"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // RowIterator is an iterator over the results of a query.
 type RowIterator struct {
-	r         *reader
+	r         reader
 	rows      []*Row
 	totalRows uint64
-	schema    *schema
 	pageToken string
 }
 
@@ -34,9 +32,6 @@ type RowIterator struct {
 func (it *RowIterator) Next(ctx context.Context) (*Row, error) {
 	if len(it.rows) > 0 {
 		return it.dequeueRow(), nil
-	}
-	if it.pageToken == "" {
-		return nil, iterator.Done
 	}
 
 	err := it.fetchRows(ctx)
@@ -48,28 +43,20 @@ func (it *RowIterator) Next(ctx context.Context) (*Row, error) {
 }
 
 func (it *RowIterator) fetchRows(ctx context.Context) error {
-	res, err := it.r.getRows(ctx, it.pageToken)
+	res, err := it.r.nextPage(ctx, it.pageToken)
 	if err != nil {
 		return err
 	}
 
-	if res.TotalRows != nil {
-		it.totalRows = res.TotalRows.Value
-	}
-	if it.schema == nil {
-		it.schema = newSchema(res.Schema)
-	}
+	it.totalRows = res.totalRows
 
-	rows := res.GetRows()
+	rows := res.rows
 	if len(rows) == 0 {
 		return iterator.Done
 	}
 
-	it.rows, err = fieldValueRowsToRowList(rows, it.schema)
-	if err != nil {
-		return err
-	}
-	it.pageToken = res.GetPageToken()
+	it.rows = res.rows
+	it.pageToken = res.pageToken
 
 	return nil
 }
@@ -81,8 +68,4 @@ func (it *RowIterator) dequeueRow() *Row {
 	row := it.rows[0]
 	it.rows = it.rows[1:]
 	return row
-}
-
-func fieldValueRowsToRowList(rows []*structpb.Struct, schema *schema) ([]*Row, error) {
-	return convertRows(rows, schema)
 }
