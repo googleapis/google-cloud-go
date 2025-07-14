@@ -1,10 +1,10 @@
 # Migrating from Go PubSub v1 to v2
 
-This guide shows how to migrate from the Go PubSub client library v1 version cloud.google.com/go to the v2 version cloud.google.com/go/pubsub/v2. 
+This guide shows how to migrate from the Go PubSub client library v1 version cloud.google.com/go to the v2 version cloud.google.com/go/pubsub/v2.
 
 Note: The code snippets in this guide are meant to be a quick way of comparing the differences between the v1 and v2 packages and **don’t compile as-is**. For a list of all the samples, see the [updated samples](https://cloud.google.com/pubsub/docs/samples).
 
-In line with Google's [OSS Library Breaking Change Policy](https://opensource.google/documentation/policies/library-breaking-change), support for the Go PubSub client library v1 version will continue until June 30th, 2026\. This includes continued bug fixes and security patches for v1 version, but no new features would be introduced. We encourage all users to migrate to the Go PubSub client library v2 version before support expires for the earlier v1 version.
+In line with Google's [OSS Library Breaking Change Policy](https://opensource.google/documentation/policies/library-breaking-change), support for the Go PubSub client library v1 version will continue until July 31st, 2026. This includes continued bug fixes and security patches for v1 version, but no new features would be introduced. We encourage all users to migrate to the Go PubSub client library v2 version before support expires for the earlier v1 version.
 
 ## New imports
 
@@ -18,29 +18,29 @@ For other relevant packages, see Additional References.
 
 ## Overview of the migration process
 
-The following is an overview of the migration process. You can find more details about the classes in the later part of this document. 
+The following is an overview of the migration process. You can find more details about the classes in the later part of this document.
 
 1. Import the new [cloud.google.com/go/v2](http://cloud.google.com/go/v2) package.
 
 2. Migrate admin operations such as CreateTopic and DeleteTopic to the v2 version admin API.
 
-3. Replace all instances of Topic() and Subscription() calls with Publisher() and Subscriber().
+3. Replace all instances of `Topic()` and `Subscription()` calls with `Publisher()` and `Subscriber()`.
 
-4. Change the data plane client instantiation method. If you previously called CreateTopic and used the returned Topic to call the Publish RPC, you must now instead instantiate a Publisher client, and then use that to call Publish.
+4. Change the data plane client instantiation method. If you previously called `CreateTopic` and used the returned `Topic` to call the `Publish` RPC, you must now instead instantiate a `Publisher` client, and then use that to call `Publish`.
 
 5. Change the subscriber settings that are renamed in the v2 version.
 
-6. Remove references to deprecated settings Synchronous, BufferedByteLimit, and UseLegacyFlowControl.
+6. Remove references to deprecated settings `Synchronous`, `BufferedByteLimit`, and `UseLegacyFlowControl`.
 
-7. Migrate references to migrated error type: ErrTopicStopped to ErrPublisherStopped.
+7. Rename migrated error type: `ErrTopicStopped` to `ErrPublisherStopped`.
 
 ## Admin operations
 
 The Pub/Sub admin plane is used to manage Pub/Sub resources like topics, subscriptions, and schemas. These admin operations include `Create`, `Get`, `Update`, `List`, and `Delete`.
 
-One of the key differences between the v1 and v2 versions is the change to the admin API. Two new clients called TopicAdminClient and SubscriptionAdminClient are added that handle the admin operations for topics and subscriptions respectively.
+One of the key differences between the v1 and v2 versions is the change to the admin API. Two new clients called `TopicAdminClient` and `SubscriptionAdminClient` are added that handle the admin operations for topics and subscriptions respectively.
 
-For topics and subscriptions, you can access these admin clients as fields of the main client:  pubsub.Client.TopicAdminClient and pubsub.Client.SubscriptionAdminClient. These clients are pre-initialized when calling pubsub.NewClient, and takes in the same `ClientOptions` when NewClient is called.
+For topics and subscriptions, you can access these admin clients as fields of the main client: `pubsub.Client.TopicAdminClient` and `pubsub.Client.SubscriptionAdminClient`. These clients are pre-initialized when calling `pubsub.NewClient`, and takes in the same `ClientOptions` when `NewClient` is called.
 
 There is a mostly one-to-one mapping of existing admin methods to the new admin methods.
 
@@ -48,7 +48,7 @@ There is a mostly one-to-one mapping of existing admin methods to the new admin 
 
 The new gRPC-based admin client generally takes in Go protobuf types and returns protobuf response types. If you have used other Google Cloud Go libraries like Compute Engine or Secret Manager, the process is similar.
 
-Here is an example comparing a topic creation method in v1 and v2 libraries. In this case, [CreateTopic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1#TopicAdminClient.CreateTopic) takes in a generated protobuf type, [pubsubpb.Topic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic) that is based on the topic defined in [pubsub.proto](https://github.com/googleapis/googleapis/blob/3808680f22d715ef59493e67a6fe82e5ae3e00dd/google/pubsub/v1/pubsub.proto#L678). A key difference here is that the Name of the proto type is the **fully qualified name** for the topic (e.g. “projects/my-project/topics/my-topic”), rather than just the resource ID (e.g. “my-topic”). In addition, specifying this name is part of the [Topic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic) struct rather than an argument for CreateTopic.
+Here is an example comparing a topic creation method in v1 and v2 libraries. In this case, [CreateTopic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1#TopicAdminClient.CreateTopic) takes in a generated protobuf type, [pubsubpb.Topic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic) that is based on the topic defined in [pubsub.proto](https://github.com/googleapis/googleapis/blob/3808680f22d715ef59493e67a6fe82e5ae3e00dd/google/pubsub/v1/pubsub.proto#L678). A key difference here is that the `Name` field of the proto type is the **fully qualified name** for the topic (e.g. `projects/my-project/topics/my-topic`), rather than just the resource ID (e.g. `my-topic`). In addition, specifying this name is part of the [Topic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic) struct rather than an argument for CreateTopic.
 
 ```go
 // v1 way to create a topic
@@ -81,7 +81,7 @@ topicpb := &pubsubpb.Topic{
 topic, err := client.TopicAdminClient.CreateTopic(ctx, topicpb)
 ```
 
-When migrating the v1 CreateTopicWithConfig which currently takes in a TopicConfig type, you must also use the [pubsubpb.Topic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic) type.
+The v1 library's `CreateTopicWithConfig` is fully removed. You can specify topic configurations by passing in the fields into [pubsubpb.Topic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic) while calling `TopicAdminClient.CreateTopic`.
 
 ```go
 // v1 way to create a topic with settings
@@ -125,7 +125,7 @@ topicpb := &pubsubpb.Topic{
 topic, err := client.TopicAdminClient.CreateTopic(ctx, topicpb)
 ```
 
-For code that creates a subscription, the migration process is similar to the topic creation method. Use the pubsubpb.Subscription type and SubscriptionAdminClient.CreateSubscription method.
+For code that creates a subscription, the migration process is similar to the topic creation method. Use the `pubsubpb.Subscription` type and `SubscriptionAdminClient.CreateSubscription` method.
 
 ```go
 s := &pubsubpb.Subscription{
@@ -134,19 +134,20 @@ s := &pubsubpb.Subscription{
 topic, err := client.SubscriptionAdminClient.CreateSubscription(ctx, s)
 ```
 
-The new proto types and their fields might differ slightly from the current v1 version types. The new types are based on the Pub/Sub proto and can be found [here](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb). Here are some examples:
+The [new proto types](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb) and their fields might differ slightly from the current v1 version types. The new types are based on the Pub/Sub proto. Here are some of those differences:
 
-* In the CreateTopic example shown in an earlier part of this guide, the message retention duration is defined as RetentionDuration in the v1 as a Go duration, but in the v2 version it is MessageRetentionDuration of type [durationpb.Duration](https://pkg.go.dev/google.golang.org/protobuf/types/known/durationpb#hdr-Conversion_from_a_Go_Duration).
+* In the `CreateTopic` example shown in an earlier part of this guide, the message retention duration is defined as `RetentionDuration` in the v1 as a Go duration, but in the v2 version it is `MessageRetentionDuration` of type [durationpb.Duration](https://pkg.go.dev/google.golang.org/protobuf/types/known/durationpb#hdr-Conversion_from_a_Go_Duration).
 
-* Generated protobuf code doesn't follow Go styling guides for initialisms. For example, KMSKeyName is defined as KmsKeyName in the v2 version.
+* Generated protobuf code doesn't follow Go styling guides for initialisms. For example, `KMSKeyName` is defined as `KmsKeyName` in the v2 version.
 
-* The v1 version uses custom optional types for certain fields for durations and boolean values. Some custom fields such as time.Duration uses a protobuf specific [durationpb.Duration](https://pkg.go.dev/google.golang.org/protobuf/types/known/durationpb) and boolean values directly.
+* The v1 version uses custom optional types for certain fields for durations and boolean values. In the v2, `time.Duration` fields are defined by a protobuf specific [durationpb.Duration](https://pkg.go.dev/google.golang.org/protobuf/types/known/durationpb). Optional booleans now use Go boolean values directly.
 
 ```go
+// V2 subscription of initializing a subscription with configuration.
 s := &pubsubpb.Subscription{
 	Name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, subID),
 	TopicMessageRetentionDuration: durationpb.New(1 * time.Hour),
-EnableExactlyOnceDelivery: true,
+	EnableExactlyOnceDelivery: true,
 }
 topic, err := client.SubscriptionAdminClient.CreateSubscription(ctx, s)
 ```
@@ -188,13 +189,13 @@ req := &pubsubpb.DeleteTopicRequest{
 client.TopicAdminClient.DeleteTopic(ctx, req)
 ```
 
-In this case, you have to instantiate a DeleteTopicRequest object and pass that into the DeleteTopic call. This includes specifying the **full path** of the topic, which includes the project ID, instead of just the topic ID.
+In this case, you have to instantiate a `DeleteTopicRequest` struct and pass that into the `DeleteTopic` call. This includes specifying the **full path** of the topic, which includes the project ID, instead of just the topic ID.
 
 ### Update RPCs
 
 When trying to update resources, you will need to declare the new object you are modifying by creating a proto object, and explicitly defining the field name.
 
-You also might need to specify a [FieldMask protobuf type](https://pkg.go.dev/google.golang.org/protobuf/types/known/fieldmaskpb) along with the resource you are modifying if you only want to edit specific fields and leave the others the same. The strings to pass into the update field mask must be the name of the field of the resource you are editing, written in snake\_case (such as `enable_exactly_once_delivery` or message\_storage\_policy). These must match the field names in the [resource message definition in proto](https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto).
+You may need to specify a [FieldMask protobuf type](https://pkg.go.dev/google.golang.org/protobuf/types/known/fieldmaskpb) along with the resource you are modifying if you only want to edit specific fields and leave the others the same. The strings to pass into the update field mask must be the name of the field of the resource you are editing, written in snake\_case (such as `enable_exactly_once_delivery` or message\_storage\_policy). These must match the field names in the [resource message definition in proto](https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto).
 
 If a field mask is not present on update, the operation applies to all fields (as if a field mask of all fields has been specified) and overrides the entire resource.
 
@@ -221,9 +222,9 @@ subID := "my-subscription"
 client, err := pubsub.NewClient(ctx, projectID)
 updateReq := &pb.UpdateSubscriptionRequest{
 	Subscription: &pb.Subscription{
-Name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, subID),
-EnableExactlyOnceDelivery: true
-},
+		Name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, subID),
+		EnableExactlyOnceDelivery: true
+	},
 	UpdateMask: &fieldmaskpb.FieldMask{
 		Paths: []string{"enable_exactly_once_delivery"},
 	},
@@ -274,12 +275,11 @@ topicpb := &pb.Topic{
 	IngestionDataSourceSettings: &pb.IngestionDataSourceSettings{
 		Source: &pb.IngestionDataSourceSettings_AwsKinesis_{
 			AwsKinesis: &pb.IngestionDataSourceSettings_AwsKinesis{
-	StreamArn:         streamARN,
-	ConsumerArn:       consumerARN,
-	AwsRoleArn:        awsRoleARN,
-GcpServiceAccount: gcpServiceAccount,
-}
-,
+				StreamArn:         streamARN,
+				ConsumerArn:       consumerARN,
+				AwsRoleArn:        awsRoleARN,
+				GcpServiceAccount: gcpServiceAccount,
+			},
 		},
 	},
 }
@@ -287,7 +287,7 @@ GcpServiceAccount: gcpServiceAccount,
 topic, err := client.TopicAdminClient.CreateTopic(ctx, topicpb)
 ```
 
-In the above example, IngestionDataSourceSettings\_AwsKinesis\_ is a wrapper struct around IngestionDataSourceSettings\_AwsKinesis. The former satisfies the interface type of being an ingestion data source, while the latter contains the actual fields of the settings.
+In the above example, `IngestionDataSourceSettings\_AwsKinesis\_` is a wrapper struct around `IngestionDataSourceSettings\_AwsKinesis`. The former satisfies the interface type of being an ingestion data source, while the latter contains the actual fields of the settings.
 
 Another example of an instantiation is with [Single Message Transforms](https://cloud.google.com/pubsub/docs/smts/smts-overview).
 
@@ -340,9 +340,9 @@ topicpb := &pb.Topic{
 topic, err := client.TopicAdminClient.CreateTopic(ctx, topicpb)
 ```
 
-In this case, MessageTransform\_JavascriptUdf satisfies the interface, while JavascriptUdf holds the actual strings relevant for the message transform.
+In this case, `MessageTransform\_JavascriptUdf` satisfies the interface, while `JavascriptUdf` holds the actual strings relevant for the message transform.
 
-### Call Options (retries and timeouts) 
+### Call Options (retries and timeouts)
 
 In the v2, [pubsub.NewClientWithConfig](https://pkg.go.dev/cloud.google.com/go/pubsub#NewClientWithConfig) is still the correct method to invoke to add RPC specific retries and timeouts. However, the helper struct is renamed from `ClientConfig.PublisherCallOptions`  to `TopicAdminCallOptions`. The same is true for Subscription calls, which is now named `SubscriptionAdminCallOptions.`
 
@@ -374,7 +374,7 @@ defer client.Close()
 
 ## Schemas
 
-The existing `Schema` client is replaced by a new `SchemaClient`, which behaves similarly to the topic and subscription admin clients in the new v2 version. Since schemas are less commonly used than publishing and subscribing, the Pub/Sub client does not preinitialize these for you. Instead, you must call the NewSchemaClient method in [cloud.google.com/go/pubsub/v2/apiv1](http://cloud.google.com/go/pubsub/v2/apiv1). 
+The existing `Schema` client is replaced by a new `SchemaClient`, which behaves similarly to the topic and subscription admin clients in the new v2 version. Since schemas are less commonly used than publishing and subscribing, the Pub/Sub client does not preinitialize these for you. Instead, you must call the `NewSchemaClient` method in [cloud.google.com/go/pubsub/v2/apiv1](http://cloud.google.com/go/pubsub/v2/apiv1).
 
 ```go
 import (
@@ -400,7 +400,7 @@ s, err := client.GetSchema(ctx, req)
 
 ```
 
-The main difference with the new auto generated schema client is that you cannot pass in a project ID at client instantiation. Instead, all references to schemas are done by its fully qualified resource name (such as  projects/my-project/schemas/my-schema).
+The main difference with the new auto generated schema client is that you cannot pass in a project ID at client instantiation. Instead, all references to schemas are done by its fully qualified resource name (such as `projects/my-project/schemas/my-schema`).
 
 ## Data plane operations
 
@@ -416,7 +416,7 @@ topic := client.Topic("my-topic")
 topic.Publish(ctx, "message")
 ```
 
-In the v2 version, replace Topic with Publisher to publish messages.
+In the v2 version, replace `Topic` with `Publisher` to publish messages.
 
 ```go
 // Simplified v2 code
@@ -426,7 +426,7 @@ publisher := client.Publisher("my-topic")
 publisher.Publish(ctx, "message")
 ```
 
-Similarly, the v1 version Subscription has [Receive](https://pkg.go.dev/cloud.google.com/go/pubsub#Subscription.Receive) for pulling messages. Replace Subscription with Subscriber to pull messages.
+Similarly, the v1 version Subscription has [Receive](https://pkg.go.dev/cloud.google.com/go/pubsub#Subscription.Receive) for pulling messages. Replace `Subscription` with `Subscriber` to pull messages.
 
 ```go
 client, err := pubsub.NewClient(ctx, projectID)
@@ -437,7 +437,7 @@ subscriber.Receive(ctx, ...)
 
 ### Instantiation from admin
 
-In the v1 version, it is possible to call CreateTopic and then call Publish on the returned topic. Since the v2 version CreateTopic returns a generated protobuf [topic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic) that doesn’t have a Publish method, you must  instantiate your own Publisher client to publish messages.
+In the v1 version, it is possible to call `CreateTopic` to create a topic and then call `Publish` on the returned topic. Since the v2 version `CreateTopic` returns a generated protobuf [topic](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic) that doesn’t have a `Publish` method, you must instantiate your own `Publisher` client to publish messages.
 
 ```go
 // Simplified v2 code
@@ -456,9 +456,9 @@ publisher.Publish(ctx, "message")
 
 ### TopicInProject and SubscriptionInProject removed
 
-To make this transition easier, the Publisher and Subscriber methods can take in either the resource ID (such as my-topic) or a fully qualified name (such as projects/p/topics/topic) as arguments. This makes it easier to use the fully qualified topic name (accessible through topic.GetName()) rather than needing to parse out just the resource ID. If you use the resource ID, the publisher and subscriber clients assume you are referring to the project ID defined when instantiating the base pubsub client.
+To make this transition easier, the Publisher and Subscriber methods can take in either the resource ID (such as `my-topic`) or a fully qualified name (such as `projects/p/topics/topic`) as arguments. This makes it easier to use the fully qualified topic name (accessible through `topic.GetName())` rather than needing to parse out just the resource ID. If you use the resource ID, the publisher and subscriber clients assume you are referring to the project ID defined when instantiating the base pubsub client.
 
-The previous TopicInProject and SubscriptionInProject methods are removed from the v2 version. To create a publisher or subscriber in a different project, use the fully qualified name.
+The previous `TopicInProject` and `SubscriptionInProject` methods are removed from the v2 version. To create a publisher or subscriber in a different project, use the fully qualified name like in the sample above.
 
 ### Renamed settings
 
@@ -470,19 +470,19 @@ Two subscriber flow control settings are renamed:
 
 ### Default settings changes
 
-To align with other client libraries, we will be changing the default value for ReceiveSettings.NumGoroutines to 1\. This is a better default for most users as each stream can handle 10 MB/s and will reduce the number of idle streams for lower throughput applications.
+To align with other client libraries, we will be changing the default value for `ReceiveSettings.NumGoroutines` to 1\. This is a better default for most users as each stream can handle 10 MB/s and will reduce the number of idle streams for lower throughput applications.
 
 ### Removed settings
 
-PublishSettings.BufferedByteLimit is removed. This was already superseded by the existing PublishSettings.MaxOutstandingBytes.
+`PublishSettings.BufferedByteLimit` is removed. This was already superseded by the existing `PublishSettings.MaxOutstandingBytes`.
 
-ReceiveSettings.Synchronous used to make the library use the synchronous Pull API for the mechanism to receive messages, but we are requiring only using the StreamingPull API in the v2.
+`ReceiveSettings.Synchronous` used to make the library use the synchronous `Pull` API for the mechanism to receive messages, but we are requiring only using the StreamingPull API in the v2.
 
-Lastly, we will be removing ReceiveSettings.UseLegacyFlowControl, since server side flow control is now a mature feature and should be relied upon for managing flow control.
+Lastly, we will be removing `ReceiveSettings.UseLegacyFlowControl`, since server side flow control is now a mature feature and should be relied upon for managing flow control.
 
 ### Renamed Error Type
 
-Because of the change to the data plane clients (now named Publisher and Subscriber), we renamed one error type to match this. `ErrTopicStopped` is now `ErrPublisherStopped`.
+Because of the change to the data plane clients (now named `Publisher` and `Subscriber)`, we renamed one error type to match this. `ErrTopicStopped` is now `ErrPublisherStopped`.
 
 ## Relevant packages
 
@@ -498,11 +498,11 @@ Because of the change to the data plane clients (now named Publisher and Subscri
 
 * [google.golang.org/protobuf/types/known/fieldmaskpb](http://google.golang.org/protobuf/types/known/fieldmaskpb) is used for masking which fields are updated in update calls.
 
-# FAQ
+## FAQ
 
 **Q: Why does the new admin API package mention both v2 and apiv1?**
 
-The new Pub/Sub v2 package is cloud.google.com/go/v2. All of the new v2 code lives in the v2 directory. The apiv1 version denotes that the Pub/Sub server API is still under v1 and is **not** changing.
+The new Pub/Sub v2 package is `cloud.google.com/go/v2`. All of the new v2 code lives in the v2 directory. The apiv1 version denotes that the Pub/Sub server API is still under v1 and is **not** changing.
 
 **Q: Why are you changing the admin API surface?**
 
