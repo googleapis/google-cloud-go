@@ -20,6 +20,13 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
+const (
+	stageNameAddFields = "add_fields"
+	stageNameSelect    = "select"
+	stageNameWhere     = "where"
+	stageNameAggregate = "aggregate"
+)
+
 // internal interface for pipeline stages.
 type pipelineStage interface {
 	toProto() (*pb.Pipeline_Stage, error)
@@ -66,9 +73,7 @@ func (s *inputStageCollectionGroup) toProto() (*pb.Pipeline_Stage, error) {
 }
 
 // inputStageDatabase returns all documents from the entire database.
-type inputStageDatabase struct {
-	path string
-}
+type inputStageDatabase struct{}
 
 func newInputStageDatabase() *inputStageDatabase {
 	return &inputStageDatabase{}
@@ -95,3 +100,100 @@ func (s *limitStage) toProto() (*pb.Pipeline_Stage, error) {
 		Args: []*pb.Value{arg},
 	}, nil
 }
+
+type selectStage struct {
+	stagePb *pb.Pipeline_Stage
+}
+
+func newSelectStage(fieldsOrSelectables ...any) (*selectStage, error) {
+	selectables, err := fieldsOrSelectablesToSelectables(fieldsOrSelectables...)
+	if err != nil {
+		return nil, err
+	}
+
+	mapVal, err := projectionsToMapValue(selectables)
+	if err != nil {
+		return nil, err
+	}
+
+	return &selectStage{
+		stagePb: &pb.Pipeline_Stage{
+			Name: stageNameSelect,
+			Args: []*pb.Value{mapVal},
+		},
+	}, nil
+}
+func (s *selectStage) name() string                         { return "select" }
+func (s *selectStage) toProto() (*pb.Pipeline_Stage, error) { return s.stagePb, nil }
+
+// addFieldsStage is the internal representation of a AddFields stage.
+type addFieldsStage struct {
+	stagePb *pb.Pipeline_Stage
+}
+
+func newAddFieldsStage(selectables ...Selectable) (*addFieldsStage, error) {
+	mapVal, err := projectionsToMapValue(selectables)
+	if err != nil {
+		return nil, err
+	}
+
+	return &addFieldsStage{
+		stagePb: &pb.Pipeline_Stage{
+			Name: stageNameAddFields,
+			Args: []*pb.Value{mapVal},
+		},
+	}, nil
+}
+func (s *addFieldsStage) name() string                         { return stageNameAddFields }
+func (s *addFieldsStage) toProto() (*pb.Pipeline_Stage, error) { return s.stagePb, nil }
+
+type whereStage struct {
+	stagePb *pb.Pipeline_Stage
+}
+
+func newWhereStage(condition BooleanExpr) (*whereStage, error) {
+	argsPb, err := condition.toProto()
+	if err != nil {
+		return nil, err
+	}
+	return &whereStage{
+		stagePb: &pb.Pipeline_Stage{
+			Name: stageNameWhere,
+			Args: []*pb.Value{argsPb},
+		},
+	}, nil
+}
+
+func (s *whereStage) name() string                         { return stageNameWhere }
+func (s *whereStage) toProto() (*pb.Pipeline_Stage, error) { return s.stagePb, nil }
+
+type aggregateStage struct {
+	stagePb *pb.Pipeline_Stage
+}
+
+func newAggregateStage(a *AggregateSpec) (*aggregateStage, error) {
+	if a.err != nil {
+		return nil, a.err
+	}
+	targetsPb, err := aliasedAggregatesToMapValue(a.accTargets)
+	if err != nil {
+		return nil, err
+	}
+
+	groupsPb, err := projectionsToMapValue(a.groups)
+	if err != nil {
+		return nil, err
+	}
+
+	return &aggregateStage{
+		stagePb: &pb.Pipeline_Stage{
+			Name: stageNameAggregate,
+			Args: []*pb.Value{
+				targetsPb,
+				groupsPb,
+			},
+		},
+	}, nil
+}
+func (s *aggregateStage) name() string                         { return stageNameAggregate }
+func (s *aggregateStage) toProto() (*pb.Pipeline_Stage, error) { return s.stagePb, nil }

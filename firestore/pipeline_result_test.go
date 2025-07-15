@@ -61,7 +61,7 @@ func TestStreamPipelineResultIterator_Next(t *testing.T) {
 		errors    []error
 		gotCount  int
 		wantErr   error
-		wantData  []map[string]interface{}
+		wantData  []map[string]any
 	}{
 		{
 			name:      "successful iteration",
@@ -69,7 +69,7 @@ func TestStreamPipelineResultIterator_Next(t *testing.T) {
 			errors:    []error{nil, nil, io.EOF}, // EOF after 2 responses (containing 3 docs)
 			gotCount:  3,
 			wantErr:   iterator.Done,
-			wantData: []map[string]interface{}{
+			wantData: []map[string]any{
 				{"foo": "bar1"},
 				{"foo": "bar2"},
 				{"foo": "bar3"},
@@ -81,7 +81,7 @@ func TestStreamPipelineResultIterator_Next(t *testing.T) {
 			errors:    []error{nil, status.Error(codes.Unavailable, "service unavailable")},
 			gotCount:  2, // Expect results from the first response before error
 			wantErr:   status.Error(codes.Unavailable, "service unavailable"),
-			wantData: []map[string]interface{}{
+			wantData: []map[string]any{
 				{"foo": "bar1"},
 				{"foo": "bar2"},
 			},
@@ -99,7 +99,7 @@ func TestStreamPipelineResultIterator_Next(t *testing.T) {
 			errors:    []error{nil, nil, io.EOF},
 			gotCount:  2,
 			wantErr:   iterator.Done,
-			wantData: []map[string]interface{}{
+			wantData: []map[string]any{
 				{"foo": "bar1"},
 				{"foo": "bar2"},
 			},
@@ -297,9 +297,9 @@ func TestPipelineResult_DataExtraction(t *testing.T) {
 	if dataMap["intProp"].(int64) != 123 {
 		t.Errorf("intProp: got %v, want 123", dataMap["intProp"])
 	}
-	nestedMap, ok := dataMap["mapProp"].(map[string]interface{})
+	nestedMap, ok := dataMap["mapProp"].(map[string]any)
 	if !ok {
-		t.Fatalf("mapProp is not a map[string]interface{}")
+		t.Fatalf("mapProp is not a map[string]any")
 	}
 	if nestedMap["nestedString"].(string) != "world" {
 		t.Errorf("nestedString: got %v, want 'world'", nestedMap["nestedString"])
@@ -307,17 +307,17 @@ func TestPipelineResult_DataExtraction(t *testing.T) {
 
 	// Test DataTo() with a struct
 	type MyStruct struct {
-		StringProp  string                 `firestore:"stringProp"`
-		IntProp     int                    `firestore:"intProp"`
-		BoolProp    bool                   `firestore:"boolProp"`
-		MapProp     map[string]interface{} `firestore:"mapProp"`
-		NonExistent float64                `firestore:"nonExistent"`
+		StringProp  string         `firestore:"stringProp"`
+		IntProp     int            `firestore:"intProp"`
+		BoolProp    bool           `firestore:"boolProp"`
+		MapProp     map[string]any `firestore:"mapProp"`
+		NonExistent float64        `firestore:"nonExistent"`
 	}
 	gotDst := MyStruct{
 		StringProp:  "world",
 		IntProp:     456,
 		BoolProp:    false,
-		MapProp:     map[string]interface{}{"nestedString": "hello"},
+		MapProp:     map[string]any{"nestedString": "hello"},
 		NonExistent: 456.789,
 	}
 
@@ -325,7 +325,7 @@ func TestPipelineResult_DataExtraction(t *testing.T) {
 		StringProp:  "hello",
 		IntProp:     123,
 		BoolProp:    true,
-		MapProp:     map[string]interface{}{"nestedString": "world"},
+		MapProp:     map[string]any{"nestedString": "world"},
 		NonExistent: 456.789,
 	}
 
