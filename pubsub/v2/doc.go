@@ -18,8 +18,12 @@ messages, hiding the details of the underlying server RPCs.
 Pub/Sub is a many-to-many, asynchronous messaging system that decouples senders
 and receivers.
 
+If you are migrating from the v1 library, follow the migration guide
+for a faster way of using this version
+https://github.com/googleapis/google-cloud-go/blob/main/pubsub/MIGRATING.md
+
 More information about Pub/Sub is available at
-https://cloud.google.com/pubsub/docs
+https://cloud.google.com/pubsub/docs.
 
 See https://godoc.org/cloud.google.com/go for authentication, timeouts,
 connection pooling and similar aspects of this package.
@@ -27,7 +31,7 @@ connection pooling and similar aspects of this package.
 # Publishing
 
 Pub/Sub messages are published to topics via publishers.
-A [Topic] may be created like so:
+A Topic may be created like so:
 
 	ctx := context.Background()
 	client, _ := pubsub.NewClient(ctx, "my-project")
@@ -37,7 +41,7 @@ A [Topic] may be created like so:
 
 A [Publisher] client can then be instantiated and used to publish messages.
 
-	publisher := pubsubClient.Publisher(topic.GetName())
+	publisher := client.Publisher(topic.GetName())
 	res := publisher.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
 
 [Publisher.Publish] queues the message for publishing and returns immediately. When enough
@@ -73,7 +77,7 @@ A subscription may be created like so:
 
 A [Subscriber] client can be instantiated like so:
 
-	sub := pubsubClient.Subscriber(subscription.GetName())
+	sub := client.Subscriber(subscription.GetName())
 
 You then provide a callback to [Subscriber] which processes the messages.
 
@@ -89,17 +93,19 @@ The callback is invoked concurrently by multiple goroutines, maximizing
 throughput. To terminate a call to [Subscriber.Receive], cancel its context.
 
 Once client code has processed the [Message], it must call Message.Ack or
-Message.Nack; otherwise the Message will eventually be redelivered. Ack/Nack
+Message.Nack. If Ack is not called, the Message will eventually be redelivered. Ack/Nack
 MUST be called within the [Subscriber.Receive] handler function, and not from a goroutine.
 Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
-not be respected, and messages can get orphaned when cancelling Receive.
+not be respected, and messages can get orphaned when cancelling Receive, and
+redelivered slowly.
 
 If the client cannot or doesn't want to process the message, it can call Message.Nack
 to speed redelivery. For more information and configuration options, see
 Ack Deadlines below.
 
 Note: It is possible for a [Message] to be redelivered even if Message.Ack has
-been called. Client code must be robust to multiple deliveries of messages.
+been called unless exactly once delivery is enabled. Applications should be aware
+of these deliveries.
 
 Note: This uses pubsub's streaming pull feature. This feature has properties that
 may be surprising. Please take a look at https://cloud.google.com/pubsub/docs/pull#streamingpull
@@ -146,7 +152,7 @@ Ack deadlines are extended periodically by the client. The period between extens
 as well as the length of the extension, automatically adjusts based on the time it takes the
 subscriber application to ack messages (based on the 99th percentile of ack latency).
 By default, this extension period is capped at 10m, but this limit can be configured
-by the "MaxExtensionPeriod" setting. This has the effect that subscribers that process
+by the Min/MaxDurationPerAckExtension settings. This has the effect that subscribers that process
 messages quickly have their message ack deadlines extended for a short amount, whereas
 subscribers that process message slowly have their message ack deadlines extended
 for a large amount. The net effect is fewer RPCs sent from the client library.
