@@ -1284,8 +1284,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					arr := resp.GetObjectDataRanges()
 					for _, val := range arr {
 						id := val.GetReadRange().GetReadId()
-						mrd.mu.Lock()
 						func() {
+							mrd.mu.Lock()
+							defer mrd.mu.Unlock()
 							currRange, ok := mrd.activeRanges[id]
 							if !ok {
 								// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
@@ -1314,8 +1315,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 								delete(mrd.activeRanges, id)
 							}
 						}()
-
-						mrd.mu.Unlock()
 					}
 				}
 			}
