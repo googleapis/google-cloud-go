@@ -1297,7 +1297,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 								mrd.numActiveRanges--
 								delete(mrd.activeRanges, id)
 							} else {
-								mrd.activeRanges[id] = mrdRange{
+								currRange = mrdRange{
 									readID:              currRange.readID,
 									writer:              currRange.writer,
 									offset:              currRange.offset,
@@ -1306,6 +1306,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 									totalBytesWritten:   currRange.totalBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
 									callback:            currRange.callback,
 								}
+								mrd.activeRanges[id] = currRange
 							}
 							if val.GetRangeEnd() {
 								currRange.callback(currRange.offset, currRange.totalBytesWritten, nil)
