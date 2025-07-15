@@ -48,6 +48,8 @@ func TestRunQuery(t *testing.T) {
 				t.Fatalf("expected job to be complete")
 			}
 
+			t.Logf("queryID: %s", q.QueryID())
+
 			it, err := q.Read(ctx)
 			if err != nil {
 				t.Fatalf("Read() error: %v", err)

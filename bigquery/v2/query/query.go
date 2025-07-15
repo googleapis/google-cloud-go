@@ -29,6 +29,7 @@ type Query struct {
 	projectID string
 	jobID     string
 	location  string
+	queryID   string
 
 	cachedTotalRows uint64
 	cachedPageToken string
@@ -38,7 +39,8 @@ type Query struct {
 
 func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*Query, error) {
 	q := &Query{
-		c: c,
+		c:       c,
+		queryID: res.QueryId,
 	}
 	err := q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
 		Schema:              res.Schema,
@@ -150,8 +152,17 @@ func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) er
 	return nil
 }
 
+// QueryID returns the auto-generated ID for the query.
+// Only filled for stateless queries.
+func (q *Query) QueryID() string {
+	return q.queryID
+}
+
 // JobReference returns the job reference.
 func (q *Query) JobReference() *bigquerypb.JobReference {
+	if q.jobID == "" {
+		return nil
+	}
 	return &bigquerypb.JobReference{
 		ProjectId: q.projectID,
 		JobId:     q.jobID,
