@@ -101,29 +101,9 @@ func convertRepeatedRecord(vals *structpb.ListValue, typ FieldType, schema *sche
 }
 
 func convertNestedRecord(val *structpb.Struct, schema *schema) (*structpb.Value, error) {
-	// convertNestedRecord is similar to convertRow, as a record has the same structure as a row.
-	// Nested records are wrapped in a map with a single key, "f".
-	record, err := getFieldList(val)
+	r, err := convertRow(val, schema)
 	if err != nil {
 		return nil, err
-	}
-	if schema.len() != len(record) {
-		return nil, errors.New("schema length does not match row length")
-	}
-
-	r := newRow(schema)
-	for i, cell := range record {
-		// each cell contains a single entry, keyed by "v"
-		val, err := getFieldValue(cell)
-		if err != nil {
-			return nil, err
-		}
-		fs := schema.pb.Fields[i]
-		v, err := convertValue(val, FieldType(fs.Type), newSchemaFromField(fs))
-		if err != nil {
-			return nil, err
-		}
-		r.setValue(fs.Name, v)
 	}
 	s, err := r.AsStruct()
 	if err != nil {
