@@ -44,7 +44,7 @@ const (
 	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
 )
 
-// Client is a Google Pub/Sub client scoped to a single project.
+// Client is a Pub/Sub client scoped to a single project.
 //
 // Clients should be reused rather than being created as needed.
 // A Client may be shared by multiple goroutines.

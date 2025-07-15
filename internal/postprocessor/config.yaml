@@ -1272,6 +1272,7 @@ skip-module-scan-paths:
   - firestore
   - logging
   - profiler
+  - pubsub/v2
   - pubsub
   - pubsublite
   - spanner
