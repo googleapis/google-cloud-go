@@ -31,10 +31,11 @@ type Query struct {
 	location  string
 	queryID   string
 
-	cachedTotalRows uint64
-	cachedPageToken string
-	cachedRows      []*Row
-	cachedSchema    *schema
+	cachedTotalRows    uint64
+	cachedPageToken    string
+	cachedRows         []*Row
+	cachedSchema       *schema
+	numDMLAffectedRows int64
 }
 
 func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*Query, error) {
@@ -131,6 +132,9 @@ func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) er
 	if res.JobComplete != nil {
 		q.complete = res.JobComplete.Value
 	}
+	if res.NumDmlAffectedRows != nil {
+		q.numDMLAffectedRows = res.NumDmlAffectedRows.Value
+	}
 
 	if res.Rows != nil {
 		var err error
@@ -178,4 +182,9 @@ func (q *Query) Schema() *bigquerypb.TableSchema {
 // Complete to check if job finished execution
 func (q *Query) Complete() bool {
 	return q.complete
+}
+
+// NumAffectedRows returns the number of rows affected by a DML statement.
+func (q *Query) NumAffectedRows() int64 {
+	return q.numDMLAffectedRows
 }
