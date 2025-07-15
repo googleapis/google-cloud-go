@@ -105,10 +105,7 @@ func convertNestedRecord(val *structpb.Struct, schema *schema) (*structpb.Value,
 	if err != nil {
 		return nil, err
 	}
-	s, err := r.AsStruct()
-	if err != nil {
-		return nil, err
-	}
+	s := r.AsStruct()
 	return structpb.NewStructValue(s), nil
 }
 

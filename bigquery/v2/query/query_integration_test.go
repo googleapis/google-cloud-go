@@ -32,7 +32,7 @@ func TestRunQuery(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			req := client.FromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
+			req := client.FromSQL("SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar")
 			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL
 
 			q, err := client.StartQuery(ctx, req)
@@ -67,7 +67,7 @@ func TestReadQueryJob(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			req := client.FromSQL("SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar")
+			req := client.FromSQL("SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar")
 			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_REQUIRED
 
 			q, err := client.StartQuery(ctx, req)
@@ -111,7 +111,7 @@ func TestInsertQueryJob(t *testing.T) {
 			q, err := client.StartQueryJob(ctx, &bigquerypb.Job{
 				Configuration: &bigquerypb.JobConfiguration{
 					Query: &bigquerypb.JobConfigurationQuery{
-						Query:        "SELECT CURRENT_DATETIME() as foo, SESSION_USER() as bar",
+						Query:        "SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar",
 						UseLegacySql: wrapperspb.Bool(false),
 					},
 				},

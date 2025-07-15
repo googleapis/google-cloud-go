@@ -73,8 +73,8 @@ func fvToValues(f *bigquerypb.TableFieldSchema, v *structpb.Value) any {
 }
 
 // AsStruct decodes the row into a structpb.Struct.
-func (r *Row) AsStruct() (*structpb.Struct, error) {
-	return r.pb, nil
+func (r *Row) AsStruct() *structpb.Struct {
+	return r.pb
 }
 
 // Decode decodes the row into an user provided struct.

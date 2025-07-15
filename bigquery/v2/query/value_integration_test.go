@@ -78,10 +78,7 @@ func TestReadNestedObject(t *testing.T) {
 						t.Fatal(msg)
 					}
 
-					s, err := rows[0].AsStruct()
-					if err != nil {
-						t.Fatalf("AsStruct() error: %v", err)
-					}
+					s := rows[0].AsStruct()
 
 					if s.Fields["age"].GetNumberValue() != 40 {
 						t.Fatalf("expected to read `age` column as number")
