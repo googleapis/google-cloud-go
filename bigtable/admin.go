@@ -46,7 +46,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const adminAddr = "bigtableadmin.googleapis.com:443"
+const adminAddr = "bigtableadmin.UNIVERSE_DOMAIN:443"
 const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
 var (
