@@ -1275,9 +1275,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				if err == nil {
 					mrd.mu.Lock()
 					if len(mrd.activeRanges) == 0 && mrd.numActiveRanges == 0 {
+						mrd.mu.Unlock()
 						mrd.closeReceiver <- true
 						mrd.closeSender <- true
-						mrd.mu.Unlock()
 						return
 					}
 					mrd.mu.Unlock()
@@ -1285,33 +1285,35 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					for _, val := range arr {
 						id := val.GetReadRange().GetReadId()
 						mrd.mu.Lock()
-						_, ok := mrd.activeRanges[id]
-						if !ok {
-							// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
-							mrd.mu.Unlock()
-							continue
-						}
-						_, err = mrd.activeRanges[id].writer.Write(val.GetChecksummedData().GetContent())
-						if err != nil {
-							mrd.activeRanges[id].callback(mrd.activeRanges[id].offset, mrd.activeRanges[id].totalBytesWritten, err)
-							mrd.numActiveRanges--
-							delete(mrd.activeRanges, id)
-						} else {
-							mrd.activeRanges[id] = mrdRange{
-								readID:              mrd.activeRanges[id].readID,
-								writer:              mrd.activeRanges[id].writer,
-								offset:              mrd.activeRanges[id].offset,
-								limit:               mrd.activeRanges[id].limit,
-								currentBytesWritten: mrd.activeRanges[id].currentBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
-								totalBytesWritten:   mrd.activeRanges[id].totalBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
-								callback:            mrd.activeRanges[id].callback,
+						func() {
+							currRange, ok := mrd.activeRanges[id]
+							if !ok {
+								// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
+								return
 							}
-						}
-						if val.GetRangeEnd() {
-							mrd.activeRanges[id].callback(mrd.activeRanges[id].offset, mrd.activeRanges[id].totalBytesWritten, nil)
-							mrd.numActiveRanges--
-							delete(mrd.activeRanges, id)
-						}
+							_, err = currRange.writer.Write(val.GetChecksummedData().GetContent())
+							if err != nil {
+								currRange.callback(currRange.offset, currRange.totalBytesWritten, err)
+								mrd.numActiveRanges--
+								delete(mrd.activeRanges, id)
+							} else {
+								mrd.activeRanges[id] = mrdRange{
+									readID:              currRange.readID,
+									writer:              currRange.writer,
+									offset:              currRange.offset,
+									limit:               currRange.limit,
+									currentBytesWritten: currRange.currentBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
+									totalBytesWritten:   currRange.totalBytesWritten + int64(len(val.GetChecksummedData().GetContent())),
+									callback:            currRange.callback,
+								}
+							}
+							if val.GetRangeEnd() {
+								currRange.callback(currRange.offset, currRange.totalBytesWritten, nil)
+								mrd.numActiveRanges--
+								delete(mrd.activeRanges, id)
+							}
+						}()
+
 						mrd.mu.Unlock()
 					}
 				}
