@@ -3532,7 +3532,7 @@ func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]str
 		return nil, err
 	}
 
-	for _, res := range res.SchemaBundles {		
+	for _, res := range res.SchemaBundles {
 		names = append(names, strings.TrimPrefix(res.Name, prefix+"/schemaBundles/"))
 	}
 	return names, nil
