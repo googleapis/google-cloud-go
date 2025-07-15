@@ -1144,6 +1144,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 		if off != 0 {
 			t.Errorf("flushing at 0: got %v offset, want 0", off)
 		}
+		if a := w.Attrs(); a == nil {
+			t.Errorf("flushing at 0: no attrs after flush")
+		} else if a.Size != 0 {
+			t.Errorf("flushing at 0: got size %v, want 0", a.Size)
+		}
 
 		// Write first 4 MiB data, expect progress every 3 MiB.
 		_, err = w.Write(randomBytes9MiB[0 : 4*MiB])
@@ -1170,6 +1175,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 			if off != end {
 				t.Errorf("flushing 1k data: got %v bytes committed, want %v", off, end)
 			}
+			if a := w.Attrs(); a == nil {
+				t.Errorf("flushing 1k data: no attrs after flush")
+			} else if a.Size != end {
+				t.Errorf("flushing 1k data: got size %v, want %v", a.Size, end)
+			}
 		}
 
 		// Do one more Flush that would require multiple messages (over 2 MiB).
@@ -1187,6 +1197,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 		if off != 6*MiB+4096 {
 			t.Errorf("flushing 2 MiB + 1k data: got %v bytes committed, want %v", off, 6*MiB+4096)
 		}
+		if a := w.Attrs(); a == nil {
+			t.Errorf("flushing 2 MiB + 1k data: no attrs after flush")
+		} else if a.Size != 6*MiB+4096 {
+			t.Errorf("flushing 2 MiB + 1k data: got size %v, want %v", a.Size, 6*MiB+4096)
+		}
 
 		// Do one more zero-byte flush; expect noop for this.
 		off, err = w.Flush()
@@ -1195,6 +1210,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 		}
 		if off != 6*MiB+4096 {
 			t.Errorf("flushing 0b data: got %v bytes committed, want %v", off, 6*MiB+4096)
+		}
+		if a := w.Attrs(); a == nil {
+			t.Errorf("flushing 0b data: no attrs after flush")
+		} else if a.Size != 6*MiB+4096 {
+			t.Errorf("flushing 0b data: got size %v, want %v", a.Size, 6*MiB+4096)
 		}
 
 		// Write remainder of data and close the writer.
@@ -1269,6 +1289,11 @@ func TestWriterFlushAtCloseEmulated(t *testing.T) {
 		}
 		if off != 3*MiB {
 			t.Errorf("flushing data: got %v bytes written, want %v", off, 3*MiB)
+		}
+		if a := w.Attrs(); a == nil {
+			t.Errorf("flushing data: no attrs after flush")
+		} else if a.Size != 3*MiB {
+			t.Errorf("flushing data: got size %v, want %v", a.Size, 3*MiB)
 		}
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing writer: %v", err)
@@ -1356,6 +1381,11 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 				if off != 10 {
 					t.Errorf("flushing data: got %v bytes written, want %v", off, 10)
 				}
+				if a := w.Attrs(); a == nil {
+					t.Errorf("flushing data: no attrs after flush")
+				} else if a.Size != 10 {
+					t.Errorf("flushing data: got size %v, want %v", a.Size, 10)
+				}
 				// Write another 1000 bytes and flush again.
 				n, err = w.Write(content[10:1010])
 				if err != nil {
@@ -1370,6 +1400,11 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 				}
 				if off != 1010 {
 					t.Errorf("flushing data: got %v bytes written, want %v", off, 1010)
+				}
+				if a := w.Attrs(); a == nil {
+					t.Errorf("flushing data: no attrs after flush")
+				} else if a.Size != 1010 {
+					t.Errorf("flushing data: got size %v, want %v", a.Size, 1010)
 				}
 				// Write the rest of the object
 				_, err = w.Write(content[1010:])
@@ -2490,6 +2525,47 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					}
 				}
 			})
+		}
+	})
+}
+
+func TestWriterChunkBufferReuseEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		c := &Client{tc: client}
+		if err := c.Bucket(bucket).Create(ctx, project, &BucketAttrs{}); err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		objName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+		w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
+		const chunkSize = 32 * 1024 * 1024
+		w.ChunkSize = chunkSize
+
+		// Write twice using the same buffer, then clear it.
+		buf := bytes.Repeat([]byte("A"), chunkSize)
+		if n, err := w.Write(buf); err != nil || n != chunkSize {
+			t.Errorf("failed first write: wrote %v, want %v, err %v", n, chunkSize, err)
+		}
+		copy(buf, bytes.Repeat([]byte("B"), chunkSize))
+		if n, err := w.Write(buf); err != nil || n != chunkSize {
+			t.Errorf("failed second write: wrote %v, want %v, err %v", n, chunkSize, err)
+		}
+		clear(buf)
+		if err := w.Close(); err != nil {
+			t.Errorf("failed close: %v", err)
+		}
+
+		r, err := c.Bucket(bucket).Object(objName).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		defer r.Close()
+		want := append(bytes.Repeat([]byte("A"), chunkSize), bytes.Repeat([]byte("B"), chunkSize)...)
+		got, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("reading object: %v", err)
+		}
+		if !bytes.Equal(got, want) {
+			t.Errorf("content does not match, got len %v, want len %v", len(got), len(want))
 		}
 	})
 }
