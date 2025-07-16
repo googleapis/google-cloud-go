@@ -345,9 +345,6 @@
         "privilegedaccessmanager": {
             "component": "privilegedaccessmanager"
         },
-        "pubsub/v2": {
-            "component": "pubsub/v2"
-        },
         "rapidmigrationassessment": {
             "component": "rapidmigrationassessment"
         },
