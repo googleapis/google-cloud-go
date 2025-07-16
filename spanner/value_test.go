@@ -1917,6 +1917,10 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<INT64> to GenericColumnValue", proto: listProto(intProto(5), nullProto(), stringProto("bcd")), protoType: listType(intType()), want: GenericColumnValue{Type: listType(intType()), Value: listProto(intProto(5), nullProto(), stringProto("bcd"))}},
 
 		// Custom base types.
+		{desc: "decode STRING to *CustomString", proto: stringProto("abc"), protoType: stringType(), want: (*CustomString)(&sValue)},
+		{desc: "decode STRING to *CustomInt64", proto: intProto(15), protoType: intType(), want: (*CustomInt64)(&iValue)},
+		{desc: "decode STRING to *CustomBool", proto: boolProto(true), protoType: boolType(), want: (*CustomBool)(&bValue)},
+		{desc: "decode STRING to *CustomFloat64", proto: floatProto(3.14), protoType: floatType(), want: (*CustomFloat64)(&fValue)},
 		{desc: "decode STRING to CustomString", proto: stringProto("bar"), protoType: stringType(), want: CustomString("bar")},
 		{desc: "decode BYTES to CustomBytes", proto: bytesProto([]byte("ab")), protoType: bytesType(), want: CustomBytes("ab")},
 		{desc: "decode INT64 to CustomInt64", proto: intProto(-100), protoType: intType(), want: CustomInt64(-100)},
