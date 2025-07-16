@@ -16,10 +16,12 @@ package adapt
 
 import "cloud.google.com/go/internal/optional"
 
+// Option to customize proto descriptor conversion.
 type Option interface {
 	applyCustomClientOpt(*customConfig)
 }
 
+// type for collecting custom adapt Option values.
 type customConfig struct {
 	useTimestampWellKnownType bool
 	useProto3                 bool
