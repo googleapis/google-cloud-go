@@ -1,6 +1,34 @@
 # Changes
 
 
+## [1.94.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.93.0...aiplatform/v1.94.0) (2025-07-16)
+
+
+### Features
+
+* **aiplatform:** Add Aggregation Output in EvaluateDataset Get Operation Response ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** Add API for Managed OSS Fine Tuning ([#12552](https://github.com/googleapis/google-cloud-go/issues/12552)) ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** Add flexstart option to v1beta1 ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** Some comments changes in machine_resources.proto to v1beta1 ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** Vertex AI Model Garden custom model deploy Public Preview ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `boot_disk_type` in message `.google.cloud.aiplatform.v1beta1.DiskSpec` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `machine_spec` in message `.google.cloud.aiplatform.v1beta1.DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `max_replica_count` in message `.google.cloud.aiplatform.v1beta1.AutomaticResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `max_replica_count` in message `.google.cloud.aiplatform.v1beta1.DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `min_replica_count` in message `.google.cloud.aiplatform.v1beta1.AutomaticResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `min_replica_count` in message `.google.cloud.aiplatform.v1beta1.DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `required_replica_count` in message `.google.cloud.aiplatform.v1beta1.DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field learning_rate_multiplier in message .google.cloud.aiplatform.v1beta1.SupervisedHyperParameters is changed ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** A comment for field model in message .google.cloud.aiplatform.v1beta1.TunedModel is changed ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** A comment for field training_dataset_uri in message .google.cloud.aiplatform.v1beta1.SupervisedTuningSpec is changed ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** A comment for field validation_dataset_uri in message .google.cloud.aiplatform.v1beta1.SupervisedTuningSpec is changed ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** A comment for message `DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** Add constraints for AggregationMetric enum and default value for flip_enabled field in AutoraterConfig ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+
 ## [1.93.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.92.0...aiplatform/v1.93.0) (2025-07-09)
 
 

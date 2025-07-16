@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/lustre/v0.1.1...lustre/v0.2.0) (2025-07-16)
+
+
+### Features
+
+* **lustre:** Add a new instance state UPDATING ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+
+
+### Documentation
+
+* **lustre:** Deprecate gke_support_enabled flag ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/lustre/v0.1.0...lustre/v0.1.1) (2025-06-04)
 
 
