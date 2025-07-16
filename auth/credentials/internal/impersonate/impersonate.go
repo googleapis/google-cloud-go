@@ -27,6 +27,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/transport/headers"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -128,7 +129,7 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	auth.SetAuthHeader(sourceToken, req)
+	headers.SetAuthHeader(sourceToken, req)
 	logger.DebugContext(ctx, "impersonated token request", "request", internallog.HTTPRequest(req, b))
 	resp, body, err := internal.DoRequest(o.Client, req)
 	if err != nil {
@@ -153,8 +154,14 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 		Type:   internal.TokenTypeBearer,
 	}
 	// Fetch trust boundary data if a provider is configured, and attach it to the token.
-	if err := auth.ApplyTrustBoundaryData(ctx, o.TrustBoundaryDataProvider, token); err != nil {
-		return nil, fmt.Errorf("credentials: error fetching the trust boundary data: %w", err)
+	if o.TrustBoundaryDataProvider != nil {
+		trustBoundaryData, err := o.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
+		if err != nil {
+			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
+		}
+		if trustBoundaryData != nil {
+			token.TrustBoundaryData = *trustBoundaryData
+		}
 	}
 	return token, nil
 }

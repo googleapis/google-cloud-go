@@ -22,10 +22,10 @@ import (
 	"strings"
 	"testing"
 
-	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/idtoken"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/testutil"
+	"cloud.google.com/go/auth/internal/transport/headers"
 )
 
 const (
@@ -52,7 +52,7 @@ func TestNewCredentials_CredentialsFile(t *testing.T) {
 		t.Fatalf("unable to retrieve Token: %v", err)
 	}
 	req := &http.Request{Header: make(http.Header)}
-	auth.SetAuthHeader(tok, req)
+	headers.SetAuthHeader(tok, req)
 	if !strings.HasPrefix(req.Header.Get("Authorization"), "Bearer ") {
 		t.Fatalf("token should sign requests with Bearer Authorization header")
 	}

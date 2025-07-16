@@ -24,6 +24,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/internal/transport/headers"
 	detect "cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal/transport"
 	"github.com/googleapis/gax-go/v2/internallog"
@@ -241,5 +242,5 @@ func NewClient(opts *Options) (*http.Client, error) {
 func SetAuthHeader(token *auth.Token, req *http.Request) {
 	// This function is a compatibility wrapper. It forwards the call to the
 	// new, consolidated function in the auth package.
-	auth.SetAuthHeader(token, req)
+	headers.SetAuthHeader(token, req)
 }

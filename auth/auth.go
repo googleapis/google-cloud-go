@@ -49,9 +49,6 @@ const (
 	defaultExpiryDelta = 225 * time.Second
 
 	universeDomainDefault = "googleapis.com"
-
-	// trustBoundaryNoOp is a constant indicating no trust boundary is enforced.
-	trustBoundaryNoOp = "0x0"
 )
 
 // tokenState represents different states for a [Token].
@@ -106,102 +103,7 @@ type Token struct {
 	// It contains information about the regions or environments where the token is valid.
 	// This data is used to enforce trust boundary restrictions on requests made with the token.
 	// TrustBoundaryData is a value type for immutability after token creation.
-	TrustBoundaryData TrustBoundaryData
-}
-
-// SetAuthHeader uses the provided token to set the Authorization and trust
-// boundary headers on a request. If the token.Type is empty, the type is
-// assumed to be Bearer.
-func SetAuthHeader(token *Token, req *http.Request) {
-	typ := token.Type
-	if typ == "" {
-		typ = internal.TokenTypeBearer
-	}
-	req.Header.Set("Authorization", typ+" "+token.Value)
-
-	headerVal, setHeader := token.TrustBoundaryData.trustBoundaryHeader()
-	if setHeader {
-		req.Header.Set("x-allowed-locations", headerVal)
-	}
-}
-
-// SetAuthMetadata uses the provided token to set the Authorization and trust
-// boundary metadata. If the token.Type is empty, the type is assumed to be
-// Bearer.
-func SetAuthMetadata(token *Token, m map[string]string) {
-	typ := token.Type
-	if typ == "" {
-		typ = internal.TokenTypeBearer
-	}
-	m["authorization"] = typ + " " + token.Value
-
-	headerVal, setHeader := token.TrustBoundaryData.trustBoundaryHeader()
-	if setHeader {
-		m["x-allowed-locations"] = headerVal
-	}
-}
-
-// ApplyTrustBoundaryData fetches trust boundary data using the provider and applies it to the token.
-// It's a helper method to consolidate the logic used by different token providers.
-func ApplyTrustBoundaryData(ctx context.Context, provider TrustBoundaryDataProvider, token *Token) error {
-	if provider == nil {
-		return nil
-	}
-	data, err := provider.GetTrustBoundaryData(ctx, token)
-	if err != nil {
-		return err
-	}
-	if data != nil {
-		token.TrustBoundaryData = *data
-	}
-	return nil
-}
-
-// TrustBoundaryData represents the trust boundary data associated with a token.
-// It contains information about the regions or environments where the token is valid.
-type TrustBoundaryData struct {
-	// Locations is the list of locations that the token is allowed to be used in.
-	Locations []string
-	// EncodedLocations represents the locations in an encoded format.
-	EncodedLocations string
-}
-
-// IsNoOp reports whether the trust boundary has a no-op value.
-func (t *TrustBoundaryData) IsNoOp() bool {
-	if t == nil {
-		return false
-	}
-	return t.EncodedLocations == trustBoundaryNoOp
-}
-
-// IsEmpty reports whether the trust boundary is empty.
-func (t *TrustBoundaryData) IsEmpty() bool {
-	if t == nil {
-		return true
-	}
-	return t.EncodedLocations == ""
-}
-
-// trustBoundaryHeader returns the value for the x-allowed-locations header and a bool
-// indicating if the header should be set. The return values are structured to
-// handle three distinct states required by the backend:
-// 1. Header not set: (value="", present=false) -> data is empty.
-// 2. Header set to an empty string: (value="", present=true) -> data is a no-op.
-// 3. Header set to a value: (value="...", present=true) -> data has locations.
-func (t *TrustBoundaryData) trustBoundaryHeader() (value string, present bool) {
-	if t.IsEmpty() {
-		// If the data is empty, the header should not be present.
-		return "", false
-	}
-
-	// If data is not empty, the header should always be present.
-	present = true
-	value = ""
-	if !t.IsNoOp() {
-		value = t.EncodedLocations
-	}
-	// For a no-op, the backend requires an empty string.
-	return value, present
+	TrustBoundaryData internal.TrustBoundaryData
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -341,7 +243,7 @@ type CredentialsOptions struct {
 type TrustBoundaryDataProvider interface {
 	// GetTrustBoundaryData retrieves the trust boundary data.
 	// The provided token is used to authenticate the lookup request.
-	GetTrustBoundaryData(ctx context.Context, token *Token) (*TrustBoundaryData, error)
+	GetTrustBoundaryData(ctx context.Context, token *Token) (*internal.TrustBoundaryData, error)
 }
 
 // NewCredentials returns new [Credentials] from the provided options.
@@ -739,8 +641,14 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		}
 		token.Value = tokenRes.IDToken
 	}
-	if err := ApplyTrustBoundaryData(ctx, tp.opts.TrustBoundaryDataProvider, token); err != nil {
-		return nil, fmt.Errorf("auth: error fetching the trust boundary data: %w", err)
+	if tp.opts.TrustBoundaryDataProvider != nil {
+		trustBoundaryData, err := tp.opts.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
+		if err != nil {
+			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
+		}
+		if trustBoundaryData != nil {
+			token.TrustBoundaryData = *trustBoundaryData
+		}
 	}
 	return token, nil
 }

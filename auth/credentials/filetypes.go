@@ -37,7 +37,7 @@ type internalDataProviderAdapter struct {
 
 // GetTrustBoundaryData calls the internal provider and converts the internal
 // trustboundary.Data to the public auth.TrustBoundaryData.
-func (a *internalDataProviderAdapter) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*auth.TrustBoundaryData, error) {
+func (a *internalDataProviderAdapter) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internalauth.TrustBoundaryData, error) {
 	internalData, err := a.internalProvider.GetTrustBoundaryData(ctx, token)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (a *internalDataProviderAdapter) GetTrustBoundaryData(ctx context.Context, 
 		return nil, nil
 	}
 	// Convert the internal struct to the public one.
-	return &auth.TrustBoundaryData{
+	return &internalauth.TrustBoundaryData{
 		Locations:        internalData.Locations,
 		EncodedLocations: internalData.EncodedLocations,
 	}, nil

@@ -18,7 +18,7 @@ import (
 	"context"
 	"net/http"
 
-	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/internal/transport/headers"
 	"cloud.google.com/go/auth/credentials/idtoken"
 )
 
@@ -39,5 +39,5 @@ func ExampleNewCredentials_setAuthorizationHeader() {
 	if err != nil {
 		// Handle error.
 	}
-	auth.SetAuthHeader(token, req)
+	headers.SetAuthHeader(token, req)
 }

@@ -47,6 +47,9 @@ const (
 	// DefaultUniverseDomain is the default value for universe domain.
 	// Universe domain is the default service domain for a given Cloud universe.
 	DefaultUniverseDomain = "googleapis.com"
+
+	// trustBoundaryNoOp is a constant indicating no trust boundary is enforced.
+	trustBoundaryNoOp = "0x0"
 )
 
 type clonableTransport interface {
@@ -222,4 +225,51 @@ func getMetadataUniverseDomain(ctx context.Context, client *metadata.Client) (st
 // name.
 func FormatIAMServiceAccountResource(name string) string {
 	return fmt.Sprintf("projects/-/serviceAccounts/%s", name)
+}
+
+// TrustBoundaryData represents the trust boundary data associated with a token.
+// It contains information about the regions or environments where the token is valid.
+type TrustBoundaryData struct {
+	// Locations is the list of locations that the token is allowed to be used in.
+	Locations []string
+	// EncodedLocations represents the locations in an encoded format.
+	EncodedLocations string
+}
+
+// IsNoOp reports whether the trust boundary has a no-op value.
+func (t *TrustBoundaryData) IsNoOp() bool {
+	if t == nil {
+		return false
+	}
+	return t.EncodedLocations == trustBoundaryNoOp
+}
+
+// IsEmpty reports whether the trust boundary is empty.
+func (t *TrustBoundaryData) IsEmpty() bool {
+	if t == nil {
+		return true
+	}
+	return t.EncodedLocations == ""
+}
+
+// trustBoundaryHeader returns the value for the x-allowed-locations header and a bool
+// indicating if the header should be set. The return values are structured to
+// handle three distinct states required by the backend:
+// 1. Header not set: (value="", present=false) -> data is empty.
+// 2. Header set to an empty string: (value="", present=true) -> data is a no-op.
+// 3. Header set to a value: (value="...", present=true) -> data has locations.
+func (t *TrustBoundaryData) TrustBoundaryHeader() (value string, present bool) {
+	if t.IsEmpty() {
+		// If the data is empty, the header should not be present.
+		return "", false
+	}
+
+	// If data is not empty, the header should always be present.
+	present = true
+	value = ""
+	if !t.IsNoOp() {
+		value = t.EncodedLocations
+	}
+	// For a no-op, the backend requires an empty string.
+	return value, present
 }

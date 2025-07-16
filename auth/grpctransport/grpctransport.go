@@ -30,6 +30,7 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
+	"cloud.google.com/go/auth/internal/transport/headers"
 	"github.com/googleapis/gax-go/v2/internallog"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
@@ -428,7 +429,7 @@ func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ..
 		}
 	}
 	metadata := make(map[string]string, len(c.metadata)+1)
-	auth.SetAuthMetadata(token, metadata)
+	headers.SetAuthMetadata(token, metadata)
 	for k, v := range c.metadata {
 		metadata[k] = v
 	}
