@@ -16,8 +16,10 @@ package adapt
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
@@ -1031,10 +1033,10 @@ func TestSchemaToProtoConversion(t *testing.T) {
 }
 
 func TestProtoJSONSerialization(t *testing.T) {
-
 	sourceSchema := &storagepb.TableSchema{
 		Fields: []*storagepb.TableFieldSchema{
 			{Name: "record_id", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_NULLABLE},
+			{Name: "created_at", Type: storagepb.TableFieldSchema_TIMESTAMP, Mode: storagepb.TableFieldSchema_NULLABLE},
 			{
 				Name: "details",
 				Type: storagepb.TableFieldSchema_STRUCT,
@@ -1047,12 +1049,13 @@ func TestProtoJSONSerialization(t *testing.T) {
 		},
 	}
 
-	descriptor, err := StorageSchemaToProto2Descriptor(sourceSchema, "root")
+	descriptor, err := StorageSchemaToProto2Descriptor(sourceSchema, "root", WithTimestampWellKnownType(true))
 	if err != nil {
 		t.Fatalf("failed to construct descriptor")
 	}
 
-	sampleRecord := []byte(`{"record_id":"12345","details":[{"key":"name","value":"jimmy"},{"key":"title","value":"clown"}]}`)
+	ts := time.Now().UTC().Format(time.RFC3339Nano)
+	sampleRecord := []byte(fmt.Sprintf(`{"record_id":"12345","created_at": "%s","details":[{"key":"name","value":"jimmy"},{"key":"title","value":"clown"}]}`, ts))
 
 	messageDescriptor, ok := descriptor.(protoreflect.MessageDescriptor)
 	if !ok {
@@ -1078,8 +1081,15 @@ func TestProtoJSONSerialization(t *testing.T) {
 				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 			},
 			{
-				Name:     proto.String("details"),
+				Name:     proto.String("created_at"),
 				Number:   proto.Int32(2),
+				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+				TypeName: proto.String(".google.protobuf.Timestamp"),
+				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			},
+			{
+				Name:     proto.String("details"),
+				Number:   proto.Int32(3),
 				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
 				TypeName: proto.String(".root__details"),
 				Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
@@ -1140,7 +1150,6 @@ func TestProtoJSONSerialization(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("mismatched json: got\n%q\nwant\n%q", gotBytes, sampleRecord)
 	}
-
 }
 
 func TestNormalizeDescriptor(t *testing.T) {

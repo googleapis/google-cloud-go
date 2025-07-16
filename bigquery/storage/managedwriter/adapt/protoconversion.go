@@ -25,6 +25,7 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -114,6 +115,9 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 // filename used by well known types proto
 var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 
+// filename used by timestamp proto
+var wellKnownTypesTimestampName = "google/protobuf/timestamp.proto"
+
 var rangeTypesPrefix = "rangemessage_range_"
 
 // dependencyCache is used to reduce the number of unique messages we generate by caching based on the tableschema.
@@ -180,7 +184,7 @@ func (dm *dependencyCache) add(schema *storagepb.TableSchema, descriptor protore
 	return nil
 }
 
-func (dm *dependencyCache) addRangeByElementType(typ storagepb.TableFieldSchema_Type, useProto3 bool) (protoreflect.MessageDescriptor, error) {
+func (dm *dependencyCache) addRangeByElementType(typ storagepb.TableFieldSchema_Type, cfg *customConfig) (protoreflect.MessageDescriptor, error) {
 	if md, present := dm.rangeTypes[typ]; present {
 		// already added, do nothing.
 		return md, nil
@@ -212,7 +216,7 @@ func (dm *dependencyCache) addRangeByElementType(typ storagepb.TableFieldSchema_
 	// we put the range types outside the hierarchical namespace as they're effectively BQ-specific well-known types.
 	msgTypeName := fmt.Sprintf("%s%s", rangeTypesPrefix, strings.ToLower(typ.String()))
 	// use a new dependency cache, as we don't want to taint the main one due to matching schema
-	md, err := storageSchemaToDescriptorInternal(ts, msgTypeName, newDependencyCache(), useProto3)
+	md, err := storageSchemaToDescriptorInternal(ts, msgTypeName, newDependencyCache(), cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate range descriptor %q: %v", msgTypeName, err)
 	}
@@ -229,23 +233,35 @@ func (dm *dependencyCache) getRange(typ storagepb.TableFieldSchema_Type) protore
 }
 
 // StorageSchemaToProto2Descriptor builds a protoreflect.Descriptor for a given table schema using proto2 syntax.
-func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
+func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope string, opts ...Option) (protoreflect.Descriptor, error) {
 	dc := newDependencyCache()
+	cfg := &customConfig{
+		useProto3: false,
+	}
+	for _, opt := range opts {
+		opt.applyCustomClientOpt(cfg)
+	}
 	// TODO: b/193064992 tracks support for wrapper types.  In the interim, disable wrapper usage.
-	return storageSchemaToDescriptorInternal(inSchema, scope, dc, false)
+	return storageSchemaToDescriptorInternal(inSchema, scope, dc, cfg)
 }
 
 // StorageSchemaToProto3Descriptor builds a protoreflect.Descriptor for a given table schema using proto3 syntax.
 //
 // NOTE: Currently the write API doesn't yet support proto3 behaviors (default value, wrapper types, etc), but this is provided for
 // completeness.
-func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
+func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope string, opts ...Option) (protoreflect.Descriptor, error) {
 	dc := newDependencyCache()
-	return storageSchemaToDescriptorInternal(inSchema, scope, dc, true)
+	cfg := &customConfig{
+		useProto3: true,
+	}
+	for _, opt := range opts {
+		opt.applyCustomClientOpt(cfg)
+	}
+	return storageSchemaToDescriptorInternal(inSchema, scope, dc, cfg)
 }
 
 // Internal implementation of the conversion code.
-func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.MessageDescriptor, error) {
+func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, cfg *customConfig) (protoreflect.MessageDescriptor, error) {
 	if inSchema == nil {
 		return nil, newConversionError(scope, fmt.Errorf("no input schema was provided"))
 	}
@@ -277,14 +293,14 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 					deps = append(deps, foundDesc.ParentFile())
 				}
 				// Construct field descriptor for the message.
-				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
+				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), cfg)
 				fields = append(fields, fdp)
 			} else {
 				// Wrap the current struct's fields in a TableSchema outer message, and then build the submessage.
 				ts := &storagepb.TableSchema{
 					Fields: f.GetFields(),
 				}
-				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, useProto3)
+				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, cfg)
 				if err != nil {
 					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %w", err))
 				}
@@ -295,7 +311,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				if err != nil {
 					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %w", err))
 				}
-				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
+				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, cfg)
 				fields = append(fields, fdp)
 			}
 		} else {
@@ -305,7 +321,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				if ret == nil {
 					return nil, fmt.Errorf("field %q is a RANGE, but doesn't include RangeElementType info", f.GetName())
 				}
-				foundDesc, err := cache.addRangeByElementType(ret.GetType(), useProto3)
+				foundDesc, err := cache.addRangeByElementType(ret.GetType(), cfg)
 				if err != nil {
 					return nil, err
 				}
@@ -323,7 +339,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 					}
 				}
 			}
-			fd := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
+			fd := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, cfg)
 			fields = append(fields, fd)
 		}
 	}
@@ -335,6 +351,9 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 
 	// Use the local dependencies to generate a list of filenames.
 	depNames := []string{wellKnownTypesWrapperName}
+	if cfg.useTimestampWellKnownType {
+		depNames = append(depNames, wellKnownTypesTimestampName)
+	}
 	for _, d := range deps {
 		depNames = append(depNames, d.ParentFile().Path())
 	}
@@ -346,7 +365,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 		Syntax:      proto.String("proto3"),
 		Dependency:  depNames,
 	}
-	if !useProto3 {
+	if !cfg.useProto3 {
 		fdp.Syntax = proto.String("proto2")
 	}
 
@@ -356,6 +375,9 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	fdpList := []*descriptorpb.FileDescriptorProto{
 		fdp,
 		protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
+	}
+	if cfg.useTimestampWellKnownType {
+		fdpList = append(fdpList, protodesc.ToFileDescriptorProto(timestamppb.File_google_protobuf_timestamp_proto))
 	}
 	fdpList = append(fdpList, cache.getFileDescriptorProtos()...)
 
@@ -402,7 +424,7 @@ func messageDependsOnFile(msg protoreflect.MessageDescriptor, file protoreflect.
 // For proto2, we propagate the mode->label annotation as expected.
 //
 // Messages are always nullable, and repeated fields are as well.
-func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) *descriptorpb.FieldDescriptorProto {
+func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, cfg *customConfig) *descriptorpb.FieldDescriptorProto {
 	name := field.GetName()
 	var fdp *descriptorpb.FieldDescriptorProto
 
@@ -411,28 +433,37 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(scope),
-			Label:    convertModeToLabel(field.GetMode(), useProto3),
+			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
 	} else if field.GetType() == storagepb.TableFieldSchema_RANGE {
 		fdp = &descriptorpb.FieldDescriptorProto{
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(fmt.Sprintf("%s%s", rangeTypesPrefix, strings.ToLower(field.GetRangeElementType().GetType().String()))),
-			Label:    convertModeToLabel(field.GetMode(), useProto3),
+			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
+		}
+	} else if field.GetType() == storagepb.TableFieldSchema_TIMESTAMP && cfg.useTimestampWellKnownType {
+		// Only TIMESTAMP supports timestamppb: https://cloud.google.com/bigquery/docs/supported-data-types
+		fdp = &descriptorpb.FieldDescriptorProto{
+			Name:     proto.String(name),
+			Number:   proto.Int32(idx),
+			Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+			TypeName: proto.String(".google.protobuf.Timestamp"),
+			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
 	} else {
 		// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
-		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
+		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !cfg.useProto3 {
 			outType := bqTypeToFieldTypeMap[field.GetType()]
 			fdp = &descriptorpb.FieldDescriptorProto{
 				Name:   proto.String(name),
 				Number: proto.Int32(idx),
 				Type:   outType.Enum(),
-				Label:  convertModeToLabel(field.GetMode(), useProto3),
+				Label:  convertModeToLabel(field.GetMode(), cfg.useProto3),
 			}
 
 			// Special case: proto2 repeated fields may benefit from using packed annotation.
-			if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !useProto3 {
+			if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !cfg.useProto3 {
 				for _, v := range packedTypes {
 					if outType == v {
 						fdp.Options = &descriptorpb.FieldOptions{
