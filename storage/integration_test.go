@@ -1627,6 +1627,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 			length int64
 		}{
 			{name: "negative offset", start: -5, length: -1},
+			{name: "too large negative offset", start: -1000, length: -1},
 			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
 			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
 		}
@@ -5911,6 +5912,7 @@ func TestIntegration_Reader(t *testing.T) {
 			{"-2 offset", -2, -1, 2},
 			{"-object length offset", -objlen, -1, objlen},
 			{"-half of object length offset", -(objlen / 2), -1, objlen / 2},
+			{"-offset above object length", -(2 * objlen), -1, objlen},
 		} {
 			t.Run(r.desc, func(t *testing.T) {
 
@@ -5946,6 +5948,10 @@ func TestIntegration_Reader(t *testing.T) {
 						switch {
 						case r.offset < 0: // The case of reading the last N bytes.
 							start := objlen + r.offset
+							// If negative offset is before the file size we expect the whole file.
+							if start < 0 {
+								start = 0
+							}
 							if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
 								t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
 							}
