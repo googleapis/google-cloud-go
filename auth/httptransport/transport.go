@@ -26,8 +26,8 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
-	"cloud.google.com/go/auth/internal/transport/headers"
 	"cloud.google.com/go/auth/internal/transport/cert"
+	"cloud.google.com/go/auth/internal/transport/headers"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/net/http2"
 )
