@@ -46,6 +46,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
 const adminAddr = "bigtableadmin.UNIVERSE_DOMAIN:443"
 const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
@@ -1166,7 +1167,8 @@ func (ac *AdminClient) AuthorizedViewIAM(table, authorizedView string) *iam.Hand
 	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.authorizedViewPath(table, authorizedView))
 }
 
-const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
+// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
+const instanceAdminAddr = "bigtableadmin.UNIVERSE_DOMAIN:443"
 const mtlsInstanceAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
 // InstanceAdminClient is a client type for performing admin operations on instances.
