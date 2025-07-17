@@ -48,7 +48,7 @@ const (
 	// Universe domain is the default service domain for a given Cloud universe.
 	DefaultUniverseDomain = "googleapis.com"
 
-	// trustBoundaryNoOp is a constant indicating no trust boundary is enforced.
+	// TrustBoundaryNoOp is a constant indicating no trust boundary is enforced.
 	TrustBoundaryNoOp = "0x0"
 )
 
@@ -274,7 +274,7 @@ func NewNoOpTrustBoundaryData() *TrustBoundaryData {
 	}
 }
 
-// trustBoundaryHeader returns the value for the x-allowed-locations header and a bool
+// TrustBoundaryHeader returns the value for the x-allowed-locations header and a bool
 // indicating if the header should be set. The return values are structured to
 // handle three distinct states required by the backend:
 // 1. Header not set: (value="", present=false) -> data is empty.
