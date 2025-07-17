@@ -1622,14 +1622,15 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 		}
 
 		last5s := []struct {
-			name   string
-			start  int64
-			length int64
+			name      string
+			start     int64
+			length    int64
+			wantStart int64
 		}{
-			{name: "negative offset", start: -5, length: -1},
-			{name: "too large negative offset", start: -1000, length: -1},
-			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
-			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
+			{name: "negative offset", start: -5, length: -1, wantStart: 31},
+			{name: "too large negative offset", start: -1000, length: -1, wantStart: 0},
+			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5, wantStart: 31},
+			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1, wantStart: 31},
 		}
 
 		for _, last5 := range last5s {
@@ -1637,14 +1638,14 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				// Test Read and WriteTo.
 				for _, c := range readCases {
 					t.Run(c.desc, func(t *testing.T) {
-						wantBuf := contents[len(contents)-5:]
+						wantBuf := contents[last5.wantStart:]
 						r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
 						if err != nil {
 							t.Fatalf("Failed to make range read: %v", err)
 						}
 						defer r.Close()
 
-						if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+						if got, want := r.Attrs.StartOffset, last5.wantStart; got != want {
 							t.Errorf("StartOffset mismatch, got %d want %d", got, want)
 						}
 
@@ -1652,7 +1653,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 						if err != nil {
 							t.Fatalf("reading object: %v", err)
 						}
-						if got, want := len(gotBuf), 5; got != want {
+						if got, want := len(gotBuf), len(contents)-int(last5.wantStart); got != want {
 							t.Errorf("Body length mismatch, got %d want %d", got, want)
 						} else if diff := cmp.Diff(string(gotBuf), string(wantBuf)); diff != "" {
 							t.Errorf("Content read does not match - got(-),want(+):\n%s", diff)
