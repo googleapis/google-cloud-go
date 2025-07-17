@@ -6,13 +6,13 @@ require (
 	cloud.google.com/go/storage v1.55.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/martian/v3 v3.3.3
-	github.com/googleapis/gax-go/v2 v2.14.2
+	github.com/googleapis/gax-go/v2 v2.15.0
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/sdk v1.36.0
 	go.opentelemetry.io/otel/trace v1.36.0
 	golang.org/x/oauth2 v0.30.0
-	google.golang.org/api v0.239.0
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822
+	google.golang.org/api v0.242.0
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250715232539-7130f93afb79
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
 )
@@ -54,6 +54,6 @@ require (
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
-	google.golang.org/genproto v0.0.0-20250505200425-f936aa4a68b2 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250512202823-5a2f75b736a9 // indirect
+	google.golang.org/genproto v0.0.0-20250603155806-513f23925822 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250603155806-513f23925822 // indirect
 )
