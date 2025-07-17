@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	cloud.google.com/go/translate v1.12.6
-	google.golang.org/api v0.239.0
+	google.golang.org/api v0.242.0
 	google.golang.org/grpc v1.73.0
 )
 

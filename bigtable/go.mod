@@ -10,16 +10,16 @@ require (
 	github.com/google/btree v1.1.3
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/cloud-bigtable-clients-test v0.0.3
-	github.com/googleapis/gax-go/v2 v2.14.2
+	github.com/googleapis/cloud-bigtable-clients-test v0.0.4
+	github.com/googleapis/gax-go/v2 v2.15.0
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/metric v1.36.0
 	go.opentelemetry.io/otel/sdk v1.36.0
 	go.opentelemetry.io/otel/sdk/metric v1.36.0
-	google.golang.org/api v0.239.0
-	google.golang.org/genproto v0.0.0-20250505200425-f936aa4a68b2
-	google.golang.org/genproto/googleapis/api v0.0.0-20250603155806-513f23925822
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822
+	google.golang.org/api v0.242.0
+	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
+	google.golang.org/genproto/googleapis/api v0.0.0-20250715232539-7130f93afb79
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250715232539-7130f93afb79
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
 	rsc.io/binaryregexp v0.2.0
