@@ -2,6 +2,14 @@
 
 
 
+## [0.121.4](https://github.com/googleapis/google-cloud-go/compare/v0.121.3...v0.121.4) (2025-07-17)
+
+
+### Bug Fixes
+
+* **geminidataanalytics:** Correct resource reference type for `parent` field in `data_chat_service.proto` ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **internal/postprocessor:** Add git ([#12524](https://github.com/googleapis/google-cloud-go/issues/12524)) ([82030ee](https://github.com/googleapis/google-cloud-go/commit/82030eec5d66f25ebc3fee1fda4b45ced370fc2b))
+
 ## [0.121.3](https://github.com/googleapis/google-cloud-go/compare/v0.121.2...v0.121.3) (2025-06-25)
 
 
