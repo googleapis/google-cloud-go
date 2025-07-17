@@ -1467,7 +1467,7 @@ func (s *CustomObjSizeReadStream) RecvMsg(m any) error {
 	return err
 }
 
-func TestNewEmulated(t *testing.T) {
+func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
 	ctx := context.Background()
@@ -1485,6 +1485,9 @@ func TestNewEmulated(t *testing.T) {
 		})
 
 	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
 
 	var (
 		contents = randomBytes9MiB

@@ -1684,6 +1684,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	if params.offset < 0 {
 		startOffset = size + params.offset
 	}
+	// If caller has specified a negative start offset that's larger than the
+	// reported size, start at the beginning of the object.
+	if startOffset < 0 {
+		startOffset = 0
+	}
 
 	// The remaining bytes are the lesser of the requested range and all bytes
 	// after params.offset.
@@ -1723,9 +1728,10 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			finalized:      finalized,
 			negativeOffset: negativeOffset,
 		},
-		checkCRC: checkCRC,
-		handle:   &handle,
-		remain:   remain,
+		checkCRC:    checkCRC,
+		handle:      &handle,
+		remain:      remain,
+		unfinalized: !finalized,
 	}
 
 	// For a zero-length request, explicitly close the stream and set remaining
