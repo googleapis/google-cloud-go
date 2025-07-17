@@ -1413,16 +1413,16 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 	})
 }
 
-// CustomObjSizeReadStream intercepts BidiReadObjectResponse messages and
+// customObjSizeReadStream intercepts BidiReadObjectResponse messages and
 // changes the object size in the BidiReadObjectResponse.Metadata to
 // customRecvSize.
-type CustomObjSizeReadStream struct {
+type customObjSizeReadStream struct {
 	grpc.ClientStream
 	hasReceivedMsg bool
 	customRecvSize int64
 }
 
-func (s *CustomObjSizeReadStream) RecvMsg(m any) error {
+func (s *customObjSizeReadStream) RecvMsg(m any) error {
 	// The first message should contain the object info. After that, we can
 	// receive and parse messages as usual.
 	if s.hasReceivedMsg {
@@ -1479,7 +1479,7 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 
 			if method == "/google.storage.v2.Storage/BidiReadObject" {
 				// Intercept the message and set the object size.
-				clientStream = &CustomObjSizeReadStream{ClientStream: clientStream, customRecvSize: receivedObjectSize}
+				clientStream = &customObjSizeReadStream{ClientStream: clientStream, customRecvSize: receivedObjectSize}
 			}
 			return clientStream, err
 		})
