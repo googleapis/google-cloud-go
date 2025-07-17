@@ -113,7 +113,7 @@ func TestQuery(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if ts.IsZero() {
+		if ts.Time.IsZero() {
 			t.Errorf("got zero timestamp, want current")
 		}
 

@@ -24,6 +24,7 @@ import (
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"cloud.google.com/go/bigquery/v2/query/adapt"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -43,8 +44,7 @@ func TestReadNestedObject(t *testing.T) {
 					ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 					defer cancel()
 
-					req := client.FromSQL("SELECT 40 as age, [STRUCT(STRUCT('1' as a, '2' as b) as object)] as nested")
-
+					req := client.FromSQL(`SELECT 40 as age, [STRUCT(STRUCT('1' as a, '2' as b) as object)] as nested`)
 					q, err := client.StartQuery(ctx, req)
 					if err != nil {
 						t.Fatalf("Run() error: %v", err)
@@ -112,6 +112,101 @@ func TestReadNestedObject(t *testing.T) {
 					}
 					if ms.Nested[0].Object.B != "2" {
 						t.Fatalf("expected to read `nested.object.b` column as string")
+					}
+				})
+			}
+		})
+	}
+}
+
+func TestReadAdaptTypes(t *testing.T) {
+	if len(testClients) == 0 {
+		t.Skip("integration tests skipped")
+	}
+
+	rotcs := readOptionTestCases(t)
+
+	for k, client := range testClients {
+		t.Run(k, func(t *testing.T) {
+			for _, roc := range rotcs {
+				t.Run(roc.name, func(t *testing.T) {
+					ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+					defer cancel()
+
+					ts := time.Now().UTC()
+					tsParam := ts.Format(time.RFC3339Nano)
+					tsInt := fmt.Sprintf("%v", ts.UnixMicro())
+					byteParam := base64.StdEncoding.EncodeToString([]byte("foo"))
+
+					req := client.FromSQL(`SELECT @ts as ts, @b as b`)
+					req.QueryRequest.QueryParameters = []*bigquerypb.QueryParameter{
+						{
+							Name: "ts",
+							ParameterType: &bigquerypb.QueryParameterType{
+								Type: "TIMESTAMP",
+							},
+							ParameterValue: &bigquerypb.QueryParameterValue{
+								Value: &wrapperspb.StringValue{
+									Value: tsParam,
+								},
+							},
+						},
+						{
+							Name: "b",
+							ParameterType: &bigquerypb.QueryParameterType{
+								Type: "BYTES",
+							},
+							ParameterValue: &bigquerypb.QueryParameterValue{
+								Value: &wrapperspb.StringValue{
+									Value: byteParam,
+								},
+							},
+						},
+					}
+					q, err := client.StartQuery(ctx, req)
+					if err != nil {
+						t.Fatalf("Run() error: %v", err)
+					}
+					err = q.Wait(ctx)
+					if err != nil {
+						t.Fatalf("Wait() error: %v", err)
+					}
+
+					it, err := q.Read(ctx)
+					if err != nil {
+						t.Fatalf("Read() error: %v", err)
+					}
+
+					rows, _ := readRows(ctx, t, it)
+					if msg, ok := compareReadMap(rows, []map[string]any{{
+						"ts": tsInt,
+						"b":  byteParam,
+					}}); !ok {
+						t.Fatal(msg)
+					}
+
+					s := rows[0].AsStruct()
+					if s.Fields["ts"].GetStringValue() != tsInt {
+						t.Fatalf("expected to read `ts` column as string")
+					}
+					if s.Fields["b"].GetStringValue() != byteParam {
+						t.Fatalf("expected to read `b` column as string")
+					}
+
+					type MyStruct struct {
+						Timestamp *adapt.Timestamp `json:"ts"`
+						Bytes     *adapt.Bytes     `json:"b"`
+					}
+					var ms MyStruct
+					err = rows[0].Decode(&ms)
+					if err != nil {
+						t.Fatalf("Decode() error: %v", err)
+					}
+					if ms.Timestamp.Time != ts {
+						t.Fatalf("expected to read `ts` column with value %v as adapt.Timestamp, but found %v", ts, ms.Timestamp.Time)
+					}
+					if string(*ms.Bytes) != "foo" {
+						t.Fatalf("expected to read `b` column with value `foo` as adapt.Bytes, but found %v", ms.Bytes)
 					}
 				})
 			}

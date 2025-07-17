@@ -18,6 +18,8 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 type Bytes []byte
@@ -27,9 +29,14 @@ var _ sql.Scanner = &Bytes{}
 
 func (b *Bytes) Scan(src any) error {
 	if src == nil {
+		*b = nil
 		return nil
 	}
-	value, err := ParseBytes(src.(string))
+	data, ok := src.(string)
+	if !ok {
+		return fmt.Errorf("invalid type `%T` for parsing as `Bytes`, expected `string`", src)
+	}
+	value, err := parseBytes(data)
 	if err != nil {
 		return err
 	}
@@ -38,9 +45,9 @@ func (b *Bytes) Scan(src any) error {
 }
 
 func (b *Bytes) UnmarshalJSON(src []byte) error {
-	return b.Scan(string(src))
+	return b.Scan(strings.Trim(string(src), "\""))
 }
 
-func ParseBytes(s string) ([]byte, error) {
-	return base64.StdEncoding.DecodeString(s)
+func parseBytes(data string) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(data)
 }

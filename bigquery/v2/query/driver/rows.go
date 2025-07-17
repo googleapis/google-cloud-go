@@ -59,7 +59,8 @@ func (r *rows) Next(dest []driver.Value) error {
 	}
 	values := row.AsStruct()
 	for i, f := range r.schema.Fields {
-		dest[i] = values.Fields[f.Name].AsInterface()
+		v := values.Fields[f.Name]
+		dest[i] = v.AsInterface()
 	}
 	return nil
 }

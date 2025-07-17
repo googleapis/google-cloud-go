@@ -17,7 +17,9 @@ package adapt
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -30,9 +32,15 @@ var _ sql.Scanner = &Timestamp{}
 
 func (ts *Timestamp) Scan(src any) error {
 	if src == nil {
+		ts.Time = time.Time{}
 		return nil
 	}
-	t, err := ParseTimestamp(src.(string))
+	data, ok := src.(string)
+	if !ok {
+		return fmt.Errorf("invalid type `%T` for parsing timestamp, expected `string`", data)
+	}
+
+	t, err := parseStringTimestamp(data)
 	if err != nil {
 		return err
 	}
@@ -41,10 +49,10 @@ func (ts *Timestamp) Scan(src any) error {
 }
 
 func (ts *Timestamp) UnmarshalJSON(src []byte) error {
-	return ts.Scan(string(src))
+	return ts.Scan(strings.Trim(string(src), "\""))
 }
 
-func ParseTimestamp(s string) (*time.Time, error) {
+func parseStringTimestamp(s string) (*time.Time, error) {
 	i, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		return nil, err
