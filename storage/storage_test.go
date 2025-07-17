@@ -2167,14 +2167,14 @@ func TestWithEndpoint(t *testing.T) {
 			t.Fatalf("error creating client: %v", err)
 		}
 
-		if c.raw.BasePath != tc.WantRawBasePath {
-			t.Errorf("%s: raw.BasePath not set correctly\n\tgot %v, want %v", tc.desc, c.raw.BasePath, tc.WantRawBasePath)
+		if c.tc.(*httpStorageClient).raw.BasePath != tc.WantRawBasePath {
+			t.Errorf("%s: raw.BasePath not set correctly\n\tgot %v, want %v", tc.desc, c.tc.(*httpStorageClient).raw.BasePath, tc.WantRawBasePath)
 		}
 		if c.xmlHost != tc.WantXMLHost {
 			t.Errorf("%s: xmlHost not set correctly\n\tgot %v, want %v", tc.desc, c.xmlHost, tc.WantXMLHost)
 		}
-		if c.scheme != tc.WantScheme {
-			t.Errorf("%s: scheme not set correctly\n\tgot %v, want %v", tc.desc, c.scheme, tc.WantScheme)
+		if c.tc.(*httpStorageClient).scheme != tc.WantScheme {
+			t.Errorf("%s: scheme not set correctly\n\tgot %v, want %v", tc.desc, c.tc.(*httpStorageClient).scheme, tc.WantScheme)
 		}
 	}
 }
@@ -2260,9 +2260,9 @@ func TestOperationsWithEndpoint(t *testing.T) {
 					t.Errorf("error creating client: %v", err)
 					return
 				}
-				originalRawBasePath := c.raw.BasePath
+				originalRawBasePath := c.tc.(*httpStorageClient).raw.BasePath
 				originalXMLHost := c.xmlHost
-				originalScheme := c.scheme
+				originalScheme := c.tc.(*httpStorageClient).scheme
 
 				operations := []struct {
 					desc       string
@@ -2341,17 +2341,17 @@ func TestOperationsWithEndpoint(t *testing.T) {
 				}
 
 				// Check that the client fields have not changed
-				if c.raw.BasePath != originalRawBasePath {
+				if c.tc.(*httpStorageClient).raw.BasePath != originalRawBasePath {
 					t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v",
-						c.raw.BasePath, originalRawBasePath)
+						c.tc.(*httpStorageClient).raw.BasePath, originalRawBasePath)
 				}
 				if c.xmlHost != originalXMLHost {
 					t.Errorf("xmlHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
 						c.xmlHost, originalXMLHost)
 				}
-				if c.scheme != originalScheme {
+				if c.tc.(*httpStorageClient).scheme != originalScheme {
 					t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
-						c.scheme, originalScheme)
+						c.tc.(*httpStorageClient).scheme, originalScheme)
 				}
 				done <- true
 			}()
