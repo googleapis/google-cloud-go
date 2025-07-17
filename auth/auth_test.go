@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -105,9 +106,9 @@ func TestError_Temporary(t *testing.T) {
 
 func TestToken_MetadataString(t *testing.T) {
 	cases := []struct {
-		name     string
+		name string
 		metadata map[string]interface{}
-		want     string
+		want string
 	}{
 		{
 			name: "nil metadata",
@@ -142,10 +143,10 @@ func TestToken_isValidWithEarlyExpiry(t *testing.T) {
 	defer func() { timeNow = time.Now }()
 
 	cases := []struct {
-		name   string
-		tok    *Token
+		name string
+		tok *Token
 		expiry time.Duration
-		want   bool
+		want bool
 	}{
 		{name: "4 minutes", tok: &Token{Expiry: now.Add(4 * 60 * time.Second)}, expiry: defaultExpiryDelta, want: true},
 		{name: "3 minutes and 45 seconds", tok: &Token{Expiry: now.Add(defaultExpiryDelta)}, expiry: defaultExpiryDelta, want: true},
@@ -169,12 +170,12 @@ func TestError_Error(t *testing.T) {
 	tests := []struct {
 		name string
 
-		Response    *http.Response
-		Body        []byte
-		Err         error
-		code        string
+		Response *http.Response
+		Body []byte
+		Err error
+		code string
 		description string
-		uri         string
+		uri string
 
 		want string
 	}{
@@ -187,22 +188,22 @@ func TestError_Error(t *testing.T) {
 			want: "auth: cannot fetch token: 418\nResponse: I'm a teapot",
 		},
 		{
-			name:        "from query",
-			code:        fmt.Sprint(http.StatusTeapot),
+			name: "from query",
+			code: fmt.Sprint(http.StatusTeapot),
 			description: "I'm a teapot",
-			uri:         "somewhere",
-			want:        "auth: \"418\" \"I'm a teapot\" \"somewhere\"",
+			uri: "somewhere",
+			want: "auth: \"418\" \"I'm a teapot\" \"somewhere\"",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := &Error{
-				Response:    tt.Response,
-				Body:        tt.Body,
-				Err:         tt.Err,
-				code:        tt.code,
+				Response: tt.Response,
+				Body: tt.Body,
+				Err: tt.Err,
+				code: tt.code,
 				description: tt.description,
-				uri:         tt.uri,
+				uri: tt.uri,
 			}
 			if got := r.Error(); got != tt.want {
 				t.Errorf("Error.Error() = %v, want %v", got, tt.want)
@@ -224,9 +225,9 @@ func TestNew2LOTokenProvider_JSONResponse(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options2LO{
-		Email:      "aaa@example.com",
+		Email: "aaa@example.com",
 		PrivateKey: fakePrivateKey,
-		TokenURL:   ts.URL,
+		TokenURL: ts.URL,
 	}
 	tp, err := New2LOTokenProvider(opts)
 	if err != nil {
@@ -262,9 +263,9 @@ func TestNew2LOTokenProvider_BadResponse(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options2LO{
-		Email:      "aaa@example.com",
+		Email: "aaa@example.com",
 		PrivateKey: fakePrivateKey,
-		TokenURL:   ts.URL,
+		TokenURL: ts.URL,
 	}
 	tp, err := New2LOTokenProvider(opts)
 	if err != nil {
@@ -299,9 +300,9 @@ func TestNew2LOTokenProvider_BadResponseType(t *testing.T) {
 	}))
 	defer ts.Close()
 	opts := &Options2LO{
-		Email:      "aaa@example.com",
+		Email: "aaa@example.com",
 		PrivateKey: fakePrivateKey,
-		TokenURL:   ts.URL,
+		TokenURL: ts.URL,
 	}
 	tp, err := New2LOTokenProvider(opts)
 	if err != nil {
@@ -333,10 +334,10 @@ func TestNew2LOTokenProvider_Assertion(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options2LO{
-		Email:        "aaa@example.com",
-		PrivateKey:   fakePrivateKey,
+		Email: "aaa@example.com",
+		PrivateKey: fakePrivateKey,
 		PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-		TokenURL:     ts.URL,
+		TokenURL: ts.URL,
 	}
 
 	tp, err := New2LOTokenProvider(opts)
@@ -364,8 +365,8 @@ func TestNew2LOTokenProvider_Assertion(t *testing.T) {
 
 	want := jwt.Header{
 		Algorithm: "RS256",
-		Type:      "JWT",
-		KeyID:     "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+		Type: "JWT",
+		KeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 	}
 	if got != want {
 		t.Errorf("access token header = %q; want %q", got, want)
@@ -390,23 +391,23 @@ func TestNew2LOTokenProvider_AssertionPayload(t *testing.T) {
 
 	for _, opts := range []*Options2LO{
 		{
-			Email:        "aaa1@example.com",
-			PrivateKey:   fakePrivateKey,
+			Email: "aaa1@example.com",
+			PrivateKey: fakePrivateKey,
 			PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-			TokenURL:     ts.URL,
+			TokenURL: ts.URL,
 		},
 		{
-			Email:        "aaa2@example.com",
-			PrivateKey:   fakePrivateKey,
+			Email: "aaa2@example.com",
+			PrivateKey: fakePrivateKey,
 			PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-			TokenURL:     ts.URL,
-			Audience:     "https://example.com",
+			TokenURL: ts.URL,
+			Audience: "https://example.com",
 		},
 		{
-			Email:        "aaa2@example.com",
-			PrivateKey:   fakePrivateKey,
+			Email: "aaa2@example.com",
+			PrivateKey: fakePrivateKey,
 			PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-			TokenURL:     ts.URL,
+			TokenURL: ts.URL,
 			PrivateClaims: map[string]interface{}{
 				"private0": "claim0",
 				"private1": "claim1",
@@ -478,9 +479,9 @@ func TestNew2LOTokenProvider_TokenError(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options2LO{
-		Email:      "aaa@example.com",
+		Email: "aaa@example.com",
 		PrivateKey: fakePrivateKey,
-		TokenURL:   ts.URL,
+		TokenURL: ts.URL,
 	}
 
 	tp, err := New2LOTokenProvider(opts)
@@ -513,20 +514,20 @@ func TestNew2LOTokenProvider_Validate(t *testing.T) {
 			name: "missing email",
 			opts: &Options2LO{
 				PrivateKey: []byte("key"),
-				TokenURL:   "url",
+				TokenURL: "url",
 			},
 		},
 		{
 			name: "missing key",
 			opts: &Options2LO{
-				Email:    "email",
+				Email: "email",
 				TokenURL: "url",
 			},
 		},
 		{
 			name: "missing URL",
 			opts: &Options2LO{
-				Email:      "email",
+				Email: "email",
 				PrivateKey: []byte("key"),
 			},
 		},
@@ -615,25 +616,25 @@ func TestComputeTokenProvider_NonBlockingRefresh(t *testing.T) {
 
 func TestComputeTokenProvider_BlockingRefresh(t *testing.T) {
 	tests := []struct {
-		name               string
+		name string
 		disableAutoRefresh bool
-		want1              string
-		want2              string
-		wantState2         tokenState
+		want1 string
+		want2 string
+		wantState2 tokenState
 	}{
 		{
-			name:               "disableAutoRefresh",
+			name: "disableAutoRefresh",
 			disableAutoRefresh: true,
-			want1:              "1",
-			want2:              "1",
+			want1: "1",
+			want2: "1",
 			// Because token "count" does not increase, it will always be stale.
 			wantState2: stale,
 		},
 		{
-			name:               "autoRefresh",
+			name: "autoRefresh",
 			disableAutoRefresh: false,
-			want1:              "1",
-			want2:              "2",
+			want1: "1",
+			want2: "2",
 			// As token "count" increases to 2, it transitions to fresh.
 			wantState2: fresh,
 		},
@@ -646,7 +647,7 @@ func TestComputeTokenProvider_BlockingRefresh(t *testing.T) {
 			defer func() { timeNow = time.Now }()
 			tp := NewCachedTokenProvider(&countingTestProvider{count: 1}, &CachedTokenProviderOptions{
 				DisableAsyncRefresh: true,
-				DisableAutoRefresh:  tt.disableAutoRefresh,
+				DisableAutoRefresh: tt.disableAutoRefresh,
 				// EarlyTokenRefresh ensures that token with early expiry just less than 2 seconds before now is already stale.
 				ExpireEarly: 1990 * time.Millisecond,
 			})
@@ -678,5 +679,99 @@ func TestComputeTokenProvider_BlockingRefresh(t *testing.T) {
 				t.Errorf("got %q, want %q", freshToken2.Value, tt.want2)
 			}
 		})
+	}
+}
+
+type controllableTokenProvider struct {
+	mu sync.Mutex
+	count int
+	tok *Token
+	err error
+	block chan struct{}
+}
+
+func (p *controllableTokenProvider) Token(ctx context.Context) (*Token, error) {
+	if ch := p.getBlockChan(); ch != nil {
+		<-ch
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.count++
+	return p.tok, p.err
+}
+
+func (p *controllableTokenProvider) getBlockChan() chan struct{} {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.block
+}
+
+func (p *controllableTokenProvider) setBlockChan(ch chan struct{}) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.block = ch
+}
+
+func (p *controllableTokenProvider) getCount() int {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.count
+}
+
+func TestCachedTokenProvider_TokenAsyncRace(t *testing.T) {
+	now := time.Now()
+	timeNow = func() time.Time { return now }
+	defer func() { timeNow = time.Now }()
+
+	tp := &controllableTokenProvider{}
+	ctp := NewCachedTokenProvider(tp, &CachedTokenProviderOptions{
+		ExpireEarly: 2 * time.Second,
+	}).(*cachedTokenProvider)
+
+	// 1. Cache a stale token.
+	tp.tok = &Token{Value: "initial", Expiry: now.Add(1 * time.Second)}
+	if _, err := ctp.Token(context.Background()); err != nil {
+		t.Fatalf("initial Token() failed: %v", err)
+	}
+	if got, want := tp.getCount(), 1; got != want {
+		t.Fatalf("tp.count = %d; want %d", got, want)
+	}
+	if got, want := ctp.tokenState(), stale; got != want {
+		t.Fatalf("tokenState = %v; want %v", got, want)
+	}
+
+	// 2. Setup for refresh.
+	tp.setBlockChan(make(chan struct{}))
+	tp.tok = &Token{Value: "refreshed", Expiry: now.Add(1 * time.Hour)}
+
+	// 3. Concurrently call Token to trigger async refresh.
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			ctp.Token(context.Background())
+		}()
+	}
+
+	// 4. Unblock refresh and wait for all goroutines to finish.
+	time.Sleep(100 * time.Millisecond) // give time for goroutines to run
+	close(tp.getBlockChan())
+	wg.Wait()
+	time.Sleep(100 * time.Millisecond) // give time for async refresh to complete
+
+	// 5. Check results.
+	if got, want := tp.getCount(), 2; got != want {
+		t.Errorf("tp.count = %d; want %d", got, want)
+	}
+	if got, want := ctp.tokenState(), fresh; got != want {
+		t.Errorf("tokenState = %v; want %v", got, want)
+	}
+	tok, err := ctp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := tok.Value, "refreshed"; got != want {
+		t.Errorf("tok.Value = %q; want %q", got, want)
 	}
 }
