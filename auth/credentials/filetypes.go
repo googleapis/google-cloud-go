@@ -15,6 +15,7 @@
 package credentials
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -25,7 +26,31 @@ import (
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	internalauth "cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"cloud.google.com/go/auth/internal/trustboundary"
 )
+
+// internalDataProviderAdapter wraps the internal trustboundary.DataProvider
+// and implements the public auth.TrustBoundaryDataProvider interface.
+type internalDataProviderAdapter struct {
+	internalProvider trustboundary.DataProvider
+}
+
+// GetTrustBoundaryData calls the internal provider and converts the internal
+// trustboundary.Data to the public auth.TrustBoundaryData.
+func (a *internalDataProviderAdapter) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internalauth.TrustBoundaryData, error) {
+	internalData, err := a.internalProvider.GetTrustBoundaryData(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	if internalData == nil {
+		return nil, nil
+	}
+	// Convert the internal struct to the public one.
+	return &internalauth.TrustBoundaryData{
+		Locations:        internalData.Locations,
+		EncodedLocations: internalData.EncodedLocations,
+	}, nil
+}
 
 func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	fileType, err := credsfile.ParseFileType(b)
@@ -134,17 +159,29 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 		return configureSelfSignedJWT(f, opts)
 	}
 	opts2LO := &auth.Options2LO{
-		Email:        f.ClientEmail,
-		PrivateKey:   []byte(f.PrivateKey),
-		PrivateKeyID: f.PrivateKeyID,
-		Scopes:       opts.scopes(),
-		TokenURL:     f.TokenURL,
-		Subject:      opts.Subject,
-		Client:       opts.client(),
-		Logger:       opts.logger(),
+		Email:          f.ClientEmail,
+		PrivateKey:     []byte(f.PrivateKey),
+		PrivateKeyID:   f.PrivateKeyID,
+		Scopes:         opts.scopes(),
+		TokenURL:       f.TokenURL,
+		Subject:        opts.Subject,
+		Client:         opts.client(),
+		Logger:         opts.logger(),
+		UniverseDomain: ud,
 	}
 	if opts2LO.TokenURL == "" {
 		opts2LO.TokenURL = jwtTokenURL
+	}
+	if trustBoundaryEnabledErr != nil {
+		return nil, trustBoundaryEnabledErr
+	}
+	if trustBoundaryEnabled {
+		saTrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(opts2LO.Email, opts2LO.UniverseDomain)
+		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), saTrustBoundaryConfig, opts.logger())
+		if err != nil {
+			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider: %w", err)
+		}
+		opts2LO.TrustBoundaryDataProvider = &internalDataProviderAdapter{internalProvider: tbProvider}
 	}
 	return auth.New2LOTokenProvider(opts2LO)
 }
@@ -212,14 +249,21 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	if err != nil {
 		return nil, err
 	}
-	return impersonate.NewTokenProvider(&impersonate.Options{
-		URL:       f.ServiceAccountImpersonationURL,
-		Scopes:    opts.scopes(),
-		Tp:        tp,
-		Delegates: f.Delegates,
-		Client:    opts.client(),
-		Logger:    opts.logger(),
-	})
+	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+	if trustBoundaryEnabledErr != nil {
+		return nil, trustBoundaryEnabledErr
+	}
+	impOpts := &impersonate.Options{
+		URL:                  f.ServiceAccountImpersonationURL,
+		Scopes:               opts.scopes(),
+		Tp:                   tp,
+		Delegates:            f.Delegates,
+		Client:               opts.client(),
+		Logger:               opts.logger(),
+		UniverseDomain:       ud,
+		TrustBoundaryEnabled: trustBoundaryEnabled,
+	}
+	return impersonate.NewTokenProvider(impOpts)
 }
 
 func handleGDCHServiceAccount(f *credsfile.GDCHServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
