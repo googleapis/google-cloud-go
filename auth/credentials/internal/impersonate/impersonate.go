@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport/headers"
+	"cloud.google.com/go/auth/internal/trustboundary"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -55,6 +56,18 @@ type impersonateTokenResponse struct {
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
+	}
+	if opts.TrustBoundaryEnabled {
+		targetSAEmail, err := ExtractServiceAccountEmail(opts.URL)
+		if err != nil {
+			return nil, fmt.Errorf("credentials: could not extract target service account email for trust boundary: %w", err)
+		}
+		targetSATrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(targetSAEmail, opts.UniverseDomain)
+		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.Client, targetSATrustBoundaryConfig, opts.Logger)
+		if err != nil {
+			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for impersonation: %w", err)
+		}
+		opts.trustBoundaryDataProvider = tbProvider
 	}
 	return opts, nil
 }
@@ -85,13 +98,16 @@ type Options struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
-	// TrustBoundaryDataProvider is used to fetch trust boundary data.
+	// TrustBoundaryEnabled indicates if the trust boundary feature has been enabled.
+	TrustBoundaryEnabled bool
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	UniverseDomain string
+
+	// trustBoundaryDataProvider is used to fetch trust boundary data.
 	// This data defines the regions or environments where the credential (and subsequently the tokens
 	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
 	// If nil, no trust boundary restrictions are applied or fetched for this flow.
-	TrustBoundaryDataProvider auth.TrustBoundaryDataProvider
-	// UniverseDomain is the default service domain for a given Cloud universe.
-	UniverseDomain string
+	trustBoundaryDataProvider trustboundary.DataProvider
 }
 
 func (o *Options) validate() error {
@@ -154,8 +170,8 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 		Type:   internal.TokenTypeBearer,
 	}
 	// Fetch trust boundary data if a provider is configured, and attach it to the token.
-	if o.TrustBoundaryDataProvider != nil {
-		trustBoundaryData, err := o.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
+	if o.trustBoundaryDataProvider != nil {
+		trustBoundaryData, err := o.trustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
 		if err != nil {
 			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
 		}

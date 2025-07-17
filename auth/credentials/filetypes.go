@@ -250,31 +250,18 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 		return nil, err
 	}
 	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	impOpts := &impersonate.Options{
-		URL:            f.ServiceAccountImpersonationURL,
-		Scopes:         opts.scopes(),
-		Tp:             tp,
-		Delegates:      f.Delegates,
-		Client:         opts.client(),
-		Logger:         opts.logger(),
-		UniverseDomain: ud,
-	}
-	// For impersonated service accounts, the trust boundary applies to the TARGET service account.
-	// The universe domain should be the one associated with the impersonated account.
-	targetSAEmail, err := impersonate.ExtractServiceAccountEmail(f.ServiceAccountImpersonationURL)
-	if err != nil {
-		return nil, fmt.Errorf("credentials: could not extract target service account email for trust boundary: %w", err)
-	}
 	if trustBoundaryEnabledErr != nil {
 		return nil, trustBoundaryEnabledErr
 	}
-	if trustBoundaryEnabled {
-		targetSATrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(targetSAEmail, impOpts.UniverseDomain)
-		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), targetSATrustBoundaryConfig, opts.logger())
-		if err != nil {
-			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for impersonation: %w", err)
-		}
-		impOpts.TrustBoundaryDataProvider = &internalDataProviderAdapter{internalProvider: tbProvider}
+	impOpts := &impersonate.Options{
+		URL:                  f.ServiceAccountImpersonationURL,
+		Scopes:               opts.scopes(),
+		Tp:                   tp,
+		Delegates:            f.Delegates,
+		Client:               opts.client(),
+		Logger:               opts.logger(),
+		UniverseDomain:       ud,
+		TrustBoundaryEnabled: trustBoundaryEnabled,
 	}
 	return impersonate.NewTokenProvider(impOpts)
 }
