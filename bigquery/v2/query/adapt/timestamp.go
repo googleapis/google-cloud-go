@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// Timestamp is used to parse TIMESTAMP fields coming from BigQuery APIs
 type Timestamp struct {
 	time.Time
 }
@@ -30,6 +31,7 @@ type Timestamp struct {
 var _ json.Unmarshaler = &Timestamp{}
 var _ sql.Scanner = &Timestamp{}
 
+// Scan assigns a value from a database driver.
 func (ts *Timestamp) Scan(src any) error {
 	if src == nil {
 		ts.Time = time.Time{}
@@ -48,6 +50,7 @@ func (ts *Timestamp) Scan(src any) error {
 	return nil
 }
 
+// UnmarshalJSON implements the json.Unmarshaler interface.
 func (ts *Timestamp) UnmarshalJSON(src []byte) error {
 	return ts.Scan(strings.Trim(string(src), "\""))
 }

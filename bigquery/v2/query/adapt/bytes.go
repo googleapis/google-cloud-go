@@ -22,11 +22,13 @@ import (
 	"strings"
 )
 
+// Bytes is used to parse BYTES fields coming from BigQuery APIs
 type Bytes []byte
 
 var _ json.Unmarshaler = &Bytes{}
 var _ sql.Scanner = &Bytes{}
 
+// Scan assigns a value from a database driver.
 func (b *Bytes) Scan(src any) error {
 	if src == nil {
 		*b = nil
@@ -44,6 +46,7 @@ func (b *Bytes) Scan(src any) error {
 	return nil
 }
 
+// UnmarshalJSON implements the json.Unmarshaler interface.
 func (b *Bytes) UnmarshalJSON(src []byte) error {
 	return b.Scan(strings.Trim(string(src), "\""))
 }
