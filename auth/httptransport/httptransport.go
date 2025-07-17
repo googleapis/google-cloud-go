@@ -24,9 +24,9 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/internal/transport/headers"
 	detect "cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal/transport"
+	"cloud.google.com/go/auth/internal/transport/headers"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -236,11 +236,10 @@ func NewClient(opts *Options) (*http.Client, error) {
 	}, nil
 }
 
-// SetAuthHeader uses the provided token to set the Authorization header.
-//
-// Deprecated: use cloud.google.com/go/auth.SetAuthHeader instead.
+// SetAuthHeader uses the provided token to set the Authorization and trust
+// boundary headers on an http.Request. If the token.Type is empty, the type is
+// assumed to be Bearer. This is the recommended way to set authorization
+// headers on a custom http.Request.
 func SetAuthHeader(token *auth.Token, req *http.Request) {
-	// This function is a compatibility wrapper. It forwards the call to the
-	// new, consolidated function in the auth package.
 	headers.SetAuthHeader(token, req)
 }

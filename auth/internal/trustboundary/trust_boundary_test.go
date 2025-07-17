@@ -31,136 +31,6 @@ import (
 	"cloud.google.com/go/compute/metadata"
 )
 
-// internalToPublicAuthData converts an internal *Data to the public auth.TrustBoundaryData.
-func internalToPublicAuthData(internalData *Data) auth.TrustBoundaryData {
-	if internalData == nil {
-		return auth.TrustBoundaryData{}
-	}
-	return auth.TrustBoundaryData{
-		Locations:        internalData.Locations,
-		EncodedLocations: internalData.EncodedLocations,
-	}
-}
-
-func TestNewNoOpTrustBoundaryData(t *testing.T) {
-	data := NewNoOpTrustBoundaryData()
-
-	if data == nil {
-		t.Fatal("NewNoOpTrustBoundaryData() returned nil")
-	}
-
-	if got := data.EncodedLocations; got != NoOpEncodedLocations {
-		t.Errorf("NewNoOpTrustBoundaryData().EncodedLocations = %q, want %q", got, NoOpEncodedLocations)
-	}
-
-	// Expect an empty slice, not nil.
-	expectedLocations := []string{}
-	if got := data.Locations; !reflect.DeepEqual(got, expectedLocations) {
-		t.Errorf("NewNoOpTrustBoundaryData().Locations = %v, want %v", got, expectedLocations)
-	}
-
-	publicData := internalToPublicAuthData(data)
-	if !publicData.IsNoOp() {
-		t.Errorf("internalToPublicAuthData(NewNoOpTrustBoundaryData()).IsNoOp() = false, want true")
-	}
-	if publicData.IsEmpty() {
-		t.Errorf("internalToPublicAuthData(NewNoOpTrustBoundaryData()).IsEmpty() = true, want false")
-	}
-}
-
-func TestNewTrustBoundaryData(t *testing.T) {
-	tests := []struct {
-		name             string
-		locations        []string
-		encodedLocations string
-		wantLocations    []string
-		wantEncoded      string
-		wantIsNoOp       bool
-		wantIsEmpty      bool
-	}{
-		{
-			name:             "Standard data",
-			locations:        []string{"us-central1", "europe-west1"},
-			encodedLocations: "0xABC123",
-			wantLocations:    []string{"us-central1", "europe-west1"},
-			wantEncoded:      "0xABC123",
-			wantIsNoOp:       false,
-			wantIsEmpty:      false,
-		},
-		{
-			name:             "Empty locations, not no-op encoded",
-			locations:        []string{},
-			encodedLocations: "0xDEF456",
-			wantLocations:    []string{},
-			wantEncoded:      "0xDEF456",
-			wantIsNoOp:       false,
-			wantIsEmpty:      false,
-		},
-		{
-			name:             "Nil locations, not no-op encoded",
-			locations:        nil,
-			encodedLocations: "0xGHI789",
-			wantLocations:    []string{}, // Expect empty slice, not nil
-			wantEncoded:      "0xGHI789",
-			wantIsNoOp:       false,
-			wantIsEmpty:      false,
-		},
-		{
-			name:             "No-op encoded locations",
-			locations:        []string{"us-east1"},
-			encodedLocations: NoOpEncodedLocations,
-			wantLocations:    []string{"us-east1"},
-			wantEncoded:      NoOpEncodedLocations,
-			wantIsNoOp:       true,
-			wantIsEmpty:      false,
-		},
-		{
-			name:             "Empty string encoded locations",
-			locations:        []string{},
-			encodedLocations: "",
-			wantLocations:    []string{},
-			wantEncoded:      "",
-			wantIsNoOp:       false,
-			wantIsEmpty:      true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			data := NewTrustBoundaryData(tt.locations, tt.encodedLocations)
-
-			if got := data.EncodedLocations; got != tt.wantEncoded {
-				t.Errorf("NewTrustBoundaryData().EncodedLocations = %q, want %q", got, tt.wantEncoded)
-			}
-
-			gotLocations := data.Locations
-			if !reflect.DeepEqual(gotLocations, tt.wantLocations) {
-				t.Errorf("NewTrustBoundaryData().Locations = %v, want %v", gotLocations, tt.wantLocations)
-			}
-
-			publicData := internalToPublicAuthData(data)
-			if got := publicData.IsNoOp(); got != tt.wantIsNoOp {
-				t.Errorf("internalToPublicAuthData(NewTrustBoundaryData(...)).IsNoOp() = %v, want %v", got, tt.wantIsNoOp)
-			}
-			if got := publicData.IsEmpty(); got != tt.wantIsEmpty {
-				t.Errorf("internalToPublicAuthData(NewTrustBoundaryData(...)).IsEmpty() = %v, want %v", got, tt.wantIsEmpty)
-			}
-		})
-	}
-}
-
-func TestData_Methods_NilReceiver(t *testing.T) {
-	var data *Data = nil
-
-	publicData := internalToPublicAuthData(data)
-	if publicData.IsNoOp() {
-		t.Errorf("internalToPublicAuthData(nil).IsNoOp() = true, want false")
-	}
-	if !publicData.IsEmpty() {
-		t.Errorf("internalToPublicAuthData(nil).IsEmpty() = false, want true")
-	}
-}
-
 func TestFetchTrustBoundaryData(t *testing.T) {
 	type serverResponse struct {
 		status int
@@ -174,7 +44,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 		urlOverride    *string // To test empty URL
 		useNilClient   bool
 		ctx            context.Context
-		wantData       *Data
+		wantData       *internal.TrustBoundaryData
 		wantErr        string
 		wantReqHeaders map[string]string
 	}{
@@ -186,7 +56,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			},
 			token:    &auth.Token{Value: "test-token"},
 			ctx:      context.Background(),
-			wantData: NewTrustBoundaryData([]string{"us-central1"}, "0xABC"),
+			wantData: internal.NewTrustBoundaryData([]string{"us-central1"}, "0xABC"),
 			wantReqHeaders: map[string]string{
 				"Authorization": "Bearer test-token",
 			},
@@ -199,7 +69,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			},
 			token:    &auth.Token{Value: "test-token"},
 			ctx:      context.Background(),
-			wantData: NewTrustBoundaryData(nil, "0x0"),
+			wantData: internal.NewTrustBoundaryData(nil, "0x0"),
 		},
 		{
 			name: "Success - OK No-Op response with empty locations array",
@@ -209,7 +79,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			},
 			token:    &auth.Token{Value: "test-token"},
 			ctx:      context.Background(),
-			wantData: NewTrustBoundaryData([]string{}, "0x0"),
+			wantData: internal.NewTrustBoundaryData([]string{}, "0x0"),
 		},
 		{
 			name: "Error - Non-200 Status",
@@ -712,9 +582,9 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 	tests := []struct {
 		name                  string
 		mockConfig            *mockTrustBoundaryConfigProvider
-		initialCachedData     *Data
+		initialCachedData     *internal.TrustBoundaryData
 		serverResponse        *serverResponse // for fetchTrustBoundaryData
-		wantData              *Data
+		wantData              *internal.TrustBoundaryData
 		wantErr               string
 		wantUniverseCallCount int
 		wantEndpointCallCount int
@@ -724,7 +594,7 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: "example.com",
 			},
-			wantData:              NewNoOpTrustBoundaryData(),
+			wantData:              internal.NewNoOpTrustBoundaryData(),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 0,
 		},
@@ -733,8 +603,8 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
 			},
-			initialCachedData:     NewNoOpTrustBoundaryData(),
-			wantData:              NewNoOpTrustBoundaryData(),
+			initialCachedData:     internal.NewNoOpTrustBoundaryData(),
+			wantData:              internal.NewNoOpTrustBoundaryData(),
 			wantUniverseCallCount: 1, // Universe is checked
 			wantEndpointCallCount: 0, // Endpoint fetch is skipped due to cached NoOp
 		},
@@ -747,7 +617,7 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`,
 			},
-			wantData:              NewTrustBoundaryData([]string{"us-east1"}, "0xABC"),
+			wantData:              internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC"),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
 		},
@@ -769,12 +639,12 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
 			},
-			initialCachedData: NewTrustBoundaryData([]string{"cached-loc"}, "0xCACHE"),
+			initialCachedData: internal.NewTrustBoundaryData([]string{"cached-loc"}, "0xCACHE"),
 			serverResponse: &serverResponse{
 				status: http.StatusInternalServerError,
 				body:   "server error",
 			},
-			wantData:              NewTrustBoundaryData([]string{"cached-loc"}, "0xCACHE"), // Expect cached data
+			wantData:              internal.NewTrustBoundaryData([]string{"cached-loc"}, "0xCACHE"), // Expect cached data
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
 		},
@@ -806,7 +676,7 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": ["us-default"], "encodedLocations": "0xDEF"}`,
 			},
-			wantData:              NewTrustBoundaryData([]string{"us-default"}, "0xDEF"),
+			wantData:              internal.NewTrustBoundaryData([]string{"us-default"}, "0xDEF"),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
 		},
@@ -873,7 +743,7 @@ func TestTrustBoundaryDataProvider_CacheFallback(t *testing.T) {
 	ctx := context.Background()
 	defaultToken := &auth.Token{Value: "test-access-token"}
 	successBody := `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`
-	wantData := NewTrustBoundaryData([]string{"us-east1"}, "0xABC")
+	wantData := internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC")
 
 	// Use a variable to control server response.
 	var serverResponseStatus int

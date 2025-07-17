@@ -27,12 +27,11 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/transport/headers"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 const (
-	// NoOpEncodedLocations is a special value indicating that no trust boundary is enforced.
-	NoOpEncodedLocations = "0x0"
 	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.%s/v1/projects/-/serviceAccounts/%s/allowedLocations"
 )
@@ -43,7 +42,7 @@ type DataProvider interface {
 	// GetTrustBoundaryData retrieves the trust boundary data (type Data).
 	// The token is used to authenticate the lookup request.
 	// The context provided should be used for any network requests.
-	GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*Data, error)
+	GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internal.TrustBoundaryData, error)
 }
 
 // ConfigProvider provides specific configuration for trust boundary lookups.
@@ -63,38 +62,8 @@ type AllowedLocationsResponse struct {
 	EncodedLocations string `json:"encodedLocations"`
 }
 
-// Data represents the trust boundary data.
-type Data struct {
-	// Locations is the list of locations that the token is allowed to be used in.
-	Locations []string
-	// EncodedLocations represents the locations in an encoded format.
-	EncodedLocations string
-}
-
-// NewNoOpTrustBoundaryData returns a new TrustBoundaryData with no restrictions.
-func NewNoOpTrustBoundaryData() *Data {
-	return &Data{
-		Locations:        []string{},
-		EncodedLocations: NoOpEncodedLocations,
-	}
-}
-
-// NewTrustBoundaryData returns a new TrustBoundaryData with the specified locations and encoded locations.
-func NewTrustBoundaryData(locations []string, encodedLocations string) *Data {
-	// Ensure consistency by treating a nil slice as an empty slice.
-	if locations == nil {
-		locations = []string{}
-	}
-	locationsCopy := make([]string, len(locations))
-	copy(locationsCopy, locations)
-	return &Data{
-		Locations:        locationsCopy,
-		EncodedLocations: encodedLocations,
-	}
-}
-
 // fetchTrustBoundaryData fetches the trust boundary data from the API.
-func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string, token *auth.Token, logger *slog.Logger) (*Data, error) {
+func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string, token *auth.Token, logger *slog.Logger) (*internal.TrustBoundaryData, error) {
 	if logger == nil {
 		logger = slog.New(slog.NewTextHandler(io.Discard, nil))
 	}
@@ -114,7 +83,7 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 	if token == nil || token.Value == "" {
 		return nil, errors.New("trustboundary: access token required for lookup API authentication")
 	}
-	auth.SetAuthHeader(token, req)
+	headers.SetAuthHeader(token, req)
 	logger.DebugContext(ctx, "trust boundary request", "request", internallog.HTTPRequest(req, nil))
 
 	response, err := client.Do(req)
@@ -143,7 +112,7 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 		return nil, errors.New("trustboundary: invalid API response: encodedLocations is empty")
 	}
 
-	return NewTrustBoundaryData(apiResponse.Locations, apiResponse.EncodedLocations), nil
+	return internal.NewTrustBoundaryData(apiResponse.Locations, apiResponse.EncodedLocations), nil
 }
 
 // ServiceAccountTrustBoundaryConfig holds configuration for SA trust boundary lookups.
@@ -189,7 +158,7 @@ func (sac *ServiceAccountTrustBoundaryConfig) GetUniverseDomain(ctx context.Cont
 type dataProvider struct {
 	client         *http.Client
 	configProvider ConfigProvider
-	data           *Data
+	data           *internal.TrustBoundaryData
 	logger         *slog.Logger
 }
 
@@ -216,22 +185,22 @@ func NewTrustBoundaryDataProvider(client *http.Client, configProvider ConfigProv
 // it fetches new data from the endpoint provided by its ConfigProvider,
 // using the given accessToken for authentication. Results are cached.
 // If fetching fails, it returns previously cached data if available, otherwise the fetch error.
-func (p *dataProvider) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*Data, error) {
+func (p *dataProvider) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internal.TrustBoundaryData, error) {
 	// Check the universe domain.
 	uniDomain, err := p.configProvider.GetUniverseDomain(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("trustboundary: error getting universe domain: %w", err)
 	}
 	if uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
-		if p.data == nil || p.data.EncodedLocations != NoOpEncodedLocations {
-			p.data = NewNoOpTrustBoundaryData()
+		if p.data == nil || p.data.EncodedLocations != internal.TrustBoundaryNoOp {
+			p.data = internal.NewNoOpTrustBoundaryData()
 		}
 		return p.data, nil
 	}
 
 	// Check cache for a no-op result from a previous API call.
 	cachedData := p.data
-	if cachedData != nil && cachedData.EncodedLocations == NoOpEncodedLocations {
+	if cachedData != nil && cachedData.EncodedLocations == internal.TrustBoundaryNoOp {
 		return cachedData, nil
 	}
 

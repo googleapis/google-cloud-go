@@ -49,7 +49,7 @@ const (
 	DefaultUniverseDomain = "googleapis.com"
 
 	// trustBoundaryNoOp is a constant indicating no trust boundary is enforced.
-	trustBoundaryNoOp = "0x0"
+	TrustBoundaryNoOp = "0x0"
 )
 
 type clonableTransport interface {
@@ -241,7 +241,7 @@ func (t *TrustBoundaryData) IsNoOp() bool {
 	if t == nil {
 		return false
 	}
-	return t.EncodedLocations == trustBoundaryNoOp
+	return t.EncodedLocations == TrustBoundaryNoOp
 }
 
 // IsEmpty reports whether the trust boundary is empty.
@@ -250,6 +250,28 @@ func (t *TrustBoundaryData) IsEmpty() bool {
 		return true
 	}
 	return t.EncodedLocations == ""
+}
+
+// NewTrustBoundaryData returns a new TrustBoundaryData with the specified locations and encoded locations.
+func NewTrustBoundaryData(locations []string, encodedLocations string) *TrustBoundaryData {
+	// Ensure consistency by treating a nil slice as an empty slice.
+	if locations == nil {
+		locations = []string{}
+	}
+	locationsCopy := make([]string, len(locations))
+	copy(locationsCopy, locations)
+	return &TrustBoundaryData{
+		Locations:        locationsCopy,
+		EncodedLocations: encodedLocations,
+	}
+}
+
+// NewNoOpTrustBoundaryData returns a new TrustBoundaryData with no restrictions.
+func NewNoOpTrustBoundaryData() *TrustBoundaryData {
+	return &TrustBoundaryData{
+		Locations:        []string{},
+		EncodedLocations: TrustBoundaryNoOp,
+	}
 }
 
 // trustBoundaryHeader returns the value for the x-allowed-locations header and a bool
