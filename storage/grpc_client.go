@@ -1301,40 +1301,43 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					mrd.mu.Unlock()
 					for _, val := range msg.GetObjectDataRanges() {
 						id := val.GetReadRange().GetReadId()
-						mrd.mu.Lock()
-						_, ok := mrd.activeRanges[id]
-						if !ok {
-							// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
-							continue
-						}
-
-						// The decoder holds the object content. writeToAndUpdateCRC writes
-						// it to the user's buffer without an intermediate copy.
-						written, _, err := decoder.writeToAndUpdateCRC(mrd.activeRanges[id].writer, id, func(b []byte) {
-							// crc update logic can be added here if needed
-						})
-
-						if err != nil {
-							mrd.activeRanges[id].callback(mrd.activeRanges[id].offset, mrd.activeRanges[id].totalBytesWritten, err)
-							mrd.numActiveRanges--
-							delete(mrd.activeRanges, id)
-						} else {
-							mrd.activeRanges[id] = mrdRange{
-								readID:              mrd.activeRanges[id].readID,
-								writer:              mrd.activeRanges[id].writer,
-								offset:              mrd.activeRanges[id].offset,
-								limit:               mrd.activeRanges[id].limit,
-								currentBytesWritten: mrd.activeRanges[id].currentBytesWritten + written,
-								totalBytesWritten:   mrd.activeRanges[id].totalBytesWritten + written,
-								callback:            mrd.activeRanges[id].callback,
+						func() {
+							mrd.mu.Lock()
+							defer mrd.mu.Unlock()
+							currRange, ok := mrd.activeRanges[id]
+							if !ok {
+								// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
+								return
 							}
-						}
-						if val.GetRangeEnd() {
-							mrd.activeRanges[id].callback(mrd.activeRanges[id].offset, mrd.activeRanges[id].totalBytesWritten, nil)
-							mrd.numActiveRanges--
-							delete(mrd.activeRanges, id)
-						}
-						mrd.mu.Unlock()
+
+							// The decoder holds the object content. writeToAndUpdateCRC writes
+							// it to the user's buffer without an intermediate copy.
+							written, _, err := decoder.writeToAndUpdateCRC(currRange.writer, id, func(b []byte) {
+								// crc update logic can be added here if needed
+							})
+
+							if err != nil {
+								mrd.activeRanges[id].callback(currRange.offset, currRange.totalBytesWritten, err)
+								mrd.numActiveRanges--
+								delete(mrd.activeRanges, id)
+							} else {
+								currRange = mrdRange{
+									readID:              currRange.readID,
+									writer:              currRange.writer,
+									offset:              currRange.offset,
+									limit:               currRange.limit,
+									currentBytesWritten: currRange.currentBytesWritten + written,
+									totalBytesWritten:   currRange.totalBytesWritten + written,
+									callback:            currRange.callback,
+								}
+								mrd.activeRanges[id] = currRange
+							}
+							if val.GetRangeEnd() {
+								currRange.callback(currRange.offset, currRange.totalBytesWritten, nil)
+								mrd.numActiveRanges--
+								delete(mrd.activeRanges, id)
+							}
+						}()
 					}
 					// Free the buffers once the message has been processed.
 					decoder.databufs.Free()
