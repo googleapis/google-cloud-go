@@ -167,6 +167,10 @@ func (ac *AdminClient) authorizedViewPath(table, authorizedView string) string {
 	return fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), table, authorizedView)
 }
 
+func (ac *AdminClient) schemaBundlePath(table, schemaBundle string) string {
+	return fmt.Sprintf("%s/tables/%s/schemaBundles/%s", ac.instancePrefix(), table, schemaBundle)
+}
+
 func logicalViewPath(project, instance, logicalView string) string {
 	return fmt.Sprintf("%s/logicalViews/%s", instancePrefix(project, instance), logicalView)
 }
@@ -3419,5 +3423,172 @@ func (iac *InstanceAdminClient) DeleteMaterializedView(ctx context.Context, inst
 		Name: materializedlViewPath(iac.project, instanceID, materializedViewID),
 	}
 	_, err := iac.iClient.DeleteMaterializedView(ctx, req)
+	return err
+}
+
+// SchemaBundles
+
+// SchemaBundleConf contains the information necessary to create or update a schema bundle.
+type SchemaBundleConf struct {
+	TableID        string
+	SchemaBundleID string
+	ProtoSchema    *ProtoSchemaInfo
+
+	// Etag is used for optimistic concurrency control during updates.
+	// Ignored during creation.
+	Etag string
+}
+
+// ProtoSchemaInfo represents a protobuf schema.
+type ProtoSchemaInfo struct {
+	// Contains a protobuf-serialized
+	// [google.protobuf.FileDescriptorSet](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/descriptor.proto),
+	// which could include multiple proto files.
+	ProtoDescriptors []byte
+}
+
+// CreateSchemaBundle creates a new schema bundle in a table.
+func (ac *AdminClient) CreateSchemaBundle(ctx context.Context, conf *SchemaBundleConf) error {
+	if conf.TableID == "" || conf.SchemaBundleID == "" {
+		return errors.New("both SchemaBundleID and TableID are required in SchemaBundleConf")
+	}
+	schemaBundle := &btapb.SchemaBundle{}
+	if len(conf.ProtoSchema.ProtoDescriptors) > 0 {
+		schemaBundle.Type = &btapb.SchemaBundle_ProtoSchema{
+			ProtoSchema: &btapb.ProtoSchema{
+				ProtoDescriptors: conf.ProtoSchema.ProtoDescriptors,
+			},
+		}
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	req := &btapb.CreateSchemaBundleRequest{
+		Parent:         fmt.Sprintf("%s/tables/%s", ac.instancePrefix(), conf.TableID),
+		SchemaBundleId: conf.SchemaBundleID,
+		SchemaBundle:   schemaBundle,
+	}
+	op, err := ac.tClient.CreateSchemaBundle(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.SchemaBundle{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// SchemaBundleInfo represents information about a schema bundle. Schema bundle is a named collection of related schemas.
+// This struct is read-only.
+type SchemaBundleInfo struct {
+	TableID        string
+	SchemaBundleID string
+
+	Etag         string
+	SchemaBundle []byte
+}
+
+// GetSchemaBundle retrieves information about a schema bundle.
+func (ac *AdminClient) GetSchemaBundle(ctx context.Context, tableID, schemaBundleID string) (*SchemaBundleInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	req := &btapb.GetSchemaBundleRequest{
+		Name: ac.schemaBundlePath(tableID, schemaBundleID),
+	}
+	var res *btapb.SchemaBundle
+
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = ac.tClient.GetSchemaBundle(ctx, req)
+		return err
+	}, adminRetryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	sb := &SchemaBundleInfo{
+		TableID:        tableID,
+		SchemaBundleID: schemaBundleID,
+		Etag:           res.Etag,
+	}
+	if len(res.GetProtoSchema().GetProtoDescriptors()) > 0 {
+		sb.SchemaBundle = res.GetProtoSchema().GetProtoDescriptors()
+	}
+
+	return sb, nil
+}
+
+// SchemaBundles returns a list of the schema bundles in the table.
+func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]string, error) {
+	names := []string{}
+	prefix := fmt.Sprintf("%s/tables/%s", ac.instancePrefix(), tableID)
+
+	req := &btapb.ListSchemaBundlesRequest{
+		Parent: prefix,
+	}
+	var res *btapb.ListSchemaBundlesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = ac.tClient.ListSchemaBundles(ctx, req)
+		return err
+	}, adminRetryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, res := range res.SchemaBundles {
+		names = append(names, strings.TrimPrefix(res.Name, prefix+"/schemaBundles/"))
+	}
+	return names, nil
+}
+
+// UpdateSchemaBundleConf contains all the information necessary to update or partial update a schema bundle.
+type UpdateSchemaBundleConf struct {
+	SchemaBundleConf SchemaBundleConf
+	IgnoreWarnings   bool
+}
+
+// UpdateSchemaBundle updates a schema bundle in a table according to the given configuration.
+func (ac *AdminClient) UpdateSchemaBundle(ctx context.Context, conf UpdateSchemaBundleConf) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	if conf.SchemaBundleConf.TableID == "" || conf.SchemaBundleConf.SchemaBundleID == "" {
+		return errors.New("both SchemaBundleID and TableID is required")
+	}
+	sb := &btapb.SchemaBundle{
+		Name: ac.schemaBundlePath(conf.SchemaBundleConf.TableID, conf.SchemaBundleConf.SchemaBundleID),
+		Etag: conf.SchemaBundleConf.Etag,
+	}
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{},
+	}
+	if len(conf.SchemaBundleConf.ProtoSchema.ProtoDescriptors) > 0 {
+		sb.Type = &btapb.SchemaBundle_ProtoSchema{
+			ProtoSchema: &btapb.ProtoSchema{
+				ProtoDescriptors: conf.SchemaBundleConf.ProtoSchema.ProtoDescriptors,
+			},
+		}
+		updateMask.Paths = append(updateMask.Paths, "proto_schema")
+	}
+	req := &btapb.UpdateSchemaBundleRequest{
+		SchemaBundle:   sb,
+		UpdateMask:     updateMask,
+		IgnoreWarnings: conf.IgnoreWarnings,
+	}
+	lro, err := ac.tClient.UpdateSchemaBundle(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update schema bundle: %w", err)
+	}
+	var res btapb.SchemaBundle
+	op := longrunning.InternalNewOperation(ac.lroClient, lro)
+	if err = op.Wait(ctx, &res); err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
+// DeleteSchemaBundle deletes a schema bundle in a table.
+func (ac *AdminClient) DeleteSchemaBundle(ctx context.Context, tableID, schemaBundleID string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	req := &btapb.DeleteSchemaBundleRequest{
+		Name: ac.schemaBundlePath(tableID, schemaBundleID),
+	}
+	_, err := ac.tClient.DeleteSchemaBundle(ctx, req)
 	return err
 }

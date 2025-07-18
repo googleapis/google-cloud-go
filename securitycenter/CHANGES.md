@@ -1,5 +1,17 @@
 # Changes
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.36.2...securitycenter/v1.37.0) (2025-07-09)
+
+
+### Features
+
+* **securitycenter:** Add AffectedResources proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add AiModel proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add ChokePoint proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add IpRules proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add Job proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add Network proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [1.36.2](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.36.1...securitycenter/v1.36.2) (2025-04-15)
 
 

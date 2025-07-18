@@ -40,8 +40,9 @@ var newReservationSubBlocksClientHook clientHook
 
 // ReservationSubBlocksCallOptions contains the retry settings for each method of ReservationSubBlocksClient.
 type ReservationSubBlocksCallOptions struct {
-	Get  []gax.CallOption
-	List []gax.CallOption
+	Get                []gax.CallOption
+	List               []gax.CallOption
+	PerformMaintenance []gax.CallOption
 }
 
 func defaultReservationSubBlocksRESTCallOptions() *ReservationSubBlocksCallOptions {
@@ -70,6 +71,9 @@ func defaultReservationSubBlocksRESTCallOptions() *ReservationSubBlocksCallOptio
 					http.StatusServiceUnavailable)
 			}),
 		},
+		PerformMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -80,6 +84,7 @@ type internalReservationSubBlocksClient interface {
 	Connection() *grpc.ClientConn
 	Get(context.Context, *computepb.GetReservationSubBlockRequest, ...gax.CallOption) (*computepb.ReservationSubBlocksGetResponse, error)
 	List(context.Context, *computepb.ListReservationSubBlocksRequest, ...gax.CallOption) *ReservationSubBlockIterator
+	PerformMaintenance(context.Context, *computepb.PerformMaintenanceReservationSubBlockRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // ReservationSubBlocksClient is a client for interacting with Google Compute Engine API.
@@ -127,6 +132,11 @@ func (c *ReservationSubBlocksClient) List(ctx context.Context, req *computepb.Li
 	return c.internalClient.List(ctx, req, opts...)
 }
 
+// PerformMaintenance allows customers to perform maintenance on a reservation subBlock
+func (c *ReservationSubBlocksClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceReservationSubBlockRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.PerformMaintenance(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type reservationSubBlocksRESTClient struct {
 	// The http endpoint to connect to.
@@ -134,6 +144,9 @@ type reservationSubBlocksRESTClient struct {
 
 	// The http client.
 	httpClient *http.Client
+
+	// operationClient is used to call the operation-specific management service.
+	operationClient *ZoneOperationsClient
 
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
@@ -162,6 +175,16 @@ func NewReservationSubBlocksRESTClient(ctx context.Context, opts ...option.Clien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewZoneOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &ReservationSubBlocksClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -194,6 +217,9 @@ func (c *reservationSubBlocksRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *reservationSubBlocksRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -333,4 +359,64 @@ func (c *reservationSubBlocksRESTClient) List(ctx context.Context, req *computep
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// PerformMaintenance allows customers to perform maintenance on a reservation subBlock
+func (c *reservationSubBlocksRESTClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceReservationSubBlockRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSubBlocks/%v/performMaintenance", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSubBlock())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "parent_name", url.QueryEscape(req.GetParentName()), "reservation_sub_block", url.QueryEscape(req.GetReservationSubBlock()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PerformMaintenance[0:len((*c.CallOptions).PerformMaintenance):len((*c.CallOptions).PerformMaintenance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "PerformMaintenance")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
 }

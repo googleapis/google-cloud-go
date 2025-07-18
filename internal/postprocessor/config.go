@@ -36,6 +36,11 @@ type config struct {
 	// ManualClientInfo contains information on manual clients used to generate
 	// the manifest file.
 	ManualClientInfo []*ManifestEntry
+	// SkipModuleScanPaths are the set of directory paths relative to the
+	// the repository root which are ignored when autodetecting new modules for
+	// inclusion in the common set of released modules.  Paths to modules that are
+	// either not released, or released individually should be included here.
+	SkipModuleScanPaths []string
 }
 
 type serviceConfigEntry struct {
@@ -47,9 +52,10 @@ type serviceConfigEntry struct {
 }
 
 type postProcessorConfig struct {
-	Modules        []string              `yaml:"modules"`
-	ServiceConfigs []*serviceConfigEntry `yaml:"service-configs"`
-	ManualClients  []*ManifestEntry      `yaml:"manual-clients"`
+	Modules             []string              `yaml:"modules"`
+	ServiceConfigs      []*serviceConfigEntry `yaml:"service-configs"`
+	ManualClients       []*ManifestEntry      `yaml:"manual-clients"`
+	SkipModuleScanPaths []string              `yaml:"skip-module-scan-paths"`
 }
 
 type deepCopyConfig struct {
@@ -111,6 +117,7 @@ func (p *postProcessor) loadConfig() error {
 		ClientRelPaths:         make([]string, 0),
 		GoogleapisToImportPath: make(map[string]*libraryInfo),
 		ManualClientInfo:       ppc.ManualClients,
+		SkipModuleScanPaths:    ppc.SkipModuleScanPaths,
 	}
 	for _, v := range ppc.ServiceConfigs {
 		c.GoogleapisToImportPath[v.InputDirectory] = &libraryInfo{
