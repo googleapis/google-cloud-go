@@ -5,6 +5,80 @@
   "protoPackage": "google.cloud.policysimulator.v1",
   "libraryPackage": "cloud.google.com/go/policysimulator/apiv1",
   "services": {
+    "OrgPolicyViolationsPreviewService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OrgPolicyViolationsPreviewClient",
+          "rpcs": {
+            "CreateOrgPolicyViolationsPreview": {
+              "methods": [
+                "CreateOrgPolicyViolationsPreview"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOrgPolicyViolationsPreview": {
+              "methods": [
+                "GetOrgPolicyViolationsPreview"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListOrgPolicyViolations": {
+              "methods": [
+                "ListOrgPolicyViolations"
+              ]
+            },
+            "ListOrgPolicyViolationsPreviews": {
+              "methods": [
+                "ListOrgPolicyViolationsPreviews"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "OrgPolicyViolationsPreviewClient",
+          "rpcs": {
+            "CreateOrgPolicyViolationsPreview": {
+              "methods": [
+                "CreateOrgPolicyViolationsPreview"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOrgPolicyViolationsPreview": {
+              "methods": [
+                "GetOrgPolicyViolationsPreview"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListOrgPolicyViolations": {
+              "methods": [
+                "ListOrgPolicyViolations"
+              ]
+            },
+            "ListOrgPolicyViolationsPreviews": {
+              "methods": [
+                "ListOrgPolicyViolationsPreviews"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Simulator": {
       "clients": {
         "grpc": {
