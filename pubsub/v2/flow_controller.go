@@ -212,6 +212,7 @@ func (f *flowController) recordOutstandingMessages(ctx context.Context, n int64)
 		return
 	}
 
+	// Otherwise record this as subscriber outstanding messages.
 	recordStat(ctx, OutstandingMessages, n)
 }
 
@@ -221,5 +222,6 @@ func (f *flowController) recordOutstandingBytes(ctx context.Context, n int64) {
 		return
 	}
 
+	// Otherwise record this as subscriber outstanding bytes.
 	recordStat(ctx, OutstandingBytes, n)
 }
