@@ -222,6 +222,6 @@ func (f *flowController) recordOutstandingBytes(ctx context.Context, n int64) {
 		return
 	}
 
-	// Otherwise record this as subscriber outstanding .
+	// Otherwise record this as subscriber outstanding bytes.
 	recordStat(ctx, OutstandingBytes, n)
 }
