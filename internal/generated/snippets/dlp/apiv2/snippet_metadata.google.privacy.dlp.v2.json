@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dlp/apiv2",
-    "version": "1.24.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
