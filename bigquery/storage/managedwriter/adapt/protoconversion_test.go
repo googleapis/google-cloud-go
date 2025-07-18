@@ -29,6 +29,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // TestSchemaToProtoConversion validates behavior around converting table schemas to
@@ -348,6 +349,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 					},
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
+					expectedTimestampDescriptor(),
 					{
 						Name: proto.String("rangemessage_range_date"),
 						Field: []*descriptorpb.FieldDescriptorProto{
@@ -386,16 +388,18 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						Name: proto.String("rangemessage_range_timestamp"),
 						Field: []*descriptorpb.FieldDescriptorProto{
 							{
-								Name:   proto.String("start"),
-								Number: proto.Int32(1),
-								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
-								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+								Name:     proto.String("start"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("google_protobuf_Timestamp"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 							},
 							{
-								Name:   proto.String("end"),
-								Number: proto.Int32(2),
-								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
-								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+								Name:     proto.String("end"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("google_protobuf_Timestamp"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 							},
 						},
 					},
@@ -1956,4 +1960,15 @@ func TestNormalizeDescriptor(t *testing.T) {
 			t.Errorf("%s: -got, +want:\n%s", tc.description, diff)
 		}
 	}
+}
+
+func expectedTimestampDescriptor() *descriptorpb.DescriptorProto {
+	msg := new(timestamppb.Timestamp).ProtoReflect().Descriptor()
+	desc := protodesc.ToDescriptorProto(msg)
+	desc.Name = proto.String("google_protobuf_Timestamp")
+	for _, f := range desc.Field {
+		// doesn't seem to get pulled over in the conversion
+		f.DefaultValue = proto.String("0")
+	}
+	return desc
 }
