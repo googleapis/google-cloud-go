@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package accounts_test
-
-import (
-	accounts "cloud.google.com/go/shopping/merchant/accounts/apiv1beta"
-)
