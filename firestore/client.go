@@ -77,8 +77,8 @@ type Client struct {
 	UsesEmulator bool          // a boolean that indicates if the client is using the emulator
 }
 
-// NewClient creates a new Firestore client that uses the given project.
-func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+// newClient creates a new Firestore client, using the given createClient function to create the underlying client.
+func newClient(ctx context.Context, projectID string, createClient func(ctx context.Context, opts ...option.ClientOption) (*vkit.Client, error), supportsEmulator bool, opts ...option.ClientOption) (*Client, error) {
 	if projectID == "" {
 		return nil, errors.New("firestore: projectID was empty")
 	}
@@ -86,6 +86,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	var usesEmulator bool
 	// If this environment variable is defined, configure the client to talk to the emulator.
 	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {
+		if !supportsEmulator {
+			return nil, fmt.Errorf("firestore: emulator is not supported for this client type")
+		}
+
 		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithPerRPCCredentials(emulatorCreds{}))
 		if err != nil {
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
@@ -105,7 +109,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, err
 	}
 
-	vc, err := vkit.NewClient(ctx, o...)
+	vc, err := createClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}
@@ -118,6 +122,16 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		UsesEmulator: usesEmulator,
 	}
 	return c, nil
+}
+
+// NewClient creates a new Firestore client that uses the given project.
+func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	return newClient(ctx, projectID, vkit.NewClient, true, opts...)
+}
+
+// NewRESTClient creates a new Firestore client that uses the REST API.
+func NewRESTClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	return newClient(ctx, projectID, vkit.NewRESTClient, false, opts...)
 }
 
 // NewClientWithDatabase creates a new Firestore client that accesses the
