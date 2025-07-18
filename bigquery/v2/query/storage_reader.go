@@ -27,12 +27,13 @@ import (
 type storageReader struct {
 	c            *Client
 	rc           *storage.BigQueryReadClient
-	q            *Query
 	table        *bigquerypb.TableReference
 	rs           *storagepb.ReadSession
 	it           *storageArrowIterator
 	arrowDecoder *arrowDecoder
 }
+
+var _ sourceReader = &jobsReader{}
 
 func newStorageReader(ctx context.Context, c *Client, rc *storage.BigQueryReadClient, q *Query) (*storageReader, error) {
 	table, err := resolveDestinationTable(ctx, q)
@@ -54,7 +55,6 @@ func newStorageReader(ctx context.Context, c *Client, rc *storage.BigQueryReadCl
 	rs := &storageReader{
 		c:     c,
 		rc:    rc,
-		q:     q,
 		table: table,
 	}
 
@@ -94,8 +94,7 @@ func resolveDestinationTable(ctx context.Context, q *Query) (*bigquerypb.TableRe
 
 func (r *storageReader) start(ctx context.Context, state *readState) (*RowIterator, error) {
 	it := &RowIterator{
-		r:         r,
-		totalRows: r.q.cachedTotalRows,
+		r: r,
 	}
 	rs, err := r.sessionForTable(ctx)
 	if err != nil {
@@ -104,7 +103,7 @@ func (r *storageReader) start(ctx context.Context, state *readState) (*RowIterat
 	r.rs = rs
 	it.totalRows = uint64(r.rs.EstimatedRowCount)
 
-	dec, err := newArrowDecoder(rs.GetArrowSchema().SerializedSchema, r.q.cachedSchema)
+	dec, err := newArrowDecoder(rs.GetArrowSchema().SerializedSchema, r.it.schema)
 	if err != nil {
 		return nil, err
 	}

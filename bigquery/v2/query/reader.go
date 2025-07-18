@@ -21,7 +21,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-type reader interface {
+type sourceReader interface {
 	// start do all set up and make sure data can be read.
 	start(ctx context.Context, state *readState) (*RowIterator, error)
 	// nextPage fetchs new page of results. Can return iterator.Done if there is
@@ -35,14 +35,16 @@ type resultSet struct {
 	rows      []*Row
 }
 
-// jobsQueryReader is used to read the results of a query using jobs.query API.
-type jobsQueryReader struct {
+// jobsReader is used to read the results of a query using jobs.getQueryResults API.
+type jobsReader struct {
 	c            *Client
 	q            *Query
 	gotFirstPage bool
 }
 
-func newReaderFromQuery(ctx context.Context, c *Client, q *Query, state *readState) reader {
+var _ sourceReader = &jobsReader{}
+
+func newReaderFromQuery(ctx context.Context, c *Client, q *Query, state *readState) sourceReader {
 	if c.rc != nil || state.readClient != nil {
 		rc := c.rc
 		if rc == nil {
@@ -53,11 +55,11 @@ func newReaderFromQuery(ctx context.Context, c *Client, q *Query, state *readSta
 			return r
 		}
 	}
-	return newJobsQueryReader(c, q)
+	return newJobsReader(c, q)
 }
 
-func newJobsQueryReader(c *Client, q *Query) *jobsQueryReader {
-	r := &jobsQueryReader{
+func newJobsReader(c *Client, q *Query) *jobsReader {
+	r := &jobsReader{
 		c: c,
 		q: q,
 	}
@@ -66,7 +68,7 @@ func newJobsQueryReader(c *Client, q *Query) *jobsQueryReader {
 	return r
 }
 
-func (r *jobsQueryReader) start(ctx context.Context, state *readState) (*RowIterator, error) {
+func (r *jobsReader) start(ctx context.Context, state *readState) (*RowIterator, error) {
 	it := &RowIterator{
 		r:         r,
 		rows:      r.q.cachedRows,
@@ -85,7 +87,7 @@ func (r *jobsQueryReader) start(ctx context.Context, state *readState) (*RowIter
 	return it, nil
 }
 
-func (r *jobsQueryReader) nextPage(ctx context.Context, pageToken string) (*resultSet, error) {
+func (r *jobsReader) nextPage(ctx context.Context, pageToken string) (*resultSet, error) {
 	if pageToken == "" && r.gotFirstPage {
 		return nil, iterator.Done
 	}

@@ -22,7 +22,7 @@ import (
 
 // RowIterator is an iterator over the results of a query.
 type RowIterator struct {
-	r         reader
+	r         sourceReader
 	rows      []*Row
 	totalRows uint64
 	pageToken string

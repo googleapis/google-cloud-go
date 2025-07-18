@@ -54,7 +54,7 @@ func setup() func() {
 	testProjectID = projID
 
 	ctx := context.Background()
-	bqClient, err := apiv2_client.NewClient(ctx)
+	client, err := apiv2_client.NewClient(ctx)
 	if err != nil {
 		log.Printf("apiv2_client.NewClient: %v", err)
 		return nil
@@ -62,7 +62,7 @@ func setup() func() {
 
 	testDatasetID = fmt.Sprintf("testdataset_%d", time.Now().UnixNano())
 
-	ds, err := bqClient.InsertDataset(ctx, &bigquerypb.InsertDatasetRequest{
+	ds, err := client.InsertDataset(ctx, &bigquerypb.InsertDatasetRequest{
 		ProjectId: testProjectID,
 		Dataset: &bigquerypb.Dataset{
 			DatasetReference: &bigquerypb.DatasetReference{
@@ -80,7 +80,8 @@ func setup() func() {
 		}
 	}
 
-	db, err = sql.Open("bigquery", "bigquery://"+testProjectID)
+	connStr := fmt.Sprintf("bigquery://%s?useStorageReadAPI", testProjectID)
+	db, err = sql.Open("bigquery", connStr)
 	if err != nil {
 		log.Printf("sql.Open: %v", err)
 		return nil
@@ -88,12 +89,12 @@ func setup() func() {
 
 	return func() {
 		db.Close()
-		bqClient.DeleteDataset(ctx, &bigquerypb.DeleteDatasetRequest{
+		client.DeleteDataset(ctx, &bigquerypb.DeleteDatasetRequest{
 			ProjectId:      testProjectID,
 			DeleteContents: true,
 			DatasetId:      ds.DatasetReference.DatasetId,
 		})
-		bqClient.Close()
+		client.Close()
 	}
 }
 

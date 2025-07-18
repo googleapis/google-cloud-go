@@ -21,18 +21,20 @@ import (
 	"net/url"
 	"strings"
 
+	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/v2/query"
+	"google.golang.org/api/option"
 )
 
 // Connector is a database/sql/driver.Connector for BigQuery.
 type Connector struct {
-	projectID string
-	// other options can go here
+	projectID         string
+	useStorageReadAPI bool
 }
 
 // NewConnector creates a new Connector.
 // The name is a connection string in the following format:
-// "bigquery://<project_id>"
+// "bigquery://<project_id>?useStorageReadAPI"
 func NewConnector(name string) (*Connector, error) {
 	u, err := url.Parse(name)
 	if err != nil {
@@ -49,14 +51,24 @@ func NewConnector(name string) (*Connector, error) {
 	if projectID == "" {
 		return nil, fmt.Errorf("invalid connection string: missing project_id")
 	}
+	q := u.Query()
 	return &Connector{
-		projectID: projectID,
+		projectID:         projectID,
+		useStorageReadAPI: q.Has("useStorageReadAPI"),
 	}, nil
 }
 
 // Connect returns a new connection to the database.
 func (c *Connector) Connect(ctx context.Context) (driver.Conn, error) {
-	client, err := query.NewClient(ctx, c.projectID)
+	opts := []option.ClientOption{}
+	if c.useStorageReadAPI {
+		rc, err := storage.NewBigQueryReadClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, query.WithReadClient(rc))
+	}
+	client, err := query.NewClient(ctx, c.projectID, opts...)
 	if err != nil {
 		return nil, err
 	}
