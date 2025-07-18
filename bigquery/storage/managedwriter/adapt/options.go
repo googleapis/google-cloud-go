@@ -14,7 +14,12 @@
 
 package adapt
 
-import "cloud.google.com/go/internal/optional"
+import (
+	"strings"
+
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	"google.golang.org/protobuf/types/descriptorpb"
+)
 
 // Option to customize proto descriptor conversion.
 type Option interface {
@@ -23,22 +28,56 @@ type Option interface {
 
 // type for collecting custom adapt Option values.
 type customConfig struct {
-	useTimestampWellKnownType bool
-	useProto3                 bool
+	protoMappingOverrides map[storagepb.TableFieldSchema_Type]protoOverride
+	useProto3             bool
+}
+
+type protoOverride struct {
+	fieldType storagepb.TableFieldSchema_Type
+	typeName  string
+	protoType descriptorpb.FieldDescriptorProto_Type
 }
 
 type customOption struct {
-	useTimestampWellKnownType optional.Bool
+	protoOverride *protoOverride
 }
 
-// WithTimestampWellKnownType defines that table fields of type Timestamp, are mapped
+// WithTimestampAsTimestamp defines that table fields of type Timestamp, are mapped
 // as Google's WKT timestamppb.Timestamp.
-func WithTimestampWellKnownType(useTimestampWellKnownType bool) Option {
-	return &customOption{useTimestampWellKnownType: useTimestampWellKnownType}
+// THIS IS GOING TO BE REMOVED
+func WithTimestampAsTimestamp() Option {
+	return WithProtoMapping(storagepb.TableFieldSchema_TIMESTAMP, "google.protobuf.Timestamp", descriptorpb.FieldDescriptorProto_TYPE_MESSAGE)
+}
+
+// WithIntervalAsDuration defines that table fields of type Interval, are mapped
+// as Google's WKT durationpb.Duration
+// THIS IS GOING TO BE REMOVED
+func WithIntervalAsDuration() Option {
+	return WithProtoMapping(storagepb.TableFieldSchema_INTERVAL, "google.protobuf.Duration", descriptorpb.FieldDescriptorProto_TYPE_MESSAGE)
+}
+
+// WithBigNumericAsDouble defines that table fields of type BigNumeric, are mapped
+// as Google's WKT wrapperspb.Double
+// THIS IS GOING TO BE REMOVED
+func WithBigNumericAsDouble() Option {
+	return WithProtoMapping(storagepb.TableFieldSchema_BIGNUMERIC, "google.protobuf.DoubleValue", descriptorpb.FieldDescriptorProto_TYPE_DOUBLE)
+}
+
+// WithProtoMapping overrides which field descriptor proto type is going to be used
+// for the given table field type.
+func WithProtoMapping(fieldType storagepb.TableFieldSchema_Type, typeName string, protoType descriptorpb.FieldDescriptorProto_Type) Option {
+	if !strings.HasPrefix(typeName, ".") {
+		typeName = "." + typeName
+	}
+	return &customOption{protoOverride: &protoOverride{
+		fieldType: fieldType,
+		typeName:  typeName,
+		protoType: protoType,
+	}}
 }
 
 func (o *customOption) applyCustomClientOpt(cfg *customConfig) {
-	if o.useTimestampWellKnownType != nil {
-		cfg.useTimestampWellKnownType = optional.ToBool(o.useTimestampWellKnownType)
+	if o.protoOverride != nil {
+		cfg.protoMappingOverrides[o.protoOverride.fieldType] = *o.protoOverride
 	}
 }

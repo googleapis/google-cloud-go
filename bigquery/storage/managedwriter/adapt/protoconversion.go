@@ -25,6 +25,7 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -115,8 +116,20 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 // filename used by well known types proto
 var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 
-// filename used by timestamp proto
-var wellKnownTypesTimestampName = "google/protobuf/timestamp.proto"
+// filename used by timestamp and duration proto
+var extraWellKnownTypesPerTypeName = map[string]struct {
+	name           string
+	fileDescriptor *descriptorpb.FileDescriptorProto
+}{
+	".google.protobuf.Timestamp": {
+		name:           "google/protobuf/timestamp.proto",
+		fileDescriptor: protodesc.ToFileDescriptorProto(timestamppb.File_google_protobuf_timestamp_proto),
+	},
+	".google.protobuf.Duration": {
+		name:           "google/protobuf/duration.proto",
+		fileDescriptor: protodesc.ToFileDescriptorProto(durationpb.File_google_protobuf_duration_proto),
+	},
+}
 
 var rangeTypesPrefix = "rangemessage_range_"
 
@@ -236,7 +249,8 @@ func (dm *dependencyCache) getRange(typ storagepb.TableFieldSchema_Type) protore
 func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope string, opts ...Option) (protoreflect.Descriptor, error) {
 	dc := newDependencyCache()
 	cfg := &customConfig{
-		useProto3: false,
+		useProto3:             false,
+		protoMappingOverrides: map[storagepb.TableFieldSchema_Type]protoOverride{},
 	}
 	for _, opt := range opts {
 		opt.applyCustomClientOpt(cfg)
@@ -252,7 +266,8 @@ func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope stri
 func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope string, opts ...Option) (protoreflect.Descriptor, error) {
 	dc := newDependencyCache()
 	cfg := &customConfig{
-		useProto3: true,
+		useProto3:             true,
+		protoMappingOverrides: map[storagepb.TableFieldSchema_Type]protoOverride{},
 	}
 	for _, opt := range opts {
 		opt.applyCustomClientOpt(cfg)
@@ -351,8 +366,10 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 
 	// Use the local dependencies to generate a list of filenames.
 	depNames := []string{wellKnownTypesWrapperName}
-	if cfg.useTimestampWellKnownType {
-		depNames = append(depNames, wellKnownTypesTimestampName)
+	for _, override := range cfg.protoMappingOverrides {
+		if dep, found := extraWellKnownTypesPerTypeName[override.typeName]; found {
+			depNames = append(depNames, dep.name)
+		}
 	}
 	for _, d := range deps {
 		depNames = append(depNames, d.ParentFile().Path())
@@ -376,8 +393,10 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 		fdp,
 		protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
 	}
-	if cfg.useTimestampWellKnownType {
-		fdpList = append(fdpList, protodesc.ToFileDescriptorProto(timestamppb.File_google_protobuf_timestamp_proto))
+	for _, override := range cfg.protoMappingOverrides {
+		if dep, found := extraWellKnownTypesPerTypeName[override.typeName]; found {
+			fdpList = append(fdpList, dep.fileDescriptor)
+		}
 	}
 	fdpList = append(fdpList, cache.getFileDescriptorProtos()...)
 
@@ -442,24 +461,18 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 			TypeName: proto.String(fmt.Sprintf("%s%s", rangeTypesPrefix, strings.ToLower(field.GetRangeElementType().GetType().String()))),
 			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
-	} else if field.GetType() == storagepb.TableFieldSchema_TIMESTAMP && cfg.useTimestampWellKnownType {
-		// Only TIMESTAMP supports timestamppb: https://cloud.google.com/bigquery/docs/supported-data-types
-		fdp = &descriptorpb.FieldDescriptorProto{
-			Name:     proto.String(name),
-			Number:   proto.Int32(idx),
-			Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-			TypeName: proto.String(".google.protobuf.Timestamp"),
-			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
-		}
 	} else {
 		// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
 		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !cfg.useProto3 {
-			outType := bqTypeToFieldTypeMap[field.GetType()]
+			typeName, outType := resolveType(field, cfg)
 			fdp = &descriptorpb.FieldDescriptorProto{
 				Name:   proto.String(name),
 				Number: proto.Int32(idx),
 				Type:   outType.Enum(),
 				Label:  convertModeToLabel(field.GetMode(), cfg.useProto3),
+			}
+			if typeName != "" {
+				fdp.TypeName = proto.String(typeName)
 			}
 
 			// Special case: proto2 repeated fields may benefit from using packed annotation.
@@ -474,13 +487,16 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 				}
 			}
 		} else {
+			typeName, outType := resolveType(field, cfg)
 			// For NULLABLE proto3 fields, use a wrapper type.
 			fdp = &descriptorpb.FieldDescriptorProto{
-				Name:     proto.String(name),
-				Number:   proto.Int32(idx),
-				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-				TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
-				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+				Name:   proto.String(name),
+				Number: proto.Int32(idx),
+				Type:   outType.Enum(),
+				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			}
+			if typeName != "" {
+				fdp.TypeName = proto.String(typeName)
 			}
 		}
 	}
@@ -497,6 +513,17 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 		proto.SetExtension(fdp.Options, storagepb.E_ColumnName, name)
 	}
 	return fdp
+}
+
+func resolveType(field *storagepb.TableFieldSchema, cfg *customConfig) (string, descriptorpb.FieldDescriptorProto_Type) {
+	if override, found := cfg.protoMappingOverrides[field.GetType()]; found {
+		return override.typeName, override.protoType
+	}
+	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE {
+		return bqTypeToWrapperMap[field.GetType()], descriptorpb.FieldDescriptorProto_TYPE_MESSAGE
+	}
+	outType := bqTypeToFieldTypeMap[field.GetType()]
+	return "", outType
 }
 
 // nameRequiresAnnotation determines whether a field name requires unicode-annotation.
