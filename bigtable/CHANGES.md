@@ -1,5 +1,15 @@
 # Changes
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.38.0...bigtable/v1.39.0) (2025-07-18)
+
+
+### Features
+
+* **bigtable/spanner:** Allow disable gRPC DirectPath deps ([#12469](https://github.com/googleapis/google-cloud-go/issues/12469)) ([2205d27](https://github.com/googleapis/google-cloud-go/commit/2205d27d8fff56c0b25facfc60daa766f4d10ee8))
+* **bigtable:** Add Idempotency to Cloud Bigtable MutateRowRequest API ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **bigtable:** Adding support to schema bundles ([#12516](https://github.com/googleapis/google-cloud-go/issues/12516)) ([688eb13](https://github.com/googleapis/google-cloud-go/commit/688eb13ea98a2a041513b06d47dddfbfc29a9117))
+* **bigtable:** Update ListSchemaBundles to returns only names ([#12563](https://github.com/googleapis/google-cloud-go/issues/12563)) ([83ea7c4](https://github.com/googleapis/google-cloud-go/commit/83ea7c420baf1a7c004796843eb377e4344f41b1))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.37.0...bigtable/v1.38.0) (2025-06-27)
 
 
