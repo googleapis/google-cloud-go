@@ -19,7 +19,7 @@ package bigtable
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -251,7 +251,7 @@ type TestResult struct {
 }
 
 func TestAcceptance(t *testing.T) {
-	testJSON, err := ioutil.ReadFile("./testdata/read-rows-acceptance-test.json")
+	testJSON, err := os.ReadFile("./testdata/read-rows-acceptance-test.json")
 	if err != nil {
 		t.Fatalf("could not open acceptance test file %v", err)
 	}
