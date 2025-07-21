@@ -404,7 +404,7 @@ func newFake(t *testing.T) (*Client, *pstest.Server) {
 	client, err := NewClient(ctx, projName,
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithTelemetryDisabled(),
 	)
 	if err != nil {
