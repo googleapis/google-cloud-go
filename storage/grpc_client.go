@@ -1108,7 +1108,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			}
 		}
 		var stream storagepb.Storage_BidiReadObjectClient
-		//var resp *storagepb.BidiReadObjectResponse
 		var decoder *readResponseDecoder
 		cc, cancel := context.WithCancel(ctx)
 		err = run(cc, func(ctx context.Context) error {
@@ -2227,14 +2226,12 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC
 		return 0, true
 	}
 
-	// HIGHLIGHT START
 	// Look up the specific offsets for the requested readID.
 	offsets, ok := d.dataOffsets[readID]
 	if !ok {
 		// If the message contains no data for this ID, return 0 bytes read.
 		return 0, false
 	}
-	// HIGHLIGHT END
 
 	databuf := d.databufs[offsets.currBuf]
 	startOff := offsets.currOff
