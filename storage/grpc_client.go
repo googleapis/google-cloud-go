@@ -2276,16 +2276,12 @@ func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, upd
 		return 0, false, nil
 	}
 
-	// Loop from the starting buffer to the ending buffer for this specific data range.
-	for i := offsets.startBuf; i <= offsets.endBuf; i++ {
+	// Loop from the current buffer to the ending buffer for this specific data range.
+	for i := offsets.currBuf; i <= offsets.endBuf; i++ {
 		databuf := d.databufs[i]
 
 		// Determine the start and end of the data slice for the current buffer.
-		start := uint64(0)
-		if i == offsets.startBuf {
-			start = offsets.startOff
-		}
-
+		start := offsets.currOff
 		end := uint64(databuf.Len())
 		if i == offsets.endBuf {
 			end = offsets.endOff
@@ -2301,6 +2297,7 @@ func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, upd
 		// Write the data slice to the user's writer.
 		n, err := w.Write(dataSlice)
 		totalWritten += int64(n)
+		offsets.currOff = 0 // moving to the next buffer, currOff resets to zero.
 		if updateCRC != nil {
 			updateCRC(dataSlice[:n])
 		}
