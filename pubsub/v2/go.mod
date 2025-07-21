@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	cloud.google.com/go v0.121.1
 	cloud.google.com/go/iam v1.5.2
-	cloud.google.com/go/pubsub v1.47.0
+	cloud.google.com/go/pubsub/v2 v2.0.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.14.1
