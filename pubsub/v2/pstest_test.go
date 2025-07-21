@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/pubsub/v2/pstest"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // withGRPCHeadersAssertionAlt is named differently than
@@ -51,7 +52,7 @@ func TestPSTest(t *testing.T) {
 	srv := pstest.NewServer()
 	defer srv.Close()
 
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials))
 	if err != nil {
 		panic(err)
 	}
