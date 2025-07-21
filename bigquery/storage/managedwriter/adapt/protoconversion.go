@@ -462,41 +462,24 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
 	} else {
-		// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
-		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !cfg.useProto3 {
-			typeName, outType := resolveType(field, cfg)
-			fdp = &descriptorpb.FieldDescriptorProto{
-				Name:   proto.String(name),
-				Number: proto.Int32(idx),
-				Type:   outType.Enum(),
-				Label:  convertModeToLabel(field.GetMode(), cfg.useProto3),
-			}
-			if typeName != "" {
-				fdp.TypeName = proto.String(typeName)
-			}
+		typeName, outType, label := resolveType(field, cfg)
+		fdp = &descriptorpb.FieldDescriptorProto{
+			Name:     proto.String(name),
+			Number:   proto.Int32(idx),
+			Type:     outType.Enum(),
+			TypeName: typeName,
+			Label:    label,
+		}
 
-			// Special case: proto2 repeated fields may benefit from using packed annotation.
-			if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !cfg.useProto3 {
-				for _, v := range packedTypes {
-					if outType == v {
-						fdp.Options = &descriptorpb.FieldOptions{
-							Packed: proto.Bool(true),
-						}
-						break
+		// Special case: proto2 repeated fields may benefit from using packed annotation.
+		if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !cfg.useProto3 {
+			for _, v := range packedTypes {
+				if outType == v {
+					fdp.Options = &descriptorpb.FieldOptions{
+						Packed: proto.Bool(true),
 					}
+					break
 				}
-			}
-		} else {
-			typeName, outType := resolveType(field, cfg)
-			// For NULLABLE proto3 fields, use a wrapper type.
-			fdp = &descriptorpb.FieldDescriptorProto{
-				Name:   proto.String(name),
-				Number: proto.Int32(idx),
-				Type:   outType.Enum(),
-				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
-			}
-			if typeName != "" {
-				fdp.TypeName = proto.String(typeName)
 			}
 		}
 	}
@@ -515,15 +498,16 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 	return fdp
 }
 
-func resolveType(field *storagepb.TableFieldSchema, cfg *customConfig) (string, descriptorpb.FieldDescriptorProto_Type) {
+func resolveType(field *storagepb.TableFieldSchema, cfg *customConfig) (*string, descriptorpb.FieldDescriptorProto_Type, *descriptorpb.FieldDescriptorProto_Label) {
 	if override, found := cfg.protoMappingOverrides[field.GetType()]; found {
-		return override.typeName, override.protoType
+		return proto.String(override.typeName), override.protoType, convertModeToLabel(field.GetMode(), cfg.useProto3)
 	}
-	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE {
-		return bqTypeToWrapperMap[field.GetType()], descriptorpb.FieldDescriptorProto_TYPE_MESSAGE
+	// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
+	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !cfg.useProto3 {
+		return nil, bqTypeToFieldTypeMap[field.GetType()], convertModeToLabel(field.GetMode(), cfg.useProto3)
 	}
-	outType := bqTypeToFieldTypeMap[field.GetType()]
-	return "", outType
+	// For NULLABLE proto3 fields, use a wrapper type.
+	return proto.String(bqTypeToWrapperMap[field.GetType()]), descriptorpb.FieldDescriptorProto_TYPE_MESSAGE, descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()
 }
 
 // nameRequiresAnnotation determines whether a field name requires unicode-annotation.
