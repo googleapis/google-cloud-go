@@ -36,15 +36,6 @@ const (
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.%s/v1/projects/-/serviceAccounts/%s/allowedLocations"
 )
 
-// DataProvider provides an interface for fetching trust boundary data.
-// It's responsible for obtaining trust boundary information, including caching and specific logic for different credential types.
-type DataProvider interface {
-	// GetTrustBoundaryData retrieves the trust boundary data (type Data).
-	// The token is used to authenticate the lookup request.
-	// The context provided should be used for any network requests.
-	GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internal.TrustBoundaryData, error)
-}
-
 // ConfigProvider provides specific configuration for trust boundary lookups.
 type ConfigProvider interface {
 	// GetTrustBoundaryEndpoint returns the endpoint URL for the trust boundary lookup.
@@ -165,7 +156,7 @@ type dataProvider struct {
 // NewTrustBoundaryDataProvider creates a new DataProvider.
 // It will use the provided HTTP client to make requests and the configProvider
 // to determine the correct endpoint and universe domain for trust boundary lookups.
-func NewTrustBoundaryDataProvider(client *http.Client, configProvider ConfigProvider, logger *slog.Logger) (DataProvider, error) {
+func NewTrustBoundaryDataProvider(client *http.Client, configProvider ConfigProvider, logger *slog.Logger) (auth.TrustBoundaryDataProvider, error) {
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client cannot be nil for TrustBoundaryDataProvider")
 	}
@@ -247,7 +238,7 @@ type GCETrustBoundaryConfigProvider struct {
 
 // NewGCETrustBoundaryConfigProvider creates a new GCETrustBoundaryConfigProvider
 // which uses the provided gceUDP to interact with the GCE metadata server.
-func NewGCETrustBoundaryConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider) ConfigProvider {
+func NewGCETrustBoundaryConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider) *GCETrustBoundaryConfigProvider {
 	// The validity of gceUDP and its internal MetadataClient will be checked
 	// within the GetTrustBoundaryEndpoint and GetUniverseDomain methods.
 	return &GCETrustBoundaryConfigProvider{

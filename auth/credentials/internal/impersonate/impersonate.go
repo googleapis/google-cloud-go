@@ -107,7 +107,7 @@ type Options struct {
 	// This data defines the regions or environments where the credential (and subsequently the tokens
 	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
 	// If nil, no trust boundary restrictions are applied or fetched for this flow.
-	trustBoundaryDataProvider trustboundary.DataProvider
+	trustBoundaryDataProvider auth.TrustBoundaryDataProvider
 }
 
 func (o *Options) validate() error {
@@ -173,7 +173,7 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	if o.trustBoundaryDataProvider != nil {
 		trustBoundaryData, err := o.trustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
 		if err != nil {
-			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
+			return nil, fmt.Errorf("auth: error fetching the trust boundary data: %w", err)
 		}
 		if trustBoundaryData != nil {
 			token.TrustBoundaryData = *trustBoundaryData

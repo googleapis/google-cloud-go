@@ -236,6 +236,7 @@ type CredentialsOptions struct {
 	// This data defines location restrictions for credential usage.
 	// Not all credential types utilize this provider; if it's nil, no trust boundary
 	// restrictions are applied via this mechanism.
+	// FOR INTERNAL USE ONLY.
 	TrustBoundaryDataProvider TrustBoundaryDataProvider
 }
 
@@ -523,6 +524,7 @@ type Options2LO struct {
 	// which is particularly relevant for credential types like service accounts
 	// where trust boundaries are enforced to limit usage to authorized locations.
 	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
+	// FOR INTERNAL USE ONLY.
 	TrustBoundaryDataProvider TrustBoundaryDataProvider
 }
 
@@ -644,7 +646,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 	if tp.opts.TrustBoundaryDataProvider != nil {
 		trustBoundaryData, err := tp.opts.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
 		if err != nil {
-			return nil, fmt.Errorf("auth: error fetching the trust bounday data: %w", err)
+			return nil, fmt.Errorf("auth: error fetching the trust boundary data: %w", err)
 		}
 		if trustBoundaryData != nil {
 			token.TrustBoundaryData = *trustBoundaryData

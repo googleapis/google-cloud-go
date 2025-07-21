@@ -15,7 +15,6 @@
 package credentials
 
 import (
-	"context"
 	"errors"
 	"fmt"
 
@@ -28,29 +27,6 @@ import (
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/trustboundary"
 )
-
-// internalDataProviderAdapter wraps the internal trustboundary.DataProvider
-// and implements the public auth.TrustBoundaryDataProvider interface.
-type internalDataProviderAdapter struct {
-	internalProvider trustboundary.DataProvider
-}
-
-// GetTrustBoundaryData calls the internal provider and converts the internal
-// trustboundary.Data to the public auth.TrustBoundaryData.
-func (a *internalDataProviderAdapter) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internalauth.TrustBoundaryData, error) {
-	internalData, err := a.internalProvider.GetTrustBoundaryData(ctx, token)
-	if err != nil {
-		return nil, err
-	}
-	if internalData == nil {
-		return nil, nil
-	}
-	// Convert the internal struct to the public one.
-	return &internalauth.TrustBoundaryData{
-		Locations:        internalData.Locations,
-		EncodedLocations: internalData.EncodedLocations,
-	}, nil
-}
 
 func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	fileType, err := credsfile.ParseFileType(b)
@@ -177,11 +153,11 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 	}
 	if trustBoundaryEnabled {
 		saTrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(opts2LO.Email, opts2LO.UniverseDomain)
-		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), saTrustBoundaryConfig, opts.logger())
+		trustBoundaryProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), saTrustBoundaryConfig, opts.logger())
 		if err != nil {
-			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider: %w", err)
+			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for service account: %w", err)
 		}
-		opts2LO.TrustBoundaryDataProvider = &internalDataProviderAdapter{internalProvider: tbProvider}
+		opts2LO.TrustBoundaryDataProvider = trustBoundaryProvider
 	}
 	return auth.New2LOTokenProvider(opts2LO)
 }
