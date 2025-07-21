@@ -246,7 +246,21 @@ func (dm *dependencyCache) getRange(typ storagepb.TableFieldSchema_Type) protore
 }
 
 // StorageSchemaToProto2Descriptor builds a protoreflect.Descriptor for a given table schema using proto2 syntax.
-func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope string, opts ...Option) (protoreflect.Descriptor, error) {
+func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
+	return StorageSchemaToProtoDescriptorWithOptions(inSchema, scope, withProto2())
+}
+
+// StorageSchemaToProto3Descriptor builds a protoreflect.Descriptor for a given table schema using proto3 syntax.
+//
+// NOTE: Currently the write API doesn't yet support proto3 behaviors (default value, wrapper types, etc), but this is provided for
+// completeness.
+func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
+	return StorageSchemaToProtoDescriptorWithOptions(inSchema, scope, withProto3())
+}
+
+// StorageSchemaToProtoDescriptorWithOptions builds a protoreflect.Descriptor for a given table schema with
+// extra configuration options. Uses proto2 syntax by default.
+func StorageSchemaToProtoDescriptorWithOptions(inSchema *storagepb.TableSchema, scope string, opts ...Option) (protoreflect.Descriptor, error) {
 	dc := newDependencyCache()
 	cfg := &customConfig{
 		useProto3:             false,
@@ -256,22 +270,6 @@ func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope stri
 		opt.applyCustomClientOpt(cfg)
 	}
 	// TODO: b/193064992 tracks support for wrapper types.  In the interim, disable wrapper usage.
-	return storageSchemaToDescriptorInternal(inSchema, scope, dc, cfg)
-}
-
-// StorageSchemaToProto3Descriptor builds a protoreflect.Descriptor for a given table schema using proto3 syntax.
-//
-// NOTE: Currently the write API doesn't yet support proto3 behaviors (default value, wrapper types, etc), but this is provided for
-// completeness.
-func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope string, opts ...Option) (protoreflect.Descriptor, error) {
-	dc := newDependencyCache()
-	cfg := &customConfig{
-		useProto3:             true,
-		protoMappingOverrides: map[storagepb.TableFieldSchema_Type]protoOverride{},
-	}
-	for _, opt := range opts {
-		opt.applyCustomClientOpt(cfg)
-	}
 	return storageSchemaToDescriptorInternal(inSchema, scope, dc, cfg)
 }
 

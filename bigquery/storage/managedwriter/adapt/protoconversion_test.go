@@ -1049,7 +1049,7 @@ func TestProtoJSONSerialization(t *testing.T) {
 		},
 	}
 
-	descriptor, err := StorageSchemaToProto2Descriptor(sourceSchema, "root", WithTimestampAsTimestamp())
+	descriptor, err := StorageSchemaToProtoDescriptorWithOptions(sourceSchema, "root", WithTimestampAsTimestamp())
 	if err != nil {
 		t.Fatalf("failed to construct descriptor")
 	}

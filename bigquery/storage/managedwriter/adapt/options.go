@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	"cloud.google.com/go/internal/optional"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
@@ -40,6 +41,7 @@ type protoOverride struct {
 
 type customOption struct {
 	protoOverride *protoOverride
+	useProto3     optional.Bool
 }
 
 // WithTimestampAsTimestamp defines that table fields of type Timestamp, are mapped
@@ -78,8 +80,21 @@ func WithProtoMapping(fieldType storagepb.TableFieldSchema_Type, typeName string
 	}}
 }
 
+// internal option to set proto 2 syntax option
+func withProto2() Option {
+	return &customOption{useProto3: false}
+}
+
+// internal option to set proto 3 syntax option
+func withProto3() Option {
+	return &customOption{useProto3: true}
+}
+
 func (o *customOption) applyCustomClientOpt(cfg *customConfig) {
 	if o.protoOverride != nil {
 		cfg.protoMappingOverrides[o.protoOverride.fieldType] = *o.protoOverride
+	}
+	if o.useProto3 != nil {
+		cfg.useProto3 = optional.ToBool(o.useProto3)
 	}
 }
