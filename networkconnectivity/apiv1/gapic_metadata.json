@@ -318,6 +318,85 @@
         }
       }
     },
+    "InternalRangeService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "InternalRangeClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateInternalRange": {
+              "methods": [
+                "CreateInternalRange"
+              ]
+            },
+            "DeleteInternalRange": {
+              "methods": [
+                "DeleteInternalRange"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInternalRange": {
+              "methods": [
+                "GetInternalRange"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListInternalRanges": {
+              "methods": [
+                "ListInternalRanges"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateInternalRange": {
+              "methods": [
+                "UpdateInternalRange"
+              ]
+            }
+          }
+        }
+      }
+    },
     "PolicyBasedRoutingService": {
       "clients": {
         "grpc": {

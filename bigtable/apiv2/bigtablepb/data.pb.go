@@ -489,6 +489,7 @@ type Value_BoolValue struct {
 
 type Value_FloatValue struct {
 	// Represents a typed value transported as a floating point number.
+	// Does not support NaN or infinities.
 	FloatValue float64 `protobuf:"fixed64,11,opt,name=float_value,json=floatValue,proto3,oneof"`
 }
 
