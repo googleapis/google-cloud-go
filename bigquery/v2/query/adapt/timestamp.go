@@ -37,16 +37,22 @@ func (ts *Timestamp) Scan(src any) error {
 		ts.Time = time.Time{}
 		return nil
 	}
-	data, ok := src.(string)
-	if !ok {
-		return fmt.Errorf("invalid type `%T` for parsing timestamp, expected `string`", data)
+	switch data := src.(type) {
+	case *time.Time:
+		ts.Time = *data
+		return nil
+	case time.Time:
+		ts.Time = data
+		return nil
+	case string:
+		t, err := parseStringTimestamp(data)
+		if err != nil {
+			return err
+		}
+		ts.Time = *t
+	default:
+		return fmt.Errorf("invalid type `%T` for parsing timestamp, expected `string` or `time.Time`", src)
 	}
-
-	t, err := parseStringTimestamp(data)
-	if err != nil {
-		return err
-	}
-	ts.Time = *t
 	return nil
 }
 

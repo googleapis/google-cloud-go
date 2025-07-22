@@ -17,10 +17,90 @@ package query
 import (
 	"errors"
 	"fmt"
+	"math/big"
 	"strconv"
 
+	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"cloud.google.com/go/bigquery/v2/query/adapt"
+	"cloud.google.com/go/civil"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+type fieldValue struct {
+	fs    *bigquerypb.TableFieldSchema
+	value *structpb.Value
+}
+
+func newFieldValue(fs *bigquerypb.TableFieldSchema, value *structpb.Value) *fieldValue {
+	return &fieldValue{
+		fs:    fs,
+		value: value,
+	}
+}
+
+func (fv *fieldValue) isNullable() bool {
+	return fv.fs.Mode == string(ModeNullable)
+}
+
+func (fv *fieldValue) asInterface() any {
+	if s := fv.value.GetStructValue(); s != nil {
+		subrow := &Row{pb: s, schema: newSchemaFromField(fv.fs)}
+		return subrow.AsValues()
+	} else if l := fv.value.GetListValue(); l != nil {
+		arr := []any{}
+		for _, row := range l.Values {
+			subv := newFieldValue(fv.fs, row)
+			arr = append(arr, subv.asInterface())
+		}
+		return arr
+	}
+	switch FieldType(fv.fs.Type) {
+	case BytesFieldType:
+		b := &adapt.Bytes{}
+		b.Scan(fv.value.GetStringValue())
+		return []byte(*b)
+	case TimestampFieldType:
+		t := &adapt.Timestamp{}
+		t.Scan(fv.value.GetStringValue())
+		if fv.isNullable() {
+			return &t.Time
+		}
+		return t.Time
+	case DateFieldType:
+		t := &civil.Date{}
+		t.Scan(fv.value.GetStringValue())
+		if fv.isNullable() {
+			return t
+		}
+		return *t
+	case TimeFieldType:
+		t := &civil.Time{}
+		t.Scan(fv.value.GetStringValue())
+		if fv.isNullable() {
+			return t
+		}
+		return *t
+	case DateTimeFieldType:
+		t := &civil.DateTime{}
+		t.Scan(fv.value.GetStringValue())
+		if fv.isNullable() {
+			return t
+		}
+		return *t
+	case NumericFieldType, BigNumericFieldType:
+		rat := &big.Rat{}
+		rat.SetString(fv.value.GetStringValue())
+		if fv.isNullable() {
+			return rat
+		}
+		return *rat
+	case GeographyFieldType,
+		JSONFieldType, IntervalFieldType:
+		return fv.value.AsInterface()
+	default:
+		return fv.value.AsInterface()
+	}
+}
 
 // convertRows converts a series of TableRows into a series of Value slices.
 // schema is used to interpret the data from rows; its length must match the
@@ -114,7 +194,7 @@ func convertBasicType(val string, typ FieldType) (*structpb.Value, error) {
 	switch typ {
 	case StringFieldType, BytesFieldType, TimestampFieldType, DateFieldType, TimeFieldType,
 		DateTimeFieldType, NumericFieldType, BigNumericFieldType, GeographyFieldType,
-		JSONFieldType:
+		JSONFieldType, IntervalFieldType:
 		return structpb.NewStringValue(val), nil
 	case IntegerFieldType:
 		v, err := strconv.ParseInt(val, 10, 64)
@@ -134,8 +214,6 @@ func convertBasicType(val string, typ FieldType) (*structpb.Value, error) {
 			return nil, err
 		}
 		return structpb.NewBoolValue(v), nil
-	case IntervalFieldType:
-		panic("interval not supported yet")
 	default:
 		return nil, fmt.Errorf("unrecognized type: %s", typ)
 	}

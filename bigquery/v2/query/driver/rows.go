@@ -57,10 +57,10 @@ func (r *rows) Next(dest []driver.Value) error {
 	if err != nil {
 		return err
 	}
-	values := row.AsStruct()
+	values := row.AsMap()
 	for i, f := range r.schema.Fields {
-		v := values.Fields[f.Name]
-		dest[i] = v.AsInterface()
+		v := values[f.Name]
+		dest[i] = v
 	}
 	return nil
 }

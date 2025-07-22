@@ -43,7 +43,28 @@ func (r *Row) setValue(columnName string, value *structpb.Value) {
 
 // AsMap returns the row as a JSON object.
 func (r *Row) AsMap() map[string]any {
-	return r.pb.AsMap()
+	values := map[string]any{}
+	for _, f := range r.schema.pb.Fields {
+		fv := r.pb.Fields[f.Name]
+		v := fvToMap(f, newFieldValue(f, fv))
+		values[f.Name] = v
+	}
+	return values
+}
+
+func fvToMap(f *bigquerypb.TableFieldSchema, v *fieldValue) any {
+	if s := v.value.GetStructValue(); s != nil {
+		subrow := &Row{pb: s, schema: newSchemaFromField(f)}
+		return subrow.AsMap()
+	} else if l := v.value.GetListValue(); l != nil {
+		arr := []any{}
+		for _, row := range l.Values {
+			subv := fvToMap(f, newFieldValue(f, row))
+			arr = append(arr, subv)
+		}
+		return arr
+	}
+	return v.asInterface()
 }
 
 // AsValues decodes the row into an array of Value.
@@ -51,25 +72,25 @@ func (r *Row) AsValues() []any {
 	values := []any{}
 	for _, f := range r.schema.pb.Fields {
 		fv := r.pb.Fields[f.Name]
-		v := fvToValues(f, fv)
+		v := fvToValues(f, newFieldValue(f, fv))
 		values = append(values, v)
 	}
 	return values
 }
 
-func fvToValues(f *bigquerypb.TableFieldSchema, v *structpb.Value) any {
-	if s := v.GetStructValue(); s != nil {
+func fvToValues(f *bigquerypb.TableFieldSchema, v *fieldValue) any {
+	if s := v.value.GetStructValue(); s != nil {
 		subrow := &Row{pb: s, schema: newSchemaFromField(f)}
 		return subrow.AsValues()
-	} else if l := v.GetListValue(); l != nil {
+	} else if l := v.value.GetListValue(); l != nil {
 		arr := []any{}
 		for _, row := range l.Values {
-			subv := fvToValues(f, row)
+			subv := fvToValues(f, newFieldValue(f, row))
 			arr = append(arr, subv)
 		}
 		return arr
 	}
-	return v.AsInterface()
+	return v.asInterface()
 }
 
 // AsStruct decodes the row into a structpb.Struct.
@@ -79,7 +100,7 @@ func (r *Row) AsStruct() *structpb.Struct {
 
 // Decode decodes the row into an user provided struct.
 func (r *Row) Decode(v any) error {
-	encoded, err := r.pb.MarshalJSON()
+	encoded, err := json.Marshal(r.AsMap())
 	if err != nil {
 		return err
 	}

@@ -24,7 +24,6 @@ import (
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
-	"cloud.google.com/go/bigquery/v2/query/adapt"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -119,7 +118,7 @@ func TestReadNestedObject(t *testing.T) {
 	}
 }
 
-func TestReadAdaptTypes(t *testing.T) {
+func TestReadNativeTypes(t *testing.T) {
 	if len(testClients) == 0 {
 		t.Skip("integration tests skipped")
 	}
@@ -179,8 +178,8 @@ func TestReadAdaptTypes(t *testing.T) {
 
 					rows, _ := readRows(ctx, t, it)
 					if msg, ok := compareReadMap(rows, []map[string]any{{
-						"ts": tsInt,
-						"b":  byteParam,
+						"ts": &ts,
+						"b":  []byte("foo"),
 					}}); !ok {
 						t.Fatal(msg)
 					}
@@ -194,18 +193,18 @@ func TestReadAdaptTypes(t *testing.T) {
 					}
 
 					type MyStruct struct {
-						Timestamp *adapt.Timestamp `json:"ts"`
-						Bytes     *adapt.Bytes     `json:"b"`
+						Timestamp *time.Time `json:"ts"`
+						Bytes     []byte     `json:"b"`
 					}
 					var ms MyStruct
 					err = rows[0].Decode(&ms)
 					if err != nil {
 						t.Fatalf("Decode() error: %v", err)
 					}
-					if ms.Timestamp.Time != ts {
-						t.Fatalf("expected to read `ts` column with value %v as adapt.Timestamp, but found %v", ts, ms.Timestamp.Time)
+					if *ms.Timestamp != ts {
+						t.Fatalf("expected to read `ts` column with value %v as adapt.Timestamp, but found %v", ts, ms.Timestamp)
 					}
-					if string(*ms.Bytes) != "foo" {
+					if string(ms.Bytes) != "foo" {
 						t.Fatalf("expected to read `b` column with value `foo` as adapt.Bytes, but found %v", ms.Bytes)
 					}
 				})
@@ -300,18 +299,13 @@ type queryParameterTestCase struct {
 
 func queryParameterTestCases() []queryParameterTestCase {
 	d := civil.Date{Year: 2016, Month: 3, Day: 20}
-	ds := civilDateString(d)
 	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
 	tm.Nanosecond = 3000 // round to microseconds
-	tms := civilTimeString(tm)
 	dtm := civil.DateTime{Date: d, Time: tm}
 	dtm.Time.Nanosecond = 3000 // round to microseconds
-	dtms := civilDateTimeString(dtm)
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
-	tsInt64 := fmt.Sprintf("%v", ts.UnixMicro())
-	rat := big.NewRat(13, 10).FloatString(1)
-	nrat := big.NewRat(-13, 10).FloatString(1)
-	byteValue := base64.StdEncoding.EncodeToString([]byte("foo"))
+	rat := big.NewRat(13, 10)
+	nrat := big.NewRat(-13, 10)
 	/*rangeTimestamp1 := &RangeValue{
 		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
 	}
@@ -371,7 +365,7 @@ func queryParameterTestCases() []queryParameterTestCase {
 			[]*bigquerypb.QueryParameter{{
 				Name:           "val",
 				ParameterType:  &bigquerypb.QueryParameterType{Type: "BIGNUMERIC"},
-				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: rat}},
+				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: rat.FloatString(1)}},
 			}},
 			map[string]any{"f0_": rat},
 			[]any{rat},
@@ -381,7 +375,7 @@ func queryParameterTestCases() []queryParameterTestCase {
 			"SELECT @val",
 			[]*bigquerypb.QueryParameter{{Name: "val",
 				ParameterType:  &bigquerypb.QueryParameterType{Type: "BIGNUMERIC"},
-				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: nrat}}}},
+				ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: nrat.FloatString(1)}}}},
 			map[string]any{"f0_": nrat},
 			[]any{nrat},
 		},
@@ -418,20 +412,20 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 					ParameterValue: &bigquerypb.QueryParameterValue{
 						Value: &wrapperspb.StringValue{
-							Value: byteValue,
+							Value: base64.StdEncoding.EncodeToString([]byte("foo")),
 						},
 					},
 				},
 			},
-			map[string]any{"f0_": byteValue},
-			[]any{byteValue},
+			map[string]any{"f0_": []byte("foo")},
+			[]any{[]byte("foo")},
 		},
 		{
 			"TimestampParam",
 			"SELECT @val",
 			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "TIMESTAMP"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: timestampString(ts)}}}},
-			map[string]any{"f0_": tsInt64},
-			[]any{tsInt64},
+			map[string]any{"f0_": &ts},
+			[]any{&ts},
 		},
 		{
 			"TimestampArrayParam",
@@ -450,29 +444,29 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 				},
 			}},
-			map[string]any{"f0_": []any{tsInt64, tsInt64}},
-			[]any{[]any{tsInt64, tsInt64}},
+			map[string]any{"f0_": []any{ts, ts}},
+			[]any{[]any{ts, ts}},
 		},
 		{
 			"DatetimeParam",
 			"SELECT @val",
-			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "DATETIME"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: dtms}}}},
-			map[string]any{"f0_": dtms},
-			[]any{dtms},
+			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "DATETIME"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: civilDateTimeString(dtm)}}}},
+			map[string]any{"f0_": &dtm},
+			[]any{&dtm},
 		},
 		{
 			"DateParam",
 			"SELECT @val",
-			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "DATE"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: ds}}}},
-			map[string]any{"f0_": ds},
-			[]any{ds},
+			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "DATE"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: civilDateString(d)}}}},
+			map[string]any{"f0_": &d},
+			[]any{&d},
 		},
 		{
 			"TimeParam",
 			"SELECT @val",
-			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "TIME"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: tms}}}},
-			map[string]any{"f0_": tms},
-			[]any{tms},
+			[]*bigquerypb.QueryParameter{{Name: "val", ParameterType: &bigquerypb.QueryParameterType{Type: "TIME"}, ParameterValue: &bigquerypb.QueryParameterValue{Value: &wrapperspb.StringValue{Value: civilTimeString(tm)}}}},
+			map[string]any{"f0_": &tm},
+			[]any{&tm},
 		},
 		{
 			"JsonParam",
@@ -673,7 +667,7 @@ func queryParameterTestCases() []queryParameterTestCase {
 			},
 			map[string]any{
 				"f0_": map[string]any{
-					"Datetime":    dtms,
+					"Datetime":    &dtm,
 					"StringArray": []any{"a", "b"},
 					"SubStruct": map[string]any{
 						"String": "c",
@@ -688,7 +682,7 @@ func queryParameterTestCases() []queryParameterTestCase {
 					},
 				},
 			},
-			[]any{[]any{dtms, []any{"a", "b"}, []any{"c"}, []any{[]any{"d"}, []any{"e"}}}},
+			[]any{[]any{&dtm, []any{"a", "b"}, []any{"c"}, []any{[]any{"d"}, []any{"e"}}}},
 		},
 	}
 

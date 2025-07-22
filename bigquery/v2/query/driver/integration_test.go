@@ -114,7 +114,7 @@ func TestQuery(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if ts.Time.IsZero() {
+		if ts.IsZero() {
 			t.Errorf("got zero timestamp, want current")
 		}
 
@@ -123,6 +123,45 @@ func TestQuery(t *testing.T) {
 		}
 
 		t.Logf("%v %s", ts, s)
+	}
+}
+
+func TestNestedQuery(t *testing.T) {
+	if db == nil {
+		t.Skip("db not configured")
+	}
+	rows, err := db.Query(`SELECT 40 as age, [STRUCT(STRUCT('1' as a, '2' as b) as object)] as nested`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var s []any
+		var age int64
+		if err := rows.Scan(&age, &s); err != nil {
+			t.Fatal(err)
+		}
+
+		if len(s) == 0 {
+			t.Errorf("expected map, got %v", s)
+		}
+
+		a := s[0].(map[string]any)["object"].(map[string]any)["a"]
+		if a != "1" {
+			t.Errorf("expected nested.object.a to be 1, got %v(%T)", a, a)
+		}
+
+		b := s[0].(map[string]any)["object"].(map[string]any)["b"]
+		if b != "2" {
+
+			t.Errorf("expected nested.object.b to be 2, got %v(%T)", b, b)
+		}
+
+		if age != 40 {
+			t.Errorf("expected 40, got %d", age)
+		}
+
+		t.Logf("%v %s", age, s)
 	}
 }
 
