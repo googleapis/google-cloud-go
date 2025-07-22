@@ -271,7 +271,9 @@ type Message struct {
 	//
 	// [Card builder](https://addons.gsuite.google.com/uikit/builder)
 	CardsV2 []*CardWithId `protobuf:"bytes,22,rep,name=cards_v2,json=cardsV2,proto3" json:"cards_v2,omitempty"`
-	// Output only. Annotations associated with the `text` in this message.
+	// Output only. Annotations can be associated with the plain-text body of the
+	// message or with chips that link to Google Workspace resources like Google
+	// Docs or Sheets with `start_index` and `length` of 0.
 	Annotations []*Annotation `protobuf:"bytes,10,rep,name=annotations,proto3" json:"annotations,omitempty"`
 	// The thread the message belongs to. For example usage, see
 	// [Start or reply to a message
