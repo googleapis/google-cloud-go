@@ -35,7 +35,31 @@ func (it *BranchRuleIterator) All() iter.Seq2[*securesourcemanagerpb.BranchRule,
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *FileDiffIterator) All() iter.Seq2[*securesourcemanagerpb.FileDiff, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HookIterator) All() iter.Seq2[*securesourcemanagerpb.Hook, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *InstanceIterator) All() iter.Seq2[*securesourcemanagerpb.Instance, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IssueCommentIterator) All() iter.Seq2[*securesourcemanagerpb.IssueComment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IssueIterator) All() iter.Seq2[*securesourcemanagerpb.Issue, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -53,6 +77,24 @@ func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *PullRequestCommentIterator) All() iter.Seq2[*securesourcemanagerpb.PullRequestComment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PullRequestIterator) All() iter.Seq2[*securesourcemanagerpb.PullRequest, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *RepositoryIterator) All() iter.Seq2[*securesourcemanagerpb.Repository, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TreeEntryIterator) All() iter.Seq2[*securesourcemanagerpb.TreeEntry, error] {
 	return iterator.RangeAdapter(it.Next)
 }
