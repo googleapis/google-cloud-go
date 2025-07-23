@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.95.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.94.0...aiplatform/v1.95.0) (2025-07-23)
+
+
+### Features
+
+* **aiplatform:** Add service_account to Reasoning Engine public protos ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **aiplatform:** Add service_account to Reasoning Engine public protos ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+
+### Bug Fixes
+
+* **aiplatform:** Remove gemini_template_config and request_column_name fields from DatasetService.AssessData and DatasetService.AssembleData ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [1.94.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.93.0...aiplatform/v1.94.0) (2025-07-16)
 
 
