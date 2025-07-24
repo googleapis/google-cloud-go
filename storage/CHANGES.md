@@ -7,14 +7,6 @@
 ### Features
 
 * **storage/control:** Update BUILD configs to support rest transportation for all client ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
-* **storage/internal:** Add new field contexts for Object Contexts in message Object ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
-* **storage/internal:** Add new field filter for Object Contexts in message ListObjectsRequest ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
-* **storage/internal:** Add option in IpFilter to allow all P4SA access to bucket ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
-* **storage/internal:** Add option to enable object retention in CreateBucket API ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
-* **storage/internal:** Add option to override unlocked retention in UpdateObject API ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
-* **storage/internal:** Add support for object retention config in Bucket ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
-* **storage/internal:** Added support for encryption enforcement config in Bucket ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
-* **storage:** Add IpFilter to bucketAttrs ([#12020](https://github.com/googleapis/google-cloud-go/issues/12020)) ([942c770](https://github.com/googleapis/google-cloud-go/commit/942c7707bd5119a62a4e7d92803179f6af865eaa))
 
 
 ### Bug Fixes
