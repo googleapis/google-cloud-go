@@ -29,18 +29,42 @@ type Option interface {
 
 // type for collecting custom adapt Option values.
 type customConfig struct {
-	protoMappingOverrides map[storagepb.TableFieldSchema_Type]protoOverride
+	protoMappingOverrides protoMappingOverrides
 	useProto3             bool
 }
 
-type protoOverride struct {
-	fieldType storagepb.TableFieldSchema_Type
-	typeName  string
-	protoType descriptorpb.FieldDescriptorProto_Type
+// ProtoMapping can be used to override protobuf types used when
+// converting from a BigQuery Schema to a Protobuf Descriptor.
+// See [WithProtoMapping] option.
+type ProtoMapping struct {
+	// FieldPath should be in the `fieldA.subFieldB.anotherSubFieldC`.
+	FieldPath string
+	// FieldType is the BigQuery Table field type to be overrided
+	FieldType storagepb.TableFieldSchema_Type
+	// TypeName is the full qualified path name for the protobuf type.
+	// Example: ".google.protobuf.Timestamp", ".google.protobuf.Duration", etc
+	TypeName string
+	// Type is the final DescriptorProto Type
+	Type descriptorpb.FieldDescriptorProto_Type
+}
+
+type protoMappingOverrides []ProtoMapping
+
+func (o *protoMappingOverrides) getByField(field *storagepb.TableFieldSchema, path string) *ProtoMapping {
+	for _, override := range *o {
+		if override.FieldPath == path {
+			return &override
+		}
+		if override.FieldType == field.Type {
+			return &override
+
+		}
+	}
+	return nil
 }
 
 type customOption struct {
-	protoOverride *protoOverride
+	protoOverride *ProtoMapping
 	useProto3     optional.Bool
 }
 
@@ -48,36 +72,44 @@ type customOption struct {
 // as Google's WKT timestamppb.Timestamp.
 // JUST AN EXAMPLE - THIS IS GOING TO BE REMOVED
 func WithTimestampAsTimestamp() Option {
-	return WithProtoMapping(storagepb.TableFieldSchema_TIMESTAMP, "google.protobuf.Timestamp", descriptorpb.FieldDescriptorProto_TYPE_MESSAGE)
+	return WithProtoMapping(ProtoMapping{
+		FieldType: storagepb.TableFieldSchema_TIMESTAMP,
+		TypeName:  "google.protobuf.Timestamp",
+		Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+	})
 }
 
 // WithIntervalAsDuration defines that table fields of type Interval, are mapped
 // as Google's WKT durationpb.Duration
 // JUST AN EXAMPLE - THIS IS GOING TO BE REMOVED
 func WithIntervalAsDuration() Option {
-	return WithProtoMapping(storagepb.TableFieldSchema_INTERVAL, "google.protobuf.Duration", descriptorpb.FieldDescriptorProto_TYPE_MESSAGE)
+	return WithProtoMapping(ProtoMapping{
+		FieldType: storagepb.TableFieldSchema_INTERVAL,
+		TypeName:  "google.protobuf.Duration",
+		Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+	})
 }
 
 // WithBigNumericAsDouble defines that table fields of type BigNumeric, are mapped
 // as Google's WKT wrapperspb.Double
 // JUST AN EXAMPLE - THIS IS GOING TO BE REMOVED
 func WithBigNumericAsDouble() Option {
-	return WithProtoMapping(storagepb.TableFieldSchema_BIGNUMERIC, "google.protobuf.DoubleValue", descriptorpb.FieldDescriptorProto_TYPE_DOUBLE)
+	return WithProtoMapping(ProtoMapping{
+		FieldType: storagepb.TableFieldSchema_BIGNUMERIC,
+		TypeName:  "google.protobuf.DoubleValue",
+		Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+	})
 }
 
-// WithProtoMapping overrides which field descriptor proto type is going to be used
-// for the given BigQuery table field type.
+// WithProtoMapping allow to set an override on which field descriptor proto type
+// is going to be used for the given BigQuery Table field type or field path.
 // See https://cloud.google.com/bigquery/docs/supported-data-types#supported_protocol_buffer_data_types for accepted types
 // by the BigQuery Storage Write API.
-func WithProtoMapping(fieldType storagepb.TableFieldSchema_Type, typeName string, protoType descriptorpb.FieldDescriptorProto_Type) Option {
-	if !strings.HasPrefix(typeName, ".") {
-		typeName = "." + typeName
+func WithProtoMapping(protoMapping ProtoMapping) Option {
+	if !strings.HasPrefix(protoMapping.TypeName, ".") {
+		protoMapping.TypeName = "." + protoMapping.TypeName
 	}
-	return &customOption{protoOverride: &protoOverride{
-		fieldType: fieldType,
-		typeName:  typeName,
-		protoType: protoType,
-	}}
+	return &customOption{protoOverride: &protoMapping}
 }
 
 // internal option to set proto 2 syntax option
@@ -92,7 +124,7 @@ func withProto3() Option {
 
 func (o *customOption) applyCustomClientOpt(cfg *customConfig) {
 	if o.protoOverride != nil {
-		cfg.protoMappingOverrides[o.protoOverride.fieldType] = *o.protoOverride
+		cfg.protoMappingOverrides = append(cfg.protoMappingOverrides, *o.protoOverride)
 	}
 	if o.useProto3 != nil {
 		cfg.useProto3 = optional.ToBool(o.useProto3)

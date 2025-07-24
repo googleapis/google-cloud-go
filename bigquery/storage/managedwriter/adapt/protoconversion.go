@@ -264,7 +264,7 @@ func StorageSchemaToProtoDescriptorWithOptions(inSchema *storagepb.TableSchema, 
 	dc := newDependencyCache()
 	cfg := &customConfig{
 		useProto3:             false,
-		protoMappingOverrides: map[storagepb.TableFieldSchema_Type]protoOverride{},
+		protoMappingOverrides: protoMappingOverrides{},
 	}
 	for _, opt := range opts {
 		opt.applyCustomClientOpt(cfg)
@@ -365,7 +365,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	// Use the local dependencies to generate a list of filenames.
 	depNames := []string{wellKnownTypesWrapperName}
 	for _, override := range cfg.protoMappingOverrides {
-		if dep, found := extraWellKnownTypesPerTypeName[override.typeName]; found {
+		if dep, found := extraWellKnownTypesPerTypeName[override.TypeName]; found {
 			depNames = append(depNames, dep.name)
 		}
 	}
@@ -392,7 +392,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 		protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
 	}
 	for _, override := range cfg.protoMappingOverrides {
-		if dep, found := extraWellKnownTypesPerTypeName[override.typeName]; found {
+		if dep, found := extraWellKnownTypesPerTypeName[override.TypeName]; found {
 			fdpList = append(fdpList, dep.fileDescriptor)
 		}
 	}
@@ -460,7 +460,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
 	} else {
-		typeName, outType, label := resolveType(field, cfg)
+		typeName, outType, label := resolveType(scope, field, cfg)
 		fdp = &descriptorpb.FieldDescriptorProto{
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
@@ -496,9 +496,11 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 	return fdp
 }
 
-func resolveType(field *storagepb.TableFieldSchema, cfg *customConfig) (*string, descriptorpb.FieldDescriptorProto_Type, *descriptorpb.FieldDescriptorProto_Label) {
-	if override, found := cfg.protoMappingOverrides[field.GetType()]; found {
-		return proto.String(override.typeName), override.protoType, convertModeToLabel(field.GetMode(), cfg.useProto3)
+func resolveType(scope string, field *storagepb.TableFieldSchema, cfg *customConfig) (*string, descriptorpb.FieldDescriptorProto_Type, *descriptorpb.FieldDescriptorProto_Label) {
+	path := strings.TrimPrefix(strings.ReplaceAll(scope, "__", "."), "root.")
+	fmt.Println("[resolveType]", scope, path, field.GetName(), cfg.protoMappingOverrides)
+	if override := cfg.protoMappingOverrides.getByField(field, path); override != nil {
+		return proto.String(override.TypeName), override.Type, convertModeToLabel(field.GetMode(), cfg.useProto3)
 	}
 	// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
 	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !cfg.useProto3 {
