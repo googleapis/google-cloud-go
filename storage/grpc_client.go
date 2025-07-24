@@ -64,6 +64,10 @@ const (
 	//
 	// This is only used for the gRPC API.
 	msgEntityNotSupported = "The gRPC API currently does not support ACL entities using project ID, use project numbers instead"
+
+	// Default value for Read ID on BidiReadObject streams. Used for NewRangeReader
+	// which only does a single read per stream.
+	defaultReadID = 1
 )
 
 // defaultGRPCOptions returns a set of the default client options
@@ -1640,7 +1644,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		// BidiReadObject can take multiple ranges, but we just request one in this case.
 		readRange := &storagepb.ReadRange{
 			ReadOffset: params.offset + seen,
-			ReadId:     1,
+			ReadId:     defaultReadID,
 		}
 
 		// Only set a ReadLength if length is greater than zero, because <= 0 means
@@ -2033,7 +2037,7 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	for {
 		// Write any data from the current message buffer.
 		if r.currMsg != nil && !r.currMsg.done {
-			written, _, err := r.currMsg.writeToAndUpdateCRC(w, 1, func(b []byte) {
+			written, _, err := r.currMsg.writeToAndUpdateCRC(w, defaultReadID, func(b []byte) {
 				r.updateCRC(b)
 			})
 			r.seen += written
@@ -2048,8 +2052,7 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 		err := r.recv()
 		if err != nil {
 			if err == io.EOF {
-				// We are done; check the checksum if necessary and break the loop.
-				err = r.runCRCCheck()
+				// We are done; exit the loop.
 				break
 			}
 			return r.seen - alreadySeen, err
@@ -2131,11 +2134,9 @@ type readResponseDecoder struct {
 	currBuf int    // index of the current buffer being processed
 	currOff uint64 // offset in the current buffer
 	// Processed data
-	msg *storagepb.BidiReadObjectResponse // processed response message with all fields other than object data populated
-	// The original dataOffsets field is replaced with a map to handle multiple ranges.
-	// dataOffsets bufferSliceOffsets
-	dataOffsets map[int64]bufferSliceOffsets // New field: map ReadId to its data offsets
-	done        bool                         // true if the data has been completely read.
+	msg         *storagepb.BidiReadObjectResponse // processed response message with all fields other than object data populated
+	dataOffsets map[int64]bufferSliceOffsets      // Map ReadId to the offsets of the object data for that ID in the message.
+	done        bool                              // true if the data has been completely read.
 }
 
 type bufferSliceOffsets struct {
@@ -2474,10 +2475,8 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			// The object data field was found. Initialize the data ranges assuming
 			// exactly one range in the message.
 			// Create a new ObjectRangeData for each instance of this repeated field.
-			newRangeData := &storagepb.ObjectRangeData{ChecksummedData: &storagepb.ChecksummedData{}, ReadRange: &storagepb.ReadRange{}}
-			msg.ObjectDataRanges = append(msg.ObjectDataRanges, newRangeData)
-			// Get a reference to the newly added element to populate it.
-			currentRange := msg.ObjectDataRanges[len(msg.ObjectDataRanges)-1]
+			currentRange := &storagepb.ObjectRangeData{ChecksummedData: &storagepb.ChecksummedData{}, ReadRange: &storagepb.ReadRange{}}
+			msg.ObjectDataRanges = append(msg.ObjectDataRanges, currentRange)
 			// This variable will temporarily hold the data offsets until the ReadId is known.
 			var contentOffsets bufferSliceOffsets
 			var hasContent bool
