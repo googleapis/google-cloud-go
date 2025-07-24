@@ -1273,11 +1273,10 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				// TODO: update read handle?
 				if err == io.EOF {
 					err = nil
-				}
-				// TODO: handle not found error?
-				if err != nil {
-					// cancel stream and reopen the stream again.
-					// Incase again an error is thrown close the streamManager goroutine.
+				} else {
+					// Cancel stream and reopen the stream again.
+					// In case again an error is thrown, close the streamManager goroutine.
+					// TODO: special handling for not found error.
 					mrd.retrier(err, "receiver")
 				}
 
@@ -1320,7 +1319,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 							})
 
 							if err != nil {
-								mrd.activeRanges[id].callback(currRange.offset, currRange.totalBytesWritten, err)
+								currRange.callback(currRange.offset, currRange.totalBytesWritten, err)
 								mrd.numActiveRanges--
 								delete(mrd.activeRanges, id)
 							} else {
