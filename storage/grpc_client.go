@@ -1270,7 +1270,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				// to indicate that output buffer is filled.
 				databufs := mem.BufferSlice{}
 				err = mrd.stream.RecvMsg(&databufs)
-				// TODO: update read handle?
 				if err == io.EOF {
 					err = nil
 				} else {
@@ -1510,6 +1509,8 @@ func (mrd *gRPCBidiReader) reopenStream(failSpec []mrdRange) error {
 		}
 		mrd.mu.Unlock()
 	}
+	// Once all data in the initial response has been read out, free buffers.
+	res.decoder.databufs.Free()
 	if failSpec != nil {
 		mrd.rangesToRead <- failSpec
 	}
@@ -2223,7 +2224,7 @@ func (d *readResponseDecoder) advanceOffset(n uint64) error {
 func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC func([]byte)) (n int, found bool) {
 	// For a completely empty message, just return 0.
 	if len(d.databufs) == 0 {
-		return 0, true
+		return 0, false
 	}
 
 	// Look up the specific offsets for the requested readID.
@@ -2266,7 +2267,7 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC
 func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, updateCRC func([]byte)) (totalWritten int64, found bool, err error) {
 	// For a completely empty message, just return 0
 	if len(d.databufs) == 0 {
-		return 0, true, nil
+		return 0, false, nil
 	}
 	// Look up the specific offsets for the requested readID.
 	offsets, ok := d.dataOffsets[readID]
@@ -2306,6 +2307,7 @@ func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, upd
 			return totalWritten, true, err
 		}
 	}
+	d.done = true
 
 	return totalWritten, true, nil
 }
