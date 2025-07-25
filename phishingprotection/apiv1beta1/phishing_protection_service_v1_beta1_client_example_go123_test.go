@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package phishingprotection_test
+
+import (
+	phishingprotection "cloud.google.com/go/phishingprotection/apiv1beta1"
+)
