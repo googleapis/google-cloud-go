@@ -6768,7 +6768,7 @@ func skipEmulatorTest(t *testing.T) {
 	}
 }
 
-func skipDirectPathTest(t *testing.T)  {
+func skipDirectPathTest(t *testing.T) {
 	if directPathEnabled, found := os.LookupEnv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); found {
 		if enabled, _ := strconv.ParseBool(directPathEnabled); enabled {
 			t.Skip("Skipping GFE tests when DirectPath is enabled")

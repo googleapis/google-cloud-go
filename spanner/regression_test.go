@@ -147,7 +147,7 @@ func TestAllHeadersForwardedAppropriately(t *testing.T) {
 
 	var dynamicHeaders []string
 	if directPathEnabled() {
-		dynamicHeaders =  []string{"x-goog-spanner-enable-afe-server-timing"}
+		dynamicHeaders = []string{"x-goog-spanner-enable-afe-server-timing"}
 	}
 
 	wantUnaryExpectations := []*headerExpectation{
