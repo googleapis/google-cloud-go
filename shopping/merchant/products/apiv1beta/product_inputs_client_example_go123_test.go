@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package products_test
+
+import (
+	products "cloud.google.com/go/shopping/merchant/products/apiv1beta"
+)
