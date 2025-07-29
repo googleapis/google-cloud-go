@@ -209,7 +209,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 	// RawService should be created with the chosen endpoint to take account of user override.
 	// Preserve other user-supplied options as well.
-	opts = append([]option.ClientOption{option.WithEndpoint(ep), option.WithHTTPClient(hc)}, opts...)
+	opts = append(opts, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	rawService, err := raw.NewService(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %w", err)
