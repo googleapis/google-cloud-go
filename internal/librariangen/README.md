@@ -80,15 +80,3 @@ The `Dockerfile` packages the `librariangen` binary and all its dependencies int
     ```bash
     bash build-docker-and-test.sh
     ```
-
-### Container Dependencies
-
-The container environment is built with the following pinned tool versions to ensure backward compatibility:
-
-*   **Base Image:** `marketplace.gcr.io/google/debian12:latest`
-*   **Go:** `1.23.0`
-*   **protoc:** `25.7`
-*   **protoc-gen-go:** `v1.35.2`
-*   **protoc-gen-go-grpc:** `v1.3.0`
-*   **protoc-gen-go_gapic:** `v0.53.1`
-*   **staticcheck:** `2023.1.6`
