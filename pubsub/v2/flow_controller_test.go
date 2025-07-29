@@ -241,3 +241,34 @@ func TestFlowControllerUnboundedBytes(t *testing.T) {
 		t.Errorf("got nil, wanted %v", ErrFlowControllerMaxOutstandingMessages)
 	}
 }
+
+func TestFlowControllerIgnoreWithMetrics(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	// Initialize fc with bytes > acquire to ensure no bound restrictions occur.
+	fc := newFlowController(fcSettings(5, 50, FlowControlIgnore))
+
+	if err := fc.acquire(ctx, 5); err != nil {
+		t.Errorf("got %v, wanted no error", err)
+	}
+	if err := fc.acquire(ctx, 5); err != nil {
+		t.Errorf("got %v, wanted no error", err)
+	}
+
+	if c := fc.count(); c != 2 {
+		t.Errorf("got %d messages, want 2", c)
+	}
+
+	if s := fc.size(); s != 10 {
+		t.Errorf("got %d bytes, want 10", s)
+	}
+
+	fc.release(ctx, 5)
+
+	if c := fc.count(); c != 1 {
+		t.Errorf("got %d messages, want 1", c)
+	}
+	if s := fc.size(); s != 5 {
+		t.Errorf("got %d bytes, want 5", s)
+	}
+}
