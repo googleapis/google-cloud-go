@@ -43,6 +43,7 @@ type Config struct {
 	// Meta configuration
 	// TODO(quartzmo): Remove this field once the googleapis migration from go_proto_library
 	// to go_grpc_library is complete.
+	// See https://github.com/googleapis/librarian/issues/1021.
 	hasGoGRPC bool
 }
 

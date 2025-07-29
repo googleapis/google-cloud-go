@@ -74,7 +74,7 @@ The `Dockerfile` packages the `librariangen` binary and all its dependencies int
     ```bash
     gcloud auth configure-docker
     ```
-    **Note:** Access to this base image may require special IAM permissions. If you encounter an `unauthorized` error, you can temporarily switch the `Dockerfile` to use a public base image (`debian:12-slim`) to unblock local development. See the `TODO` comments in the `Dockerfile` for details.
+    **Note:** Access to this base image may require special access.
 
 2.  **Build and Test:** The `build-docker-and-test.sh` script builds the Docker image and then runs a verification container to ensure all dependencies are correctly installed.
     ```bash
@@ -92,11 +92,3 @@ The container environment is built with the following pinned tool versions to en
 *   **protoc-gen-go-grpc:** `v1.3.0`
 *   **protoc-gen-go_gapic:** `v0.53.1`
 *   **staticcheck:** `2023.1.6`
-
-## Future Work
-
-This implementation currently focuses only on the core `generate` command. Future work includes:
-
-*   **`configure` and `build` commands:** Implementing the remaining commands from the Librarian container contract.
-*   **Finalizing the `newModule` logic:** The post-processor's `newModule` parameter is currently hardcoded to `false`. This needs to be driven by configuration from the orchestrating Librarian tool.
-*   **Bazel Fallback:** Implementing a contingency plan to invoke Bazel directly for APIs with highly complex or unusual configurations.

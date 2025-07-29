@@ -29,10 +29,11 @@ import (
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
-// TODO: The determination of whether a module is new or not should be
+// TODO(quartzmo): The determination of whether a module is new or not should be
 // driven by configuration passed down from the orchestrating Librarian tool.
 // For now, we hardcode it to false, assuming we are always regenerating
 // existing modules.
+// See https://github.com/googleapis/librarian/issues/1022.
 const isNewModule = false
 
 // Test substitution vars.
@@ -172,7 +173,6 @@ func handleGapicgen(ctx context.Context, cfg *Config) (string, error) {
 
 	// We'll use the import path of the last API's BUILD.bazel to initialize the module.
 	// This assumes all APIs in the request belong to the same module.
-	// TODO: Ensure the root module path is used here.
 	modulePath := bazelConfig.ModulePath()
 	return modulePath, nil
 }

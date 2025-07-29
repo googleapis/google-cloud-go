@@ -18,8 +18,9 @@
 
 # --- Builder Stage ---
 # This stage builds the librariangen binary using the MOSS-compliant base image.
-# TODO: For production builds, this must be switched back to the MOSS-compliant
+# TODO(quartzmo): For production builds, this must be switched back to the MOSS-compliant
 # base image.
+# See https://github.com/googleapis/librarian/issues/1019.
 # FROM marketplace.gcr.io/google/debian12:latest as builder
 FROM debian:12-slim as builder
 
@@ -53,8 +54,9 @@ RUN CGO_ENABLED=0 go build -o /librariangen .
 # --- Final Stage ---
 # This stage creates the final, minimal image with the compiled binary and
 # all required runtime dependencies pinned to specific versions for compatibility.
-# TODO: For production builds, this must be switched back to the MOSS-compliant
+# TODO(quartzmo): For production builds, this must be switched back to the MOSS-compliant
 # base image.
+# See https://github.com/googleapis/librarian/issues/1019.
 # FROM marketplace.gcr.io/google/debian12:latest
 FROM debian:12-slim
 
