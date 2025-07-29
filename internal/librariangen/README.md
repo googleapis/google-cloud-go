@@ -8,7 +8,20 @@ The `librariangen` binary is designed to be run inside a Docker container orches
 
 The primary command is `generate`.
 
+### Usage
+
+The `librariangen` binary expects the command to be the first argument, followed by flags.
+
+**Example `generate` command:**
+`bash
+librariangen generate \
+    --source /source \
+    --librarian /librarian \
+    --output /output
+`
+
 ### `generate` Command Workflow
+
 
 1.  **Inputs:** The container is provided with several mounted directories:
     *   `/source`: A complete checkout of the `googleapis` repository. This is the primary include path (`-I`) for `protoc`.

@@ -41,16 +41,6 @@ fi
 # --- Setup ---
 
 enable_post_processor=true
-# Parse command-line arguments
-for arg in "$@"
-do
-    case $arg in
-        --enable-post-processor)
-        enable_post_processor=true
-        shift # Remove --enable-post-processor from processing
-        ;;
-    esac
-done
 
 # Create a temporary directory for the entire test environment.
 TEST_DIR=$(mktemp -d -t tmp.XXXXXXXXXX)
@@ -87,8 +77,7 @@ if [ "$enable_post_processor" = true ]; then
       generate \
       --source=/source \
       --librarian=/librarian \
-      --output=/output \
-      --enable-post-processor >> "$LIBRARIANGEN_LOG" 2>&1
+      --output=/output >> "$LIBRARIANGEN_LOG" 2>&1
 else
     docker run --rm \
       --mount type=bind,source="$LIBRARIANGEN_GOOGLEAPIS_DIR",target=/source,readonly \
@@ -98,7 +87,8 @@ else
       generate \
       --source=/source \
       --librarian=/librarian \
-      --output=/output >> "$LIBRARIANGEN_LOG" 2>&1
+      --output=/output \
+      --disable-post-processor >> "$LIBRARIANGEN_LOG" 2>&1
 fi
 
 # --- Verify ---

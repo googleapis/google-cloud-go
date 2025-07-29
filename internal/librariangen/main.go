@@ -41,41 +41,23 @@ func main() {
 var generateFunc = generate.Generate
 
 // run executes the appropriate command based on the CLI's invocation arguments.
+// The idiomatic structure is `librariangen [command] [flags]`.
 func run(ctx context.Context, args []string) error {
 	if len(args) < 1 {
-		// Check for a version flag if no other args are present.
-		for _, arg := range os.Args[1:] {
-			if arg == "--version" {
-				fmt.Println(version)
-				return nil
-			}
-		}
 		return errors.New("expected a command")
 	}
 
-	// Separate command and flags. The command is the first non-flag argument.
-	var cmd string
-	var flags []string
-	for i, arg := range args {
-		if !strings.HasPrefix(arg, "-") {
-			cmd = arg
-			flags = append(args[:i], args[i+1:]...)
-			break
-		}
+	// The --version flag is a special case and not a command.
+	if args[0] == "--version" {
+		fmt.Println(version)
+		return nil
 	}
 
-	// Handle --version flag even if other flags are present.
-	for _, arg := range args {
-		if arg == "--version" {
-			fmt.Println(version)
-			return nil
-		}
-	}
+	cmd := args[0]
+	flags := args[1:]
 
-	if cmd == "" {
-		// This case handles when all arguments are flags, which is an error.
-		// Or when there are no arguments.
-		return errors.New("no command specified")
+	if strings.HasPrefix(cmd, "-") {
+		return fmt.Errorf("command cannot be a flag: %s", cmd)
 	}
 
 	switch cmd {
@@ -100,7 +82,7 @@ func handleGenerate(ctx context.Context, args []string) error {
 	generateFlags.StringVar(&cfg.InputDir, "input", "/input", "Path to the .librarian/generator-input directory from the language repository.")
 	generateFlags.StringVar(&cfg.OutputDir, "output", "/output", "Path to the empty directory where librariangen writes its output.")
 	generateFlags.StringVar(&cfg.SourceDir, "source", "/source", "Path to a complete checkout of the googleapis repository.")
-	generateFlags.BoolVar(&cfg.EnablePostProcessor, "enable-post-processor", false, "Enable the post-processor. This should always be true in production.")
+	generateFlags.BoolVar(&cfg.DisablePostProcessor, "disable-post-processor", false, "Disable the post-processor. This should always be false in production.")
 	if err := generateFlags.Parse(args); err != nil {
 		return fmt.Errorf("failed to parse flags: %w", err)
 	}

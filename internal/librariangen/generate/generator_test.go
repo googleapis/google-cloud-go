@@ -174,10 +174,11 @@ go_gapic_library(
 			}
 
 			cfg := &Config{
-				LibrarianDir: e.librarianDir,
-				InputDir:     "fake-input",
-				OutputDir:    e.outputDir,
-				SourceDir:    e.sourceDir,
+				LibrarianDir:         e.librarianDir,
+				InputDir:             "fake-input",
+				OutputDir:            e.outputDir,
+				SourceDir:            e.sourceDir,
+				DisablePostProcessor: tt.name != "happy path",
 			}
 
 			if err := Generate(context.Background(), cfg); (err != nil) != tt.wantErr {

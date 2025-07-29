@@ -1,4 +1,4 @@
-2025/07/25 20:45:21 INFO librariangen invoked args="[/usr/local/bin/librariangen generate --source=/source --librarian=/librarian --output=/output --enable-post-processor]"
+2025/07/25 20:45:21 INFO librariangen invoked args="[/usr/local/bin/librariangen generate --source=/source --librarian=/librarian --output=/output]"
 2025/07/25 20:45:21 INFO generate command started
 2025/07/25 20:45:21 INFO reading generate request path=/librarian/generate-request.json
 2025/07/25 20:45:21 INFO successfully unmarshalled request library_id=google-cloud-chronicle

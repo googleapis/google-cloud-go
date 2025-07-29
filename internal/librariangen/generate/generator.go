@@ -59,9 +59,9 @@ type Config struct {
 	OutputDir string
 	// SourceDir is the path to a complete checkout of the googleapis repository.
 	SourceDir string
-	// EnablePostProcessor controls whether the post-processor is run.
-	// This should always be true in production.
-	EnablePostProcessor bool
+	// DisablePostProcessor controls whether the post-processor is run.
+	// This should always be false in production.
+	DisablePostProcessor bool
 }
 
 // Validate ensures that the configuration is valid.
@@ -91,11 +91,11 @@ func (c *Config) Validate() error {
 //  3. Fix the permissions of all generated `.go` files to `0644`.
 //  4. Flatten the output directory, moving the generated module(s) to the top
 //     level of the output directory (e.g., `/output/chronicle`).
-//  5. If the `EnablePostProcessor` flag is true, run the post-processor on the
+//  5. If the `DisablePostProcessor` flag is false, run the post-processor on the
 //     generated module(s) to add module files (`go.mod`, `README.md`, etc.).
 //
-// The `EnablePostProcessor` flag should always be true in production. It can be
-// disabled during development to inspect the "raw" protoc output before any
+// The `DisablePostProcessor` flag should always be false in production. It can be
+// true during development to inspect the "raw" protoc output before any
 // post-processing is applied.
 func Generate(ctx context.Context, cfg *Config) error {
 	if err := cfg.Validate(); err != nil {
@@ -113,7 +113,7 @@ func Generate(ctx context.Context, cfg *Config) error {
 	}
 	slog.Info("using module path from final API", "importpath", modulePath)
 
-	if cfg.EnablePostProcessor {
+	if !cfg.DisablePostProcessor {
 		slog.Debug("post-processor enabled")
 		generateReq, err := readGenerateReq(cfg.LibrarianDir)
 		if err != nil {
@@ -121,11 +121,14 @@ func Generate(ctx context.Context, cfg *Config) error {
 		}
 		// The module name is the first part of the API path.
 		// E.g. google/cloud/workflows/v1 -> workflows
+		// E.g. api/v1 -> api
 		moduleName := ""
 		if len(generateReq.APIs) > 0 {
 			parts := strings.Split(generateReq.APIs[0].Path, "/")
 			if len(parts) > 2 {
 				moduleName = parts[2]
+			} else if len(parts) > 0 {
+				moduleName = parts[0]
 			}
 		}
 		if moduleName == "" {

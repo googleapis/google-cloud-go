@@ -39,6 +39,16 @@ func TestRun(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name:    "version flag",
+			args:    []string{"--version"},
+			wantErr: false,
+		},
+		{
+			name:    "flag as command",
+			args:    []string{"--foo"},
+			wantErr: true,
+		},
+		{
 			name:    "unknown command",
 			args:    []string{"foo"},
 			wantErr: true,
@@ -60,7 +70,7 @@ func TestRun(t *testing.T) {
 		},
 		{
 			name:    "generate command with flags",
-			args:    []string{"--source=.", "generate", "--output=./build_out"},
+			args:    []string{"generate", "--source=.", "--output=./build_out"},
 			wantErr: false,
 		},
 	}

@@ -66,16 +66,6 @@ rm -f "$BINARY_PATH"
 # --- Setup ---
 
 enable_post_processor=true
-# Parse command-line arguments
-for arg in "$@"
-do
-    case $arg in
-        --enable-post-processor)
-        enable_post_processor=true
-        shift # Remove --enable-post-processor from processing
-        ;;
-    esac
-done
 
 # Create a temporary directory for the entire test environment.
 TEST_DIR=$(mktemp -d -t tmp.XXXXXXXXXX)
@@ -114,19 +104,18 @@ GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go build -o "$BINARY_PATH" .
 # 4. Run the librariangen generate command.
 echo "Running librariangen..."
 if [ "$enable_post_processor" = true ]; then
-    PATH=$(GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go env GOPATH)/bin:$HOME/go/bin:$PATH ./librariangen \
+    PATH=$(GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go env GOPATH)/bin:$HOME/go/bin:$PATH ./librariangen generate \
       --source="$SOURCE_DIR" \
       --librarian="$LIBRARIAN_DIR" \
-      --output="$OUTPUT_DIR" \
-      --enable-post-processor \
-      generate >> "$LIBRARIANGEN_LOG" 2>&1
+      --output="$OUTPUT_DIR" >> "$LIBRARIANGEN_LOG" 2>&1
 else
-    PATH=$(GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go env GOPATH)/bin:$HOME/go/bin:$PATH ./librariangen \
+    PATH=$(GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go env GOPATH)/bin:$HOME/go/bin:$PATH ./librariangen generate \
       --source="$SOURCE_DIR" \
       --librarian="$LIBRARIAN_DIR" \
       --output="$OUTPUT_DIR" \
-      generate >> "$LIBRARIANGEN_LOG" 2>&1
+      --disable-post-processor >> "$LIBRARIANGEN_LOG" 2>&1
 fi
+
 
 # Run gofmt just like the Bazel rule:
 # https://github.com/googleapis/gapic-generator-go/blob/main/rules_go_gapic/go_gapic.bzl#L34
