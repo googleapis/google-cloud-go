@@ -147,7 +147,7 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 		}
 		if f.semSize != nil {
 			// Try to acquire the full size of the message here.
-			if !f.semSize.TryAcquire(int64(size)) {
+			if !f.semSize.TryAcquire(f.bound(size)) {
 				if f.semCount != nil {
 					f.semCount.Release(1)
 				}
