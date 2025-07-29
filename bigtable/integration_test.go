@@ -153,7 +153,7 @@ func cleanup(c IntegrationTestConfig) error {
 		return nil
 	}
 	ctx := context.Background()
-	iac, err := NewInstanceAdminClient(ctx, c.Project)
+	iac, err := NewInstanceAdminClient(ctx, c.Project, c.ClientOpts...)
 	if err != nil {
 		return err
 	}
@@ -952,7 +952,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	// Sleep some more
 	time.Sleep(30 * time.Second)
 
-	monitoringClient, err := monitoring.NewMetricClient(ctx)
+	monitoringClient, err := monitoring.NewMetricClient(ctx, testEnv.Config().ClientOpts...)
 	if err != nil {
 		t.Errorf("Failed to create metric client: %v", err)
 	}
