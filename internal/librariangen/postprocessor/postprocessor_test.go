@@ -42,7 +42,6 @@ func TestPostProcess(t *testing.T) {
 				return nil
 			},
 			wantFilesCreated: []string{
-				// "go.mod", // Not actually created by unit tests, verify go mod init called instead.
 				"CHANGES.md",
 				"internal/version.go",
 				"README.md",

@@ -26,9 +26,9 @@ type Request struct {
 	ID      string `json:"id"`
 	Version string `json:"version,omitempty"`
 	APIs    []API  `json:"apis"`
-	// SourceRoots are the directories to which librarian contributes code.
+	// SourcePaths are the directories to which librarian contributes code.
 	// For Go, this is typically the Go module directory.
-	SourceRoots []string `json:"source_roots"`
+	SourcePaths []string `json:"source_paths"`
 	// PreserveRegex are files/directories to leave untouched during generation.
 	// This is useful for preserving handwritten helper files or customizations.
 	PreserveRegex []string `json:"preserve_regex"`
