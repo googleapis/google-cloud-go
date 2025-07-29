@@ -19,8 +19,10 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"os"
 	"slices"
 	"sort"
+	"strconv"
 	"testing"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -58,6 +60,11 @@ func (oi *ourInterceptor) interceptUnary(ctx context.Context, req any, usi *grpc
 	}
 	oi.unaryHeaders = append(oi.unaryHeaders, &methodAndMetadata{usi.FullMethod, md})
 	return handler(ctx, req)
+}
+
+func directPathEnabled() bool {
+	enabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"))
+	return enabled
 }
 
 // This is a regression test to assert that all the expected headers are propagated
@@ -138,36 +145,41 @@ func TestAllHeadersForwardedAppropriately(t *testing.T) {
 		WantHeaders []string
 	}
 
+	var dynamicHeaders []string
+	if directPathEnabled() {
+		dynamicHeaders = []string{"x-goog-spanner-enable-afe-server-timing"}
+	}
+
 	wantUnaryExpectations := []*headerExpectation{
 		{
 			"/google.spanner.v1.Spanner/BatchCreateSessions",
-			[]string{
+			append([]string{
 				":authority", "content-type", "google-cloud-resource-prefix",
 				"grpc-accept-encoding", "user-agent", "x-goog-api-client",
 				"x-goog-request-params", "x-goog-spanner-end-to-end-tracing",
 				"x-goog-spanner-request-id", "x-goog-spanner-route-to-leader",
-			},
+			}, dynamicHeaders...),
 		},
 		{
 			"/google.spanner.v1.Spanner/BeginTransaction",
-			[]string{
+			append([]string{
 				":authority", "content-type", "google-cloud-resource-prefix",
 				"grpc-accept-encoding", "user-agent", "x-goog-api-client",
 				"x-goog-request-params", "x-goog-spanner-end-to-end-tracing",
 				"x-goog-spanner-request-id",
-			},
+			}, dynamicHeaders...),
 		},
 	}
 
 	wantStreamingExpectations := []*headerExpectation{
 		{
 			"/google.spanner.v1.Spanner/ExecuteStreamingSql",
-			[]string{
+			append([]string{
 				":authority", "content-type", "google-cloud-resource-prefix",
 				"grpc-accept-encoding", "user-agent", "x-goog-api-client",
 				"x-goog-request-params", "x-goog-spanner-end-to-end-tracing",
 				"x-goog-spanner-request-id",
-			},
+			}, dynamicHeaders...),
 		},
 	}
 

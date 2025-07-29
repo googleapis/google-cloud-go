@@ -31,6 +31,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
 )
 
@@ -44,7 +45,7 @@ const (
 	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
 )
 
-// Client is a Google Pub/Sub client scoped to a single project.
+// Client is a Pub/Sub client scoped to a single project.
 //
 // Clients should be reused rather than being created as needed.
 // A Client may be shared by multiple goroutines.
@@ -172,7 +173,7 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 	if addr := os.Getenv("PUBSUB_EMULATOR_HOST"); addr != "" {
 		emulatorOpts := []option.ClientOption{
 			option.WithEndpoint(addr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 			option.WithoutAuthentication(),
 			option.WithTelemetryDisabled(),
 			internaloption.SkipDialSettingsValidation(),

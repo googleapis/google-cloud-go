@@ -57,11 +57,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &securesourcemanagerpb.CreateBranchRuleRequest{
+//	req := &securesourcemanagerpb.BatchCreatePullRequestCommentsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/securesourcemanager/apiv1/securesourcemanagerpb#CreateBranchRuleRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/securesourcemanager/apiv1/securesourcemanagerpb#BatchCreatePullRequestCommentsRequest.
 //	}
-//	op, err := c.CreateBranchRule(ctx, req)
+//	op, err := c.BatchCreatePullRequestComments(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

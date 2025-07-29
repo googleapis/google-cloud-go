@@ -5,6 +5,60 @@
   "protoPackage": "google.cloud.discoveryengine.v1",
   "libraryPackage": "cloud.google.com/go/discoveryengine/apiv1",
   "services": {
+    "AssistantService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AssistantClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "StreamAssist": {
+              "methods": [
+                "StreamAssist"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AssistantClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "StreamAssist": {
+              "methods": [
+                "StreamAssist"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CmekConfigService": {
       "clients": {
         "grpc": {
@@ -1393,6 +1447,100 @@
             "UpdateServingConfig": {
               "methods": [
                 "UpdateServingConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SessionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SessionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSession": {
+              "methods": [
+                "CreateSession"
+              ]
+            },
+            "DeleteSession": {
+              "methods": [
+                "DeleteSession"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSession": {
+              "methods": [
+                "GetSession"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
+              ]
+            },
+            "UpdateSession": {
+              "methods": [
+                "UpdateSession"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SessionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSession": {
+              "methods": [
+                "CreateSession"
+              ]
+            },
+            "DeleteSession": {
+              "methods": [
+                "DeleteSession"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSession": {
+              "methods": [
+                "GetSession"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
+              ]
+            },
+            "UpdateSession": {
+              "methods": [
+                "UpdateSession"
               ]
             }
           }

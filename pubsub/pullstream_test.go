@@ -26,6 +26,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
 
@@ -95,7 +96,7 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 	opts := withGRPCHeadersAssertion(t,
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()))
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
 	client, err := NewClient(ctx, "P", opts...)
 	if err != nil {
 		t.Fatal(err)

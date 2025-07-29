@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/pubsub/v2/pstest"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Using the fake PubSub server in the pstest package, verify that streaming
@@ -37,7 +38,7 @@ func TestStreamTimeout(t *testing.T) {
 	defer srv.Close()
 
 	srv.SetStreamTimeout(2 * time.Second)
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}
