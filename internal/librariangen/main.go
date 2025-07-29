@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -49,7 +50,7 @@ func run(ctx context.Context, args []string) error {
 				return nil
 			}
 		}
-		return fmt.Errorf("expected a command")
+		return errors.New("expected a command")
 	}
 
 	// Separate command and flags. The command is the first non-flag argument.
@@ -74,7 +75,7 @@ func run(ctx context.Context, args []string) error {
 	if cmd == "" {
 		// This case handles when all arguments are flags, which is an error.
 		// Or when there are no arguments.
-		return fmt.Errorf("no command specified")
+		return errors.New("no command specified")
 	}
 
 	switch cmd {

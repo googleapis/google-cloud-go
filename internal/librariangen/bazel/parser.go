@@ -15,6 +15,7 @@
 package bazel
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -100,16 +101,16 @@ func (c *Config) HasGoGRPC() bool { return c.hasGoGRPC }
 // Validate ensures that the configuration is valid.
 func (c *Config) Validate() error {
 	if c.gapicImportPath == "" {
-		return fmt.Errorf("gapicImportPath is not set")
+		return errors.New("gapicImportPath is not set")
 	}
 	if c.serviceYAML == "" {
-		return fmt.Errorf("serviceYAML is not set")
+		return errors.New("serviceYAML is not set")
 	}
 	if c.grpcServiceConfig == "" {
-		return fmt.Errorf("grpcServiceConfig is not set")
+		return errors.New("grpcServiceConfig is not set")
 	}
 	if c.transport == "" {
-		return fmt.Errorf("transport is not set")
+		return errors.New("transport is not set")
 	}
 	return nil
 }

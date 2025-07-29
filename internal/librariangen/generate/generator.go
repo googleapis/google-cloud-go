@@ -16,6 +16,7 @@ package generate
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/fs"
 	"log/slog"
@@ -65,16 +66,16 @@ type Config struct {
 // Validate ensures that the configuration is valid.
 func (c *Config) Validate() error {
 	if c.LibrarianDir == "" {
-		return fmt.Errorf("librarian directory must be set")
+		return errors.New("librarian directory must be set")
 	}
 	if c.InputDir == "" {
-		return fmt.Errorf("input directory must be set")
+		return errors.New("input directory must be set")
 	}
 	if c.OutputDir == "" {
-		return fmt.Errorf("output directory must be set")
+		return errors.New("output directory must be set")
 	}
 	if c.SourceDir == "" {
-		return fmt.Errorf("source directory must be set")
+		return errors.New("source directory must be set")
 	}
 	return nil
 }
