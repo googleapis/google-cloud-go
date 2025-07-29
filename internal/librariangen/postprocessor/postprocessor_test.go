@@ -121,11 +121,7 @@ func TestPostProcess(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tmpDir, err := os.MkdirTemp("", "postprocessor-test")
-			if err != nil {
-				t.Fatalf("failed to create temp dir: %v", err)
-			}
-			defer os.RemoveAll(tmpDir)
+			tmpDir := t.TempDir()
 
 			var goModInitCalled, goModTidyCalled bool
 			execvRun = func(ctx context.Context, args []string, dir string) error {
