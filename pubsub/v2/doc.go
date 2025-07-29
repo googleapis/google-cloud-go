@@ -95,7 +95,8 @@ Once client code has processed the [Message], it must call Message.Ack or
 Message.Nack. If Ack is not called, the Message will eventually be redelivered. Ack/Nack
 MUST be called within the [Subscriber.Receive] handler function, and not from a goroutine.
 Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
-not be respected, messages can get orphaned when cancelling Receive resulting in slow redelivery.
+not be respected. Additionally, messages can get orphaned when Receive is canceled,
+resulting in slow redelivery.
 
 If the client cannot or does not want to process the message, it can call Message.Nack
 to speed redelivery. For more information and configuration options, see
@@ -106,7 +107,7 @@ been called unless exactly once delivery is enabled. Applications should be awar
 of these deliveries.
 
 Note: This uses pubsub's streaming pull feature. This feature has properties that
-may be surprising. Please take a look at https://cloud.google.com/pubsub/docs/pull#streamingpull
+may be surprising. Please refer to https://cloud.google.com/pubsub/docs/pull#streamingpull
 for more details on how streaming pull behaves.
 
 # Emulator
@@ -167,8 +168,7 @@ AckDeadline for the MaxExtension value.
 # Fine Tuning PubSub Receive Performance
 
 As the PubSub client receives messages from the PubSub server, it puts them into
-a local buffer. The client hands messages from the buffer to the user by way of
-the callback function passed in to Receive. The user must Ack or Nack a message
+the callback function passed to Receive. The user must Ack or Nack a message
 in this function. Each invocation by the client of the passed-in callback occurs
 in a goroutine; that is, messages are processed concurrently.
 
@@ -186,7 +186,7 @@ https://medium.com/google-cloud/pub-sub-flow-control-batching-9ba9a75bce3b
 - Subscription.ReceiveSettings.MaxExtension
 
 This is the maximum amount of time that the client will extend a message's deadline.
-This value should be set as high as messages are expected to be processed, plus some
+This value should be set to the maximum expected processing time, plus some
 buffer. It is fairly safe to set it quite high; the only downside is that it will take
 longer to recover from hanging programs. The higher the extension allowed, the longer
 it takes before the server considers messages lost and re-sends them to some
@@ -196,11 +196,11 @@ other, healthy instance of your application.
 
 This is the maximum amount of time to extend each message's deadline per
 ModifyAckDeadline RPC. Normally, the deadline is determined by the 99th percentile
-of previous message processing times. However, if normal processing times takes 10 minutes
+of previous message processing times. However, if normal processing time takes 10 minutes
 but an error occurs while processing a message within 1 minute, a message will be
 stuck and held by the client for the remaining 9 minutes. By setting the maximum amount
 of time to extend a message's deadline on a per-RPC basis, you can decrease the amount
-of time before message redelivery when errors occur. However the downside is that more
+of time before message redelivery when errors occur. However, the downside is that more
 ModifyAckDeadline RPCs will be sent.
 
 - Subscription.ReceiveSettings.MinDurationPerAckExtension
@@ -211,7 +211,7 @@ represents the lower bound of modack deadlines to send. If processing time is ve
 low, it may be better to issue fewer ModifyAckDeadline RPCs rather than every
 10 seconds. Setting both Min/MaxDurationPerAckExtension to the same value
 effectively removes the automatic derivation of deadlines and fixes it to the value
-you wish to extend your messages deadlines by each time.
+you wish to extend your messages' deadlines by each time.
 
 - Subscription.ReceiveSettings.MaxOutstandingMessages
 
@@ -232,7 +232,7 @@ messages from the server.
 
 Note that there sometimes can be more bytes pulled and being processed than
 MaxOutstandingBytes allows. This is due to the fact that the server
-doesn't consider byte sizes when provisioning server side flow control.
+does not consider byte size when tracking server-side flow control.
 For example, if the client sets MaxOutstandingBytes to 50 KiB, but receives
 a batch of messages totaling 100 KiB, there will be a temporary overflow of
 message byte size until messages are acked.
@@ -251,7 +251,7 @@ Setting this value to 1 is sufficient for many workloads. Each stream can handle
 Reducing the number of streams can improve the performance by decreasing overhead.
 Currently, there is an issue where setting NumGoroutines greater than 1 results in poor
 behavior interacting with flow control. Since each StreamingPull stream has its own flow
-control, the server side flow control will not match what is available locally.
+control, the server-side flow control will not match what is available locally.
 
 Going above 100 streams can lead to increasingly poor behavior, such as acks/modacks not
 succeeding in a reasonable amount of time, leading to message expiration. In these cases,
