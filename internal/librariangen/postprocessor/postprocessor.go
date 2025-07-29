@@ -25,7 +25,7 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/protoc"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
@@ -41,7 +41,7 @@ var (
 
 // Test substitution vars.
 var (
-	protocRun = protoc.Run
+	execvRun = execv.Run
 )
 
 // PostProcess is the entrypoint for post-processing generated files. It runs
@@ -114,21 +114,21 @@ func goimports(ctx context.Context, dir string) error {
 	// The `.` argument will make goimports process all go files in the directory
 	// and its subdirectories. The -w flag writes results back to source files.
 	args := []string{"goimports", "-w", "."}
-	return protocRun(ctx, args, dir)
+	return execvRun(ctx, args, dir)
 }
 
 // goModInit initializes a go.mod file in the given directory.
 func goModInit(ctx context.Context, modulePath, dir string) error {
 	slog.Info("running go mod init", "directory", dir, "modulePath", modulePath)
 	args := []string{"go", "mod", "init", modulePath}
-	return protocRun(ctx, args, dir)
+	return execvRun(ctx, args, dir)
 }
 
 // goModTidy tidies the go.mod file, adding missing and removing unused dependencies.
 func goModTidy(ctx context.Context, dir string) error {
 	slog.Info("running go mod tidy", "directory", dir)
 	args := []string{"go", "mod", "tidy"}
-	return protocRun(ctx, args, dir)
+	return execvRun(ctx, args, dir)
 }
 
 // generateReadme creates a README.md file for a new module.

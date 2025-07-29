@@ -23,6 +23,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 	"github.com/google/go-cmp/cmp"
 )
@@ -140,7 +141,7 @@ func TestRun_Integration(t *testing.T) {
 		protoPath,
 	}
 
-	if err := Run(context.Background(), args, outputDir); err != nil {
+	if err := execv.Run(context.Background(), args, outputDir); err != nil {
 		t.Fatalf("Run() failed: %v", err)
 	}
 

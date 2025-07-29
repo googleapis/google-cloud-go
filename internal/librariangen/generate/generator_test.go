@@ -160,7 +160,12 @@ go_gapic_library(
 			tt.setup(e, t)
 
 			var protocRunCalled bool
-			protocRun = func(ctx context.Context, args []string, dir string) error {
+			execvRun = func(ctx context.Context, args []string, dir string) error {
+				want := "protoc"
+				if args[0] != want {
+					t.Errorf("protocRun called with %s; want %s", args[0], want)
+				}
+
 				protocRunCalled = true
 				return tt.protocErr
 			}

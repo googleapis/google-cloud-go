@@ -28,7 +28,7 @@ func TestPostProcess(t *testing.T) {
 	tests := []struct {
 		name                string
 		newModule           bool
-		mockProtocRun       func(ctx context.Context, args []string, dir string) error
+		mockexecvRun        func(ctx context.Context, args []string, dir string) error
 		wantFilesCreated    []string
 		wantFilesNotCreated []string
 		wantGoModInitCalled bool
@@ -38,7 +38,7 @@ func TestPostProcess(t *testing.T) {
 		{
 			name:      "new module success",
 			newModule: true,
-			mockProtocRun: func(ctx context.Context, args []string, dir string) error {
+			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				return nil
 			},
 			wantFilesCreated: []string{
@@ -56,7 +56,7 @@ func TestPostProcess(t *testing.T) {
 		{
 			name:      "existing module success",
 			newModule: false,
-			mockProtocRun: func(ctx context.Context, args []string, dir string) error {
+			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				return nil
 			},
 			wantFilesCreated: []string{
@@ -76,7 +76,7 @@ func TestPostProcess(t *testing.T) {
 		{
 			name:      "goimports fails (non-fatal)",
 			newModule: false,
-			mockProtocRun: func(ctx context.Context, args []string, dir string) error {
+			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				if args[0] == "goimports" {
 					return errors.New("goimports failed")
 				}
@@ -94,7 +94,7 @@ func TestPostProcess(t *testing.T) {
 		{
 			name:      "go mod init fails (fatal)",
 			newModule: true,
-			mockProtocRun: func(ctx context.Context, args []string, dir string) error {
+			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				if args[0] == "go" && args[1] == "mod" && args[2] == "init" {
 					return errors.New("go mod init failed")
 				}
@@ -107,7 +107,7 @@ func TestPostProcess(t *testing.T) {
 		{
 			name:      "go mod tidy fails (fatal)",
 			newModule: false,
-			mockProtocRun: func(ctx context.Context, args []string, dir string) error {
+			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				if args[0] == "go" && args[1] == "mod" && args[2] == "tidy" {
 					return errors.New("go mod tidy failed")
 				}
@@ -128,14 +128,14 @@ func TestPostProcess(t *testing.T) {
 			defer os.RemoveAll(tmpDir)
 
 			var goModInitCalled, goModTidyCalled bool
-			protocRun = func(ctx context.Context, args []string, dir string) error {
+			execvRun = func(ctx context.Context, args []string, dir string) error {
 				if len(args) > 2 && args[0] == "go" && args[1] == "mod" && args[2] == "init" {
 					goModInitCalled = true
 				}
 				if len(args) > 2 && args[0] == "go" && args[1] == "mod" && args[2] == "tidy" {
 					goModTidyCalled = true
 				}
-				return tt.mockProtocRun(ctx, args, dir)
+				return tt.mockexecvRun(ctx, args, dir)
 			}
 
 			req := &request.Request{

@@ -25,6 +25,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/bazel"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/postprocessor"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/protoc"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
@@ -41,7 +42,7 @@ const isNewModule = false
 var (
 	postProcess  = postprocessor.PostProcess
 	bazelParse   = bazel.Parse
-	protocRun    = protoc.Run
+	execvRun     = execv.Run
 	requestParse = request.Parse
 )
 
@@ -167,7 +168,7 @@ func handleGapicgen(ctx context.Context, cfg *Config) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("failed to build protoc command for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}
-		if err := protocRun(ctx, args, cfg.OutputDir); err != nil {
+		if err := execvRun(ctx, args, cfg.OutputDir); err != nil {
 			return "", fmt.Errorf("protoc failed for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}
 	}
