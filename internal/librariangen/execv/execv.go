@@ -16,6 +16,7 @@ package execv
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -30,12 +31,21 @@ func Run(ctx context.Context, args []string, outputDir string) error {
 	cmd.Dir = outputDir // Run commands from the output directory.
 	slog.Debug("running command", "command", strings.Join(cmd.Args, " "), "dir", cmd.Dir)
 
-	output, err := cmd.CombinedOutput()
+	output, err := cmd.Output()
 	if len(output) > 0 {
-		slog.Debug("command output", "output", string(output))
+		slog.Debug("command stdout", "output", string(output))
 	}
 	if err != nil {
-		return fmt.Errorf("command failed with error: %w", err)
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			// The command ran and exited with a non-zero exit code.
+			if len(exitErr.Stderr) > 0 {
+				slog.Debug("command stderr", "output", string(exitErr.Stderr))
+			}
+			return fmt.Errorf("command failed with exit error: %s: %w", exitErr.Stderr, err)
+		}
+		// Another error occurred (e.g., command not found).
+		return fmt.Errorf("command failed: %w", err)
 	}
 	return nil
 }
