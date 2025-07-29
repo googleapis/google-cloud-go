@@ -841,7 +841,11 @@ func (c *Client) ListPullRequestComments(ctx context.Context, req *securesourcem
 	return c.internalClient.ListPullRequestComments(ctx, req, opts...)
 }
 
-// CreatePullRequestComment creates a pull request comment.
+// CreatePullRequestComment creates a pull request comment. This function is used to create a single
+// PullRequestComment of type Comment, or a single PullRequestComment of type
+// Code that’s replying to another PullRequestComment of type Code. Use
+// BatchCreatePullRequestComments to create multiple PullRequestComments for
+// code reviews.
 func (c *Client) CreatePullRequestComment(ctx context.Context, req *securesourcemanagerpb.CreatePullRequestCommentRequest, opts ...gax.CallOption) (*CreatePullRequestCommentOperation, error) {
 	return c.internalClient.CreatePullRequestComment(ctx, req, opts...)
 }
@@ -874,7 +878,11 @@ func (c *Client) DeletePullRequestCommentOperation(name string) *DeletePullReque
 	return c.internalClient.DeletePullRequestCommentOperation(name)
 }
 
-// BatchCreatePullRequestComments batch creates pull request comments.
+// BatchCreatePullRequestComments batch creates pull request comments. This function is used to create
+// multiple PullRequestComments for code review. There needs to be exactly one
+// PullRequestComment of type Review, and at most 100 PullRequestComments of
+// type Code per request. The Postition of the code comments must be unique
+// within the request.
 func (c *Client) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
 	return c.internalClient.BatchCreatePullRequestComments(ctx, req, opts...)
 }
@@ -885,7 +893,10 @@ func (c *Client) BatchCreatePullRequestCommentsOperation(name string) *BatchCrea
 	return c.internalClient.BatchCreatePullRequestCommentsOperation(name)
 }
 
-// ResolvePullRequestComments resolves pull request comments.
+// ResolvePullRequestComments resolves pull request comments. A list of PullRequestComment names must be
+// provided. The PullRequestComment names must be in the same conversation
+// thread. If auto_fill is set, all comments in the conversation thread will
+// be resolved.
 func (c *Client) ResolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.ResolvePullRequestCommentsRequest, opts ...gax.CallOption) (*ResolvePullRequestCommentsOperation, error) {
 	return c.internalClient.ResolvePullRequestComments(ctx, req, opts...)
 }
@@ -896,7 +907,10 @@ func (c *Client) ResolvePullRequestCommentsOperation(name string) *ResolvePullRe
 	return c.internalClient.ResolvePullRequestCommentsOperation(name)
 }
 
-// UnresolvePullRequestComments unresolves pull request comment.
+// UnresolvePullRequestComments unresolves pull request comments. A list of PullRequestComment names must
+// be provided. The PullRequestComment names must be in the same conversation
+// thread. If auto_fill is set, all comments in the conversation thread will
+// be unresolved.
 func (c *Client) UnresolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.UnresolvePullRequestCommentsRequest, opts ...gax.CallOption) (*UnresolvePullRequestCommentsOperation, error) {
 	return c.internalClient.UnresolvePullRequestComments(ctx, req, opts...)
 }
@@ -5265,7 +5279,11 @@ func (c *restClient) ListPullRequestComments(ctx context.Context, req *securesou
 	return it
 }
 
-// CreatePullRequestComment creates a pull request comment.
+// CreatePullRequestComment creates a pull request comment. This function is used to create a single
+// PullRequestComment of type Comment, or a single PullRequestComment of type
+// Code that’s replying to another PullRequestComment of type Code. Use
+// BatchCreatePullRequestComments to create multiple PullRequestComments for
+// code reviews.
 func (c *restClient) CreatePullRequestComment(ctx context.Context, req *securesourcemanagerpb.CreatePullRequestCommentRequest, opts ...gax.CallOption) (*CreatePullRequestCommentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPullRequestComment()
@@ -5445,7 +5463,11 @@ func (c *restClient) DeletePullRequestComment(ctx context.Context, req *secureso
 	}, nil
 }
 
-// BatchCreatePullRequestComments batch creates pull request comments.
+// BatchCreatePullRequestComments batch creates pull request comments. This function is used to create
+// multiple PullRequestComments for code review. There needs to be exactly one
+// PullRequestComment of type Review, and at most 100 PullRequestComments of
+// type Code per request. The Postition of the code comments must be unique
+// within the request.
 func (c *restClient) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -5504,7 +5526,10 @@ func (c *restClient) BatchCreatePullRequestComments(ctx context.Context, req *se
 	}, nil
 }
 
-// ResolvePullRequestComments resolves pull request comments.
+// ResolvePullRequestComments resolves pull request comments. A list of PullRequestComment names must be
+// provided. The PullRequestComment names must be in the same conversation
+// thread. If auto_fill is set, all comments in the conversation thread will
+// be resolved.
 func (c *restClient) ResolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.ResolvePullRequestCommentsRequest, opts ...gax.CallOption) (*ResolvePullRequestCommentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -5563,7 +5588,10 @@ func (c *restClient) ResolvePullRequestComments(ctx context.Context, req *secure
 	}, nil
 }
 
-// UnresolvePullRequestComments unresolves pull request comment.
+// UnresolvePullRequestComments unresolves pull request comments. A list of PullRequestComment names must
+// be provided. The PullRequestComment names must be in the same conversation
+// thread. If auto_fill is set, all comments in the conversation thread will
+// be unresolved.
 func (c *restClient) UnresolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.UnresolvePullRequestCommentsRequest, opts ...gax.CallOption) (*UnresolvePullRequestCommentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
