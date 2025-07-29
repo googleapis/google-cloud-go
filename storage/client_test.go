@@ -2005,19 +2005,19 @@ func initEmulatorClients() func() error {
 	}
 	ctx := context.Background()
 
-	grpcClient, err := newGRPCStorageClient(ctx)
+	grpcClient, err := NewGRPCClient(ctx)
 	if err != nil {
 		log.Fatalf("Error setting up gRPC client for emulator tests: %v", err)
 		return noopCloser
 	}
-	httpClient, err := newHTTPStorageClient(ctx)
+	httpClient, err := NewClient(ctx)
 	if err != nil {
 		log.Fatalf("Error setting up HTTP client for emulator tests: %v", err)
 		return noopCloser
 	}
 	emulatorClients = map[string]storageClient{
-		"http": httpClient,
-		"grpc": grpcClient,
+		"http": httpClient.tc,
+		"grpc": grpcClient.tc,
 	}
 
 	veneerClient, err = NewClient(ctx)

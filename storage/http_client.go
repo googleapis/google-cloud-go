@@ -30,7 +30,6 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
@@ -47,7 +46,6 @@ import (
 // httpStorageClient is the HTTP-JSON API implementation of the transport-agnostic
 // storageClient interface.
 type httpStorageClient struct {
-	creds                      *auth.Credentials
 	hc                         *http.Client
 	xmlHost                    string
 	raw                        *raw.Service
@@ -61,57 +59,7 @@ type httpStorageClient struct {
 // Storage API.
 func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
-	o := s.clientOption
-	config := newStorageConfig(o...)
-
-	var creds *auth.Credentials
-	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
-	// since raw.NewService configures the correct default endpoints when initializing the
-	// internal http client. However, in our case, "NewRangeReader" in reader.go needs to
-	// access the http client directly to make requests, so we create the client manually
-	// here so it can be re-used by both reader.go and raw.NewService. This means we need to
-	// manually configure the default endpoint options on the http client. Furthermore, we
-	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
-	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
-		// Prepend default options to avoid overriding options passed by the user.
-		o = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, o...)
-
-		o = append(o, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
-			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
-			internaloption.WithDefaultUniverseDomain("googleapis.com"),
-		)
-		// Don't error out here. The user may have passed in their own HTTP
-		// client which does not auth with ADC or other common conventions.
-		c, err := internaloption.AuthCreds(ctx, o)
-		if err == nil {
-			creds = c
-			o = append(o, option.WithAuthCredentials(creds))
-		}
-	} else {
-		var hostURL *url.URL
-
-		if strings.Contains(host, "://") {
-			h, err := url.Parse(host)
-			if err != nil {
-				return nil, err
-			}
-			hostURL = h
-		} else {
-			// Add scheme for user if not supplied in STORAGE_EMULATOR_HOST
-			// URL is only parsed correctly if it has a scheme, so we build it ourselves
-			hostURL = &url.URL{Scheme: "http", Host: host}
-		}
-
-		hostURL.Path = "storage/v1/"
-		endpoint := hostURL.String()
-
-		// Append the emulator host as default endpoint for the user
-		o = append([]option.ClientOption{option.WithoutAuthentication()}, o...)
-
-		o = append(o, internaloption.WithDefaultEndpointTemplate(endpoint))
-		o = append(o, internaloption.WithDefaultMTLSEndpoint(endpoint))
-	}
-	s.clientOption = o
+	config := newStorageConfig(s.clientOption...)
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, s.clientOption...)
@@ -144,7 +92,6 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	}
 
 	return &httpStorageClient{
-		creds:                      creds,
 		hc:                         hc,
 		xmlHost:                    u.Host,
 		raw:                        rawService,
@@ -153,6 +100,55 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		config:                     &config,
 		dynamicReadReqStallTimeout: bd,
 	}, nil
+}
+
+// defaultHTTPOptions returns a set of the default client options
+// for http client initialization.
+func defaultHTTPOptions(ctx context.Context, defaults ...option.ClientOption) ([]option.ClientOption, error) {
+
+	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
+	// since raw.NewService configures the correct default endpoints when initializing the
+	// internal http client. However, in our case, "NewRangeReader" in reader.go needs to
+	// access the http client directly to make requests, so we create the client manually
+	// here so it can be re-used by both reader.go and raw.NewService. This means we need to
+	// manually configure the default endpoint options on the http client. Furthermore, we
+	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
+		// Prepend default options to avoid overriding options passed by the user.
+		defaults = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, defaults...)
+
+		defaults = append(defaults, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
+			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+			internaloption.EnableNewAuthLibrary(),
+		)
+		c, err := internaloption.AuthCreds(ctx, defaults)
+		if err == nil {
+			defaults = append(defaults, option.WithAuthCredentials(c))
+		}
+	} else {
+		var hostURL *url.URL
+		var err error
+
+		hostURL, err = parseEmulatorURL(host)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse STORAGE_EMULATOR_HOST: %v", host)
+		}
+
+		hostURL.Path = "storage/v1/"
+		endpoint := hostURL.String()
+
+		// Append the emulator host as default endpoint for the user
+		defaults = append([]option.ClientOption{option.WithoutAuthentication()}, defaults...)
+
+		defaults = append(defaults, internaloption.SkipDialSettingsValidation(),
+			internaloption.WithDefaultEndpointTemplate(endpoint),
+			internaloption.WithDefaultMTLSEndpoint(endpoint),
+		)
+
+	}
+
+	return defaults, nil
 }
 
 func (c *httpStorageClient) Close() error {
