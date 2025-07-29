@@ -20,10 +20,9 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/bazelbuild/buildtools/build"
 )
 
 // Config holds configuration extracted from the Go rules in a googleapis BUILD.bazel file.
@@ -124,60 +123,55 @@ func Parse(dir string) (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to read BUILD.bazel file %s: %w", fp, err)
 	}
-	f, err := build.Parse(fp, data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse BUILD.bazel file %s: %w", fp, err)
+	content := string(data)
+
+	// First, find the go_gapic_library block.
+	re := regexp.MustCompile(`go_gapic_library\((?s:.)*?\)`)
+	gapicLibraryBlock := re.FindString(content)
+	if gapicLibraryBlock == "" {
+		slog.Warn("could not find go_gapic_library rule in BUILD.bazel")
 	}
 
 	// GAPIC build target
-	for _, rule := range f.Rules("go_gapic_library") {
-		if v := rule.AttrString("grpc_service_config"); v != "" {
-			c.grpcServiceConfig = v
-		}
-		if v := rule.AttrString("importpath"); v != "" {
-			c.gapicImportPath = v
-		}
-		if v := rule.AttrLiteral("metadata"); v != "" {
-			if b, err := strconv.ParseBool(v); err == nil {
-				c.metadata = b
-			} else {
-				slog.Warn("failed to parse metadata", "error", err, "input", v)
-			}
-		}
-		if v := rule.AttrString("release_level"); v != "" {
-			c.releaseLevel = v
-		}
-		if v := rule.AttrLiteral("rest_numeric_enums"); v != "" {
-			if b, err := strconv.ParseBool(v); err == nil {
-				c.restNumericEnums = b
-			} else {
-				slog.Warn("failed to parse rest_numeric_enums", "error", err, "input", v)
-			}
-		}
-		if v := rule.AttrString("service_yaml"); v != "" {
-			c.serviceYAML = v
-		}
-		if v := rule.AttrString("transport"); v != "" {
-			c.transport = v
-		}
-		if v := rule.AttrLiteral("diregapic"); v != "" {
-			if b, err := strconv.ParseBool(v); err == nil {
-				c.diregapic = b
-			} else {
-				slog.Warn("failed to parse diregapic", "error", err, "input", v)
-			}
-		}
-	}
+	c.grpcServiceConfig = findString(gapicLibraryBlock, "grpc_service_config")
+	c.gapicImportPath = findString(gapicLibraryBlock, "importpath")
+	c.releaseLevel = findString(gapicLibraryBlock, "release_level")
+	c.serviceYAML = findString(gapicLibraryBlock, "service_yaml")
+	c.transport = findString(gapicLibraryBlock, "transport")
+	c.metadata = findBool(gapicLibraryBlock, "metadata")
+	c.restNumericEnums = findBool(gapicLibraryBlock, "rest_numeric_enums")
+	c.diregapic = findBool(gapicLibraryBlock, "diregapic")
 
 	// We are currently migrating go_proto_library to go_grpc_library.
 	// Only one is expect to be present
-	for range f.Rules("go_grpc_library") {
+	if strings.Contains(content, "go_grpc_library") {
 		c.hasGoGRPC = true
 	}
-	for range f.Rules("go_proto_library") {
+	if strings.Contains(content, "go_proto_library") {
 		if c.hasGoGRPC {
 			return nil, fmt.Errorf("misconfiguration in BUILD.bazel file, only one of go_grpc_library and go_proto_library rules should be present: %s", fp)
 		}
 	}
 	return c, nil
+}
+
+func findString(content, name string) string {
+	re := regexp.MustCompile(fmt.Sprintf(`%s\s*=\s*"([^"]+)"`, name))
+	if match := re.FindStringSubmatch(content); len(match) > 1 {
+		return match[1]
+	}
+	slog.Warn("failed to find string", "name", name)
+	return ""
+}
+
+func findBool(content, name string) bool {
+	re := regexp.MustCompile(fmt.Sprintf(`%s\s*=\s*(\w+)`, name))
+	if match := re.FindStringSubmatch(content); len(match) > 1 {
+		if b, err := strconv.ParseBool(match[1]); err == nil {
+			return b
+		}
+		slog.Warn("failed to parse bool", "name", name, "match", match[1])
+	}
+	slog.Warn("failed to find bool", "name", name)
+	return false
 }
