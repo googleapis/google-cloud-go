@@ -35,7 +35,9 @@ const (
 )
 
 // Who deleted the message and how it was deleted. More values may be added in
-// the future.
+// the future. See [Edit or delete a message in Google
+// Chat](https://support.google.com/chat/answer/7653281) for details on when
+// messages can be deleted.
 type DeletionMetadata_DeletionType int32
 
 const (
@@ -43,18 +45,22 @@ const (
 	DeletionMetadata_DELETION_TYPE_UNSPECIFIED DeletionMetadata_DeletionType = 0
 	// User deleted their own message.
 	DeletionMetadata_CREATOR DeletionMetadata_DeletionType = 1
-	// The space owner deleted the message.
+	// A space manager deleted the message.
 	DeletionMetadata_SPACE_OWNER DeletionMetadata_DeletionType = 2
-	// A Google Workspace admin deleted the message.
+	// A Google Workspace administrator deleted the message. Administrators can
+	// delete any message in the space, including messages sent by any space
+	// member or Chat app.
 	DeletionMetadata_ADMIN DeletionMetadata_DeletionType = 3
 	// A Chat app deleted its own message when it expired.
 	DeletionMetadata_APP_MESSAGE_EXPIRY DeletionMetadata_DeletionType = 4
-	// A Chat app deleted the message on behalf of the user.
+	// A Chat app deleted the message on behalf of the creator (using user
+	// authentication).
 	DeletionMetadata_CREATOR_VIA_APP DeletionMetadata_DeletionType = 5
-	// A Chat app deleted the message on behalf of the space owner.
+	// A Chat app deleted the message on behalf of a space manager (using user
+	// authentication).
 	DeletionMetadata_SPACE_OWNER_VIA_APP DeletionMetadata_DeletionType = 6
-	// A member of the space deleted the message. Human users can delete
-	// messages sent by apps.
+	// A member of the space deleted the message. Users can delete messages sent
+	// by apps.
 	DeletionMetadata_SPACE_MEMBER DeletionMetadata_DeletionType = 7
 )
 
