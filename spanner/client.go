@@ -18,7 +18,6 @@ package spanner
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -735,52 +734,6 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 	}
 }
 
-// wrappedStream  wraps around the embedded grpc.ClientStream, and intercepts the RecvMsg and
-// SendMsg method call.
-type wrappedStream struct {
-	method string
-	target string
-	grpc.ClientStream
-}
-
-func (w *wrappedStream) RecvMsg(m any) error {
-	err := w.ClientStream.RecvMsg(m)
-	if errors.Is(err, io.EOF) {
-		return err
-	}
-	ctx := w.ClientStream.Context()
-	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok {
-		return err
-	}
-	mt.method = w.method
-	if strings.HasPrefix(w.target, "google-c2p") {
-		mt.currOp.setDirectPathEnabled(true)
-	}
-	isDirectPathUsed := false
-	peerInfo, ok := peer.FromContext(ctx)
-	if ok {
-		if peerInfo.Addr != nil {
-			remoteIP := peerInfo.Addr.String()
-			if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
-				isDirectPathUsed = true
-			}
-		}
-	}
-	if mt.currOp.currAttempt != nil {
-		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
-	}
-	return err
-}
-
-func (w *wrappedStream) SendMsg(m any) error {
-	return w.ClientStream.SendMsg(m)
-}
-
-func newWrappedStream(s grpc.ClientStream, method, target string) grpc.ClientStream {
-	return &wrappedStream{ClientStream: s, method: method, target: target}
-}
-
 // metricsInterceptor is a gRPC stream client interceptor that records metrics for stream RPCs.
 func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 	return func(
@@ -795,7 +748,16 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 		if err != nil {
 			return nil, err
 		}
-		return newWrappedStream(s, method, cc.Target()), nil
+		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+		if ok {
+			if mt != nil {
+				mt.method = method
+				if strings.HasPrefix(cc.Target(), "google-c2p") {
+					mt.currOp.setDirectPathEnabled(true)
+				}
+			}
+		}
+		return s, nil
 	}
 }
 

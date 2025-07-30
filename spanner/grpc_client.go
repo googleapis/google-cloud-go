@@ -192,6 +192,15 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
 		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		peerInfo, ok := peer.FromContext(client.Context())
+		if ok {
+			if peerInfo.Addr != nil {
+				remoteIP := peerInfo.Addr.String()
+				if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
+					mt.currOp.currAttempt.setDirectPathUsed(true)
+				}
+			}
+		}
 	}
 	return client, err
 }
@@ -227,6 +236,15 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
 		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		peerInfo, ok := peer.FromContext(client.Context())
+		if ok {
+			if peerInfo.Addr != nil {
+				remoteIP := peerInfo.Addr.String()
+				if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
+					mt.currOp.currAttempt.setDirectPathUsed(true)
+				}
+			}
+		}
 	}
 	return client, err
 }
@@ -290,6 +308,15 @@ func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.Batch
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
 		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		peerInfo, ok := peer.FromContext(client.Context())
+		if ok {
+			if peerInfo.Addr != nil {
+				remoteIP := peerInfo.Addr.String()
+				if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
+					mt.currOp.currAttempt.setDirectPathUsed(true)
+				}
+			}
+		}
 	}
 	return client, err
 }
