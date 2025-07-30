@@ -88,6 +88,7 @@ modules:
   - iot
   - kms
   - language
+  - licensemanager
   - lifesciences
   - logging
   - longrunning
@@ -697,6 +698,9 @@ service-configs:
   - input-directory: google/cloud/language/v2
     service-config: language_v2.yaml
     import-path: cloud.google.com/go/language/apiv2
+  - input-directory: google/cloud/licensemanager/v1
+    service-config: licensemanager_v1.yaml
+    import-path: cloud.google.com/go/licensemanager/apiv1
   - input-directory: google/cloud/lifesciences/v2beta
     service-config: lifesciences_v2beta.yaml
     import-path: cloud.google.com/go/lifesciences/apiv2beta
