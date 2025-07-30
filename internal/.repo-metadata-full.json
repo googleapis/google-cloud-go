@@ -945,7 +945,7 @@
     "description": "Config Delivery API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/configdelivery/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/configdelivery/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
@@ -955,7 +955,7 @@
     "description": "Config Delivery API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/configdelivery/apiv1beta",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/configdelivery/latest/apiv1beta",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
@@ -1665,7 +1665,7 @@
     "description": "License Manager API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/licensemanager/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/licensemanager/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
