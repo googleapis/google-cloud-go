@@ -14,7 +14,7 @@
     {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_BatchCreatePullRequestComments_sync",
       "title": "securesourcemanager BatchCreatePullRequestComments Sample",
-      "description": "BatchCreatePullRequestComments batch creates pull request comments.",
+      "description": "BatchCreatePullRequestComments batch creates pull request comments. This function is used to create\nmultiple PullRequestComments for code review. There needs to be exactly one\nPullRequestComment of type Review, and at most 100 PullRequestComments of\ntype Code per request. The Postition of the code comments must be unique\nwithin the request.",
       "file": "Client/BatchCreatePullRequestComments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -473,7 +473,7 @@
     {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreatePullRequestComment_sync",
       "title": "securesourcemanager CreatePullRequestComment Sample",
-      "description": "CreatePullRequestComment creates a pull request comment.",
+      "description": "CreatePullRequestComment creates a pull request comment. This function is used to create a single\nPullRequestComment of type Comment, or a single PullRequestComment of type\nCode that's replying to another PullRequestComment of type Code. Use\nBatchCreatePullRequestComments to create multiple PullRequestComments for\ncode reviews.",
       "file": "Client/CreatePullRequestComment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2220,7 +2220,7 @@
     {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ResolvePullRequestComments_sync",
       "title": "securesourcemanager ResolvePullRequestComments Sample",
-      "description": "ResolvePullRequestComments resolves pull request comments.",
+      "description": "ResolvePullRequestComments resolves pull request comments. A list of PullRequestComment names must be\nprovided. The PullRequestComment names must be in the same conversation\nthread. If auto_fill is set, all comments in the conversation thread will\nbe resolved.",
       "file": "Client/ResolvePullRequestComments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2450,7 +2450,7 @@
     {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UnresolvePullRequestComments_sync",
       "title": "securesourcemanager UnresolvePullRequestComments Sample",
-      "description": "UnresolvePullRequestComments unresolves pull request comment.",
+      "description": "UnresolvePullRequestComments unresolves pull request comments. A list of PullRequestComment names must\nbe provided. The PullRequestComment names must be in the same conversation\nthread. If auto_fill is set, all comments in the conversation thread will\nbe unresolved.",
       "file": "Client/UnresolvePullRequestComments/main.go",
       "language": "GO",
       "clientMethod": {

@@ -8929,17 +8929,31 @@ type SecureSourceManagerClient interface {
 	GetPullRequestComment(ctx context.Context, in *GetPullRequestCommentRequest, opts ...grpc.CallOption) (*PullRequestComment, error)
 	// Lists pull request comments.
 	ListPullRequestComments(ctx context.Context, in *ListPullRequestCommentsRequest, opts ...grpc.CallOption) (*ListPullRequestCommentsResponse, error)
-	// Creates a pull request comment.
+	// Creates a pull request comment. This function is used to create a single
+	// PullRequestComment of type Comment, or a single PullRequestComment of type
+	// Code that's replying to another PullRequestComment of type Code. Use
+	// BatchCreatePullRequestComments to create multiple PullRequestComments for
+	// code reviews.
 	CreatePullRequestComment(ctx context.Context, in *CreatePullRequestCommentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a pull request comment.
 	UpdatePullRequestComment(ctx context.Context, in *UpdatePullRequestCommentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a pull request comment.
 	DeletePullRequestComment(ctx context.Context, in *DeletePullRequestCommentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Batch creates pull request comments.
+	// Batch creates pull request comments. This function is used to create
+	// multiple PullRequestComments for code review. There needs to be exactly one
+	// PullRequestComment of type Review, and at most 100 PullRequestComments of
+	// type Code per request. The Postition of the code comments must be unique
+	// within the request.
 	BatchCreatePullRequestComments(ctx context.Context, in *BatchCreatePullRequestCommentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Resolves pull request comments.
+	// Resolves pull request comments. A list of PullRequestComment names must be
+	// provided. The PullRequestComment names must be in the same conversation
+	// thread. If auto_fill is set, all comments in the conversation thread will
+	// be resolved.
 	ResolvePullRequestComments(ctx context.Context, in *ResolvePullRequestCommentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Unresolves pull request comment.
+	// Unresolves pull request comments. A list of PullRequestComment names must
+	// be provided. The PullRequestComment names must be in the same conversation
+	// thread. If auto_fill is set, all comments in the conversation thread will
+	// be unresolved.
 	UnresolvePullRequestComments(ctx context.Context, in *UnresolvePullRequestCommentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates an issue comment.
 	CreateIssueComment(ctx context.Context, in *CreateIssueCommentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -9520,17 +9534,31 @@ type SecureSourceManagerServer interface {
 	GetPullRequestComment(context.Context, *GetPullRequestCommentRequest) (*PullRequestComment, error)
 	// Lists pull request comments.
 	ListPullRequestComments(context.Context, *ListPullRequestCommentsRequest) (*ListPullRequestCommentsResponse, error)
-	// Creates a pull request comment.
+	// Creates a pull request comment. This function is used to create a single
+	// PullRequestComment of type Comment, or a single PullRequestComment of type
+	// Code that's replying to another PullRequestComment of type Code. Use
+	// BatchCreatePullRequestComments to create multiple PullRequestComments for
+	// code reviews.
 	CreatePullRequestComment(context.Context, *CreatePullRequestCommentRequest) (*longrunningpb.Operation, error)
 	// Updates a pull request comment.
 	UpdatePullRequestComment(context.Context, *UpdatePullRequestCommentRequest) (*longrunningpb.Operation, error)
 	// Deletes a pull request comment.
 	DeletePullRequestComment(context.Context, *DeletePullRequestCommentRequest) (*longrunningpb.Operation, error)
-	// Batch creates pull request comments.
+	// Batch creates pull request comments. This function is used to create
+	// multiple PullRequestComments for code review. There needs to be exactly one
+	// PullRequestComment of type Review, and at most 100 PullRequestComments of
+	// type Code per request. The Postition of the code comments must be unique
+	// within the request.
 	BatchCreatePullRequestComments(context.Context, *BatchCreatePullRequestCommentsRequest) (*longrunningpb.Operation, error)
-	// Resolves pull request comments.
+	// Resolves pull request comments. A list of PullRequestComment names must be
+	// provided. The PullRequestComment names must be in the same conversation
+	// thread. If auto_fill is set, all comments in the conversation thread will
+	// be resolved.
 	ResolvePullRequestComments(context.Context, *ResolvePullRequestCommentsRequest) (*longrunningpb.Operation, error)
-	// Unresolves pull request comment.
+	// Unresolves pull request comments. A list of PullRequestComment names must
+	// be provided. The PullRequestComment names must be in the same conversation
+	// thread. If auto_fill is set, all comments in the conversation thread will
+	// be unresolved.
 	UnresolvePullRequestComments(context.Context, *UnresolvePullRequestCommentsRequest) (*longrunningpb.Operation, error)
 	// Creates an issue comment.
 	CreateIssueComment(context.Context, *CreateIssueCommentRequest) (*longrunningpb.Operation, error)
