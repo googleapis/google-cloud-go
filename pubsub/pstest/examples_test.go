@@ -21,6 +21,7 @@ import (
 	"cloud.google.com/go/pubsub/pstest"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func ExampleNewServer() {
@@ -29,7 +30,7 @@ func ExampleNewServer() {
 	srv := pstest.NewServer()
 	defer srv.Close()
 	// Connect to the server without using TLS.
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -49,7 +50,7 @@ func ExampleNewServerWithPort() {
 	srv := pstest.NewServerWithPort(9001)
 	defer srv.Close()
 	// Connect to the server without using TLS.
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		// TODO: Handle error.
 	}

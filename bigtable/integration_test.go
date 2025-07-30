@@ -153,7 +153,7 @@ func cleanup(c IntegrationTestConfig) error {
 		return nil
 	}
 	ctx := context.Background()
-	iac, err := NewInstanceAdminClient(ctx, c.Project)
+	iac, err := NewInstanceAdminClient(ctx, c.Project, c.ClientOpts...)
 	if err != nil {
 		return err
 	}
@@ -952,7 +952,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	// Sleep some more
 	time.Sleep(30 * time.Second)
 
-	monitoringClient, err := monitoring.NewMetricClient(ctx)
+	monitoringClient, err := monitoring.NewMetricClient(ctx, testEnv.Config().ClientOpts...)
 	if err != nil {
 		t.Errorf("Failed to create metric client: %v", err)
 	}
@@ -4992,11 +4992,8 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 	if got, want := len(schemaBundles), 1; got != want {
 		t.Fatalf("Listing schema bundles count: %d, want: != %d", got, want)
 	}
-	if got, want := schemaBundles[0].SchemaBundleID, schemaBundle; got != want {
+	if got, want := schemaBundles[0], schemaBundle; got != want {
 		t.Errorf("SchemaBundle Name: %s, want: %s", got, want)
-	}
-	if got, want := schemaBundles[0].SchemaBundle, content; !reflect.DeepEqual(got, want) {
-		t.Errorf("ProtoSchema: %v, want: %v", got, want)
 	}
 
 	// Get schema bundle

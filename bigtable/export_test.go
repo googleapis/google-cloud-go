@@ -90,6 +90,7 @@ type IntegrationTestConfig struct {
 	Cluster               string
 	Cluster2              string
 	Table                 string
+	ClientOpts            []option.ClientOption
 	AttemptDirectPath     bool
 	DirectPathIPV4Only    bool
 	EmulatedServerOptions []grpc.ServerOption
@@ -129,6 +130,8 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 	if c.Cluster2 == "" {
 		c.Cluster2 = os.Getenv("GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER")
 	}
+	universeDomain := os.Getenv("GCLOUD_TESTS_BIGTABLE_UNIVERSE_DOMAIN")
+	c.ClientOpts = append(c.ClientOpts, option.WithUniverseDomain(universeDomain))
 
 	if legacyUseProd != "" {
 		fmt.Println("WARNING: using legacy commandline arg -use_prod, please switch to -it.*")
@@ -324,6 +327,7 @@ func (e *ProdEnv) AdminClientOptions() (context.Context, []option.ClientOption, 
 	if endpoint := e.config.AdminEndpoint; endpoint != "" {
 		clientOpts = append(clientOpts, option.WithEndpoint(endpoint))
 	}
+	clientOpts = append(clientOpts, e.config.ClientOpts...)
 	return context.Background(), clientOpts, nil
 }
 
@@ -365,5 +369,6 @@ func (e *ProdEnv) newProdClient(config ClientConfig) (*Client, error) {
 		// For DirectPath tests, we need to add an interceptor to check the peer IP.
 		clientOpts = append(clientOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(e.peerInfo))))
 	}
+	clientOpts = append(clientOpts, e.config.ClientOpts...)
 	return NewClientWithConfig(context.Background(), e.config.Project, e.config.Instance, config, clientOpts...)
 }

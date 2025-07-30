@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.17.1...networkconnectivity/v1.18.0) (2025-07-23)
+
+
+### Features
+
+* **networkconnectivity:** Add Network Connectivity Center APIs for Internal Range service ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.17.0...networkconnectivity/v1.17.1) (2025-04-15)
 
 

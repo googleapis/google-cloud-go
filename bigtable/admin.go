@@ -46,7 +46,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const adminAddr = "bigtableadmin.googleapis.com:443"
+// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
+const adminAddr = "bigtableadmin.UNIVERSE_DOMAIN:443"
 const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
 var (
@@ -1166,7 +1167,8 @@ func (ac *AdminClient) AuthorizedViewIAM(table, authorizedView string) *iam.Hand
 	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.authorizedViewPath(table, authorizedView))
 }
 
-const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
+// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
+const instanceAdminAddr = "bigtableadmin.UNIVERSE_DOMAIN:443"
 const mtlsInstanceAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
 // InstanceAdminClient is a client type for performing admin operations on instances.
@@ -3515,8 +3517,8 @@ func (ac *AdminClient) GetSchemaBundle(ctx context.Context, tableID, schemaBundl
 }
 
 // SchemaBundles returns a list of the schema bundles in the table.
-func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]SchemaBundleInfo, error) {
-	bundles := []SchemaBundleInfo{}
+func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]string, error) {
+	names := []string{}
 	prefix := fmt.Sprintf("%s/tables/%s", ac.instancePrefix(), tableID)
 
 	req := &btapb.ListSchemaBundlesRequest{
@@ -3533,17 +3535,9 @@ func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]Sch
 	}
 
 	for _, res := range res.SchemaBundles {
-		sb := SchemaBundleInfo{
-			TableID:        tableID,
-			SchemaBundleID: strings.TrimPrefix(res.Name, prefix+"/schemaBundles/"),
-			Etag:           res.Etag,
-		}
-		if len(res.GetProtoSchema().GetProtoDescriptors()) > 0 {
-			sb.SchemaBundle = res.GetProtoSchema().GetProtoDescriptors()
-		}
-		bundles = append(bundles, sb)
+		names = append(names, strings.TrimPrefix(res.Name, prefix+"/schemaBundles/"))
 	}
-	return bundles, nil
+	return names, nil
 }
 
 // UpdateSchemaBundleConf contains all the information necessary to update or partial update a schema bundle.
