@@ -48,6 +48,7 @@ use (
 	./compute/metadata
 	./confidentialcomputing
 	./config
+	./configdelivery
 	./contactcenterinsights
 	./container
 	./containeranalysis
@@ -103,6 +104,7 @@ use (
 	./iot
 	./kms
 	./language
+	./licensemanager
 	./lifesciences
 	./logging
 	./longrunning

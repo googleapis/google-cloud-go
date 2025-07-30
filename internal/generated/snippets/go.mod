@@ -553,3 +553,7 @@ replace cloud.google.com/go/chronicle => ../../../chronicle
 replace cloud.google.com/go/storagebatchoperations => ../../../storagebatchoperations
 
 replace cloud.google.com/go/maintenance => ../../../maintenance
+
+replace cloud.google.com/go/configdelivery => ../../../configdelivery
+
+replace cloud.google.com/go/licensemanager => ../../../licensemanager
