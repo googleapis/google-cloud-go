@@ -45,6 +45,7 @@ modules:
   - compute
   - confidentialcomputing
   - config
+  - configdelivery
   - contactcenterinsights
   - container
   - containeranalysis
@@ -544,6 +545,12 @@ service-configs:
   - input-directory: google/cloud/config/v1
     service-config: config_v1.yaml
     import-path: cloud.google.com/go/config/apiv1
+  - input-directory: google/cloud/configdelivery/v1
+    service-config: configdelivery_v1.yaml
+    import-path: cloud.google.com/go/configdelivery/apiv1
+  - input-directory: google/cloud/configdelivery/v1beta
+    service-config: configdelivery_v1beta.yaml
+    import-path: cloud.google.com/go/configdelivery/apiv1beta
   - input-directory: google/cloud/contactcenterinsights/v1
     service-config: contactcenterinsights_v1.yaml
     import-path: cloud.google.com/go/contactcenterinsights/apiv1
