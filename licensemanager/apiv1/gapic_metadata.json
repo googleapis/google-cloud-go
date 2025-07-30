@@ -1,0 +1,213 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.licensemanager.v1",
+  "libraryPackage": "cloud.google.com/go/licensemanager/apiv1",
+  "services": {
+    "LicenseManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AggregateUsage": {
+              "methods": [
+                "AggregateUsage"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConfiguration": {
+              "methods": [
+                "CreateConfiguration"
+              ]
+            },
+            "DeactivateConfiguration": {
+              "methods": [
+                "DeactivateConfiguration"
+              ]
+            },
+            "DeleteConfiguration": {
+              "methods": [
+                "DeleteConfiguration"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetConfiguration": {
+              "methods": [
+                "GetConfiguration"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProduct": {
+              "methods": [
+                "GetProduct"
+              ]
+            },
+            "ListConfigurations": {
+              "methods": [
+                "ListConfigurations"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            },
+            "QueryConfigurationLicenseUsage": {
+              "methods": [
+                "QueryConfigurationLicenseUsage"
+              ]
+            },
+            "ReactivateConfiguration": {
+              "methods": [
+                "ReactivateConfiguration"
+              ]
+            },
+            "UpdateConfiguration": {
+              "methods": [
+                "UpdateConfiguration"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AggregateUsage": {
+              "methods": [
+                "AggregateUsage"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConfiguration": {
+              "methods": [
+                "CreateConfiguration"
+              ]
+            },
+            "DeactivateConfiguration": {
+              "methods": [
+                "DeactivateConfiguration"
+              ]
+            },
+            "DeleteConfiguration": {
+              "methods": [
+                "DeleteConfiguration"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetConfiguration": {
+              "methods": [
+                "GetConfiguration"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProduct": {
+              "methods": [
+                "GetProduct"
+              ]
+            },
+            "ListConfigurations": {
+              "methods": [
+                "ListConfigurations"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            },
+            "QueryConfigurationLicenseUsage": {
+              "methods": [
+                "QueryConfigurationLicenseUsage"
+              ]
+            },
+            "ReactivateConfiguration": {
+              "methods": [
+                "ReactivateConfiguration"
+              ]
+            },
+            "UpdateConfiguration": {
+              "methods": [
+                "UpdateConfiguration"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
