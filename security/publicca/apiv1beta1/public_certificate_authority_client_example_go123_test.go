@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package publicca_test
-
-import (
-	publicca "cloud.google.com/go/security/publicca/apiv1beta1"
-)
