@@ -190,3 +190,27 @@ func TestUpdateManifestFile(t *testing.T) {
 		t.Errorf("updateConfigFile() mismatch (-want +got):\n%s", diff)
 	}
 }
+
+func TestDetectModules(t *testing.T) {
+	p := &postProcessor{
+		googleapisDir:  googleapisDir,
+		googleCloudDir: "../..",
+	}
+	p.loadConfig()
+	mods, err := detectModules(p.googleCloudDir, p.config.SkipModuleScanPaths)
+	if err != nil {
+		t.Fatalf("detectModules: %v", err)
+	}
+
+	// Assert that none of the detected modules are present in the SkipModuleScanPaths
+	foundMap := make(map[string]bool)
+	for _, m := range mods {
+		foundMap[m] = true
+	}
+	for _, sk := range p.config.SkipModuleScanPaths {
+		if foundMap[sk] {
+			t.Errorf("detected module %q but it was present in the SkipModuleScanPaths", sk)
+		}
+	}
+
+}

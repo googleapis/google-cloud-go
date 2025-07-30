@@ -3,7 +3,7 @@ module cloud.google.com/go/auth/oauth2adapt
 go 1.23.0
 
 require (
-	cloud.google.com/go/auth v0.16.2
+	cloud.google.com/go/auth v0.16.3
 	github.com/google/go-cmp v0.7.0
 	golang.org/x/oauth2 v0.30.0
 )

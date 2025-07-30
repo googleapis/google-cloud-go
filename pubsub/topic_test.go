@@ -35,6 +35,7 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
 
@@ -373,7 +374,7 @@ func TestPublishTimeout(t *testing.T) {
 	}
 	pubsubpb.RegisterPublisherServer(serv.Gsrv, &alwaysFailPublish{})
 	serv.Start()
-	conn, err := grpc.Dial(serv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(serv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}

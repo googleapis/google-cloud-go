@@ -2,6 +2,18 @@
 
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.21.1...maps/v1.22.0) (2025-07-16)
+
+
+### Features
+
+* **maps/addressvalidation:** Add has_spell_corrected_components field to the Address Validation verdict in the API response ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+
+
+### Documentation
+
+* **maps/addressvalidation:** Update proto field descriptions ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+
 ## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.21.0...maps/v1.21.1) (2025-07-09)
 
 

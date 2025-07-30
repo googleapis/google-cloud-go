@@ -743,6 +743,52 @@
       ]
     },
     {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_InternalUpdateGraphOperation_sync",
+      "title": "spanner InternalUpdateGraphOperation Sample",
+      "description": "InternalUpdateGraphOperation this is an internal API called by Spanner Graph jobs. You should never need\nto call this API directly.",
+      "file": "DatabaseAdminClient/InternalUpdateGraphOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InternalUpdateGraphOperation",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.InternalUpdateGraphOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.InternalUpdateGraphOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*databasepb.InternalUpdateGraphOperationResponse",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "InternalUpdateGraphOperation",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.InternalUpdateGraphOperation",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_ListBackupOperations_sync",
       "title": "spanner ListBackupOperations Sample",
       "description": "ListBackupOperations lists the backup [long-running operations][google.longrunning.Operation] in\nthe given instance. A backup operation has a name of the form\n`projects/<project>/instances/<instance>/backups/<backup>/operations/<operation>`.\nThe long-running operation\n[metadata][google.longrunning.Operation.metadata] field type\n`metadata.type_url` describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations. Operations returned are ordered by\n`operation.metadata.value.progress.start_time` in descending order starting\nfrom the most recently started operation.",

@@ -416,6 +416,45 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 	})
 }
 
+// Test many concurrent reads on the same MultiRangeDownloader to try to detect
+// potential deadlocks.
+func TestIntegration_MRDManyReads(t *testing.T) {
+	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MultiRangeDownloaderManyReads"
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		// Previously 100 ranges here worked in a few seconds, but 1000 caused
+		// a deadlock. After this PR, 1000 also works in under 10s.
+		// 1000 is larger than the size of the buffer for the new ranges
+		// to be added.
+		for i := 0; i < 1000; i++ {
+			reader.Add(io.Discard, 0, 100, func(_ int64, _ int64, err error) {
+				if err != nil {
+					t.Errorf("error in call %v: %v", i, err)
+				}
+			})
+		}
+		reader.Wait()
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
 // TestIntegration_MRDCallbackReturnsDataLength tests if the callback returns the correct data
 // read length or not.
 func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
@@ -1583,13 +1622,15 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 		}
 
 		last5s := []struct {
-			name   string
-			start  int64
-			length int64
+			name      string
+			start     int64
+			length    int64
+			wantStart int64
 		}{
-			{name: "negative offset", start: -5, length: -1},
-			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
-			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
+			{name: "negative offset", start: -5, length: -1, wantStart: 31},
+			{name: "too large negative offset", start: -1000, length: -1, wantStart: 0},
+			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5, wantStart: 31},
+			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1, wantStart: 31},
 		}
 
 		for _, last5 := range last5s {
@@ -1597,14 +1638,14 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				// Test Read and WriteTo.
 				for _, c := range readCases {
 					t.Run(c.desc, func(t *testing.T) {
-						wantBuf := contents[len(contents)-5:]
+						wantBuf := contents[last5.wantStart:]
 						r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
 						if err != nil {
 							t.Fatalf("Failed to make range read: %v", err)
 						}
 						defer r.Close()
 
-						if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+						if got, want := r.Attrs.StartOffset, last5.wantStart; got != want {
 							t.Errorf("StartOffset mismatch, got %d want %d", got, want)
 						}
 
@@ -1612,7 +1653,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 						if err != nil {
 							t.Fatalf("reading object: %v", err)
 						}
-						if got, want := len(gotBuf), 5; got != want {
+						if got, want := len(gotBuf), len(contents)-int(last5.wantStart); got != want {
 							t.Errorf("Body length mismatch, got %d want %d", got, want)
 						} else if diff := cmp.Diff(string(gotBuf), string(wantBuf)); diff != "" {
 							t.Errorf("Content read does not match - got(-),want(+):\n%s", diff)
@@ -5872,6 +5913,7 @@ func TestIntegration_Reader(t *testing.T) {
 			{"-2 offset", -2, -1, 2},
 			{"-object length offset", -objlen, -1, objlen},
 			{"-half of object length offset", -(objlen / 2), -1, objlen / 2},
+			{"-offset above object length", -(2 * objlen), -1, objlen},
 		} {
 			t.Run(r.desc, func(t *testing.T) {
 
@@ -5907,6 +5949,10 @@ func TestIntegration_Reader(t *testing.T) {
 						switch {
 						case r.offset < 0: // The case of reading the last N bytes.
 							start := objlen + r.offset
+							// If negative offset is before the file size we expect the whole file.
+							if start < 0 {
+								start = 0
+							}
 							if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
 								t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
 							}
