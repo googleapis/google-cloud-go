@@ -325,6 +325,7 @@ func (x *SummarizeMaintenancesRequest) GetOrderBy() string {
 	return ""
 }
 
+// Request message for SummarizeMaintenances custom method.
 type SummarizeMaintenancesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1016,6 +1017,7 @@ func (x *GetResourceMaintenanceRequest) GetName() string {
 	return ""
 }
 
+// Stats indicates the type of aggregate and the corresponding aggregates.
 type MaintenanceSummary_Stats struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1074,6 +1076,7 @@ func (x *MaintenanceSummary_Stats) GetAggregates() []*MaintenanceSummary_Aggrega
 	return nil
 }
 
+// Aggregate is a <group, count> pair.
 type MaintenanceSummary_Aggregate struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

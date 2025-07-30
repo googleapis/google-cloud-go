@@ -330,7 +330,7 @@ func toSet(arr []int32) []int32 {
 }
 
 func initConn(ctx context.Context, addr string) (*Subscription, *Client, error) {
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, nil, err
 	}

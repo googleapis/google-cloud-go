@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.1...chat/v0.14.0) (2025-07-23)
+
+
+### Features
+
+* **chat:** Exposing 1p integration message content (drive, calendar, huddle, meet chips) ([#12589](https://github.com/googleapis/google-cloud-go/issues/12589)) ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
+
+### Documentation
+
+* **chat:** Update reference documentation for annotations. Introduce new richlink metadata types ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.0...chat/v0.13.1) (2025-06-04)
 
 

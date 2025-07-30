@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.6.0...managedkafka/v0.7.0) (2025-07-09)
+
+
+### Features
+
+* **managedkafka:** Update libraries and clients for Managed Kafka ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.5.2...managedkafka/v0.6.0) (2025-05-29)
 
 

@@ -38,4 +38,16 @@ func TestLoadConfig(t *testing.T) {
 	if got, want := li.ReleaseLevel, "preview"; got != want {
 		t.Errorf("got %v, want %v", got, want)
 	}
+
+	wantSkipPath := "bigquery/v2"
+	found := false
+	for _, p := range p.config.SkipModuleScanPaths {
+		if p == wantSkipPath {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("entry %q not found in SkipModuleScanPaths", wantSkipPath)
+	}
 }

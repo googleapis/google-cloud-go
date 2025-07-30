@@ -1,5 +1,12 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.22.0...retail/v1.23.0) (2025-07-23)
+
+
+### Features
+
+* **retail:** Add experiment_id in the SearchRequest proto ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.21.0...retail/v1.22.0) (2025-06-25)
 
 

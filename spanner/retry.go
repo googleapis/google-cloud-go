@@ -59,7 +59,8 @@ func onCodes(bo gax.Backoff, cc ...codes.Code) gax.Retryer {
 // Retry returns the retry delay returned by Cloud Spanner if that is present.
 // Otherwise it returns the retry delay calculated by the generic gax Retryer.
 func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
-	if status.Code(err) == codes.Internal &&
+	errCode := status.Code(err)
+	if errCode == codes.Internal &&
 		!strings.Contains(err.Error(), "stream terminated by RST_STREAM") &&
 		// See b/25451313.
 		!strings.Contains(err.Error(), "HTTP/2 error code: INTERNAL_ERROR") &&
@@ -74,7 +75,14 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 	if !shouldRetry {
 		return 0, false
 	}
-	if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+
+	serverDelay, hasServerDelay := ExtractRetryDelay(err)
+	// Retry ResourceExhausted error only if there's a server delay in the trailer
+	if errCode == codes.ResourceExhausted && (!hasServerDelay || serverDelay <= 0) {
+		return 0, false
+	}
+
+	if hasServerDelay {
 		delay = serverDelay
 	}
 	return delay, true

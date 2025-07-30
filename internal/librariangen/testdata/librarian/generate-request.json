@@ -1,0 +1,22 @@
+{
+  "id": "google-cloud-chronicle",
+  "apis": [
+    {
+      "path": "google/cloud/chronicle/v1",
+      "service_config": "chronicle_v1.yaml"
+    }
+  ],
+  "source_paths": [
+    "chronicle",
+    "internal/generated/snippets/chronicle"
+  ],
+  "preserve_regex": [
+    "chronicle/aliasshim/aliasshim.go",
+    "chronicle/CHANGES.md",
+    "chronicle/internal/version.go"
+  ],
+  "remove_regex": [
+    "chronicle",
+    "internal/generated/snippets/chronicle"
+  ]
+}

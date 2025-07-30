@@ -49,7 +49,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const prodAddr = "bigtable.googleapis.com:443"
+// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
+const prodAddr = "bigtable.UNIVERSE_DOMAIN:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 const featureFlagsHeaderKey = "bigtable-features"
 const queryExpiredViolationType = "PREPARED_QUERY_EXPIRED"

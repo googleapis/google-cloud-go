@@ -124,6 +124,7 @@ modules:
   - privatecatalog
   - privilegedaccessmanager
   - profiler
+  - pubsub/v2
   - pubsub
   - pubsublite
   - rapidmigrationassessment
@@ -321,6 +322,9 @@ service-configs:
   - input-directory: google/apps/events/subscriptions/v1
     service-config: workspaceevents_v1.yaml
     import-path: cloud.google.com/go/apps/events/subscriptions/apiv1
+  - input-directory: google/apps/events/subscriptions/v1beta
+    service-config: workspaceevents_v1beta.yaml
+    import-path: cloud.google.com/go/apps/events/subscriptions/apiv1beta
   - input-directory: google/apps/meet/v2
     service-config: meet_v2.yaml
     import-path: cloud.google.com/go/apps/meet/apiv2
@@ -1260,3 +1264,26 @@ service-configs:
   - input-directory: google/cloud/video/stitcher/v1
     service-config: videostitcher_v1.yaml
     import-path: cloud.google.com/go/video/stitcher/apiv1
+
+skip-module-scan-paths:
+  # ignore the root module
+  - .
+  # individually released modules
+  - auth
+  - auth/oauth2adapt
+  - bigquery
+  - bigquery/v2
+  - bigtable
+  - datastore
+  - errorreporting
+  - firestore
+  - logging
+  - profiler
+  - pubsub/v2
+  - pubsub
+  - pubsublite
+  - spanner
+  - storage
+  - vertexai
+  # unreleased modules
+  - spanner/test/opentelemetry/test
