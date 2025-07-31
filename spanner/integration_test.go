@@ -411,7 +411,7 @@ func getInstanceConfig() string {
 }
 
 func getMultiplexEnableFlag() bool {
-	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true"
+	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
 }
 
 const (

@@ -551,21 +551,23 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if isAFEBuiltInMetricEnabled {
 		md.Append(afeMetricHeader, "true")
 	}
-
-	if isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS")); isMultiplexed != "" && !config.enableMultiplexSession {
+	config.enableMultiplexSession = true
+	if isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS")); isMultiplexed != "" {
 		config.enableMultiplexSession, err = strconv.ParseBool(isMultiplexed)
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
 		}
 	}
-	if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" && !config.enableMultiplexedSessionForRW {
+	config.enableMultiplexedSessionForRW = config.enableMultiplexSession
+	if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" {
 		config.enableMultiplexedSessionForRW, err = strconv.ParseBool(isMultiplexForRW)
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
 		}
 		config.enableMultiplexedSessionForRW = config.enableMultiplexedSessionForRW && config.SessionPoolConfig.enableMultiplexSession
 	}
-	if isMultiplexForPartitionOps := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); isMultiplexForPartitionOps != "" && !config.enableMultiplexedSessionForPartitionedOps {
+	config.enableMultiplexedSessionForPartitionedOps = config.enableMultiplexSession
+	if isMultiplexForPartitionOps := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); isMultiplexForPartitionOps != "" {
 		config.enableMultiplexedSessionForPartitionedOps, err = strconv.ParseBool(isMultiplexForPartitionOps)
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS must be either true or false")
