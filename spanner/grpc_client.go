@@ -192,6 +192,7 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
 		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
 	}
 	return client, err
 }
@@ -227,6 +228,7 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
 		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
 	}
 	return client, err
 }
@@ -290,6 +292,7 @@ func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.Batch
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
 		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
 	}
 	return client, err
 }
