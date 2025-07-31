@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.2.5...privilegedaccessmanager/v0.3.0) (2025-07-31)
+
+
+### Features
+
+* **privilegedaccessmanager:** Introducing new Grant states for Withdrawal operation ([#12626](https://github.com/googleapis/google-cloud-go/issues/12626)) ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.2.4...privilegedaccessmanager/v0.2.5) (2025-04-15)
 
 

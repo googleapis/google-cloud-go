@@ -1,6 +1,24 @@
 # Changes
 
 
+## [1.96.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.95.0...aiplatform/v1.96.0) (2025-07-31)
+
+
+### Features
+
+* **aiplatform:** Add `DeploymentStage` for CreateEndpointOperationMetadata and DeployModelOperationMetadata ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+* **aiplatform:** Add `DeploymentStage` for CreateEndpointOperationMetadata and DeployModelOperationMetadata ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+* **aiplatform:** Add enable_datapoint_upsert_logging to google.cloud.aiplatform.v1.DeployedIndex ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+* **aiplatform:** Add enable_datapoint_upsert_logging to google.cloud.aiplatform.v1.DeployedIndex ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+* **aiplatform:** Added the ability to use the Model Armor service for content sanitization ([#12623](https://github.com/googleapis/google-cloud-go/issues/12623)) ([768079e](https://github.com/googleapis/google-cloud-go/commit/768079ef67c0fa68e57f60249cc6dbe774631df1))
+* **aiplatform:** Adds DWS and spot VM feature support to custom batch predictions 2.0 ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
+
+### Documentation
+
+* **aiplatform:** Update MutateDeployedModel documentation ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+* **aiplatform:** Update MutateDeployedModel documentation ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+
 ## [1.95.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.94.0...aiplatform/v1.95.0) (2025-07-23)
 
 

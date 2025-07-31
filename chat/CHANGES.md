@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.14.0...chat/v0.15.0) (2025-07-31)
+
+
+### Features
+
+* **chat:** Addition of app auth support for chat api ([#12611](https://github.com/googleapis/google-cloud-go/issues/12611)) ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+
+### Documentation
+
+* **chat:** Update reference documentation for createSpace,updateSpace,deleteSpace,createMembership,updateMembership,deleteMembership and the newly added field -customer- in space.proto ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
 ## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.1...chat/v0.14.0) (2025-07-23)
 
 
