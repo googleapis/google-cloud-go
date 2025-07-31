@@ -717,16 +717,7 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 
 		statusCode, _ := status.FromError(err)
 		mt.currOp.currAttempt.setStatus(statusCode.Code().String())
-
-		isDirectPathUsed := false
-		if peerInfo.Addr != nil {
-			remoteIP := peerInfo.Addr.String()
-			if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
-				isDirectPathUsed = true
-			}
-		}
-
-		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+		mt.currOp.currAttempt.setDirectPathUsed(peer.NewContext(ctx, peerInfo))
 		metrics := parseServerTimingHeader(md)
 		mt.currOp.currAttempt.setServerTimingMetrics(metrics)
 		recordAttemptCompletion(mt)
@@ -749,12 +740,10 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 			return nil, err
 		}
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-		if ok {
-			if mt != nil {
-				mt.method = method
-				if strings.HasPrefix(cc.Target(), "google-c2p") {
-					mt.currOp.setDirectPathEnabled(true)
-				}
+		if ok && mt != nil {
+			mt.method = method
+			if strings.HasPrefix(cc.Target(), "google-c2p") {
+				mt.currOp.setDirectPathEnabled(true)
 			}
 		}
 		return s, nil
