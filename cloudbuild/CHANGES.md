@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.3](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.2...cloudbuild/v1.22.3) (2025-07-31)
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Updated Private Service Connect IP ranges when route_all_traffic is false ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
 ## [1.22.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.1...cloudbuild/v1.22.2) (2025-04-15)
 
 

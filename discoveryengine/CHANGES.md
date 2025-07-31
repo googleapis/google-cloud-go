@@ -2,6 +2,34 @@
 
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.19.0...discoveryengine/v1.20.0) (2025-07-31)
+
+
+### Features
+
+* **discoveryengine:** Add SessionService ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** Add SessionService ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
+
+### Documentation
+
+* **discoveryengine:** A comment for field `answer` in message `.google.cloud.discoveryengine.v1alpha.Session` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `answer` in message `.google.cloud.discoveryengine.v1beta.Session` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `filter` in message `.google.cloud.discoveryengine.v1alpha.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `filter` in message `.google.cloud.discoveryengine.v1beta.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `name` in message `.google.cloud.discoveryengine.v1alpha.DeleteSessionRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `name` in message `.google.cloud.discoveryengine.v1alpha.GetSessionRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `order_by` in message `.google.cloud.discoveryengine.v1alpha.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `order_by` in message `.google.cloud.discoveryengine.v1beta.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `parent` in message `.google.cloud.discoveryengine.v1alpha.CreateSessionRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `parent` in message `.google.cloud.discoveryengine.v1alpha.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `query_id` in message `.google.cloud.discoveryengine.v1alpha.Query` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `query_id` in message `.google.cloud.discoveryengine.v1beta.Query` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `query` in message `.google.cloud.discoveryengine.v1alpha.Session` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `query` in message `.google.cloud.discoveryengine.v1beta.Session` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `session` in message `.google.cloud.discoveryengine.v1alpha.SearchRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `session` in message `.google.cloud.discoveryengine.v1beta.SearchRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.18.0...discoveryengine/v1.19.0) (2025-07-23)
 
 
