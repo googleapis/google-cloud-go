@@ -45,6 +45,7 @@ modules:
   - compute
   - confidentialcomputing
   - config
+  - configdelivery
   - contactcenterinsights
   - container
   - containeranalysis
@@ -88,6 +89,7 @@ modules:
   - iot
   - kms
   - language
+  - licensemanager
   - lifesciences
   - logging
   - longrunning
@@ -543,6 +545,12 @@ service-configs:
   - input-directory: google/cloud/config/v1
     service-config: config_v1.yaml
     import-path: cloud.google.com/go/config/apiv1
+  - input-directory: google/cloud/configdelivery/v1
+    service-config: configdelivery_v1.yaml
+    import-path: cloud.google.com/go/configdelivery/apiv1
+  - input-directory: google/cloud/configdelivery/v1beta
+    service-config: configdelivery_v1beta.yaml
+    import-path: cloud.google.com/go/configdelivery/apiv1beta
   - input-directory: google/cloud/contactcenterinsights/v1
     service-config: contactcenterinsights_v1.yaml
     import-path: cloud.google.com/go/contactcenterinsights/apiv1
@@ -697,6 +705,9 @@ service-configs:
   - input-directory: google/cloud/language/v2
     service-config: language_v2.yaml
     import-path: cloud.google.com/go/language/apiv2
+  - input-directory: google/cloud/licensemanager/v1
+    service-config: licensemanager_v1.yaml
+    import-path: cloud.google.com/go/licensemanager/apiv1
   - input-directory: google/cloud/lifesciences/v2beta
     service-config: lifesciences_v2beta.yaml
     import-path: cloud.google.com/go/lifesciences/apiv2beta
@@ -1272,6 +1283,7 @@ skip-module-scan-paths:
   - firestore
   - logging
   - profiler
+  - pubsub/v2
   - pubsub
   - pubsublite
   - spanner

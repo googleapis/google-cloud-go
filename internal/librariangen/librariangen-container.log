@@ -1,0 +1,125 @@
+2025/07/25 20:45:21 INFO librariangen invoked args="[/usr/local/bin/librariangen generate --source=/source --librarian=/librarian --output=/output]"
+2025/07/25 20:45:21 INFO generate command started
+2025/07/25 20:45:21 INFO reading generate request path=/librarian/generate-request.json
+2025/07/25 20:45:21 INFO successfully unmarshalled request library_id=google-cloud-chronicle
+2025/07/25 20:45:21 INFO processing api service_dir=/source/google/cloud/chronicle/v1
+2025/07/25 20:45:21 INFO bazel config loaded conf="&{protoImportPath:cloud.google.com/go/chronicle/apiv1/chroniclepb grpcServiceConfig:chronicle_v1_grpc_service_config.json gapicImportPath:cloud.google.com/go/chronicle/apiv1;chronicle metadata:true releaseLevel:beta restNumericEnums:true serviceYAML:chronicle_v1.yaml transport:grpc+rest diregapic:false hasGoGRPC:true}"
+2025/07/25 20:45:21 INFO running command command="protoc --experimental_allow_proto3_optional --go_out=/output --go-grpc_out=/output --go_gapic_out=/output --go_gapic_opt=go-gapic-package=cloud.google.com/go/chronicle/apiv1;chronicle --go_gapic_opt=api-service-config=/source/google/cloud/chronicle/v1/chronicle_v1.yaml --go_gapic_opt=grpc-service-config=/source/google/cloud/chronicle/v1/chronicle_v1_grpc_service_config.json --go_gapic_opt=transport=grpc+rest --go_gapic_opt=release-level=beta --go_gapic_opt=metadata --go_gapic_opt=rest-numeric-enums -I=/source /source/google/cloud/chronicle/v1/data_access_control.proto /source/google/cloud/chronicle/v1/entity.proto /source/google/cloud/chronicle/v1/instance.proto /source/google/cloud/chronicle/v1/reference_list.proto /source/google/cloud/chronicle/v1/rule.proto" dir=/output
+2025/07/25 20:45:21 INFO flattening output directory dir=/output
+2025/07/25 20:45:21 INFO moving file from=/output/cloud.google.com/go/chronicle to=/output/chronicle
+2025/07/25 20:45:21 INFO moving file from=/output/cloud.google.com/go/internal to=/output/internal
+2025/07/25 20:45:21 INFO using module path from final API importpath=cloud.google.com/go/chronicle/apiv1
+2025/07/25 20:45:21 INFO post-processor enabled
+2025/07/25 20:45:21 INFO reading generate request path=/librarian/generate-request.json
+2025/07/25 20:45:21 INFO successfully unmarshalled request library_id=google-cloud-chronicle
+2025/07/25 20:45:21 INFO starting post-processing directory=/output/chronicle new_module=true
+2025/07/25 20:45:21 INFO running goimports directory=/output/chronicle
+2025/07/25 20:45:21 INFO running command command="goimports -w ." dir=/output/chronicle
+2025/07/25 20:45:22 INFO initializing new module
+2025/07/25 20:45:22 INFO running go mod init directory=/output/chronicle modulePath=cloud.google.com/go/chronicle
+2025/07/25 20:45:22 INFO running command command="go mod init cloud.google.com/go/chronicle" dir=/output/chronicle
+2025/07/25 20:45:22 INFO command output output="go: creating new go.mod: module cloud.google.com/go/chronicle\ngo: to add module requirements and sums:\n\tgo mod tidy\n"
+2025/07/25 20:45:22 INFO creating file path=/output/chronicle/CHANGES.md
+2025/07/25 20:45:22 INFO creating file path=/output/chronicle/internal/version.go
+2025/07/25 20:45:22 INFO creating file path=/output/chronicle/README.md
+2025/07/25 20:45:22 INFO post-processing finished successfully
+2025/07/25 20:45:22 INFO generate command finished
+2025/07/25 20:45:22 INFO librariangen finished successfully
+--- Git Reset Summary ---
+HEAD is now at 7ce88633f9 chore(main): release storage 1.56.0 (#12394)
+--- Git Status Summary ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   chronicle/CHANGES.md
+	modified:   chronicle/apiv1/chroniclepb/data_access_control.pb.go
+	modified:   chronicle/apiv1/chroniclepb/data_access_control_grpc.pb.go
+	modified:   chronicle/apiv1/chroniclepb/entity.pb.go
+	modified:   chronicle/apiv1/chroniclepb/entity_grpc.pb.go
+	modified:   chronicle/apiv1/chroniclepb/instance.pb.go
+	modified:   chronicle/apiv1/chroniclepb/instance_grpc.pb.go
+	modified:   chronicle/apiv1/chroniclepb/reference_list.pb.go
+	modified:   chronicle/apiv1/chroniclepb/reference_list_grpc.pb.go
+	modified:   chronicle/apiv1/chroniclepb/rule.pb.go
+	modified:   chronicle/apiv1/chroniclepb/rule_grpc.pb.go
+	deleted:    chronicle/apiv1/version.go
+	modified:   chronicle/go.mod
+	deleted:    chronicle/go.sum
+	modified:   chronicle/internal/version.go
+
+
+--- Diff for chronicle/README.md ---
+
+--- Diff for chronicle/CHANGES.md ---
+diff --git a/chronicle/CHANGES.md b/chronicle/CHANGES.md
+index 4da5b8fe7f..b671f0bbcd 100644
+--- a/chronicle/CHANGES.md
++++ b/chronicle/CHANGES.md
+@@ -1,18 +1 @@
+-# Changelog
+-
+-## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/chronicle/v0.1.0...chronicle/v0.1.1) (2025-05-21)
+-
+-
+-### Bug Fixes
+-
+-* **chronicle:** A new packaging option `com.google.cloud.chronicle.v1` for `java_package` is added ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+-* **chronicle:** An existing packaging option `google.cloud.chronicle.v1` for `java_package` is removed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+-
+-## 0.1.0 (2025-04-30)
+-
+-
+-### Features
+-
+-* **chronicle:** New clients ([#12081](https://github.com/googleapis/google-cloud-go/issues/12081)) ([8f38e18](https://github.com/googleapis/google-cloud-go/commit/8f38e18f030f54756e5d556e5c3cbc6146bfe149))
+-
+-## Changes
++# Changes
+
+--- Diff for chronicle/go.mod ---
+diff --git a/chronicle/go.mod b/chronicle/go.mod
+index 612a62e4c5..a4562343ff 100644
+--- a/chronicle/go.mod
++++ b/chronicle/go.mod
+@@ -1,39 +1,3 @@
+ module cloud.google.com/go/chronicle
+ 
+ go 1.23.0
+-
+-require (
+-	cloud.google.com/go/longrunning v0.6.7
+-	github.com/googleapis/gax-go/v2 v2.15.0
+-	google.golang.org/api v0.243.0
+-	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
+-	google.golang.org/genproto/googleapis/api v0.0.0-20250721164621-a45f3dfb1074
+-	google.golang.org/grpc v1.74.2
+-	google.golang.org/protobuf v1.36.6
+-)
+-
+-require (
+-	cloud.google.com/go v0.120.1 // indirect
+-	cloud.google.com/go/auth v0.16.3 // indirect
+-	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
+-	cloud.google.com/go/compute/metadata v0.7.0 // indirect
+-	github.com/felixge/httpsnoop v1.0.4 // indirect
+-	github.com/go-logr/logr v1.4.3 // indirect
+-	github.com/go-logr/stdr v1.2.2 // indirect
+-	github.com/google/s2a-go v0.1.9 // indirect
+-	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
+-	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
+-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0 // indirect
+-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0 // indirect
+-	go.opentelemetry.io/otel v1.36.0 // indirect
+-	go.opentelemetry.io/otel/metric v1.36.0 // indirect
+-	go.opentelemetry.io/otel/trace v1.36.0 // indirect
+-	golang.org/x/crypto v0.40.0 // indirect
+-	golang.org/x/net v0.42.0 // indirect
+-	golang.org/x/oauth2 v0.30.0 // indirect
+-	golang.org/x/sync v0.16.0 // indirect
+-	golang.org/x/sys v0.34.0 // indirect
+-	golang.org/x/text v0.27.0 // indirect
+-	golang.org/x/time v0.12.0 // indirect
+-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250715232539-7130f93afb79 // indirect
+-)

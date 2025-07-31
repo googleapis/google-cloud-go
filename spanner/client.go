@@ -390,6 +390,8 @@ type openTelemetryConfig struct {
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
 	existing, ok := metadata.FromOutgoingContext(ctx)
 	if ok {
+		// Make sure that we only send one resource header.
+		existing.Delete(resourcePrefixHeader)
 		md = metadata.Join(existing, md)
 	}
 	if !disableRouteToLeader {

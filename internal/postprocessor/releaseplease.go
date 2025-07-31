@@ -129,7 +129,7 @@ func detectModules(dir string, skipPaths []string) ([]string, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if !d.IsDir() && d.Name() == "go.mod" && !strings.Contains(path, "internal") && skipMap[filepath.Dir(path)] {
+		if !d.IsDir() && d.Name() == "go.mod" && !strings.Contains(path, "internal") && !skipMap[filepath.Dir(path)] {
 			mods = append(mods, filepath.Dir(path))
 		}
 		return nil

@@ -1772,6 +1772,9 @@ func (c *conversationalSearchRESTClient) GetSession(ctx context.Context, req *di
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetIncludeAnswerDetails() {
+		params.Add("includeAnswerDetails", fmt.Sprintf("%v", req.GetIncludeAnswerDetails()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

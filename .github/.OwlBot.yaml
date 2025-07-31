@@ -93,6 +93,8 @@ deep-remove-regex:
   - /confidentialcomputing/apiv1
   - /confidentialcomputing/apiv1alpha1
   - /config/apiv1/
+  - /configdelivery/apiv1/
+  - /configdelivery/apiv1beta/
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
   - /containeranalysis/apiv1beta1/
@@ -238,6 +240,9 @@ deep-remove-regex:
   - /internal/generated/snippets/compute/apiv1beta
   - /internal/generated/snippets/confidentialcomputing/apiv1
   - /internal/generated/snippets/confidentialcomputing/apiv1alpha1
+  - /internal/generated/snippets/config/apiv1/
+  - /internal/generated/snippets/configdelivery/apiv1/
+  - /internal/generated/snippets/configdelivery/apiv1beta/
   - /internal/generated/snippets/contactcenterinsights/apiv1/
   - /internal/generated/snippets/container/apiv1/
   - /internal/generated/snippets/containeranalysis/apiv1beta1/
@@ -302,6 +307,7 @@ deep-remove-regex:
   - /internal/generated/snippets/language/apiv1/
   - /internal/generated/snippets/language/apiv1beta2/
   - /internal/generated/snippets/language/apiv2/
+  - /internal/generated/snippets/licensemanager/apiv1/
   - /internal/generated/snippets/lifesciences/apiv2beta/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
@@ -461,6 +467,7 @@ deep-remove-regex:
   - /language/apiv1/
   - /language/apiv1beta2/
   - /language/apiv2/
+  - /licensemanager/apiv1/
   - /lifesciences/apiv2beta/
   - /logging/apiv2/
   - /longrunning/autogen/
@@ -845,6 +852,10 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/config/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/configdelivery/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/configdelivery/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/container/v1/cloud.google.com/go
@@ -977,6 +988,8 @@ deep-copy-regex:
   - source: /google/cloud/language/v1beta2/cloud.google.com/go
     dest: /
   - source: /google/cloud/language/v2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/licensemanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/lifesciences/v2beta/cloud.google.com/go
     dest: /

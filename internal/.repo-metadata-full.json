@@ -939,6 +939,26 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/configdelivery/apiv1": {
+    "api_shortname": "configdelivery",
+    "distribution_name": "cloud.google.com/go/configdelivery/apiv1",
+    "description": "Config Delivery API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/configdelivery/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/configdelivery/apiv1beta": {
+    "api_shortname": "configdelivery",
+    "distribution_name": "cloud.google.com/go/configdelivery/apiv1beta",
+    "description": "Config Delivery API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/configdelivery/latest/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/contactcenterinsights/apiv1": {
     "api_shortname": "contactcenterinsights",
     "distribution_name": "cloud.google.com/go/contactcenterinsights/apiv1",
@@ -1639,6 +1659,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/licensemanager/apiv1": {
+    "api_shortname": "licensemanager",
+    "distribution_name": "cloud.google.com/go/licensemanager/apiv1",
+    "description": "License Manager API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/licensemanager/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/lifesciences/apiv2beta": {
     "api_shortname": "lifesciences",
     "distribution_name": "cloud.google.com/go/lifesciences/apiv2beta",
@@ -2249,23 +2279,13 @@
     "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
-  "cloud.google.com/go/pubsub/v2": {
-    "api_shortname": "pubsub",
-    "distribution_name": "cloud.google.com/go/pubsub/v2",
-    "description": "Cloud Pub/Sub API",
-    "language": "go",
-    "client_library_type": "manual",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest/v2",
-    "release_level": "stable",
-    "library_type": "GAPIC_MANUAL"
-  },
   "cloud.google.com/go/pubsub/v2/apiv1": {
     "api_shortname": "pubsub",
     "distribution_name": "cloud.google.com/go/pubsub/v2/apiv1",
     "description": "Cloud Pub/Sub API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest/v2/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/v2/latest/apiv1",
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
