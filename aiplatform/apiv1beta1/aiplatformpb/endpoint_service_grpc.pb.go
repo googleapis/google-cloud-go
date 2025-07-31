@@ -69,9 +69,9 @@ type EndpointServiceClient interface {
 	// freeing all resources it's using.
 	UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an existing deployed model. Updatable fields include
-	// `min_replica_count`, `max_replica_count`, `autoscaling_metric_specs`,
-	// `disable_container_logging` (v1 only), and `enable_container_logging`
-	// (v1beta1 only).
+	// `min_replica_count`, `max_replica_count`, `required_replica_count`,
+	// `autoscaling_metric_specs`, `disable_container_logging` (v1 only), and
+	// `enable_container_logging` (v1beta1 only).
 	MutateDeployedModel(ctx context.Context, in *MutateDeployedModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Sets (creates or updates) configs of publisher models. For example, sets
 	// the request/response logging config.
@@ -209,9 +209,9 @@ type EndpointServiceServer interface {
 	// freeing all resources it's using.
 	UndeployModel(context.Context, *UndeployModelRequest) (*longrunningpb.Operation, error)
 	// Updates an existing deployed model. Updatable fields include
-	// `min_replica_count`, `max_replica_count`, `autoscaling_metric_specs`,
-	// `disable_container_logging` (v1 only), and `enable_container_logging`
-	// (v1beta1 only).
+	// `min_replica_count`, `max_replica_count`, `required_replica_count`,
+	// `autoscaling_metric_specs`, `disable_container_logging` (v1 only), and
+	// `enable_container_logging` (v1beta1 only).
 	MutateDeployedModel(context.Context, *MutateDeployedModelRequest) (*longrunningpb.Operation, error)
 	// Sets (creates or updates) configs of publisher models. For example, sets
 	// the request/response logging config.
