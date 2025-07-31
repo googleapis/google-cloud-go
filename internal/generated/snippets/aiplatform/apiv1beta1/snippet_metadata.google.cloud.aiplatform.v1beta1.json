@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.95.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -2768,7 +2768,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_EndpointService_MutateDeployedModel_sync",
       "title": "aiplatform MutateDeployedModel Sample",
-      "description": "MutateDeployedModel updates an existing deployed model. Updatable fields include\n`min_replica_count`, `max_replica_count`, `autoscaling_metric_specs`,\n`disable_container_logging` (v1 only), and `enable_container_logging`\n(v1beta1 only).",
+      "description": "MutateDeployedModel updates an existing deployed model. Updatable fields include\n`min_replica_count`, `max_replica_count`, `required_replica_count`,\n`autoscaling_metric_specs`, `disable_container_logging` (v1 only), and\n`enable_container_logging` (v1beta1 only).",
       "file": "EndpointClient/MutateDeployedModel/main.go",
       "language": "GO",
       "clientMethod": {
