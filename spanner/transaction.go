@@ -28,6 +28,8 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
+	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
+	ottrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -682,6 +684,18 @@ func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sp
 func (t *txReadOnly) query(ctx context.Context, statement Statement, options QueryOptions) (ri *RowIterator) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.Query")
 	defer func() { trace.EndSpan(ctx, ri.err) }()
+	
+	span := ottrace.SpanFromContext(ctx)
+	if span == nil {
+		return
+	}
+
+	span.SetAttributes(semconv.DBSystemNameGCPSpanner)
+
+	if statement.SQL != "" {
+		span.SetAttributes(semconv.DBQueryText(statement.SQL))
+	}
+	
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
 	if err != nil {
 		return &RowIterator{
