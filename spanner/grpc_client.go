@@ -25,6 +25,8 @@ import (
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
@@ -171,7 +173,53 @@ func (g *grpcSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.De
 	return err
 }
 
+// setSpanAttributes dynamically sets span attributes based on the request type.
+func setSpanAttributes[T any](span oteltrace.Span, req T) {
+	if !span.IsRecording() {
+		return
+	}
+
+	var attrs []attribute.KeyValue
+
+	if r, ok := any(req).(interface {
+		GetRequestOptions() *spannerpb.RequestOptions
+	}); ok {
+		if tag := r.GetRequestOptions().GetTransactionTag(); tag != "" {
+			attrs = append(attrs, attribute.String("transaction.tag", tag))
+		}
+		if tag := r.GetRequestOptions().GetRequestTag(); tag != "" {
+			attrs = append(attrs, attribute.String("statement.tag", tag))
+		}
+	}
+
+	if r, ok := any(req).(interface{ GetSql() string }); ok {
+		if sql := r.GetSql(); sql != "" {
+			attrs = append(attrs, attribute.String("db.statement", sql))
+		}
+	} else if r, ok := any(req).(interface {
+		GetStatements() []*spannerpb.ExecuteBatchDmlRequest_Statement
+	}); ok {
+		if stmts := r.GetStatements(); len(stmts) > 0 {
+			sqls := make([]string, len(stmts))
+			for i, stmt := range stmts {
+				sqls[i] = stmt.GetSql()
+			}
+			attrs = append(attrs, attribute.StringSlice("db.statement", sqls))
+		}
+	}
+
+	if r, ok := any(req).(interface{ GetTable() string }); ok {
+		if table := r.GetTable(); table != "" {
+			attrs = append(attrs, attribute.String("db.table", table))
+		}
+	}
+
+	span.SetAttributes(attrs...)
+}
+
 func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
@@ -182,6 +230,8 @@ func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.Execu
 }
 
 func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	// Note: This method does not add g.optsWithNextRequestID to inject x-goog-spanner-request-id
 	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
 	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
@@ -198,6 +248,8 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 }
 
 func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
@@ -208,6 +260,8 @@ func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.
 }
 
 func (g *grpcSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
@@ -220,6 +274,8 @@ func (g *grpcSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest
 func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
 	// Note: This method does not add g.optsWithNextRequestID, as it is already
 	// manually added when creating Stream iterators for StreamingRead.
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	client, err := g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 	if !ok {
@@ -244,6 +300,8 @@ func (g *grpcSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb
 }
 
 func (g *grpcSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
@@ -264,6 +322,8 @@ func (g *grpcSpannerClient) Rollback(ctx context.Context, req *spannerpb.Rollbac
 }
 
 func (g *grpcSpannerClient) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
@@ -274,6 +334,8 @@ func (g *grpcSpannerClient) PartitionQuery(ctx context.Context, req *spannerpb.P
 }
 
 func (g *grpcSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
@@ -284,6 +346,8 @@ func (g *grpcSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.Pa
 }
 
 func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	client, err := g.raw.BatchWrite(peer.NewContext(ctx, &peer.Peer{}), req, g.optsWithNextRequestID(opts)...)
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 	if !ok {
