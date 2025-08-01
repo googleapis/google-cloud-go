@@ -32,6 +32,7 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/option"
+
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -269,8 +270,8 @@ func (sc *sessionClient) executeBatchCreateSessions(client spannerClient, create
 	defer sc.waitWorkers.Done()
 	ctx, cancel := context.WithTimeout(context.Background(), sc.batchTimeout)
 	defer cancel()
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchCreateSessions")
-	defer func() { trace.EndSpan(ctx, nil) }()
+	ctx, _ = startSpan(ctx, "BatchCreateSessions", sc.otConfig.commonTraceStartOptions...)
+	defer func() { endSpan(ctx, nil) }()
 	trace.TracePrintf(ctx, nil, "Creating a batch of %d sessions", createCount)
 
 	remainingCreateCount := createCount
@@ -341,8 +342,8 @@ func (sc *sessionClient) executeBatchCreateSessions(client spannerClient, create
 }
 
 func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, client spannerClient, md metadata.MD, consumer sessionConsumer) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.CreateSession")
-	defer func() { trace.EndSpan(ctx, nil) }()
+	ctx, _ = startSpan(ctx, "CreateSession", sc.otConfig.commonTraceStartOptions...)
+	defer func() { endSpan(ctx, nil) }()
 	trace.TracePrintf(ctx, nil, "Creating a multiplexed session")
 	sc.mu.Lock()
 	closed := sc.closed
