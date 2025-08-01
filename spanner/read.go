@@ -288,9 +288,14 @@ func (r *RowIterator) Stop() {
 		} else {
 			defer trace.EndSpan(r.streamd.ctx, nil)
 		}
-	}
-	if r.cancel != nil {
-		r.cancel()
+		// if stream is ended, we should not cancel the context
+		if r.streamd.state != ended && r.cancel != nil {
+			r.cancel()
+		}
+	} else {
+		if r.cancel != nil {
+			r.cancel()
+		}
 	}
 	if r.release != nil {
 		r.release(r.err)
@@ -385,6 +390,7 @@ const (
 	queueingUnretryable                                    // 2
 	aborted                                                // 3
 	finished                                               // 4
+	ended                                                  // 5
 )
 
 // resumableStreamDecoder provides a resumable interface for receiving
@@ -651,7 +657,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			// to caller.
 			d.q.clear()
 			return false
-		case finished:
+		case finished, ended:
 			// If query has finished, check if there are still buffered messages.
 			d.reqIDInjector = nil
 			if d.q.empty() {
@@ -677,14 +683,14 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
-			go func(s streamingReceiver) {
+			go func(s streamingReceiver, cancel func()) {
 				_, _ = s.Recv()
 				// Cancel the context after receiving trailers
-				if d.cancel != nil {
-					d.cancel()
+				if cancel != nil {
+					cancel()
 				}
-			}(d.stream)
-			d.changeState(finished)
+			}(d.stream, d.cancel)
+			d.changeState(ended)
 			return
 		}
 		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
