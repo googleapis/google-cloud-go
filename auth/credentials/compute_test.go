@@ -83,6 +83,7 @@ func TestComputeTokenProvider(t *testing.T) {
 				TokenBindingType: tc.tokenBindingType,
 			},
 				metadata.NewClient(nil),
+				nil,
 			)
 			tok, err := tp.Token(context.Background())
 			if err != nil {
