@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/datasources/apiv1beta",
-    "version": "0.24.0",
+    "version": "0.24.1",
     "language": "GO",
     "apis": [
       {
