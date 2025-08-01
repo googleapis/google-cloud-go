@@ -109,8 +109,8 @@ func TestContextCancellationWithLastFlag_CorrectBehavior(t *testing.T) {
 	}
 
 	time.Sleep(50 * time.Millisecond)
-	if mockStream.wasTrailersReceived() {
-		t.Error("Trailers were received in fixed implementation - should be skipped for performance")
+	if !mockStream.wasTrailersReceived() {
+		t.Error("Trailers should be received for OpenTelemetry tracing support")
 	}
 }
 
@@ -353,8 +353,8 @@ func TestFixComparison(t *testing.T) {
 			name:                   "Fixed Implementation",
 			implementation:         (*resumableStreamDecoder).tryRecv,
 			expectContextCancelled: true,
-			expectTrailersReceived: false,
-			description:            "Current working implementation",
+			expectTrailersReceived: true,
+			description:            "Current working implementation with OpenTelemetry support",
 		},
 		{
 			name:                   "Broken Implementation (PR #11854)",

@@ -676,15 +676,19 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	res, d.err = d.stream.Recv()
 	if d.err == nil {
 		d.q.push(res)
-		if res.GetLast() {
-			// Skip gRPC trailers for performance optimization (addresses PR #11854 goal)
-			// but still cancel the context for proper stream lifecycle management
-			if d.cancel != nil {
-				d.cancel()
-			}
-			d.changeState(finished)
-			return
+			if res.GetLast() {
+		// Receive gRPC trailers synchronously for OpenTelemetry tracing
+		// This ensures trailers are received before context cancellation
+		// preventing the race condition while maintaining OpenTelemetry functionality
+		_, _ = d.stream.Recv() // Receive gRPC trailers for OpenTelemetry
+		
+		// Cancel context after trailers have been received
+		if d.cancel != nil {
+			d.cancel()
 		}
+		d.changeState(finished)
+		return
+	}
 		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
 			d.bytesBetweenResumeTokens += int32(proto.Size(res))
 		}
