@@ -52,15 +52,6 @@ type Config struct {
 // E.g., cloud.google.com/go/asset/apiv1;asset
 func (c *Config) GAPICImportPath() string { return c.gapicImportPath }
 
-// ModulePath returns the module path from the GAPIC import path.
-// E.g., "cloud.google.com/go/chronicle/apiv1;chronicle" -> "cloud.google.com/go/chronicle/apiv1"
-func (c *Config) ModulePath() string {
-	if idx := strings.Index(c.gapicImportPath, ";"); idx != -1 {
-		return c.gapicImportPath[:idx]
-	}
-	return c.gapicImportPath
-}
-
 // ServiceYAML is the client config file in the API version directory in googleapis.
 // This is a required input to the GAPIC generator.
 // E.g., googleapis/google/cloud/asset/v1/cloudasset_v1.yaml
@@ -129,7 +120,7 @@ func Parse(dir string) (*Config, error) {
 	re := regexp.MustCompile(`go_gapic_library\((?s:.)*?\)`)
 	gapicLibraryBlock := re.FindString(content)
 	if gapicLibraryBlock == "" {
-		slog.Warn("could not find go_gapic_library rule in BUILD.bazel")
+		return nil, errors.New("could not find go_gapic_library rule in BUILD.bazel")
 	}
 
 	// GAPIC build target
@@ -138,9 +129,15 @@ func Parse(dir string) (*Config, error) {
 	c.releaseLevel = findString(gapicLibraryBlock, "release_level")
 	c.serviceYAML = findString(gapicLibraryBlock, "service_yaml")
 	c.transport = findString(gapicLibraryBlock, "transport")
-	c.metadata = findBool(gapicLibraryBlock, "metadata")
-	c.restNumericEnums = findBool(gapicLibraryBlock, "rest_numeric_enums")
-	c.diregapic = findBool(gapicLibraryBlock, "diregapic")
+	if c.metadata, err = findBool(gapicLibraryBlock, "metadata"); err != nil {
+		return nil, fmt.Errorf("failed to parse BUILD.bazel file %s: %w", fp, err)
+	}
+	if c.restNumericEnums, err = findBool(gapicLibraryBlock, "rest_numeric_enums"); err != nil {
+		return nil, fmt.Errorf("failed to parse BUILD.bazel file %s: %w", fp, err)
+	}
+	if c.diregapic, err = findBool(gapicLibraryBlock, "diregapic"); err != nil {
+		return nil, fmt.Errorf("failed to pars BUILD.bazel file %s: %w", fp, err)
+	}
 
 	// We are currently migrating go_proto_library to go_grpc_library.
 	// Only one is expect to be present
@@ -152,6 +149,10 @@ func Parse(dir string) (*Config, error) {
 			return nil, fmt.Errorf("misconfiguration in BUILD.bazel file, only one of go_grpc_library and go_proto_library rules should be present: %s", fp)
 		}
 	}
+	if err := c.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid bazel config in %s: %w", dir, err)
+	}
+	slog.Debug("librariangen: bazel config loaded", "conf", fmt.Sprintf("%+v", c))
 	return c, nil
 }
 
@@ -160,18 +161,18 @@ func findString(content, name string) string {
 	if match := re.FindStringSubmatch(content); len(match) > 1 {
 		return match[1]
 	}
-	slog.Warn("failed to find string", "name", name)
+	slog.Debug("librariangen: failed to find string attr in BUILD.bazel", "name", name)
 	return ""
 }
 
-func findBool(content, name string) bool {
+func findBool(content, name string) (bool, error) {
 	re := regexp.MustCompile(fmt.Sprintf(`%s\s*=\s*(\w+)`, name))
 	if match := re.FindStringSubmatch(content); len(match) > 1 {
 		if b, err := strconv.ParseBool(match[1]); err == nil {
-			return b
+			return b, nil
 		}
-		slog.Warn("failed to parse bool", "name", name, "match", match[1])
+		return false, fmt.Errorf("failed to parse bool attr in BUILD.bazel: %q, got: %q", name, match[1])
 	}
-	slog.Warn("failed to find bool", "name", name)
-	return false
+	slog.Debug("librariangen: failed to find bool attr in BUILD.bazel", "name", name)
+	return false, nil
 }

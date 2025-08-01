@@ -1,5 +1,5 @@
 {
-  "id": "google-cloud-chronicle",
+  "id": "chronicle",
   "apis": [
     {
       "path": "google/cloud/chronicle/v1",

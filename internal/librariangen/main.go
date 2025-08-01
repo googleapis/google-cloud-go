@@ -30,12 +30,19 @@ const version = "0.1.0"
 
 // main is the entrypoint for the librariangen CLI.
 func main() {
-	slog.Info("librariangen invoked", "args", os.Args)
+	logLevel := slog.LevelInfo
+	if os.Getenv("GOOGLE_SDK_GO_LOGGING_LEVEL") == "debug" {
+		logLevel = slog.LevelDebug
+	}
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: logLevel,
+	})))
+	slog.Info("librariangen: invoked", "args", os.Args)
 	if err := run(context.Background(), os.Args[1:]); err != nil {
-		slog.Error("librariangen failed", "error", err)
+		slog.Error("librariangen: failed", "error", err)
 		os.Exit(1)
 	}
-	slog.Info("librariangen finished successfully")
+	slog.Info("librariangen: finished successfully")
 }
 
 var generateFunc = generate.Generate
@@ -64,10 +71,10 @@ func run(ctx context.Context, args []string) error {
 	case "generate":
 		return handleGenerate(ctx, flags)
 	case "configure":
-		slog.Warn("configure command is not yet implemented")
+		slog.Warn("librariangen: configure command is not yet implemented")
 		return nil
 	case "build":
-		slog.Warn("build command is not yet implemented")
+		slog.Warn("librariangen: build command is not yet implemented")
 		return nil
 	default:
 		return fmt.Errorf("unknown command: %s", cmd)

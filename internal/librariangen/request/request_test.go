@@ -32,7 +32,7 @@ func TestParse(t *testing.T) {
 		{
 			name: "valid request",
 			content: `{
-				"id": "google-cloud-asset-v1",
+				"id": "asset",
 				"version": "1.15.0",
 				"apis": [
 					{
@@ -45,7 +45,7 @@ func TestParse(t *testing.T) {
 				"remove_regex": ["asset/apiv1/bar.go"]
 			}`,
 			want: &Request{
-				ID:      "google-cloud-asset-v1",
+				ID:      "asset",
 				Version: "1.15.0",
 				APIs: []API{
 					{

@@ -29,6 +29,7 @@ import (
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/postprocessor"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/protoc"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
+	"github.com/ghodss/yaml"
 )
 
 // TODO(quartzmo): The determination of whether a module is new or not should be
@@ -101,8 +102,13 @@ func Generate(ctx context.Context, cfg *Config) error {
 	if err := cfg.Validate(); err != nil {
 		return fmt.Errorf("invalid configuration: %w", err)
 	}
-	modulePath, err := handleGapicgen(ctx, cfg)
+	slog.Debug("librariangen: generate command started")
+
+	generateReq, err := readGenerateReq(cfg.LibrarianDir)
 	if err != nil {
+		return fmt.Errorf("failed to flatten output: %w", err)
+	}
+	if err := invokeProtoc(ctx, cfg, generateReq); err != nil {
 		return fmt.Errorf("gapic generation failed: %w", err)
 	}
 	if err := fixPermissions(cfg.OutputDir); err != nil {
@@ -111,75 +117,55 @@ func Generate(ctx context.Context, cfg *Config) error {
 	if err := flattenOutput(cfg.OutputDir); err != nil {
 		return fmt.Errorf("failed to flatten output: %w", err)
 	}
-	slog.Info("using module path from final API", "importpath", modulePath)
 
 	if !cfg.DisablePostProcessor {
-		slog.Debug("post-processor enabled")
-		generateReq, err := readGenerateReq(cfg.LibrarianDir)
+		slog.Debug("librariangen: post-processor enabled")
+		if len(generateReq.APIs) == 0 {
+			return errors.New("no APIs in request")
+		}
+		// Get the name of the service config YAML from the first API's BUILD.bazel file.
+		firstAPIServiceDir := filepath.Join(cfg.SourceDir, generateReq.APIs[0].Path)
+		bazelConfig, err := bazelParse(firstAPIServiceDir)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse BUILD.bazel for %s: %w", firstAPIServiceDir, err)
 		}
-		// The module name is the first part of the API path.
-		// E.g. google/cloud/workflows/v1 -> workflows
-		// E.g. api/v1 -> api
-		moduleName := ""
-		if len(generateReq.APIs) > 0 {
-			parts := strings.Split(generateReq.APIs[0].Path, "/")
-			if len(parts) > 2 {
-				moduleName = parts[2]
-			} else if len(parts) > 0 {
-				moduleName = parts[0]
-			}
+		// Get the module title from the first API's service config YAML.
+		// This assumes all APIs in the request belong to the same module.
+		serviceYAMLPath := filepath.Join(firstAPIServiceDir, bazelConfig.ServiceYAML())
+		title, err := readTitleFromServiceYAML(serviceYAMLPath)
+		if err != nil {
+			return fmt.Errorf("failed to read title from service yaml: %w", err)
 		}
-		if moduleName == "" {
-			return fmt.Errorf("could not determine module name from API path")
-		}
-		moduleDir := filepath.Join(cfg.OutputDir, moduleName)
-		if err := postProcess(ctx, generateReq, moduleDir, isNewModule); err != nil {
+		moduleDir := filepath.Join(cfg.OutputDir, generateReq.ID)
+		if err := postProcess(ctx, generateReq, moduleDir, isNewModule, title); err != nil {
 			return fmt.Errorf("post-processing failed: %w", err)
 		}
 	}
 
-	slog.Debug("generate command finished")
+	slog.Debug("librariangen: generate command finished")
 	return nil
 }
 
-// handleGapicgen handles the protoc GAPIC generation logic for the 'generate' CLI command.
+// invokeProtoc handles the protoc GAPIC generation logic for the 'generate' CLI command.
 // It reads a request file, and for each API specified, it invokes protoc
-// to generate the client library.
-func handleGapicgen(ctx context.Context, cfg *Config) (string, error) {
-	slog.Debug("generate command started")
-
-	generateReq, err := readGenerateReq(cfg.LibrarianDir)
-	if err != nil {
-		return "", err
-	}
-	var bazelConfig *bazel.Config
+// to generate the client library. It returns the module path and the path to the service YAML.
+func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Request) error {
 	for _, api := range generateReq.APIs {
 		apiServiceDir := filepath.Join(cfg.SourceDir, api.Path)
 		slog.Info("processing api", "service_dir", apiServiceDir)
-		var err error
-		bazelConfig, err = bazelParse(apiServiceDir)
+		bazelConfig, err := bazelParse(apiServiceDir)
 		if err != nil {
-			return "", fmt.Errorf("failed to parse BUILD.bazel for %s: %w", apiServiceDir, err)
+			return fmt.Errorf("failed to parse BUILD.bazel for %s: %w", apiServiceDir, err)
 		}
-		if err := bazelConfig.Validate(); err != nil {
-			return "", fmt.Errorf("invalid bazel config for %s: %w", apiServiceDir, err)
-		}
-		slog.Info("bazel config loaded", "conf", fmt.Sprintf("%+v", bazelConfig))
 		args, err := protoc.Build(generateReq, &api, apiServiceDir, bazelConfig, cfg.SourceDir, cfg.OutputDir)
 		if err != nil {
-			return "", fmt.Errorf("failed to build protoc command for api %q in library %q: %w", api.Path, generateReq.ID, err)
+			return fmt.Errorf("failed to build protoc command for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}
 		if err := execvRun(ctx, args, cfg.OutputDir); err != nil {
-			return "", fmt.Errorf("protoc failed for api %q in library %q: %w", api.Path, generateReq.ID, err)
+			return fmt.Errorf("protoc failed for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}
 	}
-
-	// We'll use the import path of the last API's BUILD.bazel to initialize the module.
-	// This assumes all APIs in the request belong to the same module.
-	modulePath := bazelConfig.ModulePath()
-	return modulePath, nil
+	return nil
 }
 
 // readGenerateReq reads generate-request.json from the librarian-tool input directory.
@@ -187,26 +173,44 @@ func handleGapicgen(ctx context.Context, cfg *Config) (string, error) {
 // It is prepared by the Librarian tool and mounted at /librarian.
 func readGenerateReq(librarianDir string) (*request.Request, error) {
 	reqPath := filepath.Join(librarianDir, "generate-request.json")
-	slog.Debug("reading generate request", "path", reqPath)
+	slog.Debug("librariangen: reading generate request", "path", reqPath)
 
 	generateReq, err := requestParse(reqPath)
 	if err != nil {
 		return nil, err
 	}
-	slog.Debug("successfully unmarshalled request", "library_id", generateReq.ID)
+	slog.Debug("librariangen: successfully unmarshalled request", "library_id", generateReq.ID)
 	return generateReq, nil
+}
+
+// readTitleFromServiceYAML reads the service YAML file and returns the title.
+func readTitleFromServiceYAML(path string) (string, error) {
+	slog.Debug("librariangen: reading service yaml", "path", path)
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", fmt.Errorf("failed to read service yaml file: %w", err)
+	}
+	var serviceConfig struct {
+		Title string `json:"title"`
+	}
+	if err := yaml.Unmarshal(data, &serviceConfig); err != nil {
+		return "", fmt.Errorf("failed to unmarshal service yaml: %w", err)
+	}
+	if serviceConfig.Title == "" {
+		return "", errors.New("title not found in service yaml")
+	}
+	return serviceConfig.Title, nil
 }
 
 // fixPermissions recursively finds all .go files in the given directory and sets
 // their permissions to 0644.
 func fixPermissions(dir string) error {
-	slog.Debug("fixing file permissions", "dir", dir)
+	slog.Debug("librariangen: changing file permissions to 644", "dir", dir)
 	return filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 		if !d.IsDir() && strings.HasSuffix(path, ".go") {
-			slog.Debug("fixing file", "path", path)
 			if err := os.Chmod(path, 0644); err != nil {
 				return fmt.Errorf("failed to chmod %s: %w", path, err)
 			}
@@ -218,11 +222,10 @@ func fixPermissions(dir string) error {
 // flattenOutput moves the contents of /output/cloud.google.com/go/ to the top
 // level of /output.
 func flattenOutput(outputDir string) error {
-	slog.Debug("flattening output directory", "dir", outputDir)
+	slog.Debug("librariangen: flattening output directory", "dir", outputDir)
 	goDir := filepath.Join(outputDir, "cloud.google.com", "go")
 	if _, err := os.Stat(goDir); os.IsNotExist(err) {
-		slog.Warn("go directory does not exist, skipping flatten", "path", goDir)
-		return nil
+		return fmt.Errorf("go directory does not exist in path: %s", goDir)
 	}
 	files, err := os.ReadDir(goDir)
 	if err != nil {
@@ -231,7 +234,7 @@ func flattenOutput(outputDir string) error {
 	for _, f := range files {
 		oldPath := filepath.Join(goDir, f.Name())
 		newPath := filepath.Join(outputDir, f.Name())
-		slog.Debug("moving file", "from", oldPath, "to", newPath)
+		slog.Debug("librariangen: moving file", "from", oldPath, "to", newPath)
 		if err := os.Rename(oldPath, newPath); err != nil {
 			return fmt.Errorf("failed to move %s to %s: %w", oldPath, newPath, err)
 		}
