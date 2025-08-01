@@ -290,6 +290,7 @@ func (r *RowIterator) Stop() {
 		}
 	}
 	if r.cancel != nil {
+		trace.TracePrintf(r.streamd.ctx, nil, "RowIterator.Stop")
 		r.cancel()
 	}
 	if r.release != nil {
@@ -678,9 +679,12 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 		d.q.push(res)
 		if res.GetLast() {
 			go func(s streamingReceiver) {
+				trace.TracePrintf(d.ctx, nil, "last response received, waiting for trailers")
 				_, _ = s.Recv()
+				trace.TracePrintf(d.ctx, nil, "trailers received, stream finished")
 				// Cancel the context after receiving trailers
 				if d.cancel != nil {
+					trace.TracePrintf(d.ctx, nil, "Cancelling context after receiving trailers")
 					d.cancel()
 				}
 			}(d.stream)
