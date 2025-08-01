@@ -677,13 +677,11 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
-			go func(s streamingReceiver) {
-				_, _ = s.Recv()
-				// Cancel the context after receiving trailers
-				if d.cancel != nil {
-					d.cancel()
-				}
-			}(d.stream)
+			// Skip gRPC trailers for performance optimization (addresses PR #11854 goal)
+			// but still cancel the context for proper stream lifecycle management
+			if d.cancel != nil {
+				d.cancel()
+			}
 			d.changeState(finished)
 			return
 		}

@@ -682,12 +682,6 @@ func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sp
 func (t *txReadOnly) query(ctx context.Context, statement Statement, options QueryOptions) (ri *RowIterator) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.Query")
 	defer func() { trace.EndSpan(ctx, ri.err) }()
-	
-	// TODO: contribute upstream to changes
-	//   Intentially, we keep the code here as small as possible and isolate the changes to another file. The
-	//   reason is that we want to avoid merge conflicts with the upstream changes.
-	addDbSemanticConventionAttributes(ctx, statement)
-	
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
 	if err != nil {
 		return &RowIterator{
