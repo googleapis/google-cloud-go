@@ -1,5 +1,43 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.4...storagetransfer/v1.13.0) (2025-05-29)
+
+
+### Features
+
+* **storagetransfer:** Support Azure federated identity ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** Support BYOSA ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+
+### Documentation
+
+* **storagetransfer:** A comment for enum value `COPY` in enum `LoggableAction` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** A comment for field `end_time_of_day` in message `.google.storagetransfer.v1.Schedule` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** A comment for field `list_url` in message `.google.storagetransfer.v1.HttpData` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** A comment for field `overwrite_objects_already_existing_in_sink` in message `.google.storagetransfer.v1.TransferOptions` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **storagetransfer:** A comment for message `ObjectConditions` is changed ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+## [1.12.4](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.3...storagetransfer/v1.12.4) (2025-04-15)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.12.3](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.2...storagetransfer/v1.12.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.1...storagetransfer/v1.12.2) (2025-03-06)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.0...storagetransfer/v1.12.1) (2025-01-02)
 
 

@@ -140,7 +140,8 @@ func TestLoad(t *testing.T) {
 				return g
 			}(),
 			config: LoadConfig{
-				JobTimeout: 4 * time.Second,
+				JobTimeout:  4 * time.Second,
+				Reservation: "reservation/1",
 			},
 			want: func() *bq.Job {
 				j := defaultLoadJob()
@@ -149,6 +150,7 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.AllowQuotedNewlines = true
 				j.Configuration.Load.IgnoreUnknownValues = true
 				j.Configuration.JobTimeoutMs = 4000
+				j.Configuration.Reservation = "reservation/1"
 				return j
 			}(),
 		},

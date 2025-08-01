@@ -29,7 +29,19 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *BackupChannelIterator) All() iter.Seq2[*gkebackuppb.BackupChannel, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *BackupIterator) All() iter.Seq2[*gkebackuppb.Backup, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupPlanBindingIterator) All() iter.Seq2[*gkebackuppb.BackupPlanBinding, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -53,7 +65,19 @@ func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *RestoreChannelIterator) All() iter.Seq2[*gkebackuppb.RestoreChannel, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *RestoreIterator) All() iter.Seq2[*gkebackuppb.Restore, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestorePlanBindingIterator) All() iter.Seq2[*gkebackuppb.RestorePlanBinding, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

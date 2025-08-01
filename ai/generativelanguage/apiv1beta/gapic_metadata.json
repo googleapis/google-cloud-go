@@ -158,6 +158,11 @@
                 "DeleteFile"
               ]
             },
+            "DownloadFile": {
+              "methods": [
+                "DownloadFile"
+              ]
+            },
             "GetFile": {
               "methods": [
                 "GetFile"
@@ -193,6 +198,11 @@
                 "DeleteFile"
               ]
             },
+            "DownloadFile": {
+              "methods": [
+                "DownloadFile"
+              ]
+            },
             "GetFile": {
               "methods": [
                 "GetFile"
@@ -225,6 +235,11 @@
             "BatchEmbedContents": {
               "methods": [
                 "BatchEmbedContents"
+              ]
+            },
+            "BidiGenerateContent": {
+              "methods": [
+                "BidiGenerateContent"
               ]
             },
             "CountTokens": {
@@ -270,6 +285,11 @@
             "BatchEmbedContents": {
               "methods": [
                 "BatchEmbedContents"
+              ]
+            },
+            "BidiGenerateContent": {
+              "methods": [
+                "BidiGenerateContent"
               ]
             },
             "CountTokens": {
@@ -528,6 +548,11 @@
               "methods": [
                 "Predict"
               ]
+            },
+            "PredictLongRunning": {
+              "methods": [
+                "PredictLongRunning"
+              ]
             }
           }
         },
@@ -547,6 +572,11 @@
             "Predict": {
               "methods": [
                 "Predict"
+              ]
+            },
+            "PredictLongRunning": {
+              "methods": [
+                "PredictLongRunning"
               ]
             }
           }

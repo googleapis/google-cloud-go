@@ -115,7 +115,7 @@ func defaultControlRESTCallOptions() *ControlCallOptions {
 	}
 }
 
-// internalControlClient is an interface that defines the methods available from Vertex AI Search for Retail API.
+// internalControlClient is an interface that defines the methods available from Vertex AI Search for commerce API.
 type internalControlClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -129,7 +129,7 @@ type internalControlClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ControlClient is a client for interacting with Vertex AI Search for Retail API.
+// ControlClient is a client for interacting with Vertex AI Search for commerce API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for modifying Control.
@@ -211,7 +211,7 @@ func (c *ControlClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// controlGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
+// controlGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type controlGRPCClient struct {
@@ -279,7 +279,7 @@ func (c *controlGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *controlGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -347,7 +347,7 @@ func defaultControlRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *controlRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}

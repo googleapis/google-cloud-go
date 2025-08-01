@@ -15,11 +15,16 @@
 package grpctransport
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"log/slog"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/compute/metadata"
 )
 
 func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
@@ -41,11 +46,7 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 		},
 		{
 			name: "EnableNonDefaultSAForDirectPath",
-			tp: &staticTP{
-				tok: token(map[string]interface{}{
-					"auth.google.tokenSource": "compute-metadata",
-				}),
-			},
+			tp:   &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 			opts: &Options{
 				InternalOptions: &InternalOptions{
 					EnableNonDefaultSAForDirectPath: true,
@@ -54,18 +55,19 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "EnableNonDefaultSAForDirectPathButNotCompute",
-			tp:   &staticTP{},
-			opts: &Options{
-				InternalOptions: &InternalOptions{
-					EnableNonDefaultSAForDirectPath: true,
-				},
-			},
+			name: "non-compute token source",
+			tp:   &staticTP{tok: token(map[string]interface{}{"auth.google.tokenSource": "NOT-compute-metadata"})},
+			opts: &Options{},
 			want: false,
 		},
 		{
-			name: "non-compute token source",
-			tp:   &staticTP{tok: token(map[string]interface{}{"auth.google.tokenSource": "NOT-compute-metadata"})},
+			name: "compute-metadata but non default SA",
+			tp: &staticTP{
+				tok: token(map[string]interface{}{
+					"auth.google.tokenSource":    "compute-metadata",
+					"auth.google.serviceAccount": "NON-default",
+				}),
+			},
 			opts: &Options{},
 			want: false,
 		},
@@ -95,6 +97,53 @@ func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
 	}
 }
 
+func TestIsDirectPathBoundTokenEnabled(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		opts *InternalOptions
+		want bool
+	}{
+		{
+			name: "empty list",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{},
+			},
+		},
+		{
+			name: "nil list",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{},
+			},
+		},
+		{
+			name: "list does not contain ALTS",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"MTLS_S2A"},
+			},
+		},
+		{
+			name: "list only contains ALTS",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"ALTS"},
+			},
+			want: true,
+		},
+		{
+			name: "list contains ALTS and others",
+			opts: &InternalOptions{
+				AllowHardBoundTokens: []string{"ALTS", "MTLS_S2A"},
+			},
+			want: true,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isDirectPathBoundTokenEnabled(tt.opts); got != tt.want {
+				t.Fatalf("isDirectPathBoundTokenEnabled() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 type errTP struct {
 }
 
@@ -106,4 +155,72 @@ func token(metadata map[string]interface{}) *auth.Token {
 	tok := &auth.Token{Value: "fakeToken"}
 	tok.Metadata = metadata
 	return tok
+}
+
+func TestLogDirectPathMisconfigDirectPathNotSet(t *testing.T) {
+	opts := &Options{InternalOptions: &InternalOptions{}}
+	opts.InternalOptions.EnableDirectPathXds = true
+
+	var logOutput bytes.Buffer
+	opts.Logger = slog.New(slog.NewTextHandler(&logOutput, nil))
+
+	endpoint := "abc.googleapis.com"
+	creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
+	if err != nil {
+		t.Fatalf("failed to create creds")
+	}
+
+	logDirectPathMisconfig(endpoint, creds, opts)
+
+	wantedLog := "DirectPath is disabled. To enable, please set the EnableDirectPath option along with the EnableDirectPathXds option."
+	if !strings.Contains(logOutput.String(), wantedLog) {
+		t.Fatalf("got: %v, want: %v", logOutput.String(), wantedLog)
+	}
+}
+
+func TestLogDirectPathMisconfigWrongCredential(t *testing.T) {
+	opts := &Options{InternalOptions: &InternalOptions{
+		EnableDirectPathXds: true,
+		EnableDirectPath:    true,
+	}}
+
+	var logOutput bytes.Buffer
+	opts.Logger = slog.New(slog.NewTextHandler(&logOutput, nil))
+
+	endpoint := "abc.googleapis.com"
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
+		JSON:          []byte("test"),
+	})
+	logDirectPathMisconfig(endpoint, creds, opts)
+
+	wantedLog := "DirectPath is disabled. Please make sure the token source is fetched from GCE metadata server and the default service account is used."
+	if !strings.Contains(logOutput.String(), wantedLog) {
+		t.Fatalf("got: %v, want: %v", logOutput.String(), wantedLog)
+	}
+}
+
+func TestLogDirectPathMisconfigNotOnGCE(t *testing.T) {
+	opts := &Options{InternalOptions: &InternalOptions{}}
+	opts.InternalOptions.EnableDirectPath = true
+	opts.InternalOptions.EnableDirectPathXds = true
+
+	var logOutput bytes.Buffer
+	opts.Logger = slog.New(slog.NewTextHandler(&logOutput, nil))
+
+	endpoint := "abc.googleapis.com"
+
+	creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
+	if err != nil {
+		t.Fatalf("failed to create creds")
+	}
+
+	logDirectPathMisconfig(endpoint, creds, opts)
+
+	if !metadata.OnGCE() {
+		wantedLog := "DirectPath is disabled. DirectPath is only available in a GCE environment."
+		if !strings.Contains(logOutput.String(), wantedLog) {
+			t.Fatalf("got: %v, want: %v", logOutput.String(), wantedLog)
+		}
+	}
 }

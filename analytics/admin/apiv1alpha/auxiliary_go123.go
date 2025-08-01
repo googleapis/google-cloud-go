@@ -165,6 +165,12 @@ func (it *PropertyIterator) All() iter.Seq2[*adminpb.Property, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ReportingDataAnnotationIterator) All() iter.Seq2[*adminpb.ReportingDataAnnotation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *RollupPropertySourceLinkIterator) All() iter.Seq2[*adminpb.RollupPropertySourceLink, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -184,5 +190,11 @@ func (it *SearchAds360LinkIterator) All() iter.Seq2[*adminpb.SearchAds360Link, e
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *SubpropertyEventFilterIterator) All() iter.Seq2[*adminpb.SubpropertyEventFilter, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubpropertySyncConfigIterator) All() iter.Seq2[*adminpb.SubpropertySyncConfig, error] {
 	return iterator.RangeAdapter(it.Next)
 }

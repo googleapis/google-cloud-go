@@ -2,6 +2,102 @@
 
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.21.1...maps/v1.22.0) (2025-07-16)
+
+
+### Features
+
+* **maps/addressvalidation:** Add has_spell_corrected_components field to the Address Validation verdict in the API response ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+
+
+### Documentation
+
+* **maps/addressvalidation:** Update proto field descriptions ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.21.0...maps/v1.21.1) (2025-07-09)
+
+
+### Documentation
+
+* **maps/places:** Clarify behavior of primary types and weekday text ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.4...maps/v1.21.0) (2025-05-21)
+
+
+### Features
+
+* **maps/places:** Add address descriptor proto ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new GoogleMapsLinks fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new NeighborhoodSummary fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new photo fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new review fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Add new ReviewSummary fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** Update GenerativeSummary fields ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+
+### Bug Fixes
+
+* **maps/places:** An existing field `area_summary` is removed from message `.google.maps.places.v1.Place` ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** An existing field `description` is removed from message `.google.maps.places.v1.Place` ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** An existing field `references` is removed from message `.google.maps.places.v1.Place` ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **maps/places:** An existing message `AreaSummary` is removed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+
+### Documentation
+
+* **maps/places:** Change comments for some fields in Places API ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.3...maps/v1.20.4) (2025-04-30)
+
+
+### Documentation
+
+* **maps/areainsights:** A comment for method `ComputeInsights` in service `AreaInsights` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **maps/areainsights:** A comment for service `AreaInsights` is changed ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **maps/areainsights:** Clarifications of comments ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+* **maps/areainsights:** Sample requests rewritten as JSON ([a95a0bf](https://github.com/googleapis/google-cloud-go/commit/a95a0bf4172b8a227955a0353fd9c845f4502411))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.2...maps/v1.20.3) (2025-04-22)
+
+
+### Documentation
+
+* **maps/areainsights:** A comment for field `place` in message `.google.maps.areainsights.v1.LocationFilter` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+* **maps/areainsights:** A comment for field `place` in message `.google.maps.areainsights.v1.PlaceInsight` is changed ([fe831f9](https://github.com/googleapis/google-cloud-go/commit/fe831f9b125baf2cf5774ad892361df2d655814a))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.1...maps/v1.20.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **maps:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.20.0...maps/v1.20.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **maps:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.19.0...maps/v1.20.0) (2025-03-12)
+
+
+### Features
+
+* **maps/places:** Add postal_address and time_zone to Place ([b323f88](https://github.com/googleapis/google-cloud-go/commit/b323f888e349168b4e30a9edb4630dfb6060ed4d))
+
+
+### Documentation
+
+* **maps/places:** Change comments in some fields in Places API ([#11798](https://github.com/googleapis/google-cloud-go/issues/11798)) ([b323f88](https://github.com/googleapis/google-cloud-go/commit/b323f888e349168b4e30a9edb4630dfb6060ed4d))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.18.0...maps/v1.19.0) (2025-02-26)
+
+
+### Features
+
+* **maps/places:** Add NACS EVCS connector type support ([794ecf7](https://github.com/googleapis/google-cloud-go/commit/794ecf77993a83fcad01912fb066366ba16adc11))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.17.1...maps/v1.18.0) (2025-01-30)
 
 

@@ -66,6 +66,29 @@ func ExampleTripClient_CreateTrip() {
 	_ = resp
 }
 
+func ExampleTripClient_DeleteTrip() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := fleetengine.NewTripClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &fleetenginepb.DeleteTripRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#DeleteTripRequest.
+	}
+	err = c.DeleteTrip(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleTripClient_GetTrip() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

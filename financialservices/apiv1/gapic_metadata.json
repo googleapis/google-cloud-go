@@ -1,0 +1,463 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.financialservices.v1",
+  "libraryPackage": "cloud.google.com/go/financialservices/apiv1",
+  "services": {
+    "AML": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AMLClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBacktestResult": {
+              "methods": [
+                "CreateBacktestResult"
+              ]
+            },
+            "CreateDataset": {
+              "methods": [
+                "CreateDataset"
+              ]
+            },
+            "CreateEngineConfig": {
+              "methods": [
+                "CreateEngineConfig"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "CreateModel": {
+              "methods": [
+                "CreateModel"
+              ]
+            },
+            "CreatePredictionResult": {
+              "methods": [
+                "CreatePredictionResult"
+              ]
+            },
+            "DeleteBacktestResult": {
+              "methods": [
+                "DeleteBacktestResult"
+              ]
+            },
+            "DeleteDataset": {
+              "methods": [
+                "DeleteDataset"
+              ]
+            },
+            "DeleteEngineConfig": {
+              "methods": [
+                "DeleteEngineConfig"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteModel": {
+              "methods": [
+                "DeleteModel"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePredictionResult": {
+              "methods": [
+                "DeletePredictionResult"
+              ]
+            },
+            "ExportBacktestResultMetadata": {
+              "methods": [
+                "ExportBacktestResultMetadata"
+              ]
+            },
+            "ExportEngineConfigMetadata": {
+              "methods": [
+                "ExportEngineConfigMetadata"
+              ]
+            },
+            "ExportModelMetadata": {
+              "methods": [
+                "ExportModelMetadata"
+              ]
+            },
+            "ExportPredictionResultMetadata": {
+              "methods": [
+                "ExportPredictionResultMetadata"
+              ]
+            },
+            "ExportRegisteredParties": {
+              "methods": [
+                "ExportRegisteredParties"
+              ]
+            },
+            "GetBacktestResult": {
+              "methods": [
+                "GetBacktestResult"
+              ]
+            },
+            "GetDataset": {
+              "methods": [
+                "GetDataset"
+              ]
+            },
+            "GetEngineConfig": {
+              "methods": [
+                "GetEngineConfig"
+              ]
+            },
+            "GetEngineVersion": {
+              "methods": [
+                "GetEngineVersion"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPredictionResult": {
+              "methods": [
+                "GetPredictionResult"
+              ]
+            },
+            "ImportRegisteredParties": {
+              "methods": [
+                "ImportRegisteredParties"
+              ]
+            },
+            "ListBacktestResults": {
+              "methods": [
+                "ListBacktestResults"
+              ]
+            },
+            "ListDatasets": {
+              "methods": [
+                "ListDatasets"
+              ]
+            },
+            "ListEngineConfigs": {
+              "methods": [
+                "ListEngineConfigs"
+              ]
+            },
+            "ListEngineVersions": {
+              "methods": [
+                "ListEngineVersions"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListModels": {
+              "methods": [
+                "ListModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPredictionResults": {
+              "methods": [
+                "ListPredictionResults"
+              ]
+            },
+            "UpdateBacktestResult": {
+              "methods": [
+                "UpdateBacktestResult"
+              ]
+            },
+            "UpdateDataset": {
+              "methods": [
+                "UpdateDataset"
+              ]
+            },
+            "UpdateEngineConfig": {
+              "methods": [
+                "UpdateEngineConfig"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateModel": {
+              "methods": [
+                "UpdateModel"
+              ]
+            },
+            "UpdatePredictionResult": {
+              "methods": [
+                "UpdatePredictionResult"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AMLClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBacktestResult": {
+              "methods": [
+                "CreateBacktestResult"
+              ]
+            },
+            "CreateDataset": {
+              "methods": [
+                "CreateDataset"
+              ]
+            },
+            "CreateEngineConfig": {
+              "methods": [
+                "CreateEngineConfig"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "CreateModel": {
+              "methods": [
+                "CreateModel"
+              ]
+            },
+            "CreatePredictionResult": {
+              "methods": [
+                "CreatePredictionResult"
+              ]
+            },
+            "DeleteBacktestResult": {
+              "methods": [
+                "DeleteBacktestResult"
+              ]
+            },
+            "DeleteDataset": {
+              "methods": [
+                "DeleteDataset"
+              ]
+            },
+            "DeleteEngineConfig": {
+              "methods": [
+                "DeleteEngineConfig"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteModel": {
+              "methods": [
+                "DeleteModel"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePredictionResult": {
+              "methods": [
+                "DeletePredictionResult"
+              ]
+            },
+            "ExportBacktestResultMetadata": {
+              "methods": [
+                "ExportBacktestResultMetadata"
+              ]
+            },
+            "ExportEngineConfigMetadata": {
+              "methods": [
+                "ExportEngineConfigMetadata"
+              ]
+            },
+            "ExportModelMetadata": {
+              "methods": [
+                "ExportModelMetadata"
+              ]
+            },
+            "ExportPredictionResultMetadata": {
+              "methods": [
+                "ExportPredictionResultMetadata"
+              ]
+            },
+            "ExportRegisteredParties": {
+              "methods": [
+                "ExportRegisteredParties"
+              ]
+            },
+            "GetBacktestResult": {
+              "methods": [
+                "GetBacktestResult"
+              ]
+            },
+            "GetDataset": {
+              "methods": [
+                "GetDataset"
+              ]
+            },
+            "GetEngineConfig": {
+              "methods": [
+                "GetEngineConfig"
+              ]
+            },
+            "GetEngineVersion": {
+              "methods": [
+                "GetEngineVersion"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPredictionResult": {
+              "methods": [
+                "GetPredictionResult"
+              ]
+            },
+            "ImportRegisteredParties": {
+              "methods": [
+                "ImportRegisteredParties"
+              ]
+            },
+            "ListBacktestResults": {
+              "methods": [
+                "ListBacktestResults"
+              ]
+            },
+            "ListDatasets": {
+              "methods": [
+                "ListDatasets"
+              ]
+            },
+            "ListEngineConfigs": {
+              "methods": [
+                "ListEngineConfigs"
+              ]
+            },
+            "ListEngineVersions": {
+              "methods": [
+                "ListEngineVersions"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListModels": {
+              "methods": [
+                "ListModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPredictionResults": {
+              "methods": [
+                "ListPredictionResults"
+              ]
+            },
+            "UpdateBacktestResult": {
+              "methods": [
+                "UpdateBacktestResult"
+              ]
+            },
+            "UpdateDataset": {
+              "methods": [
+                "UpdateDataset"
+              ]
+            },
+            "UpdateEngineConfig": {
+              "methods": [
+                "UpdateEngineConfig"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateModel": {
+              "methods": [
+                "UpdateModel"
+              ]
+            },
+            "UpdatePredictionResult": {
+              "methods": [
+                "UpdatePredictionResult"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -67,6 +67,7 @@ type CallOptions struct {
 	ResetWorkspaceChanges              []gax.CallOption
 	FetchFileDiff                      []gax.CallOption
 	QueryDirectoryContents             []gax.CallOption
+	SearchFiles                        []gax.CallOption
 	MakeDirectory                      []gax.CallOption
 	RemoveDirectory                    []gax.CallOption
 	MoveDirectory                      []gax.CallOption
@@ -94,6 +95,8 @@ type CallOptions struct {
 	DeleteWorkflowInvocation           []gax.CallOption
 	CancelWorkflowInvocation           []gax.CallOption
 	QueryWorkflowInvocationActions     []gax.CallOption
+	GetConfig                          []gax.CallOption
+	UpdateConfig                       []gax.CallOption
 	GetLocation                        []gax.CallOption
 	ListLocations                      []gax.CallOption
 	GetIamPolicy                       []gax.CallOption
@@ -142,6 +145,7 @@ func defaultCallOptions() *CallOptions {
 		ResetWorkspaceChanges:              []gax.CallOption{},
 		FetchFileDiff:                      []gax.CallOption{},
 		QueryDirectoryContents:             []gax.CallOption{},
+		SearchFiles:                        []gax.CallOption{},
 		MakeDirectory:                      []gax.CallOption{},
 		RemoveDirectory:                    []gax.CallOption{},
 		MoveDirectory:                      []gax.CallOption{},
@@ -169,6 +173,8 @@ func defaultCallOptions() *CallOptions {
 		DeleteWorkflowInvocation:           []gax.CallOption{},
 		CancelWorkflowInvocation:           []gax.CallOption{},
 		QueryWorkflowInvocationActions:     []gax.CallOption{},
+		GetConfig:                          []gax.CallOption{},
+		UpdateConfig:                       []gax.CallOption{},
 		GetLocation:                        []gax.CallOption{},
 		ListLocations:                      []gax.CallOption{},
 		GetIamPolicy:                       []gax.CallOption{},
@@ -203,6 +209,7 @@ func defaultRESTCallOptions() *CallOptions {
 		ResetWorkspaceChanges:              []gax.CallOption{},
 		FetchFileDiff:                      []gax.CallOption{},
 		QueryDirectoryContents:             []gax.CallOption{},
+		SearchFiles:                        []gax.CallOption{},
 		MakeDirectory:                      []gax.CallOption{},
 		RemoveDirectory:                    []gax.CallOption{},
 		MoveDirectory:                      []gax.CallOption{},
@@ -230,6 +237,8 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteWorkflowInvocation:           []gax.CallOption{},
 		CancelWorkflowInvocation:           []gax.CallOption{},
 		QueryWorkflowInvocationActions:     []gax.CallOption{},
+		GetConfig:                          []gax.CallOption{},
+		UpdateConfig:                       []gax.CallOption{},
 		GetLocation:                        []gax.CallOption{},
 		ListLocations:                      []gax.CallOption{},
 		GetIamPolicy:                       []gax.CallOption{},
@@ -248,7 +257,7 @@ type internalClient interface {
 	CreateRepository(context.Context, *dataformpb.CreateRepositoryRequest, ...gax.CallOption) (*dataformpb.Repository, error)
 	UpdateRepository(context.Context, *dataformpb.UpdateRepositoryRequest, ...gax.CallOption) (*dataformpb.Repository, error)
 	DeleteRepository(context.Context, *dataformpb.DeleteRepositoryRequest, ...gax.CallOption) error
-	CommitRepositoryChanges(context.Context, *dataformpb.CommitRepositoryChangesRequest, ...gax.CallOption) error
+	CommitRepositoryChanges(context.Context, *dataformpb.CommitRepositoryChangesRequest, ...gax.CallOption) (*dataformpb.CommitRepositoryChangesResponse, error)
 	ReadRepositoryFile(context.Context, *dataformpb.ReadRepositoryFileRequest, ...gax.CallOption) (*dataformpb.ReadRepositoryFileResponse, error)
 	QueryRepositoryDirectoryContents(context.Context, *dataformpb.QueryRepositoryDirectoryContentsRequest, ...gax.CallOption) *DirectoryEntryIterator
 	FetchRepositoryHistory(context.Context, *dataformpb.FetchRepositoryHistoryRequest, ...gax.CallOption) *CommitLogEntryIterator
@@ -259,19 +268,20 @@ type internalClient interface {
 	CreateWorkspace(context.Context, *dataformpb.CreateWorkspaceRequest, ...gax.CallOption) (*dataformpb.Workspace, error)
 	DeleteWorkspace(context.Context, *dataformpb.DeleteWorkspaceRequest, ...gax.CallOption) error
 	InstallNpmPackages(context.Context, *dataformpb.InstallNpmPackagesRequest, ...gax.CallOption) (*dataformpb.InstallNpmPackagesResponse, error)
-	PullGitCommits(context.Context, *dataformpb.PullGitCommitsRequest, ...gax.CallOption) error
-	PushGitCommits(context.Context, *dataformpb.PushGitCommitsRequest, ...gax.CallOption) error
+	PullGitCommits(context.Context, *dataformpb.PullGitCommitsRequest, ...gax.CallOption) (*dataformpb.PullGitCommitsResponse, error)
+	PushGitCommits(context.Context, *dataformpb.PushGitCommitsRequest, ...gax.CallOption) (*dataformpb.PushGitCommitsResponse, error)
 	FetchFileGitStatuses(context.Context, *dataformpb.FetchFileGitStatusesRequest, ...gax.CallOption) (*dataformpb.FetchFileGitStatusesResponse, error)
 	FetchGitAheadBehind(context.Context, *dataformpb.FetchGitAheadBehindRequest, ...gax.CallOption) (*dataformpb.FetchGitAheadBehindResponse, error)
-	CommitWorkspaceChanges(context.Context, *dataformpb.CommitWorkspaceChangesRequest, ...gax.CallOption) error
-	ResetWorkspaceChanges(context.Context, *dataformpb.ResetWorkspaceChangesRequest, ...gax.CallOption) error
+	CommitWorkspaceChanges(context.Context, *dataformpb.CommitWorkspaceChangesRequest, ...gax.CallOption) (*dataformpb.CommitWorkspaceChangesResponse, error)
+	ResetWorkspaceChanges(context.Context, *dataformpb.ResetWorkspaceChangesRequest, ...gax.CallOption) (*dataformpb.ResetWorkspaceChangesResponse, error)
 	FetchFileDiff(context.Context, *dataformpb.FetchFileDiffRequest, ...gax.CallOption) (*dataformpb.FetchFileDiffResponse, error)
 	QueryDirectoryContents(context.Context, *dataformpb.QueryDirectoryContentsRequest, ...gax.CallOption) *DirectoryEntryIterator
+	SearchFiles(context.Context, *dataformpb.SearchFilesRequest, ...gax.CallOption) *SearchResultIterator
 	MakeDirectory(context.Context, *dataformpb.MakeDirectoryRequest, ...gax.CallOption) (*dataformpb.MakeDirectoryResponse, error)
-	RemoveDirectory(context.Context, *dataformpb.RemoveDirectoryRequest, ...gax.CallOption) error
+	RemoveDirectory(context.Context, *dataformpb.RemoveDirectoryRequest, ...gax.CallOption) (*dataformpb.RemoveDirectoryResponse, error)
 	MoveDirectory(context.Context, *dataformpb.MoveDirectoryRequest, ...gax.CallOption) (*dataformpb.MoveDirectoryResponse, error)
 	ReadFile(context.Context, *dataformpb.ReadFileRequest, ...gax.CallOption) (*dataformpb.ReadFileResponse, error)
-	RemoveFile(context.Context, *dataformpb.RemoveFileRequest, ...gax.CallOption) error
+	RemoveFile(context.Context, *dataformpb.RemoveFileRequest, ...gax.CallOption) (*dataformpb.RemoveFileResponse, error)
 	MoveFile(context.Context, *dataformpb.MoveFileRequest, ...gax.CallOption) (*dataformpb.MoveFileResponse, error)
 	WriteFile(context.Context, *dataformpb.WriteFileRequest, ...gax.CallOption) (*dataformpb.WriteFileResponse, error)
 	ListReleaseConfigs(context.Context, *dataformpb.ListReleaseConfigsRequest, ...gax.CallOption) *ReleaseConfigIterator
@@ -292,8 +302,10 @@ type internalClient interface {
 	GetWorkflowInvocation(context.Context, *dataformpb.GetWorkflowInvocationRequest, ...gax.CallOption) (*dataformpb.WorkflowInvocation, error)
 	CreateWorkflowInvocation(context.Context, *dataformpb.CreateWorkflowInvocationRequest, ...gax.CallOption) (*dataformpb.WorkflowInvocation, error)
 	DeleteWorkflowInvocation(context.Context, *dataformpb.DeleteWorkflowInvocationRequest, ...gax.CallOption) error
-	CancelWorkflowInvocation(context.Context, *dataformpb.CancelWorkflowInvocationRequest, ...gax.CallOption) error
+	CancelWorkflowInvocation(context.Context, *dataformpb.CancelWorkflowInvocationRequest, ...gax.CallOption) (*dataformpb.CancelWorkflowInvocationResponse, error)
 	QueryWorkflowInvocationActions(context.Context, *dataformpb.QueryWorkflowInvocationActionsRequest, ...gax.CallOption) *WorkflowInvocationActionIterator
+	GetConfig(context.Context, *dataformpb.GetConfigRequest, ...gax.CallOption) (*dataformpb.Config, error)
+	UpdateConfig(context.Context, *dataformpb.UpdateConfigRequest, ...gax.CallOption) (*dataformpb.Config, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -338,6 +350,9 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // ListRepositories lists Repositories in a given project and location.
+//
+// Note: This method can return repositories not shown in the Dataform
+// UI (at https://console.cloud.google.com/bigquery/dataform).
 func (c *Client) ListRepositories(ctx context.Context, req *dataformpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	return c.internalClient.ListRepositories(ctx, req, opts...)
 }
@@ -353,6 +368,11 @@ func (c *Client) CreateRepository(ctx context.Context, req *dataformpb.CreateRep
 }
 
 // UpdateRepository updates a single Repository.
+//
+// Note: This method does not fully implement
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *Client) UpdateRepository(ctx context.Context, req *dataformpb.UpdateRepositoryRequest, opts ...gax.CallOption) (*dataformpb.Repository, error) {
 	return c.internalClient.UpdateRepository(ctx, req, opts...)
 }
@@ -364,7 +384,7 @@ func (c *Client) DeleteRepository(ctx context.Context, req *dataformpb.DeleteRep
 
 // CommitRepositoryChanges applies a Git commit to a Repository. The Repository must not have a value
 // for git_remote_settings.url.
-func (c *Client) CommitRepositoryChanges(ctx context.Context, req *dataformpb.CommitRepositoryChangesRequest, opts ...gax.CallOption) error {
+func (c *Client) CommitRepositoryChanges(ctx context.Context, req *dataformpb.CommitRepositoryChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitRepositoryChangesResponse, error) {
 	return c.internalClient.CommitRepositoryChanges(ctx, req, opts...)
 }
 
@@ -422,12 +442,12 @@ func (c *Client) InstallNpmPackages(ctx context.Context, req *dataformpb.Install
 }
 
 // PullGitCommits pulls Git commits from the Repository’s remote into a Workspace.
-func (c *Client) PullGitCommits(ctx context.Context, req *dataformpb.PullGitCommitsRequest, opts ...gax.CallOption) error {
+func (c *Client) PullGitCommits(ctx context.Context, req *dataformpb.PullGitCommitsRequest, opts ...gax.CallOption) (*dataformpb.PullGitCommitsResponse, error) {
 	return c.internalClient.PullGitCommits(ctx, req, opts...)
 }
 
 // PushGitCommits pushes Git commits from a Workspace to the Repository’s remote.
-func (c *Client) PushGitCommits(ctx context.Context, req *dataformpb.PushGitCommitsRequest, opts ...gax.CallOption) error {
+func (c *Client) PushGitCommits(ctx context.Context, req *dataformpb.PushGitCommitsRequest, opts ...gax.CallOption) (*dataformpb.PushGitCommitsResponse, error) {
 	return c.internalClient.PushGitCommits(ctx, req, opts...)
 }
 
@@ -442,12 +462,12 @@ func (c *Client) FetchGitAheadBehind(ctx context.Context, req *dataformpb.FetchG
 }
 
 // CommitWorkspaceChanges applies a Git commit for uncommitted files in a Workspace.
-func (c *Client) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) error {
+func (c *Client) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitWorkspaceChangesResponse, error) {
 	return c.internalClient.CommitWorkspaceChanges(ctx, req, opts...)
 }
 
 // ResetWorkspaceChanges performs a Git reset for uncommitted files in a Workspace.
-func (c *Client) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.ResetWorkspaceChangesRequest, opts ...gax.CallOption) error {
+func (c *Client) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.ResetWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.ResetWorkspaceChangesResponse, error) {
 	return c.internalClient.ResetWorkspaceChanges(ctx, req, opts...)
 }
 
@@ -461,13 +481,18 @@ func (c *Client) QueryDirectoryContents(ctx context.Context, req *dataformpb.Que
 	return c.internalClient.QueryDirectoryContents(ctx, req, opts...)
 }
 
+// SearchFiles finds the contents of a given Workspace directory by filter.
+func (c *Client) SearchFiles(ctx context.Context, req *dataformpb.SearchFilesRequest, opts ...gax.CallOption) *SearchResultIterator {
+	return c.internalClient.SearchFiles(ctx, req, opts...)
+}
+
 // MakeDirectory creates a directory inside a Workspace.
 func (c *Client) MakeDirectory(ctx context.Context, req *dataformpb.MakeDirectoryRequest, opts ...gax.CallOption) (*dataformpb.MakeDirectoryResponse, error) {
 	return c.internalClient.MakeDirectory(ctx, req, opts...)
 }
 
 // RemoveDirectory deletes a directory (inside a Workspace) and all of its contents.
-func (c *Client) RemoveDirectory(ctx context.Context, req *dataformpb.RemoveDirectoryRequest, opts ...gax.CallOption) error {
+func (c *Client) RemoveDirectory(ctx context.Context, req *dataformpb.RemoveDirectoryRequest, opts ...gax.CallOption) (*dataformpb.RemoveDirectoryResponse, error) {
 	return c.internalClient.RemoveDirectory(ctx, req, opts...)
 }
 
@@ -483,7 +508,7 @@ func (c *Client) ReadFile(ctx context.Context, req *dataformpb.ReadFileRequest, 
 }
 
 // RemoveFile deletes a file (inside a Workspace).
-func (c *Client) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileRequest, opts ...gax.CallOption) error {
+func (c *Client) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileRequest, opts ...gax.CallOption) (*dataformpb.RemoveFileResponse, error) {
 	return c.internalClient.RemoveFile(ctx, req, opts...)
 }
 
@@ -513,6 +538,11 @@ func (c *Client) CreateReleaseConfig(ctx context.Context, req *dataformpb.Create
 }
 
 // UpdateReleaseConfig updates a single ReleaseConfig.
+//
+// Note: This method does not fully implement
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *Client) UpdateReleaseConfig(ctx context.Context, req *dataformpb.UpdateReleaseConfigRequest, opts ...gax.CallOption) (*dataformpb.ReleaseConfig, error) {
 	return c.internalClient.UpdateReleaseConfig(ctx, req, opts...)
 }
@@ -558,6 +588,11 @@ func (c *Client) CreateWorkflowConfig(ctx context.Context, req *dataformpb.Creat
 }
 
 // UpdateWorkflowConfig updates a single WorkflowConfig.
+//
+// Note: This method does not fully implement
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *Client) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.UpdateWorkflowConfigRequest, opts ...gax.CallOption) (*dataformpb.WorkflowConfig, error) {
 	return c.internalClient.UpdateWorkflowConfig(ctx, req, opts...)
 }
@@ -588,13 +623,28 @@ func (c *Client) DeleteWorkflowInvocation(ctx context.Context, req *dataformpb.D
 }
 
 // CancelWorkflowInvocation requests cancellation of a running WorkflowInvocation.
-func (c *Client) CancelWorkflowInvocation(ctx context.Context, req *dataformpb.CancelWorkflowInvocationRequest, opts ...gax.CallOption) error {
+func (c *Client) CancelWorkflowInvocation(ctx context.Context, req *dataformpb.CancelWorkflowInvocationRequest, opts ...gax.CallOption) (*dataformpb.CancelWorkflowInvocationResponse, error) {
 	return c.internalClient.CancelWorkflowInvocation(ctx, req, opts...)
 }
 
 // QueryWorkflowInvocationActions returns WorkflowInvocationActions in a given WorkflowInvocation.
 func (c *Client) QueryWorkflowInvocationActions(ctx context.Context, req *dataformpb.QueryWorkflowInvocationActionsRequest, opts ...gax.CallOption) *WorkflowInvocationActionIterator {
 	return c.internalClient.QueryWorkflowInvocationActions(ctx, req, opts...)
+}
+
+// GetConfig get default config for a given project and location.
+func (c *Client) GetConfig(ctx context.Context, req *dataformpb.GetConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
+	return c.internalClient.GetConfig(ctx, req, opts...)
+}
+
+// UpdateConfig update default config for a given project and location.
+//
+// Note: This method does not fully implement
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
+func (c *Client) UpdateConfig(ctx context.Context, req *dataformpb.UpdateConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
+	return c.internalClient.UpdateConfig(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -705,7 +755,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -774,7 +824,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -908,18 +958,22 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 	return err
 }
 
-func (c *gRPCClient) CommitRepositoryChanges(ctx context.Context, req *dataformpb.CommitRepositoryChangesRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) CommitRepositoryChanges(ctx context.Context, req *dataformpb.CommitRepositoryChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitRepositoryChangesResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CommitRepositoryChanges[0:len((*c.CallOptions).CommitRepositoryChanges):len((*c.CallOptions).CommitRepositoryChanges)], opts...)
+	var resp *dataformpb.CommitRepositoryChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = executeRPC(ctx, c.client.CommitRepositoryChanges, req, settings.GRPC, c.logger, "CommitRepositoryChanges")
+		resp, err = executeRPC(ctx, c.client.CommitRepositoryChanges, req, settings.GRPC, c.logger, "CommitRepositoryChanges")
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) ReadRepositoryFile(ctx context.Context, req *dataformpb.ReadRepositoryFileRequest, opts ...gax.CallOption) (*dataformpb.ReadRepositoryFileResponse, error) {
@@ -1182,32 +1236,40 @@ func (c *gRPCClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 	return resp, nil
 }
 
-func (c *gRPCClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGitCommitsRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGitCommitsRequest, opts ...gax.CallOption) (*dataformpb.PullGitCommitsResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PullGitCommits[0:len((*c.CallOptions).PullGitCommits):len((*c.CallOptions).PullGitCommits)], opts...)
+	var resp *dataformpb.PullGitCommitsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = executeRPC(ctx, c.client.PullGitCommits, req, settings.GRPC, c.logger, "PullGitCommits")
+		resp, err = executeRPC(ctx, c.client.PullGitCommits, req, settings.GRPC, c.logger, "PullGitCommits")
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
-func (c *gRPCClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGitCommitsRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGitCommitsRequest, opts ...gax.CallOption) (*dataformpb.PushGitCommitsResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PushGitCommits[0:len((*c.CallOptions).PushGitCommits):len((*c.CallOptions).PushGitCommits)], opts...)
+	var resp *dataformpb.PushGitCommitsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = executeRPC(ctx, c.client.PushGitCommits, req, settings.GRPC, c.logger, "PushGitCommits")
+		resp, err = executeRPC(ctx, c.client.PushGitCommits, req, settings.GRPC, c.logger, "PushGitCommits")
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.FetchFileGitStatusesRequest, opts ...gax.CallOption) (*dataformpb.FetchFileGitStatusesResponse, error) {
@@ -1246,32 +1308,40 @@ func (c *gRPCClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 	return resp, nil
 }
 
-func (c *gRPCClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitWorkspaceChangesResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CommitWorkspaceChanges[0:len((*c.CallOptions).CommitWorkspaceChanges):len((*c.CallOptions).CommitWorkspaceChanges)], opts...)
+	var resp *dataformpb.CommitWorkspaceChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = executeRPC(ctx, c.client.CommitWorkspaceChanges, req, settings.GRPC, c.logger, "CommitWorkspaceChanges")
+		resp, err = executeRPC(ctx, c.client.CommitWorkspaceChanges, req, settings.GRPC, c.logger, "CommitWorkspaceChanges")
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
-func (c *gRPCClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.ResetWorkspaceChangesRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.ResetWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.ResetWorkspaceChangesResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResetWorkspaceChanges[0:len((*c.CallOptions).ResetWorkspaceChanges):len((*c.CallOptions).ResetWorkspaceChanges)], opts...)
+	var resp *dataformpb.ResetWorkspaceChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = executeRPC(ctx, c.client.ResetWorkspaceChanges, req, settings.GRPC, c.logger, "ResetWorkspaceChanges")
+		resp, err = executeRPC(ctx, c.client.ResetWorkspaceChanges, req, settings.GRPC, c.logger, "ResetWorkspaceChanges")
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFileDiffRequest, opts ...gax.CallOption) (*dataformpb.FetchFileDiffResponse, error) {
@@ -1338,6 +1408,52 @@ func (c *gRPCClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 	return it
 }
 
+func (c *gRPCClient) SearchFiles(ctx context.Context, req *dataformpb.SearchFilesRequest, opts ...gax.CallOption) *SearchResultIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "workspace", url.QueryEscape(req.GetWorkspace()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SearchFiles[0:len((*c.CallOptions).SearchFiles):len((*c.CallOptions).SearchFiles)], opts...)
+	it := &SearchResultIterator{}
+	req = proto.Clone(req).(*dataformpb.SearchFilesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchResult, string, error) {
+		resp := &dataformpb.SearchFilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.SearchFiles, req, settings.GRPC, c.logger, "SearchFiles")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSearchResults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDirectoryRequest, opts ...gax.CallOption) (*dataformpb.MakeDirectoryResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "workspace", url.QueryEscape(req.GetWorkspace()))}
 
@@ -1356,18 +1472,22 @@ func (c *gRPCClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 	return resp, nil
 }
 
-func (c *gRPCClient) RemoveDirectory(ctx context.Context, req *dataformpb.RemoveDirectoryRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) RemoveDirectory(ctx context.Context, req *dataformpb.RemoveDirectoryRequest, opts ...gax.CallOption) (*dataformpb.RemoveDirectoryResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "workspace", url.QueryEscape(req.GetWorkspace()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RemoveDirectory[0:len((*c.CallOptions).RemoveDirectory):len((*c.CallOptions).RemoveDirectory)], opts...)
+	var resp *dataformpb.RemoveDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = executeRPC(ctx, c.client.RemoveDirectory, req, settings.GRPC, c.logger, "RemoveDirectory")
+		resp, err = executeRPC(ctx, c.client.RemoveDirectory, req, settings.GRPC, c.logger, "RemoveDirectory")
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDirectoryRequest, opts ...gax.CallOption) (*dataformpb.MoveDirectoryResponse, error) {
@@ -1406,18 +1526,22 @@ func (c *gRPCClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 	return resp, nil
 }
 
-func (c *gRPCClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileRequest, opts ...gax.CallOption) (*dataformpb.RemoveFileResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "workspace", url.QueryEscape(req.GetWorkspace()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RemoveFile[0:len((*c.CallOptions).RemoveFile):len((*c.CallOptions).RemoveFile)], opts...)
+	var resp *dataformpb.RemoveFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = executeRPC(ctx, c.client.RemoveFile, req, settings.GRPC, c.logger, "RemoveFile")
+		resp, err = executeRPC(ctx, c.client.RemoveFile, req, settings.GRPC, c.logger, "RemoveFile")
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) MoveFile(ctx context.Context, req *dataformpb.MoveFileRequest, opts ...gax.CallOption) (*dataformpb.MoveFileResponse, error) {
@@ -1908,18 +2032,22 @@ func (c *gRPCClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 	return err
 }
 
-func (c *gRPCClient) CancelWorkflowInvocation(ctx context.Context, req *dataformpb.CancelWorkflowInvocationRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) CancelWorkflowInvocation(ctx context.Context, req *dataformpb.CancelWorkflowInvocationRequest, opts ...gax.CallOption) (*dataformpb.CancelWorkflowInvocationResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelWorkflowInvocation[0:len((*c.CallOptions).CancelWorkflowInvocation):len((*c.CallOptions).CancelWorkflowInvocation)], opts...)
+	var resp *dataformpb.CancelWorkflowInvocationResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = executeRPC(ctx, c.client.CancelWorkflowInvocation, req, settings.GRPC, c.logger, "CancelWorkflowInvocation")
+		resp, err = executeRPC(ctx, c.client.CancelWorkflowInvocation, req, settings.GRPC, c.logger, "CancelWorkflowInvocation")
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) QueryWorkflowInvocationActions(ctx context.Context, req *dataformpb.QueryWorkflowInvocationActionsRequest, opts ...gax.CallOption) *WorkflowInvocationActionIterator {
@@ -1966,6 +2094,42 @@ func (c *gRPCClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) GetConfig(ctx context.Context, req *dataformpb.GetConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
+	var resp *dataformpb.Config
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetConfig, req, settings.GRPC, c.logger, "GetConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "config.name", url.QueryEscape(req.GetConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateConfig[0:len((*c.CallOptions).UpdateConfig):len((*c.CallOptions).UpdateConfig)], opts...)
+	var resp *dataformpb.Config
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateConfig, req, settings.GRPC, c.logger, "UpdateConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -2087,6 +2251,9 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 }
 
 // ListRepositories lists Repositories in a given project and location.
+//
+// Note: This method can return repositories not shown in the Dataform
+// UI (at https://console.cloud.google.com/bigquery/dataform).
 func (c *restClient) ListRepositories(ctx context.Context, req *dataformpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
 	req = proto.Clone(req).(*dataformpb.ListRepositoriesRequest)
@@ -2279,6 +2446,11 @@ func (c *restClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 }
 
 // UpdateRepository updates a single Repository.
+//
+// Note: This method does not fully implement
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *restClient) UpdateRepository(ctx context.Context, req *dataformpb.UpdateRepositoryRequest, opts ...gax.CallOption) (*dataformpb.Repository, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRepository()
@@ -2382,16 +2554,16 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 
 // CommitRepositoryChanges applies a Git commit to a Repository. The Repository must not have a value
 // for git_remote_settings.url.
-func (c *restClient) CommitRepositoryChanges(ctx context.Context, req *dataformpb.CommitRepositoryChangesRequest, opts ...gax.CallOption) error {
+func (c *restClient) CommitRepositoryChanges(ctx context.Context, req *dataformpb.CommitRepositoryChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitRepositoryChangesResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:commit", req.GetName())
 
@@ -2406,7 +2578,10 @@ func (c *restClient) CommitRepositoryChanges(ctx context.Context, req *dataformp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	opts = append((*c.CallOptions).CommitRepositoryChanges[0:len((*c.CallOptions).CommitRepositoryChanges):len((*c.CallOptions).CommitRepositoryChanges)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.CommitRepositoryChangesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
@@ -2417,9 +2592,21 @@ func (c *restClient) CommitRepositoryChanges(ctx context.Context, req *dataformp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CommitRepositoryChanges")
-		return err
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CommitRepositoryChanges")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ReadRepositoryFile returns the contents of a file (inside a Repository). The Repository
@@ -3025,16 +3212,16 @@ func (c *restClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 }
 
 // PullGitCommits pulls Git commits from the Repository’s remote into a Workspace.
-func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGitCommitsRequest, opts ...gax.CallOption) error {
+func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGitCommitsRequest, opts ...gax.CallOption) (*dataformpb.PullGitCommitsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:pull", req.GetName())
 
@@ -3049,7 +3236,10 @@ func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	opts = append((*c.CallOptions).PullGitCommits[0:len((*c.CallOptions).PullGitCommits):len((*c.CallOptions).PullGitCommits)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.PullGitCommitsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
@@ -3060,22 +3250,34 @@ func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PullGitCommits")
-		return err
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PullGitCommits")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // PushGitCommits pushes Git commits from a Workspace to the Repository’s remote.
-func (c *restClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGitCommitsRequest, opts ...gax.CallOption) error {
+func (c *restClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGitCommitsRequest, opts ...gax.CallOption) (*dataformpb.PushGitCommitsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:push", req.GetName())
 
@@ -3090,7 +3292,10 @@ func (c *restClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	opts = append((*c.CallOptions).PushGitCommits[0:len((*c.CallOptions).PushGitCommits):len((*c.CallOptions).PushGitCommits)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.PushGitCommitsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
@@ -3101,9 +3306,21 @@ func (c *restClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PushGitCommits")
-		return err
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PushGitCommits")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // FetchFileGitStatuses fetches Git statuses for the files in a Workspace.
@@ -3210,16 +3427,16 @@ func (c *restClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 }
 
 // CommitWorkspaceChanges applies a Git commit for uncommitted files in a Workspace.
-func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) error {
+func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitWorkspaceChangesResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:commit", req.GetName())
 
@@ -3234,7 +3451,10 @@ func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	opts = append((*c.CallOptions).CommitWorkspaceChanges[0:len((*c.CallOptions).CommitWorkspaceChanges):len((*c.CallOptions).CommitWorkspaceChanges)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.CommitWorkspaceChangesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
@@ -3245,22 +3465,34 @@ func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CommitWorkspaceChanges")
-		return err
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CommitWorkspaceChanges")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ResetWorkspaceChanges performs a Git reset for uncommitted files in a Workspace.
-func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.ResetWorkspaceChangesRequest, opts ...gax.CallOption) error {
+func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.ResetWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.ResetWorkspaceChangesResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:reset", req.GetName())
 
@@ -3275,7 +3507,10 @@ func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	opts = append((*c.CallOptions).ResetWorkspaceChanges[0:len((*c.CallOptions).ResetWorkspaceChanges):len((*c.CallOptions).ResetWorkspaceChanges)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.ResetWorkspaceChangesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
@@ -3286,9 +3521,21 @@ func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetWorkspaceChanges")
-		return err
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetWorkspaceChanges")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // FetchFileDiff fetches Git diff for an uncommitted file in a Workspace.
@@ -3423,6 +3670,87 @@ func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 	return it
 }
 
+// SearchFiles finds the contents of a given Workspace directory by filter.
+func (c *restClient) SearchFiles(ctx context.Context, req *dataformpb.SearchFilesRequest, opts ...gax.CallOption) *SearchResultIterator {
+	it := &SearchResultIterator{}
+	req = proto.Clone(req).(*dataformpb.SearchFilesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchResult, string, error) {
+		resp := &dataformpb.SearchFilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchFiles", req.GetWorkspace())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchFiles")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSearchResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // MakeDirectory creates a directory inside a Workspace.
 func (c *restClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDirectoryRequest, opts ...gax.CallOption) (*dataformpb.MakeDirectoryResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -3480,16 +3808,16 @@ func (c *restClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 }
 
 // RemoveDirectory deletes a directory (inside a Workspace) and all of its contents.
-func (c *restClient) RemoveDirectory(ctx context.Context, req *dataformpb.RemoveDirectoryRequest, opts ...gax.CallOption) error {
+func (c *restClient) RemoveDirectory(ctx context.Context, req *dataformpb.RemoveDirectoryRequest, opts ...gax.CallOption) (*dataformpb.RemoveDirectoryResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:removeDirectory", req.GetWorkspace())
 
@@ -3504,7 +3832,10 @@ func (c *restClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	opts = append((*c.CallOptions).RemoveDirectory[0:len((*c.CallOptions).RemoveDirectory):len((*c.CallOptions).RemoveDirectory)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.RemoveDirectoryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
@@ -3515,9 +3846,21 @@ func (c *restClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveDirectory")
-		return err
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveDirectory")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // MoveDirectory moves a directory (inside a Workspace), and all of its contents, to a new
@@ -3588,6 +3931,9 @@ func (c *restClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("path", fmt.Sprintf("%v", req.GetPath()))
+	if req.GetRevision() != "" {
+		params.Add("revision", fmt.Sprintf("%v", req.GetRevision()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3629,16 +3975,16 @@ func (c *restClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 }
 
 // RemoveFile deletes a file (inside a Workspace).
-func (c *restClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileRequest, opts ...gax.CallOption) error {
+func (c *restClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileRequest, opts ...gax.CallOption) (*dataformpb.RemoveFileResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:removeFile", req.GetWorkspace())
 
@@ -3653,7 +3999,10 @@ func (c *restClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	opts = append((*c.CallOptions).RemoveFile[0:len((*c.CallOptions).RemoveFile):len((*c.CallOptions).RemoveFile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.RemoveFileResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
@@ -3664,9 +4013,21 @@ func (c *restClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveFile")
-		return err
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveFile")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // MoveFile moves a file (inside a Workspace) to a new location.
@@ -3968,6 +4329,11 @@ func (c *restClient) CreateReleaseConfig(ctx context.Context, req *dataformpb.Cr
 }
 
 // UpdateReleaseConfig updates a single ReleaseConfig.
+//
+// Note: This method does not fully implement
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *restClient) UpdateReleaseConfig(ctx context.Context, req *dataformpb.UpdateReleaseConfigRequest, opts ...gax.CallOption) (*dataformpb.ReleaseConfig, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetReleaseConfig()
@@ -4089,6 +4455,12 @@ func (c *restClient) ListCompilationResults(ctx context.Context, req *dataformpb
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -4519,6 +4891,11 @@ func (c *restClient) CreateWorkflowConfig(ctx context.Context, req *dataformpb.C
 }
 
 // UpdateWorkflowConfig updates a single WorkflowConfig.
+//
+// Note: This method does not fully implement
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
 func (c *restClient) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.UpdateWorkflowConfigRequest, opts ...gax.CallOption) (*dataformpb.WorkflowConfig, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetWorkflowConfig()
@@ -4844,16 +5221,16 @@ func (c *restClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 }
 
 // CancelWorkflowInvocation requests cancellation of a running WorkflowInvocation.
-func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataformpb.CancelWorkflowInvocationRequest, opts ...gax.CallOption) error {
+func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataformpb.CancelWorkflowInvocationRequest, opts ...gax.CallOption) (*dataformpb.CancelWorkflowInvocationResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
 
@@ -4868,7 +5245,10 @@ func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	opts = append((*c.CallOptions).CancelWorkflowInvocation[0:len((*c.CallOptions).CancelWorkflowInvocation):len((*c.CallOptions).CancelWorkflowInvocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.CancelWorkflowInvocationResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
@@ -4879,9 +5259,21 @@ func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelWorkflowInvocation")
-		return err
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelWorkflowInvocation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // QueryWorkflowInvocationActions returns WorkflowInvocationActions in a given WorkflowInvocation.
@@ -4960,6 +5352,125 @@ func (c *restClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetConfig get default config for a given project and location.
+func (c *restClient) GetConfig(ctx context.Context, req *dataformpb.GetConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.Config{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateConfig update default config for a given project and location.
+//
+// Note: This method does not fully implement
+// AIP/134 (at https://google.aip.dev/134). The wildcard entry (*) is treated
+// as a bad request, and when the field_mask is omitted, the request is
+// treated as a full update on all modifiable fields.
+func (c *restClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "config.name", url.QueryEscape(req.GetConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateConfig[0:len((*c.CallOptions).UpdateConfig):len((*c.CallOptions).UpdateConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.Config{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.

@@ -165,6 +165,11 @@
                 "CreateProperty"
               ]
             },
+            "CreateReportingDataAnnotation": {
+              "methods": [
+                "CreateReportingDataAnnotation"
+              ]
+            },
             "CreateRollupProperty": {
               "methods": [
                 "CreateRollupProperty"
@@ -283,6 +288,11 @@
             "DeleteProperty": {
               "methods": [
                 "DeleteProperty"
+              ]
+            },
+            "DeleteReportingDataAnnotation": {
+              "methods": [
+                "DeleteReportingDataAnnotation"
               ]
             },
             "DeleteRollupPropertySourceLink": {
@@ -445,6 +455,11 @@
                 "GetProperty"
               ]
             },
+            "GetReportingDataAnnotation": {
+              "methods": [
+                "GetReportingDataAnnotation"
+              ]
+            },
             "GetRollupPropertySourceLink": {
               "methods": [
                 "GetRollupPropertySourceLink"
@@ -463,6 +478,11 @@
             "GetSubpropertyEventFilter": {
               "methods": [
                 "GetSubpropertyEventFilter"
+              ]
+            },
+            "GetSubpropertySyncConfig": {
+              "methods": [
+                "GetSubpropertySyncConfig"
               ]
             },
             "ListAccessBindings": {
@@ -580,6 +600,11 @@
                 "ListProperties"
               ]
             },
+            "ListReportingDataAnnotations": {
+              "methods": [
+                "ListReportingDataAnnotations"
+              ]
+            },
             "ListRollupPropertySourceLinks": {
               "methods": [
                 "ListRollupPropertySourceLinks"
@@ -598,6 +623,11 @@
             "ListSubpropertyEventFilters": {
               "methods": [
                 "ListSubpropertyEventFilters"
+              ]
+            },
+            "ListSubpropertySyncConfigs": {
+              "methods": [
+                "ListSubpropertySyncConfigs"
               ]
             },
             "ProvisionAccountTicket": {
@@ -628,6 +658,11 @@
             "SetAutomatedGa4ConfigurationOptOut": {
               "methods": [
                 "SetAutomatedGa4ConfigurationOptOut"
+              ]
+            },
+            "SubmitUserDeletion": {
+              "methods": [
+                "SubmitUserDeletion"
               ]
             },
             "UpdateAccessBinding": {
@@ -745,6 +780,11 @@
                 "UpdateProperty"
               ]
             },
+            "UpdateReportingDataAnnotation": {
+              "methods": [
+                "UpdateReportingDataAnnotation"
+              ]
+            },
             "UpdateSKAdNetworkConversionValueSchema": {
               "methods": [
                 "UpdateSKAdNetworkConversionValueSchema"
@@ -758,6 +798,11 @@
             "UpdateSubpropertyEventFilter": {
               "methods": [
                 "UpdateSubpropertyEventFilter"
+              ]
+            },
+            "UpdateSubpropertySyncConfig": {
+              "methods": [
+                "UpdateSubpropertySyncConfig"
               ]
             }
           }
@@ -920,6 +965,11 @@
                 "CreateProperty"
               ]
             },
+            "CreateReportingDataAnnotation": {
+              "methods": [
+                "CreateReportingDataAnnotation"
+              ]
+            },
             "CreateRollupProperty": {
               "methods": [
                 "CreateRollupProperty"
@@ -1038,6 +1088,11 @@
             "DeleteProperty": {
               "methods": [
                 "DeleteProperty"
+              ]
+            },
+            "DeleteReportingDataAnnotation": {
+              "methods": [
+                "DeleteReportingDataAnnotation"
               ]
             },
             "DeleteRollupPropertySourceLink": {
@@ -1200,6 +1255,11 @@
                 "GetProperty"
               ]
             },
+            "GetReportingDataAnnotation": {
+              "methods": [
+                "GetReportingDataAnnotation"
+              ]
+            },
             "GetRollupPropertySourceLink": {
               "methods": [
                 "GetRollupPropertySourceLink"
@@ -1218,6 +1278,11 @@
             "GetSubpropertyEventFilter": {
               "methods": [
                 "GetSubpropertyEventFilter"
+              ]
+            },
+            "GetSubpropertySyncConfig": {
+              "methods": [
+                "GetSubpropertySyncConfig"
               ]
             },
             "ListAccessBindings": {
@@ -1335,6 +1400,11 @@
                 "ListProperties"
               ]
             },
+            "ListReportingDataAnnotations": {
+              "methods": [
+                "ListReportingDataAnnotations"
+              ]
+            },
             "ListRollupPropertySourceLinks": {
               "methods": [
                 "ListRollupPropertySourceLinks"
@@ -1353,6 +1423,11 @@
             "ListSubpropertyEventFilters": {
               "methods": [
                 "ListSubpropertyEventFilters"
+              ]
+            },
+            "ListSubpropertySyncConfigs": {
+              "methods": [
+                "ListSubpropertySyncConfigs"
               ]
             },
             "ProvisionAccountTicket": {
@@ -1383,6 +1458,11 @@
             "SetAutomatedGa4ConfigurationOptOut": {
               "methods": [
                 "SetAutomatedGa4ConfigurationOptOut"
+              ]
+            },
+            "SubmitUserDeletion": {
+              "methods": [
+                "SubmitUserDeletion"
               ]
             },
             "UpdateAccessBinding": {
@@ -1500,6 +1580,11 @@
                 "UpdateProperty"
               ]
             },
+            "UpdateReportingDataAnnotation": {
+              "methods": [
+                "UpdateReportingDataAnnotation"
+              ]
+            },
             "UpdateSKAdNetworkConversionValueSchema": {
               "methods": [
                 "UpdateSKAdNetworkConversionValueSchema"
@@ -1513,6 +1598,11 @@
             "UpdateSubpropertyEventFilter": {
               "methods": [
                 "UpdateSubpropertyEventFilter"
+              ]
+            },
+            "UpdateSubpropertySyncConfig": {
+              "methods": [
+                "UpdateSubpropertySyncConfig"
               ]
             }
           }

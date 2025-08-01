@@ -1,6 +1,127 @@
 # Changelog
 
 
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.19.0...discoveryengine/v1.20.0) (2025-07-31)
+
+
+### Features
+
+* **discoveryengine:** Add SessionService ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** Add SessionService ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
+
+### Documentation
+
+* **discoveryengine:** A comment for field `answer` in message `.google.cloud.discoveryengine.v1alpha.Session` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `answer` in message `.google.cloud.discoveryengine.v1beta.Session` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `filter` in message `.google.cloud.discoveryengine.v1alpha.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `filter` in message `.google.cloud.discoveryengine.v1beta.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `name` in message `.google.cloud.discoveryengine.v1alpha.DeleteSessionRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `name` in message `.google.cloud.discoveryengine.v1alpha.GetSessionRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `order_by` in message `.google.cloud.discoveryengine.v1alpha.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `order_by` in message `.google.cloud.discoveryengine.v1beta.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `parent` in message `.google.cloud.discoveryengine.v1alpha.CreateSessionRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `parent` in message `.google.cloud.discoveryengine.v1alpha.ListSessionsRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `query_id` in message `.google.cloud.discoveryengine.v1alpha.Query` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `query_id` in message `.google.cloud.discoveryengine.v1beta.Query` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `query` in message `.google.cloud.discoveryengine.v1alpha.Session` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `query` in message `.google.cloud.discoveryengine.v1beta.Session` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `session` in message `.google.cloud.discoveryengine.v1alpha.SearchRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **discoveryengine:** A comment for field `session` in message `.google.cloud.discoveryengine.v1beta.SearchRequest` is changed ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.18.0...discoveryengine/v1.19.0) (2025-07-23)
+
+
+### Features
+
+* **discoveryengine:** Add AssistantService ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **discoveryengine:** Add SessionService ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+
+### Documentation
+
+* **discoveryengine:** A comment for field `answer` in message `.google.cloud.discoveryengine.v1.Session` is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **discoveryengine:** A comment for field `filter` in message `.google.cloud.discoveryengine.v1.ListSessionsRequest` is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **discoveryengine:** A comment for field `query_id` in message `.google.cloud.discoveryengine.v1.Query` is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **discoveryengine:** A comment for field `query` in message `.google.cloud.discoveryengine.v1.Session` is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **discoveryengine:** A comment for field `session` in message `.google.cloud.discoveryengine.v1.SearchRequest` is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.17.2...discoveryengine/v1.18.0) (2025-06-04)
+
+
+### Features
+
+* **discoveryengine:** Add CMEK config service ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add ConnectorRunErrorContext to error log ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add custom search operators for Workspace search ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add HealthcareFhirConfig to FHIR data store ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add identity mapping service ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add more indexing state for site search engine ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add more options for layout parser config ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Add user license config service ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Enable claim level score for grounding ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Support ACL data store and document ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Support media recommendation engine ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+* **discoveryengine:** Support structured content for chunk ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.17.1...discoveryengine/v1.17.2) (2025-05-06)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Upgrade gRPC service registration func ([7c01015](https://github.com/googleapis/google-cloud-go/commit/7c01015f2aafb5eeb0237accced76b059bc7635d))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.17.0...discoveryengine/v1.17.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.16.2...discoveryengine/v1.17.0) (2025-03-27)
+
+
+### Features
+
+* **discoveryengine:** Add interpolation boost action and promotion action ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Add sitemap APIs ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Add stream answer API ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Add time_zone in user info ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **discoveryengine:** Allow FHIR import to use latest predefined schema ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Allow unstructured data import to force refresh all content ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Move serving config update API to GA ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **discoveryengine:** Support auto mode in search as your type ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support boosting for blended search ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support conversion user event ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support end user spec for answer API ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support enterprise web retrieval source for grounding ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support grounding and safety rating for answer API ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support images in web search grounding ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support model scores in search ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support panel aware user event ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support query rephraser model for answer API ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support relevance threshold in search ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+* **discoveryengine:** Support search highlighting ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([76309ee](https://github.com/googleapis/google-cloud-go/commit/76309eee261b1f8a39b79d18a4e69e31b60a1969))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([11f7222](https://github.com/googleapis/google-cloud-go/commit/11f72226e9694bd47adb4376fc557d7b74da3549))
+
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.16.1...discoveryengine/v1.16.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.16.0...discoveryengine/v1.16.1) (2025-01-02)
 
 

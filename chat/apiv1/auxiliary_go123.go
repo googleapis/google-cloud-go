@@ -27,6 +27,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *CustomEmojiIterator) All() iter.Seq2[*chatpb.CustomEmoji, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *MembershipIterator) All() iter.Seq2[*chatpb.Membership, error] {
 	return iterator.RangeAdapter(it.Next)
 }

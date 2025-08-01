@@ -62,6 +62,7 @@ type InstancesCallOptions struct {
 	ListReferrers                      []gax.CallOption
 	PerformMaintenance                 []gax.CallOption
 	RemoveResourcePolicies             []gax.CallOption
+	ReportHostAsFaulty                 []gax.CallOption
 	Reset                              []gax.CallOption
 	Resume                             []gax.CallOption
 	SendDiagnosticInterrupt            []gax.CallOption
@@ -244,6 +245,9 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 		RemoveResourcePolicies: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		ReportHostAsFaulty: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Reset: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -356,6 +360,7 @@ type internalInstancesClient interface {
 	ListReferrers(context.Context, *computepb.ListReferrersInstancesRequest, ...gax.CallOption) *ReferenceIterator
 	PerformMaintenance(context.Context, *computepb.PerformMaintenanceInstanceRequest, ...gax.CallOption) (*Operation, error)
 	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesInstanceRequest, ...gax.CallOption) (*Operation, error)
+	ReportHostAsFaulty(context.Context, *computepb.ReportHostAsFaultyInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Reset(context.Context, *computepb.ResetInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Resume(context.Context, *computepb.ResumeInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SendDiagnosticInterrupt(context.Context, *computepb.SendDiagnosticInterruptInstanceRequest, ...gax.CallOption) (*computepb.SendDiagnosticInterruptInstanceResponse, error)
@@ -519,6 +524,11 @@ func (c *InstancesClient) PerformMaintenance(ctx context.Context, req *computepb
 // RemoveResourcePolicies removes resource policies from an instance.
 func (c *InstancesClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveResourcePolicies(ctx, req, opts...)
+}
+
+// ReportHostAsFaulty mark the host as faulty and try to restart the instance on a new host.
+func (c *InstancesClient) ReportHostAsFaulty(ctx context.Context, req *computepb.ReportHostAsFaultyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.ReportHostAsFaulty(ctx, req, opts...)
 }
 
 // Reset performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance.
@@ -730,7 +740,7 @@ func defaultInstancesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *instancesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -2003,6 +2013,73 @@ func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *c
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveResourcePolicies")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// ReportHostAsFaulty mark the host as faulty and try to restart the instance on a new host.
+func (c *instancesRESTClient) ReportHostAsFaulty(ctx context.Context, req *computepb.ReportHostAsFaultyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetInstancesReportHostAsFaultyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/reportHostAsFaulty", req.GetProject(), req.GetZone(), req.GetInstance())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ReportHostAsFaulty[0:len((*c.CallOptions).ReportHostAsFaulty):len((*c.CallOptions).ReportHostAsFaulty)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReportHostAsFaulty")
 		if err != nil {
 			return err
 		}

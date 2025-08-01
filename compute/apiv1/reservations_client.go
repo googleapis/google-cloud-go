@@ -48,6 +48,7 @@ type ReservationsCallOptions struct {
 	GetIamPolicy       []gax.CallOption
 	Insert             []gax.CallOption
 	List               []gax.CallOption
+	PerformMaintenance []gax.CallOption
 	Resize             []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
@@ -110,6 +111,9 @@ func defaultReservationsRESTCallOptions() *ReservationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		PerformMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Resize: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -136,6 +140,7 @@ type internalReservationsClient interface {
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyReservationRequest, ...gax.CallOption) (*computepb.Policy, error)
 	Insert(context.Context, *computepb.InsertReservationRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListReservationsRequest, ...gax.CallOption) *ReservationIterator
+	PerformMaintenance(context.Context, *computepb.PerformMaintenanceReservationRequest, ...gax.CallOption) (*Operation, error)
 	Resize(context.Context, *computepb.ResizeReservationRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyReservationRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsReservationRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
@@ -205,6 +210,11 @@ func (c *ReservationsClient) Insert(ctx context.Context, req *computepb.InsertRe
 // List a list of all the reservations that have been configured for the specified project in specified zone.
 func (c *ReservationsClient) List(ctx context.Context, req *computepb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// PerformMaintenance perform maintenance on an extended reservation
+func (c *ReservationsClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceReservationRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.PerformMaintenance(ctx, req, opts...)
 }
 
 // Resize resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
@@ -296,7 +306,7 @@ func defaultReservationsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *reservationsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -727,6 +737,73 @@ func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListRe
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// PerformMaintenance perform maintenance on an extended reservation
+func (c *reservationsRESTClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceReservationRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetReservationsPerformMaintenanceRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/performMaintenance", req.GetProject(), req.GetZone(), req.GetReservation())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "reservation", url.QueryEscape(req.GetReservation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PerformMaintenance[0:len((*c.CallOptions).PerformMaintenance):len((*c.CallOptions).PerformMaintenance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PerformMaintenance")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
 }
 
 // Resize resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.

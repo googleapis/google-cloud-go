@@ -1,0 +1,133 @@
+chrisdsmith@chrisdsmith:~/oss/google-cloud-go/internal/librariangen$ ./build-docker-and-test.sh
+--- Building Docker Image ---
+Sending build context to Docker daemon  172.5kB
+Step 1/23 : FROM debian:12-slim as builder
+ ---> 8168deeb41a7
+Step 2/23 : ENV GO_VERSION=1.23.0
+ ---> Using cache
+ ---> 7bf7eae15782
+Step 3/23 : RUN apt-get update &&     apt-get install -y     build-essential     ca-certificates     curl     wget &&     rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> cd01c4060625
+Step 4/23 : RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz &&     tar -C /usr/local -xzf go.tar.gz &&     rm go.tar.gz
+ ---> Using cache
+ ---> 509c9f226505
+Step 5/23 : ENV PATH /usr/local/go/bin:$PATH
+ ---> Using cache
+ ---> 243bead3c43a
+Step 6/23 : WORKDIR /src
+ ---> Using cache
+ ---> 1bcd1a7bb2ac
+Step 7/23 : COPY . .
+ ---> ebf6f3b381c6
+Step 8/23 : RUN CGO_ENABLED=0 go build -o /librariangen .
+ ---> Running in 26e265663f89
+go: downloading go1.24.4 (linux/amd64)
+go: downloading github.com/bazelbuild/buildtools v0.0.0-20250715102656-62b9413b08bb
+Removing intermediate container 26e265663f89
+ ---> a9542c64285a
+Step 9/23 : FROM debian:12-slim
+ ---> 8168deeb41a7
+Step 10/23 : ENV GO_VERSION=1.23.0
+ ---> Using cache
+ ---> 7bf7eae15782
+Step 11/23 : ENV PROTOC_VERSION=25.7
+ ---> Using cache
+ ---> 1735afc167da
+Step 12/23 : ENV GO_PROTOC_PLUGIN_VERSION=1.35.2
+ ---> Using cache
+ ---> 91eccaa2b1da
+Step 13/23 : ENV GO_GRPC_PLUGIN_VERSION=1.3.0
+ ---> Using cache
+ ---> 0fdcd8bb7db5
+Step 14/23 : ENV GAPIC_GENERATOR_VERSION=0.53.1
+ ---> Using cache
+ ---> 8385709fa0d8
+Step 15/23 : ENV STATICCHECK_VERSION=2023.1.6
+ ---> Using cache
+ ---> 3b2451cea02f
+Step 16/23 : ENV GOPATH /go
+ ---> Using cache
+ ---> 36217449e9bd
+Step 17/23 : ENV PATH $GOPATH/bin:/usr/local/go/bin:/usr/local/bin:$PATH
+ ---> Using cache
+ ---> b073631320dc
+Step 18/23 : RUN apt-get update &&     apt-get install -y     ca-certificates     curl     git     unzip     wget &&     rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 820c6badd7c4
+Step 19/23 : RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz &&     tar -C /usr/local -xzf go.tar.gz &&     rm go.tar.gz
+ ---> Using cache
+ ---> d3f972cef07c
+Step 20/23 : RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip -O protoc.zip &&     unzip protoc.zip -d /usr/local &&     rm protoc.zip &&     protoc --version
+ ---> Using cache
+ ---> eb93299f8ab7
+Step 21/23 : RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GO_PROTOC_PLUGIN_VERSION} &&     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v${GO_GRPC_PLUGIN_VERSION} &&     go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v${GAPIC_GENERATOR_VERSION} &&     go install golang.org/x/tools/cmd/goimports@latest &&     go install honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION}
+ ---> Running in 4998872e1e7b
+go: downloading google.golang.org/protobuf v1.35.2
+go: downloading google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
+go: downloading google.golang.org/grpc v1.3.0
+go: downloading google.golang.org/protobuf v1.28.1
+go: downloading github.com/googleapis/gapic-generator-go v0.53.1
+go: downloading google.golang.org/protobuf v1.36.6
+go: downloading cloud.google.com/go/iam v1.5.2
+go: downloading google.golang.org/genproto/googleapis/api v0.0.0-20250519155744-55703ea1f237
+go: downloading google.golang.org/genproto v0.0.0-20250519155744-55703ea1f237
+go: downloading gitlab.com/golang-commonmark/markdown v0.0.0-20211110145824-bf3e522c626a
+go: downloading github.com/ghodss/yaml v1.0.0
+go: downloading google.golang.org/genproto/googleapis/rpc v0.0.0-20250519155744-55703ea1f237
+go: downloading cloud.google.com/go/longrunning v0.6.7
+go: downloading gopkg.in/yaml.v2 v2.4.0
+go: downloading google.golang.org/grpc v1.72.1
+go: downloading gitlab.com/golang-commonmark/html v0.0.0-20191124015941-a22733972181
+go: downloading gitlab.com/golang-commonmark/linkify v0.0.0-20200225224916-64bca66f6ad3
+go: downloading gitlab.com/golang-commonmark/mdurl v0.0.0-20191124015652-932350d1cb84
+go: downloading gitlab.com/golang-commonmark/puny v0.0.0-20191124015043-9f83538fa04f
+go: downloading golang.org/x/text v0.25.0
+go: downloading golang.org/x/net v0.40.0
+go: downloading golang.org/x/sys v0.33.0
+go: downloading golang.org/x/tools v0.35.0
+go: downloading golang.org/x/mod v0.26.0
+go: downloading golang.org/x/sync v0.16.0
+go: downloading honnef.co/go/tools v0.4.6
+go: downloading golang.org/x/tools v0.12.1-0.20230825192346-2191a27a6dc5
+go: downloading golang.org/x/exp/typeparams v0.0.0-20221208152030-732eee02a75a
+go: downloading github.com/BurntSushi/toml v1.2.1
+go: downloading golang.org/x/mod v0.12.0
+go: downloading golang.org/x/sys v0.11.0
+Removing intermediate container 4998872e1e7b
+ ---> a7faed61ffe9
+Step 22/23 : COPY --from=builder /librariangen /usr/local/bin/librariangen
+ ---> 5492a0cb3450
+Step 23/23 : ENTRYPOINT [ "/usr/local/bin/librariangen" ]
+ ---> Running in 9699e4160669
+Removing intermediate container 9699e4160669
+ ---> 40300a70cc08
+Successfully built 40300a70cc08
+Successfully tagged gcr.io/cloud-go-infra/librariangen:latest
+--- Docker Image Built Successfully ---
+
+--- Verifying Dependencies Inside Container ---
+--- Verifying librariangen binary ---
+librariangen found.
+2025/07/25 19:58:18 INFO librariangen invoked args="[librariangen --version]"
+2025/07/25 19:58:18 INFO librariangen finished successfully
+version: 0.1.0
+
+--- Verifying Go ---
+go version go1.23.0 linux/amd64
+
+--- Verifying protoc ---
+libprotoc 25.7
+
+--- Verifying Go Plugins ---
+protoc-gen-go v1.35.2
+protoc-gen-go-grpc 1.3.0
+protoc-gen-go_gapic found.
+
+--- Verifying Post-processor Tools ---
+goimports found.
+staticcheck 2023.1.6 (v0.4.6)
+
+--- All Dependencies Verified Successfully ---
+
+--- Docker Image Verification Complete ---

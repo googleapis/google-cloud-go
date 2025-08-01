@@ -29,6 +29,7 @@ import (
 	rpcpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -38,7 +39,7 @@ func setupFakeServer(project, instance string, config ClientConfig, opt ...grpc.
 	if err != nil {
 		return nil, nil, err
 	}
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
 		return nil, nil, err
 	}
@@ -124,18 +125,20 @@ func TestRetryApply(t *testing.T) {
 		t.Errorf("conditionally mutating row with no retries: no error")
 	}
 
-	errCount = 0
-	code = codes.Internal // Will be retried
-	errMsg = "stream terminated by RST_STREAM"
-	if err := tbl.Apply(ctx, "row", mut); err != nil {
-		t.Errorf("applying single mutation with retries: %v", err)
-	}
-	row, err = tbl.ReadRow(ctx, "row")
-	if err != nil {
-		t.Errorf("reading single value with retries: %v", err)
-	}
-	if row == nil {
-		t.Errorf("applying single mutation with retries: could not read back row")
+	for _, msg := range retryableInternalErrMsgs {
+		errCount = 0
+		code = codes.Internal // Will be retried
+		errMsg = msg
+		if err := tbl.Apply(ctx, "row", mut); err != nil {
+			t.Errorf("applying single mutation with retries: %v, errMsg: %v", err, errMsg)
+		}
+		row, err = tbl.ReadRow(ctx, "row")
+		if err != nil {
+			t.Errorf("reading single value with retries: %v, errMsg: %v", err, errMsg)
+		}
+		if row == nil {
+			t.Errorf("applying single mutation with retries: could not read back row. errMsg: %v", errMsg)
+		}
 	}
 
 	errCount = 0
@@ -588,6 +591,38 @@ func TestRetryReverseReadRows(t *testing.T) {
 	if !testutil.Equal(got, want) {
 		t.Errorf("retry range integration: got %v, want %v", got, want)
 	}
+}
+
+func TestRetryOptionSelection(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+
+	t.Run("DefaultRetryLogic", func(t *testing.T) {
+		client, err := NewClientWithConfig(ctx, project, instance, disableMetricsConfig)
+		if err != nil {
+			t.Fatalf("NewClientWithConfig: %v", err)
+		}
+		defer client.Close()
+
+		if client.disableRetryInfo {
+			t.Errorf("client.disableRetryInfo got: true, want: false")
+		}
+	})
+
+	t.Run("ClientOnlyRetryLogic", func(t *testing.T) {
+		t.Setenv("DISABLE_RETRY_INFO", "1")
+
+		client, err := NewClientWithConfig(ctx, project, instance, disableMetricsConfig)
+		if err != nil {
+			t.Fatalf("NewClientWithConfig: %v", err)
+		}
+		defer client.Close()
+
+		if !client.disableRetryInfo {
+			t.Errorf("client.disableRetryInfo got: false, want: true")
+		}
+	})
 }
 
 func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {

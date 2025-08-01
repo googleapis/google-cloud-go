@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.14.0...vertexai/v0.15.0) (2025-06-25)
+
+
+### Features
+
+* **vertexai:** Support ThinkingConfig ([#12493](https://github.com/googleapis/google-cloud-go/issues/12493)) ([9cc6c04](https://github.com/googleapis/google-cloud-go/commit/9cc6c0418b0afeece20187ac01a086fc080f9dd2))
+
+
+### Bug Fixes
+
+* **vertexai:** Fix flaky test ([#12492](https://github.com/googleapis/google-cloud-go/issues/12492)) ([a961cb5](https://github.com/googleapis/google-cloud-go/commit/a961cb5e85ed07e2eaf088faa29ed9b60882212b))
+
+
+### Documentation
+
+* **vertexai:** Add deprecation note to README ([#12486](https://github.com/googleapis/google-cloud-go/issues/12486)) ([52da9d0](https://github.com/googleapis/google-cloud-go/commit/52da9d00293362877b8b6b3f2e6a4f6fadc60b24))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.4...vertexai/v0.14.0) (2025-06-16)
+
+
+### Features
+
+* **vertexai:** Support global endpoint ([#12450](https://github.com/googleapis/google-cloud-go/issues/12450)) ([0fc210c](https://github.com/googleapis/google-cloud-go/commit/0fc210cf11d0b90468b07ce0be65e20dc73635db))
+
+## [0.13.4](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.3...vertexai/v0.13.4) (2025-05-15)
+
+
+### Bug Fixes
+
+* **vertexai:** Close cache client to avoid leaking gRPC goroutines ([#11856](https://github.com/googleapis/google-cloud-go/issues/11856)) ([d281c20](https://github.com/googleapis/google-cloud-go/commit/d281c20d5fbfdb52f4a474aee6e5268381305a22))
+* **vertexai:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+* **vertexai:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+
+### Documentation
+
+* **vertexai:** Steer new users toward google.golang.org/genai ([#12094](https://github.com/googleapis/google-cloud-go/issues/12094)) ([bd91c05](https://github.com/googleapis/google-cloud-go/commit/bd91c0531bec5a9c375568748325c2d532c0f657))
+
 ## [0.13.3](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.2...vertexai/v0.13.3) (2024-12-19)
 
 

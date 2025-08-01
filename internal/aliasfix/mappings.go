@@ -238,10 +238,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb",
 		Status:     StatusMigrated,
 	},
-	"google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2": {
-		ImportPath: "cloud.google.com/go/dataform/apiv1alpha2/dataformpb",
-		Status:     StatusMigrated,
-	},
 	"google.golang.org/genproto/googleapis/cloud/datafusion/v1": {
 		ImportPath: "cloud.google.com/go/datafusion/apiv1/datafusionpb",
 		Status:     StatusMigrated,
@@ -526,10 +522,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb",
 		Status:     StatusMigrated,
 	},
-	"google.golang.org/genproto/googleapis/cloud/resourcesettings/v1": {
-		ImportPath: "cloud.google.com/go/resourcesettings/apiv1/resourcesettingspb",
-		Status:     StatusMigrated,
-	},
 	"google.golang.org/genproto/googleapis/cloud/retail/v2": {
 		ImportPath: "cloud.google.com/go/retail/apiv2/retailpb",
 		Status:     StatusMigrated,
@@ -724,10 +716,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/devtools/cloudbuild/v1": {
 		ImportPath: "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb",
-		Status:     StatusMigrated,
-	},
-	"google.golang.org/genproto/googleapis/devtools/clouddebugger/v2": {
-		ImportPath: "cloud.google.com/go/debugger/apiv2/debuggerpb",
 		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1": {

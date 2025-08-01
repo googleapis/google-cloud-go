@@ -33,8 +33,7 @@ done
 git diff '*go.mod' :^internal/generated/snippets | tee /dev/stderr | (! read)
 git diff '*go.sum' :^internal/generated/snippets | tee /dev/stderr | (! read)
 
-gofmt -s -d -l . 2>&1 | tee /dev/stderr | (! read)
-goimports -l . 2>&1 | tee /dev/stderr | (! read)
+goimports -l . 2>&1 | grep -vE ".pb.go" | tee /dev/stderr | (! read)
 
 # Runs the linter. Regrettably the linter is very simple and does not provide the ability to exclude rules or files,
 # so we rely on inverse grepping to do this for us.

@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -60,7 +59,7 @@ func TestRangeReader(t *testing.T) {
 				t.Errorf("%d/%d: %v", test.offset, test.length, err)
 				continue
 			}
-			gotb, err := ioutil.ReadAll(r)
+			gotb, err := io.ReadAll(r)
 			if err != nil {
 				t.Errorf("%d/%d: %v", test.offset, test.length, err)
 				continue
@@ -472,7 +471,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 				}
 				defer rd.Close()
 
-				got, err := ioutil.ReadAll(rd)
+				got, err := io.ReadAll(rd)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -540,7 +539,7 @@ func TestMetadataParsingWithReader(t *testing.T) {
 			t.Fatalf("metadata mismatch diff got vs want: %v", diff)
 		}
 
-		got, err := ioutil.ReadAll(rd)
+		got, err := io.ReadAll(rd)
 		if err != nil {
 			t.Fatal(err)
 		}

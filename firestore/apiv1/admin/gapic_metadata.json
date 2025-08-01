@@ -35,6 +35,11 @@
                 "CreateIndex"
               ]
             },
+            "CreateUserCreds": {
+              "methods": [
+                "CreateUserCreds"
+              ]
+            },
             "DeleteBackup": {
               "methods": [
                 "DeleteBackup"
@@ -58,6 +63,21 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteUserCreds": {
+              "methods": [
+                "DeleteUserCreds"
+              ]
+            },
+            "DisableUserCreds": {
+              "methods": [
+                "DisableUserCreds"
+              ]
+            },
+            "EnableUserCreds": {
+              "methods": [
+                "EnableUserCreds"
               ]
             },
             "ExportDocuments": {
@@ -95,6 +115,11 @@
                 "GetOperation"
               ]
             },
+            "GetUserCreds": {
+              "methods": [
+                "GetUserCreds"
+              ]
+            },
             "ImportDocuments": {
               "methods": [
                 "ImportDocuments"
@@ -128,6 +153,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListUserCreds": {
+              "methods": [
+                "ListUserCreds"
+              ]
+            },
+            "ResetUserPassword": {
+              "methods": [
+                "ResetUserPassword"
               ]
             },
             "RestoreDatabase": {
@@ -180,6 +215,11 @@
                 "CreateIndex"
               ]
             },
+            "CreateUserCreds": {
+              "methods": [
+                "CreateUserCreds"
+              ]
+            },
             "DeleteBackup": {
               "methods": [
                 "DeleteBackup"
@@ -203,6 +243,21 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteUserCreds": {
+              "methods": [
+                "DeleteUserCreds"
+              ]
+            },
+            "DisableUserCreds": {
+              "methods": [
+                "DisableUserCreds"
+              ]
+            },
+            "EnableUserCreds": {
+              "methods": [
+                "EnableUserCreds"
               ]
             },
             "ExportDocuments": {
@@ -240,6 +295,11 @@
                 "GetOperation"
               ]
             },
+            "GetUserCreds": {
+              "methods": [
+                "GetUserCreds"
+              ]
+            },
             "ImportDocuments": {
               "methods": [
                 "ImportDocuments"
@@ -273,6 +333,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListUserCreds": {
+              "methods": [
+                "ListUserCreds"
+              ]
+            },
+            "ResetUserPassword": {
+              "methods": [
+                "ResetUserPassword"
               ]
             },
             "RestoreDatabase": {

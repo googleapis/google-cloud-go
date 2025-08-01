@@ -140,3 +140,37 @@ func TestRetryerRespectsServerDelayResourceExhausted(t *testing.T) {
 		t.Fatalf("Retry delay mismatch:\ngot: %v\nwant: %v", maxSeenDelay, serverDelay)
 	}
 }
+
+func TestRunWithRetryOnInternalAuthError(t *testing.T) {
+	ctx := context.Background()
+	targetErr := status.Error(codes.Internal, "Authentication backend internal server error. Please retry")
+
+	callCount := 0
+	// Mock function that fails with the target error first, then succeeds on the second attempt after retry.
+	mockFunc := func(ctx context.Context) error {
+		callCount++
+		if callCount == 1 {
+			return targetErr
+		}
+		return nil
+	}
+
+	// Use a very short backoff for testing purposes to speed it up.
+	originalBackoff := DefaultRetryBackoff
+	DefaultRetryBackoff = gax.Backoff{
+		Initial:    1 * time.Nanosecond,
+		Max:        10 * time.Nanosecond,
+		Multiplier: 1.0,
+	}
+	defer func() { DefaultRetryBackoff = originalBackoff }() // Restore original backoff
+
+	err := runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx, mockFunc)
+
+	if err != nil {
+		t.Errorf("Expected runWithRetry to succeed after retry, but got error: %v", err)
+	}
+
+	if callCount != 2 {
+		t.Errorf("Expected mockFunc to be called 2 times (1 initial + 1 retry), but got %d", callCount)
+	}
+}

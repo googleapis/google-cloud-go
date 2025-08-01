@@ -1,6 +1,50 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.2.0...support/v1.3.0) (2025-05-29)
+
+
+### Features
+
+* **support:** New client(s) ([#12351](https://github.com/googleapis/google-cloud-go/issues/12351)) ([6297761](https://github.com/googleapis/google-cloud-go/commit/6297761f4d292877e003855b83c02b52e54f1f9d))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.6...support/v1.2.0) (2025-05-21)
+
+
+### Features
+
+* **support:** Annotate `Comment.plain_text_body` as deprecated (it was already deprecated, but now we're adding the annotation for it) ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **support:** Deprecate the `Actor.email` field and add `username` to replace it ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+
+
+### Documentation
+
+* **support:** Annotate all names with IDENTIFIER ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **support:** Bring comments and metadata up to date ([d863442](https://github.com/googleapis/google-cloud-go/commit/d863442bc040d09b370aecc40792631df479b1fe))
+* **support:** Update Cloud Support RPC comments to no longer include cURL and Python examples ([62155da](https://github.com/googleapis/google-cloud-go/commit/62155dae7958ebd50140a630a38003f4f74d68bc))
+* **support:** Use backticks around `username` in documentation for `Actor.email` ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+
+## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.5...support/v1.1.6) (2025-04-15)
+
+
+### Bug Fixes
+
+* **support:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.4...support/v1.1.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* **support:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.1.4](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.3...support/v1.1.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* **support:** Fix out-of-sync version.go ([28f0030](https://github.com/googleapis/google-cloud-go/commit/28f00304ebb13abfd0da2f45b9b79de093cca1ec))
+
 ## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/support/v1.1.2...support/v1.1.3) (2025-01-02)
 
 

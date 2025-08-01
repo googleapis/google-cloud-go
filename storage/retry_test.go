@@ -17,7 +17,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -100,7 +100,7 @@ func TestIndefiniteRetries(t *testing.T) {
 			}
 
 			// Consume the body since we can accept this body.
-			ioutil.ReadAll(r.Body)
+			io.ReadAll(r.Body)
 			w.Header().Set("X-Http-Status-Code-Override", "308")
 			return
 

@@ -119,6 +119,18 @@ func (it *EntityTypeIterator) All() iter.Seq2[*aiplatformpb.EntityType, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ExampleIterator) All() iter.Seq2[*aiplatformpb.Example, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExampleStoreIterator) All() iter.Seq2[*aiplatformpb.ExampleStore, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ExecutionIterator) All() iter.Seq2[*aiplatformpb.Execution, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -198,6 +210,12 @@ func (it *IndexIterator) All() iter.Seq2[*aiplatformpb.Index, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MemoryIterator) All() iter.Seq2[*aiplatformpb.Memory, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -360,6 +378,18 @@ func (it *SavedQueryIterator) All() iter.Seq2[*aiplatformpb.SavedQuery, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *ScheduleIterator) All() iter.Seq2[*aiplatformpb.Schedule, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionEventIterator) All() iter.Seq2[*aiplatformpb.SessionEvent, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionIterator) All() iter.Seq2[*aiplatformpb.Session, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

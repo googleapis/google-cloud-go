@@ -546,6 +546,11 @@
                 "GenerateStatelessSummary"
               ]
             },
+            "GenerateSuggestions": {
+              "methods": [
+                "GenerateSuggestions"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
@@ -559,6 +564,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "IngestContextReferences": {
+              "methods": [
+                "IngestContextReferences"
               ]
             },
             "ListConversations": {
@@ -626,6 +636,11 @@
                 "GenerateStatelessSummary"
               ]
             },
+            "GenerateSuggestions": {
+              "methods": [
+                "GenerateSuggestions"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
@@ -639,6 +654,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "IngestContextReferences": {
+              "methods": [
+                "IngestContextReferences"
               ]
             },
             "ListConversations": {

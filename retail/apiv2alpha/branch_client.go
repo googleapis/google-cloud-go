@@ -151,7 +151,7 @@ func defaultBranchRESTCallOptions() *BranchCallOptions {
 	}
 }
 
-// internalBranchClient is an interface that defines the methods available from Vertex AI Search for Retail API.
+// internalBranchClient is an interface that defines the methods available from Vertex AI Search for commerce API.
 type internalBranchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -162,7 +162,7 @@ type internalBranchClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// BranchClient is a client for interacting with Vertex AI Search for Retail API.
+// BranchClient is a client for interacting with Vertex AI Search for commerce API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // # Service for Branch Management
@@ -224,7 +224,7 @@ func (c *BranchClient) ListOperations(ctx context.Context, req *longrunningpb.Li
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// branchGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
+// branchGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type branchGRPCClient struct {
@@ -298,7 +298,7 @@ func (c *branchGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *branchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -372,7 +372,7 @@ func defaultBranchRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *branchRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}

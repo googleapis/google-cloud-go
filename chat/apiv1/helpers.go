@@ -18,6 +18,7 @@ package chat
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -28,9 +29,12 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const serviceName = "chat.googleapis.com"
+
+var protoVersion = fmt.Sprintf("1.%d", protoimpl.MaxVersion)
 
 // For more information on implementing a client constructor hook, see
 // https://github.com/googleapis/google-cloud-go/wiki/Customizing-constructors.
@@ -54,7 +58,13 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/chat.admin.memberships.readonly",
 		"https://www.googleapis.com/auth/chat.admin.spaces",
 		"https://www.googleapis.com/auth/chat.admin.spaces.readonly",
+		"https://www.googleapis.com/auth/chat.app.delete",
+		"https://www.googleapis.com/auth/chat.app.memberships",
+		"https://www.googleapis.com/auth/chat.app.spaces",
+		"https://www.googleapis.com/auth/chat.app.spaces.create",
 		"https://www.googleapis.com/auth/chat.bot",
+		"https://www.googleapis.com/auth/chat.customemojis",
+		"https://www.googleapis.com/auth/chat.customemojis.readonly",
 		"https://www.googleapis.com/auth/chat.delete",
 		"https://www.googleapis.com/auth/chat.import",
 		"https://www.googleapis.com/auth/chat.memberships",
@@ -71,6 +81,7 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/chat.spaces.readonly",
 		"https://www.googleapis.com/auth/chat.users.readstate",
 		"https://www.googleapis.com/auth/chat.users.readstate.readonly",
+		"https://www.googleapis.com/auth/chat.users.spacesettings",
 	}
 }
 

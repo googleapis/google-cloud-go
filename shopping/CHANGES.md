@@ -1,5 +1,222 @@
 # Changelog
 
+
+## [0.24.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.24.0...shopping/v0.24.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* **shopping/merchant/reviews:** An existing field `attributes` is renamed to `merchant_review_attributes` in message `.google.shopping.merchant.reviews.v1beta.MerchantReview` ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **shopping/merchant/reviews:** An existing field `attributes` is renamed to `product_review_attributes` in message `.google.shopping.merchant.reviews.v1beta.ProductReview` ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
+## [0.24.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.23.0...shopping/v0.24.0) (2025-07-16)
+
+
+### Features
+
+* **shopping/merchant/products:** A new field `gtins` is added to message `.google.shopping.merchant.products.v1beta.Attributes` ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A new field `maximum_retail_price` is added to message `.google.shopping.merchant.products.v1beta.Attributes` ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/reviews:** A new field `is_incentivized_review` is added to message `.google.shopping.merchant.reviews.v1beta.ProductReviewAttributes` ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/reviews:** A new field `is_verified_purchase` is added to message `.google.shopping.merchant.reviews.v1beta.ProductReviewAttributes` ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+
+
+### Documentation
+
+* **shopping/merchant/products:** A comment for field `ads_grouping` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `auto_pricing_min_price` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `availability` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `brand` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `color` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `condition` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `custom_attributes` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `custom_label_0` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `custom_label_1` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `custom_label_2` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `custom_label_3` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `custom_label_4` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `data_source` in message `.google.shopping.merchant.products.v1beta.DeleteProductInputRequest` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `data_source` in message `.google.shopping.merchant.products.v1beta.InsertProductInputRequest` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `data_source` in message `.google.shopping.merchant.products.v1beta.UpdateProductInputRequest` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `disclosure_date` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `display_ads_similar_ids` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `display_ads_value` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `excluded_destinations` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `feed_label` in message `.google.shopping.merchant.products.v1beta.Product` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `feed_label` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `gender` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `gtin` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `included_destinations` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `is_bundle` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `link_template` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `material` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `mobile_link_template` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `multipack` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `name` in message `.google.shopping.merchant.products.v1beta.DeleteProductInputRequest` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `name` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `page_size` in message `.google.shopping.merchant.products.v1beta.ListProductsRequest` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `parent` in message `.google.shopping.merchant.products.v1beta.InsertProductInputRequest` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `pattern` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `pickup_method` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `pickup_sla` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `product_highlights` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `product_types` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `product` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `program_label` in message `.google.shopping.merchant.products.v1beta.LoyaltyProgram` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `resolution` in message `.google.shopping.merchant.products.v1beta.ProductStatus` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `sale_price_effective_date` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `shopping_ads_excluded_countries` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `size_system` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `size_types` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `size` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `tax_category` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for field `version_number` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for message `ProductInput` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/products:** A comment for method `InsertProductInput` in service `ProductInputsService` is changed ([#12543](https://github.com/googleapis/google-cloud-go/issues/12543)) ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/reviews:** A comment for field `content` in message `.google.shopping.merchant.reviews.v1beta.ProductReviewAttributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/reviews:** A comment for field `custom_attributes` in message `.google.shopping.merchant.reviews.v1beta.MerchantReview` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **shopping/merchant/reviews:** A comment for field `review_language` in message `.google.shopping.merchant.reviews.v1beta.MerchantReviewAttributes` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+
+## [0.23.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.22.0...shopping/v0.23.0) (2025-07-09)
+
+
+### Features
+
+* **shopping/merchant/accounts:** Add CheckoutSettings service ([#12505](https://github.com/googleapis/google-cloud-go/issues/12505)) ([208745b](https://github.com/googleapis/google-cloud-go/commit/208745bbc1f4fc9122ec71d6cf42f512ae570d13))
+
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.21.0...shopping/v0.22.0) (2025-06-04)
+
+
+### Features
+
+* **shopping/merchant/issueresolution:** Add AggregateProductStatuses ([#12397](https://github.com/googleapis/google-cloud-go/issues/12397)) ([75c4346](https://github.com/googleapis/google-cloud-go/commit/75c434671407bbbdce1e1d16424057cbf980cccd))
+
+## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.20.0...shopping/v0.21.0) (2025-05-21)
+
+
+### Features
+
+* **shopping/merchant/accounts:** A new method_signature `parent,online_return_policy` is added to method `CreateOnlineReturnPolicy` in service `OnlineReturnPolicyService` ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** Add OmnichannelSetingsService, LfpProvidersService and GbpAccountsService ([2a9d8ee](https://github.com/googleapis/google-cloud-go/commit/2a9d8eec71a7e6803eb534287c8d2f64903dcddd))
+* **shopping/merchant/accounts:** Updated comments for returns sub-API publication ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** A comment for field `accept_defective_only` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for field `accept_exchange` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for field `item_conditions` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `online_return_policy` in message `.google.shopping.merchant.accounts.v1beta.CreateOnlineReturnPolicyRequest` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for field `online_return_policy` in message `.google.shopping.merchant.accounts.v1beta.UpdateOnlineReturnPolicyRequest` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for field `parent` in message `.google.shopping.merchant.accounts.v1beta.CreateOnlineReturnPolicyRequest` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for field `parent` in message `.google.shopping.merchant.accounts.v1beta.ListOnlineReturnPoliciesRequest` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `policy` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `process_refund_days` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for field `restocking_fee` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `return_label_source` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for field `return_methods` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `return_shipping_fee` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for field `update_mask` in message `.google.shopping.merchant.accounts.v1beta.UpdateOnlineReturnPolicyRequest` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for message `UpdateOnlineReturnPolicyRequest` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for method `DeleteOnlineReturnPolicy` in service `OnlineReturnPolicyService` is changed ([cb8b66c](https://github.com/googleapis/google-cloud-go/commit/cb8b66cdbff925aaecb59703523cdf364b554eb6))
+* **shopping/merchant/accounts:** A comment for method `GetOnlineReturnPolicy` in service `OnlineReturnPolicyService` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for method `ListOnlineReturnPolicies` in service `OnlineReturnPolicyService` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+* **shopping/merchant/accounts:** A comment for service `OnlineReturnPolicyService` is changed ([2aaada3](https://github.com/googleapis/google-cloud-go/commit/2aaada3fb7a9d3eaacec3351019e225c4038646b))
+
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.19.1...shopping/v0.20.0) (2025-04-30)
+
+
+### Features
+
+* **shopping:** New clients ([#12056](https://github.com/googleapis/google-cloud-go/issues/12056)) ([3ab1dd8](https://github.com/googleapis/google-cloud-go/commit/3ab1dd8441c2f805f08cb32c1d6d98a76b63130f))
+* **shopping:** New clients ([#12068](https://github.com/googleapis/google-cloud-go/issues/12068)) ([25736fe](https://github.com/googleapis/google-cloud-go/commit/25736fe96434648091388e73c8ed58fa94e9deb8))
+
+
+### Documentation
+
+* **shopping/merchant/lfp:** Add clarification to GetLfpMerchantState documentation ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+
+## [0.19.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.19.0...shopping/v0.19.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **shopping:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.19.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.18.1...shopping/v0.19.0) (2025-04-15)
+
+
+### Features
+
+* **shopping/css:** Introduce QuotaService for CSS API ([#11962](https://github.com/googleapis/google-cloud-go/issues/11962)) ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/merchant/lfp:** Add GetLfpMerchantState method ([#11973](https://github.com/googleapis/google-cloud-go/issues/11973)) ([8a2171a](https://github.com/googleapis/google-cloud-go/commit/8a2171a42cca078228fe27bd287a8ba6cad30e70))
+* **shopping/merchant/products:** A new field `automated_discounts` is added to message `google.shopping.merchant.products.v1beta.Product` ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+
+
+### Documentation
+
+* **shopping/css:** A comment for field `name` in message `.google.shopping.css.v1.CssProductInput` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/css:** A comment for field `name` in message `.google.shopping.css.v1.DeleteCssProductInputRequest` is changed ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+* **shopping/merchant/products:** Modified several comments ([48e00d1](https://github.com/googleapis/google-cloud-go/commit/48e00d15ffbec160d21493d07495ac74614167d9))
+
+## [0.18.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.18.0...shopping/v0.18.1) (2025-03-25)
+
+
+### Documentation
+
+* **shopping/css:** Added a clarifying note to the description of the parent field in the Account resource ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.17.1...shopping/v0.18.0) (2025-03-19)
+
+
+### Features
+
+* **shopping/merchant/accounts:** Add AutomaticImprovements service ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/datasources:** Add a new destinations field ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/products:** Add an update method ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **shopping/merchant/datasources:** A comment for field `channel` in message `.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource` is changed ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/datasources:** A comment for field `promotion_data_source` in message `.google.shopping.merchant.datasources.v1beta.DataSource` is changed ([05674f7](https://github.com/googleapis/google-cloud-go/commit/05674f71f13269a5ab193388e5478e55fef6622d))
+* **shopping/merchant/products:** A comment for field `channel` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+* **shopping/merchant/products:** A comment for field `data_source` in message `.google.shopping.merchant.products.v1beta.InsertProductInputRequest` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+* **shopping/merchant/products:** A comment for message `ProductInput` is changed ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+## [0.17.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.17.0...shopping/v0.17.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **shopping:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.17.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.16.0...shopping/v0.17.0) (2025-03-12)
+
+
+### Features
+
+* **shopping/merchant/accounts:** A new field `seasonal_overrides` is added to message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** A new message `SeasonalOverride` is added ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+
+### Bug Fixes
+
+* **shopping/merchant/accounts:** An existing optional field `countries` is converted to required field in message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** An existing optional field `label` is converted to required field in message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** An existing optional field `return_policy_uri` is converted to required field in message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** An existing optional field `type` is converted to required field in message .google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** The documentation for field `countries` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for field `label` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for field `parent` in message `.google.shopping.merchant.accounts.v1beta.ListOnlineReturnPoliciesRequest` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for field `return_policy_uri` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for field `type` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for method `GetOnlineReturnPolicy` in service `OnlineReturnPolicyService` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+* **shopping/merchant/accounts:** The documentation for method `ListOnlineReturnPolicies` in service `OnlineReturnPolicyService` is improved ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.15.0...shopping/v0.16.0) (2025-01-08)
 
 

@@ -16,10 +16,20 @@ package externalaccount
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
+	"os"
+	"path"
+	"reflect"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+)
+
+const (
+	testDataDir = "testdata"
 )
 
 func TestCreateX509Credential(t *testing.T) {
@@ -73,34 +83,103 @@ func TestCreateX509Credential(t *testing.T) {
 	}
 }
 
+func loadCerAsEncodedString(path string) (string, error) {
+	leafCertData, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	leafCert, err := parseCertificate(leafCertData)
+	if err != nil {
+		return "", err
+	}
+	leafCertEncoded := base64.StdEncoding.EncodeToString(leafCert.Raw)
+	return leafCertEncoded, nil
+}
+
 func TestRetrieveSubjectToken_X509(t *testing.T) {
-	opts := cloneTestOpts()
-	opts.CredentialSource = &credsfile.CredentialSource{
-		Certificate: &credsfile.CertificateConfig{
-			UseDefaultCertificateConfig: true,
+	encodedLeaf, err := loadCerAsEncodedString(path.Join(testDataDir, "x509_leaf_certificate.pem"))
+	if err != nil {
+		t.Fatalf("Failed to load the test leaf certificate: %v", err)
+	}
+	encodedIntermediate, err := loadCerAsEncodedString(path.Join(testDataDir, "x509_intermediate_certificate.pem"))
+	if err != nil {
+		t.Fatalf("Failed to load the test intermediate certificate: %v", err)
+	}
+	tests := []struct {
+		name           string
+		trustChainPath string
+		configFilePath string
+		wantErr        bool
+		wantErrMsg     string
+		trustChain     []string
+	}{
+		{
+			name:           "no_trust_chain",
+			configFilePath: path.Join(testDataDir, "x509_certificate_config.json"),
+			wantErr:        false,
+			trustChain:     []string{encodedLeaf},
+		},
+		{
+			name:           "trust_chain_with_leaf",
+			trustChainPath: path.Join(testDataDir, "trust_chain_with_leaf.pem"),
+			configFilePath: path.Join(testDataDir, "x509_certificate_config.json"),
+			wantErr:        false,
+			trustChain:     []string{encodedLeaf, encodedIntermediate},
+		},
+		{
+			name:           "trust_chain_without_leaf",
+			trustChainPath: path.Join(testDataDir, "trust_chain_without_leaf.pem"),
+			configFilePath: path.Join(testDataDir, "x509_certificate_config.json"),
+			wantErr:        false,
+			trustChain:     []string{encodedLeaf, encodedIntermediate},
+		},
+		{
+			name:           "trust_chain_wrong_order",
+			trustChainPath: path.Join(testDataDir, "trust_chain_wrong_order.pem"),
+			configFilePath: path.Join(testDataDir, "x509_certificate_config.json"),
+			wantErr:        true,
+			wantErrMsg:     "the leaf certificate must be at the top of the trust chain file",
+
+			trustChain: []string{encodedLeaf, encodedIntermediate},
 		},
 	}
 
-	base, err := newSubjectTokenProvider(opts)
-	if err != nil {
-		t.Fatalf("newSubjectTokenProvider(): %v", err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			provider := &x509Provider{
+				TrustChainPath: tt.trustChainPath,
+				ConfigFilePath: tt.configFilePath,
+			}
+
+			got, err := provider.subjectToken(context.Background())
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("expected error, but got none")
+				}
+				if !strings.Contains(err.Error(), tt.wantErrMsg) {
+					t.Errorf("error got: %v, want: %v", err, tt.wantErrMsg)
+				}
+				return
+			}
+
+			var gotTrustChain []string
+			if err := json.Unmarshal([]byte(got), &gotTrustChain); err != nil {
+				t.Fatalf("failed to unmarshal got: %v", err)
+			}
+
+			if !reflect.DeepEqual(gotTrustChain, tt.trustChain) {
+				t.Errorf("got %v, want %v", gotTrustChain, tt.trustChain)
+			}
+			if got, want := provider.providerType(), x509ProviderType; got != want {
+				t.Errorf("got %q, want %q", got, want)
+			}
+		})
 	}
 
-	got, err := base.subjectToken(context.Background())
-	if err != nil {
-		t.Fatalf("subjectToken(): %v", err)
-	}
-
-	if want := ""; got != want {
-		t.Errorf("got %q, want %q", got, want)
-	}
-	if got, want := base.providerType(), x509ProviderType; got != want {
-		t.Fatalf("got %q, want %q", got, want)
-	}
 }
 
 func TestClient_Success(t *testing.T) {
-	client, err := createX509Client("testdata/certificate_config_workload.json")
+	client, err := createX509Client(path.Join(testDataDir, "certificate_config_workload.json"))
 	if err != nil {
 		t.Fatalf("createX509Client(): %v", err)
 	}
@@ -111,7 +190,7 @@ func TestClient_Success(t *testing.T) {
 }
 
 func TestGetClient_error(t *testing.T) {
-	if _, err := createX509Client("testdata/bad_file.json"); err == nil {
+	if _, err := createX509Client(path.Join(testDataDir, "bad_file.json")); err == nil {
 		t.Errorf("got nil, want an error")
 	}
 }

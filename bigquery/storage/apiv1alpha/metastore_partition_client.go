@@ -129,8 +129,8 @@ type internalMetastorePartitionClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // BigQuery Metastore Partition Service API.
-// This service is used for managing metastore partitions in BigQuery metastore.
-// The service supports only batch operations for write.
+// This service is used for managing metastore partitions in BigQuery
+// metastore. The service supports only batch operations for write.
 type MetastorePartitionClient struct {
 	// The internal transport-dependent client.
 	internalClient internalMetastorePartitionClient
@@ -215,8 +215,8 @@ type metastorePartitionGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // BigQuery Metastore Partition Service API.
-// This service is used for managing metastore partitions in BigQuery metastore.
-// The service supports only batch operations for write.
+// This service is used for managing metastore partitions in BigQuery
+// metastore. The service supports only batch operations for write.
 func NewMetastorePartitionClient(ctx context.Context, opts ...option.ClientOption) (*MetastorePartitionClient, error) {
 	clientOpts := defaultMetastorePartitionGRPCClientOptions()
 	if newMetastorePartitionClientHook != nil {
@@ -259,7 +259,7 @@ func (c *metastorePartitionGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *metastorePartitionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}

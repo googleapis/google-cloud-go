@@ -1,5 +1,52 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.4.1...oracledatabase/v0.5.0) (2025-04-30)
+
+
+### Features
+
+* **oracledatabase:** Re-enable gRPC support ([#12075](https://github.com/googleapis/google-cloud-go/issues/12075)) ([19c60f9](https://github.com/googleapis/google-cloud-go/commit/19c60f9ac0489ad408b4a8672c5bf091022eda15))
+
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.4.0...oracledatabase/v0.4.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* **oracledatabase:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.3.1...oracledatabase/v0.4.0) (2025-04-15)
+
+
+### Features
+
+* **oracledatabase:** Add new AutonomousDatabase RPCs ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.3.0...oracledatabase/v0.3.1) (2025-03-25)
+
+
+### Documentation
+
+* **oracledatabase:** The network and cidr fields of AutonomousDatabase are now marked optional ([427f448](https://github.com/googleapis/google-cloud-go/commit/427f448d9a1a32a2a55a695e9e3a915fcc71ae19))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.2.1...oracledatabase/v0.3.0) (2025-03-19)
+
+
+### Features
+
+* **oracledatabase:** Add enum value `State ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+
+### Documentation
+
+* **oracledatabase:** Update comment for field `MaintenanceWindow.patching_mode` ([671eed9](https://github.com/googleapis/google-cloud-go/commit/671eed979bfdbf199c4c3787d4f18bca1d5883f4))
+
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.2.0...oracledatabase/v0.2.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **oracledatabase:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.1.3...oracledatabase/v0.2.0) (2025-01-08)
 
 

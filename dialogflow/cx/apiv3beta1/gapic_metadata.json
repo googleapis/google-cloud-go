@@ -2208,9 +2208,19 @@
                 "CreateTool"
               ]
             },
+            "CreateToolVersion": {
+              "methods": [
+                "CreateToolVersion"
+              ]
+            },
             "DeleteTool": {
               "methods": [
                 "DeleteTool"
+              ]
+            },
+            "DeleteToolVersion": {
+              "methods": [
+                "DeleteToolVersion"
               ]
             },
             "ExportTools": {
@@ -2233,6 +2243,11 @@
                 "GetTool"
               ]
             },
+            "GetToolVersion": {
+              "methods": [
+                "GetToolVersion"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -2243,9 +2258,19 @@
                 "ListOperations"
               ]
             },
+            "ListToolVersions": {
+              "methods": [
+                "ListToolVersions"
+              ]
+            },
             "ListTools": {
               "methods": [
                 "ListTools"
+              ]
+            },
+            "RestoreToolVersion": {
+              "methods": [
+                "RestoreToolVersion"
               ]
             },
             "UpdateTool": {
@@ -2268,9 +2293,19 @@
                 "CreateTool"
               ]
             },
+            "CreateToolVersion": {
+              "methods": [
+                "CreateToolVersion"
+              ]
+            },
             "DeleteTool": {
               "methods": [
                 "DeleteTool"
+              ]
+            },
+            "DeleteToolVersion": {
+              "methods": [
+                "DeleteToolVersion"
               ]
             },
             "ExportTools": {
@@ -2293,6 +2328,11 @@
                 "GetTool"
               ]
             },
+            "GetToolVersion": {
+              "methods": [
+                "GetToolVersion"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -2303,9 +2343,19 @@
                 "ListOperations"
               ]
             },
+            "ListToolVersions": {
+              "methods": [
+                "ListToolVersions"
+              ]
+            },
             "ListTools": {
               "methods": [
                 "ListTools"
+              ]
+            },
+            "RestoreToolVersion": {
+              "methods": [
+                "RestoreToolVersion"
               ]
             },
             "UpdateTool": {

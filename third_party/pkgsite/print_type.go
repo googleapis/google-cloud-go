@@ -109,7 +109,7 @@ type declVisitor struct {
 func (v *declVisitor) Visit(n ast.Node) ast.Visitor {
 	switch n := n.(type) {
 	case *ast.BasicLit:
-		if n.Kind == token.STRING && len(n.Value) > 128 {
+		if n.Kind == token.STRING && len(n.Value) > 512 {
 			v.Comments = append(v.Comments,
 				&ast.CommentGroup{List: []*ast.Comment{{
 					Slash: n.Pos(),

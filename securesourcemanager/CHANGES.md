@@ -2,6 +2,40 @@
 
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.3.3...securesourcemanager/v1.4.0) (2025-07-23)
+
+
+### Features
+
+* **securesourcemanager:** Add new UpdateRepository API ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **securesourcemanager:** Add support for new API resources ([#12598](https://github.com/googleapis/google-cloud-go/issues/12598)) ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **securesourcemanager:** Add support for workforce identity federation in instance ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+
+### Documentation
+
+* **securesourcemanager:** `ca_pool` in message `.google.cloud.securesourcemanager.v1.Instance` is Optional ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **securesourcemanager:** A comment for field `requested_cancellation` in message `.google.cloud.securesourcemanager.v1.OperationMetadata` is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **securesourcemanager:** Fix typo in `BranchRule` comment ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **securesourcemanager:** Remove mention of DataPlane from `CreateRepository` endpoint ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **securesourcemanager:** Remove mention of DataPlane from `DeleteRepository` endpoint ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **securesourcemanager:** Remove mention of DataPlane from `GetRepository` endpont ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **securesourcemanager:** Remove mention of DataPlane from `ListRepositories` endpoint ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.3.2...securesourcemanager/v1.3.3) (2025-04-15)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.3.1...securesourcemanager/v1.3.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.3.0...securesourcemanager/v1.3.1) (2025-01-02)
 
 

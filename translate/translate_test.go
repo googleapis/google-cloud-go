@@ -17,7 +17,7 @@ package translate
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -74,7 +74,7 @@ func (t *fakeTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return &http.Response{
 		Status:     fmt.Sprintf("%d OK", http.StatusOK),
 		StatusCode: http.StatusOK,
-		Body:       ioutil.NopCloser(strings.NewReader("{}")),
+		Body:       io.NopCloser(strings.NewReader("{}")),
 	}, nil
 }
 

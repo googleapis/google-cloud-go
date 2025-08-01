@@ -17,6 +17,9 @@ limitations under the License.
 /*
 Package vertexai provides a client for interacting with Vertex AI APIs.
 
+New users are encouraged to use the Google GenAI Go SDK available at
+[google.golang.org/genai].
+
 See [cloud.google.com/go/vertexai/genai] for the currently supported
 functionality.
 */

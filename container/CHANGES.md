@@ -1,5 +1,109 @@
 # Changes
 
+## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.43.0...container/v1.44.0) (2025-07-16)
+
+
+### Features
+
+* **container:** A new enum `Mode` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new enum `TransparentHugepageDefrag` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new enum `TransparentHugepageEnabled` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `additional_ip_ranges_configs` is added to message `.google.container.v1.IPAllocationPolicy` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `auto_ipam_config` is added to message `.google.container.v1.IPAllocationPolicy` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `boot_disk` is added to message `.google.container.v1.NodeConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `boot_disk` is added to message `.google.container.v1.UpdateNodePoolRequest` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `default_compute_class_config` is added to message `.google.container.v1.ClusterAutoscaling` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `desired_additional_ip_ranges_config` is added to message `.google.container.v1.ClusterUpdate` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `desired_auto_ipam_config` is added to message `.google.container.v1.ClusterUpdate` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `desired_user_managed_keys_config` is added to message `.google.container.v1.ClusterUpdate` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `eviction_max_pod_grace_period_seconds` is added to message `.google.container.v1.NodeKubeletConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `eviction_minimum_reclaim` is added to message `.google.container.v1.NodeKubeletConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `eviction_soft_grace_period` is added to message `.google.container.v1.NodeKubeletConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `eviction_soft` is added to message `.google.container.v1.NodeKubeletConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `gke_auto_upgrade_config` is added to message `.google.container.v1.Cluster` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `gke_auto_upgrade_config` is added to message `.google.container.v1.ClusterUpdate` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `lustre_csi_driver_config` is added to message `.google.container.v1.AddonsConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `max_parallel_image_pulls` is added to message `.google.container.v1.NodeKubeletConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `min_node_cpus` is added to message `.google.container.v1.SoleTenantConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `mode` is added to message `.google.container.v1.AnonymousAuthenticationConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `single_process_oom_kill` is added to message `.google.container.v1.NodeKubeletConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `subnetwork` is added to message `.google.container.v1.NodeNetworkConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `transparent_hugepage_defrag` is added to message `.google.container.v1.LinuxNodeConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new field `transparent_hugepage_enabled` is added to message `.google.container.v1.LinuxNodeConfig` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `AdditionalIPRangesConfig` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `AutoIpamConfig` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `BootDisk` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `DefaultComputeClassConfig` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `DesiredAdditionalIPRangesConfig` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `EvictionGracePeriod` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `EvictionMinimumReclaim` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `EvictionSignals` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `GkeAutoUpgradeConfig` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new message `LustreCsiDriverConfig` is added ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **container:** A new value `CLOUD_KMS_KEY_DESTROYED` is added to enum `Code` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.4...container/v1.43.0) (2025-05-29)
+
+
+### Features
+
+* **container:** Add allowed_unsafe_sysctls in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add alpha_cluster_feature_gates in Cluster ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add auto_monitoring_config in ManagedPrometheusConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add autopilot_compatibility_auditing_enabled in WorkloadPolicyConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add ClusterUpgradeInfo ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add confidential_instance_type in ConfidentialNodes ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add container_log_max_files in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add container_log_max_size in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add data_cache_count in EphemeralStorageLocalSsdConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add desired_anonymous_authentication_config in ClusterUpdate ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add desired_disable_l4_lb_firewall_reconciliation in ClusterUpdate ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add desired_pod_autoscaling in ClusterUpdate ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add disable_l4_lb_firewall_reconciliation in NetworkConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add event_type in UpgradeInfoEvent ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add extended_support_end_time in UpgradeInfoEvent ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add FetchClusterUpgradeInfoRequest ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add FetchNodePoolUpgradeInfoRequest ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add flex_start in NodeConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add flex_start in UpdateNodePoolRequest ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add high_scale_checkpointing_config in AddonsConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add image_gc_high_threshold_percent in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add image_gc_low_threshold_percent in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add image_maximum_gc_age in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add image_minimum_gc_age in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add JOBSET in MonitoringComponentConfig.Component ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add KCP_HPA in LoggingComponentConfig.Component ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add max_run_duration in NodeConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add max_run_duration in UpdateNodePoolRequest ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add mitigated_versions in SecurityBulletinEvent ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add NODE_SERVICE_ACCOUNT_MISSING_PERMISSIONS in StatusCondition.Code ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add NodePoolUpgradeInfo ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add performance_monitoring_unit in AdvancedMachineFeatures ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add pod_autoscaling in Cluster ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add standard_support_end_time in UpgradeInfoEvent ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add topology_manager in NodeKubeletConfig ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add UPGRADE_INFO_EVENT in NotificationConfig.EventType ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+* **container:** Add UpgradeDetails ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+
+### Documentation
+
+* **container:** Minor documentation updates ([8189e33](https://github.com/googleapis/google-cloud-go/commit/8189e3313ed62b99cc238c421ae9acfa32aaf9af))
+
+## [1.42.4](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.3...container/v1.42.4) (2025-04-15)
+
+
+### Bug Fixes
+
+* **container:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.42.3](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.2...container/v1.42.3) (2025-03-13)
+
+
+### Bug Fixes
+
+* **container:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.42.2](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.1...container/v1.42.2) (2025-01-30)
 
 

@@ -63,10 +63,12 @@
 //		// TODO: Fill request struct fields.
 //		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CancelWorkflowInvocationRequest.
 //	}
-//	err = c.CancelWorkflowInvocation(ctx, req)
+//	resp, err := c.CancelWorkflowInvocation(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

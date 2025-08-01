@@ -59,11 +59,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &aiplatformpb.CreateDatasetRequest{
+//	req := &aiplatformpb.AssembleDataRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateDatasetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#AssembleDataRequest.
 //	}
-//	op, err := c.CreateDataset(ctx, req)
+//	op, err := c.AssembleData(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

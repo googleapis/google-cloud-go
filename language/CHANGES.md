@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/language/v1.14.4...language/v1.14.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **language:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/language/v1.14.3...language/v1.14.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **language:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/language/v1.14.2...language/v1.14.3) (2025-01-02)
 
 

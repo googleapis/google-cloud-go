@@ -1,5 +1,26 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.18.5...security/v1.19.0) (2025-07-09)
+
+
+### Features
+
+* **security:** Add RDN sequence ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+## [1.18.5](https://github.com/googleapis/google-cloud-go/compare/security/v1.18.4...security/v1.18.5) (2025-04-15)
+
+
+### Bug Fixes
+
+* **security:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.18.4](https://github.com/googleapis/google-cloud-go/compare/security/v1.18.3...security/v1.18.4) (2025-03-13)
+
+
+### Bug Fixes
+
+* **security:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/security/v1.18.2...security/v1.18.3) (2025-01-02)
 
 

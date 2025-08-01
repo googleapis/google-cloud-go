@@ -144,6 +144,11 @@
         "grpc": {
           "libraryClient": "SpacesClient",
           "rpcs": {
+            "ConnectActiveConference": {
+              "methods": [
+                "ConnectActiveConference"
+              ]
+            },
             "CreateMember": {
               "methods": [
                 "CreateMember"
@@ -189,6 +194,11 @@
         "rest": {
           "libraryClient": "SpacesClient",
           "rpcs": {
+            "ConnectActiveConference": {
+              "methods": [
+                "ConnectActiveConference"
+              ]
+            },
             "CreateMember": {
               "methods": [
                 "CreateMember"

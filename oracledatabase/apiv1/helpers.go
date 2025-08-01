@@ -18,16 +18,23 @@ package oracledatabase
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
 
 	"github.com/googleapis/gax-go/v2/internallog"
+	"github.com/googleapis/gax-go/v2/internallog/grpclog"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const serviceName = "oracledatabase.googleapis.com"
+
+var protoVersion = fmt.Sprintf("1.%d", protoimpl.MaxVersion)
 
 // For more information on implementing a client constructor hook, see
 // https://github.com/googleapis/google-cloud-go/wiki/Customizing-constructors.
@@ -84,4 +91,15 @@ func executeStreamingHTTPRequest(ctx context.Context, client *http.Client, req *
 		return nil, err
 	}
 	return resp, nil
+}
+
+func executeRPC[I proto.Message, O proto.Message](ctx context.Context, fn func(context.Context, I, ...grpc.CallOption) (O, error), req I, opts []grpc.CallOption, logger *slog.Logger, rpc string) (O, error) {
+	var zero O
+	logger.DebugContext(ctx, "api request", "serviceName", serviceName, "rpcName", rpc, "request", grpclog.ProtoMessageRequest(ctx, req))
+	resp, err := fn(ctx, req, opts...)
+	if err != nil {
+		return zero, err
+	}
+	logger.DebugContext(ctx, "api response", "serviceName", serviceName, "rpcName", rpc, "response", grpclog.ProtoMessageResponse(resp))
+	return resp, err
 }

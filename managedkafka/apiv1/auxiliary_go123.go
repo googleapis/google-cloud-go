@@ -29,7 +29,25 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *AclIterator) All() iter.Seq2[*managedkafkapb.Acl, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ClusterIterator) All() iter.Seq2[*managedkafkapb.Cluster, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectClusterIterator) All() iter.Seq2[*managedkafkapb.ConnectCluster, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectorIterator) All() iter.Seq2[*managedkafkapb.Connector, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

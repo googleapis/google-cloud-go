@@ -1,6 +1,39 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.2...config/v1.4.0) (2025-07-09)
+
+
+### Features
+
+* **config:** Added resource change and drift details for the preview ([#12513](https://github.com/googleapis/google-cloud-go/issues/12513)) ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+
+### Documentation
+
+* **config:** A comment for field `annotations` in message `.google.cloud.config.v1.Preview` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `error` in message `.google.cloud.config.v1.TerraformError` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `input_value` in message `.google.cloud.config.v1.TerraformVariable` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `input_values` in message `.google.cloud.config.v1.TerraformBlueprint` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `labels` in message `.google.cloud.config.v1.Deployment` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `name` in message `.google.cloud.config.v1.Deployment` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `page_size` in message `.google.cloud.config.v1.ListTerraformVersionsRequest` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `page_token` in message `.google.cloud.config.v1.ListTerraformVersionsRequest` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.1...config/v1.3.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **config:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.0...config/v1.3.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **config:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.2.1...config/v1.3.0) (2025-01-08)
 
 

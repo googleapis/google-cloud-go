@@ -47,6 +47,7 @@ type MachineImagesCallOptions struct {
 	Insert             []gax.CallOption
 	List               []gax.CallOption
 	SetIamPolicy       []gax.CallOption
+	SetLabels          []gax.CallOption
 	TestIamPermissions []gax.CallOption
 }
 
@@ -97,6 +98,9 @@ func defaultMachineImagesRESTCallOptions() *MachineImagesCallOptions {
 		SetIamPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		SetLabels: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -114,6 +118,7 @@ type internalMachineImagesClient interface {
 	Insert(context.Context, *computepb.InsertMachineImageRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListMachineImagesRequest, ...gax.CallOption) *MachineImageIterator
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyMachineImageRequest, ...gax.CallOption) (*computepb.Policy, error)
+	SetLabels(context.Context, *computepb.SetLabelsMachineImageRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsMachineImageRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -180,6 +185,11 @@ func (c *MachineImagesClient) List(ctx context.Context, req *computepb.ListMachi
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *MachineImagesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyMachineImageRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// SetLabels sets the labels on a machine image. To learn more about labels, read the Labeling Resources documentation.
+func (c *MachineImagesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsMachineImageRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
@@ -256,7 +266,7 @@ func defaultMachineImagesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *machineImagesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -641,6 +651,65 @@ func (c *machineImagesRESTClient) SetIamPolicy(ctx context.Context, req *compute
 		return nil, e
 	}
 	return resp, nil
+}
+
+// SetLabels sets the labels on a machine image. To learn more about labels, read the Labeling Resources documentation.
+func (c *machineImagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsMachineImageRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalSetLabelsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/machineImages/%v/setLabels", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetLabels")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.

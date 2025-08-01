@@ -36,6 +36,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -129,8 +130,10 @@ loop:
 			}
 		}
 	}
+	md := metadata.Pairs(resourcePrefixHeader, "projects/p/instances/i/databases/d")
+	ctx = metadata.NewOutgoingContext(ctx, md)
 	for _, sh := range shs {
-		if _, err := sh.getClient().GetSession(context.Background(), &sppb.GetSessionRequest{
+		if _, err := sh.getClient().GetSession(ctx, &sppb.GetSessionRequest{
 			Name: sh.getID(),
 		}); err != nil {
 			t.Fatalf("error getting expected session from server: %v", err)

@@ -21,12 +21,12 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
@@ -674,6 +674,7 @@ func TestNewBucket(t *testing.T) {
 			RetentionDurationSeconds: 3600,
 		},
 		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
+		Owner:                 &raw.BucketOwner{Entity: "project-owner-projectId"},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -737,6 +738,7 @@ func TestNewBucket(t *testing.T) {
 			RetentionDuration: time.Hour,
 		},
 		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
+		OwnerEntity:           "project-owner-projectId",
 	}
 	got, err := newBucket(rb)
 	if err != nil {
@@ -810,6 +812,7 @@ func TestNewBucketFromProto(t *testing.T) {
 				},
 			},
 		},
+		Owner: &storagepb.Owner{Entity: "project-owner-projectId"},
 	}
 	want := &BucketAttrs{
 		Name:             "name",
@@ -859,6 +862,7 @@ func TestNewBucketFromProto(t *testing.T) {
 				},
 			}},
 		},
+		OwnerEntity: "project-owner-projectId",
 	}
 	got := newBucketFromProto(pb)
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -1296,9 +1300,7 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			bucket := BucketHandle{
 				c: &Client{
-					creds: &google.Credentials{
-						JSON: []byte(tc.creds(tc.serviceAccount)),
-					},
+					creds: auth.NewCredentials(&auth.CredentialsOptions{JSON: []byte(tc.creds(tc.serviceAccount))}),
 				},
 				name: "my-bucket",
 			}
@@ -1617,7 +1619,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 	}()
 
 	for _, test := range tests {
-		t.Run(test.desc, func(s *testing.T) {
+		t.Run(test.desc, func(t *testing.T) {
 			utcNow = func() time.Time {
 				return test.now
 			}
@@ -1635,11 +1637,11 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 
 			got, err := c.Bucket(bucketName).SignedURL(objectName, test.opts)
 			if err != nil {
-				s.Fatal(err)
+				t.Fatal(err)
 			}
 
 			if got != test.want {
-				s.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
+				t.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
 		})
 	}
@@ -1664,9 +1666,10 @@ func TestDefaultSignBlobRetry(t *testing.T) {
 	b := client.Bucket("fakebucket")
 
 	if _, err := b.SignedURL("fakeobj", &SignedURLOptions{
-		Method:    "GET",
-		Expires:   time.Now().Add(time.Hour),
-		SignBytes: b.defaultSignBytesFunc("example@example.com"),
+		Method:         "GET",
+		Expires:        time.Now().Add(time.Hour),
+		SignBytes:      b.defaultSignBytesFunc("example@example.com"),
+		GoogleAccessID: "example@example.com",
 	}); err != nil {
 		t.Fatalf("BucketHandle.SignedURL: %v", err)
 	}

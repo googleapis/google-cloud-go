@@ -213,7 +213,7 @@ func (c *Client) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.Synth
 	return c.internalClient.SynthesizeSpeech(ctx, req, opts...)
 }
 
-// StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while
+// StreamingSynthesize performs bidirectional streaming speech synthesis: receives audio while
 // sending text.
 //
 // This method is not supported for the REST transport.
@@ -299,7 +299,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -367,7 +367,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -602,7 +602,7 @@ func (c *restClient) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.S
 	return resp, nil
 }
 
-// StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while
+// StreamingSynthesize performs bidirectional streaming speech synthesis: receives audio while
 // sending text.
 //
 // This method is not supported for the REST transport.

@@ -97,9 +97,10 @@ type internalClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service definition for the Places API.
-// Note: every request (except for Autocomplete requests) requires a field mask
-// set outside of the request proto (all/*, is not assumed). The field mask
-// can be set via the HTTP header X-Goog-FieldMask. See:
+// Note: every request (except for Autocomplete and GetPhotoMedia requests)
+// requires a field mask set outside of the request proto (all/*, is not
+// assumed). The field mask can be set via the HTTP header X-Goog-FieldMask.
+// See:
 // https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 type Client struct {
 	// The internal transport-dependent client.
@@ -181,9 +182,10 @@ type gRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service definition for the Places API.
-// Note: every request (except for Autocomplete requests) requires a field mask
-// set outside of the request proto (all/*, is not assumed). The field mask
-// can be set via the HTTP header X-Goog-FieldMask. See:
+// Note: every request (except for Autocomplete and GetPhotoMedia requests)
+// requires a field mask set outside of the request proto (all/*, is not
+// assumed). The field mask can be set via the HTTP header X-Goog-FieldMask.
+// See:
 // https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
@@ -227,7 +229,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -259,9 +261,10 @@ type restClient struct {
 // NewRESTClient creates a new places rest client.
 //
 // Service definition for the Places API.
-// Note: every request (except for Autocomplete requests) requires a field mask
-// set outside of the request proto (all/*, is not assumed). The field mask
-// can be set via the HTTP header X-Goog-FieldMask. See:
+// Note: every request (except for Autocomplete and GetPhotoMedia requests)
+// requires a field mask set outside of the request proto (all/*, is not
+// assumed). The field mask can be set via the HTTP header X-Goog-FieldMask.
+// See:
 // https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
@@ -299,7 +302,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}

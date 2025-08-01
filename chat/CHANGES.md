@@ -1,5 +1,73 @@
 # Changelog
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.14.0...chat/v0.15.0) (2025-07-31)
+
+
+### Features
+
+* **chat:** Addition of app auth support for chat api ([#12611](https://github.com/googleapis/google-cloud-go/issues/12611)) ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+
+### Documentation
+
+* **chat:** Update reference documentation for createSpace,updateSpace,deleteSpace,createMembership,updateMembership,deleteMembership and the newly added field -customer- in space.proto ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.1...chat/v0.14.0) (2025-07-23)
+
+
+### Features
+
+* **chat:** Exposing 1p integration message content (drive, calendar, huddle, meet chips) ([#12589](https://github.com/googleapis/google-cloud-go/issues/12589)) ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
+
+### Documentation
+
+* **chat:** Update reference documentation for annotations. Introduce new richlink metadata types ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
+## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.0...chat/v0.13.1) (2025-06-04)
+
+
+### Bug Fixes
+
+* **chat:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.12.2...chat/v0.13.0) (2025-05-06)
+
+
+### Features
+
+* **chat:** A new method `customEmojis.create` is added ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+* **chat:** A new method `customEmojis.delete` is added ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+* **chat:** A new method `customEmojis.get` is added ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+* **chat:** A new method `customEmojis.list` is added ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+
+
+### Documentation
+
+* **chat:** A comment for field `filter` in message `.google.chat.v1.ListReactionsRequest` is changed ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+* **chat:** A comment for message `CustomEmoji` is changed ([2f22244](https://github.com/googleapis/google-cloud-go/commit/2f2224464c132fbcf84e82cc4c3fabb21f07e858))
+
+## [0.12.2](https://github.com/googleapis/google-cloud-go/compare/chat/v0.12.1...chat/v0.12.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* **chat:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.12.0...chat/v0.12.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* **chat:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.11.0...chat/v0.12.0) (2025-03-12)
+
+
+### Features
+
+* **chat:** Addition of space notification setting Chat API ([dd0d1d7](https://github.com/googleapis/google-cloud-go/commit/dd0d1d7b41884c9fc9b5fe808139cccd29e1e486))
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.1...chat/v0.11.0) (2025-02-20)
 
 

@@ -2,6 +2,27 @@
 
 
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.7...secretmanager/v1.15.0) (2025-06-17)
+
+
+### Features
+
+* **secretmanager:** Update secret manager protos for tags ([#12406](https://github.com/googleapis/google-cloud-go/issues/12406)) ([feb078b](https://github.com/googleapis/google-cloud-go/commit/feb078b04ab541dd3bdceb2ac1f24938bb0354a3))
+
+## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.6...secretmanager/v1.14.7) (2025-04-15)
+
+
+### Bug Fixes
+
+* **secretmanager:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.5...secretmanager/v1.14.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* **secretmanager:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
 ## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.4...secretmanager/v1.14.5) (2025-02-12)
 
 

@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.11.9](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.8...orchestration/v1.11.9) (2025-04-15)
+
+
+### Documentation
+
+* **orchestration/airflow/service:** `enabled` field of `MasterAuthorizedNetworksConfig` is now marked as optional ([43bc515](https://github.com/googleapis/google-cloud-go/commit/43bc51591e4ffe7efc76449bb00e3747cda2c944))
+
+## [1.11.8](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.7...orchestration/v1.11.8) (2025-04-15)
+
+
+### Bug Fixes
+
+* **orchestration:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.6...orchestration/v1.11.7) (2025-03-19)
+
+
+### Documentation
+
+* **orchestration/airflow/service:** A comment for field `connection_type` in message `.google.cloud.orchestration.airflow.service.v1.NetworkingConfig` is changed ([c2ee207](https://github.com/googleapis/google-cloud-go/commit/c2ee207621b2bb5fad8e6821892eae0041f469cd))
+
+## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.5...orchestration/v1.11.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* **orchestration:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.4...orchestration/v1.11.5) (2025-03-12)
+
+
+### Documentation
+
+* **orchestration/airflow/service:** Fix Composer 3 image version format in API docs ([12bfa98](https://github.com/googleapis/google-cloud-go/commit/12bfa984f87099dbfbd5abf3436e440e62b04bad))
+
 ## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.3...orchestration/v1.11.4) (2025-01-15)
 
 

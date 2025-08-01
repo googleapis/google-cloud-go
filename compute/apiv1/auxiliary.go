@@ -1991,6 +1991,53 @@ func (it *InstantSnapshotsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// InterconnectAttachmentGroupIterator manages a stream of *computepb.InterconnectAttachmentGroup.
+type InterconnectAttachmentGroupIterator struct {
+	items    []*computepb.InterconnectAttachmentGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InterconnectAttachmentGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *InterconnectAttachmentGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *InterconnectAttachmentGroupIterator) Next() (*computepb.InterconnectAttachmentGroup, error) {
+	var item *computepb.InterconnectAttachmentGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *InterconnectAttachmentGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *InterconnectAttachmentGroupIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // InterconnectAttachmentIterator manages a stream of *computepb.InterconnectAttachment.
 type InterconnectAttachmentIterator struct {
 	items    []*computepb.InterconnectAttachment
@@ -2086,6 +2133,53 @@ func (it *InterconnectAttachmentsScopedListPairIterator) bufLen() int {
 }
 
 func (it *InterconnectAttachmentsScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// InterconnectGroupIterator manages a stream of *computepb.InterconnectGroup.
+type InterconnectGroupIterator struct {
+	items    []*computepb.InterconnectGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InterconnectGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *InterconnectGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *InterconnectGroupIterator) Next() (*computepb.InterconnectGroup, error) {
+	var item *computepb.InterconnectGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *InterconnectGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *InterconnectGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
@@ -3796,6 +3890,53 @@ func (it *RegionIterator) takeBuf() interface{} {
 	return b
 }
 
+// ReservationBlockIterator manages a stream of *computepb.ReservationBlock.
+type ReservationBlockIterator struct {
+	items    []*computepb.ReservationBlock
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ReservationBlock, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ReservationBlockIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ReservationBlockIterator) Next() (*computepb.ReservationBlock, error) {
+	var item *computepb.ReservationBlock
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ReservationBlockIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ReservationBlockIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ReservationIterator manages a stream of *computepb.Reservation.
 type ReservationIterator struct {
 	items    []*computepb.Reservation
@@ -3838,6 +3979,53 @@ func (it *ReservationIterator) bufLen() int {
 }
 
 func (it *ReservationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ReservationSubBlockIterator manages a stream of *computepb.ReservationSubBlock.
+type ReservationSubBlockIterator struct {
+	items    []*computepb.ReservationSubBlock
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ReservationSubBlock, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ReservationSubBlockIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ReservationSubBlockIterator) Next() (*computepb.ReservationSubBlock, error) {
+	var item *computepb.ReservationSubBlock
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ReservationSubBlockIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ReservationSubBlockIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

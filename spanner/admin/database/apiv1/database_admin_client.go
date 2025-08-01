@@ -47,36 +47,37 @@ var newDatabaseAdminClientHook clientHook
 
 // DatabaseAdminCallOptions contains the retry settings for each method of DatabaseAdminClient.
 type DatabaseAdminCallOptions struct {
-	ListDatabases          []gax.CallOption
-	CreateDatabase         []gax.CallOption
-	GetDatabase            []gax.CallOption
-	UpdateDatabase         []gax.CallOption
-	UpdateDatabaseDdl      []gax.CallOption
-	DropDatabase           []gax.CallOption
-	GetDatabaseDdl         []gax.CallOption
-	SetIamPolicy           []gax.CallOption
-	GetIamPolicy           []gax.CallOption
-	TestIamPermissions     []gax.CallOption
-	CreateBackup           []gax.CallOption
-	CopyBackup             []gax.CallOption
-	GetBackup              []gax.CallOption
-	UpdateBackup           []gax.CallOption
-	DeleteBackup           []gax.CallOption
-	ListBackups            []gax.CallOption
-	RestoreDatabase        []gax.CallOption
-	ListDatabaseOperations []gax.CallOption
-	ListBackupOperations   []gax.CallOption
-	ListDatabaseRoles      []gax.CallOption
-	AddSplitPoints         []gax.CallOption
-	CreateBackupSchedule   []gax.CallOption
-	GetBackupSchedule      []gax.CallOption
-	UpdateBackupSchedule   []gax.CallOption
-	DeleteBackupSchedule   []gax.CallOption
-	ListBackupSchedules    []gax.CallOption
-	CancelOperation        []gax.CallOption
-	DeleteOperation        []gax.CallOption
-	GetOperation           []gax.CallOption
-	ListOperations         []gax.CallOption
+	ListDatabases                []gax.CallOption
+	CreateDatabase               []gax.CallOption
+	GetDatabase                  []gax.CallOption
+	UpdateDatabase               []gax.CallOption
+	UpdateDatabaseDdl            []gax.CallOption
+	DropDatabase                 []gax.CallOption
+	GetDatabaseDdl               []gax.CallOption
+	SetIamPolicy                 []gax.CallOption
+	GetIamPolicy                 []gax.CallOption
+	TestIamPermissions           []gax.CallOption
+	CreateBackup                 []gax.CallOption
+	CopyBackup                   []gax.CallOption
+	GetBackup                    []gax.CallOption
+	UpdateBackup                 []gax.CallOption
+	DeleteBackup                 []gax.CallOption
+	ListBackups                  []gax.CallOption
+	RestoreDatabase              []gax.CallOption
+	ListDatabaseOperations       []gax.CallOption
+	ListBackupOperations         []gax.CallOption
+	ListDatabaseRoles            []gax.CallOption
+	AddSplitPoints               []gax.CallOption
+	CreateBackupSchedule         []gax.CallOption
+	GetBackupSchedule            []gax.CallOption
+	UpdateBackupSchedule         []gax.CallOption
+	DeleteBackupSchedule         []gax.CallOption
+	ListBackupSchedules          []gax.CallOption
+	InternalUpdateGraphOperation []gax.CallOption
+	CancelOperation              []gax.CallOption
+	DeleteOperation              []gax.CallOption
+	GetOperation                 []gax.CallOption
+	ListOperations               []gax.CallOption
 }
 
 func defaultDatabaseAdminGRPCClientOptions() []option.ClientOption {
@@ -374,10 +375,11 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		InternalUpdateGraphOperation: []gax.CallOption{},
+		CancelOperation:              []gax.CallOption{},
+		DeleteOperation:              []gax.CallOption{},
+		GetOperation:                 []gax.CallOption{},
+		ListOperations:               []gax.CallOption{},
 	}
 }
 
@@ -641,10 +643,11 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		InternalUpdateGraphOperation: []gax.CallOption{},
+		CancelOperation:              []gax.CallOption{},
+		DeleteOperation:              []gax.CallOption{},
+		GetOperation:                 []gax.CallOption{},
+		ListOperations:               []gax.CallOption{},
 	}
 }
 
@@ -685,6 +688,7 @@ type internalDatabaseAdminClient interface {
 	UpdateBackupSchedule(context.Context, *databasepb.UpdateBackupScheduleRequest, ...gax.CallOption) (*databasepb.BackupSchedule, error)
 	DeleteBackupSchedule(context.Context, *databasepb.DeleteBackupScheduleRequest, ...gax.CallOption) error
 	ListBackupSchedules(context.Context, *databasepb.ListBackupSchedulesRequest, ...gax.CallOption) *BackupScheduleIterator
+	InternalUpdateGraphOperation(context.Context, *databasepb.InternalUpdateGraphOperationRequest, ...gax.CallOption) (*databasepb.InternalUpdateGraphOperationResponse, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -1048,6 +1052,12 @@ func (c *DatabaseAdminClient) ListBackupSchedules(ctx context.Context, req *data
 	return c.internalClient.ListBackupSchedules(ctx, req, opts...)
 }
 
+// InternalUpdateGraphOperation this is an internal API called by Spanner Graph jobs. You should never need
+// to call this API directly.
+func (c *DatabaseAdminClient) InternalUpdateGraphOperation(ctx context.Context, req *databasepb.InternalUpdateGraphOperationRequest, opts ...gax.CallOption) (*databasepb.InternalUpdateGraphOperationResponse, error) {
+	return c.internalClient.InternalUpdateGraphOperation(ctx, req, opts...)
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *DatabaseAdminClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
@@ -1162,7 +1172,7 @@ func (c *databaseAdminGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *databaseAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -1255,7 +1265,7 @@ func defaultDatabaseAdminRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *databaseAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -1909,6 +1919,21 @@ func (c *databaseAdminGRPCClient) ListBackupSchedules(ctx context.Context, req *
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *databaseAdminGRPCClient) InternalUpdateGraphOperation(ctx context.Context, req *databasepb.InternalUpdateGraphOperationRequest, opts ...gax.CallOption) (*databasepb.InternalUpdateGraphOperationResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).InternalUpdateGraphOperation[0:len((*c.CallOptions).InternalUpdateGraphOperation):len((*c.CallOptions).InternalUpdateGraphOperation)], opts...)
+	var resp *databasepb.InternalUpdateGraphOperationResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.databaseAdminClient.InternalUpdateGraphOperation, req, settings.GRPC, c.logger, "InternalUpdateGraphOperation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *databaseAdminGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -3707,6 +3732,66 @@ func (c *databaseAdminRESTClient) ListBackupSchedules(ctx context.Context, req *
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// InternalUpdateGraphOperation this is an internal API called by Spanner Graph jobs. You should never need
+// to call this API directly.
+func (c *databaseAdminRESTClient) InternalUpdateGraphOperation(ctx context.Context, req *databasepb.InternalUpdateGraphOperationRequest, opts ...gax.CallOption) (*databasepb.InternalUpdateGraphOperationResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("database", fmt.Sprintf("%v", req.GetDatabase()))
+	params.Add("operationId", fmt.Sprintf("%v", req.GetOperationId()))
+	if req.GetProgress() != 0 {
+		params.Add("progress", fmt.Sprintf("%v", req.GetProgress()))
+	}
+	if req.GetStatus().GetCode() != 0 {
+		params.Add("status.code", fmt.Sprintf("%v", req.GetStatus().GetCode()))
+	}
+	if req.GetStatus().GetMessage() != "" {
+		params.Add("status.message", fmt.Sprintf("%v", req.GetStatus().GetMessage()))
+	}
+	params.Add("vmIdentityToken", fmt.Sprintf("%v", req.GetVmIdentityToken()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).InternalUpdateGraphOperation[0:len((*c.CallOptions).InternalUpdateGraphOperation):len((*c.CallOptions).InternalUpdateGraphOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &databasepb.InternalUpdateGraphOperationResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "InternalUpdateGraphOperation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.

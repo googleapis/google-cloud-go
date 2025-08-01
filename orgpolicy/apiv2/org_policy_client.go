@@ -536,10 +536,10 @@ func (c *Client) UpdateCustomConstraint(ctx context.Context, req *orgpolicypb.Up
 	return c.internalClient.UpdateCustomConstraint(ctx, req, opts...)
 }
 
-// GetCustomConstraint gets a custom constraint.
+// GetCustomConstraint gets a custom or managed constraint.
 //
 // Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
-// custom constraint does not exist.
+// custom or managed constraint does not exist.
 func (c *Client) GetCustomConstraint(ctx context.Context, req *orgpolicypb.GetCustomConstraintRequest, opts ...gax.CallOption) (*orgpolicypb.CustomConstraint, error) {
 	return c.internalClient.GetCustomConstraint(ctx, req, opts...)
 }
@@ -642,7 +642,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -729,7 +729,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
 	}
@@ -1606,10 +1606,10 @@ func (c *restClient) UpdateCustomConstraint(ctx context.Context, req *orgpolicyp
 	return resp, nil
 }
 
-// GetCustomConstraint gets a custom constraint.
+// GetCustomConstraint gets a custom or managed constraint.
 //
 // Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
-// custom constraint does not exist.
+// custom or managed constraint does not exist.
 func (c *restClient) GetCustomConstraint(ctx context.Context, req *orgpolicypb.GetCustomConstraintRequest, opts ...gax.CallOption) (*orgpolicypb.CustomConstraint, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

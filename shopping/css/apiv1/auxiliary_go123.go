@@ -42,3 +42,9 @@ func (it *AccountLabelIterator) All() iter.Seq2[*csspb.AccountLabel, error] {
 func (it *CssProductIterator) All() iter.Seq2[*csspb.CssProduct, error] {
 	return iterator.RangeAdapter(it.Next)
 }
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QuotaGroupIterator) All() iter.Seq2[*csspb.QuotaGroup, error] {
+	return iterator.RangeAdapter(it.Next)
+}

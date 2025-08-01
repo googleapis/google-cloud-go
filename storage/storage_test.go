@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -360,9 +359,6 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 	bucketName := "bucket-name"
 	objectName := "obj-name"
 
-	emulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
-	defer os.Setenv("STORAGE_EMULATOR_HOST", emulatorHost)
-
 	tests := []struct {
 		desc         string
 		emulatorHost string
@@ -496,7 +492,7 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 				return test.now
 			}
 
-			os.Setenv("STORAGE_EMULATOR_HOST", test.emulatorHost)
+			t.Setenv("STORAGE_EMULATOR_HOST", test.emulatorHost)
 
 			got, err := SignedURL(bucketName, objectName, test.opts)
 			if err != nil {
@@ -697,7 +693,7 @@ func TestPathEncodeV4(t *testing.T) {
 }
 
 func dummyKey(kind string) []byte {
-	slurp, err := ioutil.ReadFile(fmt.Sprintf("./internal/test/dummy_%s", kind))
+	slurp, err := os.ReadFile(fmt.Sprintf("./internal/test/dummy_%s", kind))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -793,7 +789,7 @@ func TestCondition(t *testing.T) {
 	t.Parallel()
 	gotReq := make(chan *http.Request, 1)
 	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		gotReq <- r
 		w.WriteHeader(200)
 	})
@@ -1143,7 +1139,7 @@ func TestClientSetRetry(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		t.Run(tc.name, func(s *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			c, err := NewClient(context.Background(), option.WithoutAuthentication())
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
@@ -1161,7 +1157,7 @@ func TestClientSetRetry(t *testing.T) {
 					return (a == nil && b == nil) || (a != nil && b != nil)
 				}),
 			); diff != "" {
-				s.Fatalf("retry not configured correctly: %v", diff)
+				t.Fatalf("retry not configured correctly: %v", diff)
 			}
 		})
 	}
@@ -1365,7 +1361,7 @@ func TestRetryer(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		t.Run(tc.name, func(s *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			ctx := context.Background()
 			c, err := NewClient(ctx, option.WithoutAuthentication())
 			if err != nil {
@@ -1416,7 +1412,7 @@ func TestRetryer(t *testing.T) {
 				},
 			}
 			for _, ac := range configHandleCases {
-				s.Run(ac.name, func(ss *testing.T) {
+				t.Run(ac.name, func(t *testing.T) {
 					if diff := cmp.Diff(
 						ac.want,
 						ac.r,
@@ -1427,7 +1423,7 @@ func TestRetryer(t *testing.T) {
 							return (a == nil && b == nil) || (a != nil && b != nil)
 						}),
 					); diff != "" {
-						ss.Fatalf("retry not configured correctly: %v", diff)
+						t.Fatalf("retry not configured correctly: %v", diff)
 					}
 				})
 			}
@@ -1441,7 +1437,7 @@ func TestObjectCompose(t *testing.T) {
 	gotURL := make(chan string, 1)
 	gotBody := make(chan []byte, 1)
 	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body)
+		body, _ := io.ReadAll(r.Body)
 		gotURL <- r.URL.String()
 		gotBody <- body
 		w.Write([]byte("{}"))
@@ -1640,7 +1636,7 @@ func TestObjectCompose(t *testing.T) {
 func TestEmptyObjectIterator(t *testing.T) {
 	t.Parallel()
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
 	})
 	defer close()
@@ -1661,7 +1657,7 @@ func TestEmptyObjectIterator(t *testing.T) {
 func TestEmptyBucketIterator(t *testing.T) {
 	t.Parallel()
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
 	})
 	defer close()
@@ -1698,7 +1694,7 @@ func TestUserProject(t *testing.T) {
 	ctx := context.Background()
 	gotURL := make(chan *url.URL, 1)
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		gotURL <- r.URL
 		if strings.Contains(r.URL.String(), "/rewriteTo/") {
 			res := &raw.RewriteResponse{Done: true}
@@ -1805,6 +1801,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				RetentionExpirationTime: "2019-03-31T19:33:36Z",
 				Size:                    1 << 20,
 				TimeCreated:             "2019-03-31T19:32:10Z",
+				TimeFinalized:           "2019-03-31T19:32:10Z",
 				TimeDeleted:             "2019-03-31T19:33:39Z",
 				TemporaryHold:           true,
 				ComponentCount:          2,
@@ -1812,6 +1809,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
 				Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+				Finalized:               time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
 				CustomTime:              time.Date(2020, 8, 25, 19, 33, 36, 0, time.UTC),
@@ -1843,6 +1841,7 @@ func TestObjectAttrsToRawObject(t *testing.T) {
 	in := &ObjectAttrs{
 		Bucket:                  "Test",
 		Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+		Finalized:               time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 		ContentLanguage:         "en-us",
 		ContentType:             "video/mpeg",
 		Deleted:                 time.Date(2019, 3, 31, 19, 33, 39, 0, time.UTC),
@@ -1893,6 +1892,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 				RetentionExpireTime: timestamppb.New(now),
 				Size:                1 << 20,
 				CreateTime:          timestamppb.New(now),
+				FinalizeTime:        timestamppb.New(now),
 				DeleteTime:          timestamppb.New(now),
 				TemporaryHold:       true,
 				ComponentCount:      2,
@@ -1900,6 +1900,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
 				Created:                 now,
+				Finalized:               now,
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
 				CustomTime:              now,
@@ -1940,11 +1941,13 @@ func TestObjectAttrsToProtoObject(t *testing.T) {
 		RetentionExpireTime: timestamppb.New(now),
 		Size:                1 << 20,
 		CreateTime:          timestamppb.New(now),
+		FinalizeTime:        timestamppb.New(now),
 		DeleteTime:          timestamppb.New(now),
 		TemporaryHold:       true,
 	}
 	in := &ObjectAttrs{
 		Created:                 now,
+		Finalized:               now,
 		ContentLanguage:         "en-us",
 		ContentType:             "video/mpeg",
 		CustomTime:              now,
@@ -2067,7 +2070,6 @@ func TestEmulatorWithCredentialsFile(t *testing.T) {
 // STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath (used
 // for writes) and xmlHost and scheme (used for reads) are all set correctly.
 func TestWithEndpoint(t *testing.T) {
-	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	testCases := []struct {
 		desc                string
 		CustomEndpoint      string
@@ -2159,7 +2161,7 @@ func TestWithEndpoint(t *testing.T) {
 	}
 	ctx := context.Background()
 	for _, tc := range testCases {
-		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+		t.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint), option.WithoutAuthentication())
 		if err != nil {
 			t.Fatalf("error creating client: %v", err)
@@ -2175,7 +2177,6 @@ func TestWithEndpoint(t *testing.T) {
 			t.Errorf("%s: scheme not set correctly\n\tgot %v, want %v", tc.desc, c.scheme, tc.WantScheme)
 		}
 	}
-	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 }
 
 // Create a client using a combination of custom endpoint and STORAGE_EMULATOR_HOST
@@ -2184,9 +2185,6 @@ func TestWithEndpoint(t *testing.T) {
 // Verifies also that raw.BasePath, xmlHost and scheme are not changed
 // after running the operations.
 func TestOperationsWithEndpoint(t *testing.T) {
-	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
-	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
-
 	gotURL := make(chan string, 1)
 	gotHost := make(chan string, 1)
 	gotMethod := make(chan string, 1)
@@ -2195,7 +2193,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 
 	hClient, closeServer := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		done := make(chan bool, 1)
-		io.Copy(ioutil.Discard, r.Body)
+		io.Copy(io.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
 		go func() {
 			gotHost <- r.Host
@@ -2255,7 +2253,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			timeout := time.After(time.Second)
 			done := make(chan bool, 1)
 			go func() {
-				os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+				t.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 
 				c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
 				if err != nil {
@@ -2301,7 +2299,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 								return err
 							}
 
-							_, err = io.Copy(ioutil.Discard, rc)
+							_, err = io.Copy(io.Discard, rc)
 							if err != nil {
 								return err
 							}

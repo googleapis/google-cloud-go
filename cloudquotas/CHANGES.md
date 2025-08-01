@@ -2,6 +2,49 @@
 
 
 
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.4...cloudquotas/v1.4.0) (2025-06-17)
+
+
+### Features
+
+* **cloudquotas:** Added support for hierarchical enrollment in Quota Adjuster consumer API ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
+
+### Documentation
+
+* **cloudquotas:** Added 2 new fields in `.google.api.cloudquotas.v1beta.QuotaAdjusterSettings` ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **cloudquotas:** Added inherited and inherited_from in `.google.api.cloudquotas.v1beta.QuotaAdjusterSettings` ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **cloudquotas:** Added support for folder and organization level enrollment ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
+## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.3...cloudquotas/v1.3.4) (2025-06-04)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Fix: upgrade gRPC service registration func ([6a871e0](https://github.com/googleapis/google-cloud-go/commit/6a871e0f6924980da4fec78405bfe0736522afa8))
+
+## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.2...cloudquotas/v1.3.3) (2025-04-15)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.1...cloudquotas/v1.3.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.0...cloudquotas/v1.3.1) (2025-03-12)
+
+
+### Documentation
+
+* **cloudquotas:** Improved comment clarity ([#11805](https://github.com/googleapis/google-cloud-go/issues/11805)) ([30f8af9](https://github.com/googleapis/google-cloud-go/commit/30f8af98c23feec33fa1fe873833b7f4e7783119))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.2.1...cloudquotas/v1.3.0) (2025-01-08)
 
 
