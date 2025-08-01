@@ -119,6 +119,9 @@ func TestNewCredentials_user(t *testing.T) {
 						}
 					}
 					if strings.Contains(req.URL.Path, "/token") {
+						if got, want := req.Header.Get("Content-Type"), "application/x-www-form-urlencoded"; got != want {
+							t.Errorf("got %v, want %v", got, want)
+						}
 						resp := exchangeTokenResponse{
 							AccessToken: userTok,
 							TokenType:   internal.TokenTypeBearer,
