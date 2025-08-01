@@ -20,6 +20,7 @@ import (
 	"context"
 	"strings"
 	"sync/atomic"
+	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -217,6 +218,17 @@ func setSpanAttributes[T any](span oteltrace.Span, req T) {
 	span.SetAttributes(attrs...)
 }
 
+func setGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.Duration) {
+	if !span.IsRecording() {
+		return
+	}
+	for t, v := range latencyMap {
+		span.SetAttributes(
+			attribute.Float64(t[:3]+".latency_ms", float64(v.Nanoseconds())/1e6),
+		)
+	}
+}
+
 func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
@@ -241,7 +253,9 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 	}
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
-		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		latencyMap := parseServerTimingHeader(md)
+		setGFEAndAFESpanAttributes(span, latencyMap)
+		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
 		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
 	}
 	return client, err
@@ -283,7 +297,9 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 	}
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
-		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		latencyMap := parseServerTimingHeader(md)
+		setGFEAndAFESpanAttributes(span, latencyMap)
+		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
 		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
 	}
 	return client, err
@@ -355,7 +371,9 @@ func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.Batch
 	}
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
 		md, _ := client.Header()
-		mt.currOp.currAttempt.setServerTimingMetrics(parseServerTimingHeader(md))
+		latencyMap := parseServerTimingHeader(md)
+		setGFEAndAFESpanAttributes(span, latencyMap)
+		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
 		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
 	}
 	return client, err

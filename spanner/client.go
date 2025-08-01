@@ -720,8 +720,10 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		statusCode, _ := status.FromError(err)
 		mt.currOp.currAttempt.setStatus(statusCode.Code().String())
 		mt.currOp.currAttempt.setDirectPathUsed(peer.NewContext(ctx, peerInfo))
-		metrics := parseServerTimingHeader(md)
-		mt.currOp.currAttempt.setServerTimingMetrics(metrics)
+		latencies := parseServerTimingHeader(md)
+		span := otrace.SpanFromContext(ctx)
+		setGFEAndAFESpanAttributes(span, latencies)
+		mt.currOp.currAttempt.setServerTimingMetrics(latencies)
 		recordAttemptCompletion(mt)
 		return err
 	}
