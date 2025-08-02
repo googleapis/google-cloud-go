@@ -1,5 +1,29 @@
 # Changes
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.38.0...bigtable/v1.39.0) (2025-08-02)
+
+
+### Features
+
+* **bigtable/spanner:** Allow disable gRPC DirectPath deps ([#12469](https://github.com/googleapis/google-cloud-go/issues/12469)) ([2205d27](https://github.com/googleapis/google-cloud-go/commit/2205d27d8fff56c0b25facfc60daa766f4d10ee8))
+* **bigtable:** Add Idempotency to Cloud Bigtable MutateRowRequest API ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **bigtable:** Add Idempotency to Cloud Bigtable MutateRowsRequest API ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **bigtable:** Adding support to schema bundles ([#12516](https://github.com/googleapis/google-cloud-go/issues/12516)) ([688eb13](https://github.com/googleapis/google-cloud-go/commit/688eb13ea98a2a041513b06d47dddfbfc29a9117))
+* **bigtable:** Publish Proto and Enum types to CBT data API ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **bigtable:** Support universe domain ([#12567](https://github.com/googleapis/google-cloud-go/issues/12567)) ([fc59e39](https://github.com/googleapis/google-cloud-go/commit/fc59e39b63abde64c161ec9ef67bee6312e54aea))
+* **bigtable:** Update ListSchemaBundles to returns only names ([#12563](https://github.com/googleapis/google-cloud-go/issues/12563)) ([83ea7c4](https://github.com/googleapis/google-cloud-go/commit/83ea7c420baf1a7c004796843eb377e4344f41b1))
+
+
+### Bug Fixes
+
+* **bigtable:** Update routing_parameters.path_template ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+
+### Documentation
+
+* **bigtable:** Minor comment update for field `idempotency` in message `.google.bigtable.v2.MutateRowRequest` ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **bigtable:** Sync generated comments from the API Protos ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.37.0...bigtable/v1.38.0) (2025-06-27)
 
 
