@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.97.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.96.0...aiplatform/v1.97.0) (2025-08-02)
+
+
+### Features
+
+* **aiplatform:** Add field ReasoningEngine.encryption_spec ([0b74f43](https://github.com/googleapis/google-cloud-go/commit/0b74f43c6639e0e85c828145e867b0e98f4fdc96))
+* **aiplatform:** Add field ReasoningEngineSpec.service_account ([0b74f43](https://github.com/googleapis/google-cloud-go/commit/0b74f43c6639e0e85c828145e867b0e98f4fdc96))
+
 ## [1.96.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.95.0...aiplatform/v1.96.0) (2025-07-31)
 
 
