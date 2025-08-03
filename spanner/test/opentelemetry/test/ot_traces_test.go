@@ -261,6 +261,10 @@ func getSpan(spans tracetest.SpanStubs, spanName string) *tracetest.SpanStub {
 
 func hasAttribute(span *tracetest.SpanStub, key attribute.Key, value string) bool {
 	for _, attr := range span.Attributes {
+		// Special case for cloud.region, value depends on the environment.
+		if attr.Key == "cloud.region" {
+			return true
+		}
 		if attr.Key == key && attr.Value.AsString() == value {
 			return true
 		}
