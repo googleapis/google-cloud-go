@@ -27,6 +27,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/spanner"
+	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel/attribute"
@@ -121,7 +122,7 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		"db.name":             "[DATABASE]",
 		"instance.name":       "[INSTANCE]",
 		"cloud.region":        "global",
-		"gcp.client.version":  "1.83.0",
+		"gcp.client.version":  internal.Version,
 		"gcp.client.repo":     "googleapis/google-cloud-go",
 		"gcp.client.artifact": "cloud.google.com/go/spanner",
 		"transaction.tag":     transactionTag,
