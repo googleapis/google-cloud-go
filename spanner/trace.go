@@ -21,7 +21,6 @@ import (
 
 	"cloud.google.com/go/spanner/internal"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
@@ -42,8 +41,7 @@ func tracer() trace.Tracer {
 // If the context.Context provided in `ctx` contains a span then the newly-created
 // span will be a child of that span, otherwise it will be a root span.
 func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
-	name = appendPackageName(name)
-	opts = append(opts, getCommonTraceOptions(ctx)...)
+	name = prependPackageName(name)
 	ctx, span := tracer().Start(ctx, name, opts...)
 	return ctx, span
 }
@@ -72,17 +70,6 @@ func toOpenTelemetryStatusDescription(err error) string {
 	}
 }
 
-// getCommonTraceOptions includes the common attributes used for Cloud Trace adoption tracking.
-func getCommonTraceOptions(ctx context.Context) []trace.SpanStartOption {
-	return []trace.SpanStartOption{
-		trace.WithAttributes(
-			attribute.String("gcp.client.version", internal.Version),
-			attribute.String("gcp.client.repo", gcpClientRepo),
-			attribute.String("gcp.client.artifact", gcpClientArtifact),
-		),
-	}
-}
-
-func appendPackageName(spanName string) string {
+func prependPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }

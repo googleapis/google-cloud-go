@@ -223,9 +223,11 @@ func setGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.
 		return
 	}
 	for t, v := range latencyMap {
-		span.SetAttributes(
-			attribute.Float64(t[:3]+".latency_ms", float64(v.Nanoseconds())/1e6),
-		)
+		if t == gfeTimingHeader || t == afeTimingHeader {
+			span.SetAttributes(
+				attribute.Float64(t[:3]+".latency_ms", float64(v.Nanoseconds())/1e6),
+			)
+		}
 	}
 }
 

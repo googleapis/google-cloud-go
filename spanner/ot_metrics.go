@@ -64,6 +64,9 @@ func createOpenTelemetryConfig(ctx context.Context, mp metric.MeterProvider, log
 				attribute.String("db.name", database),
 				attribute.String("instance.name", instance),
 				attribute.String("cloud.region", detectClientLocation(ctx)),
+				attribute.String("gcp.client.version", internal.Version),
+				attribute.String("gcp.client.repo", gcpClientRepo),
+				attribute.String("gcp.client.artifact", gcpClientArtifact),
 			),
 		},
 	}
