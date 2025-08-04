@@ -511,7 +511,7 @@ type Routine struct {
 	//
 	// For functions, this is the expression in the AS clause.
 	//
-	// If language=SQL, it is the substring inside (but excluding) the
+	// If `language = "SQL"`, it is the substring inside (but excluding) the
 	// parentheses. For example, for the function created with the following
 	// statement:
 	//
@@ -520,7 +520,7 @@ type Routine struct {
 	// The definition_body is `concat(x, "\n", y)` (\n is not replaced with
 	// linebreak).
 	//
-	// If language=JAVASCRIPT, it is the evaluated string in the AS clause.
+	// If `language="JAVASCRIPT"`, it is the evaluated string in the AS clause.
 	// For example, for the function created with the following statement:
 	//
 	// `CREATE FUNCTION f() RETURNS STRING LANGUAGE js AS 'return "\n";\n'`
@@ -530,6 +530,9 @@ type Routine struct {
 	// `return "\n";\n`
 	//
 	// Note that both \n are replaced with linebreaks.
+	//
+	// If `definition_body` references another routine, then that routine must
+	// be fully qualified with its project ID.
 	DefinitionBody string `protobuf:"bytes,9,opt,name=definition_body,json=definitionBody,proto3" json:"definition_body,omitempty"`
 	// Optional. The description of the routine, if defined.
 	Description string `protobuf:"bytes,11,opt,name=description,proto3" json:"description,omitempty"`
@@ -561,7 +564,7 @@ type Routine struct {
 	// masking
 	// routines](https://cloud.google.com/bigquery/docs/user-defined-functions#custom-mask).
 	DataGovernanceType Routine_DataGovernanceType `protobuf:"varint,17,opt,name=data_governance_type,json=dataGovernanceType,proto3,enum=google.cloud.bigquery.v2.Routine_DataGovernanceType" json:"data_governance_type,omitempty"`
-	// Optional. Options for Python UDF.
+	// Optional. Options for the Python UDF.
 	// [Preview](https://cloud.google.com/products/#product-launch-stages)
 	PythonOptions *PythonOptions `protobuf:"bytes,20,opt,name=python_options,json=pythonOptions,proto3" json:"python_options,omitempty"`
 	// Optional. Options for the runtime of the external system executing the
@@ -746,11 +749,13 @@ type PythonOptions struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The entry point function in the user's Python code.
+	// Required. The name of the function defined in Python code as the entry
+	// point when the Python UDF is invoked.
 	EntryPoint string `protobuf:"bytes,1,opt,name=entry_point,json=entryPoint,proto3" json:"entry_point,omitempty"`
-	// Optional. A list of package names along with versions to be installed.
-	// Follows requirements.txt syntax (e.g. numpy==2.0, permutation,
-	// urllib3<2.2.1)
+	// Optional. A list of Python package names along with versions to be
+	// installed. Example: ["pandas>=2.1", "google-cloud-translate==3.11"]. For
+	// more information, see [Use third-party
+	// packages](https://cloud.google.com/bigquery/docs/user-defined-functions-python#third-party-packages).
 	Packages []string `protobuf:"bytes,2,rep,name=packages,proto3" json:"packages,omitempty"`
 }
 
@@ -804,12 +809,15 @@ type ExternalRuntimeOptions struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Amount of memory provisioned for the container instance. Format:
-	// {number}{unit} where unit is one of "M", "G", "Mi" and "Gi" (e.g. 1G,
-	// 512Mi). If not specified, the default value is 512Mi.
+	// Optional. Amount of memory provisioned for a Python UDF container instance.
+	// Format: {number}{unit} where unit is one of "M", "G", "Mi" and "Gi" (e.g.
+	// 1G, 512Mi). If not specified, the default value is 512Mi. For more
+	// information, see [Configure container limits for Python
+	// UDFs](https://cloud.google.com/bigquery/docs/user-defined-functions-python#configure-container-limits)
 	ContainerMemory string `protobuf:"bytes,1,opt,name=container_memory,json=containerMemory,proto3" json:"container_memory,omitempty"`
-	// Optional. Amount of CPU provisioned for the container instance. If not
-	// specified, the default value is 0.33 vCPUs.
+	// Optional. Amount of CPU provisioned for a Python UDF container instance.
+	// For more information, see [Configure container limits for Python
+	// UDFs](https://cloud.google.com/bigquery/docs/user-defined-functions-python#configure-container-limits)
 	ContainerCpu float64 `protobuf:"fixed64,2,opt,name=container_cpu,json=containerCpu,proto3" json:"container_cpu,omitempty"`
 	// Optional. Fully qualified name of the connection whose service account will
 	// be used to execute the code in the container. Format:
@@ -819,7 +827,7 @@ type ExternalRuntimeOptions struct {
 	// runtime. If absent or if 0, BigQuery dynamically decides the number of rows
 	// in a batch.
 	MaxBatchingRows int64 `protobuf:"varint,4,opt,name=max_batching_rows,json=maxBatchingRows,proto3" json:"max_batching_rows,omitempty"`
-	// Optional. Language runtime version (e.g. python-3.11).
+	// Optional. Language runtime version. Example: `python-3.11`.
 	RuntimeVersion string `protobuf:"bytes,5,opt,name=runtime_version,json=runtimeVersion,proto3" json:"runtime_version,omitempty"`
 }
 
