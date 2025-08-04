@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package bigquery_test
+
+import (
+	bigquery "cloud.google.com/go/bigquery/v2/apiv2"
+)
