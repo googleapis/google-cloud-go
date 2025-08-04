@@ -36,13 +36,13 @@ The following is an overview of the migration process. You can find more details
 
 ## Admin operations
 
-The Pub/Sub admin plane is used to manage Pub/Sub resources like topics, subscriptions, and schemas. These admin operations include `Create`, `Get`, `Update`, `List`, and `Delete`.
+The Pub/Sub admin plane is used to manage Pub/Sub resources like topics, subscriptions, and schemas. These admin operations include `Create`, `Get`, `Update`, `List`, and `Delete`. For subscriptions, seek and snapshots are also part of this layer.
 
 One of the key differences between the v1 and v2 versions is the change to the admin API. Two new clients called `TopicAdminClient` and `SubscriptionAdminClient` are added that handle the admin operations for topics and subscriptions respectively.
 
 For topics and subscriptions, you can access these admin clients as fields of the main client: `pubsub.Client.TopicAdminClient` and `pubsub.Client.SubscriptionAdminClient`. These clients are pre-initialized when calling `pubsub.NewClient`, and takes in the same `ClientOptions` when `NewClient` is called.
 
-There is a mostly one-to-one mapping of existing admin methods to the new admin methods.
+There is a mostly one-to-one mapping of existing admin methods to the new admin methods. There are some exceptions that are noted below.
 
 ### General RPCs
 
@@ -343,6 +343,34 @@ topic, err := client.TopicAdminClient.CreateTopic(ctx, topicpb)
 ```
 
 In this case, `MessageTransform_JavascriptUdf` satisfies the interface, while `JavascriptUdf` holds the actual strings relevant for the message transform.
+
+### Seek / snapshots
+
+Seek and snapshot RPCs are also part of the admin layer. Use the [SubscriptionAdminClient](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1#SubscriptionAdminClient) to Seek to specific time or snapshot.
+
+```go
+// v2 way to call seek on a subscription
+
+import (
+	"cloud.google.com/go/pubsub/v2"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+)
+...
+projectID := "my-project-id"
+subscriptionID := "my-subscription-id"
+
+now := time.Now()
+
+client, err := pubsub.NewClient(ctx, projectID)
+...
+client.SubscriptionAdminClient.Seek(ctx, &pb.SeekRequest{
+	Subscription: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, subID),
+	Target: &pb.SeekRequest_Time{
+		Time: timestamppb.New(now),
+	},
+})
+```
 
 ### Call Options (retries and timeouts)
 
