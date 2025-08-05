@@ -684,13 +684,6 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 				span.SetStatus(otcodes.Ok, "Stream finished successfully")
 				span.End()
 			}
-			go func(s streamingReceiver) {
-				_, _ = s.Recv()
-				// Cancel the context after receiving trailers
-				if d.cancel != nil {
-					d.cancel()
-				}
-			}(d.stream)
 			d.changeState(finished)
 			return
 		}
