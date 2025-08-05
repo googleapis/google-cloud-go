@@ -1236,6 +1236,10 @@ func (sr *sReceiver) Recv() (*sppb.PartialResultSet, error) {
 	return sr.rpcReceiver.Recv()
 }
 
+func (sr *sReceiver) Context() context.Context {
+	return sr.rpcReceiver.Context()
+}
+
 // waitn waits for nth receiving attempt from now on, until the signal for nth
 // Recv() attempts is received or timeout. Note that because the way stream()
 // works, the signal for the nth Recv() means that the previous n - 1
