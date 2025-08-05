@@ -1,0 +1,77 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.productstudio.v1alpha",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+  "services": {
+    "ImageService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ImageClient",
+          "rpcs": {
+            "GenerateProductImageBackground": {
+              "methods": [
+                "GenerateProductImageBackground"
+              ]
+            },
+            "RemoveProductImageBackground": {
+              "methods": [
+                "RemoveProductImageBackground"
+              ]
+            },
+            "UpscaleProductImage": {
+              "methods": [
+                "UpscaleProductImage"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ImageClient",
+          "rpcs": {
+            "GenerateProductImageBackground": {
+              "methods": [
+                "GenerateProductImageBackground"
+              ]
+            },
+            "RemoveProductImageBackground": {
+              "methods": [
+                "RemoveProductImageBackground"
+              ]
+            },
+            "UpscaleProductImage": {
+              "methods": [
+                "UpscaleProductImage"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TextSuggestionsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TextSuggestionsClient",
+          "rpcs": {
+            "GenerateProductTextSuggestions": {
+              "methods": [
+                "GenerateProductTextSuggestions"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TextSuggestionsClient",
+          "rpcs": {
+            "GenerateProductTextSuggestions": {
+              "methods": [
+                "GenerateProductTextSuggestions"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

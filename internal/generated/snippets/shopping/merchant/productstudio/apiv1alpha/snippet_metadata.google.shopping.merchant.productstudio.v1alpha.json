@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.productstudio.v1alpha",
+        "version": "v1alpha"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1alpha_generated_ImageService_GenerateProductImageBackground_sync",
+      "title": "merchantapi GenerateProductImageBackground Sample",
+      "description": "GenerateProductImageBackground generateProductImageBackground generates a new image where the background\nof the original image is replaced by an AI generated scene based on\nprovided product information and a text prompt.",
+      "file": "ImageClient/GenerateProductImageBackground/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateProductImageBackground",
+        "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageClient.GenerateProductImageBackground",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productstudiopb.GenerateProductImageBackgroundRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*productstudiopb.GenerateProductImageBackgroundResponse",
+        "client": {
+          "shortName": "ImageClient",
+          "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageClient"
+        },
+        "method": {
+          "shortName": "GenerateProductImageBackground",
+          "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageService.GenerateProductImageBackground",
+          "service": {
+            "shortName": "ImageService",
+            "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1alpha_generated_ImageService_RemoveProductImageBackground_sync",
+      "title": "merchantapi RemoveProductImageBackground Sample",
+      "description": "RemoveProductImageBackground removeProductImageBackground generates a new image where the background of\nthe original image is removed.",
+      "file": "ImageClient/RemoveProductImageBackground/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveProductImageBackground",
+        "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageClient.RemoveProductImageBackground",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productstudiopb.RemoveProductImageBackgroundRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*productstudiopb.RemoveProductImageBackgroundResponse",
+        "client": {
+          "shortName": "ImageClient",
+          "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageClient"
+        },
+        "method": {
+          "shortName": "RemoveProductImageBackground",
+          "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageService.RemoveProductImageBackground",
+          "service": {
+            "shortName": "ImageService",
+            "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1alpha_generated_ImageService_UpscaleProductImage_sync",
+      "title": "merchantapi UpscaleProductImage Sample",
+      "description": "UpscaleProductImage upscaleProductImage generates a new image where the resolution of the\noriginal image is enhanced.",
+      "file": "ImageClient/UpscaleProductImage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpscaleProductImage",
+        "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageClient.UpscaleProductImage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productstudiopb.UpscaleProductImageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*productstudiopb.UpscaleProductImageResponse",
+        "client": {
+          "shortName": "ImageClient",
+          "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageClient"
+        },
+        "method": {
+          "shortName": "UpscaleProductImage",
+          "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageService.UpscaleProductImage",
+          "service": {
+            "shortName": "ImageService",
+            "fullName": "google.shopping.merchant.productstudio.v1alpha.ImageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1alpha_generated_TextSuggestionsService_GenerateProductTextSuggestions_sync",
+      "title": "merchantapi GenerateProductTextSuggestions Sample",
+      "description": "GenerateProductTextSuggestions generateProductTextSuggestions generates a set of candidate text\ncompletions (e.g., product titles, descriptions) based on provided product\ninformation. This endpoint leverages GenAI models to create suggestions for\nimproving existing product text or generating new content.",
+      "file": "TextSuggestionsClient/GenerateProductTextSuggestions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateProductTextSuggestions",
+        "fullName": "google.shopping.merchant.productstudio.v1alpha.TextSuggestionsClient.GenerateProductTextSuggestions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productstudiopb.GenerateProductTextSuggestionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*productstudiopb.GenerateProductTextSuggestionsResponse",
+        "client": {
+          "shortName": "TextSuggestionsClient",
+          "fullName": "google.shopping.merchant.productstudio.v1alpha.TextSuggestionsClient"
+        },
+        "method": {
+          "shortName": "GenerateProductTextSuggestions",
+          "fullName": "google.shopping.merchant.productstudio.v1alpha.TextSuggestionsService.GenerateProductTextSuggestions",
+          "service": {
+            "shortName": "TextSuggestionsService",
+            "fullName": "google.shopping.merchant.productstudio.v1alpha.TextSuggestionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
