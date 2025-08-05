@@ -113,6 +113,12 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		if span == nil {
 			t.Fatalf("Failed to find span %q", spanName)
 		}
+		if spanName == "google.spanner.v1.Spanner/ExecuteStreamingSql" {
+			if g, w := span.Status.Code, codes.Ok; g != w {
+				t.Errorf("span %q status code mismatch\n Got: %v\nWant: %v", spanName, g, w)
+			}
+			continue
+		}
 		if g, w := span.Status.Code, codes.Unset; g != w {
 			t.Errorf("span %q status code mismatch\n Got: %v\nWant: %v", spanName, g, w)
 		}
