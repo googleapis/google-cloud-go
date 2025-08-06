@@ -1,6 +1,22 @@
 # Changes
 
 
+## [1.97.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.96.0...aiplatform/v1.97.0) (2025-08-06)
+
+
+### Features
+
+* **aiplatform:** A new value NVIDIA_GB200 is added to enum AcceleratorType ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** A new value NVIDIA_GB200 is added to enum AcceleratorType ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** Add embedding_metadata to google.cloud.aiplatform.v1.Index ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** Add embedding_metadata to google.cloud.aiplatform.v1.Index ([#12643](https://github.com/googleapis/google-cloud-go/issues/12643)) ([039e556](https://github.com/googleapis/google-cloud-go/commit/039e55642132b5fa28b4b6645f4b29a06b5ad032))
+* **aiplatform:** Add exclude_domains for grounding with GoogleSearch and EnterpriseWebSearch ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** Add exclude_domains for grounding with GoogleSearch and EnterpriseWebSearch ([#12637](https://github.com/googleapis/google-cloud-go/issues/12637)) ([87815bf](https://github.com/googleapis/google-cloud-go/commit/87815bf66014cfd5f6aac93e4d642722e4d63569))
+* **aiplatform:** Add FeatureViewDirectWrite API in v1 ([#12645](https://github.com/googleapis/google-cloud-go/issues/12645)) ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** Add field ReasoningEngine.encryption_spec ([0b74f43](https://github.com/googleapis/google-cloud-go/commit/0b74f43c6639e0e85c828145e867b0e98f4fdc96))
+* **aiplatform:** Add field ReasoningEngineSpec.service_account ([0b74f43](https://github.com/googleapis/google-cloud-go/commit/0b74f43c6639e0e85c828145e867b0e98f4fdc96))
+* **aiplatform:** Online Prediction DeployModel API to support custom metrics based autoscaling ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+
 ## [1.96.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.95.0...aiplatform/v1.96.0) (2025-07-31)
 
 
