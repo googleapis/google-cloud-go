@@ -82,7 +82,6 @@ func equalErrs(gotErr error, wantErr error) bool {
 	return strings.Contains(gotErr.Error(), wantErr.Error())
 }
 
-// readRowsWithAppBlockingDelayLogic implements the core logic for a ReadRows RPC that introduces
 // sendTwoRowsHandler is a simple server-side stream handler that sends two predefined rows.
 func sendTwoRowsHandler(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
 	// 1. Send headers immediately
@@ -107,6 +106,7 @@ func sendTwoRowsHandler(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRows
 		return err
 	}
 
+	time.Sleep(time.Second * 5)
 	// 3. Send second chunk/response
 	if err := stream.Send(&btpb.ReadRowsResponse{
 		Chunks: []*btpb.ReadRowsResponse_CellChunk{
@@ -829,7 +829,7 @@ func TestApplicationLatencies(t *testing.T) {
 		createExporterOptions = origCreateExporterOptions
 	}()
 
-	// Setup fake Bigtable server with delayed stream handler
+	// Setup fake Bigtable server which returns 2 rows
 	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, sendTwoRowsHandler)
 	defer cleanup()
 	if err != nil {
