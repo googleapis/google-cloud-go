@@ -680,6 +680,7 @@ func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sp
 }
 
 func (t *txReadOnly) query(ctx context.Context, statement Statement, options QueryOptions) (ri *RowIterator) {
+	queryTimingInfo := QueryTimingInfo{}
 	ctx, _ = startSpan(ctx, "Query", t.otConfig.commonTraceStartOptions...)
 	defer func() { endSpan(ctx, ri.err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
@@ -705,7 +706,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			req.Session = t.sh.getID()
 			req.Transaction = t.getTransactionSelector()
 			t.sh.updateLastUseTime()
-
+			queryTimingInfo.ClientRequestOverhead = float64(time.Now().UnixNano()) - queryTimingInfo.ClientRequestOverhead
+			queryTimingInfo.GrpcRequestOverhead = float64(time.Now().UnixNano())
 			client, err := client.ExecuteStreamingSql(ctx, req, opts...)
 			if err != nil {
 				if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -714,6 +716,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 				}
 				return client, t.updateTxState(err)
 			}
+			queryTimingInfo.GrpcRequestOverhead = float64(time.Now().UnixNano()) - queryTimingInfo.GrpcRequestOverhead
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
@@ -733,7 +736,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		client.(*grpcSpannerClient))
+		client.(*grpcSpannerClient),
+		&queryTimingInfo)
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {

@@ -457,6 +457,8 @@ type builtinMetricsTracer struct {
 	method string // The method being traced.
 
 	currOp *opTracer // The current operation tracer.
+
+	QueryTimingInfo *QueryTimingInfo
 }
 
 // opTracer is used to record metrics for the entire operation, including retries.

@@ -16,6 +16,8 @@ package spanner
 
 import (
 	"context"
+	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -374,4 +376,95 @@ type commonTags struct {
 	instance string
 	// Library Version
 	libVersion string
+}
+
+// QueryTimingInfo provides latency information for various parts of a query.
+type QueryTimingInfo struct {
+	// ClientRequestOverhead is the time from when the query is sent to the client
+	// to when the gRPC call is initiated.
+	ClientRequestOverhead float64
+	// GrpcRequestOverhead is the time from when the gRPC call is initiated to
+	// when the stream is created.
+	GrpcRequestOverhead float64
+	// GrpcReceiveOverhead is the time from when the first message is received
+	// to when the last message is received.
+	GrpcReceiveOverhead float64
+	// ClientResponseOverhead is the time from when the last message is
+	// received to when the response is returned to the client.
+	ClientResponseOverhead float64
+}
+
+// queryTimingStore holds slices of query timing information for calculating percentiles.
+var queryTimingStore = struct {
+	sync.Mutex
+	enable                  bool
+	clientRequestOverheads  []float64
+	grpcRequestOverheads    []float64
+	grpcReceiveOverheads    []float64
+	clientResponseOverheads []float64
+}{}
+
+// AddQueryTimingInfo adds a new QueryTimingInfo to the store.
+func AddQueryTimingInfo(info *QueryTimingInfo) {
+	if !queryTimingStore.enable {
+		return
+	}
+	queryTimingStore.clientRequestOverheads = append(queryTimingStore.clientRequestOverheads, info.ClientRequestOverhead)
+	queryTimingStore.grpcRequestOverheads = append(queryTimingStore.grpcRequestOverheads, info.GrpcRequestOverhead)
+	queryTimingStore.grpcReceiveOverheads = append(queryTimingStore.grpcReceiveOverheads, info.GrpcReceiveOverhead)
+	queryTimingStore.clientResponseOverheads = append(queryTimingStore.clientResponseOverheads, info.ClientResponseOverhead)
+}
+
+func EnableQueryTimingMetrics() {
+	queryTimingStore.Lock()
+	defer queryTimingStore.Unlock()
+	queryTimingStore.enable = true
+	queryTimingStore.clientRequestOverheads = make([]float64, 0, 10000) // Pre-allocate some capacity
+	queryTimingStore.grpcRequestOverheads = make([]float64, 0, 10000)
+	queryTimingStore.grpcReceiveOverheads = make([]float64, 0, 10000)
+	queryTimingStore.clientResponseOverheads = make([]float64, 0, 10000)
+}
+
+// PrintQueryTimingPercentiles calculates and prints the 50, 90, 95, and 99th percentiles
+// for the collected query timing information.
+func PrintQueryTimingPercentiles() {
+	queryTimingStore.Lock()
+	defer queryTimingStore.Unlock()
+
+	fmt.Println("Query Timing Percentiles (µs):")
+	printPercentiles("ClientRequestOverhead", queryTimingStore.clientRequestOverheads)
+	printPercentiles("GrpcRequestOverhead", queryTimingStore.grpcRequestOverheads)
+	printPercentiles("GrpcReceiveOverhead", queryTimingStore.grpcReceiveOverheads)
+	printPercentiles("ClientResponseOverhead", queryTimingStore.clientResponseOverheads)
+}
+
+func printPercentiles(name string, values []float64) {
+	if len(values) == 0 {
+		fmt.Printf("  %s: no data\n", name)
+		return
+	}
+	sort.Float64s(values)
+	p50 := percentile(values, 50) / 1000
+	p90 := percentile(values, 90) / 1000
+	p95 := percentile(values, 95) / 1000
+	p99 := percentile(values, 99) / 1000
+	fmt.Printf("  %s:\n", name)
+	fmt.Printf("    p50: %.2f\n", p50)
+	fmt.Printf("    p90: %.2f\n", p90)
+	fmt.Printf("    p95: %.2f\n", p95)
+	fmt.Printf("    p99: %.2f\n", p99)
+}
+
+func percentile(values []float64, p float64) float64 {
+	if len(values) == 0 {
+		return 0
+	}
+	index := (p / 100) * float64(len(values)-1)
+	// Simple linear interpolation
+	i := int(index)
+	if i >= len(values)-1 {
+		return values[len(values)-1]
+	}
+	f := index - float64(i)
+	return values[i]*(1-f) + values[i+1]*f
 }

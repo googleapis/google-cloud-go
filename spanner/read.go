@@ -93,10 +93,11 @@ func streamWithReplaceSessionFunc(
 	setTimestamp func(time.Time),
 	release func(error),
 	gsc *grpcSpannerClient,
+	queryTimingInfo ...*QueryTimingInfo,
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, _ = startSpan(ctx, "RowIterator")
-	return &RowIterator{
+	ri := &RowIterator{
 		meterTracerFactory:   meterTracerFactory,
 		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, replaceSession, gsc),
 		rowd:                 &partialResultSetDecoder{},
@@ -107,6 +108,10 @@ func streamWithReplaceSessionFunc(
 		release:              release,
 		cancel:               cancel,
 	}
+	if len(queryTimingInfo) > 0 {
+		ri.QueryTimingInfo = queryTimingInfo[0]
+	}
+	return ri
 }
 
 // rowIterator is an interface for iterating over Rows.
@@ -136,6 +141,9 @@ type RowIterator struct {
 	// RowIterator.Next() returned an error that is not equal to iterator.Done.
 	Metadata *sppb.ResultSetMetadata
 
+	// QueryTimingInfo provides latency information for various parts of a query.
+	QueryTimingInfo *QueryTimingInfo
+
 	ctx                  context.Context
 	meterTracerFactory   *builtinMetricsTracerFactory
 	streamd              *resumableStreamDecoder
@@ -158,10 +166,18 @@ var _ rowIterator = (*RowIterator)(nil)
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *RowIterator) Next() (*Row, error) {
+	if r.QueryTimingInfo != nil {
+		if r.QueryTimingInfo.ClientRequestOverhead == 0 {
+			// This is the first time Next() is called, so we set the
+			// ClientRequestOverhead to the current time.
+			r.QueryTimingInfo.ClientRequestOverhead = float64(time.Now().UnixNano())
+		}
+	}
 	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
 	if r.err != nil {
 		return nil, r.err
 	}
+	mt.QueryTimingInfo = r.QueryTimingInfo
 	// Start new attempt
 	mt.currOp.incrementAttemptCount()
 	mt.currOp.currAttempt = &attemptTracer{
@@ -285,6 +301,10 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 // Stop terminates the iteration. It should be called after you finish using the
 // iterator.
 func (r *RowIterator) Stop() {
+	if r.QueryTimingInfo != nil {
+		r.QueryTimingInfo.ClientResponseOverhead = float64(time.Now().UnixNano()) - r.QueryTimingInfo.ClientResponseOverhead
+		AddQueryTimingInfo(r.QueryTimingInfo)
+	}
 	if r.streamd != nil {
 		if r.err != nil && r.err != iterator.Done {
 			defer trace.EndSpan(r.streamd.ctx, r.err)
@@ -580,10 +600,14 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			// If no gRPC stream is available, try to initiate one.
 			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken, riw.withNextRetryAttempt(d.retryAttempt))
 			if d.err == nil {
+				if mt.QueryTimingInfo != nil && mt.QueryTimingInfo.ClientResponseOverhead == 0 {
+					// here the stream is just created, so we set the
+					// ClientResponseOverhead to the current time.
+					mt.QueryTimingInfo.ClientResponseOverhead = float64(time.Now().UnixNano())
+				}
 				d.changeState(queueingRetryable)
 				continue
 			}
-
 			delay, shouldRetry := retryer.Retry(d.err)
 			if !shouldRetry {
 				d.changeState(aborted)
@@ -676,7 +700,16 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 // tryRecv attempts to receive a PartialResultSet from gRPC stream.
 func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.Retryer) {
 	var res *sppb.PartialResultSet
+	if mt.QueryTimingInfo != nil && mt.QueryTimingInfo.GrpcReceiveOverhead == 0 {
+		// This is the first time we are receiving from the stream, so we set
+		// the GrpcReceiveOverhead to the current time.
+		mt.QueryTimingInfo.GrpcReceiveOverhead = float64(time.Now().UnixNano())
+	}
 	res, d.err = d.stream.Recv()
+	if mt.QueryTimingInfo != nil {
+		// Record the time it took to receive the response from the server.
+		mt.QueryTimingInfo.GrpcReceiveOverhead = float64(time.Now().UnixNano()) - mt.QueryTimingInfo.GrpcReceiveOverhead
+	}
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
