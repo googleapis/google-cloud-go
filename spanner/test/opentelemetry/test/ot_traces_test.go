@@ -52,6 +52,9 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		},
 	}, option.WithGRPCDialOption(grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor(otelgrpc.WithTracerProvider(te.tp)))))
 	defer teardown()
+	res := server.CreateSingersResults(4, true)
+	sql := "SELECT SingerId, AlbumId, AlbumTitle FROM Albums WHERE 1=2"
+	err := server.TestSpanner.PutStatementResult(sql, res)
 
 	waitFor(t, func() error {
 		if isMultiplexEnabled {
@@ -69,8 +72,8 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		transactionTag = "tx-tag"
 		requestTag     = "req-tag"
 	)
-	_, err := client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
-		iter := tx.QueryWithOptions(ctx, spanner.NewStatement(stestutil.SelectSingerIDAlbumIDAlbumTitleFromAlbums), spanner.QueryOptions{
+	_, err = client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		iter := tx.QueryWithOptions(ctx, spanner.NewStatement(sql), spanner.QueryOptions{
 			RequestTag: requestTag,
 		})
 		return iter.Do(func(r *spanner.Row) error {
@@ -153,7 +156,7 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		case "cloud.google.com/go/spanner.RowIterator":
 			if hasAttribute(&span, "statement.tag", requestTag) {
 				foundTaggedQuerySpan = true
-				if !hasAttribute(&span, "db.statement", stestutil.SelectSingerIDAlbumIDAlbumTitleFromAlbums) {
+				if !hasAttribute(&span, "db.statement", sql) {
 					t.Errorf("tagged span %q was missing db.statement", span.Name)
 				}
 				if !hasAttribute(&span, "transaction.tag", transactionTag) {
