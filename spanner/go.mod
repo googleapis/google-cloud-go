@@ -4,6 +4,8 @@ go 1.23.0
 
 retract v1.76.0 // due to https://github.com/googleapis/google-cloud-go/issues/11630
 
+retract v1.84.0 // due to https://github.com/googleapis/google-cloud-go/issues/12659
+
 require (
 	cloud.google.com/go v0.121.4
 	cloud.google.com/go/iam v1.5.2
