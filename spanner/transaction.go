@@ -680,7 +680,7 @@ func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sp
 }
 
 func (t *txReadOnly) query(ctx context.Context, statement Statement, options QueryOptions) (ri *RowIterator) {
-	queryTimingInfo := QueryTimingInfo{}
+	queryTimingInfo := QueryTimingInfo{ClientRequestOverhead: float64(time.Now().UnixNano())}
 	ctx, _ = startSpan(ctx, "Query", t.otConfig.commonTraceStartOptions...)
 	defer func() { endSpan(ctx, ri.err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)

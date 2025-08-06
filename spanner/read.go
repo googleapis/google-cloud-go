@@ -166,13 +166,6 @@ var _ rowIterator = (*RowIterator)(nil)
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *RowIterator) Next() (*Row, error) {
-	if r.QueryTimingInfo != nil {
-		if r.QueryTimingInfo.ClientRequestOverhead == 0 {
-			// This is the first time Next() is called, so we set the
-			// ClientRequestOverhead to the current time.
-			r.QueryTimingInfo.ClientRequestOverhead = float64(time.Now().UnixNano())
-		}
-	}
 	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
 	if r.err != nil {
 		return nil, r.err
