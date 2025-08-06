@@ -289,7 +289,7 @@ type CSVOptions struct {
 	// An optional custom string that will represent a NULL
 	// value in CSV import data.
 	//
-	// Deprecated: Use NullMarkers
+	// NullMarker and NullMarkers are mutually exclusive and should not be set at the same time.
 	NullMarker string
 
 	// An optional list of custom strings that will represent
