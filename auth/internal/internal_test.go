@@ -128,12 +128,6 @@ func TestTrustBoundaryData(t *testing.T) {
 		wantIsEmpty bool
 	}{
 		{
-			name:        "nil",
-			tbd:         nil,
-			wantIsNoOp:  false,
-			wantIsEmpty: true,
-		},
-		{
 			name: "empty",
 			tbd: &TrustBoundaryData{
 				EncodedLocations: "",
@@ -269,45 +263,28 @@ func TestNewNoOpTrustBoundaryData(t *testing.T) {
 	}
 }
 
-func TestData_Methods_NilReceiver(t *testing.T) {
-	var data *TrustBoundaryData = nil
-
-	if got := (*TrustBoundaryData)(data).IsNoOp(); got {
-		t.Errorf("nil TrustBoundaryData.IsNoOp() = true, want false")
-	}
-	if got := (*TrustBoundaryData)(data).IsEmpty(); !got {
-		t.Errorf("nil TrustBoundaryData.IsEmpty() = false, want true")
-	}
-}
-
 func TestTrustBoundaryHeader(t *testing.T) {
 	tests := []struct {
 		name        string
-		tbd         *TrustBoundaryData
+		tbd         TrustBoundaryData
 		wantValue   string
 		wantPresent bool
 	}{
 		{
-			name:        "nil data",
-			tbd:         nil,
-			wantValue:   "",
-			wantPresent: false,
-		},
-		{
 			name:        "empty data",
-			tbd:         NewTrustBoundaryData(nil, ""),
+			tbd:         TrustBoundaryData{},
 			wantValue:   "",
 			wantPresent: false,
 		},
 		{
 			name:        "no-op data",
-			tbd:         NewTrustBoundaryData(nil, TrustBoundaryNoOp),
+			tbd:         *NewNoOpTrustBoundaryData(),
 			wantValue:   "",
 			wantPresent: true,
 		},
 		{
 			name:        "regular data",
-			tbd:         NewTrustBoundaryData(nil, "some-encoded-locations"),
+			tbd:         *NewTrustBoundaryData(nil, "some-encoded-locations"),
 			wantValue:   "some-encoded-locations",
 			wantPresent: true,
 		},

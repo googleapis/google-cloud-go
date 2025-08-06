@@ -26,7 +26,8 @@ import (
 func TestSetAuth(t *testing.T) {
 	tests := []struct {
 		name            string
-		token           *auth.Token
+		baseToken       *auth.Token
+		tbd             *internal.TrustBoundaryData
 		wantAuthHeader  string
 		wantTBHeader    bool
 		wantTBHeaderVal string
@@ -34,31 +35,29 @@ func TestSetAuth(t *testing.T) {
 	}{
 		{
 			name:           "auth only",
-			token:          &auth.Token{Value: "token_val", Type: "Bearer"},
+			baseToken:      &auth.Token{Value: "token_val", Type: "Bearer"},
 			wantAuthHeader: "Bearer token_val",
 			wantTBHeader:   false,
 			wantGRPCMeta:   map[string]string{"authorization": "Bearer token_val"},
 		},
 		{
 			name: "auth with empty tbd",
-			token: &auth.Token{
-				Value:             "token_val",
-				Type:              "Bearer",
-				TrustBoundaryData: internal.TrustBoundaryData{},
+			baseToken: &auth.Token{
+				Value: "token_val",
+				Type:  "Bearer",
 			},
+			tbd:            &internal.TrustBoundaryData{},
 			wantAuthHeader: "Bearer token_val",
 			wantTBHeader:   false,
 			wantGRPCMeta:   map[string]string{"authorization": "Bearer token_val"},
 		},
 		{
 			name: "auth with no-op tbd",
-			token: &auth.Token{
+			baseToken: &auth.Token{
 				Value: "token_val",
 				Type:  "Bearer",
-				TrustBoundaryData: internal.TrustBoundaryData{
-					EncodedLocations: "0x0",
-				},
 			},
+			tbd:             internal.NewNoOpTrustBoundaryData(),
 			wantAuthHeader:  "Bearer token_val",
 			wantTBHeader:    true,
 			wantTBHeaderVal: "",
@@ -66,13 +65,11 @@ func TestSetAuth(t *testing.T) {
 		},
 		{
 			name: "auth with tbd",
-			token: &auth.Token{
+			baseToken: &auth.Token{
 				Value: "token_val",
 				Type:  "Bearer",
-				TrustBoundaryData: internal.TrustBoundaryData{
-					EncodedLocations: "some_value",
-				},
 			},
+			tbd:             internal.NewTrustBoundaryData(nil, "some_value"),
 			wantAuthHeader:  "Bearer token_val",
 			wantTBHeader:    true,
 			wantTBHeaderVal: "some_value",
@@ -81,9 +78,13 @@ func TestSetAuth(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			token := tt.baseToken
+			if tt.tbd != nil {
+				token.SetTrustBoundaryData(*tt.tbd)
+			}
 			// Test HTTP
 			req := httptest.NewRequest("GET", "/", nil)
-			SetAuthHeader(tt.token, req)
+			SetAuthHeader(token, req)
 			if got := req.Header.Get("Authorization"); got != tt.wantAuthHeader {
 				t.Errorf("Authorization header: got %q, want %q", got, tt.wantAuthHeader)
 			}
@@ -93,7 +94,7 @@ func TestSetAuth(t *testing.T) {
 
 			// Test gRPC
 			gotMeta := make(map[string]string)
-			SetAuthMetadata(tt.token, gotMeta)
+			SetAuthMetadata(token, gotMeta)
 			if diff := cmp.Diff(tt.wantGRPCMeta, gotMeta); diff != "" {
 				t.Errorf("gRPC metadata mismatch (-want +got):\n%s", diff)
 			}

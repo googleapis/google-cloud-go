@@ -153,20 +153,31 @@ type dataProvider struct {
 	logger         *slog.Logger
 }
 
-// NewTrustBoundaryDataProvider creates a new DataProvider.
-// It will use the provided HTTP client to make requests and the configProvider
-// to determine the correct endpoint and universe domain for trust boundary lookups.
-func NewTrustBoundaryDataProvider(client *http.Client, configProvider ConfigProvider, logger *slog.Logger) (auth.TrustBoundaryDataProvider, error) {
+// NewTokenHook creates a new [auth.TokenHook] that fetches and attaches trust
+// boundary data to a token. It uses the provided HTTP client to make requests
+// and the configProvider to determine the correct endpoint and universe domain
+// for trust boundary lookups.
+func NewTokenHook(client *http.Client, configProvider ConfigProvider, logger *slog.Logger) (auth.TokenHook, error) {
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client cannot be nil for TrustBoundaryDataProvider")
 	}
 	if configProvider == nil {
 		return nil, errors.New("trustboundary: TrustBoundaryConfigProvider cannot be nil for TrustBoundaryDataProvider")
 	}
-	return &dataProvider{
+	p := &dataProvider{
 		client:         client,
 		configProvider: configProvider,
 		logger:         internallog.New(logger),
+	}
+	return func(ctx context.Context, t *auth.Token) error {
+		tbData, err := p.GetTrustBoundaryData(ctx, t)
+		if err != nil {
+			return fmt.Errorf("trustboundary: error fetching the trust boundary data: %w", err)
+		}
+		if tbData != nil {
+			t.SetTrustBoundaryData(*tbData)
+		}
+		return nil
 	}, nil
 }
 

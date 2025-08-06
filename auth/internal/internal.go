@@ -237,18 +237,12 @@ type TrustBoundaryData struct {
 }
 
 // IsNoOp reports whether the trust boundary has a no-op value.
-func (t *TrustBoundaryData) IsNoOp() bool {
-	if t == nil {
-		return false
-	}
+func (t TrustBoundaryData) IsNoOp() bool {
 	return t.EncodedLocations == TrustBoundaryNoOp
 }
 
 // IsEmpty reports whether the trust boundary is empty.
-func (t *TrustBoundaryData) IsEmpty() bool {
-	if t == nil {
-		return true
-	}
+func (t TrustBoundaryData) IsEmpty() bool {
 	return t.EncodedLocations == ""
 }
 
@@ -280,7 +274,7 @@ func NewNoOpTrustBoundaryData() *TrustBoundaryData {
 // 1. Header not set: (value="", present=false) -> data is empty.
 // 2. Header set to an empty string: (value="", present=true) -> data is a no-op.
 // 3. Header set to a value: (value="...", present=true) -> data has locations.
-func (t *TrustBoundaryData) TrustBoundaryHeader() (value string, present bool) {
+func (t TrustBoundaryData) TrustBoundaryHeader() (value string, present bool) {
 	if t.IsEmpty() {
 		// If the data is empty, the header should not be present.
 		return "", false

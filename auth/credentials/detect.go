@@ -79,7 +79,7 @@ func isTrustBoundaryEnabled() (bool, error) {
 	case "false", "0":
 		return false, nil
 	default:
-		return false, fmt.Errorf("invalid value for %s: %q. Must be one of \"true\", \"false\", \"1\", or \"0\"", envVar, val)
+		return false, fmt.Errorf(`invalid value for %s: %q. Must be one of "true", "false", "1", or "0"`, envVar, val)
 	}
 }
 
@@ -157,24 +157,22 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			MetadataClient: metadataClient,
 		}
 
-		var TrustBoundaryProvider auth.TrustBoundaryDataProvider
-
+		var hook auth.TokenHook
 		if trustBoundaryEnabled {
 			gceTBConfigProvider := trustboundary.NewGCETrustBoundaryConfigProvider(gceUniverseDomainProvider)
 			var err error
-			TrustBoundaryProvider, err = trustboundary.NewTrustBoundaryDataProvider(opts.client(), gceTBConfigProvider, opts.logger())
+			hook, err = trustboundary.NewTokenHook(opts.client(), gceTBConfigProvider, opts.logger())
 			if err != nil {
 				return nil, fmt.Errorf("credentials: failed to initialize GCE trust boundary provider: %w", err)
 			}
 
 		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
-			TokenProvider: computeTokenProvider(opts, metadataClient, TrustBoundaryProvider),
+			TokenProvider: computeTokenProvider(opts, metadataClient, hook),
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
 				return metadataClient.ProjectIDWithContext(ctx)
 			}),
-			UniverseDomainProvider:    gceUniverseDomainProvider,
-			TrustBoundaryDataProvider: TrustBoundaryProvider,
+			UniverseDomainProvider: gceUniverseDomainProvider,
 		}), nil
 	}
 

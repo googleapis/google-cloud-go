@@ -37,12 +37,12 @@ var (
 
 // computeTokenProvider creates a [cloud.google.com/go/auth.TokenProvider] that
 // uses the metadata service to retrieve tokens.
-func computeTokenProvider(opts *DetectOptions, client *metadata.Client, tbDataProvider auth.TrustBoundaryDataProvider) auth.TokenProvider {
+func computeTokenProvider(opts *DetectOptions, client *metadata.Client, hook auth.TokenHook) auth.TokenProvider {
 	return auth.NewCachedTokenProvider(&computeProvider{
-		scopes:                    opts.Scopes,
-		client:                    client,
-		tokenBindingType:          opts.TokenBindingType,
-		trustBoundaryDataProvider: tbDataProvider,
+		scopes:           opts.Scopes,
+		client:           client,
+		tokenBindingType: opts.TokenBindingType,
+		tokenHook:        hook,
 	}, &auth.CachedTokenProviderOptions{
 		ExpireEarly:         opts.EarlyTokenRefresh,
 		DisableAsyncRefresh: opts.DisableAsyncRefresh,
@@ -51,10 +51,10 @@ func computeTokenProvider(opts *DetectOptions, client *metadata.Client, tbDataPr
 
 // computeProvider fetches tokens from the google cloud metadata service.
 type computeProvider struct {
-	scopes                    []string
-	client                    *metadata.Client
-	tokenBindingType          TokenBindingType
-	trustBoundaryDataProvider auth.TrustBoundaryDataProvider
+	scopes           []string
+	client           *metadata.Client
+	tokenBindingType TokenBindingType
+	tokenHook        auth.TokenHook
 }
 
 type metadataTokenResp struct {
@@ -100,13 +100,9 @@ func (cs *computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Expiry:   time.Now().Add(time.Duration(res.ExpiresInSec) * time.Second),
 		Metadata: computeTokenMetadata,
 	}
-	if cs.trustBoundaryDataProvider != nil {
-		trustBoundaryData, err := cs.trustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
-		if err != nil {
-			return nil, fmt.Errorf("auth: error fetching the trust boundary data: %w", err)
-		}
-		if trustBoundaryData != nil {
-			token.TrustBoundaryData = *trustBoundaryData
+	if cs.tokenHook != nil {
+		if err := cs.tokenHook(ctx, token); err != nil {
+			return nil, fmt.Errorf("credentials: token hook failed: %w", err)
 		}
 	}
 	return token, nil

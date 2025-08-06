@@ -63,11 +63,11 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 			return nil, fmt.Errorf("credentials: could not extract target service account email for trust boundary: %w", err)
 		}
 		targetSATrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(targetSAEmail, opts.UniverseDomain)
-		tbProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.Client, targetSATrustBoundaryConfig, opts.Logger)
+		hook, err := trustboundary.NewTokenHook(opts.Client, targetSATrustBoundaryConfig, opts.Logger)
 		if err != nil {
 			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for impersonation: %w", err)
 		}
-		opts.trustBoundaryDataProvider = tbProvider
+		opts.tokenHook = hook
 	}
 	return opts, nil
 }
@@ -102,12 +102,9 @@ type Options struct {
 	TrustBoundaryEnabled bool
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	UniverseDomain string
-
-	// trustBoundaryDataProvider is used to fetch trust boundary data.
-	// This data defines the regions or environments where the credential (and subsequently the tokens
-	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
-	// If nil, no trust boundary restrictions are applied or fetched for this flow.
-	trustBoundaryDataProvider auth.TrustBoundaryDataProvider
+	// TokenHook is a function that will be called after a token is fetched,
+	// allowing for modification of the token.
+	tokenHook auth.TokenHook
 }
 
 func (o *Options) validate() error {
@@ -170,13 +167,9 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 		Type:   internal.TokenTypeBearer,
 	}
 	// Fetch trust boundary data if a provider is configured, and attach it to the token.
-	if o.trustBoundaryDataProvider != nil {
-		trustBoundaryData, err := o.trustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
-		if err != nil {
-			return nil, fmt.Errorf("auth: error fetching the trust boundary data: %w", err)
-		}
-		if trustBoundaryData != nil {
-			token.TrustBoundaryData = *trustBoundaryData
+	if o.tokenHook != nil {
+		if err := o.tokenHook(ctx, token); err != nil {
+			return nil, fmt.Errorf("credentials: token hook failed: %w", err)
 		}
 	}
 	return token, nil

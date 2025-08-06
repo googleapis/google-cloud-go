@@ -163,7 +163,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 					}
 					w.Header().Set("Content-Type", "application/json")
 					w.WriteHeader(tt.serverResponse.status)
-					fmt.Fprintln(w, tt.serverResponse.body)
+					fmt.Fprint(w, tt.serverResponse.body)
 				}))
 				defer server.Close()
 				url = server.URL
@@ -526,53 +526,8 @@ func (m *mockTrustBoundaryConfigProvider) Reset() {
 	m.universeCallCount = 0
 }
 
-func TestNewTrustBoundaryDataProvider(t *testing.T) {
-	mockConfigProvider := &mockTrustBoundaryConfigProvider{}
-	tests := []struct {
-		name           string
-		client         *http.Client
-		configProvider ConfigProvider
-		wantErr        string
-	}{
-		{
-			name:           "Valid provider",
-			client:         http.DefaultClient,
-			configProvider: mockConfigProvider,
-		},
-		{
-			name:           "Nil client",
-			client:         nil,
-			configProvider: mockConfigProvider,
-			wantErr:        "trustboundary: HTTP client cannot be nil for TrustBoundaryDataProvider",
-		},
-		{
-			name:           "Nil config provider",
-			client:         http.DefaultClient,
-			configProvider: nil,
-			wantErr:        "trustboundary: TrustBoundaryConfigProvider cannot be nil for TrustBoundaryDataProvider",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewTrustBoundaryDataProvider(tt.client, tt.configProvider, nil)
-			if tt.wantErr != "" {
-				if err == nil {
-					t.Fatalf("NewTrustBoundaryDataProvider() error = nil, want %q", tt.wantErr)
-				}
-				if !strings.Contains(err.Error(), tt.wantErr) {
-					t.Errorf("NewTrustBoundaryDataProvider() error = %q, want %q", err.Error(), tt.wantErr)
-				}
-			} else if err != nil {
-				t.Fatalf("NewTrustBoundaryDataProvider() unexpected error: %v", err)
-			}
-		})
-	}
-}
-
-func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
+func TestTokenHook(t *testing.T) {
 	ctx := context.Background()
-	defaultToken := &auth.Token{Value: "test-access-token"}
 
 	type serverResponse struct {
 		status int
@@ -582,34 +537,32 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 	tests := []struct {
 		name                  string
 		mockConfig            *mockTrustBoundaryConfigProvider
-		initialCachedData     *internal.TrustBoundaryData
 		serverResponse        *serverResponse // for fetchTrustBoundaryData
-		wantData              *internal.TrustBoundaryData
+		wantDataOnToken       *internal.TrustBoundaryData
 		wantErr               string
 		wantUniverseCallCount int
 		wantEndpointCallCount int
+		// secondRun allows testing caching behavior by running the same hook again
+		// with a different server/mock configuration.
+		secondRun *struct {
+			serverResponse        *serverResponse
+			wantDataOnToken       *internal.TrustBoundaryData
+			wantErr               string
+			wantUniverseCallCount int
+			wantEndpointCallCount int
+		}
 	}{
 		{
-			name: "Non-default universe domain returns NoOp and caches it",
+			name: "Non-default universe domain returns NoOp",
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: "example.com",
 			},
-			wantData:              internal.NewNoOpTrustBoundaryData(),
+			wantDataOnToken:       internal.NewNoOpTrustBoundaryData(),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 0,
 		},
 		{
-			name: "Default universe, returns NoOp from cache",
-			mockConfig: &mockTrustBoundaryConfigProvider{
-				universeToReturn: internal.DefaultUniverseDomain,
-			},
-			initialCachedData:     internal.NewNoOpTrustBoundaryData(),
-			wantData:              internal.NewNoOpTrustBoundaryData(),
-			wantUniverseCallCount: 1, // Universe is checked
-			wantEndpointCallCount: 0, // Endpoint fetch is skipped due to cached NoOp
-		},
-		{
-			name: "Default universe, no cache, successful fetch and caches result",
+			name: "Default universe, no cache, successful fetch",
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
 			},
@@ -617,12 +570,12 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`,
 			},
-			wantData:              internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC"),
+			wantDataOnToken:       internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC"),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
 		},
 		{
-			name: "Default universe, fetch fails, no initial cache, returns error",
+			name: "Default universe, fetch fails, no cache, returns error",
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
 			},
@@ -630,21 +583,8 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				status: http.StatusInternalServerError,
 				body:   "server error",
 			},
-			wantErr:               "failed to fetch trust boundary data",
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 1,
-		},
-		{
-			name: "Default universe, fetch fails, with existing cache, returns cache",
-			mockConfig: &mockTrustBoundaryConfigProvider{
-				universeToReturn: internal.DefaultUniverseDomain,
-			},
-			initialCachedData: internal.NewTrustBoundaryData([]string{"cached-loc"}, "0xCACHE"),
-			serverResponse: &serverResponse{
-				status: http.StatusInternalServerError,
-				body:   "server error",
-			},
-			wantData:              internal.NewTrustBoundaryData([]string{"cached-loc"}, "0xCACHE"), // Expect cached data
+			wantDataOnToken:       &internal.TrustBoundaryData{},
+			wantErr:               "and no cache available",
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
 		},
@@ -653,7 +593,8 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeErrToReturn: errors.New("universe domain error"),
 			},
-			wantErr:               "error getting universe domain: universe domain error",
+			wantDataOnToken:       &internal.TrustBoundaryData{},
+			wantErr:               "error getting universe domain",
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 0,
 		},
@@ -663,22 +604,90 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				universeToReturn:    internal.DefaultUniverseDomain,
 				endpointErrToReturn: errors.New("endpoint error"),
 			},
-			wantErr:               "error getting the lookup endpoint: endpoint error",
+			wantDataOnToken:       &internal.TrustBoundaryData{},
+			wantErr:               "error getting the lookup endpoint",
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
 		},
 		{
-			name: "Empty universe domain from provider defaults to DefaultUniverseDomain, successful fetch",
+			name: "Cache fallback on second call",
 			mockConfig: &mockTrustBoundaryConfigProvider{
-				universeToReturn: "", // Empty, should default
+				universeToReturn: internal.DefaultUniverseDomain,
 			},
-			serverResponse: &serverResponse{
+			serverResponse: &serverResponse{ // First call is successful
 				status: http.StatusOK,
-				body:   `{"locations": ["us-default"], "encodedLocations": "0xDEF"}`,
+				body:   `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`,
 			},
-			wantData:              internal.NewTrustBoundaryData([]string{"us-default"}, "0xDEF"),
+			wantDataOnToken:       internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC"),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
+			secondRun: &struct {
+				serverResponse        *serverResponse
+				wantDataOnToken       *internal.TrustBoundaryData
+				wantErr               string
+				wantUniverseCallCount int
+				wantEndpointCallCount int
+			}{
+				serverResponse: &serverResponse{ // Second call fails
+					status: http.StatusInternalServerError,
+					body:   "server error",
+				},
+				wantDataOnToken: internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC"), // Should get cached data
+				wantErr:         "",                                                           // No error due to fallback
+				// It tries to fetch again, but falls back to cache.
+				wantUniverseCallCount: 1,
+				wantEndpointCallCount: 1,
+			},
+		},
+		{
+			name: "Non-default universe caches NoOp",
+			mockConfig: &mockTrustBoundaryConfigProvider{
+				universeToReturn: "example.com",
+			},
+			wantDataOnToken:       internal.NewNoOpTrustBoundaryData(),
+			wantUniverseCallCount: 1,
+			wantEndpointCallCount: 0,
+			secondRun: &struct {
+				serverResponse        *serverResponse
+				wantDataOnToken       *internal.TrustBoundaryData
+				wantErr               string
+				wantUniverseCallCount int
+				wantEndpointCallCount int
+			}{
+				wantDataOnToken: internal.NewNoOpTrustBoundaryData(),
+				// Universe is checked again, but endpoint call is skipped.
+				wantUniverseCallCount: 1,
+				wantEndpointCallCount: 0,
+			},
+		},
+		{
+			name: "API-retrieved NoOp is cached",
+			mockConfig: &mockTrustBoundaryConfigProvider{
+				universeToReturn: internal.DefaultUniverseDomain,
+			},
+			serverResponse: &serverResponse{ // First call returns NoOp from API
+				status: http.StatusOK,
+				body:   `{"encodedLocations": "0x0"}`,
+			},
+			wantDataOnToken:       internal.NewTrustBoundaryData(nil, internal.TrustBoundaryNoOp),
+			wantUniverseCallCount: 1,
+			wantEndpointCallCount: 1,
+			secondRun: &struct {
+				serverResponse        *serverResponse
+				wantDataOnToken       *internal.TrustBoundaryData
+				wantErr               string
+				wantUniverseCallCount int
+				wantEndpointCallCount int
+			}{
+				serverResponse: &serverResponse{ // This server would fail, but shouldn't be called
+					status: http.StatusInternalServerError,
+					body:   "server error",
+				},
+				wantDataOnToken: internal.NewTrustBoundaryData(nil, internal.TrustBoundaryNoOp),
+				// Universe is checked, but cached NoOp prevents endpoint call.
+				wantUniverseCallCount: 1,
+				wantEndpointCallCount: 0,
+			},
 		},
 	}
 
@@ -699,30 +708,29 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				client = server.Client() // Use the test server's client
 			}
 
-			provider, err := NewTrustBoundaryDataProvider(client, tt.mockConfig, nil)
+			hook, err := NewTokenHook(client, tt.mockConfig, nil)
 			if err != nil {
-				t.Fatalf("NewTrustBoundaryDataProvider() failed: %v", err)
-			}
-			internalProvider := provider.(*dataProvider)
-			if tt.initialCachedData != nil {
-				internalProvider.data = tt.initialCachedData
+				t.Fatalf("NewTokenHook() failed: %v", err)
 			}
 
-			gotData, err := provider.GetTrustBoundaryData(ctx, defaultToken)
+			// First run
+			token := &auth.Token{Value: "test-token"}
+			err = hook(ctx, token)
 
 			if tt.wantErr != "" {
 				if err == nil {
-					t.Fatalf("GetTrustBoundaryData() error = nil, want %q", tt.wantErr)
+					t.Fatalf("hook() error = nil, want %q", tt.wantErr)
 				}
 				if !strings.Contains(err.Error(), tt.wantErr) {
-					t.Errorf("GetTrustBoundaryData() error = %q, want %q", err.Error(), tt.wantErr)
+					t.Errorf("hook() error = %q, want %q", err.Error(), tt.wantErr)
 				}
 			} else if err != nil {
-				t.Fatalf("GetTrustBoundaryData() unexpected error: %v", err)
+				t.Fatalf("hook() unexpected error: %v", err)
 			}
 
-			if !reflect.DeepEqual(gotData, tt.wantData) {
-				t.Errorf("GetTrustBoundaryData() data = %+v, want %+v", gotData, tt.wantData)
+			gotData := token.TrustBoundaryData()
+			if !reflect.DeepEqual(gotData, *tt.wantDataOnToken) {
+				t.Errorf("hook() data on token = %+v, want %+v", gotData, *tt.wantDataOnToken)
 			}
 
 			if tt.mockConfig.universeCallCount != tt.wantUniverseCallCount {
@@ -732,79 +740,46 @@ func TestTrustBoundaryDataProvider_GetTrustBoundaryData(t *testing.T) {
 				t.Errorf("GetTrustBoundaryEndpoint call count = %d, want %d", tt.mockConfig.endpointCallCount, tt.wantEndpointCallCount)
 			}
 
-			if !reflect.DeepEqual(internalProvider.data, tt.wantData) {
-				t.Errorf("Final cache state mismatch. Got %+v, want %+v", internalProvider.data, tt.wantData)
+			// Second run, if configured
+			if tt.secondRun != nil {
+				// Reset server if needed
+				if tt.secondRun.serverResponse != nil {
+					server.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(tt.secondRun.serverResponse.status)
+						fmt.Fprintln(w, tt.secondRun.serverResponse.body)
+					})
+				}
+
+				// Reset mock call counts for the second run
+				tt.mockConfig.Reset()
+
+				secondToken := &auth.Token{Value: "test-token-2"}
+				err = hook(ctx, secondToken)
+
+				if tt.secondRun.wantErr != "" {
+					if err == nil {
+						t.Fatalf("hook() second run error = nil, want %q", tt.secondRun.wantErr)
+					}
+					if !strings.Contains(err.Error(), tt.secondRun.wantErr) {
+						t.Errorf("hook() second run error = %q, want %q", err.Error(), tt.secondRun.wantErr)
+					}
+				} else if err != nil {
+					t.Fatalf("hook() second run unexpected error: %v", err)
+				}
+
+				gotData := secondToken.TrustBoundaryData()
+				if !reflect.DeepEqual(gotData, *tt.secondRun.wantDataOnToken) {
+					t.Errorf("hook() second run data on token = %+v, want %+v", gotData, *tt.secondRun.wantDataOnToken)
+				}
+
+				if tt.mockConfig.universeCallCount != tt.secondRun.wantUniverseCallCount {
+					t.Errorf("second run GetUniverseDomain call count = %d, want %d", tt.mockConfig.universeCallCount, tt.secondRun.wantUniverseCallCount)
+				}
+				if tt.mockConfig.endpointCallCount != tt.secondRun.wantEndpointCallCount {
+					t.Errorf("second run GetTrustBoundaryEndpoint call count = %d, want %d", tt.mockConfig.endpointCallCount, tt.secondRun.wantEndpointCallCount)
+				}
 			}
 		})
 	}
-}
-
-func TestTrustBoundaryDataProvider_CacheFallback(t *testing.T) {
-	ctx := context.Background()
-	defaultToken := &auth.Token{Value: "test-access-token"}
-	successBody := `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`
-	wantData := internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC")
-
-	// Use a variable to control server response.
-	var serverResponseStatus int
-	var serverResponseBody string
-
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(serverResponseStatus)
-		fmt.Fprintln(w, serverResponseBody)
-	}))
-	defer server.Close()
-
-	mockConfigProvider := &mockTrustBoundaryConfigProvider{
-		universeToReturn: internal.DefaultUniverseDomain,
-		endpointToReturn: server.URL,
-	}
-
-	provider, err := NewTrustBoundaryDataProvider(server.Client(), mockConfigProvider, nil)
-	if err != nil {
-		t.Fatalf("NewTrustBoundaryDataProvider() failed: %v", err)
-	}
-
-	// 1. First call: successful fetch, populates cache.
-	t.Run("SuccessfulFirstFetch", func(t *testing.T) {
-		mockConfigProvider.Reset()
-		serverResponseStatus = http.StatusOK
-		serverResponseBody = successBody
-
-		gotData, err := provider.GetTrustBoundaryData(ctx, defaultToken)
-		if err != nil {
-			t.Fatalf("GetTrustBoundaryData() first call failed unexpectedly: %v", err)
-		}
-		if !reflect.DeepEqual(gotData, wantData) {
-			t.Errorf("GetTrustBoundaryData() first call data = %+v, want %+v", gotData, wantData)
-		}
-		if mockConfigProvider.universeCallCount != 1 {
-			t.Errorf("GetUniverseDomain call count = %d, want 1", mockConfigProvider.universeCallCount)
-		}
-		if mockConfigProvider.endpointCallCount != 1 {
-			t.Errorf("GetTrustBoundaryEndpoint call count = %d, want 1", mockConfigProvider.endpointCallCount)
-		}
-	})
-
-	// 2. Second call: fetch fails, should return cached data.
-	t.Run("FailedSecondFetchReturnsCache", func(t *testing.T) {
-		serverResponseStatus = http.StatusInternalServerError
-		serverResponseBody = "server error"
-		mockConfigProvider.Reset() // Reset call counts for this sub-test.
-
-		gotData, err := provider.GetTrustBoundaryData(ctx, defaultToken)
-		if err != nil {
-			t.Fatalf("GetTrustBoundaryData() second call returned an unexpected error: %v", err)
-		}
-		if !reflect.DeepEqual(gotData, wantData) {
-			t.Errorf("GetTrustBoundaryData() second call data = %+v, want %+v (cached data)", gotData, wantData)
-		}
-		if mockConfigProvider.universeCallCount != 1 {
-			t.Errorf("GetUniverseDomain call count = %d, want 1", mockConfigProvider.universeCallCount)
-		}
-		if mockConfigProvider.endpointCallCount != 1 {
-			t.Errorf("GetTrustBoundaryEndpoint call count = %d, want 1", mockConfigProvider.endpointCallCount)
-		}
-	})
 }

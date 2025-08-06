@@ -100,10 +100,11 @@ type Token struct {
 	// response returned by the server.
 	Metadata map[string]interface{} // TODO(codyoss): maybe make a method to flatten metadata to avoid []string for url.Values
 	// TrustBoundaryData represents the trust boundary data associated with the token.
-	// It contains information about the regions or environments where the token is valid.
-	// This data is used to enforce trust boundary restrictions on requests made with the token.
-	// TrustBoundaryData is a value type for immutability after token creation.
-	TrustBoundaryData internal.TrustBoundaryData
+	// It contains information about the regions or environments where the token is
+	// valid. This data is used to enforce trust boundary restrictions on requests
+	// made with the token. trustBoundaryData is a value type for immutability
+	// after token creation.
+	trustBoundaryData internal.TrustBoundaryData
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -139,6 +140,17 @@ func (t *Token) isValidWithEarlyExpiry(earlyExpiry time.Duration) bool {
 
 func (t *Token) isEmpty() bool {
 	return t == nil || t.Value == ""
+}
+
+// SetTrustBoundaryData is for internal use ONLY. It sets the trust boundary
+// data on the token.
+func (t *Token) SetTrustBoundaryData(data internal.TrustBoundaryData) {
+	t.trustBoundaryData = data
+}
+
+// TrustBoundaryData is for internal use ONLY. It returns the trust boundary data from the token.
+func (t *Token) TrustBoundaryData() internal.TrustBoundaryData {
+	return t.trustBoundaryData
 }
 
 // Credentials holds Google credentials, including
@@ -232,19 +244,6 @@ type CredentialsOptions struct {
 	QuotaProjectIDProvider CredentialsPropertyProvider
 	// UniverseDomainProvider resolves the universe domain with the credentials.
 	UniverseDomainProvider CredentialsPropertyProvider
-	// TrustBoundaryDataProvider is used to fetch trust boundary data.
-	// This data defines location restrictions for credential usage.
-	// Not all credential types utilize this provider; if it's nil, no trust boundary
-	// restrictions are applied via this mechanism.
-	// FOR INTERNAL USE ONLY.
-	TrustBoundaryDataProvider TrustBoundaryDataProvider
-}
-
-// TrustBoundaryDataProvider provides an interface for fetching trust boundary data.
-type TrustBoundaryDataProvider interface {
-	// GetTrustBoundaryData retrieves the trust boundary data.
-	// The provided token is used to authenticate the lookup request.
-	GetTrustBoundaryData(ctx context.Context, token *Token) (*internal.TrustBoundaryData, error)
 }
 
 // NewCredentials returns new [Credentials] from the provided options.
@@ -517,15 +516,9 @@ type Options2LO struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
-	// TrustBoundaryDataProvider is used to fetch trust boundary data.
-	// This data defines the regions or environments where the credential (and subsequently the tokens
-	// obtained by it) is allowed to be used, enforcing trust boundary restrictions.
-	// The provider pattern allows for dynamic fetching and caching of this data,
-	// which is particularly relevant for credential types like service accounts
-	// where trust boundaries are enforced to limit usage to authorized locations.
-	// If nil, no trust boundary restrictions are applied or fetched by default for this flow.
-	// FOR INTERNAL USE ONLY.
-	TrustBoundaryDataProvider TrustBoundaryDataProvider
+	// TokenHook is a function that will be called after a token is fetched,
+	// allowing for modification of the token.
+	TokenHook TokenHook
 }
 
 func (o *Options2LO) client() *http.Client {
@@ -643,14 +636,13 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		}
 		token.Value = tokenRes.IDToken
 	}
-	if tp.opts.TrustBoundaryDataProvider != nil {
-		trustBoundaryData, err := tp.opts.TrustBoundaryDataProvider.GetTrustBoundaryData(ctx, token)
-		if err != nil {
-			return nil, fmt.Errorf("auth: error fetching the trust boundary data: %w", err)
-		}
-		if trustBoundaryData != nil {
-			token.TrustBoundaryData = *trustBoundaryData
+	if tp.opts.TokenHook != nil {
+		if err := tp.opts.TokenHook(ctx, token); err != nil {
+			return nil, fmt.Errorf("auth: token hook failed: %w", err)
 		}
 	}
 	return token, nil
 }
+
+// TokenHook is a function that can be used to modify a token after it has been fetched.
+type TokenHook func(ctx context.Context, t *Token) error

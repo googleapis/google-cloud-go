@@ -148,16 +148,13 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 	if opts2LO.TokenURL == "" {
 		opts2LO.TokenURL = jwtTokenURL
 	}
-	if trustBoundaryEnabledErr != nil {
-		return nil, trustBoundaryEnabledErr
-	}
 	if trustBoundaryEnabled {
 		saTrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(opts2LO.Email, opts2LO.UniverseDomain)
-		trustBoundaryProvider, err := trustboundary.NewTrustBoundaryDataProvider(opts.client(), saTrustBoundaryConfig, opts.logger())
+		hook, err := trustboundary.NewTokenHook(opts.client(), saTrustBoundaryConfig, opts.logger())
 		if err != nil {
 			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for service account: %w", err)
 		}
-		opts2LO.TrustBoundaryDataProvider = trustBoundaryProvider
+		opts2LO.TokenHook = hook
 	}
 	return auth.New2LOTokenProvider(opts2LO)
 }
