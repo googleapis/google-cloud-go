@@ -593,11 +593,6 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			// If no gRPC stream is available, try to initiate one.
 			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken, riw.withNextRetryAttempt(d.retryAttempt))
 			if d.err == nil {
-				if mt.QueryTimingInfo != nil && mt.QueryTimingInfo.ClientResponseOverhead == 0 {
-					// here the stream is just created, so we set the
-					// ClientResponseOverhead to the current time.
-					mt.QueryTimingInfo.ClientResponseOverhead = float64(time.Now().UnixNano())
-				}
 				d.changeState(queueingRetryable)
 				continue
 			}

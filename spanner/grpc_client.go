@@ -248,18 +248,25 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 	setSpanAttributes(span, req)
 	// Note: This method does not add g.optsWithNextRequestID to inject x-goog-spanner-request-id
 	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
-	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	if ok {
+		mt.QueryTimingInfo.ClientRequestOverhead = float64(time.Now().UnixNano()) - mt.QueryTimingInfo.ClientRequestOverhead
+		mt.QueryTimingInfo.GrpcRequestOverhead = float64(time.Now().UnixNano())
+	}
+	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 	if !ok {
 		return client, err
 	}
 	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
+		mt.QueryTimingInfo.GrpcRequestOverhead = float64(time.Now().UnixNano()) - mt.QueryTimingInfo.GrpcRequestOverhead
 		md, _ := client.Header()
+		mt.QueryTimingInfo.ClientResponseOverhead = float64(time.Now().UnixNano())
 		latencyMap := parseServerTimingHeader(md)
 		setGFEAndAFESpanAttributes(span, latencyMap)
 		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
 		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
 	}
+
 	return client, err
 }
 
