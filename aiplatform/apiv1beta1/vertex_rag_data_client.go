@@ -1633,6 +1633,9 @@ func (c *vertexRagDataRESTClient) DeleteRagFile(ctx context.Context, req *aiplat
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForceDelete() {
+		params.Add("forceDelete", fmt.Sprintf("%v", req.GetForceDelete()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
