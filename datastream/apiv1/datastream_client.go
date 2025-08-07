@@ -3066,6 +3066,9 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
