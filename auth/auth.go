@@ -99,12 +99,6 @@ type Token struct {
 	// Metadata  may include, but is not limited to, the body of the token
 	// response returned by the server.
 	Metadata map[string]interface{} // TODO(codyoss): maybe make a method to flatten metadata to avoid []string for url.Values
-	// TrustBoundaryData represents the trust boundary data associated with the token.
-	// It contains information about the regions or environments where the token is
-	// valid. This data is used to enforce trust boundary restrictions on requests
-	// made with the token. trustBoundaryData is a value type for immutability
-	// after token creation.
-	trustBoundaryData internal.TrustBoundaryData
 }
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
@@ -140,17 +134,6 @@ func (t *Token) isValidWithEarlyExpiry(earlyExpiry time.Duration) bool {
 
 func (t *Token) isEmpty() bool {
 	return t == nil || t.Value == ""
-}
-
-// SetTrustBoundaryData is for internal use ONLY. It sets the trust boundary
-// data on the token.
-func (t *Token) SetTrustBoundaryData(data internal.TrustBoundaryData) {
-	t.trustBoundaryData = data
-}
-
-// TrustBoundaryData is for internal use ONLY. It returns the trust boundary data from the token.
-func (t *Token) TrustBoundaryData() internal.TrustBoundaryData {
-	return t.trustBoundaryData
 }
 
 // Credentials holds Google credentials, including

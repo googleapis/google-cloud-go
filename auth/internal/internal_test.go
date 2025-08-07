@@ -120,50 +120,6 @@ func TestDefaultClient(t *testing.T) {
 	}
 }
 
-func TestTrustBoundaryData(t *testing.T) {
-	tests := []struct {
-		name        string
-		tbd         *TrustBoundaryData
-		wantIsNoOp  bool
-		wantIsEmpty bool
-	}{
-		{
-			name: "empty",
-			tbd: &TrustBoundaryData{
-				EncodedLocations: "",
-			},
-			wantIsNoOp:  false,
-			wantIsEmpty: true,
-		},
-		{
-			name: "no-op",
-			tbd: &TrustBoundaryData{
-				EncodedLocations: TrustBoundaryNoOp,
-			},
-			wantIsNoOp:  true,
-			wantIsEmpty: false,
-		},
-		{
-			name: "with locations",
-			tbd: &TrustBoundaryData{
-				EncodedLocations: "some-locations",
-			},
-			wantIsNoOp:  false,
-			wantIsEmpty: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.tbd.IsNoOp(); got != tt.wantIsNoOp {
-				t.Errorf("IsNoOp() = %v, want %v", got, tt.wantIsNoOp)
-			}
-			if got := tt.tbd.IsEmpty(); got != tt.wantIsEmpty {
-				t.Errorf("IsEmpty() = %v, want %v", got, tt.wantIsEmpty)
-			}
-		})
-	}
-}
-
 func TestNewTrustBoundaryData(t *testing.T) {
 	tests := []struct {
 		name             string
@@ -171,8 +127,6 @@ func TestNewTrustBoundaryData(t *testing.T) {
 		encodedLocations string
 		wantLocations    []string
 		wantEncoded      string
-		wantIsNoOp       bool
-		wantIsEmpty      bool
 	}{
 		{
 			name:             "Standard data",
@@ -180,8 +134,6 @@ func TestNewTrustBoundaryData(t *testing.T) {
 			encodedLocations: "0xABC123",
 			wantLocations:    []string{"us-central1", "europe-west1"},
 			wantEncoded:      "0xABC123",
-			wantIsNoOp:       false,
-			wantIsEmpty:      false,
 		},
 		{
 			name:             "Empty locations, not no-op encoded",
@@ -189,8 +141,6 @@ func TestNewTrustBoundaryData(t *testing.T) {
 			encodedLocations: "0xDEF456",
 			wantLocations:    []string{},
 			wantEncoded:      "0xDEF456",
-			wantIsNoOp:       false,
-			wantIsEmpty:      false,
 		},
 		{
 			name:             "Nil locations, not no-op encoded",
@@ -198,8 +148,6 @@ func TestNewTrustBoundaryData(t *testing.T) {
 			encodedLocations: "0xGHI789",
 			wantLocations:    []string{}, // Expect empty slice, not nil
 			wantEncoded:      "0xGHI789",
-			wantIsNoOp:       false,
-			wantIsEmpty:      false,
 		},
 		{
 			name:             "No-op encoded locations",
@@ -207,8 +155,6 @@ func TestNewTrustBoundaryData(t *testing.T) {
 			encodedLocations: TrustBoundaryNoOp,
 			wantLocations:    []string{"us-east1"},
 			wantEncoded:      TrustBoundaryNoOp,
-			wantIsNoOp:       true,
-			wantIsEmpty:      false,
 		},
 		{
 			name:             "Empty string encoded locations",
@@ -216,8 +162,6 @@ func TestNewTrustBoundaryData(t *testing.T) {
 			encodedLocations: "",
 			wantLocations:    []string{},
 			wantEncoded:      "",
-			wantIsNoOp:       false,
-			wantIsEmpty:      true,
 		},
 	}
 
@@ -233,13 +177,6 @@ func TestNewTrustBoundaryData(t *testing.T) {
 			if !reflect.DeepEqual(gotLocations, tt.wantLocations) {
 				t.Errorf("NewTrustBoundaryData().Locations = %v, want %v", gotLocations, tt.wantLocations)
 			}
-
-			if got := data.IsNoOp(); got != tt.wantIsNoOp {
-				t.Errorf("NewTrustBoundaryData(...).IsNoOp() = %v, want %v", got, tt.wantIsNoOp)
-			}
-			if got := data.IsEmpty(); got != tt.wantIsEmpty {
-				t.Errorf("NewTrustBoundaryData(...).IsEmpty() = %v, want %v", got, tt.wantIsEmpty)
-			}
 		})
 	}
 }
@@ -253,13 +190,6 @@ func TestNewNoOpTrustBoundaryData(t *testing.T) {
 
 	if got := data.EncodedLocations; got != TrustBoundaryNoOp {
 		t.Errorf("NewNoOpTrustBoundaryData().EncodedLocations = %q, want %q", got, TrustBoundaryNoOp)
-	}
-
-	if !data.IsNoOp() {
-		t.Errorf("NewNoOpTrustBoundaryData().IsNoOp() = false, want true")
-	}
-	if data.IsEmpty() {
-		t.Errorf("NewNoOpTrustBoundaryData().IsEmpty() = true, want false")
 	}
 }
 

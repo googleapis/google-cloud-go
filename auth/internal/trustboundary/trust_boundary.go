@@ -175,7 +175,10 @@ func NewTokenHook(client *http.Client, configProvider ConfigProvider, logger *sl
 			return fmt.Errorf("trustboundary: error fetching the trust boundary data: %w", err)
 		}
 		if tbData != nil {
-			t.SetTrustBoundaryData(*tbData)
+			if t.Metadata == nil {
+				t.Metadata = make(map[string]interface{})
+			}
+			t.Metadata[internal.TrustBoundaryDataKey] = *tbData
 		}
 		return nil
 	}, nil

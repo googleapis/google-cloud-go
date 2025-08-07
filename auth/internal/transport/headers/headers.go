@@ -31,8 +31,7 @@ func SetAuthHeader(token *auth.Token, req *http.Request) {
 	}
 	req.Header.Set("Authorization", typ+" "+token.Value)
 
-	headerVal, setHeader := token.TrustBoundaryData().TrustBoundaryHeader()
-	if setHeader {
+	if headerVal, setHeader := getTrustBoundaryHeader(token); setHeader {
 		req.Header.Set("x-allowed-locations", headerVal)
 	}
 }
@@ -47,8 +46,16 @@ func SetAuthMetadata(token *auth.Token, m map[string]string) {
 	}
 	m["authorization"] = typ + " " + token.Value
 
-	headerVal, setHeader := token.TrustBoundaryData().TrustBoundaryHeader()
-	if setHeader {
+	if headerVal, setHeader := getTrustBoundaryHeader(token); setHeader {
 		m["x-allowed-locations"] = headerVal
 	}
+}
+
+func getTrustBoundaryHeader(token *auth.Token) (val string, present bool) {
+	if data, ok := token.Metadata[internal.TrustBoundaryDataKey]; ok {
+		if tbd, ok := data.(internal.TrustBoundaryData); ok {
+			return tbd.TrustBoundaryHeader()
+		}
+	}
+	return "", false
 }

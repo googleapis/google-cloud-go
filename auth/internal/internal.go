@@ -50,6 +50,9 @@ const (
 
 	// TrustBoundaryNoOp is a constant indicating no trust boundary is enforced.
 	TrustBoundaryNoOp = "0x0"
+
+	// TrustBoundaryDataKey is the key used to store trust boundary data in a token's metadata.
+	TrustBoundaryDataKey = "google.auth.trust_boundary_data"
 )
 
 type clonableTransport interface {
@@ -236,16 +239,6 @@ type TrustBoundaryData struct {
 	EncodedLocations string
 }
 
-// IsNoOp reports whether the trust boundary has a no-op value.
-func (t TrustBoundaryData) IsNoOp() bool {
-	return t.EncodedLocations == TrustBoundaryNoOp
-}
-
-// IsEmpty reports whether the trust boundary is empty.
-func (t TrustBoundaryData) IsEmpty() bool {
-	return t.EncodedLocations == ""
-}
-
 // NewTrustBoundaryData returns a new TrustBoundaryData with the specified locations and encoded locations.
 func NewTrustBoundaryData(locations []string, encodedLocations string) *TrustBoundaryData {
 	// Ensure consistency by treating a nil slice as an empty slice.
@@ -275,7 +268,7 @@ func NewNoOpTrustBoundaryData() *TrustBoundaryData {
 // 2. Header set to an empty string: (value="", present=true) -> data is a no-op.
 // 3. Header set to a value: (value="...", present=true) -> data has locations.
 func (t TrustBoundaryData) TrustBoundaryHeader() (value string, present bool) {
-	if t.IsEmpty() {
+	if t.EncodedLocations == "" {
 		// If the data is empty, the header should not be present.
 		return "", false
 	}
@@ -283,7 +276,7 @@ func (t TrustBoundaryData) TrustBoundaryHeader() (value string, present bool) {
 	// If data is not empty, the header should always be present.
 	present = true
 	value = ""
-	if !t.IsNoOp() {
+	if t.EncodedLocations != TrustBoundaryNoOp {
 		value = t.EncodedLocations
 	}
 	// For a no-op, the backend requires an empty string.

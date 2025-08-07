@@ -78,9 +78,12 @@ func TestSetAuth(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			token := tt.baseToken
+			token := &auth.Token{
+				Value: tt.baseToken.Value,
+				Type:  tt.baseToken.Type,
+			}
 			if tt.tbd != nil {
-				token.SetTrustBoundaryData(*tt.tbd)
+				token.Metadata = map[string]interface{}{internal.TrustBoundaryDataKey: *tt.tbd}
 			}
 			// Test HTTP
 			req := httptest.NewRequest("GET", "/", nil)

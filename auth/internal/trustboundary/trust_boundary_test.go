@@ -728,7 +728,10 @@ func TestTokenHook(t *testing.T) {
 				t.Fatalf("hook() unexpected error: %v", err)
 			}
 
-			gotData := token.TrustBoundaryData()
+			var gotData internal.TrustBoundaryData
+			if data, ok := token.Metadata[internal.TrustBoundaryDataKey]; ok {
+				gotData, _ = data.(internal.TrustBoundaryData)
+			}
 			if !reflect.DeepEqual(gotData, *tt.wantDataOnToken) {
 				t.Errorf("hook() data on token = %+v, want %+v", gotData, *tt.wantDataOnToken)
 			}
@@ -768,7 +771,10 @@ func TestTokenHook(t *testing.T) {
 					t.Fatalf("hook() second run unexpected error: %v", err)
 				}
 
-				gotData := secondToken.TrustBoundaryData()
+				var gotData internal.TrustBoundaryData
+				if data, ok := secondToken.Metadata[internal.TrustBoundaryDataKey]; ok {
+					gotData, _ = data.(internal.TrustBoundaryData)
+				}
 				if !reflect.DeepEqual(gotData, *tt.secondRun.wantDataOnToken) {
 					t.Errorf("hook() second run data on token = %+v, want %+v", gotData, *tt.secondRun.wantDataOnToken)
 				}
