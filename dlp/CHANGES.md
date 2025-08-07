@@ -1,5 +1,17 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.23.0...dlp/v1.24.0) (2025-06-25)
+
+
+### Features
+
+* **dlp:** Add SaveToGcsFindingsOutput ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
+
+### Documentation
+
+* **dlp:** Minor doc revision ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.22.1...dlp/v1.23.0) (2025-05-29)
 
 

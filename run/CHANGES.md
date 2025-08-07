@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.10.1...run/v1.11.0) (2025-07-16)
+
+
+### Features
+
+* **run:** Add new field `term_signal` to `.google.cloud.run.v2.TaskAttemptResult` ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **run:** Support GPU zonal redundancy setting for Cloud Run jobs ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.10.0...run/v1.10.1) (2025-06-04)
+
+
+### Bug Fixes
+
+* **run:** Manually fix default endpoints in frozen locations_client.go ([#12399](https://github.com/googleapis/google-cloud-go/issues/12399)) ([c2af696](https://github.com/googleapis/google-cloud-go/commit/c2af696abbdf356fdc76df557204ce54cd7a036e)), refs [#12389](https://github.com/googleapis/google-cloud-go/issues/12389)
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.9.3...run/v1.10.0) (2025-05-21)
 
 

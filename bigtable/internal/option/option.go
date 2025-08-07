@@ -95,6 +95,7 @@ func DefaultClientOptions(endpoint, mtlsEndpoint, scope, userAgent string) ([]op
 		o = []option.ClientOption{
 			internaloption.WithDefaultEndpointTemplate(endpoint),
 			internaloption.WithDefaultMTLSEndpoint(mtlsEndpoint),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
 			option.WithScopes(scope),
 			option.WithUserAgent(userAgent),
 		}

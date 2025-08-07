@@ -21,11 +21,7 @@
 package chroniclepb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -248,86 +244,4 @@ func file_google_cloud_chronicle_v1_instance_proto_init() {
 	file_google_cloud_chronicle_v1_instance_proto_rawDesc = nil
 	file_google_cloud_chronicle_v1_instance_proto_goTypes = nil
 	file_google_cloud_chronicle_v1_instance_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// InstanceServiceClient is the client API for InstanceService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type InstanceServiceClient interface {
-	// Gets a Instance.
-	GetInstance(ctx context.Context, in *GetInstanceRequest, opts ...grpc.CallOption) (*Instance, error)
-}
-
-type instanceServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewInstanceServiceClient(cc grpc.ClientConnInterface) InstanceServiceClient {
-	return &instanceServiceClient{cc}
-}
-
-func (c *instanceServiceClient) GetInstance(ctx context.Context, in *GetInstanceRequest, opts ...grpc.CallOption) (*Instance, error) {
-	out := new(Instance)
-	err := c.cc.Invoke(ctx, "/google.cloud.chronicle.v1.InstanceService/GetInstance", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// InstanceServiceServer is the server API for InstanceService service.
-type InstanceServiceServer interface {
-	// Gets a Instance.
-	GetInstance(context.Context, *GetInstanceRequest) (*Instance, error)
-}
-
-// UnimplementedInstanceServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedInstanceServiceServer struct {
-}
-
-func (*UnimplementedInstanceServiceServer) GetInstance(context.Context, *GetInstanceRequest) (*Instance, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetInstance not implemented")
-}
-
-func RegisterInstanceServiceServer(s *grpc.Server, srv InstanceServiceServer) {
-	s.RegisterService(&_InstanceService_serviceDesc, srv)
-}
-
-func _InstanceService_GetInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetInstanceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(InstanceServiceServer).GetInstance(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.chronicle.v1.InstanceService/GetInstance",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InstanceServiceServer).GetInstance(ctx, req.(*GetInstanceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _InstanceService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.chronicle.v1.InstanceService",
-	HandlerType: (*InstanceServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetInstance",
-			Handler:    _InstanceService_GetInstance_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/chronicle/v1/instance.proto",
 }

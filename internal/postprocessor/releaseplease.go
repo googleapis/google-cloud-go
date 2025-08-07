@@ -25,28 +25,6 @@ import (
 	"strings"
 )
 
-var unreleasedModuleDir map[string]bool = map[string]bool{
-	"spanner/test/opentelemetry/test": true,
-}
-
-var individuallyReleasedModules map[string]bool = map[string]bool{
-	".":                true,
-	"auth":             true,
-	"auth/oauth2adapt": true,
-	"bigquery":         true,
-	"bigtable":         true,
-	"datastore":        true,
-	"errorreporting":   true,
-	"firestore":        true,
-	"logging":          true,
-	"profiler":         true,
-	"pubsub":           true,
-	"pubsublite":       true,
-	"spanner":          true,
-	"storage":          true,
-	"vertexai":         true,
-}
-
 var defaultReleasePleaseConfig = &releasePleaseConfig{
 	ReleaseType:           "go-yoshi",
 	IncludeComponentInTag: true,
@@ -70,7 +48,7 @@ type releasePleasePackage struct {
 // updateReleaseFiles reconciles release-please configure based of the state of
 // the repo. It will auto-detect and add configure for new modules.
 func (p *postProcessor) UpdateReleaseFiles() error {
-	mods, err := detectModules(p.googleCloudDir)
+	mods, err := detectModules(p.googleCloudDir, p.config.SkipModuleScanPaths)
 	if err != nil {
 		return err
 	}
@@ -139,14 +117,19 @@ func updateManifestFile(w io.Writer, existingContents []byte, mods []string) err
 
 // detectModules returns a list of relative paths to module roots that are
 // managed by release-please.
-func detectModules(dir string) ([]string, error) {
+func detectModules(dir string, skipPaths []string) ([]string, error) {
 	var mods []string
+	// make it easier to probe the paths as a map.
+	skipMap := make(map[string]bool)
+	for _, p := range skipPaths {
+		skipMap[p] = true
+	}
 	fileSystem := os.DirFS(dir)
 	err := fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if !d.IsDir() && d.Name() == "go.mod" && !strings.Contains(path, "internal") && !individuallyReleasedModules[filepath.Dir(path)] && !unreleasedModuleDir[filepath.Dir(path)] {
+		if !d.IsDir() && d.Name() == "go.mod" && !strings.Contains(path, "internal") && !skipMap[filepath.Dir(path)] {
 			mods = append(mods, filepath.Dir(path))
 		}
 		return nil

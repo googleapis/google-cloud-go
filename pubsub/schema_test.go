@@ -25,6 +25,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 
 	"cloud.google.com/go/pubsub/pstest"
@@ -34,7 +35,7 @@ func newSchemaFake(t *testing.T) (*SchemaClient, *pstest.Server) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
 
-	schema, err := NewSchemaClient(ctx, "my-proj", option.WithEndpoint(srv.Addr), option.WithoutAuthentication(), option.WithGRPCDialOption(grpc.WithInsecure()))
+	schema, err := NewSchemaClient(ctx, "my-proj", option.WithEndpoint(srv.Addr), option.WithoutAuthentication(), option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
 	if err != nil {
 		t.Fatal(err)
 	}

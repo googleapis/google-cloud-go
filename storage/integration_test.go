@@ -416,6 +416,45 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 	})
 }
 
+// Test many concurrent reads on the same MultiRangeDownloader to try to detect
+// potential deadlocks.
+func TestIntegration_MRDManyReads(t *testing.T) {
+	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MultiRangeDownloaderManyReads"
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		// Previously 100 ranges here worked in a few seconds, but 1000 caused
+		// a deadlock. After this PR, 1000 also works in under 10s.
+		// 1000 is larger than the size of the buffer for the new ranges
+		// to be added.
+		for i := 0; i < 1000; i++ {
+			reader.Add(io.Discard, 0, 100, func(_ int64, _ int64, err error) {
+				if err != nil {
+					t.Errorf("error in call %v: %v", i, err)
+				}
+			})
+		}
+		reader.Wait()
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
 // TestIntegration_MRDCallbackReturnsDataLength tests if the callback returns the correct data
 // read length or not.
 func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
@@ -1583,13 +1622,15 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 		}
 
 		last5s := []struct {
-			name   string
-			start  int64
-			length int64
+			name      string
+			start     int64
+			length    int64
+			wantStart int64
 		}{
-			{name: "negative offset", start: -5, length: -1},
-			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
-			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
+			{name: "negative offset", start: -5, length: -1, wantStart: 31},
+			{name: "too large negative offset", start: -1000, length: -1, wantStart: 0},
+			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5, wantStart: 31},
+			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1, wantStart: 31},
 		}
 
 		for _, last5 := range last5s {
@@ -1597,14 +1638,14 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				// Test Read and WriteTo.
 				for _, c := range readCases {
 					t.Run(c.desc, func(t *testing.T) {
-						wantBuf := contents[len(contents)-5:]
+						wantBuf := contents[last5.wantStart:]
 						r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
 						if err != nil {
 							t.Fatalf("Failed to make range read: %v", err)
 						}
 						defer r.Close()
 
-						if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+						if got, want := r.Attrs.StartOffset, last5.wantStart; got != want {
 							t.Errorf("StartOffset mismatch, got %d want %d", got, want)
 						}
 
@@ -1612,7 +1653,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 						if err != nil {
 							t.Fatalf("reading object: %v", err)
 						}
-						if got, want := len(gotBuf), 5; got != want {
+						if got, want := len(gotBuf), len(contents)-int(last5.wantStart); got != want {
 							t.Errorf("Body length mismatch, got %d want %d", got, want)
 						} else if diff := cmp.Diff(string(gotBuf), string(wantBuf)); diff != "" {
 							t.Errorf("Content read does not match - got(-),want(+):\n%s", diff)
@@ -2356,7 +2397,7 @@ func TestIntegration_Copy(t *testing.T) {
 		obj := bucketFrom.Object("copy-object-original" + uidSpaceObjects.New())
 
 		// Create an object to copy from
-		w := obj.NewWriter(ctx)
+		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 		c := randomContents()
 		for written := 0; written < minObjectSize; {
 			n, err := w.Write(c)
@@ -2422,7 +2463,7 @@ func TestIntegration_Copy(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				copyObj := test.toBucket.Object(test.toObj)
-				copier := copyObj.CopierFrom(obj)
+				copier := copyObj.If(Conditions{DoesNotExist: true}).CopierFrom(obj)
 
 				if attrs := test.copierAttrs; attrs != nil {
 					if attrs.contentEncoding != "" {
@@ -2682,7 +2723,7 @@ func TestIntegration_SignedURL(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		bkt := client.Bucket(bucket)
@@ -2803,7 +2844,7 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		bkt := client.Bucket(bucket)
@@ -2890,7 +2931,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		opts := &SignedURLOptions{
@@ -4048,6 +4089,10 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
+
 		// an account that has permissions on the project that owns the bucket
 		mainUserEmail := jwt.Email
 
@@ -5868,6 +5913,7 @@ func TestIntegration_Reader(t *testing.T) {
 			{"-2 offset", -2, -1, 2},
 			{"-object length offset", -objlen, -1, objlen},
 			{"-half of object length offset", -(objlen / 2), -1, objlen / 2},
+			{"-offset above object length", -(2 * objlen), -1, objlen},
 		} {
 			t.Run(r.desc, func(t *testing.T) {
 
@@ -5903,6 +5949,10 @@ func TestIntegration_Reader(t *testing.T) {
 						switch {
 						case r.offset < 0: // The case of reading the last N bytes.
 							start := objlen + r.offset
+							// If negative offset is before the file size we expect the whole file.
+							if start < 0 {
+								start = 0
+							}
 							if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
 								t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
 							}
@@ -6468,7 +6518,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		projectID := testutil.ProjID()
@@ -6651,6 +6701,9 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
 
 		obj := "testBucketSignedURL"
 		contents := []byte("test")
@@ -6745,6 +6798,9 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
 		}
+		if jwt == nil {
+			t.Fatal("JSON key file is not present")
+		}
 
 		statusCodeToRespond := 200
 
@@ -6810,7 +6866,7 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 			t.Fatal(err)
 		}
 		if jwtConf == nil {
-			t.Skip("JSON key file is not present")
+			t.Fatal("JSON key file is not present")
 		}
 
 		signingFunc := func(b []byte) ([]byte, error) {
@@ -6915,7 +6971,93 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	t.Setenv(disableDP, "true")
 
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	udTestVars := universeDomainTestVars(t)
 
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		bucket := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
+		defer h.mustDeleteBucket(bucket)
+
+		obj := bucket.Object(uidSpaceObjects.New())
+		contents := generateRandomBytes(1024)
+		h.mustWrite(obj.NewWriter(ctx), contents)
+		defer h.mustDeleteObject(obj)
+
+		// Verify contents.
+		got := h.mustRead(obj)
+		if !bytes.Equal(got, contents) {
+			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
+		}
+	}, option.WithUniverseDomain(udTestVars.universeDomain), option.WithCredentialsFile(udTestVars.credFile))
+}
+
+func TestIntegration_UniverseDomains_SignedURL_DefaultSignBytes(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	// Direct connectivity is not supported yet for this feature.
+	const disableDP = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+	t.Setenv(disableDP, "true")
+
+	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+	udTestVars := universeDomainTestVars(t)
+	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
+
+	// Get new Auth creds
+	newAuthCreds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		Scopes:           scopes,
+		CredentialsFile:  udTestVars.credFile,
+		UniverseDomain:   udTestVars.universeDomain,
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatalf("cannot get Auth Credentials to create client, err: %v", err)
+	}
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bucket := client.Bucket(prefix + uidSpace.New())
+
+		h.mustCreate(bucket, udTestVars.project, &BucketAttrs{Location: udTestVars.location})
+		defer h.mustDeleteBucket(bucket)
+
+		obj := uidSpaceObjects.New()
+		contents := []byte("test")
+		if err := writeObject(ctx, bucket.Object(obj), "text/plain", contents); err != nil {
+			t.Fatalf("writing: %v", err)
+		}
+
+		defer h.mustDeleteObject(bucket.Object(obj))
+
+		opts := SignedURLOptions{
+			Method:  "GET",
+			Expires: time.Now().Add(30 * time.Second),
+		}
+
+		url, err := bucket.SignedURL(obj, &opts)
+		if err != nil {
+			t.Fatalf("unable to create signed URL: %v", err)
+		}
+
+		if err := verifySignedURL(url, nil, contents); err != nil {
+			t.Fatalf("problem with the signed URL: %v", err)
+		}
+	}, option.WithAuthCredentials(newAuthCreds), option.WithUniverseDomain(udTestVars.universeDomain))
+}
+
+type UniverseDomainVars struct {
+	universeDomain string
+	credFile       string
+	project        string
+	location       string
+}
+
+// Gets Universe Domain environment variables for Universe Domain tests
+// Returns universeDomainTestVars pointer for easy access
+func universeDomainTestVars(t *testing.T) *UniverseDomainVars {
 	universeDomain := os.Getenv(testUniverseDomain)
 	if universeDomain == "" {
 		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
@@ -6932,25 +7074,7 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	if location == "" {
 		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
 	}
-
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
-		h := testHelper{t}
-
-		bucket := client.Bucket(prefix + uidSpace.New())
-		h.mustCreate(bucket, project, &BucketAttrs{Location: location})
-		defer h.mustDeleteBucket(bucket)
-
-		obj := bucket.Object(uidSpaceObjects.New())
-		contents := generateRandomBytes(1024)
-		h.mustWrite(obj.NewWriter(ctx), contents)
-		defer h.mustDeleteObject(obj)
-
-		// Verify contents.
-		got := h.mustRead(obj)
-		if !bytes.Equal(got, contents) {
-			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
-		}
-	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(credFile))
+	return &UniverseDomainVars{universeDomain: universeDomain, credFile: credFile, project: project, location: location}
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the

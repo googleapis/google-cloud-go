@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.89.0",
+    "version": "1.96.0",
     "language": "GO",
     "apis": [
       {
@@ -2630,7 +2630,7 @@
     {
       "regionTag": "aiplatform_v1_generated_EndpointService_MutateDeployedModel_sync",
       "title": "aiplatform MutateDeployedModel Sample",
-      "description": "MutateDeployedModel updates an existing deployed model. Updatable fields include\n`min_replica_count`, `max_replica_count`, `autoscaling_metric_specs`,\n`disable_container_logging` (v1 only), and `enable_container_logging`\n(v1beta1 only).",
+      "description": "MutateDeployedModel updates an existing deployed model. Updatable fields include\n`min_replica_count`, `max_replica_count`, `required_replica_count`,\n`autoscaling_metric_specs`, `disable_container_logging` (v1 only), and\n`enable_container_logging` (v1beta1 only).",
       "file": "EndpointClient/MutateDeployedModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4595,6 +4595,48 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_FeatureOnlineStoreService_FeatureViewDirectWrite_sync",
+      "title": "aiplatform FeatureViewDirectWrite Sample",
+      "description": "FeatureViewDirectWrite bidirectional streaming RPC to directly write to feature values in a\nfeature view. Requests may not have a one-to-one mapping to responses and\nresponses may be returned out-of-order to reduce latency.",
+      "file": "FeatureOnlineStoreClient/FeatureViewDirectWrite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FeatureViewDirectWrite",
+        "fullName": "google.cloud.aiplatform.v1.FeatureOnlineStoreClient.FeatureViewDirectWrite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient",
+        "client": {
+          "shortName": "FeatureOnlineStoreClient",
+          "fullName": "google.cloud.aiplatform.v1.FeatureOnlineStoreClient"
+        },
+        "method": {
+          "shortName": "FeatureViewDirectWrite",
+          "fullName": "google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite",
+          "service": {
+            "shortName": "FeatureOnlineStoreService",
+            "fullName": "google.cloud.aiplatform.v1.FeatureOnlineStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -16709,6 +16751,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_ModelGardenService_Deploy_sync",
+      "title": "aiplatform Deploy Sample",
+      "description": "Deploy deploys a model to a new endpoint.",
+      "file": "ModelGardenClient/Deploy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Deploy",
+        "fullName": "google.cloud.aiplatform.v1.ModelGardenClient.Deploy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeployRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeployOperation",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "Deploy",
+          "fullName": "google.cloud.aiplatform.v1.ModelGardenService.Deploy",
+          "service": {
+            "shortName": "ModelGardenService",
+            "fullName": "google.cloud.aiplatform.v1.ModelGardenService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_ModelGardenService_GetIamPolicy_sync",
       "title": "aiplatform GetIamPolicy Sample",
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
@@ -27155,6 +27243,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetRagEngineConfig_sync",
+      "title": "aiplatform GetRagEngineConfig Sample",
+      "description": "GetRagEngineConfig gets a RagEngineConfig.",
+      "file": "VertexRagDataClient/GetRagEngineConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRagEngineConfig",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetRagEngineConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetRagEngineConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.RagEngineConfig",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetRagEngineConfig",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.GetRagEngineConfig",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetRagFile_sync",
       "title": "aiplatform GetRagFile Sample",
       "description": "GetRagFile gets a RagFile.",
@@ -27553,6 +27687,52 @@
         "method": {
           "shortName": "UpdateRagCorpus",
           "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.UpdateRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_UpdateRagEngineConfig_sync",
+      "title": "aiplatform UpdateRagEngineConfig Sample",
+      "description": "UpdateRagEngineConfig updates a RagEngineConfig.",
+      "file": "VertexRagDataClient/UpdateRagEngineConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRagEngineConfig",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.UpdateRagEngineConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateRagEngineConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateRagEngineConfigOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "UpdateRagEngineConfig",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.UpdateRagEngineConfig",
           "service": {
             "shortName": "VertexRagDataService",
             "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"

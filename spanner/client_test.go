@@ -26,6 +26,7 @@ import (
 	"net"
 	"os"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -44,6 +45,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
@@ -92,6 +94,19 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 			},
 		},
 	}
+	expectedResourceHeaderFormat := regexp.MustCompile("projects/.+/instances/.+/databases/.+.*")
+	grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
+		Key: resourcePrefixHeader,
+		ValuesValidator: func(token ...string) error {
+			if len(token) != 1 {
+				return status.Errorf(codes.Internal, "unexpected number of resource headers: %v", len(token))
+			}
+			if !expectedResourceHeaderFormat.MatchString(token[0]) {
+				return status.Errorf(codes.Internal, "invalid resource header value: %v", token[0])
+			}
+			return nil
+		},
+	})
 	if config.Compression == gzip.Name {
 		grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
 			Key: "x-response-encoding",
@@ -657,12 +672,53 @@ func TestClient_Single(t *testing.T) {
 	}
 }
 
-func TestClient_Single_Unavailable(t *testing.T) {
+func TestClient_NonConformingHeader(t *testing.T) {
 	t.Parallel()
-	err := testSingleQuery(t, status.Error(codes.Unavailable, "Temporary unavailable"))
+	ctx := context.Background()
+	md := metadata.Pairs(resourcePrefixHeader, "projects/foo/documents/bar")
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	err := testSingleQueryWithContext(ctx, t, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Verify that even though the request is sent without the non-conforming header,
+	// it is still present in the original context.
+	if md, ok := metadata.FromOutgoingContext(ctx); ok {
+		header := md.Get(resourcePrefixHeader)
+		if g, w := len(header), 1; g != w {
+			t.Fatalf("header length mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		if g, w := header[0], "projects/foo/documents/bar"; g != w {
+			t.Fatalf("header mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	} else {
+		t.Fatal("could not get metadata from context")
+	}
+}
+
+func TestClient_Single_Unavailable(t *testing.T) {
+	t.Parallel()
+	err := testSingleQuery(t, serverErrorWithMinimalRetryDelay(codes.Unavailable, "Temporary unavailable"))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_Single_ResourceExhausted(t *testing.T) {
+	t.Parallel()
+	err := testSingleQuery(t, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "Temporary server overload"))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func serverErrorWithMinimalRetryDelay(code codes.Code, msg string) error {
+	st := status.New(code, msg)
+	retry := &errdetails.RetryInfo{
+		RetryDelay: durationpb.New(time.Nanosecond),
+	}
+	st, _ = st.WithDetails(retry)
+	return st.Err()
 }
 
 func TestClient_Single_InvalidArgument(t *testing.T) {
@@ -1173,9 +1229,22 @@ func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo
 }
 
 func testSingleQuery(t *testing.T, serverError error) error {
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
+	return testSingleQueryWithContext(context.Background(), t, serverError)
+}
+
+func testSingleQueryWithContext(ctx context.Context, t *testing.T, serverError error) error {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: SessionPoolConfig{MinOpened: 1}})
 	defer teardown()
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
+		}
+		return nil
+	})
 
 	if serverError != nil {
 		server.TestSpanner.SetError(serverError)
@@ -1801,18 +1870,24 @@ func TestClient_ReadWriteTransaction(t *testing.T) {
 	}
 }
 
-func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpannerInMemTestServer, expected sppb.TransactionOptions_IsolationLevel) {
+func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpannerInMemTestServer, expected sppb.TransactionOptions_IsolationLevel, beginTransactionOption BeginTransactionOption) {
 	found := false
 	requests := drainRequestsFromServer(server.TestSpanner)
 	for _, req := range requests {
 		switch sqlReq := req.(type) {
 		case *sppb.ExecuteSqlRequest:
+			if beginTransactionOption == ExplicitBeginTransaction {
+				t.Fatalf("got TransactionOptions on ExecuteSqlRequest in combination with ExplicitBeginTransaction")
+			}
 			found = true
 			if sqlReq.GetTransaction().GetBegin().GetIsolationLevel() != expected {
 				t.Fatalf("Invalid IsolationLevel\n Expected: %v\n Got: %v\n", expected, sqlReq.GetTransaction().GetBegin().GetIsolationLevel())
 			}
 			break
 		case *sppb.BeginTransactionRequest:
+			if beginTransactionOption == InlinedBeginTransaction {
+				t.Fatalf("got BeginTransaction RPC in combination with InlinedBeginTransaction")
+			}
 			found = true
 			if sqlReq.GetOptions().GetIsolationLevel() != expected {
 				t.Fatalf("Invalid IsolationLevel\n Expected: %v\n Got: %v\n", expected, sqlReq.GetOptions().GetIsolationLevel())
@@ -1838,32 +1913,32 @@ func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpanner
 
 func TestClient_ReadWriteTransactionWithNoIsolationLevelForRWTransactionAtClientConfig(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer teardown()
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED, InlinedBeginTransaction)
 }
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtClientConfig(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer teardown()
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, InlinedBeginTransaction)
 }
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtTransactionLevel(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfigWithTransactionOptions(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}}, TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfigWithTransactionOptions(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}}, TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer teardown()
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, InlinedBeginTransaction)
 }
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtTransactionLevelWithAbort(t *testing.T) {
@@ -1882,7 +1957,7 @@ func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtTransact
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, InlinedBeginTransaction)
 }
 
 func TestClient_ApplyMutationsWithAtLeastOnceIsolationLevel(t *testing.T) {
@@ -1897,7 +1972,7 @@ func TestClient_ApplyMutationsWithAtLeastOnceIsolationLevel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, ExplicitBeginTransaction)
 }
 
 func TestClient_ApplyMutationsWithIsolationLevel(t *testing.T) {
@@ -1912,61 +1987,111 @@ func TestClient_ApplyMutationsWithIsolationLevel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE, ExplicitBeginTransaction)
 }
 
-func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t *testing.T) {
+func consumeIterator(iter *RowIterator) error {
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevelWithExplicitBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t, ExplicitBeginTransaction)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevelWithInlineBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t, InlinedBeginTransaction)
+}
+
+func testClientReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t *testing.T, beginTransactionOption BeginTransactionOption) {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	ctx := context.Background()
 	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
 		ctx,
 		client,
-		TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ})
+		TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ, BeginTransactionOption: beginTransactionOption})
 	if err != nil {
 		t.Fatalf("Unexpected error when creating transaction: %v", err)
 	}
 
 	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
+	if err := consumeIterator(iter); err != nil {
+		t.Fatal(err)
+	}
 
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, beginTransactionOption)
 }
 
-func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t *testing.T) {
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}})
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevelWithExplicitBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t, ExplicitBeginTransaction)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevelWithInlineBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t, InlinedBeginTransaction)
+}
+
+func testClientReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t *testing.T, beginTransactionOption BeginTransactionOption) {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}})
 	defer teardown()
 	ctx := context.Background()
 	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
 		ctx,
 		client,
-		TransactionOptions{})
+		TransactionOptions{BeginTransactionOption: beginTransactionOption})
 	if err != nil {
 		t.Fatalf("Unexpected error when creating transaction: %v", err)
 	}
 
 	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
+	if err := consumeIterator(iter); err != nil {
+		t.Fatal(err)
+	}
 
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE, beginTransactionOption)
 }
 
-func TestClient_ReadWriteStmtBasedTransactionWithNoIsolationLevel(t *testing.T) {
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: TransactionOptions{}})
+func TestClient_ReadWriteStmtBasedTransactionWithNoIsolationLevelWithExplicitBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithNoIsolationLevel(t, ExplicitBeginTransaction)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithNoIsolationLevelWithInlineBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithNoIsolationLevel(t, InlinedBeginTransaction)
+}
+
+func testClientReadWriteStmtBasedTransactionWithNoIsolationLevel(t *testing.T, beginTransactionOption BeginTransactionOption) {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, TransactionOptions: TransactionOptions{}})
 	defer teardown()
 	ctx := context.Background()
 	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
 		ctx,
 		client,
-		TransactionOptions{})
+		TransactionOptions{BeginTransactionOption: beginTransactionOption})
 	if err != nil {
 		t.Fatalf("Unexpected error when creating transaction: %v", err)
 	}
 
 	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
+	if err := consumeIterator(iter); err != nil {
+		t.Fatal(err)
+	}
 
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED, beginTransactionOption)
 }
 
 func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
@@ -3650,7 +3775,7 @@ func TestClient_ReadWriteTransaction_WithCancelledContext(t *testing.T) {
 }
 
 func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
-	_, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
+	_, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
 	defer teardown()
 	return err
 }
@@ -5881,7 +6006,7 @@ func TestClient_BatchWrite(t *testing.T) {
 	defer teardown()
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -5916,7 +6041,7 @@ func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -5954,7 +6079,7 @@ func TestClient_BatchWrite_Error(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6029,7 +6154,7 @@ func TestClient_BatchWrite_Options(t *testing.T) {
 
 			mutationGroups := []*MutationGroup{
 				{[]*Mutation{
-					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 				}},
 			}
 			iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, tt.write)
@@ -6075,7 +6200,7 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6627,7 +6752,7 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, BatchWriteOptions{ExcludeTxnFromChangeStreams: true})

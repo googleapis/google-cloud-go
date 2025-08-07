@@ -103,6 +103,52 @@
       ]
     },
     {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_CloneDatabase_sync",
+      "title": "firestore CloneDatabase Sample",
+      "description": "CloneDatabase creates a new database by cloning an existing one.\n\nThe new database must be in the same cloud region or multi-region location\nas the existing database. This behaves similar to\n[FirestoreAdmin.CreateDatabase][google.firestore.admin.v1.FirestoreAdmin.CreateDatabase]\nexcept instead of creating a new empty database, a new database is created\nwith the database type, index configuration, and documents from an existing\ndatabase.\n\nThe [long-running operation][google.longrunning.Operation] can be used to\ntrack the progress of the clone, with the Operation's\n[metadata][google.longrunning.Operation.metadata] field type being the\n[CloneDatabaseMetadata][google.firestore.admin.v1.CloneDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] type is the\n[Database][google.firestore.admin.v1.Database] if the clone was\nsuccessful. The new database is not readable or writeable until the LRO has\ncompleted.",
+      "file": "FirestoreAdminClient/CloneDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CloneDatabase",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.CloneDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CloneDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CloneDatabaseOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "CloneDatabase",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.CloneDatabase",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_CreateBackupSchedule_sync",
       "title": "firestore CreateBackupSchedule Sample",
       "description": "CreateBackupSchedule creates a backup schedule on a database.\nAt most two backup schedules can be configured on a database, one daily\nbackup schedule and one weekly backup schedule.",

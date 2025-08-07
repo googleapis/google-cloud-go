@@ -151,7 +151,8 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 
 	if OnGCE() {
 		metadataClient := metadata.NewWithOptions(&metadata.Options{
-			Logger: opts.logger(),
+			Logger:           opts.logger(),
+			UseDefaultClient: true,
 		})
 		gceUniverseDomainProvider := &internal.ComputeUniverseDomainProvider{
 			MetadataClient: metadataClient,

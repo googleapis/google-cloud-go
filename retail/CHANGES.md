@@ -1,5 +1,26 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.23.0...retail/v1.24.0) (2025-07-31)
+
+
+### Features
+
+* **retail:** Add new fields in conversational search public SDK ([#12602](https://github.com/googleapis/google-cloud-go/issues/12602)) ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.22.0...retail/v1.23.0) (2025-07-23)
+
+
+### Features
+
+* **retail:** Add experiment_id in the SearchRequest proto ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.21.0...retail/v1.22.0) (2025-06-25)
+
+
+### Features
+
+* **retail:** Add a user_attributes field in SearchRequest that can be used for personalization ([#12494](https://github.com/googleapis/google-cloud-go/issues/12494)) ([2d66d4f](https://github.com/googleapis/google-cloud-go/commit/2d66d4f5b26a488b015be82733b242ce611c0fe3))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.20.0...retail/v1.21.0) (2025-05-29)
 
 

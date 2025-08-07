@@ -1,5 +1,13 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.19.5...channel/v1.20.0) (2025-06-17)
+
+
+### Features
+
+* **channel:** A new enum `CustomerAttestationState` is added ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **channel:** A new field `customer_attestation_state` is added to message `.google.cloud.channel.v1.Customer` ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
 ## [1.19.5](https://github.com/googleapis/google-cloud-go/compare/channel/v1.19.4...channel/v1.19.5) (2025-04-15)
 
 

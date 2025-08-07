@@ -4383,6 +4383,30 @@
         }
       }
     },
+    "ReservationSubBlocks": {
+      "clients": {
+        "rest": {
+          "libraryClient": "ReservationSubBlocksClient",
+          "rpcs": {
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "PerformMaintenance": {
+              "methods": [
+                "PerformMaintenance"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Reservations": {
       "clients": {
         "rest": {

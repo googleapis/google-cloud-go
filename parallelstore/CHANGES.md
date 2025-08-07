@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.11.3](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.2...parallelstore/v0.11.3) (2025-06-04)
+
+
+### Documentation
+
+* **parallelstore:** Fix various typos in commentary ([394ef95](https://github.com/googleapis/google-cloud-go/commit/394ef958d4cbb29fedb6b331581ce1390c65ccb6))
+
 ## [0.11.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.1...parallelstore/v0.11.2) (2025-04-15)
 
 

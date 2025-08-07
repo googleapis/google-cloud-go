@@ -34,13 +34,18 @@ import (
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/experimental"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 var emulatorClients map[string]storageClient
@@ -900,7 +905,6 @@ func TestOpenWriterEmulated(t *testing.T) {
 			setError: func(_ error) {}, // no-op
 			progress: func(_ int64) {}, // no-op
 			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
-			setFlush: func(f func() (int64, error)) {},
 			setSize:  func(int64) {},
 		}
 		pw, err := client.OpenWriter(params)
@@ -1145,6 +1149,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 		if off != 0 {
 			t.Errorf("flushing at 0: got %v offset, want 0", off)
 		}
+		if a := w.Attrs(); a == nil {
+			t.Errorf("flushing at 0: no attrs after flush")
+		} else if a.Size != 0 {
+			t.Errorf("flushing at 0: got size %v, want 0", a.Size)
+		}
 
 		// Write first 4 MiB data, expect progress every 3 MiB.
 		_, err = w.Write(randomBytes9MiB[0 : 4*MiB])
@@ -1171,6 +1180,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 			if off != end {
 				t.Errorf("flushing 1k data: got %v bytes committed, want %v", off, end)
 			}
+			if a := w.Attrs(); a == nil {
+				t.Errorf("flushing 1k data: no attrs after flush")
+			} else if a.Size != end {
+				t.Errorf("flushing 1k data: got size %v, want %v", a.Size, end)
+			}
 		}
 
 		// Do one more Flush that would require multiple messages (over 2 MiB).
@@ -1188,6 +1202,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 		if off != 6*MiB+4096 {
 			t.Errorf("flushing 2 MiB + 1k data: got %v bytes committed, want %v", off, 6*MiB+4096)
 		}
+		if a := w.Attrs(); a == nil {
+			t.Errorf("flushing 2 MiB + 1k data: no attrs after flush")
+		} else if a.Size != 6*MiB+4096 {
+			t.Errorf("flushing 2 MiB + 1k data: got size %v, want %v", a.Size, 6*MiB+4096)
+		}
 
 		// Do one more zero-byte flush; expect noop for this.
 		off, err = w.Flush()
@@ -1196,6 +1215,11 @@ func TestWriterFlushEmulated(t *testing.T) {
 		}
 		if off != 6*MiB+4096 {
 			t.Errorf("flushing 0b data: got %v bytes committed, want %v", off, 6*MiB+4096)
+		}
+		if a := w.Attrs(); a == nil {
+			t.Errorf("flushing 0b data: no attrs after flush")
+		} else if a.Size != 6*MiB+4096 {
+			t.Errorf("flushing 0b data: got size %v, want %v", a.Size, 6*MiB+4096)
 		}
 
 		// Write remainder of data and close the writer.
@@ -1270,6 +1294,11 @@ func TestWriterFlushAtCloseEmulated(t *testing.T) {
 		}
 		if off != 3*MiB {
 			t.Errorf("flushing data: got %v bytes written, want %v", off, 3*MiB)
+		}
+		if a := w.Attrs(); a == nil {
+			t.Errorf("flushing data: no attrs after flush")
+		} else if a.Size != 3*MiB {
+			t.Errorf("flushing data: got size %v, want %v", a.Size, 3*MiB)
 		}
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing writer: %v", err)
@@ -1357,6 +1386,11 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 				if off != 10 {
 					t.Errorf("flushing data: got %v bytes written, want %v", off, 10)
 				}
+				if a := w.Attrs(); a == nil {
+					t.Errorf("flushing data: no attrs after flush")
+				} else if a.Size != 10 {
+					t.Errorf("flushing data: got size %v, want %v", a.Size, 10)
+				}
 				// Write another 1000 bytes and flush again.
 				n, err = w.Write(content[10:1010])
 				if err != nil {
@@ -1371,6 +1405,11 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 				}
 				if off != 1010 {
 					t.Errorf("flushing data: got %v bytes written, want %v", off, 1010)
+				}
+				if a := w.Attrs(); a == nil {
+					t.Errorf("flushing data: no attrs after flush")
+				} else if a.Size != 1010 {
+					t.Errorf("flushing data: got size %v, want %v", a.Size, 1010)
 				}
 				// Write the rest of the object
 				_, err = w.Write(content[1010:])
@@ -1407,6 +1446,184 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 		}
 
 	})
+}
+
+// customObjSizeReadStream intercepts BidiReadObjectResponse messages and
+// changes the object size in the BidiReadObjectResponse.Metadata to
+// customRecvSize.
+type customObjSizeReadStream struct {
+	grpc.ClientStream
+	hasReceivedMsg bool
+	customRecvSize int64
+}
+
+func (s *customObjSizeReadStream) RecvMsg(m any) error {
+	// The first message should contain the object info. After that, we can
+	// receive and parse messages as usual.
+	if s.hasReceivedMsg {
+		return s.ClientStream.RecvMsg(m)
+	}
+	s.hasReceivedMsg = true
+
+	// Unmarshal the message to get easy access to the metadata to modify.
+	// We then modify the msg, marshal it again, and convert back to mem.BufferSlice.
+	// This is an easy way for us to intercept and change the message.
+	err := s.ClientStream.RecvMsg(m)
+
+	databufs, ok := m.(*mem.BufferSlice)
+	if !ok {
+		return errors.New("unable to cast received message to mem.BufferSlice")
+	}
+
+	var bidiResp storagepb.BidiReadObjectResponse
+	if uErr := proto.Unmarshal(databufs.Materialize(), &bidiResp); uErr != nil {
+		return fmt.Errorf("failed to unmarshal BidiReadObjectResponse: %w", uErr)
+	}
+
+	if bidiResp.Metadata == nil {
+		return fmt.Errorf("nil metadata in the first message")
+	}
+
+	// Modify the message.
+	bidiResp.Metadata.Size = s.customRecvSize
+
+	// Marshal the modified message.
+	marshalled, mErr := proto.Marshal(&bidiResp)
+	if mErr != nil {
+		return fmt.Errorf("failed to marshal modified BidiReadObjectResponse: %w", mErr)
+	}
+
+	// Set the message on the pointer to be decoded by the normal read flow.
+	updatedMsg := mem.BufferSlice{mem.SliceBuffer(marshalled)}
+	if ptr, ok := m.(*mem.BufferSlice); ok {
+		*ptr = updatedMsg
+	}
+
+	return err
+}
+
+func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx := context.Background()
+	var receivedObjectSize int64 = 10
+
+	streamInterceptor := grpc.WithStreamInterceptor(
+		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+			if method == "/google.storage.v2.Storage/BidiReadObject" {
+				// Intercept the message and set the object size.
+				clientStream = &customObjSizeReadStream{ClientStream: clientStream, customRecvSize: receivedObjectSize}
+			}
+			return clientStream, err
+		})
+
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+
+	var (
+		contents = randomBytes9MiB
+		prefix   = time.Now().Nanosecond()
+		bucket   = fmt.Sprintf("bucket-%d", prefix)
+		objName  = fmt.Sprintf("%d-object", prefix)
+		o        = client.Bucket(bucket).Object(objName)
+	)
+
+	// Upload contents to unfinalized object.
+	if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+		t.Fatalf("creating test bucket: %v", err)
+	}
+	w := o.NewWriter(ctx)
+	w.Append = true
+	if _, err = w.Write(contents); err != nil {
+		t.Fatalf("writing test data: got %v; want ok", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("closing test data writer: got %v; want ok", err)
+	}
+
+	// Download content and validate.
+	buf := bytes.NewBuffer([]byte{})
+	r, err := o.NewRangeReader(ctx, 0, -1)
+	if err != nil {
+		t.Errorf("NewRangeReader: %v", err)
+	}
+
+	// Copy exactly the same amount of bytes as object size. This would
+	// trigger a seen == size check for the next copy.
+	if _, err := io.CopyN(buf, r, receivedObjectSize); err != nil {
+		t.Fatalf("io.CopyN: %v", err)
+	}
+
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+
+	if err := r.Close(); err != nil {
+		t.Errorf("r.Close: %v", err)
+	}
+
+	if gotBytes := buf.Bytes(); !bytes.Equal(gotBytes, contents) {
+		t.Errorf("content mismatch: got %v bytes, want %v bytes", len(gotBytes), len(contents))
+	}
+
+	// Download with an offset and length.
+	buf.Truncate(0)
+	off := receivedObjectSize
+	var length int64 = 1024 * 1024 * 3
+	r, err = o.NewRangeReader(ctx, off, length)
+	if err != nil {
+		t.Errorf("NewRangeReader: %v", err)
+	}
+	if _, err := io.CopyN(buf, r, receivedObjectSize); err != nil {
+		t.Fatalf("io.CopyN: %v", err)
+	}
+
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+	if err := r.Close(); err != nil {
+		t.Errorf("r.Close: %v", err)
+	}
+
+	if got, want := buf.Bytes(), contents[off:off+length]; !bytes.Equal(got, want) {
+		t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+	}
+
+	// Download with a negative offset.
+	buf.Truncate(0)
+	off = receivedObjectSize
+	r, err = o.NewRangeReader(ctx, -off, -1)
+	if err != nil {
+		t.Errorf("NewRangeReader: %v", err)
+	}
+	if _, err := io.CopyN(buf, r, receivedObjectSize); err != nil {
+		t.Fatalf("io.CopyN: %v", err)
+	}
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+	if err := r.Close(); err != nil {
+		t.Errorf("r.Close: %v", err)
+	}
+
+	// We get a smaller object size on the first call, so the offset and
+	// length are based on that. Ensure data integrity - we shouldn't get
+	// more bytes than expected, and we shouldn't get the wrong bytes.
+	wantOff := receivedObjectSize - off
+	wantEnd := receivedObjectSize
+
+	// The bytes we get from the emulator are incorrect since the intercept only
+	// changes the obj length post receive; the request will have already requested the incorrect bytes.
+	if got, want := buf.Bytes(), contents[wantOff:wantEnd]; len(got) != len(want) {
+		t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+	}
+
+	//	Retries.
+	// metadata.remain is likely inaccurate
 }
 
 func TestListNotificationsEmulated(t *testing.T) {
@@ -1530,8 +1747,8 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		reader.Wait()
 		for _, k := range res {
 			if !bytes.Equal(k.buf.Bytes(), content[k.offset:k.offset+k.limit]) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, k.buf.Bytes(), content[k.offset:k.offset+k.limit])
+				t.Errorf("Error in read range offset %v, limit %v, got: %v bytes; want: %v bytes",
+					k.offset, k.limit, len(k.buf.Bytes()), len(content[k.offset:k.offset+k.limit]))
 			}
 			if k.err != nil {
 				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
@@ -2075,7 +2292,6 @@ func TestObjectConditionsEmulated(t *testing.T) {
 						},
 						progress: nil,
 						setObj:   nil,
-						setFlush: func(f func() (int64, error)) {},
 						setSize:  func(int64) {},
 					})
 					return err
@@ -2446,7 +2662,6 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					setError:             func(_ error) {}, // no-op
 					progress:             func(_ int64) {}, // no-op
 					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
-					setFlush:             func(func() (int64, error)) {}, // no-op
 					setSize:              func(int64) {},
 				}
 
@@ -2497,6 +2712,47 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 	})
 }
 
+func TestWriterChunkBufferReuseEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		c := &Client{tc: client}
+		if err := c.Bucket(bucket).Create(ctx, project, &BucketAttrs{}); err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		objName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+		w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
+		const chunkSize = 32 * 1024 * 1024
+		w.ChunkSize = chunkSize
+
+		// Write twice using the same buffer, then clear it.
+		buf := bytes.Repeat([]byte("A"), chunkSize)
+		if n, err := w.Write(buf); err != nil || n != chunkSize {
+			t.Errorf("failed first write: wrote %v, want %v, err %v", n, chunkSize, err)
+		}
+		copy(buf, bytes.Repeat([]byte("B"), chunkSize))
+		if n, err := w.Write(buf); err != nil || n != chunkSize {
+			t.Errorf("failed second write: wrote %v, want %v, err %v", n, chunkSize, err)
+		}
+		clear(buf)
+		if err := w.Close(); err != nil {
+			t.Errorf("failed close: %v", err)
+		}
+
+		r, err := c.Bucket(bucket).Object(objName).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		defer r.Close()
+		want := append(bytes.Repeat([]byte("A"), chunkSize), bytes.Repeat([]byte("B"), chunkSize)...)
+		got, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("reading object: %v", err)
+		}
+		if !bytes.Equal(got, want) {
+			t.Errorf("content does not match, got len %v, want len %v", len(got), len(want))
+		}
+	})
+}
+
 func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		const (
@@ -2543,7 +2799,6 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 			setError:           func(_ error) {}, // no-op
 			progress:           func(_ int64) {}, // no-op
 			setObj:             func(_ *ObjectAttrs) {},
-			setFlush:           func(f func() (int64, error)) {},
 			setSize:            func(int64) {},
 		}
 
