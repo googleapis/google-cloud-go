@@ -711,8 +711,8 @@ type AutoscalingMetricSpec struct {
 	// percentage, the machine replicas change. The default value is 60
 	// (representing 60%) if not provided.
 	Target int32 `protobuf:"varint,2,opt,name=target,proto3" json:"target,omitempty"`
-	// Optional. The Cloud Monitoring monitored resource labels used for metrics
-	// filtering. See Cloud Monitoring Labels
+	// Optional. The Cloud Monitoring monitored resource labels as key value pairs
+	// used for metrics filtering. See Cloud Monitoring Labels
 	// https://cloud.google.com/monitoring/api/v3/metric-model#generic-label-info
 	MonitoredResourceLabels map[string]string `protobuf:"bytes,3,rep,name=monitored_resource_labels,json=monitoredResourceLabels,proto3" json:"monitored_resource_labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
