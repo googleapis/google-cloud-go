@@ -491,6 +491,174 @@ func TestBeginLaterTransactionOption(t *testing.T) {
 	}
 }
 
+func TestTransactionPutWithOptions(t *testing.T) {
+	ctx := context.Background()
+	type S struct {
+		A int
+	}
+
+	key := NameKey("testKind", "test", nil)
+	src := &S{A: 1}
+	incTransform, err := Increment("A", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	// Mock BeginTransaction and Commit
+	txnID := []byte("tid")
+	srv.addRPC(&pb.BeginTransactionRequest{
+		ProjectId: "projectID",
+	}, &pb.BeginTransactionResponse{
+		Transaction: txnID,
+	})
+
+	wantMutation := &pb.Mutation{
+		Operation: &pb.Mutation_Upsert{
+			Upsert: &pb.Entity{
+				Key: keyToProto(key),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+				},
+			},
+		},
+		PropertyTransforms: []*pb.PropertyTransform{incTransform.pb},
+	}
+
+	srv.addRPC(&pb.CommitRequest{
+		ProjectId:           "projectID",
+		DatabaseId:          "",
+		Mode:                pb.CommitRequest_TRANSACTIONAL,
+		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: txnID},
+		Mutations:           []*pb.Mutation{wantMutation},
+	}, &pb.CommitResponse{
+		MutationResults: []*pb.MutationResult{{}},
+	})
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatalf("NewTransaction failed: %v", err)
+	}
+
+	_, err = tx.PutWithOptions(&PutRequest{Key: key, Entity: src, Transforms: []PropertyTransform{incTransform}})
+	if err != nil {
+		t.Fatalf("tx.PutWithOptions failed: %v", err)
+	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commit failed: %v", err)
+	}
+}
+
+func TestTransactionPutMultiWithOptions(t *testing.T) {
+	ctx := context.Background()
+	type S struct {
+		A int
+	}
+
+	keys := []*Key{
+		NameKey("testKind", "first", nil),
+		IncompleteKey("testKind", nil),
+	}
+	srcs := []interface{}{
+		&S{A: 1},
+		&S{A: 2},
+	}
+	incTransform, err := Increment("A", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	transforms := [][]PropertyTransform{
+		{incTransform},
+		{},
+	}
+
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	// Mock BeginTransaction and Commit
+	txnID := []byte("tid")
+	srv.addRPC(&pb.BeginTransactionRequest{
+		ProjectId: "projectID",
+	}, &pb.BeginTransactionResponse{
+		Transaction: txnID,
+	})
+
+	wantMutations := []*pb.Mutation{
+		{ // Upsert with transform
+			Operation: &pb.Mutation_Upsert{
+				Upsert: &pb.Entity{
+					Key: keyToProto(keys[0]),
+					Properties: map[string]*pb.Value{
+						"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+					},
+				},
+			},
+			PropertyTransforms: []*pb.PropertyTransform{incTransform.pb},
+		},
+		{ // Insert without transform
+			Operation: &pb.Mutation_Insert{
+				Insert: &pb.Entity{
+					Key: keyToProto(keys[1]),
+					Properties: map[string]*pb.Value{
+						"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+					},
+				},
+			},
+		},
+	}
+
+	completedKey := IDKey("testKind", 456, nil)
+	srv.addRPC(&pb.CommitRequest{
+		ProjectId:           "projectID",
+		DatabaseId:          "",
+		Mode:                pb.CommitRequest_TRANSACTIONAL,
+		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: txnID},
+		Mutations:           wantMutations,
+	}, &pb.CommitResponse{
+		MutationResults: []*pb.MutationResult{
+			{},
+			{Key: keyToProto(completedKey)},
+		},
+	})
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatalf("NewTransaction failed: %v", err)
+	}
+
+	putReqs := []*PutRequest{
+		{Key: keys[0], Entity: srcs[0], Transforms: transforms[0]},
+		{Key: keys[1], Entity: srcs[1], Transforms: transforms[1]},
+	}
+
+	pendingKeys, err := tx.PutMultiWithOptions(putReqs)
+	if err != nil {
+		t.Fatalf("tx.PutMultiWithOptions failed: %v", err)
+	}
+
+	commit, err := tx.Commit()
+	if err != nil {
+		t.Fatalf("Commit failed: %v", err)
+	}
+
+	// Check returned keys
+	k0 := commit.Key(pendingKeys[0])
+	if !k0.Equal(keys[0]) {
+		t.Errorf("Returned key mismatch for complete key. got %v, want %v", k0, keys[0])
+	}
+
+	k1 := commit.Key(pendingKeys[1])
+	if k1.Incomplete() {
+		t.Errorf("Expected a complete key for the second entity, but got an incomplete one.")
+	}
+	if !k1.Equal(completedKey) {
+		t.Errorf("Returned key for incomplete key mismatch. got %v, want %v", k1, completedKey)
+	}
+}
+
 func TestBackoffBeforefRetry(t *testing.T) {
 	ctx := context.Background()
 	retryer := gax.OnCodes([]codes.Code{codes.DeadlineExceeded}, gax.Backoff{
