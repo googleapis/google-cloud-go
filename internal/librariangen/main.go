@@ -51,7 +51,7 @@ var generateFunc = generate.Generate
 // The idiomatic structure is `librariangen [command] [flags]`.
 func run(ctx context.Context, args []string) error {
 	if len(args) < 1 {
-		return errors.New("expected a command")
+		return errors.New("librariangen: expected a command")
 	}
 
 	// The --version flag is a special case and not a command.
@@ -64,7 +64,7 @@ func run(ctx context.Context, args []string) error {
 	flags := args[1:]
 
 	if strings.HasPrefix(cmd, "-") {
-		return fmt.Errorf("command cannot be a flag: %s", cmd)
+		return fmt.Errorf("librariangen: command cannot be a flag: %s", cmd)
 	}
 
 	switch cmd {
@@ -77,7 +77,7 @@ func run(ctx context.Context, args []string) error {
 		slog.Warn("librariangen: build command is not yet implemented")
 		return nil
 	default:
-		return fmt.Errorf("unknown command: %s", cmd)
+		return fmt.Errorf("librariangen: unknown command: %s", cmd)
 	}
 }
 
@@ -91,7 +91,7 @@ func handleGenerate(ctx context.Context, args []string) error {
 	generateFlags.StringVar(&cfg.SourceDir, "source", "/source", "Path to a complete checkout of the googleapis repository.")
 	generateFlags.BoolVar(&cfg.DisablePostProcessor, "disable-post-processor", false, "Disable the post-processor. This should always be false in production.")
 	if err := generateFlags.Parse(args); err != nil {
-		return fmt.Errorf("failed to parse flags: %w", err)
+		return fmt.Errorf("librariangen: failed to parse flags: %w", err)
 	}
 	return generateFunc(ctx, cfg)
 }

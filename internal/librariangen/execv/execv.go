@@ -42,10 +42,10 @@ func Run(ctx context.Context, args []string, outputDir string) error {
 			if len(exitErr.Stderr) > 0 {
 				slog.Debug("librariangen: command stderr", "output", string(exitErr.Stderr))
 			}
-			return fmt.Errorf("command failed with exit error: %s: %w", exitErr.Stderr, err)
+			return fmt.Errorf("librariangen: command failed with exit error: %s: %w", exitErr.Stderr, err)
 		}
 		// Another error occurred (e.g., command not found).
-		return fmt.Errorf("command failed: %w", err)
+		return fmt.Errorf("librariangen: command failed: %w", err)
 	}
 	return nil
 }

@@ -72,32 +72,32 @@ func PostProcess(ctx context.Context, req *request.Request, moduleDir string, ne
 	if newModule {
 		slog.Debug("librariangen: initializing new module")
 		if err := generateChanges(moduleDir); err != nil {
-			return fmt.Errorf("failed to generate CHANGES.md: %w", err)
+			return fmt.Errorf("librariangen: failed to generate CHANGES.md: %w", err)
 		}
 	}
 	if err := generateInternalVersionFile(moduleDir); err != nil {
-		return fmt.Errorf("failed to generate internal/version.go: %w", err)
+		return fmt.Errorf("librariangen: failed to generate internal/version.go: %w", err)
 	}
 
 	if err := generateClientVersionFiles(req, moduleDir, req.ID); err != nil {
-		return fmt.Errorf("failed to generate client version files: %w", err)
+		return fmt.Errorf("librariangen: failed to generate client version files: %w", err)
 	}
 
 	// The README should be updated on every run.
 	if err := generateReadme(moduleDir, modulePath, title); err != nil {
-		return fmt.Errorf("failed to generate README.md: %w", err)
+		return fmt.Errorf("librariangen: failed to generate README.md: %w", err)
 	}
 
 	if err := goModInit(ctx, modulePath, moduleDir); err != nil {
-		return fmt.Errorf("failed to run 'go mod init': %w", err)
+		return fmt.Errorf("librariangen: failed to run 'go mod init': %w", err)
 	}
 
 	if err := goimports(ctx, moduleDir); err != nil {
-		return fmt.Errorf("failed to run 'goimports': %w", err)
+		return fmt.Errorf("librariangen: failed to run 'goimports': %w", err)
 	}
 
 	if err := goModTidy(ctx, moduleDir); err != nil {
-		return fmt.Errorf("failed to run 'go mod tidy': %w", err)
+		return fmt.Errorf("librariangen: failed to run 'go mod tidy': %w", err)
 	}
 
 	slog.Debug("librariangen: post-processing finished successfully")
@@ -185,7 +185,7 @@ func generateClientVersionFiles(req *request.Request, moduleDir, moduleName stri
 		// E.g. google/cloud/chronicle/v1 -> apiv1
 		parts := strings.Split(api.Path, "/")
 		if len(parts) < 2 {
-			return fmt.Errorf("unexpected API path format: %s", api.Path)
+			return fmt.Errorf("librariangen: unexpected API path format: %s", api.Path)
 		}
 		clientDirName := "api" + parts[len(parts)-1]
 		clientDir := filepath.Join(moduleDir, clientDirName)

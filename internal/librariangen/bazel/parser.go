@@ -91,16 +91,16 @@ func (c *Config) HasGoGRPC() bool { return c.hasGoGRPC }
 // Validate ensures that the configuration is valid.
 func (c *Config) Validate() error {
 	if c.gapicImportPath == "" {
-		return errors.New("gapicImportPath is not set")
+		return errors.New("librariangen: gapicImportPath is not set")
 	}
 	if c.serviceYAML == "" {
-		return errors.New("serviceYAML is not set")
+		return errors.New("librariangen: serviceYAML is not set")
 	}
 	if c.grpcServiceConfig == "" {
-		return errors.New("grpcServiceConfig is not set")
+		return errors.New("librariangen: grpcServiceConfig is not set")
 	}
 	if c.transport == "" {
-		return errors.New("transport is not set")
+		return errors.New("librariangen: transport is not set")
 	}
 	return nil
 }
@@ -112,7 +112,7 @@ func Parse(dir string) (*Config, error) {
 	fp := filepath.Join(dir, "BUILD.bazel")
 	data, err := os.ReadFile(fp)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read BUILD.bazel file %s: %w", fp, err)
+		return nil, fmt.Errorf("librariangen: failed to read BUILD.bazel file %s: %w", fp, err)
 	}
 	content := string(data)
 
@@ -120,7 +120,7 @@ func Parse(dir string) (*Config, error) {
 	re := regexp.MustCompile(`go_gapic_library\((?s:.)*?\)`)
 	gapicLibraryBlock := re.FindString(content)
 	if gapicLibraryBlock == "" {
-		return nil, errors.New("could not find go_gapic_library rule in BUILD.bazel")
+		return nil, errors.New("librariangen: could not find go_gapic_library rule in BUILD.bazel")
 	}
 
 	// GAPIC build target
@@ -130,13 +130,13 @@ func Parse(dir string) (*Config, error) {
 	c.serviceYAML = findString(gapicLibraryBlock, "service_yaml")
 	c.transport = findString(gapicLibraryBlock, "transport")
 	if c.metadata, err = findBool(gapicLibraryBlock, "metadata"); err != nil {
-		return nil, fmt.Errorf("failed to parse BUILD.bazel file %s: %w", fp, err)
+		return nil, fmt.Errorf("librariangen: failed to parse BUILD.bazel file %s: %w", fp, err)
 	}
 	if c.restNumericEnums, err = findBool(gapicLibraryBlock, "rest_numeric_enums"); err != nil {
-		return nil, fmt.Errorf("failed to parse BUILD.bazel file %s: %w", fp, err)
+		return nil, fmt.Errorf("librariangen: failed to parse BUILD.bazel file %s: %w", fp, err)
 	}
 	if c.diregapic, err = findBool(gapicLibraryBlock, "diregapic"); err != nil {
-		return nil, fmt.Errorf("failed to pars BUILD.bazel file %s: %w", fp, err)
+		return nil, fmt.Errorf("librariangen: failed to pars BUILD.bazel file %s: %w", fp, err)
 	}
 
 	// We are currently migrating go_proto_library to go_grpc_library.
@@ -146,11 +146,11 @@ func Parse(dir string) (*Config, error) {
 	}
 	if strings.Contains(content, "go_proto_library") {
 		if c.hasGoGRPC {
-			return nil, fmt.Errorf("misconfiguration in BUILD.bazel file, only one of go_grpc_library and go_proto_library rules should be present: %s", fp)
+			return nil, fmt.Errorf("librariangen: misconfiguration in BUILD.bazel file, only one of go_grpc_library and go_proto_library rules should be present: %s", fp)
 		}
 	}
 	if err := c.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid bazel config in %s: %w", dir, err)
+		return nil, fmt.Errorf("librariangen: invalid bazel config in %s: %w", dir, err)
 	}
 	slog.Debug("librariangen: bazel config loaded", "conf", fmt.Sprintf("%+v", c))
 	return c, nil
@@ -171,7 +171,7 @@ func findBool(content, name string) (bool, error) {
 		if b, err := strconv.ParseBool(match[1]); err == nil {
 			return b, nil
 		}
-		return false, fmt.Errorf("failed to parse bool attr in BUILD.bazel: %q, got: %q", name, match[1])
+		return false, fmt.Errorf("librariangen: failed to parse bool attr in BUILD.bazel: %q, got: %q", name, match[1])
 	}
 	slog.Debug("librariangen: failed to find bool attr in BUILD.bazel", "name", name)
 	return false, nil
