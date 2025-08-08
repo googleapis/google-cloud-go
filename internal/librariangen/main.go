@@ -30,12 +30,19 @@ const version = "0.1.0"
 
 // main is the entrypoint for the librariangen CLI.
 func main() {
-	slog.Info("librariangen invoked", "args", os.Args)
+	logLevel := slog.LevelInfo
+	if os.Getenv("GOOGLE_SDK_GO_LOGGING_LEVEL") == "debug" {
+		logLevel = slog.LevelDebug
+	}
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: logLevel,
+	})))
+	slog.Info("librariangen: invoked", "args", os.Args)
 	if err := run(context.Background(), os.Args[1:]); err != nil {
-		slog.Error("librariangen failed", "error", err)
+		slog.Error("librariangen: failed", "error", err)
 		os.Exit(1)
 	}
-	slog.Info("librariangen finished successfully")
+	slog.Info("librariangen: finished successfully")
 }
 
 var generateFunc = generate.Generate
@@ -44,7 +51,7 @@ var generateFunc = generate.Generate
 // The idiomatic structure is `librariangen [command] [flags]`.
 func run(ctx context.Context, args []string) error {
 	if len(args) < 1 {
-		return errors.New("expected a command")
+		return errors.New("librariangen: expected a command")
 	}
 
 	// The --version flag is a special case and not a command.
@@ -57,20 +64,20 @@ func run(ctx context.Context, args []string) error {
 	flags := args[1:]
 
 	if strings.HasPrefix(cmd, "-") {
-		return fmt.Errorf("command cannot be a flag: %s", cmd)
+		return fmt.Errorf("librariangen: command cannot be a flag: %s", cmd)
 	}
 
 	switch cmd {
 	case "generate":
 		return handleGenerate(ctx, flags)
 	case "configure":
-		slog.Warn("configure command is not yet implemented")
+		slog.Warn("librariangen: configure command is not yet implemented")
 		return nil
 	case "build":
-		slog.Warn("build command is not yet implemented")
+		slog.Warn("librariangen: build command is not yet implemented")
 		return nil
 	default:
-		return fmt.Errorf("unknown command: %s", cmd)
+		return fmt.Errorf("librariangen: unknown command: %s", cmd)
 	}
 }
 
@@ -84,7 +91,7 @@ func handleGenerate(ctx context.Context, args []string) error {
 	generateFlags.StringVar(&cfg.SourceDir, "source", "/source", "Path to a complete checkout of the googleapis repository.")
 	generateFlags.BoolVar(&cfg.DisablePostProcessor, "disable-post-processor", false, "Disable the post-processor. This should always be false in production.")
 	if err := generateFlags.Parse(args); err != nil {
-		return fmt.Errorf("failed to parse flags: %w", err)
+		return fmt.Errorf("librariangen: failed to parse flags: %w", err)
 	}
 	return generateFunc(ctx, cfg)
 }

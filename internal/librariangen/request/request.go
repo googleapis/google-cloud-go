@@ -47,12 +47,12 @@ type API struct {
 func Parse(path string) (*Request, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read request file from %s: %w", path, err)
+		return nil, fmt.Errorf("librariangen: failed to read request file from %s: %w", path, err)
 	}
 
 	var req Request
 	if err := json.Unmarshal(data, &req); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal request file %s: %w", path, err)
+		return nil, fmt.Errorf("librariangen: failed to unmarshal request file %s: %w", path, err)
 	}
 
 	return &req, nil

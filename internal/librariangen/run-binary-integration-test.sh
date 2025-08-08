@@ -104,11 +104,13 @@ GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go build -o "$BINARY_PATH" .
 # 4. Run the librariangen generate command.
 echo "Running librariangen..."
 if [ "$enable_post_processor" = true ]; then
+    # GOOGLE_SDK_GO_LOGGING_LEVEL=debug \
     PATH=$(GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go env GOPATH)/bin:$HOME/go/bin:$PATH ./librariangen generate \
       --source="$SOURCE_DIR" \
       --librarian="$LIBRARIAN_DIR" \
       --output="$OUTPUT_DIR" >> "$LIBRARIANGEN_LOG" 2>&1
 else
+    # GOOGLE_SDK_GO_LOGGING_LEVEL=debug \
     PATH=$(GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go env GOPATH)/bin:$HOME/go/bin:$PATH ./librariangen generate \
       --source="$SOURCE_DIR" \
       --librarian="$LIBRARIAN_DIR" \
@@ -117,10 +119,6 @@ else
 fi
 
 
-# Run gofmt just like the Bazel rule:
-# https://github.com/googleapis/gapic-generator-go/blob/main/rules_go_gapic/go_gapic.bzl#L34
-# TODO: move this to librariangen
-GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} gofmt -w -l $OUTPUT_DIR > /dev/null
 
 # --- Verify ---
 
@@ -186,9 +184,8 @@ if [ "$enable_post_processor" = true ]; then
     module_name=$(echo "${APIS[0]}" | cut -d'/' -f1)
     OUTPUT_MODULE_DIR="$OUTPUT_DIR/$module_name"
     EXPECTED_MODULE_DIR="$GEN_DIR/$module_name"
-    rm -rf "${EXPECTED_MODULE_DIR:?}"/*
-    mkdir -p "$EXPECTED_MODULE_DIR"
-    cp -a "$OUTPUT_MODULE_DIR"/. "$EXPECTED_MODULE_DIR/"
+    rm -rf "${EXPECTED_MODULE_DIR:?}"
+    cp -a "$OUTPUT_MODULE_DIR" "$GEN_DIR/"
 else
     for i in "${!APIS[@]}"; do
       api="${APIS[$i]}"
@@ -218,10 +215,9 @@ original_filemode=$(git config --get core.fileMode)
 git config core.fileMode false
 # Stage all changes. New files, modifications, and deletions will be staged.
 if [ "$enable_post_processor" = true ]; then
-    module_name=$(echo "${APIS[0]}" | cut -d'/' -f1)
-    git add "$module_name"
+    git add .
     # Print the human-readable status. This will now ignore permission changes.
-    git status "$module_name"
+    git status
 else
     git add .
     # Print the human-readable status. This will now ignore permission changes.
