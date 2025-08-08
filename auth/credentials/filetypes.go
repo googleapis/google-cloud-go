@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	internalauth "cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"cloud.google.com/go/auth/internal/trustboundary"
 )
 
 func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
@@ -134,17 +135,26 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 		return configureSelfSignedJWT(f, opts)
 	}
 	opts2LO := &auth.Options2LO{
-		Email:        f.ClientEmail,
-		PrivateKey:   []byte(f.PrivateKey),
-		PrivateKeyID: f.PrivateKeyID,
-		Scopes:       opts.scopes(),
-		TokenURL:     f.TokenURL,
-		Subject:      opts.Subject,
-		Client:       opts.client(),
-		Logger:       opts.logger(),
+		Email:          f.ClientEmail,
+		PrivateKey:     []byte(f.PrivateKey),
+		PrivateKeyID:   f.PrivateKeyID,
+		Scopes:         opts.scopes(),
+		TokenURL:       f.TokenURL,
+		Subject:        opts.Subject,
+		Client:         opts.client(),
+		Logger:         opts.logger(),
+		UniverseDomain: ud,
 	}
 	if opts2LO.TokenURL == "" {
 		opts2LO.TokenURL = jwtTokenURL
+	}
+	if trustBoundaryEnabled {
+		saTrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(opts2LO.Email, opts2LO.UniverseDomain)
+		hook, err := trustboundary.NewTokenHook(opts.client(), saTrustBoundaryConfig, opts.logger())
+		if err != nil {
+			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for service account: %w", err)
+		}
+		opts2LO.TokenHook = hook
 	}
 	return auth.New2LOTokenProvider(opts2LO)
 }
@@ -212,14 +222,21 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	if err != nil {
 		return nil, err
 	}
-	return impersonate.NewTokenProvider(&impersonate.Options{
-		URL:       f.ServiceAccountImpersonationURL,
-		Scopes:    opts.scopes(),
-		Tp:        tp,
-		Delegates: f.Delegates,
-		Client:    opts.client(),
-		Logger:    opts.logger(),
-	})
+	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+	if trustBoundaryEnabledErr != nil {
+		return nil, trustBoundaryEnabledErr
+	}
+	impOpts := &impersonate.Options{
+		URL:                  f.ServiceAccountImpersonationURL,
+		Scopes:               opts.scopes(),
+		Tp:                   tp,
+		Delegates:            f.Delegates,
+		Client:               opts.client(),
+		Logger:               opts.logger(),
+		UniverseDomain:       ud,
+		TrustBoundaryEnabled: trustBoundaryEnabled,
+	}
+	return impersonate.NewTokenProvider(impOpts)
 }
 
 func handleGDCHServiceAccount(f *credsfile.GDCHServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
