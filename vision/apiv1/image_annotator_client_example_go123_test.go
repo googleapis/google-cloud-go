@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package vision_test
-
-import (
-	vision "cloud.google.com/go/vision/v2/apiv1"
-)
