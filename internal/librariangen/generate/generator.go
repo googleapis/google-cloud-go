@@ -29,7 +29,7 @@ import (
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/postprocessor"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/protoc"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
-	"github.com/ghodss/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 // TODO(quartzmo): The determination of whether a module is new or not should be
@@ -191,7 +191,7 @@ func readTitleFromServiceYAML(path string) (string, error) {
 		return "", fmt.Errorf("librariangen: failed to read service yaml file: %w", err)
 	}
 	var serviceConfig struct {
-		Title string `json:"title"`
+		Title string `yaml:"title"`
 	}
 	if err := yaml.Unmarshal(data, &serviceConfig); err != nil {
 		return "", fmt.Errorf("librariangen: failed to unmarshal service yaml: %w", err)

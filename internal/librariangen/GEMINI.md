@@ -49,3 +49,4 @@ There are three primary ways to test the project:
 *   Shell scripts (`.sh`) are used for automation, particularly for testing and Docker image management.
 *   The project follows standard Go conventions for code style and project structure.
 *   Dependencies are managed with Go modules (`go.mod`). The runtime dependencies for code generation (`protoc`, plugins) are expected to be present in the execution environment (i.e., the Docker container).
+*   After any dependency change (`go get` or manual edit to `go.mod`), always run `go mod tidy` to ensure the `go.sum` file is updated and unused dependencies are removed.
