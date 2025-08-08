@@ -115,12 +115,12 @@ go_gapic_library(
 )
 `
 	tests := []struct {
-		name              string
-		setup             func(e *testEnv, t *testing.T)
-		protocErr         error
-		wantErr           bool
+		name               string
+		setup              func(e *testEnv, t *testing.T)
+		protocErr          error
+		wantErr            bool
 		wantProtocRunCount int
-		wantTitle         string
+		wantTitle          string
 	}{
 		{
 			name: "happy path",
