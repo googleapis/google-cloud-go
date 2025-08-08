@@ -225,6 +225,9 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 // to be non-nil. You may need to set the GoogleAccessID and PrivateKey fields
 // in some cases. Read more on the [automatic detection of credentials] for this method.
 //
+// To support POSTs of dynamic objects, pass an empty string to `object` and provide a condition for `$key`.
+// For example: `storage.ConditionStartsWith("$key", "prefix")`
+//
 // [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 	// Make a copy of opts so we don't modify the pointer parameter.
