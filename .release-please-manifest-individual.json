@@ -7,7 +7,7 @@
   "datastore": "1.20.0",
   "errorreporting": "0.3.2",
   "firestore": "1.18.0",
-  "logging": "1.13.0",
+  "logging": "1.13.1",
   "profiler": "0.4.3",
   "pubsub": "1.50.0",
   "pubsub/v2": "2.0.0",
