@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.98.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.97.0...aiplatform/v1.98.0) (2025-08-09)
+
+
+### Features
+
+* **aiplatform:** Add force_delete field to DeleteRagFile 'preview' API request for Vertex RAG ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field monitored_resource_labels in message .google.cloud.aiplatform.v1beta1.AutoscalingMetricSpec is changed ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+
 ## [1.97.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.96.0...aiplatform/v1.97.0) (2025-08-06)
 
 
