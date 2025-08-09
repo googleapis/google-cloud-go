@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package datasources_test
+
+import (
+	datasources "cloud.google.com/go/shopping/merchant/datasources/apiv1beta"
+)
