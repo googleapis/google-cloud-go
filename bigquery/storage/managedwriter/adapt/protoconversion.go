@@ -25,6 +25,7 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -61,7 +62,7 @@ var bqTypeToFieldTypeMap = map[storagepb.TableFieldSchema_Type]descriptorpb.Fiel
 	storagepb.TableFieldSchema_STRING:     descriptorpb.FieldDescriptorProto_TYPE_STRING,
 	storagepb.TableFieldSchema_STRUCT:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
 	storagepb.TableFieldSchema_TIME:       descriptorpb.FieldDescriptorProto_TYPE_INT64,
-	storagepb.TableFieldSchema_TIMESTAMP:  descriptorpb.FieldDescriptorProto_TYPE_INT64,
+	storagepb.TableFieldSchema_TIMESTAMP:  descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
 	storagepb.TableFieldSchema_RANGE:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
 	storagepb.TableFieldSchema_JSON:       descriptorpb.FieldDescriptorProto_TYPE_STRING,
 }
@@ -107,12 +108,15 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 	storagepb.TableFieldSchema_NUMERIC:    ".google.protobuf.BytesValue",
 	storagepb.TableFieldSchema_STRING:     ".google.protobuf.StringValue",
 	storagepb.TableFieldSchema_TIME:       ".google.protobuf.Int64Value",
-	storagepb.TableFieldSchema_TIMESTAMP:  ".google.protobuf.Int64Value",
+	storagepb.TableFieldSchema_TIMESTAMP:  ".google.protobuf.Timestamp",
 	storagepb.TableFieldSchema_JSON:       ".google.protobuf.StringValue",
 }
 
 // filename used by well known types proto
 var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
+
+// filename used by timestamp proto
+var wellKnownTypesTimestampName = "google/protobuf/timestamp.proto"
 
 var rangeTypesPrefix = "rangemessage_range_"
 
@@ -334,7 +338,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	}
 
 	// Use the local dependencies to generate a list of filenames.
-	depNames := []string{wellKnownTypesWrapperName}
+	depNames := []string{wellKnownTypesWrapperName, wellKnownTypesTimestampName}
 	for _, d := range deps {
 		depNames = append(depNames, d.ParentFile().Path())
 	}
@@ -356,6 +360,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	fdpList := []*descriptorpb.FileDescriptorProto{
 		fdp,
 		protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
+		protodesc.ToFileDescriptorProto(timestamppb.File_google_protobuf_timestamp_proto),
 	}
 	fdpList = append(fdpList, cache.getFileDescriptorProtos()...)
 
@@ -406,24 +411,34 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 	name := field.GetName()
 	var fdp *descriptorpb.FieldDescriptorProto
 
-	if field.GetType() == storagepb.TableFieldSchema_STRUCT {
+	switch fieldType := field.GetType(); fieldType {
+	case storagepb.TableFieldSchema_STRUCT:
 		fdp = &descriptorpb.FieldDescriptorProto{
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(scope),
 			Label:    convertModeToLabel(field.GetMode(), useProto3),
 		}
-	} else if field.GetType() == storagepb.TableFieldSchema_RANGE {
+	case storagepb.TableFieldSchema_RANGE:
 		fdp = &descriptorpb.FieldDescriptorProto{
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(fmt.Sprintf("%s%s", rangeTypesPrefix, strings.ToLower(field.GetRangeElementType().GetType().String()))),
 			Label:    convertModeToLabel(field.GetMode(), useProto3),
 		}
-	} else {
+	case storagepb.TableFieldSchema_TIMESTAMP:
+		// Only TIMESTAMP supports timestamppb: https://cloud.google.com/bigquery/docs/supported-data-types
+		fdp = &descriptorpb.FieldDescriptorProto{
+			Name:     proto.String(name),
+			Number:   proto.Int32(idx),
+			Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+			TypeName: proto.String(".google.protobuf.Timestamp"),
+			Label:    convertModeToLabel(field.GetMode(), useProto3),
+		}
+	default:
 		// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
 		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
-			outType := bqTypeToFieldTypeMap[field.GetType()]
+			outType := bqTypeToFieldTypeMap[fieldType]
 			fdp = &descriptorpb.FieldDescriptorProto{
 				Name:   proto.String(name),
 				Number: proto.Int32(idx),
@@ -448,7 +463,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 				Name:     proto.String(name),
 				Number:   proto.Int32(idx),
 				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-				TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
+				TypeName: proto.String(bqTypeToWrapperMap[fieldType]),
 				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 			}
 		}
