@@ -758,11 +758,13 @@ func TestDefaultCredentials_BadFileName(t *testing.T) {
 
 func TestDefaultCredentials_Validate(t *testing.T) {
 	tests := []struct {
-		name string
-		opts *DetectOptions
+		name    string
+		opts    *DetectOptions
+		wantErr string
 	}{
 		{
-			name: "missing options",
+			name:    "missing options",
+			wantErr: "credentials: options must be provided",
 		},
 		{
 			name: "scope and audience provided",
@@ -770,6 +772,7 @@ func TestDefaultCredentials_Validate(t *testing.T) {
 				Scopes:   []string{"scope"},
 				Audience: "aud",
 			},
+			wantErr: "credentials: both scopes and audience were provided",
 		},
 		{
 			name: "file and json provided",
@@ -778,12 +781,23 @@ func TestDefaultCredentials_Validate(t *testing.T) {
 				CredentialsFile: "path",
 				CredentialsJSON: []byte(`{"some":"json"}`),
 			},
+			wantErr: "credentials: both credentials file and JSON were provided",
+		},
+		{
+			name: "empty json provided",
+			opts: &DetectOptions{
+				Scopes:          []string{"scope"},
+				CredentialsJSON: []byte(`{}`),
+			},
+			wantErr: "credentials: unsupported unidentified file type",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if _, err := DetectDefault(tt.opts); err == nil {
 				t.Error("got nil, want an error")
+			} else if tt.wantErr != "" && !strings.Contains(err.Error(), tt.wantErr) {
+				t.Errorf("unexpected error, got %q expect %q", err.Error(), tt.wantErr)
 			}
 		})
 	}
