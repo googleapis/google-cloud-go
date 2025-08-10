@@ -56,6 +56,8 @@ const featureFlagsHeaderKey = "bigtable-features"
 const queryExpiredViolationType = "PREPARED_QUERY_EXPIRED"
 const preparedQueryExpireEarlyDuration = time.Second
 
+var pingBytes = []byte("ping")
+
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -921,6 +923,40 @@ func handleExecuteStreamEnd(stream btpb.Bigtable_ExecuteQueryClient, trailerMD *
 		return errors.New("bigtable: server stream ended without sending a resume token")
 	}
 	return nil
+}
+
+// Pinger pings the server and warms up the connection.
+func (c *Client) Pinger(ctx context.Context) (err error) {
+	md := metadata.Join(metadata.Pairs(
+		resourcePrefixHeader, c.fullInstanceName(),
+		requestParamsHeader, c.reqParamsHeaderValInstance(),
+	), c.newFeatureFlags())
+
+	ctx = mergeOutgoingMetadata(ctx, md)
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/PingAndWarm")
+	defer func() { trace.EndSpan(ctx, err) }()
+	mt := c.newBuiltinMetricsTracer(ctx, "", false)
+	defer recordOperationCompletion(mt)
+
+	err = c.pingerWithMetadata(ctx, mt)
+	statusCode, statusErr := convertToGrpcStatusErr(err)
+	mt.currOp.setStatus(statusCode.String())
+	return statusErr
+}
+
+func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTracer) (err error) {
+	req := &btpb.PingAndWarmRequest{
+		Name:         c.fullInstanceName(),
+		AppProfileId: c.appProfile,
+	}
+	err = gaxInvokeWithRecorder(ctx, mt, "PingAndWarm", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		var err error
+		_, err = c.client.PingAndWarm(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
+		return err
+	}, c.retryOption)
+
+	return err
+
 }
 
 func (ti *tableImpl) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
