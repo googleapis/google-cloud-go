@@ -18,6 +18,7 @@ import (
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"cloud.google.com/go/bigquery/v2/apiv2_client"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 )
@@ -83,4 +84,15 @@ func WithStorageReadClient(rc *storage.BigQueryReadClient) ReadOption {
 	return func(s *readState) {
 		s.readClient = rc
 	}
+}
+
+func hasRetry(opts []gax.CallOption) bool {
+	cs := &gax.CallSettings{}
+	for _, opt := range opts {
+		opt.Resolve(cs)
+		if cs.Retry != nil {
+			return true
+		}
+	}
+	return false
 }

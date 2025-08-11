@@ -93,6 +93,10 @@ func (r *jobsReader) nextPage(ctx context.Context, pageToken string, opts []gax.
 		return nil, iterator.Done
 	}
 
+	if !hasRetry(opts) {
+		opts = append(opts, gax.WithRetry(defaultRetryerFunc))
+	}
+
 	res, err := r.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
 		FormatOptions: &bigquerypb.DataFormatOptions{
 			UseInt64Timestamp: true,
@@ -101,7 +105,7 @@ func (r *jobsReader) nextPage(ctx context.Context, pageToken string, opts []gax.
 		ProjectId: r.q.projectID,
 		Location:  r.q.location,
 		PageToken: pageToken,
-	})
+	}, opts...)
 	if err != nil {
 		return nil, err
 	}

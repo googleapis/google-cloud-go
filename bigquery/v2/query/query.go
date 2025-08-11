@@ -99,6 +99,9 @@ func (q *Query) Wait(ctx context.Context, opts ...gax.CallOption) error {
 }
 
 func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
+	if !hasRetry(opts) {
+		opts = append(opts, gax.WithRetry(defaultRetryerFunc))
+	}
 	res, err := q.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
 		ProjectId:  q.projectID,
 		JobId:      q.jobID,

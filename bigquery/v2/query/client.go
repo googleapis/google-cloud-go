@@ -60,6 +60,11 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 	if req.QueryRequest.JobCreationMode == bigquerypb.QueryRequest_JOB_CREATION_MODE_UNSPECIFIED {
 		req.QueryRequest.JobCreationMode = c.defaultJobCreationMode
 	}
+
+	if !hasRetry(opts) {
+		opts = append(opts, gax.WithRetry(defaultJobRetryerFunc))
+	}
+
 	res, err := c.c.Query(ctx, req, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run query: %w", err)
@@ -82,6 +87,11 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	if qconfig == nil {
 		return nil, fmt.Errorf("job is not a query")
 	}
+
+	if !hasRetry(opts) {
+		opts = append(opts, gax.WithRetry(defaultJobRetryerFunc))
+	}
+
 	job, err := c.c.InsertJob(ctx, &bigquerypb.InsertJobRequest{
 		ProjectId: c.billingProjectID,
 		Job:       job,
