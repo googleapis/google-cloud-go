@@ -37,12 +37,11 @@ var (
 
 // computeTokenProvider creates a [cloud.google.com/go/auth.TokenProvider] that
 // uses the metadata service to retrieve tokens.
-func computeTokenProvider(opts *DetectOptions, client *metadata.Client, hook auth.TokenHook) auth.TokenProvider {
+func computeTokenProvider(opts *DetectOptions, client *metadata.Client) auth.TokenProvider {
 	return auth.NewCachedTokenProvider(&computeProvider{
 		scopes:           opts.Scopes,
 		client:           client,
 		tokenBindingType: opts.TokenBindingType,
-		tokenHook:        hook,
 	}, &auth.CachedTokenProviderOptions{
 		ExpireEarly:         opts.EarlyTokenRefresh,
 		DisableAsyncRefresh: opts.DisableAsyncRefresh,
@@ -54,7 +53,6 @@ type computeProvider struct {
 	scopes           []string
 	client           *metadata.Client
 	tokenBindingType TokenBindingType
-	tokenHook        auth.TokenHook
 }
 
 type metadataTokenResp struct {
@@ -99,11 +97,6 @@ func (cs *computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Type:     res.TokenType,
 		Expiry:   time.Now().Add(time.Duration(res.ExpiresInSec) * time.Second),
 		Metadata: computeTokenMetadata,
-	}
-	if cs.tokenHook != nil {
-		if err := cs.tokenHook(ctx, token); err != nil {
-			return nil, fmt.Errorf("credentials: token hook failed: %w", err)
-		}
 	}
 	return token, nil
 }

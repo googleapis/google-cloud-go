@@ -497,9 +497,6 @@ type Options2LO struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
-	// TokenHook is a function that will be called after a token is fetched,
-	// allowing for modification of the token.
-	TokenHook TokenHook
 }
 
 func (o *Options2LO) client() *http.Client {
@@ -617,13 +614,5 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		}
 		token.Value = tokenRes.IDToken
 	}
-	if tp.opts.TokenHook != nil {
-		if err := tp.opts.TokenHook(ctx, token); err != nil {
-			return nil, fmt.Errorf("auth: token hook failed: %w", err)
-		}
-	}
 	return token, nil
 }
-
-// TokenHook is a function that can be used to modify a token after it has been fetched.
-type TokenHook func(ctx context.Context, t *Token) error

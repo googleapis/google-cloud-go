@@ -22,6 +22,8 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"os"
+	"strings"
 
 	"sync"
 
@@ -35,6 +37,51 @@ const (
 	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.%s/v1/projects/-/serviceAccounts/%s/allowedLocations"
 )
+
+var (
+	// enabledOnce ensures the check for trust boundary is only performed once.
+	enabledOnce sync.Once
+	// enabled controls whether the trust boundary feature is enabled.
+	enabled    bool
+	enabledErr error
+)
+
+// IsEnabled returns if the trust boundary feature is enabled and an error if
+// the configuration is invalid.
+func IsEnabled() (bool, error) {
+	enabledOnce.Do(func() {
+		enabled, enabledErr = isTrustBoundaryEnabled()
+	})
+	return enabled, enabledErr
+}
+
+// isTrustBoundaryEnabled checks if the trust boundary feature is enabled via
+// GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED environment variable.
+//
+// If the environment variable is not set, it is considered false.
+//
+// The environment variable is interpreted as a boolean with the following
+// (case-insensitive) rules:
+//   - "true", "1" are considered true.
+//   - "false", "0" are considered false.
+//
+// Any other values will return an error.
+func isTrustBoundaryEnabled() (bool, error) {
+	const envVar = "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
+	val, ok := os.LookupEnv(envVar)
+	if !ok {
+		return false, nil
+	}
+	val = strings.ToLower(val)
+	switch val {
+	case "true", "1":
+		return true, nil
+	case "false", "0":
+		return false, nil
+	default:
+		return false, fmt.Errorf(`invalid value for %s: %q. Must be one of "true", "false", "1", or "0"`, envVar, val)
+	}
+}
 
 // ConfigProvider provides specific configuration for trust boundary lookups.
 type ConfigProvider interface {
@@ -143,45 +190,55 @@ func (sac *ServiceAccountTrustBoundaryConfig) GetUniverseDomain(ctx context.Cont
 	return sac.UniverseDomain, nil
 }
 
-// dataProvider fetches and caches trust boundary Data.
+// DataProvider fetches and caches trust boundary Data.
 // It implements the DataProvider interface and uses a ConfigProvider
 // to get type-specific details for the lookup.
-type dataProvider struct {
+type DataProvider struct {
 	client         *http.Client
 	configProvider ConfigProvider
 	data           *internal.TrustBoundaryData
 	logger         *slog.Logger
+	base           auth.TokenProvider
 }
 
-// NewTokenHook creates a new [auth.TokenHook] that fetches and attaches trust
-// boundary data to a token. It uses the provided HTTP client to make requests
-// and the configProvider to determine the correct endpoint and universe domain
-// for trust boundary lookups.
-func NewTokenHook(client *http.Client, configProvider ConfigProvider, logger *slog.Logger) (auth.TokenHook, error) {
+// NewProvider wraps the provided base [auth.TokenProvider] to create a new
+// provider that injects tokens with trust boundary data. It uses the provided
+// HTTP client and configProvider to fetch the data and attach it to the token's
+// metadata.
+func NewProvider(client *http.Client, configProvider ConfigProvider, logger *slog.Logger, base auth.TokenProvider) (*DataProvider, error) {
 	if client == nil {
 		return nil, errors.New("trustboundary: HTTP client cannot be nil for TrustBoundaryDataProvider")
 	}
 	if configProvider == nil {
 		return nil, errors.New("trustboundary: TrustBoundaryConfigProvider cannot be nil for TrustBoundaryDataProvider")
 	}
-	p := &dataProvider{
+	p := &DataProvider{
 		client:         client,
 		configProvider: configProvider,
 		logger:         internallog.New(logger),
+		base:           base,
 	}
-	return func(ctx context.Context, t *auth.Token) error {
-		tbData, err := p.GetTrustBoundaryData(ctx, t)
-		if err != nil {
-			return fmt.Errorf("trustboundary: error fetching the trust boundary data: %w", err)
+	return p, nil
+}
+
+func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
+	// Get the original token.
+	token, err := p.base.Token(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	tbData, err := p.GetTrustBoundaryData(ctx, token)
+	if err != nil {
+		return nil, fmt.Errorf("trustboundary: error fetching the trust boundary data: %w", err)
+	}
+	if tbData != nil {
+		if token.Metadata == nil {
+			token.Metadata = make(map[string]interface{})
 		}
-		if tbData != nil {
-			if t.Metadata == nil {
-				t.Metadata = make(map[string]interface{})
-			}
-			t.Metadata[internal.TrustBoundaryDataKey] = *tbData
-		}
-		return nil
-	}, nil
+		token.Metadata[internal.TrustBoundaryDataKey] = *tbData
+	}
+	return token, nil
 }
 
 // GetTrustBoundaryData retrieves the trust boundary data.
@@ -190,7 +247,7 @@ func NewTokenHook(client *http.Client, configProvider ConfigProvider, logger *sl
 // it fetches new data from the endpoint provided by its ConfigProvider,
 // using the given accessToken for authentication. Results are cached.
 // If fetching fails, it returns previously cached data if available, otherwise the fetch error.
-func (p *dataProvider) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internal.TrustBoundaryData, error) {
+func (p *DataProvider) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internal.TrustBoundaryData, error) {
 	// Check the universe domain.
 	uniDomain, err := p.configProvider.GetUniverseDomain(ctx)
 	if err != nil {

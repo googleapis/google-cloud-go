@@ -28,7 +28,6 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport/headers"
-	"cloud.google.com/go/auth/internal/trustboundary"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -56,18 +55,6 @@ type impersonateTokenResponse struct {
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
-	}
-	if opts.TrustBoundaryEnabled {
-		targetSAEmail, err := ExtractServiceAccountEmail(opts.URL)
-		if err != nil {
-			return nil, fmt.Errorf("credentials: could not extract target service account email for trust boundary: %w", err)
-		}
-		targetSATrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(targetSAEmail, opts.UniverseDomain)
-		hook, err := trustboundary.NewTokenHook(opts.Client, targetSATrustBoundaryConfig, opts.Logger)
-		if err != nil {
-			return nil, fmt.Errorf("credentials: failed to initialize trust boundary provider for impersonation: %w", err)
-		}
-		opts.tokenHook = hook
 	}
 	return opts, nil
 }
@@ -98,13 +85,8 @@ type Options struct {
 	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
 	// logger will be used. Optional.
 	Logger *slog.Logger
-	// TrustBoundaryEnabled indicates if the trust boundary feature has been enabled.
-	TrustBoundaryEnabled bool
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	UniverseDomain string
-	// TokenHook is a function that will be called after a token is fetched,
-	// allowing for modification of the token.
-	tokenHook auth.TokenHook
 }
 
 func (o *Options) validate() error {
@@ -165,12 +147,6 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 		Value:  accessTokenResp.AccessToken,
 		Expiry: expiry,
 		Type:   internal.TokenTypeBearer,
-	}
-	// Fetch trust boundary data if a provider is configured, and attach it to the token.
-	if o.tokenHook != nil {
-		if err := o.tokenHook(ctx, token); err != nil {
-			return nil, fmt.Errorf("credentials: token hook failed: %w", err)
-		}
 	}
 	return token, nil
 }

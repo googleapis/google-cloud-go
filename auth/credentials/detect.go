@@ -22,7 +22,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -51,37 +50,7 @@ const (
 var (
 	// for testing
 	allowOnGCECheck = true
-	// trustBoundaryEnabled controls whether the trust boundary feature is enabled.
-	trustBoundaryEnabled, trustBoundaryEnabledErr = isTrustBoundaryEnabled()
 )
-
-// isTrustBoundaryEnabled checks if the trust boundary feature is enabled via
-// GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED environment variable.
-//
-// If the environment variable is not set, it is considered false.
-//
-// The environment variable is interpreted as a boolean with the following
-// (case-insensitive) rules:
-//   - "true", "1" are considered true.
-//   - "false", "0" are considered false.
-//
-// Any other values will return an error.
-func isTrustBoundaryEnabled() (bool, error) {
-	const envVar = "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
-	val, ok := os.LookupEnv(envVar)
-	if !ok {
-		return false, nil
-	}
-	val = strings.ToLower(val)
-	switch val {
-	case "true", "1":
-		return true, nil
-	case "false", "0":
-		return false, nil
-	default:
-		return false, fmt.Errorf(`invalid value for %s: %q. Must be one of "true", "false", "1", or "0"`, envVar, val)
-	}
-}
 
 // TokenBindingType specifies the type of binding used when requesting a token
 // whether to request a hard-bound token using mTLS or an instance identity
@@ -127,6 +96,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
+	trustBoundaryEnabled, trustBoundaryEnabledErr := trustboundary.IsEnabled()
 	if trustBoundaryEnabledErr != nil {
 		return nil, trustBoundaryEnabledErr
 	}
@@ -158,18 +128,18 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			MetadataClient: metadataClient,
 		}
 
-		var hook auth.TokenHook
+		tp := computeTokenProvider(opts, metadataClient)
 		if trustBoundaryEnabled {
 			gceTBConfigProvider := trustboundary.NewGCETrustBoundaryConfigProvider(gceUniverseDomainProvider)
 			var err error
-			hook, err = trustboundary.NewTokenHook(opts.client(), gceTBConfigProvider, opts.logger())
+			tp, err = trustboundary.NewProvider(opts.client(), gceTBConfigProvider, opts.logger(), tp)
 			if err != nil {
 				return nil, fmt.Errorf("credentials: failed to initialize GCE trust boundary provider: %w", err)
 			}
 
 		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
-			TokenProvider: computeTokenProvider(opts, metadataClient, hook),
+			TokenProvider: tp,
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
 				return metadataClient.ProjectIDWithContext(ctx)
 			}),

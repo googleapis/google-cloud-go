@@ -24,6 +24,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 
 	"cloud.google.com/go/auth"
@@ -198,6 +199,94 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				if !reflect.DeepEqual(data, tt.wantData) {
 					t.Errorf("fetchTrustBoundaryData() data = %+v, want %+v", data, tt.wantData)
 				}
+			}
+		})
+	}
+}
+
+// for testing only
+func resetIsEnabled() {
+	enabledOnce = sync.Once{}
+	enabled = false
+	enabledErr = nil
+}
+
+func TestIsEnabled(t *testing.T) {
+	tests := []struct {
+		name    string
+		envVal  string
+		setEnv  bool
+		want    bool
+		wantErr bool
+	}{
+		{
+			name:   "unset",
+			setEnv: false,
+			want:   false,
+		},
+		{
+			name:    "empty",
+			envVal:  "",
+			setEnv:  true,
+			wantErr: true,
+		},
+		{
+			name:   "true",
+			envVal: "true",
+			setEnv: true,
+			want:   true,
+		},
+		{
+			name:   "TRUE",
+			envVal: "TRUE",
+			setEnv: true,
+			want:   true,
+		},
+		{
+			name:   "1",
+			envVal: "1",
+			setEnv: true,
+			want:   true,
+		},
+		{
+			name:   "false",
+			envVal: "false",
+			setEnv: true,
+			want:   false,
+		},
+		{
+			name:   "FALSE",
+			envVal: "FALSE",
+			setEnv: true,
+			want:   false,
+		},
+		{
+			name:   "0",
+			envVal: "0",
+			setEnv: true,
+			want:   false,
+		},
+		{
+			name:    "invalid",
+			envVal:  "invalid",
+			setEnv:  true,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resetIsEnabled()
+			if tt.setEnv {
+				t.Setenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED", tt.envVal)
+			} else {
+				os.Unsetenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED")
+			}
+			got, err := IsEnabled()
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("IsEnabled() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if got != tt.want {
+				t.Errorf("IsEnabled() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -526,7 +615,16 @@ func (m *mockTrustBoundaryConfigProvider) Reset() {
 	m.universeCallCount = 0
 }
 
-func TestTokenHook(t *testing.T) {
+type mockTokenProvider struct {
+	TokenToReturn *auth.Token
+	ErrorToReturn error
+}
+
+func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	return m.TokenToReturn, m.ErrorToReturn
+}
+
+func TestDataProvider_Token(t *testing.T) {
 	ctx := context.Background()
 
 	type serverResponse struct {
@@ -538,6 +636,7 @@ func TestTokenHook(t *testing.T) {
 		name                  string
 		mockConfig            *mockTrustBoundaryConfigProvider
 		serverResponse        *serverResponse // for fetchTrustBoundaryData
+		baseProvider          *mockTokenProvider
 		wantDataOnToken       *internal.TrustBoundaryData
 		wantErr               string
 		wantUniverseCallCount int
@@ -557,6 +656,9 @@ func TestTokenHook(t *testing.T) {
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: "example.com",
 			},
+			baseProvider: &mockTokenProvider{
+				TokenToReturn: &auth.Token{Value: "base-token"},
+			},
 			wantDataOnToken:       internal.NewNoOpTrustBoundaryData(),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 0,
@@ -565,6 +667,9 @@ func TestTokenHook(t *testing.T) {
 			name: "Default universe, no cache, successful fetch",
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
+			},
+			baseProvider: &mockTokenProvider{
+				TokenToReturn: &auth.Token{Value: "base-token"},
 			},
 			serverResponse: &serverResponse{
 				status: http.StatusOK,
@@ -578,6 +683,9 @@ func TestTokenHook(t *testing.T) {
 			name: "Default universe, fetch fails, no cache, returns error",
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
+			},
+			baseProvider: &mockTokenProvider{
+				TokenToReturn: &auth.Token{Value: "base-token"},
 			},
 			serverResponse: &serverResponse{
 				status: http.StatusInternalServerError,
@@ -593,6 +701,9 @@ func TestTokenHook(t *testing.T) {
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeErrToReturn: errors.New("universe domain error"),
 			},
+			baseProvider: &mockTokenProvider{
+				TokenToReturn: &auth.Token{Value: "base-token"},
+			},
 			wantDataOnToken:       &internal.TrustBoundaryData{},
 			wantErr:               "error getting universe domain",
 			wantUniverseCallCount: 1,
@@ -604,6 +715,9 @@ func TestTokenHook(t *testing.T) {
 				universeToReturn:    internal.DefaultUniverseDomain,
 				endpointErrToReturn: errors.New("endpoint error"),
 			},
+			baseProvider: &mockTokenProvider{
+				TokenToReturn: &auth.Token{Value: "base-token"},
+			},
 			wantDataOnToken:       &internal.TrustBoundaryData{},
 			wantErr:               "error getting the lookup endpoint",
 			wantUniverseCallCount: 1,
@@ -613,6 +727,9 @@ func TestTokenHook(t *testing.T) {
 			name: "Cache fallback on second call",
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
+			},
+			baseProvider: &mockTokenProvider{
+				TokenToReturn: &auth.Token{Value: "base-token"},
 			},
 			serverResponse: &serverResponse{ // First call is successful
 				status: http.StatusOK,
@@ -644,6 +761,9 @@ func TestTokenHook(t *testing.T) {
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: "example.com",
 			},
+			baseProvider: &mockTokenProvider{
+				TokenToReturn: &auth.Token{Value: "base-token"},
+			},
 			wantDataOnToken:       internal.NewNoOpTrustBoundaryData(),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 0,
@@ -664,6 +784,9 @@ func TestTokenHook(t *testing.T) {
 			name: "API-retrieved NoOp is cached",
 			mockConfig: &mockTrustBoundaryConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
+			},
+			baseProvider: &mockTokenProvider{
+				TokenToReturn: &auth.Token{Value: "base-token"},
 			},
 			serverResponse: &serverResponse{ // First call returns NoOp from API
 				status: http.StatusOK,
@@ -708,32 +831,34 @@ func TestTokenHook(t *testing.T) {
 				client = server.Client() // Use the test server's client
 			}
 
-			hook, err := NewTokenHook(client, tt.mockConfig, nil)
+			provider, err := NewProvider(client, tt.mockConfig, nil, tt.baseProvider)
 			if err != nil {
-				t.Fatalf("NewTokenHook() failed: %v", err)
+				t.Fatalf("NewProvider() failed: %v", err)
 			}
 
 			// First run
-			token := &auth.Token{Value: "test-token"}
-			err = hook(ctx, token)
+			token, err := provider.Token(ctx)
 
 			if tt.wantErr != "" {
 				if err == nil {
-					t.Fatalf("hook() error = nil, want %q", tt.wantErr)
+					t.Fatalf("provider.Token() error = nil, want %q", tt.wantErr)
 				}
 				if !strings.Contains(err.Error(), tt.wantErr) {
-					t.Errorf("hook() error = %q, want %q", err.Error(), tt.wantErr)
+					t.Errorf("provider.Token() error = %q, want %q", err.Error(), tt.wantErr)
 				}
 			} else if err != nil {
-				t.Fatalf("hook() unexpected error: %v", err)
-			}
-
-			var gotData internal.TrustBoundaryData
-			if data, ok := token.Metadata[internal.TrustBoundaryDataKey]; ok {
-				gotData, _ = data.(internal.TrustBoundaryData)
-			}
-			if !reflect.DeepEqual(gotData, *tt.wantDataOnToken) {
-				t.Errorf("hook() data on token = %+v, want %+v", gotData, *tt.wantDataOnToken)
+				t.Fatalf("provider.Token() unexpected error: %v", err)
+			} else {
+				if token.Value != tt.baseProvider.TokenToReturn.Value {
+					t.Errorf("provider.Token() value = %q, want %q", token.Value, tt.baseProvider.TokenToReturn.Value)
+				}
+				var gotData internal.TrustBoundaryData
+				if data, ok := token.Metadata[internal.TrustBoundaryDataKey]; ok {
+					gotData, _ = data.(internal.TrustBoundaryData)
+				}
+				if !reflect.DeepEqual(gotData, *tt.wantDataOnToken) {
+					t.Errorf("provider.Token() data on token = %+v, want %+v", gotData, *tt.wantDataOnToken)
+				}
 			}
 
 			if tt.mockConfig.universeCallCount != tt.wantUniverseCallCount {
@@ -757,26 +882,25 @@ func TestTokenHook(t *testing.T) {
 				// Reset mock call counts for the second run
 				tt.mockConfig.Reset()
 
-				secondToken := &auth.Token{Value: "test-token-2"}
-				err = hook(ctx, secondToken)
+				secondToken, err := provider.Token(ctx)
 
 				if tt.secondRun.wantErr != "" {
 					if err == nil {
-						t.Fatalf("hook() second run error = nil, want %q", tt.secondRun.wantErr)
+						t.Fatalf("provider.Token() second run error = nil, want %q", tt.secondRun.wantErr)
 					}
 					if !strings.Contains(err.Error(), tt.secondRun.wantErr) {
-						t.Errorf("hook() second run error = %q, want %q", err.Error(), tt.secondRun.wantErr)
+						t.Errorf("provider.Token() second run error = %q, want %q", err.Error(), tt.secondRun.wantErr)
 					}
 				} else if err != nil {
-					t.Fatalf("hook() second run unexpected error: %v", err)
-				}
-
-				var gotData internal.TrustBoundaryData
-				if data, ok := secondToken.Metadata[internal.TrustBoundaryDataKey]; ok {
-					gotData, _ = data.(internal.TrustBoundaryData)
-				}
-				if !reflect.DeepEqual(gotData, *tt.secondRun.wantDataOnToken) {
-					t.Errorf("hook() second run data on token = %+v, want %+v", gotData, *tt.secondRun.wantDataOnToken)
+					t.Fatalf("provider.Token() second run unexpected error: %v", err)
+				} else {
+					var gotData internal.TrustBoundaryData
+					if data, ok := secondToken.Metadata[internal.TrustBoundaryDataKey]; ok {
+						gotData, _ = data.(internal.TrustBoundaryData)
+					}
+					if !reflect.DeepEqual(gotData, *tt.secondRun.wantDataOnToken) {
+						t.Errorf("provider.Token() second run data on token = %+v, want %+v", gotData, *tt.secondRun.wantDataOnToken)
+					}
 				}
 
 				if tt.mockConfig.universeCallCount != tt.secondRun.wantUniverseCallCount {
