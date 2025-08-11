@@ -221,6 +221,8 @@ func NewProvider(client *http.Client, configProvider ConfigProvider, logger *slo
 	return p, nil
 }
 
+// Token retrieves a token from the base provider and injects it with trust
+// boundary data.
 func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
 	// Get the original token.
 	token, err := p.base.Token(ctx)
