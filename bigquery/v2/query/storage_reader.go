@@ -21,6 +21,7 @@ import (
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"github.com/googleapis/gax-go/v2"
 )
 
 // storageReader is used to read the results of a query using Storage Read API.
@@ -92,7 +93,7 @@ func resolveDestinationTable(ctx context.Context, q *Query) (*bigquerypb.TableRe
 	return qcfg.DestinationTable, nil
 }
 
-func (r *storageReader) start(ctx context.Context, state *readState) (*RowIterator, error) {
+func (r *storageReader) start(ctx context.Context, state *readState, opts []gax.CallOption) (*RowIterator, error) {
 	it := &RowIterator{
 		r: r,
 	}
@@ -128,7 +129,7 @@ func (r *storageReader) sessionForTable(ctx context.Context) (*storagepb.ReadSes
 	return r.rc.CreateReadSession(ctx, req)
 }
 
-func (r *storageReader) nextPage(ctx context.Context, pageToken string) (*resultSet, error) {
+func (r *storageReader) nextPage(ctx context.Context, pageToken string, opts []gax.CallOption) (*resultSet, error) {
 	batch, err := r.it.next()
 	if err != nil {
 		return nil, err

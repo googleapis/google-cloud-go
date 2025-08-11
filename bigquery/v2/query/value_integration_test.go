@@ -57,7 +57,7 @@ func TestReadNestedObject(t *testing.T) {
 						t.Fatalf("expected job to be complete")
 					}
 
-					it, err := q.Read(ctx)
+					it, err := q.Read(ctx, roc.opts...)
 					if err != nil {
 						t.Fatalf("Read() error: %v", err)
 					}
@@ -171,7 +171,7 @@ func TestReadNativeTypes(t *testing.T) {
 						t.Fatalf("Wait() error: %v", err)
 					}
 
-					it, err := q.Read(ctx)
+					it, err := q.Read(ctx, roc.opts...)
 					if err != nil {
 						t.Fatalf("Read() error: %v", err)
 					}

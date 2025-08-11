@@ -17,6 +17,7 @@ package query
 import (
 	"context"
 
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 )
 
@@ -29,12 +30,12 @@ type RowIterator struct {
 }
 
 // Next returns the next row from the results.
-func (it *RowIterator) Next(ctx context.Context) (*Row, error) {
+func (it *RowIterator) Next(ctx context.Context, opts ...gax.CallOption) (*Row, error) {
 	if len(it.rows) > 0 {
 		return it.dequeueRow(), nil
 	}
 
-	err := it.fetchRows(ctx)
+	err := it.fetchRows(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +43,8 @@ func (it *RowIterator) Next(ctx context.Context) (*Row, error) {
 	return it.dequeueRow(), nil
 }
 
-func (it *RowIterator) fetchRows(ctx context.Context) error {
-	res, err := it.r.nextPage(ctx, it.pageToken)
+func (it *RowIterator) fetchRows(ctx context.Context, opts []gax.CallOption) error {
+	res, err := it.r.nextPage(ctx, it.pageToken, opts)
 	if err != nil {
 		return err
 	}

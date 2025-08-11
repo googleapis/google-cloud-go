@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -78,13 +79,13 @@ func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, err
 		opt(state)
 	}
 	r := newReaderFromQuery(ctx, q.c, q, state)
-	return r.start(ctx, state)
+	return r.start(ctx, state, []gax.CallOption{})
 }
 
 // Wait waits for the query to complete.
-func (q *Query) Wait(ctx context.Context) error {
+func (q *Query) Wait(ctx context.Context, opts ...gax.CallOption) error {
 	for !q.complete {
-		err := q.waitForQuery(ctx)
+		err := q.waitForQuery(ctx, opts)
 		if err != nil {
 			return err
 		}
@@ -97,7 +98,7 @@ func (q *Query) Wait(ctx context.Context) error {
 	return nil
 }
 
-func (q *Query) waitForQuery(ctx context.Context) error {
+func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
 	res, err := q.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
 		ProjectId:  q.projectID,
 		JobId:      q.jobID,
@@ -106,7 +107,7 @@ func (q *Query) waitForQuery(ctx context.Context) error {
 		FormatOptions: &bigquerypb.DataFormatOptions{
 			UseInt64Timestamp: true,
 		},
-	})
+	}, opts...)
 	if err != nil {
 		return err
 	}

@@ -60,7 +60,7 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 	if req.QueryRequest.JobCreationMode == bigquerypb.QueryRequest_JOB_CREATION_MODE_UNSPECIFIED {
 		req.QueryRequest.JobCreationMode = c.defaultJobCreationMode
 	}
-	res, err := c.c.Query(ctx, req)
+	res, err := c.c.Query(ctx, req, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run query: %w", err)
 	}
@@ -73,7 +73,7 @@ func (c *Client) StartQueryRequest(ctx context.Context, req *bigquerypb.QueryReq
 	return c.StartQuery(ctx, &bigquerypb.PostQueryRequest{
 		QueryRequest: req,
 		ProjectId:    c.billingProjectID,
-	})
+	}, opts...)
 }
 
 // StartQueryJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
@@ -85,7 +85,7 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	job, err := c.c.InsertJob(ctx, &bigquerypb.InsertJobRequest{
 		ProjectId: c.billingProjectID,
 		Job:       job,
-	})
+	}, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert query: %w", err)
 	}

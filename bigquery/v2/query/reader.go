@@ -18,15 +18,16 @@ import (
 	"context"
 
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 )
 
 type sourceReader interface {
 	// start do all set up and make sure data can be read.
-	start(ctx context.Context, state *readState) (*RowIterator, error)
+	start(ctx context.Context, state *readState, opts []gax.CallOption) (*RowIterator, error)
 	// nextPage fetchs new page of results. Can return iterator.Done if there is
 	// no more pages to be fetched.
-	nextPage(ctx context.Context, pageToken string) (*resultSet, error)
+	nextPage(ctx context.Context, pageToken string, opts []gax.CallOption) (*resultSet, error)
 }
 
 type resultSet struct {
@@ -68,7 +69,7 @@ func newJobsReader(c *Client, q *Query) *jobsReader {
 	return r
 }
 
-func (r *jobsReader) start(ctx context.Context, state *readState) (*RowIterator, error) {
+func (r *jobsReader) start(ctx context.Context, state *readState, opts []gax.CallOption) (*RowIterator, error) {
 	it := &RowIterator{
 		r:         r,
 		rows:      r.q.cachedRows,
@@ -80,14 +81,14 @@ func (r *jobsReader) start(ctx context.Context, state *readState) (*RowIterator,
 		return it, nil
 	}
 
-	err := it.fetchRows(ctx)
+	err := it.fetchRows(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
 	return it, nil
 }
 
-func (r *jobsReader) nextPage(ctx context.Context, pageToken string) (*resultSet, error) {
+func (r *jobsReader) nextPage(ctx context.Context, pageToken string, opts []gax.CallOption) (*resultSet, error) {
 	if pageToken == "" && r.gotFirstPage {
 		return nil, iterator.Done
 	}
