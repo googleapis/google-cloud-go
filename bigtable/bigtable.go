@@ -136,7 +136,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if useDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH")); useDirectAccess {
 		enableDirectAccess = true
 		o = append(o, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
-		o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	}
 
 	// Allow non-default service account in DirectPath.
