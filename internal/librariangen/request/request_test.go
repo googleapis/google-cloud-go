@@ -40,7 +40,7 @@ func TestParse(t *testing.T) {
 						"service_config": "cloudasset_v1.yaml"
 					}
 				],
-				"source_paths": ["asset/apiv1"],
+				"source_roots": ["asset/apiv1"],
 				"preserve_regex": ["asset/apiv1/foo.go"],
 				"remove_regex": ["asset/apiv1/bar.go"]
 			}`,

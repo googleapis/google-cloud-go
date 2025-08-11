@@ -21,7 +21,7 @@ libraries:
       - path: "google/cloud/secretmanager/v1beta2"
         service_config: "secretmanager_v1beta2.yaml"
     # Directories to which librarian contributes code to.
-    source_paths:
+    source_roots:
       - "secretmanager"
       - "internal/generated/snippets/secretmanager"
     # Directories files in the local repo to leave untouched during copy and remove.
