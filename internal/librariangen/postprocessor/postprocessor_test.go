@@ -73,7 +73,7 @@ func TestPostProcess(t *testing.T) {
 			wantErr:             false,
 		},
 		{
-			name:      "goimports fails (non-fatal)",
+			name:      "goimports fails (fatal)",
 			newModule: false,
 			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				if args[0] == "goimports" {
@@ -81,14 +81,9 @@ func TestPostProcess(t *testing.T) {
 				}
 				return nil
 			},
-			wantFilesCreated: []string{
-				"README.md",
-				"apiv1/version.go",
-				"apiv2/version.go",
-			},
 			wantGoModInitCalled: true,
-			wantGoModTidyCalled: true,
-			wantErr:             false, // goimports error is logged but not returned
+			wantGoModTidyCalled: false,
+			wantErr:             true,
 		},
 		{
 			name:      "go mod init fails (fatal)",
@@ -134,14 +129,14 @@ func TestPostProcess(t *testing.T) {
 			}
 
 			req := &request.Request{
-				ID: "google-cloud-chronicle",
+				ID: "chronicle",
 				APIs: []request.API{
 					{Path: "google/cloud/chronicle/v1"},
 					{Path: "google/cloud/chronicle/v2"},
 				},
 			}
 
-			if err := PostProcess(context.Background(), req, tmpDir, tt.newModule); (err != nil) != tt.wantErr {
+			if err := PostProcess(context.Background(), req, tmpDir, tt.newModule, "Chronicle API"); (err != nil) != tt.wantErr {
 				t.Fatalf("PostProcess() error = %v, wantErr %v", err, tt.wantErr)
 			}
 

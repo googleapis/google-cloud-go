@@ -42,7 +42,7 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 	// Gather all .proto files in the API's source directory.
 	entries, err := os.ReadDir(apiServiceDir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read API source directory %s: %w", apiServiceDir, err)
+		return nil, fmt.Errorf("librariangen: failed to read API source directory %s: %w", apiServiceDir, err)
 	}
 
 	var protoFiles []string
@@ -53,7 +53,7 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 	}
 
 	if len(protoFiles) == 0 {
-		return nil, fmt.Errorf("no .proto files found in %s", apiServiceDir)
+		return nil, fmt.Errorf("librariangen: no .proto files found in %s", apiServiceDir)
 	}
 
 	// Construct the protoc command arguments.

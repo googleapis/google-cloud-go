@@ -29,23 +29,23 @@ func Run(ctx context.Context, args []string, outputDir string) error {
 	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
 	cmd.Env = os.Environ()
 	cmd.Dir = outputDir // Run commands from the output directory.
-	slog.Debug("running command", "command", strings.Join(cmd.Args, " "), "dir", cmd.Dir)
+	slog.Debug("librariangen: running command", "command", strings.Join(cmd.Args, " "), "dir", cmd.Dir)
 
 	output, err := cmd.Output()
 	if len(output) > 0 {
-		slog.Debug("command stdout", "output", string(output))
+		slog.Debug("librariangen: command stdout", "output", string(output))
 	}
 	if err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
 			// The command ran and exited with a non-zero exit code.
 			if len(exitErr.Stderr) > 0 {
-				slog.Debug("command stderr", "output", string(exitErr.Stderr))
+				slog.Debug("librariangen: command stderr", "output", string(exitErr.Stderr))
 			}
-			return fmt.Errorf("command failed with exit error: %s: %w", exitErr.Stderr, err)
+			return fmt.Errorf("librariangen: command failed with exit error: %s: %w", exitErr.Stderr, err)
 		}
 		// Another error occurred (e.g., command not found).
-		return fmt.Errorf("command failed: %w", err)
+		return fmt.Errorf("librariangen: command failed: %w", err)
 	}
 	return nil
 }

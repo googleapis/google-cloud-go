@@ -684,6 +684,15 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 				span.SetStatus(otcodes.Ok, "Stream finished successfully")
 				span.End()
 			}
+			if d.cancel != nil {
+				// Remove the cancel function to prevent iter.Stop from also calling it.
+				cancel := d.cancel
+				d.cancel = nil
+				go func() {
+					_, _ = d.stream.Recv()
+					cancel()
+				}()
+			}
 			d.changeState(finished)
 			return
 		}

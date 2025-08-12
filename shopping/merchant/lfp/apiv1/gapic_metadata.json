@@ -1,0 +1,135 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.lfp.v1",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+  "services": {
+    "LfpInventoryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LfpInventoryClient",
+          "rpcs": {
+            "InsertLfpInventory": {
+              "methods": [
+                "InsertLfpInventory"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LfpInventoryClient",
+          "rpcs": {
+            "InsertLfpInventory": {
+              "methods": [
+                "InsertLfpInventory"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LfpMerchantStateService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LfpMerchantStateClient",
+          "rpcs": {
+            "GetLfpMerchantState": {
+              "methods": [
+                "GetLfpMerchantState"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LfpMerchantStateClient",
+          "rpcs": {
+            "GetLfpMerchantState": {
+              "methods": [
+                "GetLfpMerchantState"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LfpSaleService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LfpSaleClient",
+          "rpcs": {
+            "InsertLfpSale": {
+              "methods": [
+                "InsertLfpSale"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LfpSaleClient",
+          "rpcs": {
+            "InsertLfpSale": {
+              "methods": [
+                "InsertLfpSale"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LfpStoreService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LfpStoreClient",
+          "rpcs": {
+            "DeleteLfpStore": {
+              "methods": [
+                "DeleteLfpStore"
+              ]
+            },
+            "GetLfpStore": {
+              "methods": [
+                "GetLfpStore"
+              ]
+            },
+            "InsertLfpStore": {
+              "methods": [
+                "InsertLfpStore"
+              ]
+            },
+            "ListLfpStores": {
+              "methods": [
+                "ListLfpStores"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LfpStoreClient",
+          "rpcs": {
+            "DeleteLfpStore": {
+              "methods": [
+                "DeleteLfpStore"
+              ]
+            },
+            "GetLfpStore": {
+              "methods": [
+                "GetLfpStore"
+              ]
+            },
+            "InsertLfpStore": {
+              "methods": [
+                "InsertLfpStore"
+              ]
+            },
+            "ListLfpStores": {
+              "methods": [
+                "ListLfpStores"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

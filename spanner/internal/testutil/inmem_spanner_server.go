@@ -410,6 +410,7 @@ func (s *inMemSpannerServer) SetError(err error) {
 func (s *inMemSpannerServer) PutStatementResult(sql string, result *StatementResult) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	result.SetLastFlag = true
 	s.statementResults[sql] = result
 	return nil
 }

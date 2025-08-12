@@ -404,18 +404,26 @@ deep-remove-regex:
   - /internal/generated/snippets/serviceusage/apiv1/
   - /internal/generated/snippets/shell/apiv1/
   - /internal/generated/snippets/shopping/css/apiv1/
-  - /internal/generated/snippets/shopping/merchant/accounts/v1beta/
-  - /internal/generated/snippets/shopping/merchant/conversions/v1beta/
-  - /internal/generated/snippets/shopping/merchant/datasources/v1beta/
-  - /internal/generated/snippets/shopping/merchant/notifications/v1beta/
-  - /internal/generated/snippets/shopping/merchant/ordertracking/v1beta/
-  - /internal/generated/snippets/shopping/merchant/products/v1beta/
-  - /internal/generated/snippets/shopping/merchant/promotions/v1beta/
+  - /internal/generated/snippets/shopping/merchant/accounts/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/conversions/apiv1/
+  - /internal/generated/snippets/shopping/merchant/conversions/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/datasources/apiv1/
+  - /internal/generated/snippets/shopping/merchant/datasources/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/notifications/apiv1/
+  - /internal/generated/snippets/shopping/merchant/notifications/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/ordertracking/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/products/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/productstudio/apiv1alpha/
+  - /internal/generated/snippets/shopping/merchant/promotions/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/quota/apiv1/
   - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/inventories/apiv1/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/issueresolution/apiv1/
   - /internal/generated/snippets/shopping/merchant/issueresolution/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reviews/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/lfp/apiv1/
   - /internal/generated/snippets/shopping/merchant/lfp/apiv1beta/
   - /internal/generated/snippets/spanner/adapter/apiv1/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
@@ -569,15 +577,23 @@ deep-remove-regex:
   - /shell/apiv1/
   - /shopping/css/apiv1/
   - /shopping/merchant/accounts/apiv1beta/
+  - /shopping/merchant/conversions/apiv1/
   - /shopping/merchant/conversions/apiv1beta/
+  - /shopping/merchant/datasources/apiv1/
   - /shopping/merchant/datasources/apiv1beta/
+  - /shopping/merchant/notifications/apiv1/
   - /shopping/merchant/notifications/apiv1beta/
   - /shopping/merchant/ordertracking/apiv1beta/
   - /shopping/merchant/products/apiv1beta/
+  - /shopping/merchant/productstudio/apiv1alpha/
   - /shopping/merchant/promotions/apiv1beta/
+  - /shopping/merchant/quota/apiv1/
   - /shopping/merchant/quota/apiv1beta/
+  - /shopping/merchant/inventories/apiv1/
   - /shopping/merchant/inventories/apiv1beta/
+  - /shopping/merchant/issueresolution/apiv1/
   - /shopping/merchant/issueresolution/apiv1beta/
+  - /shopping/merchant/lfp/apiv1/
   - /shopping/merchant/lfp/apiv1beta/
   - /shopping/merchant/reports/apiv1beta/
   - /shopping/merchant/reviews/apiv1beta/
@@ -1197,9 +1213,15 @@ deep-copy-regex:
     dest: /
   - source: /google/shopping/merchant/accounts/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/conversions/v1/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/conversions/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/datasources/v1/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/datasources/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/notifications/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/notifications/v1beta/cloud.google.com/go
     dest: /
@@ -1207,13 +1229,23 @@ deep-copy-regex:
     dest: /
   - source: /google/shopping/merchant/products/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/productstudio/v1alpha/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/promotions/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/quota/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/quota/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/inventories/v1/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/issueresolution/v1/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/issueresolution/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/lfp/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
     dest: /
