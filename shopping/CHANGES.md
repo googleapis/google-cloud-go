@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.25.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.24.1...shopping/v0.25.0) (2025-08-12)
+
+
+### Features
+
+* **shopping:** New clients ([#12670](https://github.com/googleapis/google-cloud-go/issues/12670)) ([ac135f5](https://github.com/googleapis/google-cloud-go/commit/ac135f52dc54b78875ff090a0a3ee4f0ba4fae50))
+
 ## [0.24.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.24.0...shopping/v0.24.1) (2025-07-31)
 
 
@@ -580,4 +587,3 @@
 * **shopping:** New clients ([#8699](https://github.com/googleapis/google-cloud-go/issues/8699)) ([0e43b40](https://github.com/googleapis/google-cloud-go/commit/0e43b40184bacac8d355ea2cfd00ebe58bd9e30b))
 
 ## Changes
-
