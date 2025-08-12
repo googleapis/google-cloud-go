@@ -1297,8 +1297,8 @@ type InstanceConf struct {
 	// with the default being 1X.
 	NodeScalingFactor NodeScalingFactor
 
-	// Tags are key value pairs associated with the instance. Keys are in the
-	// format tagKeys/123 and values are in the format tagValues/456.
+	// Tags maps TagKey resource names (e.g., "tagKeys/123") to TagValue
+	// resource names (e.g., "tagValues/456") to be associated with the instance.
 	Tags map[string]string
 }
 
@@ -1308,8 +1308,8 @@ type InstanceWithClustersConfig struct {
 	Clusters                []ClusterConfig
 	InstanceType            InstanceType
 	Labels                  map[string]string
-	// Tags are key value pairs associated with the instance. Keys are in the
-	// format tagKeys/123 and values are in the format tagValues/456.
+	// Tags maps TagKey resource names (e.g., "tagKeys/123") to TagValue
+	// resource names (e.g., "tagValues/456") to be associated with the instance.
 	Tags map[string]string
 }
 
