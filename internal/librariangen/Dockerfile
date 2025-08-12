@@ -18,11 +18,7 @@
 
 # --- Builder Stage ---
 # This stage builds the librariangen binary using the MOSS-compliant base image.
-# TODO(quartzmo): For production builds, this must be switched back to the MOSS-compliant
-# base image.
-# See https://github.com/googleapis/librarian/issues/1019.
-# FROM marketplace.gcr.io/google/debian12:latest as builder
-FROM debian:12-slim as builder
+FROM marketplace.gcr.io/google/debian12:latest as builder
 
 # Set environment variables for tool versions for easy updates.
 ENV GO_VERSION=1.23.0
@@ -47,21 +43,18 @@ WORKDIR /src
 # Copy all source code.
 COPY . .
 
+RUN go version
+
 # Build the librariangen binary.
-RUN CGO_ENABLED=0 go build -o /librariangen .
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /librariangen .
 
 
 # --- Final Stage ---
 # This stage creates the final, minimal image with the compiled binary and
 # all required runtime dependencies pinned to specific versions for compatibility.
-# TODO(quartzmo): For production builds, this must be switched back to the MOSS-compliant
-# base image.
-# See https://github.com/googleapis/librarian/issues/1019.
-# FROM marketplace.gcr.io/google/debian12:latest
-FROM debian:12-slim
+FROM marketplace.gcr.io/google/debian12:latest
 
 # Set environment variables for tool versions for easy updates.
-ENV GO_VERSION=1.23.0
 ENV PROTOC_VERSION=25.7
 ENV GO_PROTOC_PLUGIN_VERSION=1.35.2
 ENV GO_GRPC_PLUGIN_VERSION=1.3.0
@@ -95,11 +88,12 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC
     protoc --version
 
 # Install required Go tools for protoc and the post-processor.
-RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GO_PROTOC_PLUGIN_VERSION} && \
+RUN (export GOTOOLCHAIN='auto' && \
+    go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GO_PROTOC_PLUGIN_VERSION} && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v${GO_GRPC_PLUGIN_VERSION} && \
     go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v${GAPIC_GENERATOR_VERSION} && \
     go install golang.org/x/tools/cmd/goimports@latest && \
-    go install honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION}
+    go install honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION})
 
 # Copy the compiled librariangen binary from the builder stage.
 COPY --from=builder /librariangen /usr/local/bin/librariangen
