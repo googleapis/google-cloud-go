@@ -154,6 +154,9 @@ func ShouldRetry(err error) bool {
 	if errors.Is(err, net.ErrClosed) {
 		return true
 	}
+	if errors.Is(err, bidiReadObjectRedirectionError{}) {
+		return true
+	}
 
 	switch e := err.(type) {
 	case *googleapi.Error:

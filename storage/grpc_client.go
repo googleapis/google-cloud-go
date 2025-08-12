@@ -1590,6 +1590,12 @@ type mrdRange struct {
 	callback            func(int64, int64, error)
 }
 
+type bidiReadObjectRedirectionError struct{}
+
+func (e bidiReadObjectRedirectionError) Error() string {
+	return "storage: BidiReadObject redirect"
+}
+
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
 	// If bidi reads was not selected, use the legacy read object API.
 	if !c.config.grpcBidiReads {
@@ -1628,7 +1634,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	req := &storagepb.BidiReadObjectRequest{
 		ReadObjectSpec: spec,
 	}
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
 
 	// Define a function that initiates a Read with offset and length, assuming
 	// we have already read seen bytes.
@@ -1660,6 +1665,9 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		var decoder *readResponseDecoder
 
 		err = run(cc, func(ctx context.Context) error {
+			// Insert context metadata, including routing token if this is a retry
+			// for a redirect.
+			ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
 			stream, err = c.raw.BidiReadObject(ctx, s.gax...)
 			if err != nil {
 				return err
@@ -1676,12 +1684,26 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			// use a custom decoder to avoid an extra copy at the protobuf layer.
 			databufs := mem.BufferSlice{}
 			err := stream.RecvMsg(&databufs)
+
+			// We might get a redirect error here for an out-of-region request. Retry this
+			// and add the routing token and read handle to the request.
+			if st, ok := status.FromError(err); ok && st.Code() == codes.Aborted {
+				for _, d := range st.Details() {
+					if e, ok := d.(*storagepb.BidiReadObjectRedirectedError); ok {
+						err = bidiReadObjectRedirectionError{}
+						req.ReadObjectSpec.ReadHandle = e.GetReadHandle()
+						req.ReadObjectSpec.RoutingToken = e.RoutingToken
+					}
+				}
+			}
+
 			// These types of errors show up on the RecvMsg call, rather than the
 			// initialization of the stream via BidiReadObject above.
 			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
-				return formatObjectErr(err)
+				err = formatObjectErr(err)
 			}
 			if err != nil {
+				databufs.Free()
 				return err
 			}
 			// Use a custom decoder that uses protobuf unmarshalling for all
