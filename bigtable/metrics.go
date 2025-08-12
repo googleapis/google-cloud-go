@@ -110,8 +110,10 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
-		metricNameAppBlockingLatencies:    {},
-		metricNameClientBlockingLatencies: {},
+		metricNameAppBlockingLatencies: {},
+		metricNameClientBlockingLatencies: {
+			recordedPerAttempt: true,
+		},
 		metricNameRetryCount: {
 			additionalAttrs: []string{
 				metricLabelKeyStatus,
@@ -288,7 +290,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	// Create client_blocking_latencies
 	tf.clientBlockingLatencies, err = meter.Float64Histogram(
 		metricNameClientBlockingLatencies,
-		metric.WithDescription("The time between when a stream is created and when the message is actually sent."),
+		metric.WithDescription("The artificial latency introduced by the client to limit the number of outstanding requests. The publishing of the measurement will be delayed until the attempt trailers have been received."),
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
