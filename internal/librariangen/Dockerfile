@@ -37,13 +37,17 @@ RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 ENV PATH /usr/local/go/bin:$PATH
+RUN go version
 
 WORKDIR /src
 
+# Copy go.mod and go.sum to download dependencies before copying all the source.
+# This allows Docker to cache the dependencies layer.
+COPY go.mod go.sum ./
+RUN go mod download
+
 # Copy all source code.
 COPY . .
-
-RUN go version
 
 # Build the librariangen binary.
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o /librariangen .
@@ -55,6 +59,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -v -o /librariangen .
 FROM marketplace.gcr.io/google/debian12:latest
 
 # Set environment variables for tool versions for easy updates.
+ENV GO_VERSION=1.23.0
 ENV PROTOC_VERSION=25.7
 ENV GO_PROTOC_PLUGIN_VERSION=1.35.2
 ENV GO_GRPC_PLUGIN_VERSION=1.3.0
@@ -77,6 +82,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install the specific Go version required for compatibility.
+# Note: This is needed for the go install commands below.
 RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
