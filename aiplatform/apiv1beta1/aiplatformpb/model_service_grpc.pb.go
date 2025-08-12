@@ -53,6 +53,7 @@ const (
 	ModelService_ListModelEvaluations_FullMethodName             = "/google.cloud.aiplatform.v1beta1.ModelService/ListModelEvaluations"
 	ModelService_GetModelEvaluationSlice_FullMethodName          = "/google.cloud.aiplatform.v1beta1.ModelService/GetModelEvaluationSlice"
 	ModelService_ListModelEvaluationSlices_FullMethodName        = "/google.cloud.aiplatform.v1beta1.ModelService/ListModelEvaluationSlices"
+	ModelService_RecommendSpec_FullMethodName                    = "/google.cloud.aiplatform.v1beta1.ModelService/RecommendSpec"
 )
 
 // ModelServiceClient is the client API for ModelService service.
@@ -118,6 +119,8 @@ type ModelServiceClient interface {
 	GetModelEvaluationSlice(ctx context.Context, in *GetModelEvaluationSliceRequest, opts ...grpc.CallOption) (*ModelEvaluationSlice, error)
 	// Lists ModelEvaluationSlices in a ModelEvaluation.
 	ListModelEvaluationSlices(ctx context.Context, in *ListModelEvaluationSlicesRequest, opts ...grpc.CallOption) (*ListModelEvaluationSlicesResponse, error)
+	// Gets a Model's spec recommendations.
+	RecommendSpec(ctx context.Context, in *RecommendSpecRequest, opts ...grpc.CallOption) (*RecommendSpecResponse, error)
 }
 
 type modelServiceClient struct {
@@ -299,6 +302,15 @@ func (c *modelServiceClient) ListModelEvaluationSlices(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *modelServiceClient) RecommendSpec(ctx context.Context, in *RecommendSpecRequest, opts ...grpc.CallOption) (*RecommendSpecResponse, error) {
+	out := new(RecommendSpecResponse)
+	err := c.cc.Invoke(ctx, ModelService_RecommendSpec_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ModelServiceServer is the server API for ModelService service.
 // All implementations should embed UnimplementedModelServiceServer
 // for forward compatibility
@@ -362,6 +374,8 @@ type ModelServiceServer interface {
 	GetModelEvaluationSlice(context.Context, *GetModelEvaluationSliceRequest) (*ModelEvaluationSlice, error)
 	// Lists ModelEvaluationSlices in a ModelEvaluation.
 	ListModelEvaluationSlices(context.Context, *ListModelEvaluationSlicesRequest) (*ListModelEvaluationSlicesResponse, error)
+	// Gets a Model's spec recommendations.
+	RecommendSpec(context.Context, *RecommendSpecRequest) (*RecommendSpecResponse, error)
 }
 
 // UnimplementedModelServiceServer should be embedded to have forward compatible implementations.
@@ -424,6 +438,9 @@ func (UnimplementedModelServiceServer) GetModelEvaluationSlice(context.Context, 
 }
 func (UnimplementedModelServiceServer) ListModelEvaluationSlices(context.Context, *ListModelEvaluationSlicesRequest) (*ListModelEvaluationSlicesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListModelEvaluationSlices not implemented")
+}
+func (UnimplementedModelServiceServer) RecommendSpec(context.Context, *RecommendSpecRequest) (*RecommendSpecResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecommendSpec not implemented")
 }
 
 // UnsafeModelServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -779,6 +796,24 @@ func _ModelService_ListModelEvaluationSlices_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ModelService_RecommendSpec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecommendSpecRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ModelServiceServer).RecommendSpec(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ModelService_RecommendSpec_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ModelServiceServer).RecommendSpec(ctx, req.(*RecommendSpecRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ModelService_ServiceDesc is the grpc.ServiceDesc for ModelService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -861,6 +896,10 @@ var ModelService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListModelEvaluationSlices",
 			Handler:    _ModelService_ListModelEvaluationSlices_Handler,
+		},
+		{
+			MethodName: "RecommendSpec",
+			Handler:    _ModelService_RecommendSpec_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
