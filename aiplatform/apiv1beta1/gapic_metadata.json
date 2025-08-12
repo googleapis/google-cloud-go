@@ -5251,6 +5251,11 @@
                 "MergeVersionAliases"
               ]
             },
+            "RecommendSpec": {
+              "methods": [
+                "RecommendSpec"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -5399,6 +5404,11 @@
             "MergeVersionAliases": {
               "methods": [
                 "MergeVersionAliases"
+              ]
+            },
+            "RecommendSpec": {
+              "methods": [
+                "RecommendSpec"
               ]
             },
             "SetIamPolicy": {
