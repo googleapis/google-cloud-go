@@ -1296,6 +1296,10 @@ type InstanceConf struct {
 	// latency and more throughput by removing node boundaries. It is optional,
 	// with the default being 1X.
 	NodeScalingFactor NodeScalingFactor
+
+	// Tags are key value pairs associated with the instance. Keys are in the
+	// format tagKeys/123 and values are in the format tagValues/456.
+	Tags map[string]string
 }
 
 // InstanceWithClustersConfig contains the information necessary to create an Instance
@@ -1304,6 +1308,9 @@ type InstanceWithClustersConfig struct {
 	Clusters                []ClusterConfig
 	InstanceType            InstanceType
 	Labels                  map[string]string
+	// Tags are key value pairs associated with the instance. Keys are in the
+	// format tagKeys/123 and values are in the format tagValues/456.
+	Tags map[string]string
 }
 
 var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][-a-z0-9]*)$`)
@@ -1317,6 +1324,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 		DisplayName:  conf.DisplayName,
 		InstanceType: conf.InstanceType,
 		Labels:       conf.Labels,
+		Tags:         conf.Tags,
 		Clusters: []ClusterConfig{
 			{
 				InstanceID:        conf.InstanceId,
@@ -1348,6 +1356,7 @@ func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, 
 			DisplayName: conf.DisplayName,
 			Type:        btapb.Instance_Type(conf.InstanceType),
 			Labels:      conf.Labels,
+			Tags:        conf.Tags,
 		},
 		Clusters: clusters,
 	}

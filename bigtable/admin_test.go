@@ -1099,6 +1099,27 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 	}
 }
 
+// Test that CreateInstance with a tags argument completes without error.
+// We cannot verify tag creation itself, as tags are not stored in the Instance metadata
+// and thus are not observable here.
+func TestInstanceAdmin_CreateInstance_WithTags(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+
+	err := c.CreateInstance(context.Background(), &InstanceConf{
+		InstanceId:   "myinst",
+		DisplayName:  "myinst",
+		InstanceType: PRODUCTION,
+		ClusterId:    "mycluster",
+		Zone:         "us-central1-a",
+		StorageType:  SSD,
+		Tags:         map[string]string{"tagValues/123": "tagKeys/456"},
+	})
+	if err != nil {
+		t.Fatalf("CreateInstance failed: %v", err)
+	}
+}
+
 func TestInstanceAdmin_CreateInstanceWithClusters_WithAutoscaling(t *testing.T) {
 	mock := &mockAdminClock{}
 	c := setupClient(t, mock)
