@@ -17,10 +17,19 @@
 
 timeout: 7200s # 2 hours
 steps:
+  # Attempt to pull the latest image to use as a cache source.
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: 'bash'
+    args:
+      - -c
+      - |
+        docker pull gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest || exit 0
   - name: gcr.io/cloud-builders/docker
     args:
       [
         "build",
+        "--cache-from",
+        "gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest",
         "-t",
         "gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-$COMMIT_SHA",
         "-f",
@@ -29,7 +38,7 @@ steps:
       ]
     dir: internal/librariangen
   - name:  gcr.io/cloud-builders/docker
-    args: 
+    args:
       [
         "tag",
         "gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-$COMMIT_SHA",
@@ -41,3 +50,4 @@ options:
 images:
   - gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-$COMMIT_SHA
   - gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest
+

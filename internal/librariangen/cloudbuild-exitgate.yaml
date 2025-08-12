@@ -17,10 +17,19 @@
 
 timeout: 7200s # 2 hours
 steps:
+  # Attempt to pull the latest image to use as a cache source.
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: 'bash'
+    args:
+      - -c
+      - |
+        docker pull us-central1-docker.pkg.dev/cloud-sdk-production-pipeline/images-dev/librarian-go:infrastructure-public-image-latest || exit 0
   - name: gcr.io/cloud-builders/docker
     args:
       [
         "build",
+        "--cache-from",
+        "us-central1-docker.pkg.dev/cloud-sdk-production-pipeline/images-dev/librarian-go:infrastructure-public-image-latest",
         "-t",
         "us-central1-docker.pkg.dev/cloud-sdk-production-pipeline/images-dev/librarian-go:infrastructure-public-image-$COMMIT_SHA",
         "-f",
@@ -29,10 +38,11 @@ steps:
       ]
     dir: internal/librariangen
   - name:  gcr.io/cloud-builders/docker
-    args: 
+    args:
       [
         "tag",
         "us-central1-docker.pkg.dev/cloud-sdk-production-pipeline/images-dev/librarian-go:infrastructure-public-image-$COMMIT_SHA",
+        "us-central1-docker.pkg.dev/cloud-sdk-production-pipeline/images-dev/librarian-go:infrastructure-public-image-latest",
       ]
 options:
     machineType: 'E2_HIGHCPU_8'
@@ -40,3 +50,5 @@ options:
 
 images:
   - us-central1-docker.pkg.dev/cloud-sdk-production-pipeline/images-dev/librarian-go:infrastructure-public-image-$COMMIT_SHA
+  - us-central1-docker.pkg.dev/cloud-sdk-production-pipeline/images-dev/librarian-go:infrastructure-public-image-latest
+
