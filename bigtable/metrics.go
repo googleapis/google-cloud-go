@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -30,6 +31,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/stats"
 )
 
 const (
@@ -70,6 +72,12 @@ const (
 	metricUnitMS    = "ms"
 	metricUnitCount = "1"
 	maxAttrsLen     = 12 // Monitored resource labels +  Metric labels
+)
+
+type contextKey string
+
+const (
+	statsContextKey contextKey = "bigtable/clientBlockingLatencyTracker"
 )
 
 // These are effectively constant, but for testing purposes they are mutable
@@ -152,6 +160,8 @@ var (
 		}
 		return filteredOptions
 	}
+
+	sharedLatencyStatsHandler = &latencyStatsHandler{}
 )
 
 type metricInfo struct {
@@ -314,6 +324,9 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Create debug_tags
 	tf.debugTags, err = meter.Int64Counter(
@@ -323,8 +336,6 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	)
 	return err
 }
-
-type builtinMetricsTracerKey struct{}
 
 // builtinMetricsTracer is created one per operation
 // It is used to store metric instruments, attribute values
@@ -390,10 +401,6 @@ func (o *opTracer) incrementAppBlockingLatency(latency float64) {
 	o.appBlockingLatency += latency
 }
 
-func (o *opTracer) incrementClientBlockingLatency(latency float64) {
-	o.clientBlockingLatency += latency
-}
-
 // attemptTracer is used to record metrics for each individual attempt of the operation.
 // Attempt corresponds to an attempt of an RPC.
 type attemptTracer struct {
@@ -409,6 +416,9 @@ type attemptTracer struct {
 
 	// Error seen while getting server latency from headers
 	serverLatencyErr error
+
+	// Tracker for client blocking latency
+	blockingLatencyTracker *blockingLatencyTracker
 }
 
 func (a *attemptTracer) setStartTime(t time.Time) {
@@ -510,3 +520,61 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.
 	attrSet := attribute.NewSet(attrKeyValues...)
 	return attrSet, nil
 }
+
+// blockingLatencyTracker is used to calculate the time between stream creation and the first message send.
+type blockingLatencyTracker struct {
+	sync.Mutex
+	begin   time.Time
+	latency time.Duration
+}
+
+func (t *blockingLatencyTracker) setBegin(begin time.Time) {
+	t.Lock()
+	defer t.Unlock()
+	t.begin = begin
+}
+
+func (t *blockingLatencyTracker) recordLatency(end time.Time) {
+	t.Lock()
+	defer t.Unlock()
+	// Only record the first time.
+	if t.latency == 0 && !t.begin.IsZero() {
+		t.latency = end.Sub(t.begin)
+	}
+}
+
+func (t *blockingLatencyTracker) getLatency() time.Duration {
+	t.Lock()
+	defer t.Unlock()
+	return t.latency
+}
+
+// latencyStatsHandler is a gRPC stats.Handler to measure client blocking latency.
+type latencyStatsHandler struct{}
+
+var _ stats.Handler = (*latencyStatsHandler)(nil)
+
+func (h *latencyStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
+	// The tracker should already be in the context, added by gaxInvokeWithRecorder.
+	return ctx
+}
+
+func (h *latencyStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	tracker, ok := ctx.Value(statsContextKey).(*blockingLatencyTracker)
+	if !ok {
+		return
+	}
+
+	switch st := s.(type) {
+	case *stats.Begin:
+		tracker.setBegin(st.BeginTime)
+	case *stats.OutPayload:
+		tracker.recordLatency(time.Now())
+	}
+}
+
+func (h *latencyStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
+	return ctx
+}
+
+func (h *latencyStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
