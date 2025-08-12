@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -30,6 +31,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/stats"
 )
 
 const (
@@ -57,18 +59,25 @@ const (
 	metricLabelKeyClientUID          = "client_uid"
 
 	// Metric names
-	metricNameOperationLatencies   = "operation_latencies"
-	metricNameAttemptLatencies     = "attempt_latencies"
-	metricNameServerLatencies      = "server_latencies"
-	metricNameAppBlockingLatencies = "application_latencies"
-	metricNameRetryCount           = "retry_count"
-	metricNameDebugTags            = "debug_tags"
-	metricNameConnErrCount         = "connectivity_error_count"
+	metricNameOperationLatencies      = "operation_latencies"
+	metricNameAttemptLatencies        = "attempt_latencies"
+	metricNameServerLatencies         = "server_latencies"
+	metricNameAppBlockingLatencies    = "application_latencies"
+	metricNameClientBlockingLatencies = "throttling_latencies"
+	metricNameRetryCount              = "retry_count"
+	metricNameDebugTags               = "debug_tags"
+	metricNameConnErrCount            = "connectivity_error_count"
 
 	// Metric units
 	metricUnitMS    = "ms"
 	metricUnitCount = "1"
 	maxAttrsLen     = 12 // Monitored resource labels +  Metric labels
+)
+
+type contextKey string
+
+const (
+	statsContextKey contextKey = "bigtable/clientBlockingLatencyTracker"
 )
 
 // These are effectively constant, but for testing purposes they are mutable
@@ -110,6 +119,9 @@ var (
 			recordedPerAttempt: true,
 		},
 		metricNameAppBlockingLatencies: {},
+		metricNameClientBlockingLatencies: {
+			recordedPerAttempt: true,
+		},
 		metricNameRetryCount: {
 			additionalAttrs: []string{
 				metricLabelKeyStatus,
@@ -126,7 +138,6 @@ var (
 
 	// Generates unique client ID in the format go-<random UUID>@<hostname>
 	generateClientUID = func() (string, error) {
-		hostname := "localhost"
 		hostname, err := os.Hostname()
 		if err != nil {
 			return "", err
@@ -149,6 +160,8 @@ var (
 		}
 		return filteredOptions
 	}
+
+	sharedLatencyStatsHandler = &latencyStatsHandler{}
 )
 
 type metricInfo struct {
@@ -166,13 +179,14 @@ type builtinMetricsTracerFactory struct {
 	// do not change across different function calls on client
 	clientAttributes []attribute.KeyValue
 
-	operationLatencies   metric.Float64Histogram
-	serverLatencies      metric.Float64Histogram
-	attemptLatencies     metric.Float64Histogram
-	appBlockingLatencies metric.Float64Histogram
-	retryCount           metric.Int64Counter
-	connErrCount         metric.Int64Counter
-	debugTags            metric.Int64Counter
+	operationLatencies      metric.Float64Histogram
+	serverLatencies         metric.Float64Histogram
+	attemptLatencies        metric.Float64Histogram
+	appBlockingLatencies    metric.Float64Histogram
+	clientBlockingLatencies metric.Float64Histogram
+	retryCount              metric.Int64Counter
+	connErrCount            metric.Int64Counter
+	debugTags               metric.Int64Counter
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -283,6 +297,17 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
+	// Create client_blocking_latencies
+	tf.clientBlockingLatencies, err = meter.Float64Histogram(
+		metricNameClientBlockingLatencies,
+		metric.WithDescription("The artificial latency introduced by the client to limit the number of outstanding requests. The publishing of the measurement will be delayed until the attempt trailers have been received."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
+	}
+
 	// Create retry_count
 	tf.retryCount, err = meter.Int64Counter(
 		metricNameRetryCount,
@@ -299,6 +324,9 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Create debug_tags
 	tf.debugTags, err = meter.Int64Counter(
@@ -320,13 +348,14 @@ type builtinMetricsTracer struct {
 	// do not change across different operations on client
 	clientAttributes []attribute.KeyValue
 
-	instrumentOperationLatencies   metric.Float64Histogram
-	instrumentServerLatencies      metric.Float64Histogram
-	instrumentAttemptLatencies     metric.Float64Histogram
-	instrumentAppBlockingLatencies metric.Float64Histogram
-	instrumentRetryCount           metric.Int64Counter
-	instrumentConnErrCount         metric.Int64Counter
-	instrumentDebugTags            metric.Int64Counter
+	instrumentOperationLatencies      metric.Float64Histogram
+	instrumentServerLatencies         metric.Float64Histogram
+	instrumentAttemptLatencies        metric.Float64Histogram
+	instrumentAppBlockingLatencies    metric.Float64Histogram
+	instrumentClientBlockingLatencies metric.Float64Histogram
+	instrumentRetryCount              metric.Int64Counter
+	instrumentConnErrCount            metric.Int64Counter
+	instrumentDebugTags               metric.Int64Counter
 
 	tableName   string
 	method      string
@@ -386,6 +415,9 @@ type attemptTracer struct {
 
 	// Error seen while getting server latency from headers
 	serverLatencyErr error
+
+	// Tracker for client blocking latency
+	blockingLatencyTracker *blockingLatencyTracker
 }
 
 func (a *attemptTracer) setStartTime(t time.Time) {
@@ -425,13 +457,14 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		currOp:           currOpTracer,
 		clientAttributes: tf.clientAttributes,
 
-		instrumentOperationLatencies:   tf.operationLatencies,
-		instrumentServerLatencies:      tf.serverLatencies,
-		instrumentAttemptLatencies:     tf.attemptLatencies,
-		instrumentAppBlockingLatencies: tf.appBlockingLatencies,
-		instrumentRetryCount:           tf.retryCount,
-		instrumentConnErrCount:         tf.connErrCount,
-		instrumentDebugTags:            tf.debugTags,
+		instrumentOperationLatencies:      tf.operationLatencies,
+		instrumentServerLatencies:         tf.serverLatencies,
+		instrumentAttemptLatencies:        tf.attemptLatencies,
+		instrumentAppBlockingLatencies:    tf.appBlockingLatencies,
+		instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
+		instrumentRetryCount:              tf.retryCount,
+		instrumentConnErrCount:            tf.connErrCount,
+		instrumentDebugTags:               tf.debugTags,
 
 		tableName:   tableName,
 		isStreaming: isStreaming,
@@ -486,3 +519,61 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.
 	attrSet := attribute.NewSet(attrKeyValues...)
 	return attrSet, nil
 }
+
+// blockingLatencyTracker is used to calculate the time between stream creation and the first message send.
+type blockingLatencyTracker struct {
+	sync.Mutex
+	begin   time.Time
+	latency time.Duration
+}
+
+func (t *blockingLatencyTracker) setBegin(begin time.Time) {
+	t.Lock()
+	defer t.Unlock()
+	t.begin = begin
+}
+
+func (t *blockingLatencyTracker) recordLatency(end time.Time) {
+	t.Lock()
+	defer t.Unlock()
+	// Only record the first time.
+	if t.latency == 0 && !t.begin.IsZero() {
+		t.latency = end.Sub(t.begin)
+	}
+}
+
+func (t *blockingLatencyTracker) getLatency() time.Duration {
+	t.Lock()
+	defer t.Unlock()
+	return t.latency
+}
+
+// latencyStatsHandler is a gRPC stats.Handler to measure client blocking latency.
+type latencyStatsHandler struct{}
+
+var _ stats.Handler = (*latencyStatsHandler)(nil)
+
+func (h *latencyStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
+	// The tracker should already be in the context, added by gaxInvokeWithRecorder.
+	return ctx
+}
+
+func (h *latencyStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	tracker, ok := ctx.Value(statsContextKey).(*blockingLatencyTracker)
+	if !ok {
+		return
+	}
+
+	switch st := s.(type) {
+	case *stats.Begin:
+		tracker.setBegin(st.BeginTime)
+	case *stats.OutPayload:
+		tracker.recordLatency(time.Now())
+	}
+}
+
+func (h *latencyStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
+	return ctx
+}
+
+func (h *latencyStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
