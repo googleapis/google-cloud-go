@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"sync"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -531,30 +531,28 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.
 
 // blockingLatencyTracker is used to calculate the time between stream creation and the first message send.
 type blockingLatencyTracker struct {
-	sync.Mutex
-	begin   time.Time
-	latency time.Duration
+	beginNanos atomic.Int64
+	endNanos   atomic.Int64
 }
 
 func (t *blockingLatencyTracker) setBegin(begin time.Time) {
-	t.Lock()
-	defer t.Unlock()
-	t.begin = begin
+	t.beginNanos.Store(begin.UnixNano())
 }
 
 func (t *blockingLatencyTracker) recordLatency(end time.Time) {
-	t.Lock()
-	defer t.Unlock()
-	// Only record the first time.
-	if t.latency == 0 && !t.begin.IsZero() {
-		t.latency = end.Sub(t.begin)
-	}
+	endN := end.UnixNano()
+	// Ensure that only the time of the first OutPayload event is recorded.
+	t.endNanos.CompareAndSwap(0, endN)
 }
 
 func (t *blockingLatencyTracker) getLatency() time.Duration {
-	t.Lock()
-	defer t.Unlock()
-	return t.latency
+	endN := t.endNanos.Load()
+	beginN := t.beginNanos.Load()
+
+	if endN == 0 || beginN == 0 {
+		return 0 // Latency not fully recorded
+	}
+	return time.Duration(endN - beginN)
 }
 
 // latencyStatsHandler is a gRPC stats.Handler to measure client blocking latency.
