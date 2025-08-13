@@ -61,7 +61,7 @@ func TestBuild(t *testing.T) {
 	apiServiceDir := filepath.Join(sourceDir, "google/cloud/workflows/v1")
 
 	req := &request.Request{
-		ID: "google-cloud-workflows-v1",
+		ID: "workflows",
 	}
 	api := &request.API{
 		Path: "google/cloud/workflows/v1",

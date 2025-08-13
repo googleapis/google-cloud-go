@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.3.0...support/v1.4.0) (2025-08-12)
+
+
+### Features
+
+* **support:** A new message `GetAttachmentRequest` and `GetComment` is added ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.2.0...support/v1.3.0) (2025-05-29)
 
 

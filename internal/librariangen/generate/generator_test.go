@@ -60,9 +60,8 @@ func (e *testEnv) cleanup(t *testing.T) {
 }
 
 // writeRequestFile writes a generate-request.json file.
-func (e *testEnv) writeRequestFile(t *testing.T) {
+func (e *testEnv) writeRequestFile(t *testing.T, content string) {
 	t.Helper()
-	content := `{"id": "foo", "apis": [{"path": "api/v1"}]}`
 	p := filepath.Join(e.librarianDir, "generate-request.json")
 	if err := os.WriteFile(p, []byte(content), 0644); err != nil {
 		t.Fatalf("failed to write request file: %v", err)
@@ -70,9 +69,9 @@ func (e *testEnv) writeRequestFile(t *testing.T) {
 }
 
 // writeBazelFile writes a BUILD.bazel file.
-func (e *testEnv) writeBazelFile(t *testing.T, content string) {
+func (e *testEnv) writeBazelFile(t *testing.T, apiPath, content string) {
 	t.Helper()
-	apiDir := filepath.Join(e.sourceDir, "api/v1")
+	apiDir := filepath.Join(e.sourceDir, apiPath)
 	if err := os.MkdirAll(apiDir, 0755); err != nil {
 		t.Fatalf("failed to create api dir: %v", err)
 	}
@@ -86,7 +85,20 @@ func (e *testEnv) writeBazelFile(t *testing.T, content string) {
 	}
 }
 
+// writeServiceYAML writes a service.yaml file.
+func (e *testEnv) writeServiceYAML(t *testing.T, apiPath, title string) {
+	t.Helper()
+	apiDir := filepath.Join(e.sourceDir, apiPath)
+	content := "title: " + title
+	p := filepath.Join(apiDir, "service.yaml")
+	if err := os.WriteFile(p, []byte(content), 0644); err != nil {
+		t.Fatalf("failed to write service yaml: %v", err)
+	}
+}
+
 func TestGenerate(t *testing.T) {
+	singleAPIRequest := `{"id": "foo", "apis": [{"path": "api/v1"}]}`
+	multiAPIRequest := `{"id": "foo", "apis": [{"path": "api/v1"}, {"path": "api/v2"}]}`
 	validBazel := `
 go_gapic_library(
     name = "v1_gapic",
@@ -103,52 +115,69 @@ go_gapic_library(
 )
 `
 	tests := []struct {
-		name          string
-		setup         func(e *testEnv, t *testing.T)
-		protocErr     error
-		wantErr       bool
-		wantProtocRun bool
+		name               string
+		setup              func(e *testEnv, t *testing.T)
+		protocErr          error
+		wantErr            bool
+		wantProtocRunCount int
+		wantTitle          string
 	}{
 		{
 			name: "happy path",
 			setup: func(e *testEnv, t *testing.T) {
-				e.writeRequestFile(t)
-				e.writeBazelFile(t, validBazel)
+				e.writeRequestFile(t, singleAPIRequest)
+				e.writeBazelFile(t, "api/v1", validBazel)
+				e.writeServiceYAML(t, "api/v1", "My API")
 			},
-			wantErr:       false,
-			wantProtocRun: true,
+			wantErr:            false,
+			wantProtocRunCount: 1,
+			wantTitle:          "My API",
+		},
+		{
+			name: "multi-api request uses first api config",
+			setup: func(e *testEnv, t *testing.T) {
+				e.writeRequestFile(t, multiAPIRequest)
+				e.writeBazelFile(t, "api/v1", validBazel)
+				e.writeServiceYAML(t, "api/v1", "First API")
+				e.writeBazelFile(t, "api/v2", validBazel)
+				e.writeServiceYAML(t, "api/v2", "Second API")
+			},
+			wantErr:            false,
+			wantProtocRunCount: 2,
+			wantTitle:          "First API",
 		},
 		{
 			name: "missing request file",
 			setup: func(e *testEnv, t *testing.T) {
-				e.writeBazelFile(t, validBazel)
+				e.writeBazelFile(t, "api/v1", validBazel)
 			},
 			wantErr: true,
 		},
 		{
 			name: "missing bazel file",
 			setup: func(e *testEnv, t *testing.T) {
-				e.writeRequestFile(t)
+				e.writeRequestFile(t, singleAPIRequest)
 			},
 			wantErr: true,
 		},
 		{
 			name: "invalid bazel config",
 			setup: func(e *testEnv, t *testing.T) {
-				e.writeRequestFile(t)
-				e.writeBazelFile(t, invalidBazel)
+				e.writeRequestFile(t, singleAPIRequest)
+				e.writeBazelFile(t, "api/v1", invalidBazel)
 			},
 			wantErr: true,
 		},
 		{
 			name: "protoc fails",
 			setup: func(e *testEnv, t *testing.T) {
-				e.writeRequestFile(t)
-				e.writeBazelFile(t, validBazel)
+				e.writeRequestFile(t, singleAPIRequest)
+				e.writeBazelFile(t, "api/v1", validBazel)
+				e.writeServiceYAML(t, "api/v1", "My API")
 			},
-			protocErr:     errors.New("protoc failed"),
-			wantErr:       true,
-			wantProtocRun: true,
+			protocErr:          errors.New("protoc failed"),
+			wantErr:            true,
+			wantProtocRunCount: 1,
 		},
 	}
 
@@ -159,17 +188,24 @@ go_gapic_library(
 
 			tt.setup(e, t)
 
-			var protocRunCalled bool
+			var protocRunCount int
 			execvRun = func(ctx context.Context, args []string, dir string) error {
 				want := "protoc"
 				if args[0] != want {
 					t.Errorf("protocRun called with %s; want %s", args[0], want)
 				}
-
-				protocRunCalled = true
+				if tt.protocErr == nil {
+					// Simulate protoc creating the nested directory.
+					if err := os.MkdirAll(filepath.Join(e.outputDir, "cloud.google.com", "go"), 0755); err != nil {
+						t.Fatalf("failed to create nested dir: %v", err)
+					}
+				}
+				protocRunCount++
 				return tt.protocErr
 			}
-			postProcess = func(ctx context.Context, req *request.Request, moduleDir string, newModule bool) error {
+			var gotTitle string
+			postProcess = func(ctx context.Context, req *request.Request, moduleDir string, newModule bool, title string) error {
+				gotTitle = title
 				return nil
 			}
 
@@ -178,15 +214,18 @@ go_gapic_library(
 				InputDir:             "fake-input",
 				OutputDir:            e.outputDir,
 				SourceDir:            e.sourceDir,
-				DisablePostProcessor: tt.name != "happy path",
+				DisablePostProcessor: tt.name != "happy path" && tt.name != "multi-api request uses first api config",
 			}
 
 			if err := Generate(context.Background(), cfg); (err != nil) != tt.wantErr {
 				t.Errorf("Generate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if protocRunCalled != tt.wantProtocRun {
-				t.Errorf("protocRun called = %v; want %v", protocRunCalled, tt.wantProtocRun)
+			if protocRunCount != tt.wantProtocRunCount {
+				t.Errorf("protocRun called = %v; want %v", protocRunCount, tt.wantProtocRunCount)
+			}
+			if !tt.wantErr && tt.wantTitle != "" && gotTitle != tt.wantTitle {
+				t.Errorf("postProcess title = %q; want %q", gotTitle, tt.wantTitle)
 			}
 		})
 	}

@@ -2,6 +2,14 @@
 
 
 
+## [0.121.5](https://github.com/googleapis/google-cloud-go/compare/v0.121.4...v0.121.5) (2025-08-12)
+
+
+### Bug Fixes
+
+* **internal/librariangen:** Get README title from service config yaml ([#12676](https://github.com/googleapis/google-cloud-go/issues/12676)) ([b3b8f70](https://github.com/googleapis/google-cloud-go/commit/b3b8f70a15ae477885f3ecc92e01ae37b7505de3))
+* **internal/librariangen:** Update source_paths to source_roots in generate-request.json ([#12691](https://github.com/googleapis/google-cloud-go/issues/12691)) ([2adb6f9](https://github.com/googleapis/google-cloud-go/commit/2adb6f9a67f21fba32371fb4b3dcfb7204309560))
+
 ## [0.121.4](https://github.com/googleapis/google-cloud-go/compare/v0.121.3...v0.121.4) (2025-07-17)
 
 

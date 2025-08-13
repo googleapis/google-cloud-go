@@ -723,6 +723,9 @@ service-configs:
   - input-directory: google/cloud/managedkafka/v1
     service-config: managedkafka_v1.yaml
     import-path: cloud.google.com/go/managedkafka/apiv1
+  - input-directory: google/cloud/managedkafka/schemaregistry/v1
+    service-config: managedkafka_v1.yaml
+    import-path: cloud.google.com/go/managedkafka/schemaregistry/apiv1
   - input-directory: google/cloud/mediatranslation/v1beta1
     service-config: mediatranslation_v1beta1.yaml
     import-path: cloud.google.com/go/mediatranslation/apiv1beta1
