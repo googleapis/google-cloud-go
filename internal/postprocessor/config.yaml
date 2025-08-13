@@ -968,6 +968,9 @@ service-configs:
   - input-directory: google/shopping/css/v1
     service-config: css_v1.yaml
     import-path: cloud.google.com/go/shopping/css/apiv1
+  - input-directory: google/shopping/merchant/accounts/v1
+    service-config: merchantapi_v1.yaml
+    import-path: cloud.google.com/go/shopping/merchant/accounts/apiv1
   - input-directory: google/shopping/merchant/accounts/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/accounts/apiv1beta
@@ -989,15 +992,24 @@ service-configs:
   - input-directory: google/shopping/merchant/notifications/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
+  - input-directory: google/shopping/merchant/ordertracking/v1
+    service-config: merchantapi_v1.yaml
+    import-path: cloud.google.com/go/shopping/merchant/ordertracking/apiv1
   - input-directory: google/shopping/merchant/ordertracking/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta
+  - input-directory: google/shopping/merchant/products/v1
+    service-config: merchantapi_v1.yaml
+    import-path: cloud.google.com/go/shopping/merchant/products/apiv1
   - input-directory: google/shopping/merchant/products/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/products/apiv1beta
   - input-directory: google/shopping/merchant/productstudio/v1alpha
     service-config: merchantapi_v1alpha.yaml
     import-path: cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha
+  - input-directory: google/shopping/merchant/promotions/v1
+    service-config: merchantapi_v1.yaml
+    import-path: cloud.google.com/go/shopping/merchant/promotions/apiv1
   - input-directory: google/shopping/merchant/promotions/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/promotions/apiv1beta
@@ -1025,6 +1037,9 @@ service-configs:
   - input-directory: google/shopping/merchant/lfp/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/lfp/apiv1beta
+  - input-directory: google/shopping/merchant/reports/v1
+    service-config: merchantapi_v1.yaml
+    import-path: cloud.google.com/go/shopping/merchant/reports/apiv1
   - input-directory: google/shopping/merchant/reports/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/reports/apiv1beta
