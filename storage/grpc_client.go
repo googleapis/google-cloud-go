@@ -1590,12 +1590,6 @@ type mrdRange struct {
 	callback            func(int64, int64, error)
 }
 
-type bidiReadObjectRedirectionError struct{}
-
-func (e bidiReadObjectRedirectionError) Error() string {
-	return "storage: BidiReadObject redirect"
-}
-
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
 	// If bidi reads was not selected, use the legacy read object API.
 	if !c.config.grpcBidiReads {
@@ -1665,34 +1659,42 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		var decoder *readResponseDecoder
 
 		err = run(cc, func(ctx context.Context) error {
-			// Insert context metadata, including routing token if this is a retry
-			// for a redirect.
-			ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
-			stream, err = c.raw.BidiReadObject(ctx, s.gax...)
-			if err != nil {
-				return err
-			}
-			if err := stream.Send(req); err != nil {
-				return err
-			}
-			// Oneshot reads can close the client->server side immediately.
-			if err := stream.CloseSend(); err != nil {
-				return err
+			var databufs mem.BufferSlice
+			openAndSendReq := func() error {
+				databufs = mem.BufferSlice{}
+
+				// Insert context metadata, including routing token if this is a retry
+				// for a redirect.
+				mdCtx := gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
+				stream, err = c.raw.BidiReadObject(mdCtx, s.gax...)
+				if err != nil {
+					return err
+				}
+				if err := stream.Send(req); err != nil {
+					return err
+				}
+				// Oneshot reads can close the client->server side immediately.
+				if err := stream.CloseSend(); err != nil {
+					return err
+				}
+
+				// Receive the message into databuf as a wire-encoded message so we can
+				// use a custom decoder to avoid an extra copy at the protobuf layer.
+				return stream.RecvMsg(&databufs)
 			}
 
-			// Receive the message into databuf as a wire-encoded message so we can
-			// use a custom decoder to avoid an extra copy at the protobuf layer.
-			databufs := mem.BufferSlice{}
-			err := stream.RecvMsg(&databufs)
+			err := openAndSendReq()
 
-			// We might get a redirect error here for an out-of-region request. Retry this
-			// and add the routing token and read handle to the request.
+			// We might get a redirect error here for an out-of-region request.
+			// Add the routing token and read handle to the request and do one
+			// retry.
 			if st, ok := status.FromError(err); ok && st.Code() == codes.Aborted {
 				for _, d := range st.Details() {
 					if e, ok := d.(*storagepb.BidiReadObjectRedirectedError); ok {
-						err = bidiReadObjectRedirectionError{}
 						req.ReadObjectSpec.ReadHandle = e.GetReadHandle()
 						req.ReadObjectSpec.RoutingToken = e.RoutingToken
+						err = openAndSendReq()
+						break
 					}
 				}
 			}
