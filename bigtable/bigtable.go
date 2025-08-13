@@ -2328,8 +2328,8 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	// Record client_blocking_latencies
 	var clientBlockingLatencyMs float64
 	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
-		latency := mt.currOp.currAttempt.blockingLatencyTracker.getLatency()
-		clientBlockingLatencyMs = convertToMs(latency)
+		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
+		clientBlockingLatencyMs = convertToMs(time.Unix(0, int64(messageSentNanos)).Sub(mt.currOp.currAttempt.startTime))
 	}
 	clientBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameClientBlockingLatencies)
 	mt.instrumentClientBlockingLatencies.Record(mt.ctx, clientBlockingLatencyMs, metric.WithAttributeSet(clientBlockingLatAttrs))

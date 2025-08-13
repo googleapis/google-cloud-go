@@ -306,7 +306,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	// Create client_blocking_latencies
 	tf.clientBlockingLatencies, err = meter.Float64Histogram(
 		metricNameClientBlockingLatencies,
-		metric.WithDescription("The artificial latency introduced by the client to limit the number of outstanding requests. The publishing of the measurement will be delayed until the attempt trailers have been received."),
+		metric.WithDescription("Latencies introduced when the client blocks the sending of more requests to the server because of too many pending requests in a bulk operation."),
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
@@ -531,12 +531,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.
 
 // blockingLatencyTracker is used to calculate the time between stream creation and the first message send.
 type blockingLatencyTracker struct {
-	beginNanos atomic.Int64
-	endNanos   atomic.Int64
-}
-
-func (t *blockingLatencyTracker) setBegin(begin time.Time) {
-	t.beginNanos.Store(begin.UnixNano())
+	endNanos atomic.Int64
 }
 
 func (t *blockingLatencyTracker) recordLatency(end time.Time) {
@@ -545,14 +540,8 @@ func (t *blockingLatencyTracker) recordLatency(end time.Time) {
 	t.endNanos.CompareAndSwap(0, endN)
 }
 
-func (t *blockingLatencyTracker) getLatency() time.Duration {
-	endN := t.endNanos.Load()
-	beginN := t.beginNanos.Load()
-
-	if endN == 0 || beginN == 0 {
-		return 0 // Latency not fully recorded
-	}
-	return time.Duration(endN - beginN)
+func (t *blockingLatencyTracker) getMessageSentNanos() int64 {
+	return t.endNanos.Load()
 }
 
 // latencyStatsHandler is a gRPC stats.Handler to measure client blocking latency.
@@ -571,10 +560,7 @@ func (h *latencyStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 		return
 	}
 
-	switch st := s.(type) {
-	case *stats.Begin:
-		tracker.setBegin(st.BeginTime)
-	case *stats.OutPayload:
+	if _, ok := s.(*stats.OutPayload); ok {
 		tracker.recordLatency(time.Now())
 	}
 }

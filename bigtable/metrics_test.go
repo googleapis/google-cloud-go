@@ -180,7 +180,15 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	appProfile := "test-app-profile"
 	clientUID := "test-uid"
 
-	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameConnErrCount, metricNameConnErrCount, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies, metricNameAppBlockingLatencies}
+	wantMetricNamesStdout := []string{
+		metricNameAttemptLatencies, metricNameAttemptLatencies,
+		metricNameConnErrCount, metricNameConnErrCount,
+		metricNameOperationLatencies,
+		metricNameRetryCount,
+		metricNameServerLatencies,
+		metricNameClientBlockingLatencies, metricNameClientBlockingLatencies,
+		metricNameAppBlockingLatencies,
+	}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
 		wantMetricTypesGCM = append(wantMetricTypesGCM, builtInMetricsMeterName+wantMetricName)
