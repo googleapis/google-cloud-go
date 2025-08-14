@@ -45,19 +45,30 @@ There are three primary ways to run the generator, with varying levels of setup 
 
 ### EASY: Run Librarian with the prebuilt container
 
-This is the standard way to run the generator, using a pre-built image from Google's Artifact Registry.
+This is the standard way to run the generator, using a pre-built image from Google's Artifact Registry. This method orchestrates the code generation using the `librarian` CLI, which pulls and runs the container for you.
 
 1.  **Prerequisites:**
     *   You must have `docker` and `git` installed.
     *   Set the `LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR` environment variable to the absolute path of your `google-cloud-go` repository checkout.
     *   Set the `LIBRARIANGEN_GOOGLEAPIS_DIR` environment variable to the absolute path of your `googleapis` repository checkout.
 
-2.  **Execute:**
-    Run the `run-librarian-integration-test.sh` script, which invokes the `librarian` CLI to pull the image and run the generator.
+2.  **Prepare the Target Repository:**
+    Before running the generator, ensure your target `google-cloud-go` repository is clean. It must also contain a committed `.librarian/state.yaml`.
     ```bash
-    ./run-librarian-integration-test.sh
+    pushd $LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR && git reset --hard HEAD && git clean -fd && popd
     ```
-    The script uses this public image: `gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest`
+
+3.  **Execute:**
+    Run the `librarian` command from the `internal/librariangen` directory. This command will generate the `secretmanager` client library using the public container image.
+    ```bash
+    go run ./cmd/librarian generate \
+      --image="gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest" \
+      --repo="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" \
+      --library=secretmanager \
+      --api=google/cloud/secretmanager/v1,google/cloud/secretmanager/v1beta2 \
+      --api-source="$LIBRARIANGEN_GOOGLEAPIS_DIR"
+    ```
+
 
 ### MEDIUM: Build the Dockerfile yourself, and run Librarian with your image
 
@@ -68,7 +79,7 @@ If you have made local changes to `librariangen` and want to test them in a cont
     *   You may need to authenticate with Google Artifact Registry to pull the base image: `gcloud auth configure-docker`.
 
 2.  **Build the image:**
-    The `build-docker-and-test.sh` script will build the image and tag it as `gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest`.
+    The `build-docker-and-test.sh` script will build the image and tag it as `gcr.io/cloud-go-infra/librariangen:latest`.
     ```bash
     ./build-docker-and-test.sh
     ```
