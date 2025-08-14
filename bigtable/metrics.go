@@ -31,7 +31,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
-  "google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/stats"
 )
 
@@ -65,7 +65,7 @@ const (
 	metricNameAttemptLatencies        = "attempt_latencies"
 	metricNameServerLatencies         = "server_latencies"
 	metricNameAppBlockingLatencies    = "application_latencies"
-  metricNameClientBlockingLatencies = "throttling_latencies"
+	metricNameClientBlockingLatencies = "throttling_latencies"
 	metricNameFirstRespLatencies      = "first_response_latencies"
 	metricNameRetryCount              = "retry_count"
 	metricNameDebugTags               = "debug_tags"
@@ -193,7 +193,7 @@ type builtinMetricsTracerFactory struct {
 	attemptLatencies        metric.Float64Histogram
 	firstRespLatencies      metric.Float64Histogram
 	appBlockingLatencies    metric.Float64Histogram
-  clientBlockingLatencies metric.Float64Histogram
+	clientBlockingLatencies metric.Float64Histogram
 	retryCount              metric.Int64Counter
 	connErrCount            metric.Int64Counter
 	debugTags               metric.Int64Counter
@@ -400,7 +400,7 @@ type builtinMetricsTracer struct {
 	instrumentAttemptLatencies        metric.Float64Histogram
 	instrumentFirstRespLatencies      metric.Float64Histogram
 	instrumentAppBlockingLatencies    metric.Float64Histogram
-  instrumentClientBlockingLatencies metric.Float64Histogram
+	instrumentClientBlockingLatencies metric.Float64Histogram
 	instrumentRetryCount              metric.Int64Counter
 	instrumentConnErrCount            metric.Int64Counter
 	instrumentDebugTags               metric.Int64Counter
@@ -509,7 +509,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentAttemptLatencies:        tf.attemptLatencies,
 		instrumentFirstRespLatencies:      tf.firstRespLatencies,
 		instrumentAppBlockingLatencies:    tf.appBlockingLatencies,
-    instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
+		instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
 		instrumentRetryCount:              tf.retryCount,
 		instrumentConnErrCount:            tf.connErrCount,
 		instrumentDebugTags:               tf.debugTags,
@@ -665,8 +665,8 @@ func (mt *builtinMetricsTracer) recordOperationCompletion() {
 	// Record application_latencies
 	appBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAppBlockingLatencies)
 	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
-  
-  // Record client_blocking_latencies
+
+	// Record client_blocking_latencies
 	var clientBlockingLatencyMs float64
 	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
 		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
