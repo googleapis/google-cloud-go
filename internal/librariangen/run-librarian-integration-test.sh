@@ -61,7 +61,7 @@ popd
 
 echo "Running librarian..."
 
-go run ./cmd/librarian generate \
+go run github.com/googleapis/librarian/cmd/librarian@HEAD generate \
   --image="$IMAGE_NAME" \
   --repo="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" \
   --library=secretmanager \

@@ -98,7 +98,7 @@ If you have made local changes to `librariangen` and want to test them in a cont
 4.  **Execute:**
     Run the `librarian` command from the `internal/librariangen` directory. This command will generate the `secretmanager` client library using the public container image.
     ```bash
-    go run ./cmd/librarian generate \
+    go run github.com/googleapis/librarian/cmd/librarian@HEAD generate \
       --image="gcr.io/cloud-go-infra/librariangen:latest" \
       --repo="$GOOGLE_CLOUD_GO_DIR" \
       --library=secretmanager \
