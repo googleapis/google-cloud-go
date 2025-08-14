@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -41,6 +42,7 @@ const (
 	serverTimingValPrefix = "gfet4t7; dur="
 	metricMethodPrefix    = "Bigtable."
 
+	metricMethodPrefix = "Bigtable."
 	// Monitored resource labels
 	monitoredResLabelKeyProject  = "project_id"
 	monitoredResLabelKeyInstance = "instance"
@@ -178,9 +180,10 @@ type builtinMetricsTracerFactory struct {
 	attemptLatencies     metric.Float64Histogram
 	firstRespLatencies   metric.Float64Histogram
 	appBlockingLatencies metric.Float64Histogram
-	retryCount           metric.Int64Counter
-	connErrCount         metric.Int64Counter
-	debugTags            metric.Int64Counter
+
+	retryCount   metric.Int64Counter
+	connErrCount metric.Int64Counter
+	debugTags    metric.Int64Counter
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -376,6 +379,10 @@ type opTracer struct {
 
 	startTime time.Time
 
+	// Only for ReadRows. Time when the response headers are received in a streaming RPC.
+	firstRespTime     time.Time
+	firstRespTimeOnce sync.Once
+
 	// gRPC status code of last completed attempt
 	status string
 
@@ -386,6 +393,12 @@ type opTracer struct {
 
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
+}
+
+func (o *opTracer) setFirstRespTime(t time.Time) {
+	o.firstRespTimeOnce.Do(func() {
+		o.firstRespTime = t
+	})
 }
 
 func (o *opTracer) setStatus(status string) {
