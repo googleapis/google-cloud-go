@@ -30,6 +30,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/metadata"
 )
 
 const (
@@ -250,6 +251,26 @@ func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([
 	)}, nil
 }
 
+func (tf *builtinMetricsTracerFactory) newAsyncRefreshErrHandler() func() {
+	if !tf.enabled {
+		return func() {}
+	}
+
+	asyncRefreshMetricAttrs := tf.clientAttributes
+	asyncRefreshMetricAttrs = append(asyncRefreshMetricAttrs,
+		attribute.String(metricLabelKeyTag, "async_refresh_dry_run"),
+		// Table, cluster and zone are unknown at this point
+		// Use default values
+		attribute.String(monitoredResLabelKeyTable, defaultTable),
+		attribute.String(monitoredResLabelKeyCluster, defaultCluster),
+		attribute.String(monitoredResLabelKeyZone, defaultZone),
+	)
+	return func() {
+		tf.debugTags.Add(context.Background(), 1,
+			metric.WithAttributes(asyncRefreshMetricAttrs...))
+	}
+}
+
 func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {
 	var err error
 
@@ -364,10 +385,6 @@ type builtinMetricsTracer struct {
 	currOp opTracer
 }
 
-func (b *builtinMetricsTracer) setMethod(m string) {
-	b.method = metricMethodPrefix + m
-}
-
 // opTracer is used to record metrics for the entire operation, including retries.
 // Operation is a logical unit that represents a single method invocation on client.
 // The method might require multiple attempts/rpcs and backoff logic to complete
@@ -471,6 +488,10 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 	}
 }
 
+func (mt *builtinMetricsTracer) setMethod(m string) {
+	mt.method = metricMethodPrefix + m
+}
+
 // toOtelMetricAttrs:
 // - converts metric attributes values captured throughout the operation / attempt
 // to OpenTelemetry attributes format,
@@ -518,4 +539,115 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.
 
 	attrSet := attribute.NewSet(attrKeyValues...)
 	return attrSet, nil
+}
+
+func (mt *builtinMetricsTracer) recordAttemptStart() {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Increment number of attempts
+	mt.currOp.incrementAttemptCount()
+
+	mt.currOp.currAttempt = attemptTracer{}
+
+	// record start time
+	mt.currOp.currAttempt.setStartTime(time.Now())
+}
+
+// recordAttemptCompletion records as many attempt specific metrics as it can
+// Ignore errors seen while creating metric attributes since metric can still
+// be recorded with rest of the attributes
+func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempTrailerMD metadata.MD, err error) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Set attempt status
+	statusCode, _ := convertToGrpcStatusErr(err)
+	mt.currOp.currAttempt.setStatus(statusCode.String())
+
+	// Get location attributes from metadata and set it in tracer
+	// Ignore get location error since the metric can still be recorded with rest of the attributes
+	clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
+	mt.currOp.currAttempt.setClusterID(clusterID)
+	mt.currOp.currAttempt.setZoneID(zoneID)
+
+	// Set server latency in tracer
+	serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
+	mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
+	mt.currOp.currAttempt.setServerLatency(serverLatency)
+
+	// Calculate elapsed time
+	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
+
+	// Record attempt_latencies
+	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLatAttrs))
+
+	// Record server_latencies
+	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
+	if mt.currOp.currAttempt.serverLatencyErr == nil {
+		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributeSet(serverLatAttrs))
+	}
+
+	// Record connectivity_error_count
+	connErrCountAttrs, _ := mt.toOtelMetricAttrs(metricNameConnErrCount)
+	// Determine if connection error should be incremented.
+	// A true connectivity error occurs only when we receive NO server-side signals.
+	// 1. Server latency (from server-timing header) is a signal, but absent in DirectPath.
+	// 2. Location (from x-goog-ext header) is a signal present in both paths.
+	// Therefore, we only count an error if BOTH signals are missing.
+	isServerLatencyEffectivelyEmpty := mt.currOp.currAttempt.serverLatencyErr != nil || mt.currOp.currAttempt.serverLatency == 0
+	isLocationEmpty := mt.currOp.currAttempt.clusterID == defaultCluster
+	if isServerLatencyEffectivelyEmpty && isLocationEmpty {
+		// This is a connectivity error: the request likely never reached Google's network.
+		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributeSet(connErrCountAttrs))
+	} else {
+		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributeSet(connErrCountAttrs))
+	}
+}
+
+// recordOperationCompletion records as many operation specific metrics as it can
+// Ignores error seen while creating metric attributes since metric can still
+// be recorded with rest of the attributes
+func (mt *builtinMetricsTracer) recordOperationCompletion() {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Calculate elapsed time
+	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
+
+	// Record operation_latencies
+	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(opLatAttrs))
+
+	// Record retry_count
+	retryCntAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)
+	if mt.currOp.attemptCount > 1 {
+		// Only record when retry count is greater than 0 so the retry
+		// graph will be less confusing
+		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributeSet(retryCntAttrs))
+	}
+
+	// Record application_latencies
+	appBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAppBlockingLatencies)
+	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
+}
+
+func (mt *builtinMetricsTracer) setCurrOpStatus(status string) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	mt.currOp.setStatus(status)
+}
+
+func (mt *builtinMetricsTracer) incrementAppBlockingLatency(latency float64) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	mt.currOp.incrementAppBlockingLatency(latency)
 }
