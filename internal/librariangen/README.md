@@ -61,7 +61,7 @@ This is the standard way to run the generator, using a pre-built image from Goog
 3.  **Execute:**
     Run the `librarian` command from the `internal/librariangen` directory. This command will generate the `secretmanager` client library using the public container image.
     ```bash
-    go run ./cmd/librarian generate \
+    go run github.com/googleapis/librarian/cmd/librarian@HEAD generate \
       --image="gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest" \
       --repo="$GOOGLE_CLOUD_GO_DIR" \
       --library=secretmanager \
