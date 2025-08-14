@@ -43,19 +43,19 @@ librariangen generate \
 
 There are three primary ways to run the generator, with varying levels of setup complexity.
 
-### EASY: Run Librarian with the prebuilt container
+### Run Librarian with the prebuilt container image
 
 This is the standard way to run the generator, using a pre-built image from Google's Artifact Registry. This method orchestrates the code generation using the `librarian` CLI, which pulls and runs the container for you.
 
 1.  **Prerequisites:**
     *   You must have `docker` and `git` installed.
-    *   Set the `LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR` environment variable to the absolute path of your `google-cloud-go` repository checkout.
-    *   Set the `LIBRARIANGEN_GOOGLEAPIS_DIR` environment variable to the absolute path of your `googleapis` repository checkout.
+    *   Set the `GOOGLE_CLOUD_GO_DIR` environment variable to the absolute path of your `google-cloud-go` repository checkout.
+    *   Set the `GOOGLEAPIS_DIR` environment variable to the absolute path of your `googleapis` repository checkout.
 
 2.  **Prepare the Target Repository:**
     Before running the generator, ensure your target `google-cloud-go` repository is clean. It must also contain a committed `.librarian/state.yaml`.
     ```bash
-    pushd $LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR && git reset --hard HEAD && git clean -fd && popd
+    pushd $GOOGLE_CLOUD_GO_DIR && git reset --hard HEAD && git clean -fd && popd
     ```
 
 3.  **Execute:**
@@ -63,19 +63,20 @@ This is the standard way to run the generator, using a pre-built image from Goog
     ```bash
     go run ./cmd/librarian generate \
       --image="gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest" \
-      --repo="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" \
+      --repo="$GOOGLE_CLOUD_GO_DIR" \
       --library=secretmanager \
       --api=google/cloud/secretmanager/v1,google/cloud/secretmanager/v1beta2 \
-      --api-source="$LIBRARIANGEN_GOOGLEAPIS_DIR"
+      --api-source="$GOOGLEAPIS_DIR"
     ```
 
 
-### MEDIUM: Build the Dockerfile yourself, and run Librarian with your image
+### Build the container yourself, and run Librarian with your image
 
-If you have made local changes to `librariangen` and want to test them in a containerized environment, you can build the Docker image locally.
+If you have made local changes to `librariangen` and want to test them in a containerized environment, you can build the Docker image locally and run it directly.
 
 1.  **Prerequisites:**
-    *   Same as the "EASY" method.
+    *   You must have `docker` and `git` installed.
+    *   Set the `GOOGLEAPIS_DIR` environment variable to the absolute path of your `googleapis` repository checkout.
     *   You may need to authenticate with Google Artifact Registry to pull the base image: `gcloud auth configure-docker`.
 
 2.  **Build the image:**
@@ -84,34 +85,60 @@ If you have made local changes to `librariangen` and want to test them in a cont
     ./build-docker-and-test.sh
     ```
 
-3.  **Execute:**
-    Once the image is built and tagged, run the same script as the "EASY" method. The `librarian` tool will find and use your local image instead of pulling a remote one.
+3.  **Prepare Inputs:**
+    The container requires a directory with a `generate-request.json` file and an empty output directory.
     ```bash
-    ./run-librarian-integration-test.sh
+    # Create the required directories
+    mkdir -p /tmp/librariangen-run/librarian /tmp/librariangen-run/output
+
+    # Copy the sample request file
+    cp testdata/librarian/generate-request.json /tmp/librariangen-run/librarian/
     ```
 
-### SUPER EASY: Invoke the librariangen binary as a CLI
+4.  **Execute:**
+    Run the `docker` command, mounting your `googleapis` checkout and the input/output directories you just created.
+    ```bash
+    docker run --rm \
+      --mount type=bind,source="$GOOGLEAPIS_DIR",target=/source,readonly \
+      --mount type=bind,source="/tmp/librariangen-run/librarian",target=/librarian,readonly \
+      --mount type=bind,source="/tmp/librariangen-run/output",target=/output \
+      gcr.io/cloud-go-infra/librariangen:latest \
+      generate \
+      --source=/source \
+      --librarian=/librarian \
+      --output=/output
+    ```
+    The generated files will be available in `/tmp/librariangen-run/output`.
+
+
+### Run the librariangen binary as a CLI
 
 This method runs the generator directly as a Go binary, without any Docker containerization. It is the fastest way to iterate on the generator's code but requires all `protoc` plugins and dependencies to be installed on your local machine.
 
 1.  **Prerequisites:**
     *   Install all tools listed in the **Local Development Dependencies** section.
-    *   Create three directories for I/O, for example:
-        ```bash
-        mkdir -p /tmp/librariangen-test/source /tmp/librariangen-test/librarian /tmp/librariangen-test/output
-        ```
-    *   Copy your `googleapis` checkout into the `source` directory.
-    *   Create a `generate-request.json` file inside the `librarian` directory (see `testdata/librarian/generate-request.json` for an example).
+    *   Set the `GOOGLEAPIS_DIR` environment variable to the absolute path of your `googleapis` repository checkout.
 
-2.  **Execute:**
-    Run the `main.go` program with the `generate` command and flags pointing to your I/O directories.
+2.  **Prepare Inputs:**
+    The binary requires a directory with a `generate-request.json` file and an empty output directory.
+    ```bash
+    # Create the required directories
+    mkdir -p /tmp/librariangen-run/librarian /tmp/librariangen-run/output
+
+    # Copy the sample request file
+    cp testdata/librarian/generate-request.json /tmp/librariangen-run/librarian/
+    ```
+
+3.  **Execute:**
+    Run the `go run` command with flags pointing to your `googleapis` checkout and the I/O directories you just created.
     ```bash
     go run . generate \
-      --source /tmp/librariangen-test/source \
-      --librarian /tmp/librariangen-test/librarian \
-      --output /tmp/librariangen-test/output
+      --source="$GOOGLEAPIS_DIR" \
+      --librarian="/tmp/librariangen-run/librarian" \
+      --output="/tmp/librariangen-run/output"
     ```
-    The generated Go client library will be in the `/tmp/librariangen-test/output` directory.
+    The generated Go client library will be in the `/tmp/librariangen-run/output` directory.
+
 
 ## Development & Testing
 
@@ -144,7 +171,7 @@ The project has a multi-layered testing strategy.
     ```
 
 2.  **Binary Integration Test:** A shell script (`run-binary-integration-test.sh`) provides a full, end-to-end test of the compiled binary. This is the primary way to validate changes to the core generation logic.
-    *   **Setup:** The test requires local checkouts of the `googleapis` and `googleapis-gen` repositories. You must set the `LIBRARIANGEN_GOOGLEAPIS_DIR` and `LIBRARIANGEN_GOOGLEAPIS_GEN_DIR` environment variables to point to these checkouts.
+    *   **Setup:** The test requires local checkouts of the `googleapis` and `googleapis-gen` repositories. You must set the `GOOGLEAPIS_DIR` and `GOOGLEAPIS_GEN_DIR` environment variables to point to these checkouts.
     *   **Execution:**
         ```bash
         bash run-binary-integration-test.sh
