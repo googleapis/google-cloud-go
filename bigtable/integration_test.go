@@ -247,7 +247,7 @@ func TestIntegration_Pinger(t *testing.T) {
 	}
 	t.Cleanup(func() { cleanup() })
 	if !testEnv.Config().UseProd {
-		t.Skip("emulator doesn't support PrepareQuery")
+		t.Skip("emulator doesn't support PingAndWarm")
 	}
 	if err := client.Pinger(ctx); err != nil {
 		t.Fatalf("pinger failed. got %v, want %v", err, nil)

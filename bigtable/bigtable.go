@@ -953,7 +953,7 @@ func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTrace
 		var err error
 		_, err = c.client.PingAndWarm(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
-	}, c.retryOption)
+	})
 
 	return err
 
