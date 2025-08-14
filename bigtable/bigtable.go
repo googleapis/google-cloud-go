@@ -49,13 +49,15 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
-const prodAddr = "bigtable.UNIVERSE_DOMAIN:443"
-const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
-const featureFlagsHeaderKey = "bigtable-features"
-const queryExpiredViolationType = "PREPARED_QUERY_EXPIRED"
-const preparedQueryExpireEarlyDuration = time.Second
-const methodNameReadRows = "ReadRows"
+const (
+	// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
+	prodAddr                         = "bigtable.UNIVERSE_DOMAIN:443"
+	mtlsProdAddr                     = "bigtable.mtls.googleapis.com:443"
+	featureFlagsHeaderKey            = "bigtable-features"
+	queryExpiredViolationType        = "PREPARED_QUERY_EXPIRED"
+	preparedQueryExpireEarlyDuration = time.Second
+	methodNameReadRows               = "ReadRows"
+)
 
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
 

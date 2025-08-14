@@ -141,7 +141,7 @@ func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientCo
 			// req is nil because ReadRowsWithDelay does not use the request argument.
 			// Wrap the generic ServerStream with our specific wrapper.
 			wrappedStream := &bigtableReadRowsServerWrapper{ss}
-			return customReadRowsHandler(nil, wrappedStream)
+			return customReadRowsHandler(srv, wrappedStream)
 		}
 		return handler(srv, ss) // Default handling for other methods
 	}
@@ -1071,7 +1071,7 @@ func TestApplicationLatencies(t *testing.T) {
 		createExporterOptions = origCreateExporterOptions
 	}()
 
-	// Setup fake Bigtable server with delayed stream handler
+	// Setup fake Bigtable server which returns 2 rows
 	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, sendTwoRowsHandler)
 	defer cleanup()
 	if err != nil {
