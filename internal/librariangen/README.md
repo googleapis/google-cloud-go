@@ -39,6 +39,69 @@ librariangen generate \
 
 4.  **Output:** All generated files (`*.pb.go`, `*_gapic.go`, etc.) are written to the `/output` directory. The Librarian tool is then responsible for copying these files to their final destination in the `google-cloud-go` repository.
 
+## Running
+
+There are three primary ways to run the generator, with varying levels of setup complexity.
+
+### EASY: Run Librarian with the prebuilt container
+
+This is the standard way to run the generator, using a pre-built image from Google's Artifact Registry.
+
+1.  **Prerequisites:**
+    *   You must have `docker` and `git` installed.
+    *   Set the `LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR` environment variable to the absolute path of your `google-cloud-go` repository checkout.
+    *   Set the `LIBRARIANGEN_GOOGLEAPIS_DIR` environment variable to the absolute path of your `googleapis` repository checkout.
+
+2.  **Execute:**
+    Run the `run-librarian-integration-test.sh` script, which invokes the `librarian` CLI to pull the image and run the generator.
+    ```bash
+    ./run-librarian-integration-test.sh
+    ```
+    The script uses this public image: `gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest`
+
+### MEDIUM: Build the Dockerfile yourself, and run Librarian with your image
+
+If you have made local changes to `librariangen` and want to test them in a containerized environment, you can build the Docker image locally.
+
+1.  **Prerequisites:**
+    *   Same as the "EASY" method.
+    *   You may need to authenticate with Google Artifact Registry to pull the base image: `gcloud auth configure-docker`.
+
+2.  **Build the image:**
+    The `build-docker-and-test.sh` script will build the image and tag it as `gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest`.
+    ```bash
+    ./build-docker-and-test.sh
+    ```
+
+3.  **Execute:**
+    Once the image is built and tagged, run the same script as the "EASY" method. The `librarian` tool will find and use your local image instead of pulling a remote one.
+    ```bash
+    ./run-librarian-integration-test.sh
+    ```
+
+### SUPER EASY: Invoke the librariangen binary as a CLI
+
+This method runs the generator directly as a Go binary, without any Docker containerization. It is the fastest way to iterate on the generator's code but requires all `protoc` plugins and dependencies to be installed on your local machine.
+
+1.  **Prerequisites:**
+    *   Install all tools listed in the **Local Development Dependencies** section.
+    *   Create three directories for I/O, for example:
+        ```bash
+        mkdir -p /tmp/librariangen-test/source /tmp/librariangen-test/librarian /tmp/librariangen-test/output
+        ```
+    *   Copy your `googleapis` checkout into the `source` directory.
+    *   Create a `generate-request.json` file inside the `librarian` directory (see `testdata/librarian/generate-request.json` for an example).
+
+2.  **Execute:**
+    Run the `main.go` program with the `generate` command and flags pointing to your I/O directories.
+    ```bash
+    go run . generate \
+      --source /tmp/librariangen-test/source \
+      --librarian /tmp/librariangen-test/librarian \
+      --output /tmp/librariangen-test/output
+    ```
+    The generated Go client library will be in the `/tmp/librariangen-test/output` directory.
+
 ## Development & Testing
 
 ### Local Development Dependencies
@@ -93,3 +156,19 @@ The `Dockerfile` packages the `librariangen` binary and all its dependencies int
     ```bash
     bash build-docker-and-test.sh
     ```
+
+## Lines of code in this module
+
+To get an approximate count of the non-commented, non-blank lines of production Go code in the `librariangen` module, you can run the following command from the root of the `google-cloud-go` repository:
+
+```bash
+find ./internal/librariangen -type f -name "*.go" ! -name "*_test.go" -exec cat {} + | sed -e 's://.*::' -e '/^\s*$/d' | wc -l
+```
+
+This command works by:
+1.  Finding all files ending in `.go` within the `internal/librariangen` directory.
+2.  Excluding all test files (`*_test.go`).
+3.  Removing single-line comments and blank lines.
+4.  Counting the remaining lines.
+
+**Note:** This provides a good estimate but does not handle multi-line `/* ... */` comments. For a more precise count, consider using a dedicated tool like `cloc`.
