@@ -555,6 +555,11 @@
                 "DeleteOperation"
               ]
             },
+            "FeatureViewDirectWrite": {
+              "methods": [
+                "FeatureViewDirectWrite"
+              ]
+            },
             "FetchFeatureValues": {
               "methods": [
                 "FetchFeatureValues"
@@ -1995,6 +2000,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "Deploy": {
+              "methods": [
+                "Deploy"
               ]
             },
             "GetIamPolicy": {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/storage/control/apiv2",
-    "version": "1.55.0",
+    "version": "1.56.0",
     "language": "GO",
     "apis": [
       {

@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.14.0...chat/v0.15.0) (2025-07-31)
+
+
+### Features
+
+* **chat:** Addition of app auth support for chat api ([#12611](https://github.com/googleapis/google-cloud-go/issues/12611)) ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+
+### Documentation
+
+* **chat:** Update reference documentation for createSpace,updateSpace,deleteSpace,createMembership,updateMembership,deleteMembership and the newly added field -customer- in space.proto ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.1...chat/v0.14.0) (2025-07-23)
+
+
+### Features
+
+* **chat:** Exposing 1p integration message content (drive, calendar, huddle, meet chips) ([#12589](https://github.com/googleapis/google-cloud-go/issues/12589)) ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
+
+### Documentation
+
+* **chat:** Update reference documentation for annotations. Introduce new richlink metadata types ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.0...chat/v0.13.1) (2025-06-04)
 
 

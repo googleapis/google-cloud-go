@@ -24,6 +24,8 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 	"time"
 
 	adminpb "cloud.google.com/go/firestore/apiv1/admin/adminpb"
@@ -77,6 +79,7 @@ type FirestoreAdminCallOptions struct {
 	ListBackupSchedules  []gax.CallOption
 	UpdateBackupSchedule []gax.CallOption
 	DeleteBackupSchedule []gax.CallOption
+	CloneDatabase        []gax.CallOption
 	CancelOperation      []gax.CallOption
 	DeleteOperation      []gax.CallOption
 	GetOperation         []gax.CallOption
@@ -210,10 +213,13 @@ func defaultFirestoreAdminCallOptions() *FirestoreAdminCallOptions {
 		ListBackupSchedules:  []gax.CallOption{},
 		UpdateBackupSchedule: []gax.CallOption{},
 		DeleteBackupSchedule: []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
+		CloneDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -324,10 +330,13 @@ func defaultFirestoreAdminRESTCallOptions() *FirestoreAdminCallOptions {
 		ListBackupSchedules:  []gax.CallOption{},
 		UpdateBackupSchedule: []gax.CallOption{},
 		DeleteBackupSchedule: []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
+		CloneDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -376,6 +385,8 @@ type internalFirestoreAdminClient interface {
 	ListBackupSchedules(context.Context, *adminpb.ListBackupSchedulesRequest, ...gax.CallOption) (*adminpb.ListBackupSchedulesResponse, error)
 	UpdateBackupSchedule(context.Context, *adminpb.UpdateBackupScheduleRequest, ...gax.CallOption) (*adminpb.BackupSchedule, error)
 	DeleteBackupSchedule(context.Context, *adminpb.DeleteBackupScheduleRequest, ...gax.CallOption) error
+	CloneDatabase(context.Context, *adminpb.CloneDatabaseRequest, ...gax.CallOption) (*CloneDatabaseOperation, error)
+	CloneDatabaseOperation(name string) *CloneDatabaseOperation
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -723,6 +734,33 @@ func (c *FirestoreAdminClient) UpdateBackupSchedule(ctx context.Context, req *ad
 // DeleteBackupSchedule deletes a backup schedule.
 func (c *FirestoreAdminClient) DeleteBackupSchedule(ctx context.Context, req *adminpb.DeleteBackupScheduleRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteBackupSchedule(ctx, req, opts...)
+}
+
+// CloneDatabase creates a new database by cloning an existing one.
+//
+// The new database must be in the same cloud region or multi-region location
+// as the existing database. This behaves similar to
+// FirestoreAdmin.CreateDatabase
+// except instead of creating a new empty database, a new database is created
+// with the database type, index configuration, and documents from an existing
+// database.
+//
+// The [long-running operation][google.longrunning.Operation] can be used to
+// track the progress of the clone, with the Operation’s
+// metadata field type being the
+// CloneDatabaseMetadata.
+// The response type is the
+// Database if the clone was
+// successful. The new database is not readable or writeable until the LRO has
+// completed.
+func (c *FirestoreAdminClient) CloneDatabase(ctx context.Context, req *adminpb.CloneDatabaseRequest, opts ...gax.CallOption) (*CloneDatabaseOperation, error) {
+	return c.internalClient.CloneDatabase(ctx, req, opts...)
+}
+
+// CloneDatabaseOperation returns a new CloneDatabaseOperation from a given name.
+// The name must be that of a previously created CloneDatabaseOperation, possibly from a different process.
+func (c *FirestoreAdminClient) CloneDatabaseOperation(name string) *CloneDatabaseOperation {
+	return c.internalClient.CloneDatabaseOperation(name)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -1600,6 +1638,38 @@ func (c *firestoreAdminGRPCClient) DeleteBackupSchedule(ctx context.Context, req
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *firestoreAdminGRPCClient) CloneDatabase(ctx context.Context, req *adminpb.CloneDatabaseRequest, opts ...gax.CallOption) (*CloneDatabaseOperation, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
+	}
+	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CloneDatabase[0:len((*c.CallOptions).CloneDatabase):len((*c.CallOptions).CloneDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.CloneDatabase, req, settings.GRPC, c.logger, "CloneDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CloneDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *firestoreAdminGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -3463,6 +3533,93 @@ func (c *firestoreAdminRESTClient) DeleteBackupSchedule(ctx context.Context, req
 	}, opts...)
 }
 
+// CloneDatabase creates a new database by cloning an existing one.
+//
+// The new database must be in the same cloud region or multi-region location
+// as the existing database. This behaves similar to
+// FirestoreAdmin.CreateDatabase
+// except instead of creating a new empty database, a new database is created
+// with the database type, index configuration, and documents from an existing
+// database.
+//
+// The [long-running operation][google.longrunning.Operation] can be used to
+// track the progress of the clone, with the Operation’s
+// metadata field type being the
+// CloneDatabaseMetadata.
+// The response type is the
+// Database if the clone was
+// successful. The new database is not readable or writeable until the LRO has
+// completed.
+func (c *firestoreAdminRESTClient) CloneDatabase(ctx context.Context, req *adminpb.CloneDatabaseRequest, opts ...gax.CallOption) (*CloneDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/databases:clone", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
+	}
+	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CloneDatabase")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CloneDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *firestoreAdminRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -3683,6 +3840,24 @@ func (c *firestoreAdminGRPCClient) BulkDeleteDocumentsOperation(name string) *Bu
 func (c *firestoreAdminRESTClient) BulkDeleteDocumentsOperation(name string) *BulkDeleteDocumentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkDeleteDocumentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CloneDatabaseOperation returns a new CloneDatabaseOperation from a given name.
+// The name must be that of a previously created CloneDatabaseOperation, possibly from a different process.
+func (c *firestoreAdminGRPCClient) CloneDatabaseOperation(name string) *CloneDatabaseOperation {
+	return &CloneDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CloneDatabaseOperation returns a new CloneDatabaseOperation from a given name.
+// The name must be that of a previously created CloneDatabaseOperation, possibly from a different process.
+func (c *firestoreAdminRESTClient) CloneDatabaseOperation(name string) *CloneDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CloneDatabaseOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

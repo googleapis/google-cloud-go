@@ -316,12 +316,20 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		wantBuiltinEnabled     bool
 		setEmulator            bool
 		wantCreateTSCallsCount int // No. of CreateTimeSeries calls
+		wantClientAttributes   []attribute.KeyValue
 	}{
 		{
 			desc:                   "should create a new tracer factory with default meter provider",
 			config:                 ClientConfig{AppProfile: appProfile},
 			wantBuiltinEnabled:     true,
 			wantCreateTSCallsCount: 2,
+			wantClientAttributes: []attribute.KeyValue{
+				attribute.String(monitoredResLabelKeyProject, project),
+				attribute.String(monitoredResLabelKeyInstance, instance),
+				attribute.String(metricLabelKeyAppProfile, appProfile),
+				attribute.String(metricLabelKeyClientUID, clientUID),
+				attribute.String(metricLabelKeyClientName, clientName),
+			},
 		},
 		{
 			desc:   "should create a new tracer factory with noop meter provider",
@@ -354,8 +362,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				t.Errorf("builtinEnabled: got: %v, want: %v", gotClient.metricsTracerFactory.enabled, test.wantBuiltinEnabled)
 			}
 
-			if !equalsKeyValue(gotClient.metricsTracerFactory.clientAttributes, wantClientAttributes) {
-				t.Errorf("clientAttributes: got: %+v, want: %+v", gotClient.metricsTracerFactory.clientAttributes, wantClientAttributes)
+			if !equalsKeyValue(gotClient.metricsTracerFactory.clientAttributes, test.wantClientAttributes) {
+				t.Errorf("clientAttributes: got: %+v, want: %+v", gotClient.metricsTracerFactory.clientAttributes, test.wantClientAttributes)
 			}
 
 			// Check instruments

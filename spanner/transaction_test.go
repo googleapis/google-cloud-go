@@ -1690,7 +1690,8 @@ func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
@@ -1741,7 +1742,8 @@ func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSe
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
@@ -1804,7 +1806,8 @@ func TestReadWriteStmtBasedTransaction_SetsPrecommitToken(t *testing.T) {
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 

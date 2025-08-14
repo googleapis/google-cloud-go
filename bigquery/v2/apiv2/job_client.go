@@ -1000,6 +1000,9 @@ func (c *jobRESTClient) GetQueryResults(ctx context.Context, req *bigquerypb.Get
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/queries/%v", req.GetProjectId(), req.GetJobId())
 
 	params := url.Values{}
+	if req.GetFormatOptions().GetTimestampOutputFormat() != 0 {
+		params.Add("formatOptions.timestampOutputFormat", fmt.Sprintf("%v", req.GetFormatOptions().GetTimestampOutputFormat()))
+	}
 	if req.GetFormatOptions().GetUseInt64Timestamp() {
 		params.Add("formatOptions.useInt64Timestamp", fmt.Sprintf("%v", req.GetFormatOptions().GetUseInt64Timestamp()))
 	}

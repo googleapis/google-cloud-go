@@ -61,6 +61,36 @@ func ExampleNewDepRESTClient() {
 	_ = c
 }
 
+func ExampleDepClient_CreateAuthzExtension() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewDepClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.CreateAuthzExtensionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#CreateAuthzExtensionRequest.
+	}
+	op, err := c.CreateAuthzExtension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleDepClient_CreateLbRouteExtension() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -121,6 +151,34 @@ func ExampleDepClient_CreateLbTrafficExtension() {
 	_ = resp
 }
 
+func ExampleDepClient_DeleteAuthzExtension() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewDepClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.DeleteAuthzExtensionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#DeleteAuthzExtensionRequest.
+	}
+	op, err := c.DeleteAuthzExtension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleDepClient_DeleteLbRouteExtension() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -177,6 +235,31 @@ func ExampleDepClient_DeleteLbTrafficExtension() {
 	}
 }
 
+func ExampleDepClient_GetAuthzExtension() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewDepClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.GetAuthzExtensionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#GetAuthzExtensionRequest.
+	}
+	resp, err := c.GetAuthzExtension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleDepClient_GetLbRouteExtension() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -225,6 +308,43 @@ func ExampleDepClient_GetLbTrafficExtension() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleDepClient_ListAuthzExtensions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewDepClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.ListAuthzExtensionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#ListAuthzExtensionsRequest.
+	}
+	it := c.ListAuthzExtensions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*networkservicespb.ListAuthzExtensionsResponse)
+	}
 }
 
 func ExampleDepClient_ListLbRouteExtensions() {
@@ -299,6 +419,36 @@ func ExampleDepClient_ListLbTrafficExtensions() {
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*networkservicespb.ListLbTrafficExtensionsResponse)
 	}
+}
+
+func ExampleDepClient_UpdateAuthzExtension() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewDepClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.UpdateAuthzExtensionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#UpdateAuthzExtensionRequest.
+	}
+	op, err := c.UpdateAuthzExtension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleDepClient_UpdateLbRouteExtension() {

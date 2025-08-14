@@ -1,6 +1,21 @@
 # Changes
 
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.24.0...video/v1.25.0) (2025-07-23)
+
+
+### Features
+
+* **video/transcoder:** Added support for converting the input video to a supported high dynamic range (HDR) formats ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **video/transcoder:** Added support for DROP_DUPLICATE frame rate conversion strategy to achieve the exact frame rate on the output video ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **video/transcoder:** Added support for fill_content_gaps field to allow processing inputs with significant number of missing frames ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **video/transcoder:** Added support for specifying HEVC codec tag ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
+
+### Documentation
+
+* **video/transcoder:** Improve comment formatting, add links, add references ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.5...video/v1.24.0) (2025-05-21)
 
 

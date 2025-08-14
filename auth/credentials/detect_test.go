@@ -15,10 +15,12 @@
 package credentials
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -756,11 +758,13 @@ func TestDefaultCredentials_BadFileName(t *testing.T) {
 
 func TestDefaultCredentials_Validate(t *testing.T) {
 	tests := []struct {
-		name string
-		opts *DetectOptions
+		name    string
+		opts    *DetectOptions
+		wantErr string
 	}{
 		{
-			name: "missing options",
+			name:    "missing options",
+			wantErr: "credentials: options must be provided",
 		},
 		{
 			name: "scope and audience provided",
@@ -768,6 +772,7 @@ func TestDefaultCredentials_Validate(t *testing.T) {
 				Scopes:   []string{"scope"},
 				Audience: "aud",
 			},
+			wantErr: "credentials: both scopes and audience were provided",
 		},
 		{
 			name: "file and json provided",
@@ -776,12 +781,23 @@ func TestDefaultCredentials_Validate(t *testing.T) {
 				CredentialsFile: "path",
 				CredentialsJSON: []byte(`{"some":"json"}`),
 			},
+			wantErr: "credentials: both credentials file and JSON were provided",
+		},
+		{
+			name: "empty json provided",
+			opts: &DetectOptions{
+				Scopes:          []string{"scope"},
+				CredentialsJSON: []byte(`{}`),
+			},
+			wantErr: "credentials: unsupported unidentified file type",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if _, err := DetectDefault(tt.opts); err == nil {
 				t.Error("got nil, want an error")
+			} else if tt.wantErr != "" && !strings.Contains(err.Error(), tt.wantErr) {
+				t.Errorf("unexpected error, got %q expect %q", err.Error(), tt.wantErr)
 			}
 		})
 	}
@@ -973,5 +989,68 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 				t.Fatalf("got %q, want %q", ud, tt.want)
 			}
 		})
+	}
+}
+
+func TestDefaultCredentials_OnGCE(t *testing.T) {
+	ctx := context.Background()
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/computeMetadata/v1/project/project-id":
+			fmt.Fprint(w, "fake-project")
+		case "/computeMetadata/v1/instance/service-accounts/default/token":
+			w.Header().Set("Content-Type", "application/json")
+			resp := &tokResp{
+				AccessToken: "a_fake_token",
+				TokenType:   internal.TokenTypeBearer,
+				ExpiresIn:   60,
+			}
+			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+				t.Fatal(err)
+			}
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer ts.Close()
+	// Force metadata.OnGCE() to be true
+	t.Setenv("GCE_METADATA_HOST", strings.TrimPrefix(ts.URL, "http://"))
+	// Ensure no other creds are found
+	t.Setenv(credsfile.GoogleAppCredsEnvVar, "")
+	t.Setenv("HOME", "nothingToSeeHere")
+	t.Setenv("APPDATA", "nothingToSeeHere")
+
+	var logBuf bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&logBuf, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	}))
+
+	creds, err := DetectDefault(&DetectOptions{Logger: logger})
+	if err != nil {
+		t.Fatalf("DetectDefault() = %v, want nil", err)
+	}
+	if creds == nil {
+		t.Fatal("DetectDefault() = nil, want non-nil creds")
+	}
+	projID, err := creds.ProjectID(ctx)
+	if err != nil {
+		t.Fatalf("creds.ProjectID() = %v, want nil", err)
+	}
+	if projID != "fake-project" {
+		t.Errorf("creds.ProjectID() = %q, want %q", projID, "fake-project")
+	}
+	tok, err := creds.Token(ctx)
+	if err != nil {
+		t.Fatalf("creds.Token() = %v, want nil", err)
+	}
+	if tok.Value != "a_fake_token" {
+		t.Errorf("tok.Value = %q, want %q", tok.Value, "a_fake_token")
+	}
+	// Check that the logger was used, proving the correct metadata.Client was constructed.
+	if logBuf.Len() == 0 {
+		t.Error("expected logger to be used, but log buffer is empty")
+	}
+	if !strings.Contains(logBuf.String(), "metadata request") {
+		t.Errorf("log output missing 'metadata request': got %q", logBuf.String())
 	}
 }

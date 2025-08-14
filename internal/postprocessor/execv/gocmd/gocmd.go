@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -50,10 +49,6 @@ func ModInit(dir, importPath, goVersion string) error {
 func ModTidy(dir string) error {
 	c := execv.Command("go", "mod", "tidy")
 	c.Dir = dir
-	c.Env = []string{
-		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
-		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
-	}
 	return c.Run()
 }
 
@@ -85,7 +80,7 @@ func ModTidyAll(dir string) error {
 func ListModName(dir string) (string, error) {
 	modC := execv.Command("go", "list", "-m")
 	modC.Dir = dir
-	modC.Env = []string{"GOWORK=off"}
+	modC.Env = append(modC.Env, "GOWORK=off")
 	mod, err := modC.Output()
 	return strings.TrimSpace(string(mod)), err
 }
@@ -127,7 +122,7 @@ func CurrentMod(dir string) (string, error) {
 	log.Println("detecting current module")
 	c := execv.Command("go", "list", "-m")
 	c.Dir = dir
-	c.Env = []string{"GOWORK=off"}
+	c.Env = append(c.Env, "GOWORK=off")
 	var out []byte
 	var err error
 	if out, err = c.Output(); err != nil {
@@ -141,10 +136,6 @@ func EditReplace(dir, mod, modPath string) error {
 	log.Printf("%s: editing dependency %q", dir, mod)
 	c := execv.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s=%s", mod, modPath))
 	c.Dir = dir
-	c.Env = []string{
-		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
-		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
-	}
 	return c.Run()
 }
 

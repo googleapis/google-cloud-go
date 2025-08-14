@@ -1,0 +1,1439 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/configdelivery/apiv1",
+    "version": "0.1.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.configdelivery.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_AbortRollout_sync",
+      "title": "configdelivery AbortRollout Sample",
+      "description": "AbortRollout abort a Rollout.",
+      "file": "Client/AbortRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AbortRollout",
+        "fullName": "google.cloud.configdelivery.v1.Client.AbortRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.AbortRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AbortRolloutOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "AbortRollout",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.AbortRollout",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_CancelOperation_sync",
+      "title": "configdelivery CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.configdelivery.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_CreateFleetPackage_sync",
+      "title": "configdelivery CreateFleetPackage Sample",
+      "description": "CreateFleetPackage creates a new FleetPackage in a given project and location.",
+      "file": "Client/CreateFleetPackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFleetPackage",
+        "fullName": "google.cloud.configdelivery.v1.Client.CreateFleetPackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.CreateFleetPackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateFleetPackageOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateFleetPackage",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.CreateFleetPackage",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_CreateRelease_sync",
+      "title": "configdelivery CreateRelease Sample",
+      "description": "CreateRelease creates a new Release in a given project, location and resource bundle.",
+      "file": "Client/CreateRelease/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRelease",
+        "fullName": "google.cloud.configdelivery.v1.Client.CreateRelease",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.CreateReleaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateReleaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateRelease",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.CreateRelease",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_CreateResourceBundle_sync",
+      "title": "configdelivery CreateResourceBundle Sample",
+      "description": "CreateResourceBundle creates a new ResourceBundle in a given project and location.",
+      "file": "Client/CreateResourceBundle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateResourceBundle",
+        "fullName": "google.cloud.configdelivery.v1.Client.CreateResourceBundle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.CreateResourceBundleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateResourceBundleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateResourceBundle",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.CreateResourceBundle",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_CreateVariant_sync",
+      "title": "configdelivery CreateVariant Sample",
+      "description": "CreateVariant creates a new Variant in a given project, location, resource bundle, and\nrelease.",
+      "file": "Client/CreateVariant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateVariant",
+        "fullName": "google.cloud.configdelivery.v1.Client.CreateVariant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.CreateVariantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateVariantOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateVariant",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.CreateVariant",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_DeleteFleetPackage_sync",
+      "title": "configdelivery DeleteFleetPackage Sample",
+      "description": "DeleteFleetPackage deletes a single FleetPackage.",
+      "file": "Client/DeleteFleetPackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFleetPackage",
+        "fullName": "google.cloud.configdelivery.v1.Client.DeleteFleetPackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.DeleteFleetPackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFleetPackageOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteFleetPackage",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.DeleteFleetPackage",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_DeleteOperation_sync",
+      "title": "configdelivery DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.configdelivery.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_DeleteRelease_sync",
+      "title": "configdelivery DeleteRelease Sample",
+      "description": "DeleteRelease deletes a single Release.",
+      "file": "Client/DeleteRelease/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRelease",
+        "fullName": "google.cloud.configdelivery.v1.Client.DeleteRelease",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.DeleteReleaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteReleaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteRelease",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.DeleteRelease",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_DeleteResourceBundle_sync",
+      "title": "configdelivery DeleteResourceBundle Sample",
+      "description": "DeleteResourceBundle deletes a single ResourceBundle.",
+      "file": "Client/DeleteResourceBundle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteResourceBundle",
+        "fullName": "google.cloud.configdelivery.v1.Client.DeleteResourceBundle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.DeleteResourceBundleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteResourceBundleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteResourceBundle",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.DeleteResourceBundle",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_DeleteVariant_sync",
+      "title": "configdelivery DeleteVariant Sample",
+      "description": "DeleteVariant deletes a single Variant.",
+      "file": "Client/DeleteVariant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteVariant",
+        "fullName": "google.cloud.configdelivery.v1.Client.DeleteVariant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.DeleteVariantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteVariantOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteVariant",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.DeleteVariant",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_GetFleetPackage_sync",
+      "title": "configdelivery GetFleetPackage Sample",
+      "description": "GetFleetPackage gets details of a single FleetPackage.",
+      "file": "Client/GetFleetPackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFleetPackage",
+        "fullName": "google.cloud.configdelivery.v1.Client.GetFleetPackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.GetFleetPackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configdeliverypb.FleetPackage",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "GetFleetPackage",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.GetFleetPackage",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_GetLocation_sync",
+      "title": "configdelivery GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.configdelivery.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_GetOperation_sync",
+      "title": "configdelivery GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.configdelivery.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_GetRelease_sync",
+      "title": "configdelivery GetRelease Sample",
+      "description": "GetRelease gets details of a single Release.",
+      "file": "Client/GetRelease/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRelease",
+        "fullName": "google.cloud.configdelivery.v1.Client.GetRelease",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.GetReleaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configdeliverypb.Release",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "GetRelease",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.GetRelease",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_GetResourceBundle_sync",
+      "title": "configdelivery GetResourceBundle Sample",
+      "description": "GetResourceBundle gets details of a single ResourceBundle.",
+      "file": "Client/GetResourceBundle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetResourceBundle",
+        "fullName": "google.cloud.configdelivery.v1.Client.GetResourceBundle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.GetResourceBundleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configdeliverypb.ResourceBundle",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "GetResourceBundle",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.GetResourceBundle",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_GetRollout_sync",
+      "title": "configdelivery GetRollout Sample",
+      "description": "GetRollout gets details of a single Rollout.",
+      "file": "Client/GetRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRollout",
+        "fullName": "google.cloud.configdelivery.v1.Client.GetRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.GetRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configdeliverypb.Rollout",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "GetRollout",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.GetRollout",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_GetVariant_sync",
+      "title": "configdelivery GetVariant Sample",
+      "description": "GetVariant gets details of a single Variant.",
+      "file": "Client/GetVariant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVariant",
+        "fullName": "google.cloud.configdelivery.v1.Client.GetVariant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.GetVariantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configdeliverypb.Variant",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "GetVariant",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.GetVariant",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_ListFleetPackages_sync",
+      "title": "configdelivery ListFleetPackages Sample",
+      "description": "ListFleetPackages lists FleetPackages in a given project and location.",
+      "file": "Client/ListFleetPackages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFleetPackages",
+        "fullName": "google.cloud.configdelivery.v1.Client.ListFleetPackages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.ListFleetPackagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FleetPackageIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "ListFleetPackages",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.ListFleetPackages",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_ListLocations_sync",
+      "title": "configdelivery ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.configdelivery.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_ListOperations_sync",
+      "title": "configdelivery ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.configdelivery.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_ListReleases_sync",
+      "title": "configdelivery ListReleases Sample",
+      "description": "ListReleases lists Releases in a given project and location.",
+      "file": "Client/ListReleases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReleases",
+        "fullName": "google.cloud.configdelivery.v1.Client.ListReleases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.ListReleasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReleaseIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "ListReleases",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.ListReleases",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_ListResourceBundles_sync",
+      "title": "configdelivery ListResourceBundles Sample",
+      "description": "ListResourceBundles lists ResourceBundles in a given project and location.",
+      "file": "Client/ListResourceBundles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListResourceBundles",
+        "fullName": "google.cloud.configdelivery.v1.Client.ListResourceBundles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.ListResourceBundlesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResourceBundleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "ListResourceBundles",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.ListResourceBundles",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_ListRollouts_sync",
+      "title": "configdelivery ListRollouts Sample",
+      "description": "ListRollouts lists Rollouts in a given project, location, and Fleet Package.",
+      "file": "Client/ListRollouts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRollouts",
+        "fullName": "google.cloud.configdelivery.v1.Client.ListRollouts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.ListRolloutsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RolloutIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRollouts",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.ListRollouts",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_ListVariants_sync",
+      "title": "configdelivery ListVariants Sample",
+      "description": "ListVariants lists Variants in a given project and location.",
+      "file": "Client/ListVariants/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVariants",
+        "fullName": "google.cloud.configdelivery.v1.Client.ListVariants",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.ListVariantsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VariantIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "ListVariants",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.ListVariants",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_ResumeRollout_sync",
+      "title": "configdelivery ResumeRollout Sample",
+      "description": "ResumeRollout resume a Rollout.",
+      "file": "Client/ResumeRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeRollout",
+        "fullName": "google.cloud.configdelivery.v1.Client.ResumeRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.ResumeRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResumeRolloutOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "ResumeRollout",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.ResumeRollout",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_SuspendRollout_sync",
+      "title": "configdelivery SuspendRollout Sample",
+      "description": "SuspendRollout suspend a Rollout.",
+      "file": "Client/SuspendRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SuspendRollout",
+        "fullName": "google.cloud.configdelivery.v1.Client.SuspendRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.SuspendRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SuspendRolloutOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "SuspendRollout",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.SuspendRollout",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_UpdateFleetPackage_sync",
+      "title": "configdelivery UpdateFleetPackage Sample",
+      "description": "UpdateFleetPackage updates the parameters of a single FleetPackage.",
+      "file": "Client/UpdateFleetPackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFleetPackage",
+        "fullName": "google.cloud.configdelivery.v1.Client.UpdateFleetPackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.UpdateFleetPackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateFleetPackageOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateFleetPackage",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.UpdateFleetPackage",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_UpdateRelease_sync",
+      "title": "configdelivery UpdateRelease Sample",
+      "description": "UpdateRelease updates the parameters of a single Release.",
+      "file": "Client/UpdateRelease/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRelease",
+        "fullName": "google.cloud.configdelivery.v1.Client.UpdateRelease",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.UpdateReleaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateReleaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateRelease",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.UpdateRelease",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_UpdateResourceBundle_sync",
+      "title": "configdelivery UpdateResourceBundle Sample",
+      "description": "UpdateResourceBundle updates the parameters of a single ResourceBundle.",
+      "file": "Client/UpdateResourceBundle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateResourceBundle",
+        "fullName": "google.cloud.configdelivery.v1.Client.UpdateResourceBundle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.UpdateResourceBundleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateResourceBundleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateResourceBundle",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.UpdateResourceBundle",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "configdelivery_v1_generated_ConfigDelivery_UpdateVariant_sync",
+      "title": "configdelivery UpdateVariant Sample",
+      "description": "UpdateVariant updates the parameters of a single Variant.",
+      "file": "Client/UpdateVariant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateVariant",
+        "fullName": "google.cloud.configdelivery.v1.Client.UpdateVariant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configdeliverypb.UpdateVariantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateVariantOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.configdelivery.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateVariant",
+          "fullName": "google.cloud.configdelivery.v1.ConfigDelivery.UpdateVariant",
+          "service": {
+            "shortName": "ConfigDelivery",
+            "fullName": "google.cloud.configdelivery.v1.ConfigDelivery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

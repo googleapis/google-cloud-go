@@ -1449,11 +1449,23 @@ type ListSessionsRequest struct {
 	// A page token, received from a previous `ListSessions` call.
 	// Provide this to retrieve the subsequent page.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// A filter to apply on the list results. The supported features are:
-	// user_pseudo_id, state.
+	// A comma-separated list of fields to filter by, in EBNF grammar.
+	// The supported fields are:
+	// * `user_pseudo_id`
+	// * `state`
+	// * `display_name`
+	// * `starred`
+	// * `is_pinned`
+	// * `labels`
+	// * `create_time`
+	// * `update_time`
 	//
-	// Example:
+	// Examples:
 	// "user_pseudo_id = some_id"
+	// "display_name = \"some_name\""
+	// "starred = true"
+	// "is_pinned=true AND (NOT labels:hidden)"
+	// "create_time > \"1970-01-01T12:00:00Z\""
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// A comma-separated list of fields to order by, sorted in ascending order.
 	// Use "desc" after a field name for descending.

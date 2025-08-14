@@ -187,13 +187,29 @@ type builtinMetricsTracerFactory struct {
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
+	if metricsProvider != nil {
+		switch metricsProvider.(type) {
+		case NoopMetricsProvider:
+			return &builtinMetricsTracerFactory{
+				enabled:  false,
+				shutdown: func() {},
+			}, nil
+		default:
+			return &builtinMetricsTracerFactory{
+				enabled:  false,
+				shutdown: func() {},
+			}, errors.New("unknown MetricsProvider type")
+		}
+	}
+
+	// Metrics are enabled.
 	clientUID, err := generateClientUID()
 	if err != nil {
 		return nil, err
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
-		enabled: false,
+		enabled: true,
 		clientAttributes: []attribute.KeyValue{
 			attribute.String(monitoredResLabelKeyProject, project),
 			attribute.String(monitoredResLabelKeyInstance, instance),
@@ -204,31 +220,21 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		shutdown: func() {},
 	}
 
-	var meterProvider *sdkmetric.MeterProvider
-	if metricsProvider == nil {
-		// Create default meter provider
-		mpOptions, err := builtInMeterProviderOptions(project, opts...)
-		if err != nil {
-			return tracerFactory, err
-		}
-		meterProvider = sdkmetric.NewMeterProvider(mpOptions...)
-
-		tracerFactory.enabled = true
-		tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
-	} else {
-		switch metricsProvider.(type) {
-		case NoopMetricsProvider:
-			tracerFactory.enabled = false
-			return tracerFactory, nil
-		default:
-			tracerFactory.enabled = false
-			return tracerFactory, errors.New("unknown MetricsProvider type")
-		}
+	// Create default meter provider
+	mpOptions, err := builtInMeterProviderOptions(project, opts...)
+	if err != nil {
+		tracerFactory.enabled = false
+		return tracerFactory, err
 	}
+	meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
+	tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
 
 	// Create meter and instruments
 	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
 	err = tracerFactory.createInstruments(meter)
+	if err != nil {
+		tracerFactory.enabled = false
+	}
 	return tracerFactory, err
 }
 
@@ -446,6 +452,9 @@ func (a *attemptTracer) setServerLatencyErr(err error) {
 }
 
 func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Context, tableName string, isStreaming bool) builtinMetricsTracer {
+	if !tf.enabled {
+		return builtinMetricsTracer{builtInEnabled: false}
+	}
 	// Operation has started but not the attempt.
 	// So, create only operation tracer and not attempt tracer
 	currOpTracer := opTracer{}

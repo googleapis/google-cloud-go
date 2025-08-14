@@ -26,6 +26,7 @@ import (
 	"net"
 	"os"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -44,6 +45,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
@@ -92,6 +94,19 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 			},
 		},
 	}
+	expectedResourceHeaderFormat := regexp.MustCompile("projects/.+/instances/.+/databases/.+.*")
+	grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
+		Key: resourcePrefixHeader,
+		ValuesValidator: func(token ...string) error {
+			if len(token) != 1 {
+				return status.Errorf(codes.Internal, "unexpected number of resource headers: %v", len(token))
+			}
+			if !expectedResourceHeaderFormat.MatchString(token[0]) {
+				return status.Errorf(codes.Internal, "invalid resource header value: %v", token[0])
+			}
+			return nil
+		},
+	})
 	if config.Compression == gzip.Name {
 		grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
 			Key: "x-response-encoding",
@@ -657,12 +672,53 @@ func TestClient_Single(t *testing.T) {
 	}
 }
 
-func TestClient_Single_Unavailable(t *testing.T) {
+func TestClient_NonConformingHeader(t *testing.T) {
 	t.Parallel()
-	err := testSingleQuery(t, status.Error(codes.Unavailable, "Temporary unavailable"))
+	ctx := context.Background()
+	md := metadata.Pairs(resourcePrefixHeader, "projects/foo/documents/bar")
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	err := testSingleQueryWithContext(ctx, t, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Verify that even though the request is sent without the non-conforming header,
+	// it is still present in the original context.
+	if md, ok := metadata.FromOutgoingContext(ctx); ok {
+		header := md.Get(resourcePrefixHeader)
+		if g, w := len(header), 1; g != w {
+			t.Fatalf("header length mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		if g, w := header[0], "projects/foo/documents/bar"; g != w {
+			t.Fatalf("header mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	} else {
+		t.Fatal("could not get metadata from context")
+	}
+}
+
+func TestClient_Single_Unavailable(t *testing.T) {
+	t.Parallel()
+	err := testSingleQuery(t, serverErrorWithMinimalRetryDelay(codes.Unavailable, "Temporary unavailable"))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_Single_ResourceExhausted(t *testing.T) {
+	t.Parallel()
+	err := testSingleQuery(t, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "Temporary server overload"))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func serverErrorWithMinimalRetryDelay(code codes.Code, msg string) error {
+	st := status.New(code, msg)
+	retry := &errdetails.RetryInfo{
+		RetryDelay: durationpb.New(time.Nanosecond),
+	}
+	st, _ = st.WithDetails(retry)
+	return st.Err()
 }
 
 func TestClient_Single_InvalidArgument(t *testing.T) {
@@ -1173,9 +1229,22 @@ func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo
 }
 
 func testSingleQuery(t *testing.T, serverError error) error {
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
+	return testSingleQueryWithContext(context.Background(), t, serverError)
+}
+
+func testSingleQueryWithContext(ctx context.Context, t *testing.T, serverError error) error {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: SessionPoolConfig{MinOpened: 1}})
 	defer teardown()
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
+		}
+		return nil
+	})
 
 	if serverError != nil {
 		server.TestSpanner.SetError(serverError)
@@ -1844,7 +1913,7 @@ func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpanner
 
 func TestClient_ReadWriteTransactionWithNoIsolationLevelForRWTransactionAtClientConfig(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1854,7 +1923,7 @@ func TestClient_ReadWriteTransactionWithNoIsolationLevelForRWTransactionAtClient
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtClientConfig(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1864,7 +1933,7 @@ func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtClientCo
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtTransactionLevel(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfigWithTransactionOptions(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}}, TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfigWithTransactionOptions(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}}, TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1976,7 +2045,7 @@ func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLev
 }
 
 func testClientReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t *testing.T, beginTransactionOption BeginTransactionOption) {
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}})
 	defer teardown()
 	ctx := context.Background()
 	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
@@ -2006,7 +2075,7 @@ func TestClient_ReadWriteStmtBasedTransactionWithNoIsolationLevelWithInlineBegin
 }
 
 func testClientReadWriteStmtBasedTransactionWithNoIsolationLevel(t *testing.T, beginTransactionOption BeginTransactionOption) {
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: TransactionOptions{}})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, TransactionOptions: TransactionOptions{}})
 	defer teardown()
 	ctx := context.Background()
 	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
@@ -3706,7 +3775,7 @@ func TestClient_ReadWriteTransaction_WithCancelledContext(t *testing.T) {
 }
 
 func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
-	_, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
+	_, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
 	defer teardown()
 	return err
 }
@@ -5937,7 +6006,7 @@ func TestClient_BatchWrite(t *testing.T) {
 	defer teardown()
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -5972,7 +6041,7 @@ func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6010,7 +6079,7 @@ func TestClient_BatchWrite_Error(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6085,7 +6154,7 @@ func TestClient_BatchWrite_Options(t *testing.T) {
 
 			mutationGroups := []*MutationGroup{
 				{[]*Mutation{
-					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 				}},
 			}
 			iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, tt.write)
@@ -6131,7 +6200,7 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6683,7 +6752,7 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, BatchWriteOptions{ExcludeTxnFromChangeStreams: true})

@@ -862,6 +862,9 @@ func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.L
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
+		if req != nil && req.ServiceProject != nil {
+			params.Add("serviceProject", fmt.Sprintf("%v", req.GetServiceProject()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 

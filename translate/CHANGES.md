@@ -1,5 +1,13 @@
 # Changes
 
+## [1.12.6](https://github.com/googleapis/google-cloud-go/compare/translate/v1.12.5...translate/v1.12.6) (2025-06-25)
+
+
+### Documentation
+
+* **translate:** Minor formatting ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **translate:** Update hyperlink to the supported languages documentation page ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
 ## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/translate/v1.12.4...translate/v1.12.5) (2025-04-15)
 
 
