@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.25.0...shopping/v1.0.0) (2025-08-14)
+
+
+### Features
+
+* **shopping:** New clients ([#12712](https://github.com/googleapis/google-cloud-go/issues/12712)) ([710d269](https://github.com/googleapis/google-cloud-go/commit/710d269451ac438146f46b72e9141da53d1541ba))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** Fix comment for online return policy ([#12701](https://github.com/googleapis/google-cloud-go/issues/12701)) ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+* **shopping/merchant/issueresolution:** Update docs for issue resolution ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+
 ## [0.25.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.24.1...shopping/v0.25.0) (2025-08-12)
 
 
@@ -587,4 +600,3 @@
 * **shopping:** New clients ([#8699](https://github.com/googleapis/google-cloud-go/issues/8699)) ([0e43b40](https://github.com/googleapis/google-cloud-go/commit/0e43b40184bacac8d355ea2cfd00ebe58bd9e30b))
 
 ## Changes
-
