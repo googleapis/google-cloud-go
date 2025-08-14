@@ -73,6 +73,7 @@ type Client struct {
 	disableRetryInfo        bool
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
+	enableDirectAccess      bool
 }
 
 // ClientConfig has configurations for the client.
@@ -132,6 +133,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
+
+	if useDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH")); useDirectAccess {
+		enableDirectAccess = true
+		o = append(o, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
+	}
 
 	// Allow non-default service account in DirectPath.
 	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
@@ -193,6 +199,7 @@ var (
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
+	enableDirectAccess                = false
 	clientOnlyRetryOption             = newRetryOption(clientOnlyRetry, true)
 	clientOnlyExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry, true)
 	defaultRetryOption                = newRetryOption(clientOnlyRetry, false)
@@ -388,6 +395,8 @@ func (c *Client) newFeatureFlags() metadata.MD {
 		LastScannedRowResponses:  true,
 		ClientSideMetricsEnabled: c.metricsTracerFactory.enabled,
 		RetryInfo:                !c.disableRetryInfo,
+		TrafficDirectorEnabled:   c.enableDirectAccess,
+		DirectAccessRequested:    c.enableDirectAccess,
 	}
 
 	val := ""
