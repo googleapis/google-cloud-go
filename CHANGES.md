@@ -2,6 +2,13 @@
 
 
 
+## [0.121.6](https://github.com/googleapis/google-cloud-go/compare/v0.121.5...v0.121.6) (2025-08-14)
+
+
+### Bug Fixes
+
+* **internal/librariangen:** Fix Dockerfile permissions for go mod tidy ([#12704](https://github.com/googleapis/google-cloud-go/issues/12704)) ([0e70a0b](https://github.com/googleapis/google-cloud-go/commit/0e70a0b6afccc016c67337f340e2755fe7a476ca))
+
 ## [0.121.5](https://github.com/googleapis/google-cloud-go/compare/v0.121.4...v0.121.5) (2025-08-12)
 
 
