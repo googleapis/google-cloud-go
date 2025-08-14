@@ -306,7 +306,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	// Create client_blocking_latencies
 	tf.clientBlockingLatencies, err = meter.Float64Histogram(
 		metricNameClientBlockingLatencies,
-		metric.WithDescription("Latencies introduced when the client blocks the sending of more requests to the server because of too many pending requests in a bulk operation."),
+		metric.WithDescription("The latencies of requests queued on gRPC channels."),
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
@@ -560,8 +560,8 @@ func (h *latencyStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 		return
 	}
 
-	if _, ok := s.(*stats.OutPayload); ok {
-		tracker.recordLatency(time.Now())
+	if op, ok := s.(*stats.OutPayload); ok {
+		tracker.recordLatency(op.SentTime)
 	}
 }
 
