@@ -184,11 +184,19 @@ The `Dockerfile` packages the `librariangen` binary and all its dependencies int
 
 ### Building the Container
 
-1.  **Authenticate with Google Artifact Registry:** The official build process requires pulling a base image from `marketplace.gcr.io`. You must authenticate your Docker client with Google Cloud before building.
-    ```bash
-    gcloud auth configure-docker
-    ```
+1.  **Authenticate with Google Artifact Registry:** The official build process requires pulling a base image from `marketplace.gcr.io`.
+
     **Note:** Access to this base image may require special access.
+
+    You must authenticate your Docker client with Google Cloud before building with some combination of the following commands:
+
+    ```bash
+    gcloud auth login
+    go install github.com/GoogleCloudPlatform/docker-credential-gcr/v2@latest
+    docker-credential-gcr configure-docker
+    gcloud auth configure-docker
+    gcloud auth configure-docker gcr.io
+    ```
 
 2.  **Build and Test:** The `build-docker-and-test.sh` script builds the Docker image and then runs a verification container to ensure all dependencies are correctly installed.
     ```bash
