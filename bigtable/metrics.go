@@ -126,7 +126,6 @@ var (
 
 	// Generates unique client ID in the format go-<random UUID>@<hostname>
 	generateClientUID = func() (string, error) {
-		hostname := "localhost"
 		hostname, err := os.Hostname()
 		if err != nil {
 			return "", err
@@ -305,6 +304,9 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Create debug_tags
 	tf.debugTags, err = meter.Int64Counter(
@@ -390,7 +392,7 @@ type attemptTracer struct {
 	// Server latency in ms
 	serverLatency float64
 
-	// Error seen while getting server latency from headers
+	// Error seen while getting server latency from headers/trailers
 	serverLatencyErr error
 }
 
