@@ -1,43 +1,22 @@
-# The name of the image and tag to use.
-image: "image=gcr.io/cloud-go-infra/librariangen:latest"
-
-# The state of each library which is released within this repository.
+image: image=gcr.io/cloud-go-infra/librariangen:latest
 libraries:
-  - # The library identifier (language-specific format). api_paths configured under a
-    # given id should correspond to a releasable unit in a given language
-    id: "secretmanager"
-    # The last version that was released, if any.
-    version: "1.15.0"
-    # The commit hash (within the API definition repo) at which
-    # the repository was last generated.
-    last_generated_commit: "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"
-    # APIs that are bundled as a part of this library.
-    apis:
-      - # The API path included in this library, relative to the root
-        # of the API definition repo, e.g. "google/cloud/functions/v2".
-        path: "google/cloud/secretmanager/v1"
-        # The name of the service config file, relative to the path.
-        service_config: "secretmanager_v1.yaml"
-      - path: "google/cloud/secretmanager/v1beta2"
-        service_config: "secretmanager_v1beta2.yaml"
-    # Directories to which librarian contributes code to.
-    source_roots:
-      - "secretmanager"
-      - "internal/generated/snippets/secretmanager"
-    # Directories files in the local repo to leave untouched during copy and remove.
-    preserve_regex:
-      - "secretmanager/CHANGES.md"
-      - "secretmanager/README.md"
-      - "secretmanager/aliasshim/aliasshim.go"
-      - "secretmanager/apiv1/iam.go"
-      - "secretmanager/apiv1/iam_example_test.go"
-      - "secretmanager/apiv1/version.go"
-      - "secretmanager/apiv1beta2/version.go"
-      - "secretmanager/internal/version.go"
-    # If configured, these files/dirs will be removed before generated code is copied
-    # over. A more specific `preserve_regex` takes preceidece. If not not set, defaults
-    # to the `souce_paths`.
-    remove_regex:
-      - "secretmanager"
-      - "internal/generated/snippets/secretmanager"
+    - id: secretmanager
+      version: 1.15.0
+      last_generated_commit: 8fe8f9f460fe5dd1df95057659d2520ceca3c9c6
+      apis:
+        - path: google/cloud/secretmanager/v1
+          service_config: secretmanager_v1.yaml
+        - path: google/cloud/secretmanager/v1beta2
+          service_config: secretmanager_v1beta2.yaml
+      source_roots:
+        - secretmanager
+        - internal/generated/snippets/secretmanager
+      preserve_regex:
+        - secretmanager/CHANGES.md
+        - secretmanager/aliasshim/aliasshim.go
+        - secretmanager/apiv1/iam.go
+        - secretmanager/apiv1/iam_example_test.go
+      remove_regex:
+        - secretmanager
+        - internal/generated/snippets/secretmanager
 
