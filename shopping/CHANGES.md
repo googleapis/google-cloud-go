@@ -1,6 +1,34 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.25.0...shopping/v1.0.0) (2025-08-14)
+
+
+### Features
+
+* **shopping:** New clients ([#12712](https://github.com/googleapis/google-cloud-go/issues/12712)) ([710d269](https://github.com/googleapis/google-cloud-go/commit/710d269451ac438146f46b72e9141da53d1541ba))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** Fix comment for online return policy ([#12701](https://github.com/googleapis/google-cloud-go/issues/12701)) ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+* **shopping/merchant/issueresolution:** Update docs for issue resolution ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+
+## [0.25.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.24.1...shopping/v0.25.0) (2025-08-12)
+
+
+### Features
+
+* **shopping:** New clients ([#12670](https://github.com/googleapis/google-cloud-go/issues/12670)) ([ac135f5](https://github.com/googleapis/google-cloud-go/commit/ac135f52dc54b78875ff090a0a3ee4f0ba4fae50))
+
+## [0.24.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.24.0...shopping/v0.24.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* **shopping/merchant/reviews:** An existing field `attributes` is renamed to `merchant_review_attributes` in message `.google.shopping.merchant.reviews.v1beta.MerchantReview` ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **shopping/merchant/reviews:** An existing field `attributes` is renamed to `product_review_attributes` in message `.google.shopping.merchant.reviews.v1beta.ProductReview` ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
 ## [0.24.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.23.0...shopping/v0.24.0) (2025-07-16)
 
 

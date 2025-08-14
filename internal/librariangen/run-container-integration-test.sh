@@ -70,6 +70,7 @@ echo "Running librariangen container..."
 # the host's directories using --mount.
 if [ "$enable_post_processor" = true ]; then
     docker run --rm \
+      --env GOOGLE_SDK_GO_LOGGING_LEVEL=debug \
       --mount type=bind,source="$LIBRARIANGEN_GOOGLEAPIS_DIR",target=/source,readonly \
       --mount type=bind,source="$LIBRARIAN_DIR",target=/librarian,readonly \
       --mount type=bind,source="$OUTPUT_DIR",target=/output \
@@ -80,6 +81,7 @@ if [ "$enable_post_processor" = true ]; then
       --output=/output >> "$LIBRARIANGEN_LOG" 2>&1
 else
     docker run --rm \
+      --env GOOGLE_SDK_GO_LOGGING_LEVEL=debug \
       --mount type=bind,source="$LIBRARIANGEN_GOOGLEAPIS_DIR",target=/source,readonly \
       --mount type=bind,source="$LIBRARIAN_DIR",target=/librarian,readonly \
       --mount type=bind,source="$OUTPUT_DIR",target=/output \
@@ -90,6 +92,7 @@ else
       --output=/output \
       --disable-post-processor >> "$LIBRARIANGEN_LOG" 2>&1
 fi
+
 
 # --- Verify ---
 
