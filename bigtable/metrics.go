@@ -76,6 +76,11 @@ var (
 	// duration between two metric exports
 	defaultSamplePeriod = time.Minute
 
+	disabledMetricsTracerFactory = &builtinMetricsTracerFactory{
+		enabled:  false,
+		shutdown: func() {},
+	}
+
 	metricsErrorPrefix = "bigtable-metrics: "
 
 	clientName = fmt.Sprintf("go-bigtable/%v", internal.Version)
@@ -175,26 +180,22 @@ type builtinMetricsTracerFactory struct {
 	debugTags            metric.Int64Counter
 }
 
+// Returns error only if metricsProvider is of unknown type. Rest all errors are swallowed
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	if metricsProvider != nil {
 		switch metricsProvider.(type) {
 		case NoopMetricsProvider:
-			return &builtinMetricsTracerFactory{
-				enabled:  false,
-				shutdown: func() {},
-			}, nil
+			return disabledMetricsTracerFactory, nil
 		default:
-			return &builtinMetricsTracerFactory{
-				enabled:  false,
-				shutdown: func() {},
-			}, errors.New("unknown MetricsProvider type")
+			return disabledMetricsTracerFactory, errors.New("bigtable: unknown MetricsProvider type")
 		}
 	}
 
 	// Metrics are enabled.
 	clientUID, err := generateClientUID()
 	if err != nil {
-		return nil, err
+		// Swallow the error and disable metrics
+		return disabledMetricsTracerFactory, nil
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
@@ -212,8 +213,8 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	// Create default meter provider
 	mpOptions, err := builtInMeterProviderOptions(project, opts...)
 	if err != nil {
-		tracerFactory.enabled = false
-		return tracerFactory, err
+		// Swallow the error and disable metrics
+		return disabledMetricsTracerFactory, nil
 	}
 	meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
 	tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
@@ -222,9 +223,11 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
 	err = tracerFactory.createInstruments(meter)
 	if err != nil {
-		tracerFactory.enabled = false
+		// Swallow the error and disable metrics
+		return disabledMetricsTracerFactory, nil
 	}
-	return tracerFactory, err
+	// Swallow the error and disable metrics
+	return tracerFactory, nil
 }
 
 func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
