@@ -77,7 +77,7 @@ If you have made local changes to `librariangen` and want to test them in a cont
 1.  **Prerequisites:**
     *   You must have `docker` and `git` installed.
     *   Set the `GOOGLEAPIS_DIR` environment variable to the absolute path of your `googleapis` repository checkout.
-    *   You may need to authenticate with Google Artifact Registry to pull the base image: `gcloud auth configure-docker`.
+    *   You may need to authenticate with Google Artifact Registry to pull the base image. See instructions in Building the Container, below.
 
 2.  **Build the image:**
     The `build-docker-and-test.sh` script will build the image and tag it as `gcr.io/cloud-go-infra/librariangen:latest`.
@@ -96,19 +96,15 @@ If you have made local changes to `librariangen` and want to test them in a cont
     ```
 
 4.  **Execute:**
-    Run the `docker` command, mounting your `googleapis` checkout and the input/output directories you just created.
+    Run the `librarian` command from the `internal/librariangen` directory. This command will generate the `secretmanager` client library using the public container image.
     ```bash
-    docker run --rm \
-      --mount type=bind,source="$GOOGLEAPIS_DIR",target=/source,readonly \
-      --mount type=bind,source="/tmp/librariangen-run/librarian",target=/librarian,readonly \
-      --mount type=bind,source="/tmp/librariangen-run/output",target=/output \
-      gcr.io/cloud-go-infra/librariangen:latest \
-      generate \
-      --source=/source \
-      --librarian=/librarian \
-      --output=/output
+    go run ./cmd/librarian generate \
+      --image="gcr.io/cloud-go-infra/librariangen:latest" \
+      --repo="$GOOGLE_CLOUD_GO_DIR" \
+      --library=secretmanager \
+      --api=google/cloud/secretmanager/v1,google/cloud/secretmanager/v1beta2 \
+      --api-source="$GOOGLEAPIS_DIR"
     ```
-    The generated files will be available in `/tmp/librariangen-run/output`.
 
 
 ### Run the librariangen binary as a CLI
