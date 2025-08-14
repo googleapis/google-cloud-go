@@ -123,8 +123,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, err
 	}
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
-	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
-
+	o = append(o, option.WithGRPCDialOption(grpc.WithStatsHandler(sharedLatencyStatsHandler)))
 	// Default to a small connection pool that can be overridden.
 	o = append(o,
 		option.WithGRPCConnectionPool(4),
@@ -2250,6 +2249,12 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 	// Record application_latencies
 	appBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAppBlockingLatencies)
 	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
+
+	// Record client_blocking_latencies
+	cblAttrs, _ := mt.toOtelMetricAttrs(metricNameClientBlockingLatencies)
+	if mt.currOp.clientBlockingLatency > 0 {
+		mt.instrumentClientBlockingLatencies.Record(mt.ctx, mt.currOp.clientBlockingLatency, metric.WithAttributeSet(cblAttrs))
+	}
 }
 
 // gaxInvokeWithRecorder:
@@ -2276,6 +2281,10 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 			mt.currOp.incrementAttemptCount()
 
 			mt.currOp.currAttempt = attemptTracer{}
+			// Create and attach the latency tracker for the stats.Handler to use.
+			tracker := &blockingLatencyTracker{}
+			ctx = context.WithValue(ctx, statsContextKey, tracker)
+			mt.currOp.currAttempt.blockingLatencyTracker = tracker
 
 			// record start time
 			mt.currOp.currAttempt.setStartTime(time.Now())
@@ -2320,6 +2329,15 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	// Record attempt_latencies
 	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLatAttrs))
+
+	// Record client_blocking_latencies
+	var clientBlockingLatencyMs float64
+	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
+		latency := mt.currOp.currAttempt.blockingLatencyTracker.getLatency()
+		clientBlockingLatencyMs = convertToMs(latency)
+	}
+	clientBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameClientBlockingLatencies)
+	mt.instrumentClientBlockingLatencies.Record(mt.ctx, clientBlockingLatencyMs, metric.WithAttributeSet(clientBlockingLatAttrs))
 
 	// Record server_latencies
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
