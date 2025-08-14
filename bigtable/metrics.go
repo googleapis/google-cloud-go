@@ -31,6 +31,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+  "google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/stats"
 )
 
@@ -41,6 +42,7 @@ const (
 	locationMDKey         = "x-goog-ext-425905942-bin"
 	serverTimingMDKey     = "server-timing"
 	serverTimingValPrefix = "gfet4t7; dur="
+	metricMethodPrefix    = "Bigtable."
 
 	// Monitored resource labels
 	monitoredResLabelKeyProject  = "project_id"
@@ -63,7 +65,8 @@ const (
 	metricNameAttemptLatencies        = "attempt_latencies"
 	metricNameServerLatencies         = "server_latencies"
 	metricNameAppBlockingLatencies    = "application_latencies"
-	metricNameClientBlockingLatencies = "throttling_latencies"
+  metricNameClientBlockingLatencies = "throttling_latencies"
+	metricNameFirstRespLatencies      = "first_response_latencies"
 	metricNameRetryCount              = "retry_count"
 	metricNameDebugTags               = "debug_tags"
 	metricNameConnErrCount            = "connectivity_error_count"
@@ -117,6 +120,12 @@ var (
 				metricLabelKeyStreamingOperation,
 			},
 			recordedPerAttempt: true,
+		},
+		metricNameFirstRespLatencies: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: false,
 		},
 		metricNameAppBlockingLatencies: {},
 		metricNameClientBlockingLatencies: {
@@ -182,8 +191,9 @@ type builtinMetricsTracerFactory struct {
 	operationLatencies      metric.Float64Histogram
 	serverLatencies         metric.Float64Histogram
 	attemptLatencies        metric.Float64Histogram
+	firstRespLatencies      metric.Float64Histogram
 	appBlockingLatencies    metric.Float64Histogram
-	clientBlockingLatencies metric.Float64Histogram
+  clientBlockingLatencies metric.Float64Histogram
 	retryCount              metric.Int64Counter
 	connErrCount            metric.Int64Counter
 	debugTags               metric.Int64Counter
@@ -256,6 +266,26 @@ func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([
 	)}, nil
 }
 
+func (tf *builtinMetricsTracerFactory) newAsyncRefreshErrHandler() func() {
+	if !tf.enabled {
+		return func() {}
+	}
+
+	asyncRefreshMetricAttrs := tf.clientAttributes
+	asyncRefreshMetricAttrs = append(asyncRefreshMetricAttrs,
+		attribute.String(metricLabelKeyTag, "async_refresh_dry_run"),
+		// Table, cluster and zone are unknown at this point
+		// Use default values
+		attribute.String(monitoredResLabelKeyTable, defaultTable),
+		attribute.String(monitoredResLabelKeyCluster, defaultCluster),
+		attribute.String(monitoredResLabelKeyZone, defaultZone),
+	)
+	return func() {
+		tf.debugTags.Add(context.Background(), 1,
+			metric.WithAttributes(asyncRefreshMetricAttrs...))
+	}
+}
+
 func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {
 	var err error
 
@@ -285,6 +315,17 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	tf.serverLatencies, err = meter.Float64Histogram(
 		metricNameServerLatencies,
 		metric.WithDescription("The latency measured from the moment that the RPC entered the Google data center until the RPC was completed."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
+	}
+
+	// Create first_response_latencies
+	tf.firstRespLatencies, err = meter.Float64Histogram(
+		metricNameFirstRespLatencies,
+		metric.WithDescription("Latency from operation start until the response headers were received. The publishing of the measurement will be delayed until the attempt response has been received."),
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
@@ -357,8 +398,9 @@ type builtinMetricsTracer struct {
 	instrumentOperationLatencies      metric.Float64Histogram
 	instrumentServerLatencies         metric.Float64Histogram
 	instrumentAttemptLatencies        metric.Float64Histogram
+	instrumentFirstRespLatencies      metric.Float64Histogram
 	instrumentAppBlockingLatencies    metric.Float64Histogram
-	instrumentClientBlockingLatencies metric.Float64Histogram
+  instrumentClientBlockingLatencies metric.Float64Histogram
 	instrumentRetryCount              metric.Int64Counter
 	instrumentConnErrCount            metric.Int64Counter
 	instrumentDebugTags               metric.Int64Counter
@@ -368,10 +410,6 @@ type builtinMetricsTracer struct {
 	isStreaming bool
 
 	currOp opTracer
-}
-
-func (b *builtinMetricsTracer) setMethod(m string) {
-	b.method = "Bigtable." + m
 }
 
 // opTracer is used to record metrics for the entire operation, including retries.
@@ -419,7 +457,7 @@ type attemptTracer struct {
 	// Server latency in ms
 	serverLatency float64
 
-	// Error seen while getting server latency from headers
+	// Error seen while getting server latency from headers/trailers
 	serverLatencyErr error
 
 	// Tracker for client blocking latency
@@ -469,8 +507,9 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentOperationLatencies:      tf.operationLatencies,
 		instrumentServerLatencies:         tf.serverLatencies,
 		instrumentAttemptLatencies:        tf.attemptLatencies,
+		instrumentFirstRespLatencies:      tf.firstRespLatencies,
 		instrumentAppBlockingLatencies:    tf.appBlockingLatencies,
-		instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
+    instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
 		instrumentRetryCount:              tf.retryCount,
 		instrumentConnErrCount:            tf.connErrCount,
 		instrumentDebugTags:               tf.debugTags,
@@ -478,6 +517,10 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		tableName:   tableName,
 		isStreaming: isStreaming,
 	}
+}
+
+func (mt *builtinMetricsTracer) setMethod(m string) {
+	mt.method = metricMethodPrefix + m
 }
 
 // toOtelMetricAttrs:
@@ -527,6 +570,126 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.
 
 	attrSet := attribute.NewSet(attrKeyValues...)
 	return attrSet, nil
+}
+
+func (mt *builtinMetricsTracer) recordAttemptStart() {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Increment number of attempts
+	mt.currOp.incrementAttemptCount()
+
+	mt.currOp.currAttempt = attemptTracer{}
+
+	// record start time
+	mt.currOp.currAttempt.setStartTime(time.Now())
+}
+
+// recordAttemptCompletion records as many attempt specific metrics as it can
+// Ignore errors seen while creating metric attributes since metric can still
+// be recorded with rest of the attributes
+func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempTrailerMD metadata.MD, err error) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Set attempt status
+	statusCode, _ := convertToGrpcStatusErr(err)
+	mt.currOp.currAttempt.setStatus(statusCode.String())
+
+	// Get location attributes from metadata and set it in tracer
+	// Ignore get location error since the metric can still be recorded with rest of the attributes
+	clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
+	mt.currOp.currAttempt.setClusterID(clusterID)
+	mt.currOp.currAttempt.setZoneID(zoneID)
+
+	// Set server latency in tracer
+	serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
+	mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
+	mt.currOp.currAttempt.setServerLatency(serverLatency)
+
+	// Calculate elapsed time
+	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
+
+	// Record attempt_latencies
+	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLatAttrs))
+
+	// Record server_latencies
+	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
+	if mt.currOp.currAttempt.serverLatencyErr == nil {
+		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributeSet(serverLatAttrs))
+	}
+
+	// Record connectivity_error_count
+	connErrCountAttrs, _ := mt.toOtelMetricAttrs(metricNameConnErrCount)
+	// Determine if connection error should be incremented.
+	// A true connectivity error occurs only when we receive NO server-side signals.
+	// 1. Server latency (from server-timing header) is a signal, but absent in DirectPath.
+	// 2. Location (from x-goog-ext header) is a signal present in both paths.
+	// Therefore, we only count an error if BOTH signals are missing.
+	isServerLatencyEffectivelyEmpty := mt.currOp.currAttempt.serverLatencyErr != nil || mt.currOp.currAttempt.serverLatency == 0
+	isLocationEmpty := mt.currOp.currAttempt.clusterID == defaultCluster
+	if isServerLatencyEffectivelyEmpty && isLocationEmpty {
+		// This is a connectivity error: the request likely never reached Google's network.
+		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributeSet(connErrCountAttrs))
+	} else {
+		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributeSet(connErrCountAttrs))
+	}
+}
+
+// recordOperationCompletion records as many operation specific metrics as it can
+// Ignores error seen while creating metric attributes since metric can still
+// be recorded with rest of the attributes
+func (mt *builtinMetricsTracer) recordOperationCompletion() {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Calculate elapsed time
+	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
+
+	// Record operation_latencies
+	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(opLatAttrs))
+
+	// Record retry_count
+	retryCntAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)
+	if mt.currOp.attemptCount > 1 {
+		// Only record when retry count is greater than 0 so the retry
+		// graph will be less confusing
+		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributeSet(retryCntAttrs))
+	}
+
+	// Record application_latencies
+	appBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAppBlockingLatencies)
+	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
+  
+  // Record client_blocking_latencies
+	var clientBlockingLatencyMs float64
+	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
+		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
+		clientBlockingLatencyMs = convertToMs(time.Unix(0, int64(messageSentNanos)).Sub(mt.currOp.currAttempt.startTime))
+	}
+	clientBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameClientBlockingLatencies)
+	mt.instrumentClientBlockingLatencies.Record(mt.ctx, clientBlockingLatencyMs, metric.WithAttributeSet(clientBlockingLatAttrs))
+}
+
+func (mt *builtinMetricsTracer) setCurrOpStatus(status string) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	mt.currOp.setStatus(status)
+}
+
+func (mt *builtinMetricsTracer) incrementAppBlockingLatency(latency float64) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	mt.currOp.incrementAppBlockingLatency(latency)
 }
 
 // blockingLatencyTracker is used to calculate the time between stream creation and the first message send.

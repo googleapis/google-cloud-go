@@ -1,0 +1,353 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.managedkafka.schemaregistry.v1",
+  "libraryPackage": "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+  "services": {
+    "ManagedSchemaRegistry": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ManagedSchemaRegistryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CheckCompatibility": {
+              "methods": [
+                "CheckCompatibility"
+              ]
+            },
+            "CreateSchemaRegistry": {
+              "methods": [
+                "CreateSchemaRegistry"
+              ]
+            },
+            "CreateVersion": {
+              "methods": [
+                "CreateVersion"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSchemaConfig": {
+              "methods": [
+                "DeleteSchemaConfig"
+              ]
+            },
+            "DeleteSchemaMode": {
+              "methods": [
+                "DeleteSchemaMode"
+              ]
+            },
+            "DeleteSchemaRegistry": {
+              "methods": [
+                "DeleteSchemaRegistry"
+              ]
+            },
+            "DeleteSubject": {
+              "methods": [
+                "DeleteSubject"
+              ]
+            },
+            "DeleteVersion": {
+              "methods": [
+                "DeleteVersion"
+              ]
+            },
+            "GetContext": {
+              "methods": [
+                "GetContext"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRawSchema": {
+              "methods": [
+                "GetRawSchema"
+              ]
+            },
+            "GetRawSchemaVersion": {
+              "methods": [
+                "GetRawSchemaVersion"
+              ]
+            },
+            "GetSchema": {
+              "methods": [
+                "GetSchema"
+              ]
+            },
+            "GetSchemaConfig": {
+              "methods": [
+                "GetSchemaConfig"
+              ]
+            },
+            "GetSchemaMode": {
+              "methods": [
+                "GetSchemaMode"
+              ]
+            },
+            "GetSchemaRegistry": {
+              "methods": [
+                "GetSchemaRegistry"
+              ]
+            },
+            "GetVersion": {
+              "methods": [
+                "GetVersion"
+              ]
+            },
+            "ListContexts": {
+              "methods": [
+                "ListContexts"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReferencedSchemas": {
+              "methods": [
+                "ListReferencedSchemas"
+              ]
+            },
+            "ListSchemaRegistries": {
+              "methods": [
+                "ListSchemaRegistries"
+              ]
+            },
+            "ListSchemaTypes": {
+              "methods": [
+                "ListSchemaTypes"
+              ]
+            },
+            "ListSchemaVersions": {
+              "methods": [
+                "ListSchemaVersions"
+              ]
+            },
+            "ListSubjects": {
+              "methods": [
+                "ListSubjects"
+              ]
+            },
+            "ListSubjectsBySchemaId": {
+              "methods": [
+                "ListSubjectsBySchemaId"
+              ]
+            },
+            "ListVersions": {
+              "methods": [
+                "ListVersions"
+              ]
+            },
+            "LookupVersion": {
+              "methods": [
+                "LookupVersion"
+              ]
+            },
+            "UpdateSchemaConfig": {
+              "methods": [
+                "UpdateSchemaConfig"
+              ]
+            },
+            "UpdateSchemaMode": {
+              "methods": [
+                "UpdateSchemaMode"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ManagedSchemaRegistryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CheckCompatibility": {
+              "methods": [
+                "CheckCompatibility"
+              ]
+            },
+            "CreateSchemaRegistry": {
+              "methods": [
+                "CreateSchemaRegistry"
+              ]
+            },
+            "CreateVersion": {
+              "methods": [
+                "CreateVersion"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSchemaConfig": {
+              "methods": [
+                "DeleteSchemaConfig"
+              ]
+            },
+            "DeleteSchemaMode": {
+              "methods": [
+                "DeleteSchemaMode"
+              ]
+            },
+            "DeleteSchemaRegistry": {
+              "methods": [
+                "DeleteSchemaRegistry"
+              ]
+            },
+            "DeleteSubject": {
+              "methods": [
+                "DeleteSubject"
+              ]
+            },
+            "DeleteVersion": {
+              "methods": [
+                "DeleteVersion"
+              ]
+            },
+            "GetContext": {
+              "methods": [
+                "GetContext"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRawSchema": {
+              "methods": [
+                "GetRawSchema"
+              ]
+            },
+            "GetRawSchemaVersion": {
+              "methods": [
+                "GetRawSchemaVersion"
+              ]
+            },
+            "GetSchema": {
+              "methods": [
+                "GetSchema"
+              ]
+            },
+            "GetSchemaConfig": {
+              "methods": [
+                "GetSchemaConfig"
+              ]
+            },
+            "GetSchemaMode": {
+              "methods": [
+                "GetSchemaMode"
+              ]
+            },
+            "GetSchemaRegistry": {
+              "methods": [
+                "GetSchemaRegistry"
+              ]
+            },
+            "GetVersion": {
+              "methods": [
+                "GetVersion"
+              ]
+            },
+            "ListContexts": {
+              "methods": [
+                "ListContexts"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReferencedSchemas": {
+              "methods": [
+                "ListReferencedSchemas"
+              ]
+            },
+            "ListSchemaRegistries": {
+              "methods": [
+                "ListSchemaRegistries"
+              ]
+            },
+            "ListSchemaTypes": {
+              "methods": [
+                "ListSchemaTypes"
+              ]
+            },
+            "ListSchemaVersions": {
+              "methods": [
+                "ListSchemaVersions"
+              ]
+            },
+            "ListSubjects": {
+              "methods": [
+                "ListSubjects"
+              ]
+            },
+            "ListSubjectsBySchemaId": {
+              "methods": [
+                "ListSubjectsBySchemaId"
+              ]
+            },
+            "ListVersions": {
+              "methods": [
+                "ListVersions"
+              ]
+            },
+            "LookupVersion": {
+              "methods": [
+                "LookupVersion"
+              ]
+            },
+            "UpdateSchemaConfig": {
+              "methods": [
+                "UpdateSchemaConfig"
+              ]
+            },
+            "UpdateSchemaMode": {
+              "methods": [
+                "UpdateSchemaMode"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

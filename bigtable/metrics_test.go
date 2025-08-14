@@ -82,9 +82,8 @@ func equalErrs(gotErr error, wantErr error) bool {
 	return strings.Contains(gotErr.Error(), wantErr.Error())
 }
 
-// readRowsWithAppBlockingDelayLogic implements the core logic for a ReadRows RPC that introduces
 // sendTwoRowsHandler is a simple server-side stream handler that sends two predefined rows.
-func sendTwoRowsHandler(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+func sendTwoRowsHandler(_ any, stream btpb.Bigtable_ReadRowsServer) error {
 	// 1. Send headers immediately
 	if err := stream.SendHeader(metadata.MD{
 		locationMDKey: []string{string(testHeaders)}, // Send cluster/zone info
@@ -137,13 +136,12 @@ func (x *bigtableReadRowsServerWrapper) Send(m *btpb.ReadRowsResponse) error {
 // setupFakeServerWithCustomHandler sets up a fake server with a custom stream handler for ReadRows.
 // It returns a configured Table, a cleanup function, and any error during setup.
 func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientConfig,
-	customReadRowsHandler func(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error) (*Table, func(), error) {
+	customReadRowsHandler func(srv any, stream btpb.Bigtable_ReadRowsServer) error) (*Table, func(), error) {
 	streamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if info.FullMethod == "/google.bigtable.v2.Bigtable/ReadRows" {
-			// req is nil because ReadRowsWithDelayLogic does not use the request argument.
 			// Wrap the generic ServerStream with our specific wrapper.
 			wrappedStream := &bigtableReadRowsServerWrapper{ss}
-			return customReadRowsHandler(nil, wrappedStream)
+			return customReadRowsHandler(srv, wrappedStream)
 		}
 		return handler(srv, ss) // Default handling for other methods
 	}
@@ -395,7 +393,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				}
 				sort.Strings(gotMetricTypes)
 				if !testutil.Equal(gotMetricTypes, wantMetricTypesGCM) {
-					t.Errorf("Metric types missing in req. got: %v, want: %v", gotMetricTypes, wantMetricTypesGCM)
+					t.Errorf("Metric types missing in req. \ngot: %v, \nwant: %v\ndiff: %v", gotMetricTypes, wantMetricTypesGCM, testutil.Diff(gotMetricTypes, wantMetricTypesGCM))
 				}
 			}
 
@@ -838,7 +836,7 @@ func TestApplicationLatencies(t *testing.T) {
 		createExporterOptions = origCreateExporterOptions
 	}()
 
-	// Setup fake Bigtable server with delayed stream handler
+	// Setup fake Bigtable server which returns 2 rows
 	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, sendTwoRowsHandler)
 	defer cleanup()
 	if err != nil {
