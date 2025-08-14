@@ -40,6 +40,7 @@ const (
 	locationMDKey         = "x-goog-ext-425905942-bin"
 	serverTimingMDKey     = "server-timing"
 	serverTimingValPrefix = "gfet4t7; dur="
+	metricMethodPrefix    = "Bigtable."
 
 	// Monitored resource labels
 	monitoredResLabelKeyProject  = "project_id"
@@ -62,6 +63,7 @@ const (
 	metricNameAttemptLatencies     = "attempt_latencies"
 	metricNameServerLatencies      = "server_latencies"
 	metricNameAppBlockingLatencies = "application_latencies"
+	metricNameFirstRespLatencies   = "first_response_latencies"
 	metricNameRetryCount           = "retry_count"
 	metricNameDebugTags            = "debug_tags"
 	metricNameConnErrCount         = "connectivity_error_count"
@@ -110,6 +112,12 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
+		metricNameFirstRespLatencies: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: false,
+		},
 		metricNameAppBlockingLatencies: {},
 		metricNameRetryCount: {
 			additionalAttrs: []string{
@@ -127,7 +135,6 @@ var (
 
 	// Generates unique client ID in the format go-<random UUID>@<hostname>
 	generateClientUID = func() (string, error) {
-		hostname := "localhost"
 		hostname, err := os.Hostname()
 		if err != nil {
 			return "", err
@@ -170,6 +177,7 @@ type builtinMetricsTracerFactory struct {
 	operationLatencies   metric.Float64Histogram
 	serverLatencies      metric.Float64Histogram
 	attemptLatencies     metric.Float64Histogram
+	firstRespLatencies   metric.Float64Histogram
 	appBlockingLatencies metric.Float64Histogram
 	retryCount           metric.Int64Counter
 	connErrCount         metric.Int64Counter
@@ -299,6 +307,17 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
+	// Create first_response_latencies
+	tf.firstRespLatencies, err = meter.Float64Histogram(
+		metricNameFirstRespLatencies,
+		metric.WithDescription("Latency from operation start until the response headers were received. The publishing of the measurement will be delayed until the attempt response has been received."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
+	}
+
 	// Create application_latencies
 	tf.appBlockingLatencies, err = meter.Float64Histogram(
 		metricNameAppBlockingLatencies,
@@ -326,6 +345,9 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Create debug_tags
 	tf.debugTags, err = meter.Int64Counter(
@@ -350,6 +372,7 @@ type builtinMetricsTracer struct {
 	instrumentOperationLatencies   metric.Float64Histogram
 	instrumentServerLatencies      metric.Float64Histogram
 	instrumentAttemptLatencies     metric.Float64Histogram
+	instrumentFirstRespLatencies   metric.Float64Histogram
 	instrumentAppBlockingLatencies metric.Float64Histogram
 	instrumentRetryCount           metric.Int64Counter
 	instrumentConnErrCount         metric.Int64Counter
@@ -407,7 +430,7 @@ type attemptTracer struct {
 	// Server latency in ms
 	serverLatency float64
 
-	// Error seen while getting server latency from headers
+	// Error seen while getting server latency from headers/trailers
 	serverLatencyErr error
 }
 
@@ -454,6 +477,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentOperationLatencies:   tf.operationLatencies,
 		instrumentServerLatencies:      tf.serverLatencies,
 		instrumentAttemptLatencies:     tf.attemptLatencies,
+		instrumentFirstRespLatencies:   tf.firstRespLatencies,
 		instrumentAppBlockingLatencies: tf.appBlockingLatencies,
 		instrumentRetryCount:           tf.retryCount,
 		instrumentConnErrCount:         tf.connErrCount,
@@ -465,7 +489,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 }
 
 func (mt *builtinMetricsTracer) setMethod(m string) {
-	mt.method = "Bigtable." + m
+	mt.method = metricMethodPrefix + m
 }
 
 // toOtelMetricAttrs:
