@@ -71,27 +71,21 @@ func (e errUnexpectedAggregationKind) Error() string {
 // Google Cloud Monitoring.
 // Default exporter for built-in metrics
 type monitoringExporter struct {
+	shutdown     chan struct{}
 	client       *monitoring.MetricClient
-	shutdownCh   chan struct{}
 	shutdownOnce sync.Once
-	cancel       context.CancelFunc
 	projectID    string
 }
 
 func newMonitoringExporter(ctx context.Context, project string, opts ...option.ClientOption) (*monitoringExporter, error) {
-	// To avoid blocking the main operation, time out after 30 seconds.
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	client, err := monitoring.NewMetricClient(ctx, opts...)
 	if err != nil {
-		cancel()
 		return nil, err
 	}
-
 	return &monitoringExporter{
-		client:     client,
-		shutdownCh: make(chan struct{}),
-		projectID:  project,
-		cancel:     cancel,
+		client:    client,
+		shutdown:  make(chan struct{}),
+		projectID: project,
 	}, nil
 }
 
@@ -111,8 +105,7 @@ func (me *monitoringExporter) ForceFlush(ctx context.Context) error {
 func (me *monitoringExporter) Shutdown(ctx context.Context) error {
 	err := errShutdown
 	me.shutdownOnce.Do(func() {
-		close(me.shutdownCh)
-		me.cancel()
+		close(me.shutdown)
 		err = errors.Join(ctx.Err(), me.client.Close())
 	})
 	return wrapMetricsError(err)
@@ -121,7 +114,7 @@ func (me *monitoringExporter) Shutdown(ctx context.Context) error {
 // Export exports OpenTelemetry Metrics to Google Cloud Monitoring.
 func (me *monitoringExporter) Export(ctx context.Context, rm *otelmetricdata.ResourceMetrics) error {
 	select {
-	case <-me.shutdownCh:
+	case <-me.shutdown:
 		return wrapMetricsError(errShutdown)
 	default:
 	}
