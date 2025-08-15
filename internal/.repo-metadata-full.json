@@ -539,6 +539,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/bigquery/datapolicies/apiv2": {
+    "api_shortname": "bigquerydatapolicy",
+    "distribution_name": "cloud.google.com/go/bigquery/datapolicies/apiv2",
+    "description": "BigQuery Data Policy API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/datapolicies/apiv2",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/bigquery/datapolicies/apiv2beta1": {
     "api_shortname": "bigquerydatapolicy",
     "distribution_name": "cloud.google.com/go/bigquery/datapolicies/apiv2beta1",
@@ -1458,6 +1468,16 @@
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata",
     "release_level": "preview",
     "library_type": "CORE"
+  },
+  "cloud.google.com/go/geminidataanalytics/apiv1beta": {
+    "api_shortname": "geminidataanalytics",
+    "distribution_name": "cloud.google.com/go/geminidataanalytics/apiv1beta",
+    "description": "Data Analytics API with Gemini",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/geminidataanalytics/latest/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/gkebackup/apiv1": {
     "api_shortname": "gkebackup",

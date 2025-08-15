@@ -68,6 +68,7 @@
     "filestore": "1.10.2",
     "financialservices": "0.1.3",
     "functions": "1.19.6",
+    "geminidataanalytics": "0.0.0",
     "gkebackup": "1.8.0",
     "gkeconnect": "0.12.4",
     "gkehub": "0.15.6",
