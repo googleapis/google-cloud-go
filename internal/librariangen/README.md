@@ -198,19 +198,3 @@ The `Dockerfile` packages the `librariangen` binary and all its dependencies int
     ```bash
     bash build-docker-and-test.sh
     ```
-
-## Lines of code in this module
-
-To get an approximate count of the non-commented, non-blank lines of production Go code in the `librariangen` module, you can run the following command from the root of the `google-cloud-go` repository:
-
-```bash
-find ./internal/librariangen -type f -name "*.go" ! -name "*_test.go" -exec cat {} + | sed -e 's://.*::' -e '/^\s*$/d' | wc -l
-```
-
-This command works by:
-1.  Finding all files ending in `.go` within the `internal/librariangen` directory.
-2.  Excluding all test files (`*_test.go`).
-3.  Removing single-line comments and blank lines.
-4.  Counting the remaining lines.
-
-**Note:** This provides a good estimate but does not handle multi-line `/* ... */` comments. For a more precise count, consider using a dedicated tool like `cloc`.
