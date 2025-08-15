@@ -450,6 +450,9 @@ service-configs:
   - input-directory: google/cloud/bigquery/datapolicies/v1beta1
     service-config: bigquerydatapolicy_v1beta1.yaml
     import-path: cloud.google.com/go/bigquery/datapolicies/apiv1beta1
+  - input-directory: google/cloud/bigquery/datapolicies/v2
+    service-config: bigquerydatapolicy_v2.yaml
+    import-path: cloud.google.com/go/bigquery/datapolicies/apiv2
   - input-directory: google/cloud/bigquery/datapolicies/v2beta1
     service-config: bigquerydatapolicy_v2beta1.yaml
     import-path: cloud.google.com/go/bigquery/datapolicies/apiv2beta1
