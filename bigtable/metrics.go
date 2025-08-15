@@ -616,6 +616,15 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLatAttrs))
 
+	// Record client_blocking_latencies
+	var clientBlockingLatencyMs float64
+	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
+		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
+		clientBlockingLatencyMs = convertToMs(time.Unix(0, int64(messageSentNanos)).Sub(mt.currOp.currAttempt.startTime))
+	}
+	clientBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameClientBlockingLatencies)
+	mt.instrumentClientBlockingLatencies.Record(mt.ctx, clientBlockingLatencyMs, metric.WithAttributeSet(clientBlockingLatAttrs))
+
 	// Record server_latencies
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
@@ -665,15 +674,6 @@ func (mt *builtinMetricsTracer) recordOperationCompletion() {
 	// Record application_latencies
 	appBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAppBlockingLatencies)
 	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
-
-	// Record client_blocking_latencies
-	var clientBlockingLatencyMs float64
-	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
-		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
-		clientBlockingLatencyMs = convertToMs(time.Unix(0, int64(messageSentNanos)).Sub(mt.currOp.currAttempt.startTime))
-	}
-	clientBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameClientBlockingLatencies)
-	mt.instrumentClientBlockingLatencies.Record(mt.ctx, clientBlockingLatencyMs, metric.WithAttributeSet(clientBlockingLatAttrs))
 }
 
 func (mt *builtinMetricsTracer) setCurrOpStatus(status string) {
