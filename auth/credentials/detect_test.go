@@ -173,7 +173,7 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 			t.Fatal(err)
 		}
 	}))
-	f.ServiceAccountImpersonationURL = ts.URL
+	f.ServiceAccountImpersonationURL = ts.URL + "/v1/projects/-/serviceAccounts/sa3@developer.gserviceaccount.com:generateAccessToken"
 	b, err = json.Marshal(f)
 	if err != nil {
 		t.Fatal(err)
@@ -586,6 +586,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	impersonatePath := "/v1/projects/-/serviceAccounts/impersonated-sa@fake_project.iam.gserviceaccount.com:generateAccessToken"
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		if r.URL.Path == "/token" {
@@ -613,7 +614,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 			if err := json.NewEncoder(w).Encode(&resp); err != nil {
 				t.Error(err)
 			}
-		} else if r.URL.Path == "/impersonate" {
+		} else if r.URL.Path == impersonatePath {
 			if want := "a_fake_token_sts"; !strings.Contains(r.Header.Get("Authorization"), want) {
 				t.Errorf("missing sts token: got %q, want %q", r.Header.Get("Authorization"), want)
 			}
@@ -632,7 +633,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 			t.Errorf("unexpected call to %q", r.URL.Path)
 		}
 	}))
-	f.ServiceAccountImpersonationURL = ts.URL + "/impersonate"
+	f.ServiceAccountImpersonationURL = ts.URL + impersonatePath
 	f.CredentialSource.URL = ts.URL + "/token"
 	f.TokenURL = ts.URL + "/sts"
 	b, err = json.Marshal(f)
