@@ -487,6 +487,10 @@ type SignedURLOptions struct {
 	// Required.
 	Method string
 
+	// UsableTime is the time when the signed URL is usable.
+	// If it IsZero, it will be set to the current time.
+	UsableTime time.Time
+
 	// Expires is the expiration time on the signed URL. It must be
 	// a datetime in the future. For SigningSchemeV4, the expiration may be no
 	// more than seven days in the future.
@@ -679,8 +683,11 @@ func v4SanitizeHeaders(hdrs []string) []string {
 // If initializing a Storage Client, instead use the Bucket.SignedURL method
 // which uses the Client's credentials to handle authentication.
 func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
-	now := utcNow()
-	if err := validateOptions(opts, now); err != nil {
+	usableTime := utcNow()
+	if !opts.UsableTime.IsZero() {
+		usableTime = opts.UsableTime
+	}
+	if err := validateOptions(opts, usableTime); err != nil {
 		return "", err
 	}
 
@@ -690,14 +697,14 @@ func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
 		return signedURLV2(bucket, object, opts)
 	case SigningSchemeV4:
 		opts.Headers = v4SanitizeHeaders(opts.Headers)
-		return signedURLV4(bucket, object, opts, now)
+		return signedURLV4(bucket, object, opts, usableTime)
 	default: // SigningSchemeDefault
 		opts.Headers = v2SanitizeHeaders(opts.Headers)
 		return signedURLV2(bucket, object, opts)
 	}
 }
 
-func validateOptions(opts *SignedURLOptions, now time.Time) error {
+func validateOptions(opts *SignedURLOptions, usableTime time.Time) error {
 	if opts == nil {
 		return errors.New("storage: missing required SignedURLOptions")
 	}
@@ -727,7 +734,7 @@ func validateOptions(opts *SignedURLOptions, now time.Time) error {
 		return errors.New("storage: only path-style URLs are permitted with SigningSchemeV2")
 	}
 	if opts.Scheme == SigningSchemeV4 {
-		cutoff := now.Add(604801 * time.Second) // 7 days + 1 second
+		cutoff := usableTime.Add(604801 * time.Second) // 7 days + 1 second
 		if !opts.Expires.Before(cutoff) {
 			return errors.New("storage: expires must be within seven days from now")
 		}
@@ -773,7 +780,7 @@ func pathEncodeV4(path string) string {
 }
 
 // signedURLV4 creates a signed URL using the sigV4 algorithm.
-func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (string, error) {
+func signedURLV4(bucket, name string, opts *SignedURLOptions, usableTime time.Time) (string, error) {
 	buf := &bytes.Buffer{}
 	fmt.Fprintf(buf, "%s\n", opts.Method)
 
@@ -794,13 +801,13 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	}
 	sort.Strings(headerNames)
 	signedHeaders := strings.Join(headerNames, ";")
-	timestamp := now.Format(iso8601)
-	credentialScope := fmt.Sprintf("%s/auto/storage/goog4_request", now.Format(yearMonthDay))
+	timestamp := usableTime.Format(iso8601)
+	credentialScope := fmt.Sprintf("%s/auto/storage/goog4_request", usableTime.Format(yearMonthDay))
 	canonicalQueryString := url.Values{
 		"X-Goog-Algorithm":     {"GOOG4-RSA-SHA256"},
 		"X-Goog-Credential":    {fmt.Sprintf("%s/%s", opts.GoogleAccessID, credentialScope)},
 		"X-Goog-Date":          {timestamp},
-		"X-Goog-Expires":       {fmt.Sprintf("%d", int(opts.Expires.Sub(now).Seconds()))},
+		"X-Goog-Expires":       {fmt.Sprintf("%d", int(opts.Expires.Sub(usableTime).Seconds()))},
 		"X-Goog-SignedHeaders": {signedHeaders},
 	}
 	// Add user-supplied query parameters to the canonical query string. For V4,
