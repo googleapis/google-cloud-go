@@ -46,7 +46,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -6933,6 +6932,41 @@ func TestIntegration_OTelTracing(t *testing.T) {
 	})
 }
 
+func TestIntegration_ZonalOutOfRegionRead(t *testing.T) {
+	multiTransportTest(skipAllButBidi(context.Background(), "zonal bucket test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		bucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(bucketName)
+
+		h.mustCreateZonalBucket(bkt, testutil.ProjID())
+		defer h.mustDeleteBucket(bkt)
+
+		objName := "bidi-test-obj"
+		obj := bkt.Object(objName)
+		w := obj.NewWriter(ctx)
+		w.Append = true
+		h.mustWrite(w, randomBytes3MiB)
+		defer obj.Delete(ctx)
+
+		r, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatalf("NewReader: %v", err)
+		}
+
+		b, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("reading: %v", err)
+		}
+		if !bytes.Equal(randomBytes3MiB, b) {
+			t.Errorf("download data does not match; got %v bytes, want %v bytes", len(b), len(randomBytes3MiB))
+		}
+
+		if err := r.Close(); err != nil {
+			t.Errorf("closing: %v", err)
+		}
+	}, experimental.WithGRPCBidiReads())
+}
+
 // openTelemetryTestExporter is a test utility exporter. It should be created
 // with NewopenTelemetryTestExporter.
 type openTelemetryTestExporter struct {
@@ -7208,12 +7242,17 @@ func (h testHelper) mustCreateZonalBucket(b *BucketHandle, projID string) {
 	h.t.Helper()
 
 	// Create a bucket in the same zone as the test VM.
-	zone, err := metadata.ZoneWithContext(context.Background())
-	if err != nil {
-		h.t.Fatalf("could not determine VM zone: %v", err)
-	}
-	region := strings.Join(strings.Split(zone, "-")[:2], "-")
-	h.mustCreate(b, testutil.ProjID(), &BucketAttrs{
+	// zone, err := metadata.ZoneWithContext(context.Background())
+	// if err != nil {
+	// 	h.t.Fatalf("could not determine VM zone: %v", err)
+	// }
+	// region := strings.Join(strings.Split(zone, "-")[:2], "-")
+	zone := "us-west4-a"
+	region := "us-west4"
+	// zone := "us-central1-a"
+	// region := "us-central1"
+
+	h.mustCreate(b, projID, &BucketAttrs{
 		Location: region,
 		CustomPlacementConfig: &CustomPlacementConfig{
 			DataLocations: []string{zone},
