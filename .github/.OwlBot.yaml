@@ -55,6 +55,7 @@ deep-remove-regex:
   - /bigquery/dataexchange/apiv1beta1/
   - /bigquery/datapolicies/apiv1/
   - /bigquery/datapolicies/apiv1beta1/
+  - /bigquery/datapolicies/apiv2/
   - /bigquery/datapolicies/apiv2beta1/
   - /bigquery/datatransfer/apiv1/
   - /bigquery/migration/apiv2/
@@ -206,6 +207,7 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/dataexchange/apiv1beta1/
   - /internal/generated/snippets/bigquery/datapolicies/apiv1/
   - /internal/generated/snippets/bigquery/datapolicies/apiv1beta1/
+  - /internal/generated/snippets/bigquery/datapolicies/apiv2/
   - /internal/generated/snippets/bigquery/datapolicies/apiv2beta1/
   - /internal/generated/snippets/bigquery/datatransfer/apiv1/
   - /internal/generated/snippets/bigquery/migration/apiv2/
@@ -813,6 +815,8 @@ deep-copy-regex:
   - source: /google/cloud/bigquery/datapolicies/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/datapolicies/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/bigquery/datapolicies/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/datapolicies/v2beta1/cloud.google.com/go
     dest: /
