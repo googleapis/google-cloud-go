@@ -1,5 +1,39 @@
 # Changes
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.38.0...bigtable/v1.39.0) (2025-08-16)
+
+
+### Features
+
+* **bigtable/admin:** Add tags field to Instance proto (stable branch) ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **bigtable/spanner:** Allow disable gRPC DirectPath deps ([#12469](https://github.com/googleapis/google-cloud-go/issues/12469)) ([2205d27](https://github.com/googleapis/google-cloud-go/commit/2205d27d8fff56c0b25facfc60daa766f4d10ee8))
+* **bigtable:** Add Idempotency to Cloud Bigtable MutateRowRequest API ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **bigtable:** Add Idempotency to Cloud Bigtable MutateRowsRequest API ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **bigtable:** Adding support to schema bundles ([#12516](https://github.com/googleapis/google-cloud-go/issues/12516)) ([688eb13](https://github.com/googleapis/google-cloud-go/commit/688eb13ea98a2a041513b06d47dddfbfc29a9117))
+* **bigtable:** Create first response latencies instrument ([#12706](https://github.com/googleapis/google-cloud-go/issues/12706)) ([6f34867](https://github.com/googleapis/google-cloud-go/commit/6f34867b4788f971ce2cd5fc9c4d448310d94021))
+* **bigtable:** Publish Proto and Enum types to CBT data API ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+* **bigtable:** Record client_blocking_latencies ([#12698](https://github.com/googleapis/google-cloud-go/issues/12698)) ([5f03fb3](https://github.com/googleapis/google-cloud-go/commit/5f03fb3685d34e63aacb4f62132f2978efa8e7d8))
+* **bigtable:** Support universe domain ([#12567](https://github.com/googleapis/google-cloud-go/issues/12567)) ([fc59e39](https://github.com/googleapis/google-cloud-go/commit/fc59e39b63abde64c161ec9ef67bee6312e54aea))
+* **bigtable:** Update ListSchemaBundles to returns only names ([#12563](https://github.com/googleapis/google-cloud-go/issues/12563)) ([83ea7c4](https://github.com/googleapis/google-cloud-go/commit/83ea7c420baf1a7c004796843eb377e4344f41b1))
+
+
+### Bug Fixes
+
+* **bigtable:** Add ReadRows/SampleRowKeys bindings for materialized views ([7616e81](https://github.com/googleapis/google-cloud-go/commit/7616e8128384e0ce9ee12fe3dd622e61a9785534))
+* **bigtable:** Fix NoopMetricsProvider panic ([#12709](https://github.com/googleapis/google-cloud-go/issues/12709)) ([8c6da0d](https://github.com/googleapis/google-cloud-go/commit/8c6da0dd99cec1bb046fac771c0404cf5476187e))
+* **bigtable:** Update routing_parameters.path_template ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+
+### Performance Improvements
+
+* **bigtable:** Create attributes only when enabled ([#12647](https://github.com/googleapis/google-cloud-go/issues/12647)) ([aa31abc](https://github.com/googleapis/google-cloud-go/commit/aa31abcefd63d6cb589dcc4d9ed45c6658941385))
+
+
+### Documentation
+
+* **bigtable:** Minor comment update for field `idempotency` in message `.google.bigtable.v2.MutateRowRequest` ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **bigtable:** Sync generated comments from the API Protos ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.37.0...bigtable/v1.38.0) (2025-06-27)
 
 
