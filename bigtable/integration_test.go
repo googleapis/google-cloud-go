@@ -239,6 +239,22 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 	}
 }
 
+func TestIntegration_Pinger(t *testing.T) {
+	ctx := context.Background()
+	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { cleanup() })
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support PingAndWarm")
+	}
+	if err := client.Pinger(ctx); err != nil {
+		t.Fatalf("pinger failed. got %v, want %v", err, nil)
+	}
+
+}
+
 func TestIntegration_PartialReadRows(t *testing.T) {
 	ctx := context.Background()
 	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
