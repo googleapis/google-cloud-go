@@ -1,5 +1,22 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.18.0...firestore/v1.19.0) (2025-08-16)
+
+
+### Features
+
+* **firestore/apiv1:** Add Firestore CloneDatabase support ([#12629](https://github.com/googleapis/google-cloud-go/issues/12629)) ([0b74f43](https://github.com/googleapis/google-cloud-go/commit/0b74f43c6639e0e85c828145e867b0e98f4fdc96))
+* **firestore/apiv1:** Add the UserCreds API ([20f762c](https://github.com/googleapis/google-cloud-go/commit/20f762c528726a3f038d3e1f37e8a4952118badf))
+* **firestore/apiv1:** Expose tags field in Database and RestoreDatabaseRequest public protos ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **firestore/apiv1:** New Firestore index modes and Database Editions ([8d466c4](https://github.com/googleapis/google-cloud-go/commit/8d466c492fb1a15e1e857268397e795287fb844e))
+* **firestore:** Introduce DocFromResourceName for full resource paths ([#12307](https://github.com/googleapis/google-cloud-go/issues/12307)) ([f7ee0b2](https://github.com/googleapis/google-cloud-go/commit/f7ee0b25a69336b290d47c19657c2abdbfec711f))
+
+
+### Bug Fixes
+
+* **firestore:** Update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+* **firestore:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.17.0...firestore/v1.18.0) (2025-01-02)
 
 
