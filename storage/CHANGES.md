@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.56.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.56.0...storage/v1.56.1) (2025-08-16)
+
+
+### Bug Fixes
+
+* **storage:** Pass all user options to NewService ([#12615](https://github.com/googleapis/google-cloud-go/issues/12615)) ([77cdb83](https://github.com/googleapis/google-cloud-go/commit/77cdb832a374eba29e4de7699324a87f1d20eea3))
+
 ## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.55.0...storage/v1.56.0) (2025-07-24)
 
 
