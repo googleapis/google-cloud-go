@@ -21,6 +21,7 @@ import (
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"cloud.google.com/go/bigquery/v2/apiv2_client"
+	"cloud.google.com/go/internal/uid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 )
@@ -61,6 +62,10 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 		req.QueryRequest.JobCreationMode = c.defaultJobCreationMode
 	}
 
+	if req.QueryRequest.RequestId == "" {
+		req.QueryRequest.RequestId = uid.NewSpace("request", nil).New()
+	}
+
 	if !hasRetry(opts) {
 		opts = append(opts, gax.WithRetry(defaultJobRetryerFunc))
 	}
@@ -70,7 +75,14 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 		return nil, fmt.Errorf("failed to run query: %w", err)
 	}
 
-	return newQueryJobFromQueryResponse(c, res)
+	q, err := newQueryJobFromQueryResponse(c, res)
+	if err != nil {
+		return nil, fmt.Errorf("failed to run query: %w", err)
+	}
+
+	go q.waitForQueryBackground(ctx, opts)
+
+	return q, nil
 }
 
 // StartQueryRequest runs a query and returns a QueryJob handle.
@@ -99,7 +111,15 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert query: %w", err)
 	}
-	return newQueryJobFromJobReference(c, job.JobReference)
+
+	q, err := newQueryJobFromJobReference(c, job.JobReference)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start query job: %w", err)
+	}
+
+	go q.waitForQueryBackground(ctx, opts)
+
+	return q, nil
 }
 
 // AttachJob set up a query job to be read from an existing one.

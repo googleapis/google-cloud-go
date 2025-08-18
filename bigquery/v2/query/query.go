@@ -16,6 +16,7 @@ package query
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
@@ -32,6 +33,10 @@ type Query struct {
 	location  string
 	queryID   string
 
+	mu    sync.RWMutex
+	ready chan struct{}
+	err   error
+
 	cachedTotalRows    uint64
 	cachedPageToken    string
 	cachedRows         []*Row
@@ -43,6 +48,7 @@ func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*Qu
 	q := &Query{
 		c:       c,
 		queryID: res.QueryId,
+		ready:   make(chan struct{}),
 	}
 	err := q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
 		Schema:              res.Schema,
@@ -84,18 +90,36 @@ func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, err
 
 // Wait waits for the query to complete.
 func (q *Query) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	select {
+	case <-q.ready:
+		return q.err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+func (q *Query) waitForQueryBackground(ctx context.Context, opts []gax.CallOption) {
 	for !q.complete {
 		err := q.waitForQuery(ctx, opts)
 		if err != nil {
-			return err
+			q.mu.Lock()
+			q.err = err
+			close(q.ready)
+			q.mu.Unlock()
 		}
 		select {
 		case <-time.After(1 * time.Second): // TODO: exponetial backoff
 		case <-ctx.Done():
-			return ctx.Err()
+			q.mu.Lock()
+			q.err = ctx.Err()
+			close(q.ready)
+			q.mu.Unlock()
 		}
 	}
-	return nil
+	q.mu.Lock()
+	q.err = nil
+	close(q.ready)
+	q.mu.Unlock()
 }
 
 func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
@@ -121,6 +145,9 @@ func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
 }
 
 func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) error {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	if q.cachedSchema == nil {
 		schema := newSchema(res.Schema)
 		q.cachedSchema = schema

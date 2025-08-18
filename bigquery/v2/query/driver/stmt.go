@@ -70,6 +70,10 @@ func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (driv
 	if err != nil {
 		return nil, err
 	}
+	err = q.Wait(ctx)
+	if err != nil {
+		return nil, err
+	}
 	it, err := q.Read(ctx)
 	if err != nil {
 		return nil, err
