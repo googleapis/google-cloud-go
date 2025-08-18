@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"sync"
 
@@ -38,21 +39,14 @@ const (
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.%s/v1/projects/-/serviceAccounts/%s/allowedLocations"
 )
 
-var (
-	// enabledOnce ensures the check for trust boundary is only performed once.
-	enabledOnce sync.Once
-	// enabled controls whether the trust boundary feature is enabled.
-	enabled    bool
-	enabledErr error
-)
+// isEnabled wraps isTrustBoundaryEnabled with sync.OnceValues to ensure it's
+// called only once.
+var isEnabled = sync.OnceValues(isTrustBoundaryEnabled)
 
 // IsEnabled returns if the trust boundary feature is enabled and an error if
-// the configuration is invalid.
+// the configuration is invalid. The underlying check is performed only once.
 func IsEnabled() (bool, error) {
-	enabledOnce.Do(func() {
-		enabled, enabledErr = isTrustBoundaryEnabled()
-	})
-	return enabled, enabledErr
+	return isEnabled()
 }
 
 // isTrustBoundaryEnabled checks if the trust boundary feature is enabled via
@@ -124,7 +118,34 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 	headers.SetAuthHeader(token, req)
 	logger.DebugContext(ctx, "trust boundary request", "request", internallog.HTTPRequest(req, nil))
 
-	response, err := client.Do(req)
+	retryer := newRetryer()
+	var response *http.Response
+	for {
+		response, err = client.Do(req)
+
+		var pause time.Duration
+		var retry bool
+		if response != nil {
+			pause, retry = retryer.Retry(response.StatusCode, err)
+		} else {
+			pause, retry = retryer.Retry(0, err)
+		}
+
+		if !retry {
+			break
+		}
+
+		if response != nil {
+			// Drain and close the body to reuse the connection
+			io.Copy(io.Discard, response.Body)
+			response.Body.Close()
+		}
+
+		if err := sleep(ctx, pause); err != nil {
+			return nil, err
+		}
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("trustboundary: failed to fetch trust boundary: %w", err)
 	}

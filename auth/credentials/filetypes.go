@@ -154,9 +154,9 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 		return nil, err
 	}
 
-	trustBoundaryEnabled, trustBoundaryEnabledErr := trustboundary.IsEnabled()
-	if trustBoundaryEnabledErr != nil {
-		return nil, trustBoundaryEnabledErr
+	trustBoundaryEnabled, err := trustboundary.IsEnabled()
+	if err != nil {
+		return nil, err
 	}
 	if trustBoundaryEnabled {
 		saTrustBoundaryConfig := trustboundary.NewServiceAccountTrustBoundaryConfig(opts2LO.Email, opts2LO.UniverseDomain)
@@ -230,9 +230,9 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 		return nil, err
 	}
 	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	trustBoundaryEnabled, trustBoundaryEnabledErr := trustboundary.IsEnabled()
-	if trustBoundaryEnabledErr != nil {
-		return nil, trustBoundaryEnabledErr
+	trustBoundaryEnabled, err := trustboundary.IsEnabled()
+	if err != nil {
+		return nil, err
 	}
 	impOpts := &impersonate.Options{
 		URL:            f.ServiceAccountImpersonationURL,

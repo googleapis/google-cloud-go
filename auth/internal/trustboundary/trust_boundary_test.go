@@ -24,7 +24,6 @@ import (
 	"os"
 	"reflect"
 	"strings"
-	"sync"
 	"testing"
 
 	"cloud.google.com/go/auth"
@@ -39,15 +38,17 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 	}
 
 	tests := []struct {
-		name           string
-		serverResponse *serverResponse
-		token          *auth.Token
-		urlOverride    *string // To test empty URL
-		useNilClient   bool
-		ctx            context.Context
-		wantData       *internal.TrustBoundaryData
-		wantErr        string
-		wantReqHeaders map[string]string
+		name             string
+		serverResponse   *serverResponse
+		secondResponse   *serverResponse // For retry test
+		token            *auth.Token
+		urlOverride      *string // To test empty URL
+		useNilClient     bool
+		ctx              context.Context
+		wantData         *internal.TrustBoundaryData
+		wantErr          string
+		wantReqHeaders   map[string]string
+		wantRequestCount int
 	}{
 		{
 			name: "Success - OK with locations",
@@ -61,6 +62,22 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			wantReqHeaders: map[string]string{
 				"Authorization": "Bearer test-token",
 			},
+			wantRequestCount: 1,
+		},
+		{
+			name: "Success after one retry on 503 error",
+			serverResponse: &serverResponse{
+				status: http.StatusServiceUnavailable,
+				body:   "server unavailable",
+			},
+			secondResponse: &serverResponse{
+				status: http.StatusOK,
+				body:   `{"locations": ["us-central1"], "encodedLocations": "0xABC"}`,
+			},
+			token:            &auth.Token{Value: "test-token"},
+			ctx:              context.Background(),
+			wantData:         internal.NewTrustBoundaryData([]string{"us-central1"}, "0xABC"),
+			wantRequestCount: 2,
 		},
 		{
 			name: "Success - OK No-Op response",
@@ -71,6 +88,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			token:    &auth.Token{Value: "test-token"},
 			ctx:      context.Background(),
 			wantData: internal.NewTrustBoundaryData(nil, "0x0"),
+			wantRequestCount: 1,
 		},
 		{
 			name: "Success - OK No-Op response with empty locations array",
@@ -81,6 +99,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			token:    &auth.Token{Value: "test-token"},
 			ctx:      context.Background(),
 			wantData: internal.NewTrustBoundaryData([]string{}, "0x0"),
+			wantRequestCount: 1,
 		},
 		{
 			name: "Error - Non-200 Status",
@@ -152,9 +171,19 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var server *httptest.Server
 			var url string
+			requestCount := 0
 
 			if tt.serverResponse != nil {
 				server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					requestCount++
+					// Use second response if it's a retry
+					if tt.secondResponse != nil && requestCount > 1 {
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(tt.secondResponse.status)
+						fmt.Fprint(w, tt.secondResponse.body)
+						return
+					}
+					// Default response
 					if tt.wantReqHeaders != nil {
 						for key, val := range tt.wantReqHeaders {
 							if got := r.Header.Get(key); got != val {
@@ -183,6 +212,10 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 
 			data, err := fetchTrustBoundaryData(tt.ctx, client, url, tt.token, nil)
 
+			if tt.wantRequestCount > 0 && requestCount != tt.wantRequestCount {
+				t.Errorf("fetchTrustBoundaryData() requestCount = %d, want %d", requestCount, tt.wantRequestCount)
+			}
+
 			if tt.wantErr != "" {
 				if err == nil {
 					t.Fatalf("fetchTrustBoundaryData() error = nil, want substring %q", tt.wantErr)
@@ -204,14 +237,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 	}
 }
 
-// for testing only
-func resetIsEnabled() {
-	enabledOnce = sync.Once{}
-	enabled = false
-	enabledErr = nil
-}
-
-func TestIsEnabled(t *testing.T) {
+func TestIsTrustBoundaryEnabled(t *testing.T) {
 	tests := []struct {
 		name    string
 		envVal  string
@@ -275,18 +301,15 @@ func TestIsEnabled(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resetIsEnabled()
 			if tt.setEnv {
 				t.Setenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED", tt.envVal)
-			} else {
-				os.Unsetenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED")
 			}
-			got, err := IsEnabled()
+			got, err := isTrustBoundaryEnabled()
 			if (err != nil) != tt.wantErr {
-				t.Fatalf("IsEnabled() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("isTrustBoundaryEnabled() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if got != tt.want {
-				t.Errorf("IsEnabled() = %v, want %v", got, tt.want)
+				t.Errorf("isTrustBoundaryEnabled() = %v, want %v", got, tt.want)
 			}
 		})
 	}

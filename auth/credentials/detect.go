@@ -96,9 +96,9 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	trustBoundaryEnabled, trustBoundaryEnabledErr := trustboundary.IsEnabled()
-	if trustBoundaryEnabledErr != nil {
-		return nil, trustBoundaryEnabledErr
+	trustBoundaryEnabled, err := trustboundary.IsEnabled()
+	if err != nil {
+		return nil, err
 	}
 	if len(opts.CredentialsJSON) > 0 {
 		return readCredentialsFileJSON(opts.CredentialsJSON, opts)
