@@ -16,13 +16,17 @@ package query
 
 import (
 	"context"
+	"iter"
 
 	"github.com/googleapis/gax-go/v2"
+	gaxIterator "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
 // RowIterator is an iterator over the results of a query.
 type RowIterator struct {
+	ctx       context.Context
+	opts      []gax.CallOption
 	r         sourceReader
 	rows      []*Row
 	totalRows uint64
@@ -30,17 +34,23 @@ type RowIterator struct {
 }
 
 // Next returns the next row from the results.
-func (it *RowIterator) Next(ctx context.Context, opts ...gax.CallOption) (*Row, error) {
+func (it *RowIterator) Next() (*Row, error) {
 	if len(it.rows) > 0 {
 		return it.dequeueRow(), nil
 	}
 
-	err := it.fetchRows(ctx, opts)
+	err := it.fetchRows(it.ctx, it.opts)
 	if err != nil {
 		return nil, err
 	}
 
 	return it.dequeueRow(), nil
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RowIterator) All() iter.Seq2[*Row, error] {
+	return gaxIterator.RangeAdapter(it.Next)
 }
 
 func (it *RowIterator) fetchRows(ctx context.Context, opts []gax.CallOption) error {

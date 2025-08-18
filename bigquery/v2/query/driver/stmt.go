@@ -75,7 +75,6 @@ func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (driv
 		return nil, err
 	}
 	return &rows{
-		ctx:    ctx,
 		it:     it,
 		schema: q.Schema(),
 	}, nil

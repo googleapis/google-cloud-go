@@ -62,7 +62,7 @@ func TestReadNestedObject(t *testing.T) {
 						t.Fatalf("Read() error: %v", err)
 					}
 
-					rows, _ := readRows(ctx, t, it)
+					rows, _ := readRows(t, it)
 					if msg, ok := compareReadMap(rows, []map[string]any{{
 						"age": float64(40),
 						"nested": []any{
@@ -176,7 +176,7 @@ func TestReadNativeTypes(t *testing.T) {
 						t.Fatalf("Read() error: %v", err)
 					}
 
-					rows, _ := readRows(ctx, t, it)
+					rows, _ := readRows(t, it)
 					if msg, ok := compareReadMap(rows, []map[string]any{{
 						"ts": &ts,
 						"b":  []byte("foo"),
@@ -251,7 +251,7 @@ func TestReadTypes(t *testing.T) {
 								t.Fatalf("Read() error: %v", err)
 							}
 
-							rows, _ := readRows(ctx, t, it)
+							rows, _ := readRows(t, it)
 							if msg, ok := compareReadMap(rows, []map[string]any{tc.wantRowMap}); !ok {
 								t.Fatal(msg)
 							}

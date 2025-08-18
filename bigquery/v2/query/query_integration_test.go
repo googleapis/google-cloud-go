@@ -19,7 +19,6 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
-	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -53,7 +52,7 @@ func TestRunQuery(t *testing.T) {
 				t.Fatalf("Read() error: %v", err)
 			}
 
-			assertRowCount(ctx, t, it, 1)
+			assertRowCount(t, it, 1)
 		})
 	}
 }
@@ -94,7 +93,7 @@ func TestReadQueryJob(t *testing.T) {
 				t.Fatalf("Read() error: %v", err)
 			}
 
-			assertRowCount(ctx, t, it, 1)
+			assertRowCount(t, it, 1)
 		})
 	}
 }
@@ -133,25 +132,21 @@ func TestInsertQueryJob(t *testing.T) {
 				t.Fatalf("Read() error: %v", err)
 			}
 
-			assertRowCount(ctx, t, it, 1)
+			assertRowCount(t, it, 1)
 		})
 	}
 }
 
-func assertRowCount(ctx context.Context, t *testing.T, it *RowIterator, n int) {
-	_, total := readRows(ctx, t, it)
+func assertRowCount(t *testing.T, it *RowIterator, n int) {
+	_, total := readRows(t, it)
 	if total != uint64(n) {
 		t.Errorf("expected %d row of data, got %d", n, total)
 	}
 }
 
-func readRows(ctx context.Context, t *testing.T, it *RowIterator) ([]*Row, uint64) {
+func readRows(t *testing.T, it *RowIterator) ([]*Row, uint64) {
 	rows := []*Row{}
-	for {
-		row, err := it.Next(ctx)
-		if err == iterator.Done {
-			break
-		}
+	for row, err := range it.All() {
 		if err != nil {
 			t.Fatalf("Next() error: %v", err)
 		}

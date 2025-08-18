@@ -71,6 +71,8 @@ func newJobsReader(c *Client, q *Query) *jobsReader {
 
 func (r *jobsReader) start(ctx context.Context, state *readState, opts []gax.CallOption) (*RowIterator, error) {
 	it := &RowIterator{
+		ctx:       ctx,
+		opts:      opts,
 		r:         r,
 		rows:      r.q.cachedRows,
 		pageToken: state.pageToken,

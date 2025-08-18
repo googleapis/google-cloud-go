@@ -95,7 +95,9 @@ func resolveDestinationTable(ctx context.Context, q *Query) (*bigquerypb.TableRe
 
 func (r *storageReader) start(ctx context.Context, state *readState, opts []gax.CallOption) (*RowIterator, error) {
 	it := &RowIterator{
-		r: r,
+		ctx:  ctx,
+		opts: opts,
+		r:    r,
 	}
 	rs, err := r.sessionForTable(ctx)
 	if err != nil {

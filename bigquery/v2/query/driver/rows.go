@@ -15,7 +15,6 @@
 package driver
 
 import (
-	"context"
 	"database/sql/driver"
 	"io"
 
@@ -26,7 +25,6 @@ import (
 
 // rows is a database/sql/driver.Rows for BigQuery.
 type rows struct {
-	ctx    context.Context
 	it     *query.RowIterator
 	schema *bigquerypb.TableSchema
 }
@@ -50,7 +48,7 @@ func (r *rows) Close() error {
 // the provided slice. The provided slice will be the same
 // size as the number of columns.
 func (r *rows) Next(dest []driver.Value) error {
-	row, err := r.it.Next(r.ctx)
+	row, err := r.it.Next()
 	if err == iterator.Done {
 		return io.EOF
 	}
