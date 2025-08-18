@@ -6932,7 +6932,9 @@ func TestIntegration_OTelTracing(t *testing.T) {
 	})
 }
 
-func TestIntegration_ZonalOutOfRegionRead(t *testing.T) {
+// Simple integration test for a zonal bucket read via storage.Reader.
+// Will test out-of-region redirect flow if it's run from outside of us-west4.
+func TestIntegration_ZonalRead(t *testing.T) {
 	multiTransportTest(skipAllButBidi(context.Background(), "zonal bucket test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		bucketName := prefix + uidSpace.New()
@@ -7241,16 +7243,11 @@ func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttr
 func (h testHelper) mustCreateZonalBucket(b *BucketHandle, projID string) {
 	h.t.Helper()
 
-	// Create a bucket in the same zone as the test VM.
-	// zone, err := metadata.ZoneWithContext(context.Background())
-	// if err != nil {
-	// 	h.t.Fatalf("could not determine VM zone: %v", err)
-	// }
-	// region := strings.Join(strings.Split(zone, "-")[:2], "-")
+	// Create a zonal bucket in us-west4-a.
+	// Another zone/region can be subbed in if you want to run elsewhere because
+	// of quota reasons or to run in the same region as your VM.
 	zone := "us-west4-a"
 	region := "us-west4"
-	// zone := "us-central1-a"
-	// region := "us-central1"
 
 	h.mustCreate(b, projID, &BucketAttrs{
 		Location: region,
