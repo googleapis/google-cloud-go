@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.99.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.98.0...aiplatform/v1.99.0) (2025-08-14)
+
+
+### Features
+
+* **aiplatform:** Add `gpu_partition_size` to `MachineSpec` ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+* **aiplatform:** Add option EndpointUserId and ModelUserId fields ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+* **aiplatform:** Migrate dedicated endpoint to be enabled by default ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+
+
+### Bug Fixes
+
+* **aiplatform:** Fields are not part of `oneof` ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `dedicated_endpoint_enabled` in message `.google.cloud.aiplatform.v1beta1.DeployRequest` is changed ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+
 ## [1.98.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.97.0...aiplatform/v1.98.0) (2025-08-12)
 
 

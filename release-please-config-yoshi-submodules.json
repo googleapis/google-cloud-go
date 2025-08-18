@@ -210,6 +210,9 @@
         "functions": {
             "component": "functions"
         },
+        "geminidataanalytics": {
+            "component": "geminidataanalytics"
+        },
         "gkebackup": {
             "component": "gkebackup"
         },

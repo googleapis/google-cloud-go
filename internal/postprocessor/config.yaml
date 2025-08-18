@@ -76,6 +76,7 @@ modules:
   - financialservices
   - firestore
   - functions
+  - geminidataanalytics
   - gkebackup
   - gkeconnect
   - gkehub
@@ -450,6 +451,9 @@ service-configs:
   - input-directory: google/cloud/bigquery/datapolicies/v1beta1
     service-config: bigquerydatapolicy_v1beta1.yaml
     import-path: cloud.google.com/go/bigquery/datapolicies/apiv1beta1
+  - input-directory: google/cloud/bigquery/datapolicies/v2
+    service-config: bigquerydatapolicy_v2.yaml
+    import-path: cloud.google.com/go/bigquery/datapolicies/apiv2
   - input-directory: google/cloud/bigquery/datapolicies/v2beta1
     service-config: bigquerydatapolicy_v2beta1.yaml
     import-path: cloud.google.com/go/bigquery/datapolicies/apiv2beta1
@@ -663,6 +667,9 @@ service-configs:
   - input-directory: google/cloud/functions/v2beta
     service-config: cloudfunctions_v2beta.yaml
     import-path: cloud.google.com/go/functions/apiv2beta
+  - input-directory: google/cloud/geminidataanalytics/v1beta
+    service-config: geminidataanalytics_v1beta.yaml
+    import-path: cloud.google.com/go/geminidataanalytics/apiv1beta
   - input-directory: google/cloud/gkebackup/v1
     service-config: gkebackup_v1.yaml
     import-path: cloud.google.com/go/gkebackup/apiv1

@@ -55,6 +55,7 @@ deep-remove-regex:
   - /bigquery/dataexchange/apiv1beta1/
   - /bigquery/datapolicies/apiv1/
   - /bigquery/datapolicies/apiv1beta1/
+  - /bigquery/datapolicies/apiv2/
   - /bigquery/datapolicies/apiv2beta1/
   - /bigquery/datatransfer/apiv1/
   - /bigquery/migration/apiv2/
@@ -141,6 +142,7 @@ deep-remove-regex:
   - /functions/apiv1/
   - /functions/apiv2/
   - /functions/apiv2beta/
+  - /geminidataanalytics/apiv1beta/
   - /gkebackup/apiv1/
   - /gkeconnect/gateway/apiv1beta1/
   - /gkeconnect/gateway/apiv1/
@@ -206,6 +208,7 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/dataexchange/apiv1beta1/
   - /internal/generated/snippets/bigquery/datapolicies/apiv1/
   - /internal/generated/snippets/bigquery/datapolicies/apiv1beta1/
+  - /internal/generated/snippets/bigquery/datapolicies/apiv2/
   - /internal/generated/snippets/bigquery/datapolicies/apiv2beta1/
   - /internal/generated/snippets/bigquery/datatransfer/apiv1/
   - /internal/generated/snippets/bigquery/migration/apiv2/
@@ -289,6 +292,7 @@ deep-remove-regex:
   - /internal/generated/snippets/functions/apiv1/
   - /internal/generated/snippets/functions/apiv2/
   - /internal/generated/snippets/functions/apiv2beta/
+  - /internal/generated/snippets/geminidataanalytics/apiv1beta/
   - /internal/generated/snippets/gkebackup/apiv1/
   - /internal/generated/snippets/gkeconnect/gateway/apiv1beta1/
   - /internal/generated/snippets/gkeconnect/gateway/apiv1/
@@ -814,6 +818,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/datapolicies/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/bigquery/datapolicies/v2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/bigquery/datapolicies/v2beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/datatransfer/v1/cloud.google.com/go
@@ -980,6 +986,8 @@ deep-copy-regex:
   - source: /google/cloud/functions/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/functions/v2beta/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/geminidataanalytics/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/gkebackup/v1/cloud.google.com/go
     dest: /

@@ -896,16 +896,46 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	wg.Wait()
 }
 
-func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
+func TestIntegration_NoopMetricsProvider(t *testing.T) {
 	ctx := context.Background()
+	testEnv, _, adminClient, _, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
 
-	// Reduce sampling period for faster test runs
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = time.Minute
-	defer func() {
-		defaultSamplePeriod = origSamplePeriod
-	}()
+	if testing.Short() || !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode or non-prod environments")
+	}
 
+	family := "export"
+	if err := createColumnFamily(ctx, t, adminClient, tableName, family, nil); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+
+	noopClient, err := testEnv.NewClientWithConfig(ClientConfig{MetricsProvider: NoopMetricsProvider{}})
+	if err != nil {
+		t.Fatalf("NewClientWithConfig: %v", err)
+	}
+
+	noopTable := noopClient.Open(tableName)
+	for i := 0; i < 10; i++ {
+		mut := NewMutation()
+		mut.Set(family, "col", 1000, []byte("test"))
+		if err := noopTable.Apply(ctx, fmt.Sprintf("row-%v", i), mut); err != nil {
+			t.Fatalf("Apply: %v", err)
+		}
+	}
+
+	err = noopTable.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		return true
+	}, RowFilter(ColumnFilter("col")))
+	if err != nil {
+		t.Fatalf("ReadRows: %v", err)
+	}
+}
+
+func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	// record start time
 	testStartTime := time.Now()
 	tsListStart := &timestamppb.Timestamp{
@@ -913,6 +943,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		Nanos:   int32(testStartTime.Nanosecond()),
 	}
 
+	ctx := context.Background()
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
@@ -936,13 +967,11 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		}
 	}
 
-	for i := 0; i < 10; i++ {
-		err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
-			return true
-		}, RowFilter(ColumnFilter("col")))
-		if err != nil {
-			t.Fatalf("ReadRows: %v", err)
-		}
+	err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		return true
+	}, RowFilter(ColumnFilter("col")))
+	if err != nil {
+		t.Fatalf("ReadRows: %v", err)
 	}
 
 	// Validate that metrics are exported
@@ -6130,6 +6159,9 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	_ = cancel // ignore for test
 
+	// Reduce sampling period for faster test runs
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = time.Minute
 	client, err := testEnv.NewClient()
 	if err != nil {
 		t.Logf("Error creating client: %v", err)
@@ -6189,6 +6221,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	}
 
 	return testEnv, client, adminClient, client.Open(tableName), tableName, func() {
+		defaultSamplePeriod = origSamplePeriod
 		if err := deleteTable(ctx, t, adminClient, tableName); err != nil {
 			t.Errorf("DeleteTable got error %v", err)
 		}

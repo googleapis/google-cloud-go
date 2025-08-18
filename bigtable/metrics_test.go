@@ -236,14 +236,16 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	appProfile := "test-app-profile"
 	clientUID := "test-uid"
 
-	wantClientAttributes := []attribute.KeyValue{
-		attribute.String(monitoredResLabelKeyProject, project),
-		attribute.String(monitoredResLabelKeyInstance, instance),
-		attribute.String(metricLabelKeyAppProfile, appProfile),
-		attribute.String(metricLabelKeyClientUID, clientUID),
-		attribute.String(metricLabelKeyClientName, clientName),
+	wantMetricNamesStdout := []string{
+		metricNameAttemptLatencies, metricNameAttemptLatencies,
+		metricNameFirstRespLatencies,
+		metricNameConnErrCount, metricNameConnErrCount,
+		metricNameOperationLatencies,
+		metricNameRetryCount,
+		metricNameServerLatencies,
+		metricNameClientBlockingLatencies, metricNameClientBlockingLatencies,
+		metricNameAppBlockingLatencies,
 	}
-	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameFirstRespLatencies, metricNameConnErrCount, metricNameConnErrCount, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies, metricNameAppBlockingLatencies}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
 		wantMetricTypesGCM = append(wantMetricTypesGCM, builtInMetricsMeterName+wantMetricName)

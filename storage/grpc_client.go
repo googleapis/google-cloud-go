@@ -1628,7 +1628,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	req := &storagepb.BidiReadObjectRequest{
 		ReadObjectSpec: spec,
 	}
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
 
 	// Define a function that initiates a Read with offset and length, assuming
 	// we have already read seen bytes.
@@ -1660,28 +1659,53 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		var decoder *readResponseDecoder
 
 		err = run(cc, func(ctx context.Context) error {
-			stream, err = c.raw.BidiReadObject(ctx, s.gax...)
-			if err != nil {
-				return err
-			}
-			if err := stream.Send(req); err != nil {
-				return err
-			}
-			// Oneshot reads can close the client->server side immediately.
-			if err := stream.CloseSend(); err != nil {
-				return err
+			var databufs mem.BufferSlice
+			openAndSendReq := func() error {
+				databufs = mem.BufferSlice{}
+
+				// Insert context metadata, including routing token if this is a retry
+				// for a redirect.
+				mdCtx := gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
+				stream, err = c.raw.BidiReadObject(mdCtx, s.gax...)
+				if err != nil {
+					return err
+				}
+				if err := stream.Send(req); err != nil {
+					return err
+				}
+				// Oneshot reads can close the client->server side immediately.
+				if err := stream.CloseSend(); err != nil {
+					return err
+				}
+
+				// Receive the message into databuf as a wire-encoded message so we can
+				// use a custom decoder to avoid an extra copy at the protobuf layer.
+				return stream.RecvMsg(&databufs)
 			}
 
-			// Receive the message into databuf as a wire-encoded message so we can
-			// use a custom decoder to avoid an extra copy at the protobuf layer.
-			databufs := mem.BufferSlice{}
-			err := stream.RecvMsg(&databufs)
+			err := openAndSendReq()
+
+			// We might get a redirect error here for an out-of-region request.
+			// Add the routing token and read handle to the request and do one
+			// retry.
+			if st, ok := status.FromError(err); ok && st.Code() == codes.Aborted {
+				for _, d := range st.Details() {
+					if e, ok := d.(*storagepb.BidiReadObjectRedirectedError); ok {
+						req.ReadObjectSpec.ReadHandle = e.GetReadHandle()
+						req.ReadObjectSpec.RoutingToken = e.RoutingToken
+						err = openAndSendReq()
+						break
+					}
+				}
+			}
+
 			// These types of errors show up on the RecvMsg call, rather than the
 			// initialization of the stream via BidiReadObject above.
 			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
-				return formatObjectErr(err)
+				err = formatObjectErr(err)
 			}
 			if err != nil {
+				databufs.Free()
 				return err
 			}
 			// Use a custom decoder that uses protobuf unmarshalling for all
@@ -2093,7 +2117,9 @@ func (r *gRPCReader) Close() error {
 func (r *gRPCReader) recv() error {
 	databufs := mem.BufferSlice{}
 	err := r.stream.RecvMsg(&databufs)
-	if err != nil && r.settings.retry.runShouldRetry(err) {
+	// If we get a mid-stream error on a recv call, reopen the stream.
+	// ABORTED could indicate a redirect so should also trigger a reopen.
+	if err != nil && (r.settings.retry.runShouldRetry(err) || status.Code(err) == codes.Aborted) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is

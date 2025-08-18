@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.7.0...managedkafka/v0.8.0) (2025-08-14)
+
+
+### Features
+
+* **managedkafka:** New clients ([#12710](https://github.com/googleapis/google-cloud-go/issues/12710)) ([d6571b9](https://github.com/googleapis/google-cloud-go/commit/d6571b9b9db84929336a45b7ddf61278b2a58b13))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.6.0...managedkafka/v0.7.0) (2025-07-09)
 
 
@@ -162,4 +169,3 @@
 * **managedkafka:** New clients ([#10274](https://github.com/googleapis/google-cloud-go/issues/10274)) ([3caccb5](https://github.com/googleapis/google-cloud-go/commit/3caccb556c889104fb77a6353774a8779a9ea24e))
 
 ## Changes
-
