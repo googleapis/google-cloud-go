@@ -24,12 +24,11 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
-
 	"sync"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/retry"
 	"cloud.google.com/go/auth/internal/transport/headers"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
@@ -118,20 +117,18 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 	headers.SetAuthHeader(token, req)
 	logger.DebugContext(ctx, "trust boundary request", "request", internallog.HTTPRequest(req, nil))
 
-	retryer := newRetryer()
+	retryer := retry.New()
 	var response *http.Response
 	for {
 		response, err = client.Do(req)
 
-		var pause time.Duration
-		var retry bool
+		var statusCode int
 		if response != nil {
-			pause, retry = retryer.Retry(response.StatusCode, err)
-		} else {
-			pause, retry = retryer.Retry(0, err)
+			statusCode = response.StatusCode
 		}
+		pause, shouldRetry := retryer.Retry(statusCode, err)
 
-		if !retry {
+		if !shouldRetry {
 			break
 		}
 
@@ -141,7 +138,7 @@ func fetchTrustBoundaryData(ctx context.Context, client *http.Client, url string
 			response.Body.Close()
 		}
 
-		if err := sleep(ctx, pause); err != nil {
+		if err := retry.Sleep(ctx, pause); err != nil {
 			return nil, err
 		}
 	}

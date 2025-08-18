@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package trustboundary
+package retry
 
 import (
 	"errors"
@@ -103,7 +103,7 @@ func TestShouldRetry(t *testing.T) {
 
 func TestRetryer_Retry(t *testing.T) {
 	t.Run("stops after max attempts", func(t *testing.T) {
-		r := newRetryer()
+		r := New()
 		for i := 0; i < maxRetryAttempts; i++ {
 			if _, ok := r.Retry(500, nil); !ok {
 				t.Errorf("Retry() should have returned true on attempt %d", i)
@@ -115,7 +115,7 @@ func TestRetryer_Retry(t *testing.T) {
 	})
 
 	t.Run("no retry on success", func(t *testing.T) {
-		r := newRetryer()
+		r := New()
 		if _, ok := r.Retry(200, nil); ok {
 			t.Error("Retry() should have returned false on 200 OK")
 		}

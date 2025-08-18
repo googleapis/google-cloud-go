@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package trustboundary
+package retry
 
 import (
 	"context"
@@ -30,7 +30,7 @@ var (
 	syscallRetryable = func(error) bool { return false }
 )
 
-// defaultBackoff is equivalent to gax.Backoff without the need for
+// defaultBackoff is basically equivalent to gax.Backoff without the need for
 // the dependency.
 type defaultBackoff struct {
 	max time.Duration
@@ -47,8 +47,8 @@ func (b *defaultBackoff) Pause() time.Duration {
 	return d
 }
 
-// sleep is the equivalent of gax.Sleep without the need for the dependency.
-func sleep(ctx context.Context, d time.Duration) error {
+// Sleep is the equivalent of gax.Sleep without the need for the dependency.
+func Sleep(ctx context.Context, d time.Duration) error {
 	t := time.NewTimer(d)
 	select {
 	case <-ctx.Done():
@@ -59,8 +59,9 @@ func sleep(ctx context.Context, d time.Duration) error {
 	}
 }
 
-func newRetryer() *retryer {
-	return &retryer{bo: &defaultBackoff{
+// New returns a new Retryer with the default backoff strategy.
+func New() *Retryer {
+	return &Retryer{bo: &defaultBackoff{
 		cur: 100 * time.Millisecond,
 		max: 30 * time.Second,
 		mul: 2,
@@ -71,12 +72,14 @@ type backoff interface {
 	Pause() time.Duration
 }
 
-type retryer struct {
+// Retryer is a retryer for HTTP requests.
+type Retryer struct {
 	bo       backoff
 	attempts int
 }
 
-func (r *retryer) Retry(status int, err error) (time.Duration, bool) {
+// Retry determines if a request should be retried.
+func (r *Retryer) Retry(status int, err error) (time.Duration, bool) {
 	if status == http.StatusOK {
 		return 0, false
 	}
