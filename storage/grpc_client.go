@@ -1100,8 +1100,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		ReadObjectSpec: bidiObject,
 	}
 
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
-
 	openStream := func(readHandle ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error) {
 		if err := applyCondsProto("grpcStorageClient.BidiReadObject", params.gen, params.conds, bidiObject); err != nil {
 			return nil, nil, err
@@ -1111,36 +1109,53 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				Handle: readHandle,
 			}
 		}
+		databufs := mem.BufferSlice{}
+
 		var stream storagepb.Storage_BidiReadObjectClient
 		var decoder *readResponseDecoder
 		cc, cancel := context.WithCancel(ctx)
 		err = run(cc, func(ctx context.Context) error {
-			stream, err = c.raw.BidiReadObject(ctx, s.gax...)
-			if err != nil {
+			openAndSendReq := func() error {
+				mdCtx := gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
+
+				stream, err = c.raw.BidiReadObject(mdCtx, s.gax...)
+				if err != nil {
+					return err
+				}
+				// If stream opened succesfully, send first message on the stream.
+				// First message to stream should contain read_object_spec
+				err = stream.Send(req)
+				if err != nil {
+					return err
+				}
+				// Use RecvMsg to get the raw buffer slice instead of Recv().
+				err = stream.RecvMsg(&databufs)
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+
+			err := openAndSendReq()
+
+			// We might get a redirect error here for an out-of-region request.
+			// Add the routing token and read handle to the request and do one
+			// retry.
+			if st, ok := status.FromError(err); ok && st.Code() == codes.Aborted {
 				// BidiReadObjectRedirectedError error is only returned on initial open in case of a redirect.
 				// The routing token that should be used when reopening the read stream. Needs to be exported.
-				rpcStatus := status.Convert(err)
-				details := rpcStatus.Details()
-				for _, detail := range details {
+				for _, detail := range st.Details() {
 					if bidiError, ok := detail.(*storagepb.BidiReadObjectRedirectedError); ok {
 						bidiObject.ReadHandle = bidiError.ReadHandle
 						bidiObject.RoutingToken = bidiError.RoutingToken
-						req.ReadObjectSpec = bidiObject
-						ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
+						databufs = mem.BufferSlice{}
+						err = openAndSendReq()
+						break
 					}
 				}
-				return err
 			}
-			// Incase stream opened succesfully, send first message on the stream.
-			// First message to stream should contain read_object_spec
-			err = stream.Send(req)
 			if err != nil {
-				return err
-			}
-			// Use RecvMsg to get the raw buffer slice instead of Recv().
-			databufs := mem.BufferSlice{}
-			err = stream.RecvMsg(&databufs)
-			if err != nil {
+				databufs.Free()
 				return err
 			}
 
