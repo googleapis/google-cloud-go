@@ -351,10 +351,17 @@ var readCases = []readCase{
 }
 
 func TestIntegration_MultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, string, prefix string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloader"
+
+		h := testHelper{t}
+		bucket := prefix + uidSpace.New()
+		bkt := client.Bucket(bucket)
+
+		h.mustCreateZonalBucket(bkt, testutil.ProjID())
+		defer h.mustDeleteBucket(bkt)
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -412,7 +419,7 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
 		}
-	})
+	}, experimental.WithZonalBucketAPIs())
 }
 
 // Test many concurrent reads on the same MultiRangeDownloader to try to detect
