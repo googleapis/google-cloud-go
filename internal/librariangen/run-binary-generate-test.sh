@@ -93,7 +93,7 @@ rm -f "$BINARY_PATH"
 # --- Prepare Inputs ---
 
 # 1. Copy the generate-request.json into the librarian directory.
-cp "testdata/librarian/generate-request.json" "$LIBRARIAN_DIR/"
+cp "testdata/generate/librarian/generate-request.json" "$LIBRARIAN_DIR/"
 
 # --- Execute ---
 

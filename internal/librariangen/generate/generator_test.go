@@ -96,6 +96,17 @@ func (e *testEnv) writeServiceYAML(t *testing.T, apiPath, title string) {
 	}
 }
 
+type postProcessRecorder struct {
+	called bool
+	title  string
+}
+
+func (r *postProcessRecorder) record(ctx context.Context, req *request.Request, outputDir, moduleDir string, newModule bool, title string) error {
+	r.called = true
+	r.title = title
+	return nil
+}
+
 func TestGenerate(t *testing.T) {
 	singleAPIRequest := `{"id": "foo", "apis": [{"path": "api/v1"}]}`
 	multiAPIRequest := `{"id": "foo", "apis": [{"path": "api/v1"}, {"path": "api/v2"}]}`
@@ -203,11 +214,8 @@ go_gapic_library(
 				protocRunCount++
 				return tt.protocErr
 			}
-			var gotTitle string
-			postProcess = func(ctx context.Context, req *request.Request, outputDir, moduleDir string, newModule bool, title string) error {
-				gotTitle = title
-				return nil
-			}
+			recorder := &postProcessRecorder{}
+			postProcess = recorder.record
 
 			cfg := &Config{
 				LibrarianDir:         e.librarianDir,
@@ -224,8 +232,8 @@ go_gapic_library(
 			if protocRunCount != tt.wantProtocRunCount {
 				t.Errorf("protocRun called = %v; want %v", protocRunCount, tt.wantProtocRunCount)
 			}
-			if !tt.wantErr && tt.wantTitle != "" && gotTitle != tt.wantTitle {
-				t.Errorf("postProcess title = %q; want %q", gotTitle, tt.wantTitle)
+			if !tt.wantErr && tt.wantTitle != "" && recorder.title != tt.wantTitle {
+				t.Errorf("postProcess title = %q; want %q", recorder.title, tt.wantTitle)
 			}
 		})
 	}

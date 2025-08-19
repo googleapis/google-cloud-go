@@ -16,16 +16,19 @@ package execv
 
 import (
 	"context"
+	"errors"
+	"os/exec"
 	"strings"
 	"testing"
 )
 
 func TestRun(t *testing.T) {
 	tests := []struct {
-		name      string
-		args      []string
-		wantErr   bool
-		wantInErr string
+		name        string
+		args        []string
+		wantErr     bool
+		wantExit    int
+		wantInStderr string
 	}{
 		{
 			name:    "valid command",
@@ -38,26 +41,37 @@ func TestRun(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "command with non-zero exit",
-			args:    []string{"sh", "-c", "exit 1"},
-			wantErr: true,
+			name:     "command with non-zero exit",
+			args:     []string{"sh", "-c", "exit 1"},
+			wantErr:  true,
+			wantExit: 1,
 		},
 		{
-			name:      "command with stderr output",
-			args:      []string{"sh", "-c", "echo 'test error' >&2; exit 1"},
-			wantErr:   true,
-			wantInErr: "test error",
+			name:        "command with stderr output",
+			args:        []string{"sh", "-c", "echo 'test error' >&2; exit 1"},
+			wantErr:     true,
+			wantExit:    1,
+			wantInStderr: "test error",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := Run(context.Background(), tt.args, ".")
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Run() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("Run() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if tt.wantInErr != "" {
-				if err == nil || !strings.Contains(err.Error(), tt.wantInErr) {
-					t.Errorf("Run() error = %v, want substring %q", err, tt.wantInErr)
+
+			if !tt.wantErr {
+				return
+			}
+
+			var exitErr *exec.ExitError
+			if errors.As(err, &exitErr) {
+				if tt.wantExit != 0 && exitErr.ExitCode() != tt.wantExit {
+					t.Errorf("Run() exit code = %d, want %d", exitErr.ExitCode(), tt.wantExit)
+				}
+				if tt.wantInStderr != "" && !strings.Contains(string(exitErr.Stderr), tt.wantInStderr) {
+					t.Errorf("Run() stderr = %q, want contains %q", string(exitErr.Stderr), tt.wantInStderr)
 				}
 			}
 		})

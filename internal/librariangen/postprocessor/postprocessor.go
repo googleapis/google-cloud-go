@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/module"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
@@ -35,8 +36,6 @@ var (
 	readmeTmpl string
 	//go:embed _version.go.txt
 	versionTmpl string
-	//go:embed _internal_version.go.txt
-	internalVersionTmpl string
 )
 
 // Test substitution vars.
@@ -79,7 +78,7 @@ func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir
 			return fmt.Errorf("librariangen: failed to generate CHANGES.md: %w", err)
 		}
 	}
-	if err := generateInternalVersionFile(moduleDir, req.Version); err != nil {
+	if err := module.GenerateInternalVersionFile(moduleDir, req.Version); err != nil {
 		return fmt.Errorf("librariangen: failed to generate internal/version.go: %w", err)
 	}
 
@@ -87,7 +86,7 @@ func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir
 		return fmt.Errorf("librariangen: failed to generate client version files: %w", err)
 	}
 
-	if err := updateSnippetsMetadata(outputDir, req.ID, req.Version); err != nil {
+	if err := module.UpdateSnippetsMetadata(outputDir, req.ID, req.Version); err != nil {
 		return fmt.Errorf("librariangen: failed to update snippets metadata: %w", err)
 	}
 
@@ -164,29 +163,6 @@ func generateChanges(moduleDir string) error {
 	return os.WriteFile(changesPath, []byte(content), 0644)
 }
 
-// generateInternalVersionFile creates an internal/version.go file for a new module.
-func generateInternalVersionFile(moduleDir, version string) error {
-	internalDir := filepath.Join(moduleDir, "internal")
-	if err := os.MkdirAll(internalDir, 0755); err != nil {
-		return err
-	}
-	versionPath := filepath.Join(internalDir, "version.go")
-	slog.Debug("librariangen: creating file", "path", versionPath)
-	t := template.Must(template.New("internal_version").Parse(internalVersionTmpl))
-	internalVersionData := struct {
-		Year    int
-		Version string
-	}{
-		Year:    time.Now().Year(),
-		Version: version,
-	}
-	f, err := os.Create(versionPath)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	return t.Execute(f, internalVersionData)
-}
 
 // generateClientVersionFiles iterates through the APIs in the request and
 // generates a version.go file for each corresponding client directory.
@@ -229,29 +205,4 @@ func generateClientVersionFile(clientDir, moduleName string) error {
 	}
 	defer f.Close()
 	return t.Execute(f, versionData)
-}
-
-// updateSnippetsMetadata updates all snippet files to populate the $VERSION placeholder.
-func updateSnippetsMetadata(outputDir, moduleName, version string) error {
-	slog.Debug("librariangen: updating snippets metadata")
-	snpDir := filepath.Join(outputDir, "internal", "generated", "snippets", moduleName)
-	glob := filepath.Join(snpDir, "*/snippet_metadata.*.json")
-	metadataFiles, err := filepath.Glob(glob)
-	if err != nil {
-		return err
-	}
-	for _, metadataFile := range metadataFiles {
-		read, err := os.ReadFile(metadataFile)
-		if err != nil {
-			return err
-		}
-		if strings.Contains(string(read), "$VERSION") {
-			s := strings.Replace(string(read), "$VERSION", version, 1)
-			err = os.WriteFile(metadataFile, []byte(s), 0)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
 }

@@ -61,7 +61,7 @@ echo "Using googleapis source from $LIBRARIANGEN_GOOGLEAPIS_DIR"
 # --- Prepare Inputs ---
 
 # Copy the generate-request.json into the librarian directory.
-cp "testdata/librarian/generate-request.json" "$LIBRARIAN_DIR/"
+cp "testdata/generate/librarian/generate-request.json" "$LIBRARIAN_DIR/"
 
 # --- Execute ---
 

@@ -6,11 +6,11 @@ This directory contains the source code for `librariangen`, a containerized Go a
 
 The `librariangen` binary is designed to be run inside a Docker container orchestrated by the central Librarian tool. It adheres to a specific "container contract" by accepting commands and expecting a set of mounted directories for its inputs and outputs.
 
-The primary command is `generate`.
+The primary commands are `generate` and `release-init`.
 
-### Usage
+### `generate` Command
 
-The `librariangen` binary expects the command to be the first argument, followed by flags.
+This command is responsible for the core work of code generation. The container is expected to generate the library code and write it to the `/output` mount.
 
 **Example `generate` command:**
 `bash
@@ -20,7 +20,20 @@ librariangen generate \
     --output /output
 `
 
+### `release-init` Command
+
+This command is the core of the release workflow. It applies version and changelog updates to an existing library's files.
+
+**Example `release-init` command:**
+`bash
+librariangen release-init \
+    --repo /repo \
+    --librarian /librarian \
+    --output /output
+`
+
 ### `generate` Command Workflow
+
 
 
 1.  **Inputs:** The container is provided with several mounted directories:
@@ -92,7 +105,7 @@ If you have made local changes to `librariangen` and want to test them in a cont
     mkdir -p /tmp/librariangen-run/librarian /tmp/librariangen-run/output
 
     # Copy the sample request file
-    cp testdata/librarian/generate-request.json /tmp/librariangen-run/librarian/
+    cp testdata/generate/librarian/generate-request.json /tmp/librariangen-run/librarian/
     ```
 
 4.  **Execute:**
@@ -122,7 +135,7 @@ This method runs the generator directly as a Go binary, without any Docker conta
     mkdir -p /tmp/librariangen-run/librarian /tmp/librariangen-run/output
 
     # Copy the sample request file
-    cp testdata/librarian/generate-request.json /tmp/librariangen-run/librarian/
+    cp testdata/generate/librarian/generate-request.json /tmp/librariangen-run/librarian/
     ```
 
 3.  **Execute:**

@@ -1,4 +1,5 @@
 librariangen
 librariangen.log
 librariangen-container.log
+librariangen-release-init.log
 build-docker-and-test.log

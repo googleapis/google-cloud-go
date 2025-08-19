@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/generate"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/release"
 )
 
 const version = "0.1.0"
@@ -45,7 +46,10 @@ func main() {
 	slog.Info("librariangen: finished successfully")
 }
 
-var generateFunc = generate.Generate
+var (
+	generateFunc    = generate.Generate
+	releaseInitFunc = release.Init
+)
 
 // run executes the appropriate command based on the CLI's invocation arguments.
 // The idiomatic structure is `librariangen [command] [flags]`.
@@ -70,6 +74,8 @@ func run(ctx context.Context, args []string) error {
 	switch cmd {
 	case "generate":
 		return handleGenerate(ctx, flags)
+	case "release-init":
+		return handleReleaseInit(ctx, flags)
 	case "configure":
 		slog.Warn("librariangen: configure command is not yet implemented")
 		return nil
@@ -94,4 +100,17 @@ func handleGenerate(ctx context.Context, args []string) error {
 		return fmt.Errorf("librariangen: failed to parse flags: %w", err)
 	}
 	return generateFunc(ctx, cfg)
+}
+
+// handleReleaseInit parses flags for the release-init command and calls the release tool.
+func handleReleaseInit(ctx context.Context, args []string) error {
+	cfg := &release.Config{}
+	releaseFlags := flag.NewFlagSet("release-init", flag.ExitOnError)
+	releaseFlags.StringVar(&cfg.LibrarianDir, "librarian", "/librarian", "Path to the librarian-tool input directory. Contains release-init-request.json.")
+	releaseFlags.StringVar(&cfg.RepoDir, "repo", "/repo", "Path to the language repository checkout.")
+	releaseFlags.StringVar(&cfg.OutputDir, "output", "/output", "Path to the empty directory where librariangen writes its output.")
+	if err := releaseFlags.Parse(args); err != nil {
+		return fmt.Errorf("librariangen: failed to parse flags: %w", err)
+	}
+	return releaseInitFunc(ctx, cfg)
 }

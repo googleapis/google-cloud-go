@@ -1,0 +1,9 @@
+global_files_allowlist:
+  - path: "go.work"
+    permissions: "read-write"
+  - path: "go.work.sum"
+    permissions: "read-write"
+  - path: "internal/generated/snippets/go.mod"
+    permissions: "read-write"
+  - path: "internal/.repo-metadata-full.json"
+    permissions: "read-write"
