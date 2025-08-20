@@ -470,10 +470,10 @@ func (m Mutation) proto() (*sppb.Mutation, error) {
 // it is convenient for sending batch mutations to Cloud Spanner.
 func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, *sppb.Mutation, error) {
 	n := len(ms)
-	if n == 0 {
-		return nil, nil, nil
-	}
 	out := make([]*sppb.Mutation, 0, n)
+	if n == 0 {
+		return out, nil, nil
+	}
 	maxInsertIdx := -1
 	maxInsertVals := -1
 	nonInsertCount := 0
