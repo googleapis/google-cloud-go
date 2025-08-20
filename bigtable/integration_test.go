@@ -4395,56 +4395,57 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// List backup
-	gotBackups, err := list(sourceCluster)
-	if err != nil {
-		t.Fatalf("Listing backups: %v", err)
-	}
-	if got, want := len(gotBackups), 3; got < want {
-		t.Fatalf("Listing backup count: %d, want: >= %d", got, want)
-	}
+	var gotBackups []*BackupInfo
+	testutil.Retry(t, 20, 30*time.Second, func(r *testutil.R) {
+		var err error
+		gotBackups, err = list(sourceCluster)
+		if err != nil {
+			r.Fatalf("Listing backups: %v", err)
+		}
 
-	wantBackups := map[string]struct {
-		HotToStandardTime *time.Time
-		BackupType        BackupType
-	}{
-		stdBkpName: {
-			BackupType: BackupTypeStandard,
-		},
-		hotBkpName1: {
-			BackupType:        BackupTypeHot,
-			HotToStandardTime: &wantHtsTime,
-		},
-		hotBkpName2: {
-			BackupType: BackupTypeHot,
-		},
-	}
+		wantBackups := map[string]struct {
+			HotToStandardTime *time.Time
+			BackupType        BackupType
+		}{
+			stdBkpName: {
+				BackupType: BackupTypeStandard,
+			},
+			hotBkpName1: {
+				BackupType:        BackupTypeHot,
+				HotToStandardTime: &wantHtsTime,
+			},
+			hotBkpName2: {
+				BackupType: BackupTypeHot,
+			},
+		}
 
-	foundBackups := map[string]bool{}
-	for _, gotBackup := range gotBackups {
-		wantBackup, ok := wantBackups[gotBackup.Name]
-		if !ok {
-			break
-		}
-		foundBackups[gotBackup.Name] = true
+		foundBackups := map[string]bool{}
+		for _, gotBackup := range gotBackups {
+			wantBackup, ok := wantBackups[gotBackup.Name]
+			if !ok {
+				continue
+			}
+			foundBackups[gotBackup.Name] = true
 
-		if got, want := gotBackup.SourceTable, tblConf.TableID; got != want {
-			t.Errorf("%v SourceTable got: %s, want: %s", gotBackup.Name, got, want)
+			if got, want := gotBackup.SourceTable, tblConf.TableID; got != want {
+				r.Errorf("%v SourceTable got: %s, want: %s", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.ExpireTime, gotBackup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+				r.Errorf("%v ExpireTime got: %s, want: %s", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.BackupType, wantBackup.BackupType; got != want {
+				r.Errorf("%v BackupType got: %v, want: %v", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.HotToStandardTime, wantBackup.HotToStandardTime; (got != nil && !got.Equal(*want)) ||
+				(got == nil && got != want) || (want == nil && got != want) {
+				r.Errorf("%v HotToStandardTime got: %v, want: %v", gotBackup.Name, got, want)
+			}
 		}
-		if got, want := gotBackup.ExpireTime, gotBackup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-			t.Errorf("%v ExpireTime got: %s, want: %s", gotBackup.Name, got, want)
-		}
-		if got, want := gotBackup.BackupType, wantBackup.BackupType; got != want {
-			t.Errorf("%v BackupType got: %v, want: %v", gotBackup.Name, got, want)
-		}
-		if got, want := gotBackup.HotToStandardTime, wantBackup.HotToStandardTime; (got != nil && !got.Equal(*want)) ||
-			(got == nil && got != want) || (want == nil && got != want) {
-			t.Errorf("%v HotToStandardTime got: %v, want: %v", gotBackup.Name, got, want)
-		}
-	}
 
-	if len(foundBackups) != len(wantBackups) {
-		t.Errorf("foundBackups: %+v, wantBackups: %+v", foundBackups, wantBackups)
-	}
+		if len(foundBackups) != len(wantBackups) {
+			r.Errorf("foundBackups: %+v, wantBackups: %+v", foundBackups, wantBackups)
+		}
+	})
 
 	// Get BackupInfo
 	gotBackupInfo, err := adminClient.BackupInfo(ctx, sourceCluster, stdBkpName)
