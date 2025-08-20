@@ -2,6 +2,19 @@
 
 
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.22.0...maps/v1.23.0) (2025-08-18)
+
+
+### Features
+
+* **maps/solar:** Add `experiments` param to endpoints for access to pre-GA features ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **maps/solar:** Add new `ImageryQuality` tier for allowing satellite-based Solar API results ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+
+
+### Documentation
+
+* **maps/solar:** Add more detailed descriptions for each `ImageryQuality` tier ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.21.1...maps/v1.22.0) (2025-07-16)
 
 

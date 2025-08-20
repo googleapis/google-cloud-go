@@ -66,6 +66,7 @@ type ModelCallOptions struct {
 	ListModelEvaluations             []gax.CallOption
 	GetModelEvaluationSlice          []gax.CallOption
 	ListModelEvaluationSlices        []gax.CallOption
+	RecommendSpec                    []gax.CallOption
 	GetLocation                      []gax.CallOption
 	ListLocations                    []gax.CallOption
 	GetIamPolicy                     []gax.CallOption
@@ -136,6 +137,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 		ListModelEvaluationSlices: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		RecommendSpec:      []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -192,6 +194,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 		ListModelEvaluationSlices: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		RecommendSpec:      []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -235,6 +238,7 @@ type internalModelClient interface {
 	ListModelEvaluations(context.Context, *aiplatformpb.ListModelEvaluationsRequest, ...gax.CallOption) *ModelEvaluationIterator
 	GetModelEvaluationSlice(context.Context, *aiplatformpb.GetModelEvaluationSliceRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluationSlice, error)
 	ListModelEvaluationSlices(context.Context, *aiplatformpb.ListModelEvaluationSlicesRequest, ...gax.CallOption) *ModelEvaluationSliceIterator
+	RecommendSpec(context.Context, *aiplatformpb.RecommendSpecRequest, ...gax.CallOption) (*aiplatformpb.RecommendSpecResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -437,6 +441,11 @@ func (c *ModelClient) GetModelEvaluationSlice(ctx context.Context, req *aiplatfo
 // ListModelEvaluationSlices lists ModelEvaluationSlices in a ModelEvaluation.
 func (c *ModelClient) ListModelEvaluationSlices(ctx context.Context, req *aiplatformpb.ListModelEvaluationSlicesRequest, opts ...gax.CallOption) *ModelEvaluationSliceIterator {
 	return c.internalClient.ListModelEvaluationSlices(ctx, req, opts...)
+}
+
+// RecommendSpec gets a Model’s spec recommendations.
+func (c *ModelClient) RecommendSpec(ctx context.Context, req *aiplatformpb.RecommendSpecRequest, opts ...gax.CallOption) (*aiplatformpb.RecommendSpecResponse, error) {
+	return c.internalClient.RecommendSpec(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -1185,6 +1194,24 @@ func (c *modelGRPCClient) ListModelEvaluationSlices(ctx context.Context, req *ai
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *modelGRPCClient) RecommendSpec(ctx context.Context, req *aiplatformpb.RecommendSpecRequest, opts ...gax.CallOption) (*aiplatformpb.RecommendSpecResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RecommendSpec[0:len((*c.CallOptions).RecommendSpec):len((*c.CallOptions).RecommendSpec)], opts...)
+	var resp *aiplatformpb.RecommendSpecResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.modelClient.RecommendSpec, req, settings.GRPC, c.logger, "RecommendSpec")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *modelGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -2647,6 +2674,62 @@ func (c *modelRESTClient) ListModelEvaluationSlices(ctx context.Context, req *ai
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// RecommendSpec gets a Model’s spec recommendations.
+func (c *modelRESTClient) RecommendSpec(ctx context.Context, req *aiplatformpb.RecommendSpecRequest, opts ...gax.CallOption) (*aiplatformpb.RecommendSpecResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:recommendSpec", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RecommendSpec[0:len((*c.CallOptions).RecommendSpec):len((*c.CallOptions).RecommendSpec)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RecommendSpecResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RecommendSpec")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.

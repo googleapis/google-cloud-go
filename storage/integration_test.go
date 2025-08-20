@@ -46,7 +46,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -352,10 +351,17 @@ var readCases = []readCase{
 }
 
 func TestIntegration_MultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, string, prefix string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloader"
+
+		h := testHelper{t}
+		bucket := prefix + uidSpace.New()
+		bkt := client.Bucket(bucket)
+
+		h.mustCreateZonalBucket(bkt, testutil.ProjID())
+		defer h.mustDeleteBucket(bkt)
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -413,7 +419,7 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
 		}
-	})
+	}, experimental.WithZonalBucketAPIs())
 }
 
 // Test many concurrent reads on the same MultiRangeDownloader to try to detect
@@ -6933,6 +6939,43 @@ func TestIntegration_OTelTracing(t *testing.T) {
 	})
 }
 
+// Simple integration test for a zonal bucket read via storage.Reader.
+// Will test out-of-region redirect flow if it's run from outside of us-west4.
+func TestIntegration_ZonalRead(t *testing.T) {
+	multiTransportTest(skipAllButBidi(context.Background(), "zonal bucket test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		bucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(bucketName)
+
+		h.mustCreateZonalBucket(bkt, testutil.ProjID())
+		defer h.mustDeleteBucket(bkt)
+
+		objName := "bidi-test-obj"
+		obj := bkt.Object(objName)
+		w := obj.NewWriter(ctx)
+		w.Append = true
+		h.mustWrite(w, randomBytes3MiB)
+		defer obj.Delete(ctx)
+
+		r, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatalf("NewReader: %v", err)
+		}
+
+		b, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("reading: %v", err)
+		}
+		if !bytes.Equal(randomBytes3MiB, b) {
+			t.Errorf("download data does not match; got %v bytes, want %v bytes", len(b), len(randomBytes3MiB))
+		}
+
+		if err := r.Close(); err != nil {
+			t.Errorf("closing: %v", err)
+		}
+	}, experimental.WithGRPCBidiReads())
+}
+
 // openTelemetryTestExporter is a test utility exporter. It should be created
 // with NewopenTelemetryTestExporter.
 type openTelemetryTestExporter struct {
@@ -7207,13 +7250,13 @@ func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttr
 func (h testHelper) mustCreateZonalBucket(b *BucketHandle, projID string) {
 	h.t.Helper()
 
-	// Create a bucket in the same zone as the test VM.
-	zone, err := metadata.ZoneWithContext(context.Background())
-	if err != nil {
-		h.t.Fatalf("could not determine VM zone: %v", err)
-	}
-	region := strings.Join(strings.Split(zone, "-")[:2], "-")
-	h.mustCreate(b, testutil.ProjID(), &BucketAttrs{
+	// Create a zonal bucket in us-west4-a.
+	// Another zone/region can be subbed in if you want to run elsewhere because
+	// of quota reasons or to run in the same region as your VM.
+	zone := "us-west4-a"
+	region := "us-west4"
+
+	h.mustCreate(b, projID, &BucketAttrs{
 		Location: region,
 		CustomPlacementConfig: &CustomPlacementConfig{
 			DataLocations: []string{zone},

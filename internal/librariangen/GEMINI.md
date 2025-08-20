@@ -1,13 +1,52 @@
-# Go development workflow rules
+# Gemini Code Assistant Context
 
-After any code change, do the following steps:
+This document provides context for the Gemini code assistant to understand the `librariangen` project.
 
-1. Run `go build .` If the build passes, go to step 2. If the build has any errors, repeat this step. If you can't fix the build in 3 tries, ask for help.
-2. Run `go test ./...`. If the tests pass, go to step 3. If you can't fix the build in 3 tries, ask for help.
-3. After the existing unit tests pass, ask to run the binary integration test script with this command: `./run-binary-integration-test.sh`
-4. Check `librariangen.log` to verify the output. Analyze the output and ask if anything needs to be fixed.
-5. If the integration test passes and the output is correct, then devise a plan to add or update tests to ensure the new logic is covered. Show the plan. Do not make any code changes until the plan is approved. This is a step where you often get confused, so read the latest relevant files and think hard.
-6. Once your plan to update unit tests is approved, make the code change to the tests. If you can't update the tests in 3 tries, ask for help.
-7. Run `go test ./...`. If the tests pass, go to step 8. If you can't fix the build in 3 tries, ask for help.
-8. Offer to commit the changes with `git commit`.
-   
+## Project Overview
+
+`librariangen` is a Go command-line application responsible for generating Go GAPIC (Google API Client) libraries. It is designed to be run within a Docker container as part of a larger "Librarian" pipeline.
+
+The tool takes a checkout of the `googleapis` repository and a `generate-request.json` file as input. It then invokes the `protoc` compiler with the `protoc-gen-go` and `protoc-gen-go_gapic` plugins to generate the Go client library. After generation, a post-processing step is applied to create a release-ready Go module.
+
+## Building and Running
+
+### Building the Binary
+
+To compile the `librariangen` binary from source, run:
+```bash
+go build .
+```
+
+### Running Tests
+
+There are three primary ways to test the project:
+
+1.  **Unit Tests:** To run the Go unit tests for all packages:
+    ```bash
+    go test ./...
+    ```
+
+2.  **Binary Integration Test:** This is a comprehensive end-to-end test of the compiled binary. It requires local checkouts of the `googleapis` and `googleapis-gen` (or `google-cloud-go`) repositories.
+    ```bash
+    # Set these environment variables to point to your local checkouts
+    export LIBRARIANGEN_GOOGLEAPIS_DIR=/path/to/googleapis
+    export LIBRARIANGEN_GOOGLEAPIS_GEN_DIR=/path/to/googleapis-gen
+
+    # Run the test script
+    ./run-binary-integration-test.sh
+    ```
+
+3.  **Docker Container Test:** This script builds the Docker image and verifies that all dependencies are correctly installed within the container.
+    ```bash
+    ./build-docker-and-test.sh
+    ```
+
+## Development Conventions
+
+*   The application logic is primarily written in Go.
+*   The main entrypoint is in `main.go`, which handles command-line argument parsing and invokes the appropriate sub-commands.
+*   The core generation logic resides in the `generate` package.
+*   Shell scripts (`.sh`) are used for automation, particularly for testing and Docker image management.
+*   The project follows standard Go conventions for code style and project structure.
+*   Dependencies are managed with Go modules (`go.mod`). The runtime dependencies for code generation (`protoc`, plugins) are expected to be present in the execution environment (i.e., the Docker container).
+*   After any dependency change (`go get` or manual edit to `go.mod`), always run `go mod tidy` to ensure the `go.sum` file is updated and unused dependencies are removed.

@@ -79,6 +79,7 @@ use (
 	./financialservices
 	./firestore
 	./functions
+	./geminidataanalytics
 	./gkebackup
 	./gkeconnect
 	./gkehub
