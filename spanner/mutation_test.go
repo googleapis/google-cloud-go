@@ -885,3 +885,53 @@ func TestEncodeMutationGroupArray(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkMutationsProto(b *testing.B) {
+	type benchmarkCase struct {
+		name      string
+		mutations []*Mutation
+	}
+	benchmarkCases := []benchmarkCase{
+		{
+			name: "small number of mutations",
+			mutations: []*Mutation{
+				Insert("t_foo", []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}),
+				Update("t_foo", []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}),
+				InsertOrUpdate("t_foo", []string{"col1", "col2"}, []interface{}{1.0, 2.0}),
+				Replace("t_foo", []string{"col1", "col2"}, []interface{}{"one", 2.0}),
+				Delete("t_foo", Key{"foo"}),
+			},
+		},
+		{
+			name: "large number of mutations",
+			mutations: func() []*Mutation {
+				var mutations []*Mutation
+				for i := 0; i < 20; i++ {
+					mutations = append(mutations, Insert("t_foo", []string{"col1", "col2"}, []interface{}{int64(i), int64(i + 1)}))
+					mutations = append(mutations, Update("t_foo", []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}))
+					mutations = append(mutations, InsertOrUpdate("t_foo", []string{"col1", "col2"}, []interface{}{1.0, 2.0}))
+					mutations = append(mutations, Replace("t_foo", []string{"col1", "col2"}, []interface{}{"one", 2.0}))
+					mutations = append(mutations, Delete("t_foo", Key{i}))
+				}
+				return mutations
+			}(),
+		},
+		{
+			name: "mixed type of mutations",
+			mutations: []*Mutation{
+				Insert("t_foo", []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}),
+				Update("t_foo", []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}),
+				Delete("t_foo", Key{"foo"}),
+				Insert("t_bar", []string{"col1"}, []interface{}{"bar"}),
+			},
+		},
+	}
+
+	for _, bc := range benchmarkCases {
+		b.Run(bc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_, _, _ = mutationsProto(bc.mutations)
+			}
+		})
+	}
+}
