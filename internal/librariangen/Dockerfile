@@ -18,7 +18,7 @@
 
 # --- Builder Stage ---
 # This stage builds the librariangen binary using the MOSS-compliant base image.
-FROM marketplace.gcr.io/google/debian12:latest as builder
+FROM marketplace.gcr.io/google/debian12:latest AS builder
 
 # Set environment variables for tool versions for easy updates.
 ENV GO_VERSION=1.23.0
