@@ -87,6 +87,7 @@ func TestBuild(t *testing.T) {
 		"--experimental_allow_proto3_optional",
 		"--go_out=/output",
 		"--go-grpc_out=/output",
+		"--go-grpc_opt=require_unimplemented_servers=false",
 		"--go_gapic_out=/output",
 		"--go_gapic_opt=go-gapic-package=cloud.google.com/go/workflows/apiv1;workflows",
 		"--go_gapic_opt=api-service-config=" + filepath.Join(apiServiceDir, "workflows_v1.yaml"),
