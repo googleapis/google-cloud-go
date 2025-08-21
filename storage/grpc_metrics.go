@@ -173,10 +173,8 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 		meterOpts = append(meterOpts, metric.WithReader(
 			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
 	}
-	var provider *metric.MeterProvider
-	if cfg.meterProvider != nil {
-		provider = cfg.meterProvider
-	} else {
+	provider := cfg.meterProvider
+	if provider == nil {
 		provider = metric.NewMeterProvider(meterOpts...)
 	}
 	mo := opentelemetry.MetricsOptions{
