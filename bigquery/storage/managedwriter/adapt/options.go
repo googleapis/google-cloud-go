@@ -51,16 +51,16 @@ type ProtoMapping struct {
 type protoMappingOverrides []ProtoMapping
 
 func (o *protoMappingOverrides) getByField(field *storagepb.TableFieldSchema, path string) *ProtoMapping {
+	var foundOverride *ProtoMapping
 	for _, override := range *o {
-		if override.FieldPath == path {
+		if override.FieldPath == path { // only early return for specific override by path
 			return &override
 		}
 		if override.FieldType == field.Type {
-			return &override
-
+			foundOverride = &override
 		}
 	}
-	return nil
+	return foundOverride
 }
 
 type customOption struct {
@@ -68,45 +68,34 @@ type customOption struct {
 	useProto3     optional.Bool
 }
 
-// WithTimestampAsTimestamp defines that table fields of type Timestamp, are mapped
-// as Google's WKT timestamppb.Timestamp.
-// JUST AN EXAMPLE - THIS IS GOING TO BE REMOVED
-func WithTimestampAsTimestamp() Option {
-	return WithProtoMapping(ProtoMapping{
-		FieldType: storagepb.TableFieldSchema_TIMESTAMP,
-		TypeName:  "google.protobuf.Timestamp",
-		Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
-	})
-}
-
-// WithIntervalAsDuration defines that table fields of type Interval, are mapped
-// as Google's WKT durationpb.Duration
-// JUST AN EXAMPLE - THIS IS GOING TO BE REMOVED
-func WithIntervalAsDuration() Option {
-	return WithProtoMapping(ProtoMapping{
-		FieldType: storagepb.TableFieldSchema_INTERVAL,
-		TypeName:  "google.protobuf.Duration",
-		Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
-	})
-}
-
-// WithBigNumericAsDouble defines that table fields of type BigNumeric, are mapped
-// as Google's WKT wrapperspb.Double
-// JUST AN EXAMPLE - THIS IS GOING TO BE REMOVED
-func WithBigNumericAsDouble() Option {
-	return WithProtoMapping(ProtoMapping{
-		FieldType: storagepb.TableFieldSchema_BIGNUMERIC,
-		TypeName:  "google.protobuf.DoubleValue",
-		Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
-	})
-}
-
 // WithProtoMapping allow to set an override on which field descriptor proto type
 // is going to be used for the given BigQuery Table field type or field path.
 // See https://cloud.google.com/bigquery/docs/supported-data-types#supported_protocol_buffer_data_types for accepted types
 // by the BigQuery Storage Write API.
+//
+// Examples:
+//
+//	// WithTimestampAsTimestamp defines that table fields of type Timestamp, are mapped
+//	// as Google's WKT timestamppb.Timestamp.
+//	func WithTimestampAsTimestamp() Option {
+//		return WithProtoMapping(ProtoMapping{
+//			FieldType: storagepb.TableFieldSchema_TIMESTAMP,
+//			TypeName:  "google.protobuf.Timestamp",
+//			Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+//		})
+//	}
+//
+//	// WithIntervalAsDuration defines that table fields of type Interval, are mapped
+//	// as Google's WKT durationpb.Duration
+//	func WithIntervalAsDuration() Option {
+//		return WithProtoMapping(ProtoMapping{
+//			FieldType: storagepb.TableFieldSchema_INTERVAL,
+//			TypeName:  "google.protobuf.Duration",
+//			Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+//		})
+//	}
 func WithProtoMapping(protoMapping ProtoMapping) Option {
-	if !strings.HasPrefix(protoMapping.TypeName, ".") {
+	if !strings.HasPrefix(protoMapping.TypeName, ".") && protoMapping.TypeName != "" {
 		protoMapping.TypeName = "." + protoMapping.TypeName
 	}
 	return &customOption{protoOverride: &protoMapping}

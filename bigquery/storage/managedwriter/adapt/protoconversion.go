@@ -498,9 +498,12 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 
 func resolveType(scope string, field *storagepb.TableFieldSchema, cfg *customConfig) (*string, descriptorpb.FieldDescriptorProto_Type, *descriptorpb.FieldDescriptorProto_Label) {
 	path := strings.TrimPrefix(strings.ReplaceAll(scope, "__", "."), "root.")
-	fmt.Println("[resolveType]", scope, path, field.GetName(), cfg.protoMappingOverrides)
 	if override := cfg.protoMappingOverrides.getByField(field, path); override != nil {
-		return proto.String(override.TypeName), override.Type, convertModeToLabel(field.GetMode(), cfg.useProto3)
+		var typeName *string
+		if override.TypeName != "" {
+			typeName = proto.String(override.TypeName)
+		}
+		return typeName, override.Type, convertModeToLabel(field.GetMode(), cfg.useProto3)
 	}
 	// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
 	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !cfg.useProto3 {

@@ -1050,6 +1050,19 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
 					{
+						Name: proto.String("google_protobuf_Int64Value"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:         proto.String("value"),
+								Number:       proto.Int32(1),
+								DefaultValue: proto.String("0"),
+								JsonName:     proto.String("value"),
+								Type:         descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:        descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
 						Name: proto.String("root__outer_struct"),
 						Field: []*descriptorpb.FieldDescriptorProto{
 							{
@@ -1161,7 +1174,12 @@ func TestProtoJSONSerialization(t *testing.T) {
 		},
 	}
 
-	descriptor, err := StorageSchemaToProtoDescriptorWithOptions(sourceSchema, "root", WithTimestampAsTimestamp())
+	descriptor, err := StorageSchemaToProtoDescriptorWithOptions(sourceSchema, "root",
+		WithProtoMapping(ProtoMapping{
+			FieldType: storagepb.TableFieldSchema_TIMESTAMP,
+			TypeName:  "google.protobuf.Timestamp",
+			Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+		}))
 	if err != nil {
 		t.Fatalf("failed to construct descriptor")
 	}
