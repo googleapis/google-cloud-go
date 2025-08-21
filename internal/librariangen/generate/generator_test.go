@@ -204,7 +204,7 @@ go_gapic_library(
 				return tt.protocErr
 			}
 			var gotTitle string
-			postProcess = func(ctx context.Context, req *request.Request, moduleDir string, newModule bool, title string) error {
+			postProcess = func(ctx context.Context, req *request.Request, outputDir, moduleDir string, newModule bool, title string) error {
 				gotTitle = title
 				return nil
 			}

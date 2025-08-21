@@ -115,7 +115,12 @@ func TestPostProcess(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tmpDir := t.TempDir()
+			outputDir := t.TempDir()
+			moduleDir := filepath.Join(outputDir, "chronicle")
+			if err := os.MkdirAll(moduleDir, 0755); err != nil {
+				t.Fatalf("failed to create moduleDir %v", err)
+				return
+			}
 
 			var goModInitCalled, goModTidyCalled bool
 			execvRun = func(ctx context.Context, args []string, dir string) error {
@@ -136,7 +141,7 @@ func TestPostProcess(t *testing.T) {
 				},
 			}
 
-			if err := PostProcess(context.Background(), req, tmpDir, tt.newModule, "Chronicle API"); (err != nil) != tt.wantErr {
+			if err := PostProcess(context.Background(), req, outputDir, moduleDir, tt.newModule, "Chronicle API"); (err != nil) != tt.wantErr {
 				t.Fatalf("PostProcess() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -152,13 +157,13 @@ func TestPostProcess(t *testing.T) {
 			}
 
 			for _, file := range tt.wantFilesCreated {
-				if _, err := os.Stat(filepath.Join(tmpDir, file)); os.IsNotExist(err) {
+				if _, err := os.Stat(filepath.Join(moduleDir, file)); os.IsNotExist(err) {
 					t.Errorf("file %s was not created", file)
 				}
 			}
 
 			for _, file := range tt.wantFilesNotCreated {
-				if _, err := os.Stat(filepath.Join(tmpDir, file)); !os.IsNotExist(err) {
+				if _, err := os.Stat(filepath.Join(moduleDir, file)); !os.IsNotExist(err) {
 					t.Errorf("file %s was created, but should not have been", file)
 				}
 			}

@@ -58,7 +58,7 @@ var (
 //  5. Generate a `README.md`.
 //  6. Run `go mod init`.
 //  8. Run `go mod tidy` to clean up the `go.mod` file.
-func PostProcess(ctx context.Context, req *request.Request, moduleDir string, newModule bool, title string) error {
+func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir string, newModule bool, title string) error {
 	slog.Debug("librariangen: starting post-processing", "directory", moduleDir, "new_module", newModule)
 
 	if len(req.APIs) == 0 {
@@ -81,6 +81,10 @@ func PostProcess(ctx context.Context, req *request.Request, moduleDir string, ne
 
 	if err := generateClientVersionFiles(req, moduleDir, req.ID); err != nil {
 		return fmt.Errorf("librariangen: failed to generate client version files: %w", err)
+	}
+
+	if err := updateSnippetsMetadata(outputDir, req.ID, req.Version); err != nil {
+		return fmt.Errorf("librariangen: failed to update snippets metadata: %w", err)
 	}
 
 	// The README should be updated on every run.
@@ -221,4 +225,29 @@ func generateClientVersionFile(clientDir, moduleName string) error {
 	}
 	defer f.Close()
 	return t.Execute(f, versionData)
+}
+
+// updateSnippetsMetadata updates all snippet files to populate the $VERSION placeholder.
+func updateSnippetsMetadata(outputDir, moduleName, version string) error {
+	slog.Debug("librariangen: updating snippets metadata")
+	snpDir := filepath.Join(outputDir, "internal", "generated", "snippets", moduleName)
+	glob := filepath.Join(snpDir, "*/snippet_metadata.*.json")
+	metadataFiles, err := filepath.Glob(glob)
+	if err != nil {
+		return err
+	}
+	for _, metadataFile := range metadataFiles {
+		read, err := os.ReadFile(metadataFile)
+		if err != nil {
+			return err
+		}
+		if strings.Contains(string(read), "$VERSION") {
+			s := strings.Replace(string(read), "$VERSION", version, 1)
+			err = os.WriteFile(metadataFile, []byte(s), 0)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
