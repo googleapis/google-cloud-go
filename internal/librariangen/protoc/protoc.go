@@ -88,7 +88,7 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 		"--go_out=" + outputDir,
 	}
 	if config.HasGoGRPC() {
-		args = append(args, "--go-grpc_out="+outputDir)
+		args = append(args, "--go-grpc_out="+outputDir, "--go-grpc_opt=require_unimplemented_servers=false")
 	}
 	args = append(args, "--go_gapic_out="+outputDir)
 
