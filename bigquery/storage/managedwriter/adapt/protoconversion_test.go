@@ -57,7 +57,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 		wantProto3Normalized *descriptorpb.DescriptorProto
 
 		// proto conversion options
-		options []Option
+		options []ProtoConversionOption
 	}{
 		{
 			description: "basic",
@@ -975,7 +975,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 		},
 		{
 			description: "multiple nesting levels with proto mapping",
-			options: []Option{
+			options: []ProtoConversionOption{
 				WithProtoMapping(ProtoMapping{
 					FieldType: storagepb.TableFieldSchema_INT64,
 					TypeName:  "google.protobuf.Int64Value",

@@ -260,7 +260,7 @@ func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope stri
 
 // StorageSchemaToProtoDescriptorWithOptions builds a protoreflect.Descriptor for a given table schema with
 // extra configuration options. Uses proto2 syntax by default.
-func StorageSchemaToProtoDescriptorWithOptions(inSchema *storagepb.TableSchema, scope string, opts ...Option) (protoreflect.Descriptor, error) {
+func StorageSchemaToProtoDescriptorWithOptions(inSchema *storagepb.TableSchema, scope string, opts ...ProtoConversionOption) (protoreflect.Descriptor, error) {
 	dc := newDependencyCache()
 	cfg := &customConfig{
 		useProto3:             false,

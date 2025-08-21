@@ -22,8 +22,8 @@ import (
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
-// Option to customize proto descriptor conversion.
-type Option interface {
+// ProtoConversionOption to customize proto descriptor conversion.
+type ProtoConversionOption interface {
 	applyCustomClientOpt(*customConfig)
 }
 
@@ -94,7 +94,7 @@ type customOption struct {
 //			Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
 //		})
 //	}
-func WithProtoMapping(protoMapping ProtoMapping) Option {
+func WithProtoMapping(protoMapping ProtoMapping) ProtoConversionOption {
 	if !strings.HasPrefix(protoMapping.TypeName, ".") && protoMapping.TypeName != "" {
 		protoMapping.TypeName = "." + protoMapping.TypeName
 	}
@@ -102,12 +102,12 @@ func WithProtoMapping(protoMapping ProtoMapping) Option {
 }
 
 // internal option to set proto 2 syntax option
-func withProto2() Option {
+func withProto2() ProtoConversionOption {
 	return &customOption{useProto3: false}
 }
 
 // internal option to set proto 3 syntax option
-func withProto3() Option {
+func withProto3() ProtoConversionOption {
 	return &customOption{useProto3: true}
 }
 
