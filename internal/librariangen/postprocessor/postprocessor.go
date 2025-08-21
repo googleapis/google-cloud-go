@@ -75,7 +75,7 @@ func PostProcess(ctx context.Context, req *request.Request, moduleDir string, ne
 			return fmt.Errorf("librariangen: failed to generate CHANGES.md: %w", err)
 		}
 	}
-	if err := generateInternalVersionFile(moduleDir); err != nil {
+	if err := generateInternalVersionFile(moduleDir, req.Version); err != nil {
 		return fmt.Errorf("librariangen: failed to generate internal/version.go: %w", err)
 	}
 
@@ -157,7 +157,7 @@ func generateChanges(moduleDir string) error {
 }
 
 // generateInternalVersionFile creates an internal/version.go file for a new module.
-func generateInternalVersionFile(moduleDir string) error {
+func generateInternalVersionFile(moduleDir, version string) error {
 	internalDir := filepath.Join(moduleDir, "internal")
 	if err := os.MkdirAll(internalDir, 0755); err != nil {
 		return err
@@ -166,9 +166,11 @@ func generateInternalVersionFile(moduleDir string) error {
 	slog.Debug("librariangen: creating file", "path", versionPath)
 	t := template.Must(template.New("internal_version").Parse(internalVersionTmpl))
 	internalVersionData := struct {
-		Year int
+		Year    int
+		Version string
 	}{
-		Year: time.Now().Year(),
+		Year:    time.Now().Year(),
+		Version: version,
 	}
 	f, err := os.Create(versionPath)
 	if err != nil {
