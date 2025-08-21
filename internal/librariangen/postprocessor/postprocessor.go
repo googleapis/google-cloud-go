@@ -66,6 +66,10 @@ func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir
 		return nil
 	}
 
+	if req.Version == "" {
+		return fmt.Errorf("librariangen: no version for API: %s (required for post-processing)", req.ID)
+	}
+
 	// E.g. cloud.google.com/go/chronicle
 	modulePath := "cloud.google.com/go/" + req.ID
 

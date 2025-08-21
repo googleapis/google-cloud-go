@@ -34,6 +34,7 @@ func TestPostProcess(t *testing.T) {
 		wantGoModInitCalled bool
 		wantGoModTidyCalled bool
 		wantErr             bool
+		noVersion           bool
 	}{
 		{
 			name:      "new module success",
@@ -111,6 +112,13 @@ func TestPostProcess(t *testing.T) {
 			wantGoModTidyCalled: true,
 			wantErr:             true,
 		},
+		{
+			name:                "fail without version",
+			noVersion:           true,
+			wantGoModInitCalled: false,
+			wantGoModTidyCalled: false,
+			wantErr:             true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -139,6 +147,11 @@ func TestPostProcess(t *testing.T) {
 					{Path: "google/cloud/chronicle/v1"},
 					{Path: "google/cloud/chronicle/v2"},
 				},
+				Version: "1.0.0",
+			}
+
+			if tt.noVersion {
+				req.Version = ""
 			}
 
 			if err := PostProcess(context.Background(), req, outputDir, moduleDir, tt.newModule, "Chronicle API"); (err != nil) != tt.wantErr {
