@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -316,4 +317,135 @@ func (r *failingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 		return &http.Response{StatusCode: r.failCode}, nil
 	}
 	return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(strings.NewReader(r.response))}, nil
+}
+
+func TestNewClient(t *testing.T) {
+	customClient := &http.Client{}
+
+	tests := []struct {
+		name      string
+		in        *http.Client
+		wantHC    *http.Client
+		isDefault bool
+	}{
+		{
+			name:      "nil returns default",
+			in:        nil,
+			isDefault: true,
+		},
+		{
+			name:   "custom client",
+			in:     customClient,
+			wantHC: customClient,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewClient(tt.in)
+			if tt.isDefault {
+				if got != defaultClient {
+					t.Errorf("NewClient() = %p, want %p", got, defaultClient)
+				}
+			}
+			if tt.wantHC != nil {
+				if got.hc != tt.wantHC {
+					t.Errorf("NewClient().hc = %p, want %p", got.hc, tt.wantHC)
+				}
+			}
+		})
+	}
+}
+
+func TestNewWithOptions(t *testing.T) {
+	customClient := &http.Client{}
+	customLogger := slog.New(slog.NewTextHandler(io.Discard, nil))
+
+	tests := []struct {
+		name                string
+		opts                *Options
+		wantHC              *http.Client
+		isDefault           bool
+		wantSharedTransport bool
+		wantSharedHC        bool
+		hasCustomLogger     bool
+	}{
+		{
+			name:      "nil opts returns default",
+			opts:      nil,
+			isDefault: true,
+		},
+		{
+			name: "empty opts returns new isolated client",
+			opts: &Options{},
+		},
+		{
+			name:   "with custom client",
+			opts:   &Options{Client: customClient},
+			wantHC: customClient,
+		},
+		{
+			name:                "UseDefaultClient returns client with default hc",
+			opts:                &Options{UseDefaultClient: true},
+			wantSharedHC:        true,
+			wantSharedTransport: true,
+		},
+		{
+			name:                "UseDefaultClient with custom logger",
+			opts:                &Options{UseDefaultClient: true, Logger: customLogger},
+			wantSharedHC:        true,
+			wantSharedTransport: true,
+			hasCustomLogger:     true,
+		},
+		{
+			name:                "UseDefaultClient ignores custom client",
+			opts:                &Options{UseDefaultClient: true, Client: customClient},
+			wantSharedHC:        true,
+			wantSharedTransport: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewWithOptions(tt.opts)
+
+			if tt.isDefault {
+				if got != defaultClient {
+					t.Errorf("NewWithOptions() = %p, want defaultClient %p", got, defaultClient)
+				}
+				return // Don't run other checks for this case
+			}
+			if got == defaultClient {
+				t.Errorf("NewWithOptions() = %p, should not be defaultClient", got)
+			}
+			if tt.wantHC != nil {
+				if got.hc != tt.wantHC {
+					t.Errorf("NewWithOptions().hc = %p, want %p", got.hc, tt.wantHC)
+				}
+			}
+			if tt.hasCustomLogger {
+				if got.logger != customLogger {
+					t.Errorf("NewWithOptions().logger = %p, want %p", got.logger, customLogger)
+				}
+			}
+
+			// Check transport sharing behavior
+			if tt.opts != nil && tt.opts.Client == nil {
+				got2 := NewWithOptions(tt.opts)
+				transportsAreShared := got.hc.Transport == got2.hc.Transport
+				if transportsAreShared != tt.wantSharedTransport {
+					t.Errorf("Transport sharing mismatch: got %v, want %v", transportsAreShared, tt.wantSharedTransport)
+				}
+			}
+
+			// Check http client sharing behavior
+			if tt.opts != nil && tt.opts.Client == nil {
+				got2 := NewWithOptions(tt.opts)
+				clientsAreShared := got.hc == got2.hc
+				if clientsAreShared != tt.wantSharedHC {
+					t.Errorf("Client sharing mismatch: got %v, want %v", clientsAreShared, tt.wantSharedHC)
+				}
+			}
+		})
+	}
 }

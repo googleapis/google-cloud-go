@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/solar/apiv1",
-    "version": "1.21.0",
+    "version": "1.23.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "solar_v1_generated_Solar_FindClosestBuildingInsights_sync",
       "title": "solar FindClosestBuildingInsights Sample",
-      "description": "FindClosestBuildingInsights locates the closest building to a query point. Returns an error with\ncode `NOT_FOUND` if there are no buildings within approximately 50m of the\nquery point.",
+      "description": "FindClosestBuildingInsights locates the building whose centroid is closest to a query point. Returns an\nerror with code `NOT_FOUND` if there are no buildings within approximately\n50m of the query point.",
       "file": "Client/FindClosestBuildingInsights/main.go",
       "language": "GO",
       "clientMethod": {

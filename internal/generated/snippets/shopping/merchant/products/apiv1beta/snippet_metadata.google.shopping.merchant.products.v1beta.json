@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/products/apiv1beta",
-    "version": "0.22.0",
+    "version": "1.0.0",
     "language": "GO",
     "apis": [
       {
@@ -59,7 +59,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_ProductInputsService_InsertProductInput_sync",
       "title": "merchantapi InsertProductInput Sample",
-      "description": "InsertProductInput uploads a product input to your Merchant Center account. If an input\nwith the same contentLanguage, offerId, and dataSource already exists,\nthis method replaces that entry.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the processed product can be retrieved.",
+      "description": "InsertProductInput [Uploads a product input to your Merchant Center\naccount](/merchant/api/guides/products/overview#upload-product-input). You\nmust have a products data source to be able to insert a product. The unique\nidentifier of the data source is passed as a query parameter in the request\nURL.\n\nIf an input with the same contentLanguage, offerId, and dataSource already\nexists, this method replaces that entry.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the processed product can be retrieved.",
       "file": "ProductInputsClient/InsertProductInput/main.go",
       "language": "GO",
       "clientMethod": {

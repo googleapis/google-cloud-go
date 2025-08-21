@@ -25,6 +25,7 @@ import (
 
 	bigquery "cloud.google.com/go/bigquery/v2/apiv2"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 )
 
 // Client represents the aggregate client which manages the various per-RPC service
@@ -154,5 +155,12 @@ func (mc *Client) Close() error {
 	if len(errs) > 0 {
 		return errors.Join(errs...)
 	}
+	return nil
+}
+
+// Deprecated: Connection() always returns nil.  This method
+// exists solely to satisfy the underlying per-RPC service interface(s)
+// and should not be used.
+func (c *Client) Connection() *grpc.ClientConn {
 	return nil
 }

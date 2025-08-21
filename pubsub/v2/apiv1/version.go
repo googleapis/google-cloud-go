@@ -16,7 +16,7 @@
 
 package pubsub
 
-import "cloud.google.com/go/pubsub/internal"
+import "cloud.google.com/go/pubsub/v2/internal"
 
 func init() {
 	versionClient = internal.Version

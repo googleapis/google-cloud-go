@@ -1,5 +1,12 @@
 # Changes
 
+## [2.14.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.13.0...dataproc/v2.14.0) (2025-07-09)
+
+
+### Features
+
+* **dataproc:** Add `cluster_tier` to support creating premium clusters ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [2.13.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.12.0...dataproc/v2.13.0) (2025-06-17)
 
 

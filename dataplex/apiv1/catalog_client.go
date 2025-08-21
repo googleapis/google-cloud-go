@@ -3191,6 +3191,9 @@ func (c *catalogRESTClient) SearchEntries(ctx context.Context, req *dataplexpb.S
 		if req.GetScope() != "" {
 			params.Add("scope", fmt.Sprintf("%v", req.GetScope()))
 		}
+		if req.GetSemanticSearch() {
+			params.Add("semanticSearch", fmt.Sprintf("%v", req.GetSemanticSearch()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 

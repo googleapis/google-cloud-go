@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.39.0",
+    "version": "1.44.0",
     "language": "GO",
     "apis": [
       {
@@ -17354,6 +17354,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Networks_RequestRemovePeering_sync",
+      "title": "compute RequestRemovePeering Sample",
+      "description": "RequestRemovePeering requests to remove a peering from the specified network. Applicable only for PeeringConnection with update_strategy=CONSENSUS.",
+      "file": "NetworksClient/RequestRemovePeering/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RequestRemovePeering",
+        "fullName": "google.cloud.compute.v1.NetworksClient.RequestRemovePeering",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RequestRemovePeeringNetworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworksClient",
+          "fullName": "google.cloud.compute.v1.NetworksClient"
+        },
+        "method": {
+          "shortName": "RequestRemovePeering",
+          "fullName": "google.cloud.compute.v1.Networks.RequestRemovePeering",
+          "service": {
+            "shortName": "Networks",
+            "fullName": "google.cloud.compute.v1.Networks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Networks_SwitchToCustomMode_sync",
       "title": "compute SwitchToCustomMode Sample",
       "description": "SwitchToCustomMode switches the network mode from auto subnet mode to custom subnet mode.",
@@ -28389,6 +28435,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSubBlocks_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance allows customers to perform maintenance on a reservation subBlock",
+      "file": "ReservationSubBlocksClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocks.PerformMaintenance",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
