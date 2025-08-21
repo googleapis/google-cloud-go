@@ -50,7 +50,7 @@ type DataAgent struct {
 	//
 	//	*DataAgent_DataAnalyticsAgent
 	Type isDataAgent_Type `protobuf_oneof:"type"`
-	// Optional. Identifier. The unique resource name of a Agent.
+	// Optional. Identifier. The unique resource name of a DataAgent.
 	// Format:
 	// `projects/{project}/locations/{location}/dataAgents/{data_agent_id}`
 	// `{data_agent}` is the resource id and should be 63 characters or less and
@@ -58,6 +58,10 @@ type DataAgent struct {
 	// https://google.aip.dev/122#resource-id-segments
 	//
 	// Example: `projects/1234567890/locations/us-central1/dataAgents/my-agent`.
+	//
+	// It is recommended to skip setting this field during agent creation as it
+	// will be inferred automatically and overwritten with the
+	// {parent}/dataAgents/{data_agent_id}.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. User friendly display name.
 	//
@@ -68,10 +72,11 @@ type DataAgent struct {
 	// * Must be between 1-1024 characters.
 	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional. Labels to help users filter related agents.
-	// E.g. "sales", "business", "etl", etc.
-	// Note labels are only used for filtering and not for policies.
-	// See https://cloud.google.com/resource-manager/docs/labels-overview for more
-	// details on label usage.
+	// For example, "sales", "business", "etl", and so on.
+	// Note labels are used only for filtering and not for policies.
+	// See the [labels
+	// documentation](https://cloud.google.com/resource-manager/docs/labels-overview)
+	// for more details on label usage.
 	Labels map[string]string `protobuf:"bytes,5,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. The time when the data agent was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`

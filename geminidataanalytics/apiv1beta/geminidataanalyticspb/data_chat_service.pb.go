@@ -312,7 +312,7 @@ type ChatRequest struct {
 	//	*ChatRequest_ConversationReference
 	//	*ChatRequest_DataAgentContext
 	ContextProvider isChatRequest_ContextProvider `protobuf_oneof:"context_provider"`
-	// Optional. The GCP project to be used for quota and billing.
+	// Optional. The Google Cloud project to be used for quota and billing.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/geminidataanalytics/v1beta/data_chat_service.proto.
 	Project string `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
@@ -440,11 +440,12 @@ type DataAgentContext struct {
 
 	// Required. The name of the data agent resource.
 	DataAgent string `protobuf:"bytes,1,opt,name=data_agent,json=dataAgent,proto3" json:"data_agent,omitempty"`
-	// Optional. The credentials to use when calling the looker datasource
+	// Optional. The credentials to use when calling the Looker data source.
 	//
-	// Currently supports both oauth token and api keys based credentials, as
+	// Currently supports both OAuth token and API key-based credentials, as
 	// described in
-	// https://cloud.google.com/looker/docs/api-auth#authentication_with_an_sdk
+	// [Authentication with an
+	// SDK](https://cloud.google.com/looker/docs/api-auth#authentication_with_an_sdk).
 	Credentials *Credentials `protobuf:"bytes,2,opt,name=credentials,proto3" json:"credentials,omitempty"`
 	// Optional. Version of context to be used by DCS (e.g. STAGING, PUBLISHED)
 	ContextVersion DataAgentContext_ContextVersion `protobuf:"varint,3,opt,name=context_version,json=contextVersion,proto3,enum=google.cloud.geminidataanalytics.v1beta.DataAgentContext_ContextVersion" json:"context_version,omitempty"`
@@ -559,7 +560,7 @@ func (x *ConversationReference) GetDataAgentContext() *DataAgentContext {
 	return nil
 }
 
-// A message from an internaction between the user and the system.
+// A message from an interaction between the user and the system.
 type Message struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1245,8 +1246,9 @@ func (*DataMessage_GeneratedLookerQuery) isDataMessage_Kind() {}
 
 func (*DataMessage_BigQueryJob) isDataMessage_Kind() {}
 
-// A query for retrieving data from a Looker explore. See
-// https://cloud.google.com/looker/docs/reference/looker-api/latest/methods/Query/run_inline_query
+// A query for retrieving data from a Looker Explore. See
+// [Run Inline
+// Query](https://cloud.google.com/looker/docs/reference/looker-api/latest/methods/Query/run_inline_query).
 type LookerQuery struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1254,13 +1256,13 @@ type LookerQuery struct {
 
 	// Required. The LookML model used to generate the query.
 	Model string `protobuf:"bytes,1,opt,name=model,proto3" json:"model,omitempty"`
-	// Required. The LookML explore used to generate the query.
+	// Required. The LookML Explore used to generate the query.
 	Explore string `protobuf:"bytes,2,opt,name=explore,proto3" json:"explore,omitempty"`
-	// Optional. The fields to retrieve from the explore.
+	// Optional. The fields to retrieve from the Explore.
 	Fields []string `protobuf:"bytes,3,rep,name=fields,proto3" json:"fields,omitempty"`
-	// Optional. The filters to apply to the explore.
+	// Optional. The filters to apply to the Explore.
 	Filters []*LookerQuery_Filter `protobuf:"bytes,4,rep,name=filters,proto3" json:"filters,omitempty"`
-	// Optional. The sorts to apply to the explore.
+	// Optional. The sorts to apply to the Explore.
 	Sorts []string `protobuf:"bytes,5,rep,name=sorts,proto3" json:"sorts,omitempty"`
 	// Optional. Limit in the query.
 	Limit *string `protobuf:"bytes,6,opt,name=limit,proto3,oneof" json:"limit,omitempty"`
@@ -1486,27 +1488,30 @@ type BigQueryJob struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The project the job belongs to.
+	// Required. The project that the job belongs to.
 	//
-	// See https://cloud.google.com/bigquery/docs/reference/rest/v2/JobReference
+	// See
+	// [JobReference](https://cloud.google.com/bigquery/docs/reference/rest/v2/JobReference).
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// Required. The ID of the job.
 	//
-	// See https://cloud.google.com/bigquery/docs/reference/rest/v2/JobReference
+	// See
+	// [JobReference](https://cloud.google.com/bigquery/docs/reference/rest/v2/JobReference).
 	JobId string `protobuf:"bytes,2,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
 	// Optional. The location of the job.
 	//
-	// See https://cloud.google.com/bigquery/docs/reference/rest/v2/JobReference
+	// See
+	// [JobReference](https://cloud.google.com/bigquery/docs/reference/rest/v2/JobReference).
 	Location string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
 	// Optional. A reference to the destination table of the job's query results.
 	//
 	// See
-	// https://cloud.google.com/bigquery/docs/reference/rest/v2/Job#jobconfigurationquery
+	// [JobConfigurationQuery](https://cloud.google.com/bigquery/docs/reference/rest/v2/Job#jobconfigurationquery).
 	DestinationTable *BigQueryTableReference `protobuf:"bytes,3,opt,name=destination_table,json=destinationTable,proto3" json:"destination_table,omitempty"`
 	// Optional. The schema of the job's query results.
 	//
 	// See
-	// https://cloud.google.com/bigquery/docs/reference/rest/v2/Job#jobstatistics2
+	// [JobStatistics2](https://cloud.google.com/bigquery/docs/reference/rest/v2/Job#jobstatistics2).
 	Schema *Schema `protobuf:"bytes,7,opt,name=schema,proto3" json:"schema,omitempty"`
 }
 
@@ -2968,12 +2973,13 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DataChatServiceClient interface {
-	// Answers a data question by generating a stream of [Message]s.
+	// Answers a data question by generating a stream of
+	// [Message][google.cloud.geminidataanalytics.v1alpha.Message] objects.
 	Chat(ctx context.Context, in *ChatRequest, opts ...grpc.CallOption) (DataChatService_ChatClient, error)
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
 	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
-	// Gets details of a single conversation using conversation id and parent.
+	// Gets details of a single conversation by using conversation id and parent.
 	GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
 	// Lists all conversations for a given parent.
 	ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...grpc.CallOption) (*ListConversationsResponse, error)
@@ -3059,12 +3065,13 @@ func (c *dataChatServiceClient) ListMessages(ctx context.Context, in *ListMessag
 
 // DataChatServiceServer is the server API for DataChatService service.
 type DataChatServiceServer interface {
-	// Answers a data question by generating a stream of [Message]s.
+	// Answers a data question by generating a stream of
+	// [Message][google.cloud.geminidataanalytics.v1alpha.Message] objects.
 	Chat(*ChatRequest, DataChatService_ChatServer) error
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
 	CreateConversation(context.Context, *CreateConversationRequest) (*Conversation, error)
-	// Gets details of a single conversation using conversation id and parent.
+	// Gets details of a single conversation by using conversation id and parent.
 	GetConversation(context.Context, *GetConversationRequest) (*Conversation, error)
 	// Lists all conversations for a given parent.
 	ListConversations(context.Context, *ListConversationsRequest) (*ListConversationsResponse, error)
