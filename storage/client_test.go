@@ -956,6 +956,48 @@ func TestOpenWriterEmulated(t *testing.T) {
 	})
 }
 
+func TestWriterOneshotNoProgressReportEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Oneshot uploads can be forced with either a chunksize of 0, or a
+		// chunksize larger than the data size.
+		for _, chunksize := range []int{0, 16 * MiB} {
+			t.Run(fmt.Sprintf("data size %d chunksize %d", 3*MiB, chunksize), func(t *testing.T) {
+				prefix := time.Now().Nanosecond()
+				objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+				vc := &Client{tc: client}
+				obj := vc.Bucket(bucket).Object(objName)
+				w := obj.NewWriter(ctx)
+				w.ChunkSize = chunksize
+				progressCalls := 0
+				w.ProgressFunc = func(int64) { progressCalls++ }
+				if _, err := w.Write(randomBytes3MiB); err != nil {
+					t.Fatalf("writer.Write: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("writer.Close: %v", err)
+				}
+				if progressCalls != 0 {
+					t.Errorf("ProgressFunc was called %d times, expected 0", progressCalls)
+				}
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if attrs.Size != 3*MiB {
+					t.Errorf("incorrect number of bytes written; got %v, want %v", attrs.Size, 3*MiB)
+				}
+			})
+		}
+	})
+}
+
 func TestOpenAppendableWriterEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
