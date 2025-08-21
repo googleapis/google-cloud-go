@@ -16,8 +16,10 @@ package adapt
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
@@ -53,6 +55,9 @@ func TestSchemaToProtoConversion(t *testing.T) {
 		wantProto3 *descriptorpb.DescriptorProto
 		// Normalized descriptor
 		wantProto3Normalized *descriptorpb.DescriptorProto
+
+		// proto conversion options
+		options []ProtoConversionOption
 	}{
 		{
 			description: "basic",
@@ -968,11 +973,133 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				return dp
 			}(),
 		},
+		{
+			description: "multiple nesting levels with proto mapping",
+			options: []ProtoConversionOption{
+				WithProtoMapping(ProtoMapping{
+					FieldType: storagepb.TableFieldSchema_INT64,
+					TypeName:  "google.protobuf.Int64Value",
+					Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+				}), // override all INT64
+				WithProtoMapping(ProtoMapping{
+					FieldPath: "outer_struct.inner_struct.leaf_one",
+					Type:      descriptorpb.FieldDescriptorProto_TYPE_INT64,
+				}), // let deeply nested field to still use basic INT64
+			},
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{
+						Name: "outer_struct",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+						Fields: []*storagepb.TableFieldSchema{
+							{
+								Name: "inner_struct",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_NULLABLE,
+								Fields: []*storagepb.TableFieldSchema{
+									{Name: "leaf_one", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_NULLABLE},
+									{Name: "leaf_two", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_NULLABLE},
+								},
+							},
+						},
+					},
+					{
+						Name: "other_field",
+						Type: storagepb.TableFieldSchema_INT64,
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+					},
+				},
+			},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("outer_struct"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__outer_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("other_field"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.Int64Value"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+			wantProto2Normalized: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("outer_struct"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__outer_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("other_field"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("google_protobuf_Int64Value"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("google_protobuf_Int64Value"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:         proto.String("value"),
+								Number:       proto.Int32(1),
+								DefaultValue: proto.String("0"),
+								JsonName:     proto.String("value"),
+								Type:         descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:        descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("root__outer_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("inner_struct"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__outer_struct__inner_struct"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("root__outer_struct__inner_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("leaf_one"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+							{
+								Name:     proto.String("leaf_two"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("google_protobuf_Int64Value"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.description, func(T *testing.T) {
 			// Proto2
-			p2d, err := StorageSchemaToProto2Descriptor(tc.bq, "root")
+			p2d, err := StorageSchemaToProtoDescriptorWithOptions(tc.bq, "root", tc.options...)
 			if err != nil {
 				t.Fatalf("failed proto2 conversion: %v", err)
 			}
@@ -1031,10 +1158,10 @@ func TestSchemaToProtoConversion(t *testing.T) {
 }
 
 func TestProtoJSONSerialization(t *testing.T) {
-
 	sourceSchema := &storagepb.TableSchema{
 		Fields: []*storagepb.TableFieldSchema{
 			{Name: "record_id", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_NULLABLE},
+			{Name: "created_at", Type: storagepb.TableFieldSchema_TIMESTAMP, Mode: storagepb.TableFieldSchema_NULLABLE},
 			{
 				Name: "details",
 				Type: storagepb.TableFieldSchema_STRUCT,
@@ -1047,12 +1174,18 @@ func TestProtoJSONSerialization(t *testing.T) {
 		},
 	}
 
-	descriptor, err := StorageSchemaToProto2Descriptor(sourceSchema, "root")
+	descriptor, err := StorageSchemaToProtoDescriptorWithOptions(sourceSchema, "root",
+		WithProtoMapping(ProtoMapping{
+			FieldType: storagepb.TableFieldSchema_TIMESTAMP,
+			TypeName:  "google.protobuf.Timestamp",
+			Type:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+		}))
 	if err != nil {
 		t.Fatalf("failed to construct descriptor")
 	}
 
-	sampleRecord := []byte(`{"record_id":"12345","details":[{"key":"name","value":"jimmy"},{"key":"title","value":"clown"}]}`)
+	ts := time.Now().UTC().Format(time.RFC3339)
+	sampleRecord := []byte(fmt.Sprintf(`{"record_id":"12345","created_at": "%s","details":[{"key":"name","value":"jimmy"},{"key":"title","value":"clown"}]}`, ts))
 
 	messageDescriptor, ok := descriptor.(protoreflect.MessageDescriptor)
 	if !ok {
@@ -1078,8 +1211,15 @@ func TestProtoJSONSerialization(t *testing.T) {
 				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 			},
 			{
-				Name:     proto.String("details"),
+				Name:     proto.String("created_at"),
 				Number:   proto.Int32(2),
+				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+				TypeName: proto.String(".google.protobuf.Timestamp"),
+				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			},
+			{
+				Name:     proto.String("details"),
+				Number:   proto.Int32(3),
 				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
 				TypeName: proto.String(".root__details"),
 				Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
@@ -1140,7 +1280,6 @@ func TestProtoJSONSerialization(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("mismatched json: got\n%q\nwant\n%q", gotBytes, sampleRecord)
 	}
-
 }
 
 func TestNormalizeDescriptor(t *testing.T) {
