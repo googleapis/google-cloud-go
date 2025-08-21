@@ -320,7 +320,8 @@ func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
 		return w.newGRPCAppendableObjectBufferSender()
 	}
 	if w.forceOneShot {
-		// One shot semantics
+		// One shot semantics - no progress reports
+		w.progress = func(int64) {}
 		return w.newGRPCOneshotBidiWriteBufferSender()
 	}
 	// Resumable write semantics
