@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"sync"
 	"sync/atomic"
 	"time"
 
@@ -45,7 +44,6 @@ const (
 	serverTimingValPrefix = "gfet4t7; dur="
 	metricMethodPrefix    = "Bigtable."
 
-	metricMethodPrefix = "Bigtable."
 	// Monitored resource labels
 	monitoredResLabelKeyProject  = "project_id"
 	monitoredResLabelKeyInstance = "instance"
@@ -426,8 +424,7 @@ type opTracer struct {
 	startTime time.Time
 
 	// Only for ReadRows. Time when the response headers are received in a streaming RPC.
-	firstRespTime     time.Time
-	firstRespTimeOnce sync.Once
+	firstRespTime time.Time
 
 	// gRPC status code of last completed attempt
 	status string
@@ -442,9 +439,7 @@ func (o *opTracer) setStartTime(t time.Time) {
 }
 
 func (o *opTracer) setFirstRespTime(t time.Time) {
-	o.firstRespTimeOnce.Do(func() {
-		o.firstRespTime = t
-	})
+	o.firstRespTime = t
 }
 
 func (o *opTracer) setStatus(status string) {

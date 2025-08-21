@@ -86,7 +86,7 @@ var (
 
 // ReadRowsWithDelay implements the core logic for a ReadRows RPC that introduces a delay.
 // This is designed to be used within a gRPC stream interceptor.
-func ReadRowsWithDelay(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+func ReadRowsWithDelay(_ any, stream btpb.Bigtable_ReadRowsServer) error {
 	// 1. Send headers immediately
 	if err := stream.SendHeader(metadata.MD{
 		serverTimingMDKey: []string{"gfet4t7; dur=10"}, // Small initial server latency
@@ -134,7 +134,7 @@ func ReadRowsWithDelay(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsS
 // setupFakeServerWithCustomHandler sets up a fake server with a custom stream handler for ReadRows.
 // It returns a configured Table, a cleanup function, and any error during setup.
 func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientConfig,
-	customReadRowsHandler func(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error) (*Table, func(), error) {
+	customReadRowsHandler func(srv any, stream btpb.Bigtable_ReadRowsServer) error) (*Table, func(), error) {
 
 	streamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if info.FullMethod == "/google.bigtable.v2.Bigtable/ReadRows" {
@@ -189,7 +189,7 @@ func equalErrs(gotErr error, wantErr error) bool {
 
 // readRowsWithAppBlockingDelayLogic implements the core logic for a ReadRows RPC that introduces
 // sendTwoRowsHandler is a simple server-side stream handler that sends two predefined rows.
-func sendTwoRowsHandler(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+func sendTwoRowsHandler(_ any, stream btpb.Bigtable_ReadRowsServer) error {
 	// 1. Send headers immediately
 	if err := stream.SendHeader(metadata.MD{
 		locationMDKey: []string{string(testHeaders)}, // Send cluster/zone info
@@ -695,15 +695,6 @@ func TestExporterLogs(t *testing.T) {
 		time.Sleep(3*defaultSamplePeriod - elapsedTime)
 	}
 
-	// In setupFakeServerWithMock (and assumed setupFakeServer), Bigtable client is created with options like
-	// option.WithGRPCConn(conn). If the monitoring client uses these exact same options (which it might,
-	// depending on how createExporterOptions is configured for the test), and if the endpoint for monitoring
-	// is not overridden to point to monitoringServer.Endpoint, then exports could fail if the gRPC conn
-	// doesn't also host a fake Monitoring server. This comment is to note that TestExporterLogs relies
-	// on this behavior to check for errors.
-	// For TestFirstResponseLatencyWithDelayedStream, we explicitly override createExporterOptions
-	// to point to monitoringServer.Endpoint, so this isn't an issue there.
-	// Thus, there should be errors in errBuf.
 	data, readErr := mer.read()
 	if readErr != nil {
 		t.Errorf("Failed to read errBuf: %v", readErr)
@@ -850,11 +841,11 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 	project := "test-project"
 	instance := "test-instance"
 	appProfile := "test-app-profile"
-	clientUID := "test-uid-delayed" // Unique UID for this test
+	clientUID := "test-uid-delayed"
 
 	// Reduce sampling period to reduce test run time
 	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 100 * time.Millisecond // Shorter for quicker metric export
+	defaultSamplePeriod = 100 * time.Millisecond
 	defer func() {
 		defaultSamplePeriod = origSamplePeriod
 	}()
@@ -899,8 +890,8 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 
 	// Setup fake Bigtable server with delayed stream handler
 	// Define the custom ReadRows handler that uses ReadRowsWithDelay
-	readRowsHandler := func(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
-		return ReadRowsWithDelay(req, stream) // req can be nil if ReadRowsWithDelay is adapted
+	readRowsHandler := func(srv any, stream btpb.Bigtable_ReadRowsServer) error {
+		return ReadRowsWithDelay(srv, stream) // req can be nil if ReadRowsWithDelay is adapted
 	}
 
 	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, readRowsHandler)
@@ -924,7 +915,6 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 
 	// Allow time for metrics to be exported
 	// Wait for at least 3 export cycles to be reasonably sure metrics are flushed.
-	// Increased sleep duration to see if it's a timing issue.
 	time.Sleep(defaultSamplePeriod * 10)
 
 	// Fetch and analyze metrics
