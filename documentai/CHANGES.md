@@ -1,6 +1,24 @@
 # Changes
 
 
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.37.0...documentai/v1.38.0) (2025-08-18)
+
+
+### Features
+
+* **documentai:** Added config options for derived fields and signature detection. Some annotation changes changes to mark fields explicitly output only (no changes in semantics just readability) ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+
+
+### Documentation
+
+* **documentai:** A comment for field `create_time` in message `.google.cloud.documentai.v1.Processor`  is changed to describe as output only. ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **documentai:** A comment for field `create_time` in message `.google.cloud.documentai.v1.ProcessorVersion`  is changed to describe as output only. ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **documentai:** A comment for field `deprecation_info` in message `.google.cloud.documentai.v1.ProcessorVersion`  is changed to describe as output only. ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **documentai:** A comment for field `document_schema` in message `.google.cloud.documentai.v1.ProcessorVersion` is changed to describe as output only. ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **documentai:** A comment for field `kms_key_name` in message `.google.cloud.documentai.v1.ProcessorVersion`  is changed to describe as output only. ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **documentai:** A comment for field `kms_key_version_name` in message `.google.cloud.documentai.v1.ProcessorVersion`  is changed to describe as output only. ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **documentai:** A comment for field `latest_evaluation` in message `.google.cloud.documentai.v1.ProcessorVersion`  is changed to describe as output only. ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.36.1...documentai/v1.37.0) (2025-04-30)
 
 

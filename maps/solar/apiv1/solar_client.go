@@ -185,9 +185,9 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// FindClosestBuildingInsights locates the closest building to a query point. Returns an error with
-// code NOT_FOUND if there are no buildings within approximately 50m of the
-// query point.
+// FindClosestBuildingInsights locates the building whose centroid is closest to a query point. Returns an
+// error with code NOT_FOUND if there are no buildings within approximately
+// 50m of the query point.
 func (c *Client) FindClosestBuildingInsights(ctx context.Context, req *solarpb.FindClosestBuildingInsightsRequest, opts ...gax.CallOption) (*solarpb.BuildingInsights, error) {
 	return c.internalClient.FindClosestBuildingInsights(ctx, req, opts...)
 }
@@ -402,9 +402,9 @@ func (c *gRPCClient) GetGeoTiff(ctx context.Context, req *solarpb.GetGeoTiffRequ
 	return resp, nil
 }
 
-// FindClosestBuildingInsights locates the closest building to a query point. Returns an error with
-// code NOT_FOUND if there are no buildings within approximately 50m of the
-// query point.
+// FindClosestBuildingInsights locates the building whose centroid is closest to a query point. Returns an
+// error with code NOT_FOUND if there are no buildings within approximately
+// 50m of the query point.
 func (c *restClient) FindClosestBuildingInsights(ctx context.Context, req *solarpb.FindClosestBuildingInsightsRequest, opts ...gax.CallOption) (*solarpb.BuildingInsights, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -416,6 +416,11 @@ func (c *restClient) FindClosestBuildingInsights(ctx context.Context, req *solar
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetExactQualityRequired() {
 		params.Add("exactQualityRequired", fmt.Sprintf("%v", req.GetExactQualityRequired()))
+	}
+	if items := req.GetExperiments(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("experiments", fmt.Sprintf("%v", item))
+		}
 	}
 	if req.GetLocation().GetLatitude() != 0 {
 		params.Add("location.latitude", fmt.Sprintf("%v", req.GetLocation().GetLatitude()))
@@ -477,6 +482,11 @@ func (c *restClient) GetDataLayers(ctx context.Context, req *solarpb.GetDataLaye
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetExactQualityRequired() {
 		params.Add("exactQualityRequired", fmt.Sprintf("%v", req.GetExactQualityRequired()))
+	}
+	if items := req.GetExperiments(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("experiments", fmt.Sprintf("%v", item))
+		}
 	}
 	if req.GetLocation().GetLatitude() != 0 {
 		params.Add("location.latitude", fmt.Sprintf("%v", req.GetLocation().GetLatitude()))

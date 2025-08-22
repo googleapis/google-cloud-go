@@ -18,11 +18,7 @@
 
 # --- Builder Stage ---
 # This stage builds the librariangen binary using the MOSS-compliant base image.
-# TODO(quartzmo): For production builds, this must be switched back to the MOSS-compliant
-# base image.
-# See https://github.com/googleapis/librarian/issues/1019.
-# FROM marketplace.gcr.io/google/debian12:latest as builder
-FROM debian:12-slim as builder
+FROM marketplace.gcr.io/google/debian12:latest AS builder
 
 # Set environment variables for tool versions for easy updates.
 ENV GO_VERSION=1.23.0
@@ -41,24 +37,26 @@ RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 ENV PATH /usr/local/go/bin:$PATH
+RUN go version
 
 WORKDIR /src
+
+# Copy go.mod and go.sum to download dependencies before copying all the source.
+# This allows Docker to cache the dependencies layer.
+COPY go.mod go.sum ./
+RUN go mod download
 
 # Copy all source code.
 COPY . .
 
 # Build the librariangen binary.
-RUN CGO_ENABLED=0 go build -o /librariangen .
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /librariangen .
 
 
 # --- Final Stage ---
 # This stage creates the final, minimal image with the compiled binary and
 # all required runtime dependencies pinned to specific versions for compatibility.
-# TODO(quartzmo): For production builds, this must be switched back to the MOSS-compliant
-# base image.
-# See https://github.com/googleapis/librarian/issues/1019.
-# FROM marketplace.gcr.io/google/debian12:latest
-FROM debian:12-slim
+FROM marketplace.gcr.io/google/debian12:latest
 
 # Set environment variables for tool versions for easy updates.
 ENV GO_VERSION=1.23.0
@@ -68,9 +66,11 @@ ENV GO_GRPC_PLUGIN_VERSION=1.3.0
 ENV GAPIC_GENERATOR_VERSION=0.53.1
 ENV STATICCHECK_VERSION=2023.1.6
 
-# Set up PATH for Go and other tools.
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:/usr/local/bin:$PATH
+# Set up a home directory for the non-root user that will be running this container.
+# Go tools will use this directory for caches, which resolves permission issues.
+ENV HOME=/home/nonroot
+# GOPATH defaults to $HOME/go, so we need to add that to the PATH.
+ENV PATH $HOME/go/bin:/usr/local/go/bin:/usr/local/bin:$PATH
 
 # Install essential system packages.
 # Clean up apt cache to keep the image smaller.
@@ -84,6 +84,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install the specific Go version required for compatibility.
+
+# Note: This is needed for the go install commands below.
 RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
@@ -95,11 +97,15 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC
     protoc --version
 
 # Install required Go tools for protoc and the post-processor.
-RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GO_PROTOC_PLUGIN_VERSION} && \
+RUN (export GOTOOLCHAIN='auto' && \
+    go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GO_PROTOC_PLUGIN_VERSION} && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v${GO_GRPC_PLUGIN_VERSION} && \
     go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v${GAPIC_GENERATOR_VERSION} && \
     go install golang.org/x/tools/cmd/goimports@latest && \
-    go install honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION}
+    go install honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION})
+
+# Create and set permissions for the home directory so it is writable by any user.
+RUN mkdir -p ${HOME} && chmod -R 777 ${HOME}
 
 # Copy the compiled librariangen binary from the builder stage.
 COPY --from=builder /librariangen /usr/local/bin/librariangen

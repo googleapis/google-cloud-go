@@ -137,7 +137,7 @@ func Generate(ctx context.Context, cfg *Config) error {
 			return fmt.Errorf("librariangen: failed to read title from service yaml: %w", err)
 		}
 		moduleDir := filepath.Join(cfg.OutputDir, generateReq.ID)
-		if err := postProcess(ctx, generateReq, moduleDir, isNewModule, title); err != nil {
+		if err := postProcess(ctx, generateReq, cfg.OutputDir, moduleDir, isNewModule, title); err != nil {
 			return fmt.Errorf("librariangen: post-processing failed: %w", err)
 		}
 	}

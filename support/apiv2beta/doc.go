@@ -59,28 +59,16 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &supportpb.ListAttachmentsRequest{
+//	req := &supportpb.GetAttachmentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/support/apiv2beta/supportpb#ListAttachmentsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/support/apiv2beta/supportpb#GetAttachmentRequest.
 //	}
-//	it := c.ListAttachments(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
-//
-//		// If you need to access the underlying RPC response,
-//		// you can do so by casting the `Response` as below.
-//		// Otherwise, remove this line. Only populated after
-//		// first call to Next(). Not safe for concurrent access.
-//		_ = it.Response.(*supportpb.ListAttachmentsResponse)
+//	resp, err := c.GetAttachment(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
