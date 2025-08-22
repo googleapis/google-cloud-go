@@ -249,7 +249,7 @@ func TestIntegration_Pinger(t *testing.T) {
 	if !testEnv.Config().UseProd {
 		t.Skip("emulator doesn't support PingAndWarm")
 	}
-	if err := client.Pinger(ctx); err != nil {
+	if err := client.PingAndWarm(ctx); err != nil {
 		t.Fatalf("pinger failed. got %v, want %v", err, nil)
 	}
 

@@ -922,7 +922,7 @@ func handleExecuteStreamEnd(stream btpb.Bigtable_ExecuteQueryClient, trailerMD *
 }
 
 // Pinger pings the server and warms up the connection.
-func (c *Client) Pinger(ctx context.Context) (err error) {
+func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	md := metadata.Join(metadata.Pairs(
 		resourcePrefixHeader, c.fullInstanceName(),
 		requestParamsHeader, c.reqParamsHeaderValInstance(),
