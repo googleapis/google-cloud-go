@@ -1,3 +1,0 @@
-{
-  "error": "librariangen: failed to read request: open testdata/release-init/.librarian/release-init-request.json: no such file or directory"
-}

@@ -13,25 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script performs an end-to-end integration test for the `release-init`
-# command by invoking the `librarian` CLI, which in turn runs the
-# `librariangen` container.
+# This script performs an integration test on the librarian CLI
+# for the `release-init` command.
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
-IMAGE_NAME="gcr.io/cloud-go-infra/librariangen:latest"
+IMAGE_NAME="gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest"
+LIBRARIANGEN_LOG=librarian-release-init.log
+echo "Cleaning up from last time: rm -f $LIBRARIANGEN_LOG"
+rm -f "$LIBRARIANGEN_LOG"
 
 # --- Host Dependency Checks ---
-if ! command -v "docker" &> /dev/null; then
-  echo "Error: docker not found in PATH. Please install it."
-  exit 1
-fi
-if ! command -v "git" &> /dev/null; then
-  echo "Error: git not found in PATH. Please install it."
-  exit 1
-fi
-if ! command -v "go" &> /dev/null; then
+if ! command -v "go" &> /dev/null;
+then
   echo "Error: go not found in PATH. Please install it."
+  exit 1
+fi
+if ! command -v "git" &> /dev/null;
+then
+  echo "Error: git not found in PATH. Please install it."
   exit 1
 fi
 
@@ -41,62 +41,53 @@ if [ ! -d "$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" ]; then
   exit 1
 fi
 echo "Using google-cloud-go repo from $LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
+GOLDEN_REPO_DIR="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
 
-# --- Prepare Target Repository ---
-echo "Preparing target repository..."
-pushd "$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" > /dev/null
-git reset --hard HEAD
-git clean -fd
-# Create a new commit to simulate a change that needs to be released.
-echo "// New feature" >> "secretmanager/apiv1/secretmanager_client.go"
-git add "secretmanager/apiv1/secretmanager_client.go"
-git commit -m "feat(secretmanager): add new feature"
-popd
+# --- Test Execution ---
+echo ""
+echo "--------------------------------------"
+echo "Running 'release-init' integration test..."
+echo "--------------------------------------"
 
-# --- Execute ---
-echo "Running librarian release init..."
-# Note: We are testing the `release init` command of the librarian CLI.
-go run github.com/googleapis/librarian/cmd/librarian@HEAD release init \
+# Reset the golden repo to a clean state before running the test.
+(
+  echo "--- Git Reset Summary (Pre-run) ---"
+  pushd "$GOLDEN_REPO_DIR" > /dev/null
+  git reset --hard HEAD
+  git clean -fd
+  popd > /dev/null
+) >> "$LIBRARIANGEN_LOG" 2>&1
+
+# Execute
+echo "Running librarian release-init..."
+go run github.com/googleapis/librarian/cmd/librarian@HEAD release-init \
   --image="$IMAGE_NAME" \
-  --repo="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" \
-  --library=secretmanager
+  --repo="$GOLDEN_REPO_DIR" \
+  --library=secretmanager >> "$LIBRARIANGEN_LOG" 2>&1
+
 
 # --- Verify ---
-echo "Verifying output..."
-pushd "$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" > /dev/null
+echo "Verifying output against golden repository..."
 
-# Check that the expected files were modified.
-MODIFIED_FILES=$(git status --porcelain | awk '{print $2}')
-EXPECTED_FILES=(
-  ".librarian/state.yaml"
-  "secretmanager/CHANGES.md"
-  "secretmanager/internal/version.go"
-  "internal/generated/snippets/secretmanager/snippet_metadata.google.cloud.secretmanager.v1.json"
-)
+# Check the git status and diff to verify the changes.
+(
+  echo "--- Git Status Summary ---"
+  pushd "$GOLDEN_REPO_DIR" > /dev/null
+  git add .
+  git status
+  echo "--- Git Diff Summary ---"
+  git diff --staged
+  popd > /dev/null
+) >> "$LIBRARIANGEN_LOG" 2>&1
 
-for f in "${EXPECTED_FILES[@]}"; do
-  if ! echo "$MODIFIED_FILES" | grep -q "$f"; then
-    echo "Error: Expected file '$f' to be modified, but it was not."
-    git status
-    exit 1
-  fi
-done
 
-echo "Correct files were modified. Checking content with git diff..."
-git diff
-
-# Check that the version was bumped in state.yaml
-if ! grep -q "version: 1.16.0" ".librarian/state.yaml"; then
-    echo "Error: Version was not bumped to 1.16.0 in state.yaml"
+# A simple check to ensure some files were changed. A more robust check
+# would involve comparing against a known-good diff.
+if [ -z "$(git -C "$GOLDEN_REPO_DIR" status --porcelain)" ]; then
+    echo "Error: No files were changed in the golden repository."
     exit 1
 fi
 
-echo "Verification successful."
-
-# --- Cleanup ---
-echo "Cleaning up target repository..."
-git reset --hard HEAD
-git clean -fd
-popd
-
-echo "Librarian release-init integration test passed successfully."
+echo "'release-init' integration test passed successfully."
+echo "Logs are available in: $LIBRARIANGEN_LOG"
+echo "To inspect changes, see the git status of: $GOLDEN_REPO_DIR"

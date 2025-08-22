@@ -51,7 +51,6 @@ func Init(ctx context.Context, cfg *Config) error {
 
 	for _, lib := range req.Libraries {
 		if !lib.ReleaseTriggered {
-			slog.Info("librariangen: skipping library, not triggered for release", "id", lib.ID)
 			continue
 		}
 		slog.Info("librariangen: staging source directories for release", "id", lib.ID)

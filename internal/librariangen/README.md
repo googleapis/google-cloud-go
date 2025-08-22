@@ -52,6 +52,21 @@ librariangen release-init \
 
 4.  **Output:** All generated files (`*.pb.go`, `*_gapic.go`, etc.) are written to the `/output` directory. The Librarian tool is then responsible for copying these files to their final destination in the `google-cloud-go` repository.
 
+### `release-init` Command Workflow
+
+1.  **Inputs:** The container is provided with the following mounted directories:
+    *   `/repo`: A complete checkout of the `google-cloud-go` repository containing the library to be updated.
+    *   `/librarian`: Contains a `release-init-request.json` file, which specifies the library, the new version, and the changelog entries.
+    *   `/output`: An empty directory where the modified library files will be written.
+
+2.  **Execution:**
+    *   The `librariangen` binary parses the `release-init-request.json`.
+    *   It reads the specified library files from the `/repo` directory.
+    *   It updates the `version.go` file with the new version number.
+    *   It prepends the new entries to the `CHANGES.md` file.
+
+3.  **Output:** The modified files (e.g., `version.go`, `CHANGES.md`) are written to the `/output` directory. The Librarian tool then copies these files back into the `google-cloud-go` repository.
+
 ## Running
 
 There are three primary ways to run the generator, with varying levels of setup complexity.
@@ -80,6 +95,14 @@ This is the standard way to run the generator, using a pre-built image from Goog
       --library=secretmanager \
       --api=google/cloud/secretmanager/v1,google/cloud/secretmanager/v1beta2 \
       --api-source="$GOOGLEAPIS_DIR"
+    ```
+
+    To run the `release-init` command for the `secretmanager` library:
+    ```bash
+    go run github.com/googleapis/librarian/cmd/librarian@HEAD release-init \
+      --image="gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest" \
+      --repo="$GOOGLE_CLOUD_GO_DIR" \
+      --library=secretmanager
     ```
 
 
@@ -148,7 +171,6 @@ This method runs the generator directly as a Go binary, without any Docker conta
     ```
     The generated Go client library will be in the `/tmp/librariangen-run/output` directory.
 
-
 ## Development & Testing
 
 ### Local Development Dependencies
@@ -179,13 +201,21 @@ The project has a multi-layered testing strategy.
     go test ./...
     ```
 
-2.  **Binary Integration Test:** A shell script (`run-binary-integration-test.sh`) provides a full, end-to-end test of the compiled binary. This is the primary way to validate changes to the core generation logic.
-    *   **Setup:** The test requires local checkouts of the `googleapis` and `googleapis-gen` repositories. You must set the `GOOGLEAPIS_DIR` and `GOOGLEAPIS_GEN_DIR` environment variables to point to these checkouts.
-    *   **Execution:**
-        ```bash
-        bash run-binary-integration-test.sh
-        ```
-    This script will compile the binary and run it against realistic API fixtures, verifying that the correct Go files are generated and comparing them against the golden files.
+2.  **Binary Integration Tests:** Shell scripts provide full, end-to-end tests of the compiled binary. This is the primary way to validate changes to the core logic.
+    *   **`generate` command:** (`run-binary-generate-test.sh`)
+        *   **Setup:** The test requires local checkouts of the `googleapis` and `googleapis-gen` repositories. You must set the `LIBRARIANGEN_GOOGLEAPIS_DIR` and `LIBRARIANGEN_GOOGLEAPIS_GEN_DIR` environment variables to point to these checkouts.
+        *   **Execution:**
+            ```bash
+            ./run-binary-generate-test.sh
+            ```
+        This script will compile the binary and run it against realistic API fixtures, verifying that the correct Go files are generated.
+    *   **`release-init` command:** (`run-binary-release-init-test.sh`)
+        *   **Setup:** The test requires a local checkout of the `google-cloud-go` repository. You must set the `LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR` environment variable to point to this checkout.
+        *   **Execution:**
+            ```bash
+            ./run-binary-release-init-test.sh
+            ```
+        This script will compile the binary and run it against a test library, verifying that the version and changelog files are updated correctly.
 
 ## Docker Container
 

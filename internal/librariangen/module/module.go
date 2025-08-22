@@ -31,7 +31,7 @@ var (
 	internalVersionTmpl string
 )
 
-// GenerateInternalVersionFile creates an internal/version.go file for a new module.
+// GenerateInternalVersionFile creates an internal/version.go file for the module.
 func GenerateInternalVersionFile(moduleDir, version string) error {
 	internalDir := filepath.Join(moduleDir, "internal")
 	if err := os.MkdirAll(internalDir, 0755); err != nil {
@@ -55,7 +55,8 @@ func GenerateInternalVersionFile(moduleDir, version string) error {
 	return t.Execute(f, internalVersionData)
 }
 
-// UpdateSnippetsMetadata updates all snippet files to populate the $VERSION placeholder.
+// UpdateSnippetsMetadata updates the library version in all snippet metadata files,
+// replacing the old version or the $VERSION placeholder.
 func UpdateSnippetsMetadata(outputDir, moduleName, version string) error {
 	slog.Debug("librariangen: updating snippets metadata")
 	snpDir := filepath.Join(outputDir, "internal", "generated", "snippets", moduleName)

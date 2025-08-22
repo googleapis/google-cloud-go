@@ -1,5 +1,6 @@
 {
   "id": "chronicle",
+  "version": "0.1.1",
   "apis": [
     {
       "path": "google/cloud/chronicle/v1",
@@ -12,8 +13,7 @@
   ],
   "preserve_regex": [
     "chronicle/aliasshim/aliasshim.go",
-    "chronicle/CHANGES.md",
-    "chronicle/internal/version.go"
+    "chronicle/CHANGES.md"
   ],
   "remove_regex": [
     "chronicle",

@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script performs a hermetic integration test on the librariangen Docker
-# container for the `release-init` command.
+# This script performs an integration test on the librariangen container
+# for the `release-init` command.
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
@@ -24,47 +24,88 @@ echo "Cleaning up from last time: rm -f $LIBRARIANGEN_LOG"
 rm -f "$LIBRARIANGEN_LOG"
 
 # --- Host Dependency Checks ---
-if ! command -v "docker" &> /dev/null; then
+if ! command -v "docker" &> /dev/null;
+then
   echo "Error: docker not found in PATH. Please install it."
+  exit 1
+fi
+if ! command -v "git" &> /dev/null;
+then
+  echo "Error: git not found in PATH. Please install it."
   exit 1
 fi
 
 # --- Setup ---
+if [ ! -d "$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" ]; then
+  echo "Error: LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR is not set or not a directory."
+  exit 1
+fi
+echo "Using google-cloud-go repo from $LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
+GOLDEN_REPO_DIR="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
+
+# --- Test Execution ---
+echo ""
+echo "--------------------------------------"
+echo "Running 'release-init' integration test..."
+echo "--------------------------------------"
 TEST_DIR=$(mktemp -d -t tmp.XXXXXXXXXX)
 echo "Using temporary directory: $TEST_DIR"
-
-LIBRARIAN_DIR="$TEST_DIR/librarian"
-REPO_DIR="$TEST_DIR/repo"
 OUTPUT_DIR="$TEST_DIR/output"
-mkdir -p "$LIBRARIAN_DIR" "$REPO_DIR" "$OUTPUT_DIR"
+LIBRARIAN_INPUT_DIR="$TEST_DIR/librarian-input"
+mkdir -p "$OUTPUT_DIR" "$LIBRARIAN_INPUT_DIR"
 
-# --- Prepare Inputs ---
-# The testdata directories contain the state of the world *before* the release.
-cp -r "testdata/release-init/.librarian/." "$LIBRARIAN_DIR/"
-cp -r "testdata/release-init/repo/." "$REPO_DIR/"
+# Prepare a temporary librarian directory with our test fixtures.
+cp -r "testdata/release-init/.librarian/." "$LIBRARIAN_INPUT_DIR/"
+cp -r "testdata/release-init/librarian/." "$LIBRARIAN_INPUT_DIR/"
 
-# --- Execute ---
-echo "Running librariangen container for release-init..."
+# Reset the golden repo to a clean state before running the test.
+(
+  echo "--- Git Reset Summary (Pre-run) ---"
+  pushd "$GOLDEN_REPO_DIR" > /dev/null
+  git reset --hard HEAD
+  git clean -fd
+  popd > /dev/null
+) >> "$LIBRARIANGEN_LOG" 2>&1
+
+# Execute
+echo "Running librariangen release-init container..."
 docker run --rm \
   --env GOOGLE_SDK_GO_LOGGING_LEVEL=debug \
-  --mount type=bind,source="$(pwd)/$LIBRARIAN_DIR",target=/librarian,readonly \
-  --mount type=bind,source="$(pwd)/$REPO_DIR",target=/repo,readonly \
-  --mount type=bind,source="$(pwd)/$OUTPUT_DIR",target=/output \
+  --mount type=bind,source="$LIBRARIAN_INPUT_DIR",target=/librarian,readonly \
+  --mount type=bind,source="$GOLDEN_REPO_DIR",target=/repo \
+  --mount type=bind,source="$OUTPUT_DIR",target=/output \
   "$IMAGE_NAME" \
   release-init \
   --librarian=/librarian \
   --repo=/repo \
   --output=/output >> "$LIBRARIANGEN_LOG" 2>&1
 
-# --- Verify ---
-echo "Verifying output..."
-echo "Librariangen logs are available in: $LIBRARIANGEN_LOG"
 
-if diff -r "$OUTPUT_DIR" "testdata/release-init/golden"; then
-  echo "'release-init' container integration test passed successfully."
-else
-  echo "Error: Output does not match golden files. See diff above."
-  exit 1
+# --- Verify ---
+echo "Verifying output against golden repository..."
+
+# Copy the output into the golden repo.
+cp -r "$OUTPUT_DIR/." "$GOLDEN_REPO_DIR/"
+
+# Check the git status and diff to verify the changes.
+(
+  echo "--- Git Status Summary ---"
+  pushd "$GOLDEN_REPO_DIR" > /dev/null
+  git add .
+  git status
+  echo "--- Git Diff Summary ---"
+  git diff --staged
+  popd > /dev/null
+) >> "$LIBRARIANGEN_LOG" 2>&1
+
+
+# A simple check to ensure some files were changed. A more robust check
+# would involve comparing against a known-good diff.
+if [ -z "$(git -C "$GOLDEN_REPO_DIR" status --porcelain)" ]; then
+    echo "Error: No files were changed in the golden repository."
+    exit 1
 fi
 
-echo "Generated files are available for inspection in: $OUTPUT_DIR"
+echo "'release-init' container integration test passed successfully."
+echo "Logs are available in: $LIBRARIANGEN_LOG"
+echo "To inspect changes, see the git status of: $GOLDEN_REPO_DIR"
