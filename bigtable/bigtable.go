@@ -57,8 +57,6 @@ const (
 	methodNameReadRows               = "ReadRows"
 )
 
-var pingBytes = []byte("ping")
-
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -926,7 +924,6 @@ func (c *Client) Pinger(ctx context.Context) (err error) {
 	defer func() { trace.EndSpan(ctx, err) }()
 	mt := c.newBuiltinMetricsTracer(ctx, "", false)
 	defer mt.recordOperationCompletion()
-
 
 	err = c.pingerWithMetadata(ctx, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
