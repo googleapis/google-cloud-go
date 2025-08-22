@@ -1490,6 +1490,115 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 	})
 }
 
+func TestWriterAsyncCancelEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Create test bucket.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		objName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		defer w.Close()
+
+		if _, err := w.Write(randomBytes3MiB); err != nil {
+			t.Fatalf("first w.Write(): %v", err)
+		}
+		// Cancel concurrently with an additional write
+		go cancel()
+		// We don't actually care if this succeeds or fails - it will blow up under
+		// the race detector if writes and cancels are not thread-safe.
+		w.Write(randomBytes3MiB)
+		// Make sure the cancel got processed.
+		<-ctx.Done()
+
+		// The writer close should observe the cancelled error.
+		if err := w.Close(); err != context.Canceled {
+			t.Errorf("w.Close(): got %v, want %v", err, context.Canceled)
+		}
+	})
+}
+
+func TestWriterCloseTwiceEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Create test bucket.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		objName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		obj := vc.Bucket(bucket).Object(objName)
+		w := obj.NewWriter(ctx)
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+		// Closing a writer twice is allowed!
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+
+		// The object is present with 0 contents.
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("obj.Attrs: %v", err)
+		}
+		if attrs.Size != 0 {
+			t.Errorf("incorrect object size; got %v, want 0", attrs.Size)
+		}
+	})
+}
+
+func TestWriterCloseWithErrorTwiceEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Create test bucket.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		objName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		obj := vc.Bucket(bucket).Object(objName)
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write(randomBytes3MiB); err != nil {
+			t.Errorf("w.Write(): %v", err)
+		}
+
+		errOne := errors.New("the first error")
+		if err := w.CloseWithError(errOne); err != nil {
+			// CloseWithError always returns nil
+			t.Fatalf("w.CloseWithError(errOne): %v", err)
+		}
+		if err := w.Close(); err != errOne {
+			t.Errorf("first w.Close(); got %v, want %v", err, errOne)
+		}
+
+		errTwo := errors.New("the second error")
+		if err := w.CloseWithError(errTwo); err != nil {
+			// CloseWithError always returns nil
+			t.Fatalf("w.CloseWithError(errOne): %v", err)
+		}
+		// The error is _not_ replaced by a subsequent call.
+		if err := w.Close(); err != errOne {
+			t.Errorf("second w.Close(); got %v, want %v", err, errTwo)
+		}
+	})
+}
+
 // customObjSizeReadStream intercepts BidiReadObjectResponse messages and
 // changes the object size in the BidiReadObjectResponse.Metadata to
 // customRecvSize.

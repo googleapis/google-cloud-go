@@ -45,31 +45,14 @@ const (
 )
 
 func (w *gRPCWriter) Write(p []byte) (n int, err error) {
-	if w.streamSender == nil && len(w.buf)+len(p) <= cap(w.buf) {
-		// We have not started sending yet, and we can stage all data without
-		// starting a send. Do that cheaply. Compare against cap(w.buf) instead of
-		// w.writeQuantum: that way we can perform a oneshot upload for objects
-		// which fit in one chunk, even though we will cut the request into
-		// w.writeQuantum units when we do start sending.
-		origLen := len(w.buf)
-		w.buf = w.buf[:origLen+len(p)]
-		copy(w.buf[origLen:], p)
-		return len(p), nil
-	}
-
 	done := make(chan struct{})
 	cmd := &gRPCWriterCommandWrite{p: p, done: done}
-	if w.streamSender == nil {
-		w.currentCommand = cmd
-		w.initializeSender()
-	} else {
-		select {
-		case <-w.donec:
-			return 0, w.streamResult
-		case w.writesChan <- cmd:
-			// write command successfully delivered to sender. We no longer own cmd.
-			break
-		}
+	select {
+	case <-w.donec:
+		return 0, w.streamResult
+	case w.writesChan <- cmd:
+		// write command successfully delivered to sender. We no longer own cmd.
+		break
 	}
 
 	select {
@@ -83,24 +66,16 @@ func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 func (w *gRPCWriter) Flush() (int64, error) {
 	done := make(chan int64)
 	cmd := &gRPCWriterCommandFlush{done: done}
-	if w.streamSender == nil {
-		// We have to start a send in order to service this flush.
-		w.currentCommand = cmd
-		w.initializeSender()
-	} else {
-		select {
-		case <-w.donec:
-			return 0, w.streamResult
-		case w.writesChan <- cmd:
-			// flush command successfully delivered to sender. We no longer own cmd.
-			break
-		}
+	select {
+	case <-w.donec:
+		return 0, w.streamResult
+	case w.writesChan <- cmd:
+		// flush command successfully delivered to sender. We no longer own cmd.
+		break
 	}
 
 	select {
 	case <-w.donec:
-		// Stream terminated. Since Flush() and Close() are not thread-safe, this
-		// indicates a failed stream.
 		return 0, w.streamResult
 	case f := <-done:
 		return f, nil
@@ -108,30 +83,19 @@ func (w *gRPCWriter) Flush() (int64, error) {
 }
 
 func (w *gRPCWriter) Close() error {
-	if w.streamSender == nil {
-		// We have to start a send in order to service this close. Note that if we
-		// get here, data (if any) fits in w.buf, so we can force oneshot.
-		w.forceOneShot = true
-		w.initializeSender()
-	}
-
-	close(w.writesChan)
-	<-w.donec
+	w.CloseWithError(nil)
 	return w.streamResult
 }
 
 func (w *gRPCWriter) CloseWithError(err error) error {
-	if err != nil && w.streamSender == nil {
-		// We never started the stream and we want to fail, so we can just clean up.
-		w.streamResult = err
-		w.setError(err)
-		close(w.donec)
-	} else {
-		// Close the stream with a forced error.
-		w.forcedStreamResult = err
-		w.Close()
+	// N.B. CloseWithError always returns nil!
+	select {
+	case <-w.donec:
+		return nil
+	case w.writesChan <- &gRPCWriterCommandClose{err: err}:
+		break
 	}
-	// CloseWithError always returns nil!
+	<-w.donec
 	return nil
 }
 
@@ -183,6 +147,10 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		sendableUnits++
 	}
 
+	if params.append && params.appendGen >= 0 && params.setTakeoverOffset == nil {
+		return nil, errors.New("storage: no way to report offset for appendable takeover")
+	}
+
 	w := &gRPCWriter{
 		preRunCtx: ctx,
 		c:         c,
@@ -222,21 +190,32 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		lastErr:            nil,
 		streamSender:       nil,
 
-		writesChan:         make(chan gRPCWriterCommand),
-		currentCommand:     nil,
-		forcedStreamResult: nil,
-		streamResult:       nil,
-		donec:              params.donec,
+		writesChan:     make(chan gRPCWriterCommand, 1),
+		currentCommand: nil,
+		streamResult:   nil,
+		donec:          params.donec,
 	}
 
-	if w.append && w.appendGen >= 0 {
-		// For takeovers, kick off the stream immediately since we need to know the
-		// takeover offset to issue writes.
-		if w.setTakeoverOffset == nil {
-			return nil, errors.New("storage: no way to report offset for appendable takeover")
+	go func() {
+		if err := w.gatherFirstBuffer(); err != nil {
+			w.streamResult = err
+			w.setError(err)
+			close(w.donec)
+			return
 		}
-		w.initializeSender()
-	}
+
+		if w.attrs.ContentType == "" && !w.forceEmptyContentType {
+			w.spec.Resource.ContentType = w.detectContentType()
+		}
+		w.streamSender = w.pickBufferSender()
+
+		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
+			w.lastErr = w.writeLoop(ctx)
+			return w.lastErr
+		}, w.settings.retry, w.settings.idempotent))
+		w.setError(w.streamResult)
+		close(w.donec)
+	}()
 
 	return w, nil
 }
@@ -290,25 +269,6 @@ type gRPCWriter struct {
 	forcedStreamResult error
 	streamResult       error
 	donec              chan struct{}
-}
-
-func (w *gRPCWriter) initializeSender() {
-	if w.attrs.ContentType == "" && !w.forceEmptyContentType {
-		w.spec.Resource.ContentType = w.detectContentType()
-	}
-	w.streamSender = w.pickBufferSender()
-
-	go func() {
-		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
-			w.lastErr = w.writeLoop(ctx)
-			return w.lastErr
-		}, w.settings.retry, w.settings.idempotent))
-		if w.forcedStreamResult != nil {
-			w.streamResult = w.forcedStreamResult
-		}
-		w.setError(w.streamResult)
-		close(w.donec)
-	}()
 }
 
 func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
@@ -392,20 +352,66 @@ func (w *gRPCWriter) withCommandRetryDeadline(f func() error) error {
 	return err
 }
 
+// Gather write commands before starting the actual write. Returns nil if the
+// stream should be started, and an error otherwise.
+func (w *gRPCWriter) gatherFirstBuffer() error {
+	if w.append && w.appendGen >= 0 {
+		// For takeovers, kick off the stream immediately since we need to know the
+		// takeover offset to issue writes.
+		return nil
+	}
+
+	for cmd := range w.writesChan {
+		switch v := cmd.(type) {
+		case *gRPCWriterCommandWrite:
+			if len(w.buf)+len(v.p) <= cap(w.buf) {
+				// We have not started sending yet, and we can stage all data without
+				// starting a send. Compare against cap(w.buf) instead of
+				// w.writeQuantum: that way we can perform a oneshot upload for objects
+				// which fit in one chunk, even though we will cut the request into
+				// w.writeQuantum units when we do start sending.
+				origLen := len(w.buf)
+				w.buf = w.buf[:origLen+len(v.p)]
+				copy(w.buf[origLen:], v.p)
+				close(v.done)
+			} else {
+				// Too large. Handle it in writeLoop.
+				w.currentCommand = cmd
+				return nil
+			}
+			break
+		case *gRPCWriterCommandClose:
+			// If we get here, data (if any) fits in w.buf, so we can force oneshot.
+			w.forceOneShot = true
+			w.currentCommand = cmd
+			// No need to start sending if v.err is not nil.
+			return v.err
+		default:
+			// Have to start sending!
+			w.currentCommand = cmd
+			return nil
+		}
+	}
+	// Nothing should ever close w.writesChan, so we should never get here
+	return errors.New("storage.Writer: unexpectedly closed w.writesChan")
+}
+
 func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 	w.attempts++
 	// Return an error if we've been waiting for a single operation for too long.
-	// Allow each request in w.buf to be sent and result in a completion without
-	// blocking.
 	if !w.abandonRetriesTime.IsZero() && time.Now().After(w.abandonRetriesTime) {
 		return fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %w", w.chunkRetryDeadline, w.attempts, w.lastErr)
 	}
+	// Allow each request in w.buf to be sent and result in a completion without
+	// blocking.
 	requests := make(chan gRPCBidiWriteRequest, w.sendableUnits)
+	completions := make(chan gRPCBidiWriteCompletion, w.sendableUnits)
 	// Only one request ack will be outstanding at a time.
 	requestAcks := make(chan struct{}, 1)
-	completions := make(chan gRPCBidiWriteCompletion, w.sendableUnits)
 	chcs := gRPCWriterCommandHandleChans{requests, requestAcks, completions}
 	bscs := gRPCBufSenderChans{requests, requestAcks, completions}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	w.streamSender.connect(ctx, bscs, w.settings.gax...)
 
 	// Send any full quantum in w.buf, possibly including a flush
@@ -431,10 +437,7 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 		for {
 			if w.currentCommand != nil {
 				if err := w.withCommandRetryDeadline(func() error {
-					if !w.currentCommand.handle(w, chcs) {
-						return w.streamSender.err()
-					}
-					return nil
+					return w.currentCommand.handle(w, chcs)
 				}); err != nil {
 					return err
 				}
@@ -448,38 +451,51 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 				w.handleCompletion(c)
 			case cmd, ok := <-w.writesChan:
 				if !ok {
-					// User requested a stream shutdown.
-					return nil
+					// Nothing should ever close w.writesChan, so we should never get here
+					return errors.New("storage.Writer: unexpectedly closed w.writesChan")
 				}
 				w.currentCommand = cmd
 			}
 		}
 	}()
-	if err != nil {
+	if err == nil {
+		err = errors.New("storage.Writer: unexpected nil error from write loop")
+	}
+	var closeErr *gRPCWriterCommandClose
+	if !errors.As(err, &closeErr) {
+		// Not a shutdown.
 		return err
 	}
 
-	// Send any remaining tail, terminate the buffer sender, and drain the
-	// completions.
-	req := gRPCBidiWriteRequest{
-		buf:         w.buf[w.bufUnsentIdx:],
-		offset:      w.bufBaseOffset + int64(w.bufUnsentIdx),
-		flush:       true,
-		finishWrite: true,
-	}
-	if err := w.withCommandRetryDeadline(func() error {
-		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
-			return w.streamSender.err()
+	if closeErr.err == nil {
+		// Clean shutdown. Send any remaining tail.
+		req := gRPCBidiWriteRequest{
+			buf:         w.buf[w.bufUnsentIdx:],
+			offset:      w.bufBaseOffset + int64(w.bufUnsentIdx),
+			flush:       true,
+			finishWrite: true,
 		}
-		return nil
-	}); err != nil {
-		return err
+		if err := w.withCommandRetryDeadline(func() error {
+			if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
+				return w.streamSender.err()
+			}
+			return nil
+		}); err != nil {
+			return err
+		}
+	} else {
+		// Unclean shutdown. Cancel the context so we clean up expeditiously.
+		cancel()
 	}
+
 	close(requests)
 	for c := range completions {
 		w.handleCompletion(c)
 	}
-	return w.streamSender.err()
+	if closeErr.err == nil {
+		return w.streamSender.err()
+	}
+	return closeErr.err
 }
 
 // gRPCWriterCommandHandleChans contains the channels that a gRPCWriterCommand
@@ -526,10 +542,9 @@ func (cs gRPCWriterCommandHandleChans) deliverRequestUnlessCompleted(req gRPCBid
 type gRPCWriterCommand interface {
 	// handle applies the command to a gRPCWriter.
 	//
-	// Implementations may terminate false if they are not done and the completion
-	// channel is closed. In that case, the command may be retried with a new
-	// gRPCWriterCommandHandleChans instance.
-	handle(*gRPCWriter, gRPCWriterCommandHandleChans) bool
+	// Implementations may return an error. In that case, the command may be
+	// retried with a new gRPCWriterCommandHandleChans instance.
+	handle(*gRPCWriter, gRPCWriterCommandHandleChans) error
 }
 
 type gRPCWriterCommandWrite struct {
@@ -537,11 +552,11 @@ type gRPCWriterCommandWrite struct {
 	done chan struct{}
 }
 
-func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) bool {
+func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
 	if len(c.p) == 0 {
 		// No data to write.
 		close(c.done)
-		return true
+		return nil
 	}
 
 	wblen := len(w.buf)
@@ -567,11 +582,11 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		sentOffset, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
 			w.handleCompletion)
 		if !ok {
-			return false
+			return w.streamSender.err()
 		}
 		w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 		close(c.done)
-		return true
+		return nil
 	}
 
 	// We have at least one full buffer, followed by a partial. The first full
@@ -596,7 +611,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	sentOffset, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
 		w.handleCompletion)
 	if !ok {
-		return false
+		return w.streamSender.err()
 	}
 
 	// ...then send the prefix of c.p which could fill w.buf
@@ -620,7 +635,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, firstFullBufFromCmd,
 		trimCommandBuf)
 	if !ok {
-		return false
+		return w.streamSender.err()
 	}
 	cmdBuf = cmdBuf[int(sentOffset-offset):]
 	offset = sentOffset
@@ -630,7 +645,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, cap(w.buf),
 			trimCommandBuf)
 		if !ok {
-			return false
+			return w.streamSender.err()
 		}
 		cmdBuf = cmdBuf[int(sentOffset-offset):]
 		offset = sentOffset
@@ -641,18 +656,18 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, cap(w.buf),
 		trimCommandBuf)
 	if !ok {
-		return false
+		return w.streamSender.err()
 	}
 	// Finally, we need the sender to ack to let us know c.p can be released.
 	if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, trimCommandBuf) {
-		return false
+		return w.streamSender.err()
 	}
 	ackOutstanding := true
 	for ackOutstanding || (w.bufBaseOffset+int64(w.bufFlushedIdx)) < offset {
 		select {
 		case cmp, ok := <-cs.completions:
 			if !ok {
-				return false
+				return w.streamSender.err()
 			}
 			trimCommandBuf(cmp)
 		case <-cs.requestAcks:
@@ -664,14 +679,14 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	copy(w.buf, toCopyIn)
 	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 	close(c.done)
-	return true
+	return nil
 }
 
 type gRPCWriterCommandFlush struct {
 	done chan int64
 }
 
-func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) bool {
+func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
 	flushTarget := w.bufBaseOffset + int64(len(w.buf))
 	// We know that there are at most w.writeQuantum bytes in
 	// w.buf[w.bufUnsentIdx:], because we send anything more inline when handling
@@ -683,20 +698,33 @@ func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		finishWrite: false,
 	}
 	if !cs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
-		return false
+		return w.streamSender.err()
 	}
 	// Successful flushes will clear w.buf.
 	for (w.bufBaseOffset + int64(w.bufFlushedIdx)) < flushTarget {
 		c, ok := <-cs.completions
 		if !ok {
 			// Stream failure
-			return false
+			return w.streamSender.err()
 		}
 		w.handleCompletion(c)
 	}
 	// handleCompletion has cleared w.buf and updated w.bufUnsentIdx by now.
 	c.done <- flushTarget
-	return true
+	return nil
+}
+
+type gRPCWriterCommandClose struct {
+	err error
+}
+
+func (e *gRPCWriterCommandClose) Error() string {
+	return e.err.Error()
+}
+
+func (c *gRPCWriterCommandClose) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
+	// N.B. c is not nil, even if c.err is nil!
+	return c
 }
 
 // Detect content type using bytes first from baseBuf, then from pendingBuf if
