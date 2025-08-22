@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"math/rand"
 	"reflect"
-	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/codes"
@@ -470,41 +469,39 @@ func (m Mutation) proto() (*sppb.Mutation, error) {
 // mutationsProto turns a spanner.Mutation array into a sppb.Mutation array,
 // it is convenient for sending batch mutations to Cloud Spanner.
 func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, *sppb.Mutation, error) {
-	var selectedMutation *Mutation
-	var nonInsertMutations []*Mutation
-
-	l := make([]*sppb.Mutation, 0, len(ms))
-	for _, m := range ms {
-		if m.op != opInsert {
-			nonInsertMutations = append(nonInsertMutations, m)
-		}
-		if selectedMutation == nil {
-			selectedMutation = m
-		}
-		// Track the INSERT mutation with the highest number of values if only INSERT mutation were found
-		if selectedMutation.op == opInsert && m.op == opInsert && len(m.values) > len(selectedMutation.values) {
-			selectedMutation = m
-		}
-
-		// Convert the mutation to sppb.Mutation and add to the list
+	n := len(ms)
+	out := make([]*sppb.Mutation, 0, n)
+	if n == 0 {
+		return out, nil, nil
+	}
+	maxInsertIdx := -1
+	maxInsertVals := -1
+	nonInsertCount := 0
+	selectedNonInsertIdx := -1
+	for i, m := range ms {
 		pb, err := m.proto()
 		if err != nil {
 			return nil, nil, err
 		}
-		l = append(l, pb)
-	}
-	if len(nonInsertMutations) > 0 {
-		selectedMutation = nonInsertMutations[rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(nonInsertMutations))]
-	}
-	if selectedMutation != nil {
-		m, err := selectedMutation.proto()
-		if err != nil {
-			return nil, nil, err
+		out = append(out, pb)
+		if m.op == opInsert {
+			if v := len(m.values); v >= maxInsertVals {
+				maxInsertVals, maxInsertIdx = v, i
+			}
+			continue
 		}
-		return l, m, nil
+		nonInsertCount++
+		if rand.Intn(nonInsertCount) == 0 {
+			selectedNonInsertIdx = i
+		}
 	}
-
-	return l, nil, nil
+	if nonInsertCount > 0 {
+		return out, out[selectedNonInsertIdx], nil
+	}
+	if maxInsertIdx >= 0 {
+		return out, out[maxInsertIdx], nil
+	}
+	return out, nil, nil
 }
 
 // mutationGroupsProto turns a spanner.MutationGroup array into a
