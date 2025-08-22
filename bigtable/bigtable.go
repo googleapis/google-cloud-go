@@ -133,8 +133,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
 
-	if useDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH")); useDirectAccess {
-		enableDirectAccess = true
+	enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
+	if enableDirectAccess {
 		o = append(o, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 
@@ -183,6 +183,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		disableRetryInfo:        disableRetryInfo,
 		retryOption:             retryOption,
 		executeQueryRetryOption: executeQueryRetryOption,
+		enableDirectAccess:      enableDirectAccess,
 	}, nil
 }
 
@@ -210,7 +211,6 @@ var (
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
-	enableDirectAccess                = false
 	clientOnlyRetryOption             = newRetryOption(clientOnlyRetry, true)
 	clientOnlyExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry, true)
 	defaultRetryOption                = newRetryOption(clientOnlyRetry, false)
