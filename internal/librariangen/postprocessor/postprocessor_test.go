@@ -19,9 +19,11 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestPostProcess(t *testing.T) {
@@ -47,6 +49,7 @@ func TestPostProcess(t *testing.T) {
 				"README.md",
 				"apiv1/version.go",
 				"apiv2/version.go",
+				"sublevel1/sublevel2/apiv1/version.go",
 			},
 			wantGoModInitCalled: true,
 			wantGoModTidyCalled: true,
@@ -62,6 +65,8 @@ func TestPostProcess(t *testing.T) {
 				"README.md",
 				"apiv1/version.go",
 				"apiv2/version.go",
+				"internal/version.go",
+				"sublevel1/sublevel2/apiv1/version.go",
 			},
 			wantFilesNotCreated: []string{
 				"go.mod",
@@ -124,13 +129,40 @@ func TestPostProcess(t *testing.T) {
 			outputDir := t.TempDir()
 			moduleDir := filepath.Join(outputDir, "chronicle")
 			if err := os.MkdirAll(moduleDir, 0755); err != nil {
-				t.Fatalf("failed to create moduleDir %v", err)
+				t.Fatalf("failed to create directory %s: %v", moduleDir, err)
 				return
 			}
-			// Create the snippets dir that UpdateSnippetsMetadata expects.
+
 			snippetsDir := filepath.Join(outputDir, "internal", "generated", "snippets", "chronicle")
-			if err := os.MkdirAll(snippetsDir, 0755); err != nil {
-				t.Fatalf("failed to create snippetsDir %v", err)
+
+			if err := createDirectories(t, moduleDir, snippetsDir, filepath.Join(snippetsDir, "sublevel1/sublevel2")); err != nil {
+				// Specific failure will have been logged already.
+				return
+			}
+
+			snippetMetadataFiles := []string{
+				"apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+				"apiv2/snippet_metadata.google.cloud.chronicle.v2.json",
+				"sublevel1/sublevel2/apiv1/snippet_metadata.google.cloud.chronicle.sublevel1.sublevel2.v1.json",
+				// This is *not* part of the request, so won't be modified.
+				"apiv3/snippet_metadata.google.cloud.chronicle.v3.json",
+			}
+			for _, snippetMetadataFile := range snippetMetadataFiles {
+				fullPath := filepath.Join(snippetsDir, snippetMetadataFile)
+				specificSnippetDir := filepath.Dir(fullPath)
+				if err := os.MkdirAll(specificSnippetDir, 0755); err != nil {
+					t.Fatalf("failed to create directory %s: %v", moduleDir, err)
+					return
+				}
+				content := "x\ny\nversion: $VERSION\na\nb\n"
+				if err := os.WriteFile(fullPath, []byte(content), 0644); err != nil {
+					t.Fatalf("failed to write file %s: %v", fullPath, err)
+					return
+				}
+			}
+
+			if err := os.MkdirAll(moduleDir, 0755); err != nil {
+				t.Fatalf("failed to create moduleDir %v", err)
 				return
 			}
 
@@ -150,6 +182,7 @@ func TestPostProcess(t *testing.T) {
 				APIs: []request.API{
 					{Path: "google/cloud/chronicle/v1"},
 					{Path: "google/cloud/chronicle/v2"},
+					{Path: "google/cloud/chronicle/sublevel1/sublevel2/v1"},
 				},
 				Version: "1.0.0",
 			}
@@ -184,6 +217,85 @@ func TestPostProcess(t *testing.T) {
 					t.Errorf("file %s was created, but should not have been", file)
 				}
 			}
+
+			for _, snippetMetadataFile := range snippetMetadataFiles {
+				path := filepath.Join(snippetsDir, snippetMetadataFile)
+				read, err := os.ReadFile(path)
+				if err != nil {
+					t.Errorf("Couldn't read snippet metadata file %s: %v", snippetMetadataFile, err)
+				}
+				wantModified := !strings.Contains(snippetMetadataFile, "v3")
+				gotModified := strings.Contains(string(read), req.Version)
+				if wantModified != gotModified {
+					t.Errorf("incorrect snippet metadata modification for %s; got = %v; want = %v", snippetMetadataFile, gotModified, wantModified)
+				}
+			}
 		})
 	}
+}
+
+func TestFindPackageNameAndClientDirectory(t *testing.T) {
+	tests := []struct {
+		name                string
+		moduleName          string
+		apiPath             string
+		wantPackageName     string
+		wantClientDirectory string
+		wantErr             bool
+	}{
+		{
+			name:                "top-level",
+			moduleName:          "spanner",
+			apiPath:             "google/spanner/v1",
+			wantPackageName:     "spanner",
+			wantClientDirectory: "apiv1",
+		},
+		{
+			name:                "nested",
+			moduleName:          "spanner",
+			apiPath:             "google/spanner/admin/database/v1",
+			wantPackageName:     "database",
+			wantClientDirectory: "admin/database/apiv1",
+		},
+		{
+			name:       "module name doesn't match",
+			moduleName: "spanner",
+			apiPath:    "google/cloud/chronicle",
+			wantErr:    true,
+		},
+		{
+			name:       "module name is at end",
+			moduleName: "spanner",
+			apiPath:    "google/cloud/spanner/",
+			wantErr:    true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotPackageName, gotClientDirectory, err := findPackageNameAndClientDirectory(tt.moduleName, tt.apiPath)
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("findPackageNameAndClientDirectory() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.wantErr {
+				return
+			}
+
+			if diff := cmp.Diff(tt.wantPackageName, gotPackageName); diff != "" {
+				t.Errorf("mismatch of packageName (-want +got):\n%s", diff)
+			}
+			if diff := cmp.Diff(tt.wantClientDirectory, gotClientDirectory); diff != "" {
+				t.Errorf("mismatch of clientDirectory (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func createDirectories(t *testing.T, directories ...string) error {
+	for _, directory := range directories {
+		if err := os.MkdirAll(directory, 0755); err != nil {
+			t.Fatalf("failed to create directory %s: %v", directory, err)
+			return err
+		}
+	}
+	return nil
 }

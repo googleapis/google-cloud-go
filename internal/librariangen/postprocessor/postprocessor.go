@@ -86,7 +86,7 @@ func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir
 		return fmt.Errorf("librariangen: failed to generate client version files: %w", err)
 	}
 
-	if err := module.UpdateSnippetsMetadata(outputDir, req.ID, req.Version); err != nil {
+	if err := updateSnippetsMetadata(req, outputDir); err != nil {
 		return fmt.Errorf("librariangen: failed to update snippets metadata: %w", err)
 	}
 
@@ -167,22 +167,46 @@ func generateChanges(moduleDir string) error {
 // generates a version.go file for each corresponding client directory.
 func generateClientVersionFiles(req *request.Request, moduleDir, moduleName string) error {
 	for _, api := range req.APIs {
-		// E.g. google/cloud/chronicle/v1 -> apiv1
-		parts := strings.Split(api.Path, "/")
-		if len(parts) < 2 {
-			return fmt.Errorf("librariangen: unexpected API path format: %s", api.Path)
+		packageName, clientDirName, err := findPackageNameAndClientDirectory(moduleName, api.Path)
+		if err != nil {
+			return err
 		}
-		clientDirName := "api" + parts[len(parts)-1]
 		clientDir := filepath.Join(moduleDir, clientDirName)
-		if err := generateClientVersionFile(clientDir, moduleName); err != nil {
+		if err := generateClientVersionFile(clientDir, moduleName, packageName); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
+// findPackageNameAndClientDirectory determines the name of the generated package,
+// and the module-relative client directory, based on the name of a module (e.g. "spanner")
+// and an API path (e.g. "google/spanner/admin/instance/v1")
+func findPackageNameAndClientDirectory(moduleName, apiPath string) (string, string, error) {
+	startOfModuleName := strings.Index(apiPath, moduleName+"/")
+	if startOfModuleName == -1 {
+		return "", "", fmt.Errorf("librariangen: unexpected API path format: %s", apiPath)
+	}
+	pastEndOfModuleName := startOfModuleName + len(moduleName) + 1
+
+	// google/spanner/v1 => ["v1"]
+	// google/spanner/admin/instance/v1 => ["admin", "instance", "v1"]
+	parts := strings.Split(apiPath[pastEndOfModuleName:], "/")
+	if parts[0] == "" {
+		return "", "", fmt.Errorf("librariangen: unexpected API path format: %s", apiPath)
+	}
+	packageName := moduleName
+	if len(parts) > 1 {
+		packageName = parts[len(parts)-2]
+	}
+
+	parts[len(parts)-1] = "api" + parts[len(parts)-1]
+	clientDirName := strings.Join(parts, "/")
+	return packageName, clientDirName, nil
+}
+
 // generateClientVersionFile creates a version.go file for a client.
-func generateClientVersionFile(clientDir, moduleName string) error {
+func generateClientVersionFile(clientDir, moduleName, packageName string) error {
 	if err := os.MkdirAll(clientDir, 0755); err != nil {
 		return err
 	}
@@ -195,7 +219,7 @@ func generateClientVersionFile(clientDir, moduleName string) error {
 		ModuleRootInternal string
 	}{
 		Year:               time.Now().Year(),
-		Package:            moduleName,
+		Package:            packageName,
 		ModuleRootInternal: "cloud.google.com/go/" + moduleName + "/internal",
 	}
 	f, err := os.Create(versionPath)
@@ -204,4 +228,34 @@ func generateClientVersionFile(clientDir, moduleName string) error {
 	}
 	defer f.Close()
 	return t.Execute(f, versionData)
+}
+
+// updateSnippetsMetadata updates all snippet files to populate the $VERSION placeholder.
+func updateSnippetsMetadata(req *request.Request, outputDir string) error {
+	moduleName := req.ID
+	version := req.Version
+
+	slog.Debug("librariangen: updating snippets metadata")
+	snpDir := filepath.Join(outputDir, "internal", "generated", "snippets", moduleName)
+
+	for _, api := range req.APIs {
+		_, clientDirName, err := findPackageNameAndClientDirectory(moduleName, api.Path)
+		if err != nil {
+			return err
+		}
+		snippetFile := "snippet_metadata." + strings.ReplaceAll(api.Path, "/", ".") + ".json"
+		path := filepath.Join(snpDir, clientDirName, snippetFile)
+		read, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		if strings.Contains(string(read), "$VERSION") {
+			s := strings.Replace(string(read), "$VERSION", version, 1)
+			err = os.WriteFile(path, []byte(s), 0)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
