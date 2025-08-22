@@ -921,7 +921,7 @@ func handleExecuteStreamEnd(stream btpb.Bigtable_ExecuteQueryClient, trailerMD *
 	return nil
 }
 
-// Pinger pings the server and warms up the connection.
+// PingAndWarm pings the server and warms up the connection.
 func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	md := metadata.Join(metadata.Pairs(
 		resourcePrefixHeader, c.fullInstanceName(),
