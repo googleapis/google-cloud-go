@@ -84,11 +84,16 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 	args := []string{
 		"protoc",
 		"--experimental_allow_proto3_optional",
-		// All generated files are written to the /output directory.
-		"--go_out=" + outputDir,
 	}
+	// All generated files are written to the /output directory.
+	// Which plugin(s) we use depends on whether the Bazel rule was go_grpc_library
+	// or go_proto_library:
+	// - If we're using go_rpc, we use the newer go plugin and the go-grpc plugin
+	// - Otherwise, use the "old" plugin (built explicitly in the Dockerfile)
 	if config.HasGoGRPC() {
-		args = append(args, "--go-grpc_out="+outputDir, "--go-grpc_opt=require_unimplemented_servers=false")
+		args = append(args, "--go_out="+outputDir, "--go-grpc_out="+outputDir, "--go-grpc_opt=require_unimplemented_servers=false")
+	} else {
+		args = append(args, "--go_v1_out="+outputDir, "--go_v1_opt=plugins=grpc")
 	}
 	args = append(args, "--go_gapic_out="+outputDir)
 
