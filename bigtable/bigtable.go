@@ -925,7 +925,8 @@ func (c *Client) Pinger(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/PingAndWarm")
 	defer func() { trace.EndSpan(ctx, err) }()
 	mt := c.newBuiltinMetricsTracer(ctx, "", false)
-	defer recordOperationCompletion(mt)
+	defer mt.recordOperationCompletion()
+
 
 	err = c.pingerWithMetadata(ctx, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
