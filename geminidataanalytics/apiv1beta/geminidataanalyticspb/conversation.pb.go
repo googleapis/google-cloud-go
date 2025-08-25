@@ -42,8 +42,18 @@ type Conversation struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Identifier. The unique resource name of a conversation.
-	// It's not expected to be set when creating a conversation.
+	// Optional. Identifier. The unique resource name of a conversation. Format:
+	// `projects/{project}/locations/{location}/conversations/{conversation_id}`
+	// `{conversation_id}` is the resource id and should be 63 characters or less
+	// and must match the format described in
+	// https://google.aip.dev/122#resource-id-segments
+	//
+	// Example:
+	// `projects/1234567890/locations/us-central1/conversations/my-conversation`.
+	//
+	// It is recommended to skip setting this field during conversation creation
+	// as it will be inferred automatically and overwritten with the
+	// {parent}/conversations/{conversation_id}.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Agent(s) in the conversation.
 	// Currently, only one agent is supported. This field is repeated to allow
@@ -135,6 +145,9 @@ type CreateConversationRequest struct {
 	// Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The conversation id of the conversation to create.
+	// Must be unique within the parent.
+	// The allowed format is: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+	// If not provided, the server will auto-generate a value for the id.
 	ConversationId string `protobuf:"bytes,2,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"`
 	// Required. The conversation to create.
 	Conversation *Conversation `protobuf:"bytes,3,opt,name=conversation,proto3" json:"conversation,omitempty"`

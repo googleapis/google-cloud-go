@@ -42,7 +42,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := geminidataanalytics.NewContextRetrievalClient(ctx)
+//	c, err := geminidataanalytics.NewDataAgentClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -56,11 +56,16 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &geminidataanalyticspb.RetrieveBigQueryRecentRelevantTablesRequest{
+//	req := &geminidataanalyticspb.CreateDataAgentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb#RetrieveBigQueryRecentRelevantTablesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb#CreateDataAgentRequest.
 //	}
-//	resp, err := c.RetrieveBigQueryRecentRelevantTables(ctx, req)
+//	op, err := c.CreateDataAgent(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -69,7 +74,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewContextRetrievalClient is used for authentication requests and
+// The ctx passed to NewDataAgentClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

@@ -136,12 +136,78 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 				})
 			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		GetLocation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListLocations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -202,12 +268,72 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		GetLocation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListLocations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -233,7 +359,7 @@ type internalDataChatClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service to ask a natural language question on top of BigQuery
-// and LookerStudio datasources to get back streamed responses of various kinds
+// and Looker Studio datasources to get back streamed responses of various kinds
 // to help provide a rich conversational answer.
 type DataChatClient struct {
 	// The internal transport-dependent client.
@@ -266,7 +392,8 @@ func (c *DataChatClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Chat answers a data question by generating a stream of [Message]s.
+// Chat answers a data question by generating a stream of
+// Message objects.
 func (c *DataChatClient) Chat(ctx context.Context, req *geminidataanalyticspb.ChatRequest, opts ...gax.CallOption) (geminidataanalyticspb.DataChatService_ChatClient, error) {
 	return c.internalClient.Chat(ctx, req, opts...)
 }
@@ -277,7 +404,7 @@ func (c *DataChatClient) CreateConversation(ctx context.Context, req *geminidata
 	return c.internalClient.CreateConversation(ctx, req, opts...)
 }
 
-// GetConversation gets details of a single conversation using conversation id and parent.
+// GetConversation gets details of a single conversation by using conversation id and parent.
 func (c *DataChatClient) GetConversation(ctx context.Context, req *geminidataanalyticspb.GetConversationRequest, opts ...gax.CallOption) (*geminidataanalyticspb.Conversation, error) {
 	return c.internalClient.GetConversation(ctx, req, opts...)
 }
@@ -349,7 +476,7 @@ type dataChatGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service to ask a natural language question on top of BigQuery
-// and LookerStudio datasources to get back streamed responses of various kinds
+// and Looker Studio datasources to get back streamed responses of various kinds
 // to help provide a rich conversational answer.
 func NewDataChatClient(ctx context.Context, opts ...option.ClientOption) (*DataChatClient, error) {
 	clientOpts := defaultDataChatGRPCClientOptions()
@@ -427,7 +554,7 @@ type dataChatRESTClient struct {
 // NewDataChatRESTClient creates a new data chat service rest client.
 //
 // Service to ask a natural language question on top of BigQuery
-// and LookerStudio datasources to get back streamed responses of various kinds
+// and Looker Studio datasources to get back streamed responses of various kinds
 // to help provide a rich conversational answer.
 func NewDataChatRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataChatClient, error) {
 	clientOpts := append(defaultDataChatRESTClientOptions(), opts...)
@@ -789,7 +916,8 @@ func (c *dataChatGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// Chat answers a data question by generating a stream of [Message]s.
+// Chat answers a data question by generating a stream of
+// Message objects.
 func (c *dataChatRESTClient) Chat(ctx context.Context, req *geminidataanalyticspb.ChatRequest, opts ...gax.CallOption) (geminidataanalyticspb.DataChatService_ChatClient, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -955,7 +1083,7 @@ func (c *dataChatRESTClient) CreateConversation(ctx context.Context, req *gemini
 	return resp, nil
 }
 
-// GetConversation gets details of a single conversation using conversation id and parent.
+// GetConversation gets details of a single conversation by using conversation id and parent.
 func (c *dataChatRESTClient) GetConversation(ctx context.Context, req *geminidataanalyticspb.GetConversationRequest, opts ...gax.CallOption) (*geminidataanalyticspb.Conversation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

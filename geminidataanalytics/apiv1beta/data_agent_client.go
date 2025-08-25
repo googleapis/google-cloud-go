@@ -177,12 +177,78 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 				})
 			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		GetLocation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListLocations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -276,12 +342,72 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		GetLocation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListLocations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
