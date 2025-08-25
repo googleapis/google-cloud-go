@@ -44,7 +44,6 @@ func TestPostProcess(t *testing.T) {
 			},
 			wantFilesCreated: []string{
 				"CHANGES.md",
-				"internal/version.go",
 				"README.md",
 				"apiv1/version.go",
 				"apiv2/version.go",
@@ -63,7 +62,6 @@ func TestPostProcess(t *testing.T) {
 				"README.md",
 				"apiv1/version.go",
 				"apiv2/version.go",
-				"internal/version.go",
 			},
 			wantFilesNotCreated: []string{
 				"go.mod",
@@ -127,6 +125,12 @@ func TestPostProcess(t *testing.T) {
 			moduleDir := filepath.Join(outputDir, "chronicle")
 			if err := os.MkdirAll(moduleDir, 0755); err != nil {
 				t.Fatalf("failed to create moduleDir %v", err)
+				return
+			}
+			// Create the snippets dir that UpdateSnippetsMetadata expects.
+			snippetsDir := filepath.Join(outputDir, "internal", "generated", "snippets", "chronicle")
+			if err := os.MkdirAll(snippetsDir, 0755); err != nil {
+				t.Fatalf("failed to create snippetsDir %v", err)
 				return
 			}
 

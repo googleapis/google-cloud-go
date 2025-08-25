@@ -19,11 +19,15 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/generate"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/release"
 )
 
 func TestRun(t *testing.T) {
-	// Replace the real generate function with a fake for testing.
+	// Replace the real functions with fakes for testing.
 	generateFunc = func(ctx context.Context, cfg *generate.Config) error {
+		return nil
+	}
+	releaseInitFunc = func(ctx context.Context, cfg *release.Config) error {
 		return nil
 	}
 
@@ -71,6 +75,16 @@ func TestRun(t *testing.T) {
 		{
 			name:    "generate command with flags",
 			args:    []string{"generate", "--source=.", "--output=./build_out"},
+			wantErr: false,
+		},
+		{
+			name:    "release-init command no flags",
+			args:    []string{"release-init"},
+			wantErr: false,
+		},
+		{
+			name:    "release-init command with flags",
+			args:    []string{"release-init", "--repo=.", "--output=./build_out"},
 			wantErr: false,
 		},
 	}

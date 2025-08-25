@@ -54,7 +54,7 @@ func (m *mockConfigProvider) HasGoGRPC() bool           { return m.hasGoGRPC }
 func TestBuild(t *testing.T) {
 	// The testdata directory is a curated version of a valid protoc
 	// import path that contains all the necessary proto definitions.
-	sourceDir, err := filepath.Abs("../testdata/source")
+	sourceDir, err := filepath.Abs("../testdata/generate/source")
 	if err != nil {
 		t.Fatalf("failed to get absolute path for sourceDir: %v", err)
 	}
@@ -174,9 +174,9 @@ func TestRun_Integration(t *testing.T) {
 	// Setup temporary directory for the output.
 	outputDir := t.TempDir()
 
-	// The testdata/source directory is a miniature version of a valid protoc
+	// The testdata/generate/source directory is a miniature version of a valid protoc
 	// import path that contains all the necessary proto definitions.
-	sourceDir, err := filepath.Abs("../testdata/source")
+	sourceDir, err := filepath.Abs("../testdata/generate/source")
 	if err != nil {
 		t.Fatalf("failed to get absolute path for sourceDir: %v", err)
 	}

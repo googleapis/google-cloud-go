@@ -1,0 +1,8 @@
+global_files_allowlist:
+  # Allow the container to read a template.
+  - path: "internal/README.md.template"
+    permissions: "read-only"
+  
+  # Allow publishing the updated root README.md
+  - path: "README.md"
+    permissions: "write-only"
