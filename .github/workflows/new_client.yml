@@ -18,7 +18,7 @@ jobs:
   new_versions:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 2
     - uses: actions/setup-go@v5
@@ -51,9 +51,9 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.new_versions.outputs.versions) }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - run: echo >> ${{ matrix.new }}/CHANGES.md
-    - uses: googleapis/code-suggester@v4
+    - uses: googleapis/code-suggester@v5
       id: code_suggester
       env:
         ACCESS_TOKEN: ${{ secrets.YOSHI_CODE_BOT_TOKEN }}  

@@ -39,10 +39,10 @@ jobs:
         go: [ '1.23', '1.24']
         folders: ['bigtable']
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         path: google-cloud-go
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         repository: googleapis/cloud-bigtable-clients-test
         ref: v0.0.3
