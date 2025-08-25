@@ -36,7 +36,7 @@ RUN apt-get update && \
 RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH=/usr/local/go/bin:$PATH
 RUN go version
 
 WORKDIR /src
@@ -61,7 +61,8 @@ FROM marketplace.gcr.io/google/debian12:latest
 # Set environment variables for tool versions for easy updates.
 ENV GO_VERSION=1.23.0
 ENV PROTOC_VERSION=25.7
-ENV GO_PROTOC_PLUGIN_VERSION=1.35.2
+ENV GO_PROTOC_PLUGIN_V1_VERSION=1.5.4
+ENV GO_PROTOC_PLUGIN_V2_VERSION=1.35.2
 ENV GO_GRPC_PLUGIN_VERSION=1.3.0
 ENV GAPIC_GENERATOR_VERSION=0.53.1
 ENV STATICCHECK_VERSION=2023.1.6
@@ -70,7 +71,7 @@ ENV STATICCHECK_VERSION=2023.1.6
 # Go tools will use this directory for caches, which resolves permission issues.
 ENV HOME=/home/nonroot
 # GOPATH defaults to $HOME/go, so we need to add that to the PATH.
-ENV PATH $HOME/go/bin:/usr/local/go/bin:/usr/local/bin:$PATH
+ENV PATH=$HOME/go/bin:/usr/local/go/bin:/usr/local/bin:$PATH
 
 # Install essential system packages.
 # Clean up apt cache to keep the image smaller.
@@ -96,9 +97,21 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC
     rm protoc.zip && \
     protoc --version
 
+# Build the "old" Go protoc plugin manually; using go install just redirects to the new one.
+# Note that the "old" plugin uses the internal code in the "new" plugin, so we need to use
+# "go mod edit" to end up with a consistent version.
+# The plugin is built as protoc-gen-go_v1, so that we can use "go_v1" as the name in protoc options.
+# This is ghastly, and should all be removed as soon as possible by migrating all packages to go_grpc.
+RUN (export GOTOOLCHAIN='auto' && \
+    git clone --depth 1 --branch=v${GO_PROTOC_PLUGIN_V1_VERSION} https://github.com/golang/protobuf protoc-gen-go-v1 && \
+    cd protoc-gen-go-v1 && \
+    go mod edit -require google.golang.org/protobuf@v${GO_PROTOC_PLUGIN_V2_VERSION} && \
+    go mod tidy && \
+    go build -o $HOME/go/bin/protoc-gen-go_v1 ./protoc-gen-go)
+
 # Install required Go tools for protoc and the post-processor.
 RUN (export GOTOOLCHAIN='auto' && \
-    go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GO_PROTOC_PLUGIN_VERSION} && \
+    go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GO_PROTOC_PLUGIN_V2_VERSION} && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v${GO_GRPC_PLUGIN_VERSION} && \
     go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v${GAPIC_GENERATOR_VERSION} && \
     go install golang.org/x/tools/cmd/goimports@latest && \
