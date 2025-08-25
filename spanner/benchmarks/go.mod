@@ -11,13 +11,13 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.29.0
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/sdk v1.36.0
-	google.golang.org/api v0.247.0
+	google.golang.org/api v0.248.0
 )
 
 require (
 	cel.dev/expr v0.24.0 // indirect
 	cloud.google.com/go v0.121.6 // indirect
-	cloud.google.com/go/auth v0.16.4 // indirect
+	cloud.google.com/go/auth v0.16.5 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.8.0 // indirect
 	cloud.google.com/go/monitoring v1.24.2 // indirect
