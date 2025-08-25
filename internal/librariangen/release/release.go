@@ -142,7 +142,7 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 
 	var newEntry bytes.Buffer
 
-date := t.Format("2006-01-02")
+	date := t.Format("2006-01-02")
 	fmt.Fprintf(&newEntry, "%s (%s)\n\n", versionString, date)
 
 	changesByType := make(map[string]map[string]bool)
@@ -200,7 +200,6 @@ date := t.Format("2006-01-02")
 		oldContent = append(oldContent, '\n')
 		insertionPoint = len(oldContent)
 	}
-
 
 	var newContent []byte
 	newContent = append(newContent, oldContent[:insertionPoint]...)

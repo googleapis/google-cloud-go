@@ -29,7 +29,7 @@ func setupTestDirs(t *testing.T, initialRepoContent map[string]string, requestJS
 	t.Helper()
 	tmpDir := t.TempDir()
 
-librarianDir = filepath.Join(tmpDir, "librarian")
+	librarianDir = filepath.Join(tmpDir, "librarian")
 	repoDir = filepath.Join(tmpDir, "repo")
 	outputDir = filepath.Join(tmpDir, "output")
 	for _, dir := range []string{librarianDir, repoDir, outputDir} {
@@ -110,8 +110,8 @@ func TestInit(t *testing.T) {
 				}]
 			}`,
 			initialRepoContent: map[string]string{
-				"secretmanager/CHANGES.md": "# Changes\n\n## [1.15.0]\n- Old stuff.",
-				"secretmanager/internal/version.go": `package internal; const Version = "1.15.0"`,
+				"secretmanager/CHANGES.md":                                           "# Changes\n\n## [1.15.0]\n- Old stuff.",
+				"secretmanager/internal/version.go":                                  `package internal; const Version = "1.15.0"`,
 				"internal/generated/snippets/secretmanager/snippet_metadata.v1.json": `{"version": "1.15.0"}`,
 			},
 			wantChangelogSubstr: "### 1.16.0",
@@ -124,7 +124,7 @@ func TestInit(t *testing.T) {
 			releaseNotTriggered: true,
 		},
 		{
-			name: "changelog already up-to-date",
+			name:        "changelog already up-to-date",
 			requestJSON: `{ "libraries": [ { "id": "secretmanager", "version": "1.16.0", "release_triggered": true, "source_roots": ["secretmanager", "internal/generated/snippets/secretmanager"], "changes": [{"type": "feat", "subject": "add new GetSecret API"}] } ] }`,
 			initialRepoContent: map[string]string{
 				"secretmanager/CHANGES.md": "# Changes\n\n### 1.16.0\n- Already there.",
@@ -141,8 +141,8 @@ func TestInit(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-		
-librarianDir, repoDir, outputDir := setupTestDirs(t, tt.initialRepoContent, tt.requestJSON)
+
+			librarianDir, repoDir, outputDir := setupTestDirs(t, tt.initialRepoContent, tt.requestJSON)
 			cfg := &Config{
 				LibrarianDir: librarianDir,
 				RepoDir:      repoDir,
