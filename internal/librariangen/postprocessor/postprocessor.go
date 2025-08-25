@@ -163,7 +163,6 @@ func generateChanges(moduleDir string) error {
 	return os.WriteFile(changesPath, []byte(content), 0644)
 }
 
-
 // generateClientVersionFiles iterates through the APIs in the request and
 // generates a version.go file for each corresponding client directory.
 func generateClientVersionFiles(req *request.Request, moduleDir, moduleName string) error {

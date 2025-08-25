@@ -24,10 +24,10 @@ import (
 
 func TestRun(t *testing.T) {
 	tests := []struct {
-		name        string
-		args        []string
-		wantErr     bool
-		wantExit    int
+		name         string
+		args         []string
+		wantErr      bool
+		wantExit     int
 		wantInStderr string
 	}{
 		{
@@ -47,10 +47,10 @@ func TestRun(t *testing.T) {
 			wantExit: 1,
 		},
 		{
-			name:        "command with stderr output",
-			args:        []string{"sh", "-c", "echo 'test error' >&2; exit 1"},
-			wantErr:     true,
-			wantExit:    1,
+			name:         "command with stderr output",
+			args:         []string{"sh", "-c", "echo 'test error' >&2; exit 1"},
+			wantErr:      true,
+			wantExit:     1,
 			wantInStderr: "test error",
 		},
 	}
