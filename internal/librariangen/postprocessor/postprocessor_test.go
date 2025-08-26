@@ -34,6 +34,7 @@ func TestPostProcess(t *testing.T) {
 		wantGoModInitCalled bool
 		wantGoModTidyCalled bool
 		wantErr             bool
+		noVersion           bool
 	}{
 		{
 			name:      "new module success",
@@ -43,7 +44,6 @@ func TestPostProcess(t *testing.T) {
 			},
 			wantFilesCreated: []string{
 				"CHANGES.md",
-				"internal/version.go",
 				"README.md",
 				"apiv1/version.go",
 				"apiv2/version.go",
@@ -62,7 +62,6 @@ func TestPostProcess(t *testing.T) {
 				"README.md",
 				"apiv1/version.go",
 				"apiv2/version.go",
-				"internal/version.go",
 			},
 			wantFilesNotCreated: []string{
 				"go.mod",
@@ -73,7 +72,7 @@ func TestPostProcess(t *testing.T) {
 			wantErr:             false,
 		},
 		{
-			name:      "goimports fails (non-fatal)",
+			name:      "goimports fails (fatal)",
 			newModule: false,
 			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				if args[0] == "goimports" {
@@ -81,14 +80,9 @@ func TestPostProcess(t *testing.T) {
 				}
 				return nil
 			},
-			wantFilesCreated: []string{
-				"README.md",
-				"apiv1/version.go",
-				"apiv2/version.go",
-			},
 			wantGoModInitCalled: true,
-			wantGoModTidyCalled: true,
-			wantErr:             false, // goimports error is logged but not returned
+			wantGoModTidyCalled: false,
+			wantErr:             true,
 		},
 		{
 			name:      "go mod init fails (fatal)",
@@ -116,11 +110,29 @@ func TestPostProcess(t *testing.T) {
 			wantGoModTidyCalled: true,
 			wantErr:             true,
 		},
+		{
+			name:                "fail without version",
+			noVersion:           true,
+			wantGoModInitCalled: false,
+			wantGoModTidyCalled: false,
+			wantErr:             true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tmpDir := t.TempDir()
+			outputDir := t.TempDir()
+			moduleDir := filepath.Join(outputDir, "chronicle")
+			if err := os.MkdirAll(moduleDir, 0755); err != nil {
+				t.Fatalf("failed to create moduleDir %v", err)
+				return
+			}
+			// Create the snippets dir that UpdateSnippetsMetadata expects.
+			snippetsDir := filepath.Join(outputDir, "internal", "generated", "snippets", "chronicle")
+			if err := os.MkdirAll(snippetsDir, 0755); err != nil {
+				t.Fatalf("failed to create snippetsDir %v", err)
+				return
+			}
 
 			var goModInitCalled, goModTidyCalled bool
 			execvRun = func(ctx context.Context, args []string, dir string) error {
@@ -134,14 +146,19 @@ func TestPostProcess(t *testing.T) {
 			}
 
 			req := &request.Request{
-				ID: "google-cloud-chronicle",
+				ID: "chronicle",
 				APIs: []request.API{
 					{Path: "google/cloud/chronicle/v1"},
 					{Path: "google/cloud/chronicle/v2"},
 				},
+				Version: "1.0.0",
 			}
 
-			if err := PostProcess(context.Background(), req, tmpDir, tt.newModule); (err != nil) != tt.wantErr {
+			if tt.noVersion {
+				req.Version = ""
+			}
+
+			if err := PostProcess(context.Background(), req, outputDir, moduleDir, tt.newModule, "Chronicle API"); (err != nil) != tt.wantErr {
 				t.Fatalf("PostProcess() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -157,13 +174,13 @@ func TestPostProcess(t *testing.T) {
 			}
 
 			for _, file := range tt.wantFilesCreated {
-				if _, err := os.Stat(filepath.Join(tmpDir, file)); os.IsNotExist(err) {
+				if _, err := os.Stat(filepath.Join(moduleDir, file)); os.IsNotExist(err) {
 					t.Errorf("file %s was not created", file)
 				}
 			}
 
 			for _, file := range tt.wantFilesNotCreated {
-				if _, err := os.Stat(filepath.Join(tmpDir, file)); !os.IsNotExist(err) {
+				if _, err := os.Stat(filepath.Join(moduleDir, file)); !os.IsNotExist(err) {
 					t.Errorf("file %s was created, but should not have been", file)
 				}
 			}

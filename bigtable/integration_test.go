@@ -239,6 +239,22 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 	}
 }
 
+func TestIntegration_Pinger(t *testing.T) {
+	ctx := context.Background()
+	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { cleanup() })
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support PingAndWarm")
+	}
+	if err := client.PingAndWarm(ctx); err != nil {
+		t.Fatalf("pinger failed. got %v, want %v", err, nil)
+	}
+
+}
+
 func TestIntegration_PartialReadRows(t *testing.T) {
 	ctx := context.Background()
 	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
@@ -896,16 +912,46 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	wg.Wait()
 }
 
-func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
+func TestIntegration_NoopMetricsProvider(t *testing.T) {
 	ctx := context.Background()
+	testEnv, _, adminClient, _, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
 
-	// Reduce sampling period for faster test runs
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = time.Minute
-	defer func() {
-		defaultSamplePeriod = origSamplePeriod
-	}()
+	if testing.Short() || !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode or non-prod environments")
+	}
 
+	family := "export"
+	if err := createColumnFamily(ctx, t, adminClient, tableName, family, nil); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+
+	noopClient, err := testEnv.NewClientWithConfig(ClientConfig{MetricsProvider: NoopMetricsProvider{}})
+	if err != nil {
+		t.Fatalf("NewClientWithConfig: %v", err)
+	}
+
+	noopTable := noopClient.Open(tableName)
+	for i := 0; i < 10; i++ {
+		mut := NewMutation()
+		mut.Set(family, "col", 1000, []byte("test"))
+		if err := noopTable.Apply(ctx, fmt.Sprintf("row-%v", i), mut); err != nil {
+			t.Fatalf("Apply: %v", err)
+		}
+	}
+
+	err = noopTable.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		return true
+	}, RowFilter(ColumnFilter("col")))
+	if err != nil {
+		t.Fatalf("ReadRows: %v", err)
+	}
+}
+
+func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	// record start time
 	testStartTime := time.Now()
 	tsListStart := &timestamppb.Timestamp{
@@ -913,6 +959,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		Nanos:   int32(testStartTime.Nanosecond()),
 	}
 
+	ctx := context.Background()
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
@@ -935,6 +982,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 			t.Fatalf("Apply: %v", err)
 		}
 	}
+
 	err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
 		return true
 	}, RowFilter(ColumnFilter("col")))
@@ -4363,56 +4411,57 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// List backup
-	gotBackups, err := list(sourceCluster)
-	if err != nil {
-		t.Fatalf("Listing backups: %v", err)
-	}
-	if got, want := len(gotBackups), 3; got < want {
-		t.Fatalf("Listing backup count: %d, want: >= %d", got, want)
-	}
+	var gotBackups []*BackupInfo
+	testutil.Retry(t, 20, 30*time.Second, func(r *testutil.R) {
+		var err error
+		gotBackups, err = list(sourceCluster)
+		if err != nil {
+			r.Fatalf("Listing backups: %v", err)
+		}
 
-	wantBackups := map[string]struct {
-		HotToStandardTime *time.Time
-		BackupType        BackupType
-	}{
-		stdBkpName: {
-			BackupType: BackupTypeStandard,
-		},
-		hotBkpName1: {
-			BackupType:        BackupTypeHot,
-			HotToStandardTime: &wantHtsTime,
-		},
-		hotBkpName2: {
-			BackupType: BackupTypeHot,
-		},
-	}
+		wantBackups := map[string]struct {
+			HotToStandardTime *time.Time
+			BackupType        BackupType
+		}{
+			stdBkpName: {
+				BackupType: BackupTypeStandard,
+			},
+			hotBkpName1: {
+				BackupType:        BackupTypeHot,
+				HotToStandardTime: &wantHtsTime,
+			},
+			hotBkpName2: {
+				BackupType: BackupTypeHot,
+			},
+		}
 
-	foundBackups := map[string]bool{}
-	for _, gotBackup := range gotBackups {
-		wantBackup, ok := wantBackups[gotBackup.Name]
-		if !ok {
-			break
-		}
-		foundBackups[gotBackup.Name] = true
+		foundBackups := map[string]bool{}
+		for _, gotBackup := range gotBackups {
+			wantBackup, ok := wantBackups[gotBackup.Name]
+			if !ok {
+				continue
+			}
+			foundBackups[gotBackup.Name] = true
 
-		if got, want := gotBackup.SourceTable, tblConf.TableID; got != want {
-			t.Errorf("%v SourceTable got: %s, want: %s", gotBackup.Name, got, want)
+			if got, want := gotBackup.SourceTable, tblConf.TableID; got != want {
+				r.Errorf("%v SourceTable got: %s, want: %s", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.ExpireTime, gotBackup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+				r.Errorf("%v ExpireTime got: %s, want: %s", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.BackupType, wantBackup.BackupType; got != want {
+				r.Errorf("%v BackupType got: %v, want: %v", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.HotToStandardTime, wantBackup.HotToStandardTime; (got != nil && !got.Equal(*want)) ||
+				(got == nil && got != want) || (want == nil && got != want) {
+				r.Errorf("%v HotToStandardTime got: %v, want: %v", gotBackup.Name, got, want)
+			}
 		}
-		if got, want := gotBackup.ExpireTime, gotBackup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-			t.Errorf("%v ExpireTime got: %s, want: %s", gotBackup.Name, got, want)
-		}
-		if got, want := gotBackup.BackupType, wantBackup.BackupType; got != want {
-			t.Errorf("%v BackupType got: %v, want: %v", gotBackup.Name, got, want)
-		}
-		if got, want := gotBackup.HotToStandardTime, wantBackup.HotToStandardTime; (got != nil && !got.Equal(*want)) ||
-			(got == nil && got != want) || (want == nil && got != want) {
-			t.Errorf("%v HotToStandardTime got: %v, want: %v", gotBackup.Name, got, want)
-		}
-	}
 
-	if len(foundBackups) != len(wantBackups) {
-		t.Errorf("foundBackups: %+v, wantBackups: %+v", foundBackups, wantBackups)
-	}
+		if len(foundBackups) != len(wantBackups) {
+			r.Errorf("foundBackups: %+v, wantBackups: %+v", foundBackups, wantBackups)
+		}
+	})
 
 	// Get BackupInfo
 	gotBackupInfo, err := adminClient.BackupInfo(ctx, sourceCluster, stdBkpName)
@@ -6126,6 +6175,9 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	_ = cancel // ignore for test
 
+	// Reduce sampling period for faster test runs
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = time.Minute
 	client, err := testEnv.NewClient()
 	if err != nil {
 		t.Logf("Error creating client: %v", err)
@@ -6185,6 +6237,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	}
 
 	return testEnv, client, adminClient, client.Open(tableName), tableName, func() {
+		defaultSamplePeriod = origSamplePeriod
 		if err := deleteTable(ctx, t, adminClient, tableName); err != nil {
 			t.Errorf("DeleteTable got error %v", err)
 		}

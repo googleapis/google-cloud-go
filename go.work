@@ -79,6 +79,7 @@ use (
 	./financialservices
 	./firestore
 	./functions
+	./geminidataanalytics
 	./gkebackup
 	./gkeconnect
 	./gkehub
@@ -101,6 +102,7 @@ use (
 	./internal/librariangen
 	./internal/postprocessor
 	./internal/protoveneer
+	./internal/stategen	
 	./iot
 	./kms
 	./language

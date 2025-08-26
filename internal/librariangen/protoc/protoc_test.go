@@ -54,53 +54,101 @@ func (m *mockConfigProvider) HasGoGRPC() bool           { return m.hasGoGRPC }
 func TestBuild(t *testing.T) {
 	// The testdata directory is a curated version of a valid protoc
 	// import path that contains all the necessary proto definitions.
-	sourceDir, err := filepath.Abs("../testdata/source")
+	sourceDir, err := filepath.Abs("../testdata/generate/source")
 	if err != nil {
 		t.Fatalf("failed to get absolute path for sourceDir: %v", err)
 	}
-	apiServiceDir := filepath.Join(sourceDir, "google/cloud/workflows/v1")
+	tests := []struct {
+		name          string
+		apiPath       string
+		apiServiceDir string
+		reqID         string
+		config        mockConfigProvider
+		want          []string
+	}{
+		{
+			name:    "go_grpc_library rule",
+			apiPath: "google/cloud/workflows/v1",
+			reqID:   "workflows",
+			config: mockConfigProvider{
+				gapicImportPath:   "cloud.google.com/go/workflows/apiv1;workflows",
+				transport:         "grpc",
+				grpcServiceConfig: "workflows_grpc_service_config.json",
+				serviceYAML:       "workflows_v1.yaml",
+				releaseLevel:      "ga",
+				metadata:          true,
+				restNumericEnums:  true,
+				hasGoGRPC:         true,
+			},
+			want: []string{
+				"protoc",
+				"--experimental_allow_proto3_optional",
+				"--go_out=/output",
+				"--go-grpc_out=/output",
+				"--go-grpc_opt=require_unimplemented_servers=false",
+				"--go_gapic_out=/output",
+				"--go_gapic_opt=go-gapic-package=cloud.google.com/go/workflows/apiv1;workflows",
+				"--go_gapic_opt=api-service-config=" + filepath.Join(sourceDir, "google/cloud/workflows/v1/workflows_v1.yaml"),
+				"--go_gapic_opt=grpc-service-config=" + filepath.Join(sourceDir, "google/cloud/workflows/v1/workflows_grpc_service_config.json"),
+				"--go_gapic_opt=transport=grpc",
+				"--go_gapic_opt=release-level=ga",
+				"--go_gapic_opt=metadata",
+				"--go_gapic_opt=rest-numeric-enums",
+				"-I=" + sourceDir,
+				filepath.Join(sourceDir, "google/cloud/workflows/v1/workflows.proto"),
+			},
+		},
+		{
+			name:    "go_proto_library rule",
+			apiPath: "google/cloud/secretmanager/v1beta2",
+			reqID:   "secretmanager",
+			config: mockConfigProvider{
+				gapicImportPath:   "cloud.google.com/go/secretmanager/apiv1beta2;secretmanager",
+				transport:         "grpc",
+				grpcServiceConfig: "secretmanager_grpc_service_config.json",
+				serviceYAML:       "secretmanager_v1beta2.yaml",
+				releaseLevel:      "ga",
+				metadata:          true,
+				restNumericEnums:  true,
+				hasGoGRPC:         false,
+			},
+			want: []string{
+				"protoc",
+				"--experimental_allow_proto3_optional",
+				"--go_v1_out=/output",
+				"--go_v1_opt=plugins=grpc",
+				"--go_gapic_out=/output",
+				"--go_gapic_opt=go-gapic-package=cloud.google.com/go/secretmanager/apiv1beta2;secretmanager",
+				"--go_gapic_opt=api-service-config=" + filepath.Join(sourceDir, "google/cloud/secretmanager/v1beta2/secretmanager_v1beta2.yaml"),
+				"--go_gapic_opt=grpc-service-config=" + filepath.Join(sourceDir, "google/cloud/secretmanager/v1beta2/secretmanager_grpc_service_config.json"),
+				"--go_gapic_opt=transport=grpc",
+				"--go_gapic_opt=release-level=ga",
+				"--go_gapic_opt=metadata",
+				"--go_gapic_opt=rest-numeric-enums",
+				"-I=" + sourceDir,
+				filepath.Join(sourceDir, "google/cloud/secretmanager/v1beta2/secretmanager.proto"),
+			},
+		},
+	}
 
-	req := &request.Request{
-		ID: "google-cloud-workflows-v1",
-	}
-	api := &request.API{
-		Path: "google/cloud/workflows/v1",
-	}
-	config := &mockConfigProvider{
-		gapicImportPath:   "cloud.google.com/go/workflows/apiv1;workflows",
-		transport:         "grpc",
-		grpcServiceConfig: "workflows_grpc_service_config.json",
-		serviceYAML:       "workflows_v1.yaml",
-		releaseLevel:      "ga",
-		metadata:          true,
-		restNumericEnums:  true,
-		hasGoGRPC:         true,
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := &request.Request{
+				ID: tt.reqID,
+			}
+			api := &request.API{
+				Path: tt.apiPath,
+			}
 
-	got, err := Build(req, api, apiServiceDir, config, sourceDir, "/output")
-	if err != nil {
-		t.Fatalf("Build() failed: %v", err)
-	}
+			got, err := Build(req, api, filepath.Join(sourceDir, tt.apiPath), &tt.config, sourceDir, "/output")
+			if err != nil {
+				t.Fatalf("Build() failed: %v", err)
+			}
 
-	want := []string{
-		"protoc",
-		"--experimental_allow_proto3_optional",
-		"--go_out=/output",
-		"--go-grpc_out=/output",
-		"--go_gapic_out=/output",
-		"--go_gapic_opt=go-gapic-package=cloud.google.com/go/workflows/apiv1;workflows",
-		"--go_gapic_opt=api-service-config=" + filepath.Join(apiServiceDir, "workflows_v1.yaml"),
-		"--go_gapic_opt=grpc-service-config=" + filepath.Join(apiServiceDir, "workflows_grpc_service_config.json"),
-		"--go_gapic_opt=transport=grpc",
-		"--go_gapic_opt=release-level=ga",
-		"--go_gapic_opt=metadata",
-		"--go_gapic_opt=rest-numeric-enums",
-		"-I=" + sourceDir,
-		filepath.Join(apiServiceDir, "workflows.proto"),
-	}
-
-	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("Build() mismatch (-want +got):\n%s", diff)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("Build() mismatch (-want +got):\n%s", diff)
+			}
+		})
 	}
 }
 
@@ -126,9 +174,9 @@ func TestRun_Integration(t *testing.T) {
 	// Setup temporary directory for the output.
 	outputDir := t.TempDir()
 
-	// The testdata/source directory is a miniature version of a valid protoc
+	// The testdata/generate/source directory is a miniature version of a valid protoc
 	// import path that contains all the necessary proto definitions.
-	sourceDir, err := filepath.Abs("../testdata/source")
+	sourceDir, err := filepath.Abs("../testdata/generate/source")
 	if err != nil {
 		t.Fatalf("failed to get absolute path for sourceDir: %v", err)
 	}

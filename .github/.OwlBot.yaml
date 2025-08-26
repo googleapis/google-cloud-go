@@ -55,6 +55,8 @@ deep-remove-regex:
   - /bigquery/dataexchange/apiv1beta1/
   - /bigquery/datapolicies/apiv1/
   - /bigquery/datapolicies/apiv1beta1/
+  - /bigquery/datapolicies/apiv2/
+  - /bigquery/datapolicies/apiv2beta1/
   - /bigquery/datatransfer/apiv1/
   - /bigquery/migration/apiv2/
   - /bigquery/migration/apiv2alpha/
@@ -140,6 +142,7 @@ deep-remove-regex:
   - /functions/apiv1/
   - /functions/apiv2/
   - /functions/apiv2beta/
+  - /geminidataanalytics/apiv1beta/
   - /gkebackup/apiv1/
   - /gkeconnect/gateway/apiv1beta1/
   - /gkeconnect/gateway/apiv1/
@@ -205,6 +208,8 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/dataexchange/apiv1beta1/
   - /internal/generated/snippets/bigquery/datapolicies/apiv1/
   - /internal/generated/snippets/bigquery/datapolicies/apiv1beta1/
+  - /internal/generated/snippets/bigquery/datapolicies/apiv2/
+  - /internal/generated/snippets/bigquery/datapolicies/apiv2beta1/
   - /internal/generated/snippets/bigquery/datatransfer/apiv1/
   - /internal/generated/snippets/bigquery/migration/apiv2/
   - /internal/generated/snippets/bigquery/migration/apiv2alpha/
@@ -287,6 +292,7 @@ deep-remove-regex:
   - /internal/generated/snippets/functions/apiv1/
   - /internal/generated/snippets/functions/apiv2/
   - /internal/generated/snippets/functions/apiv2beta/
+  - /internal/generated/snippets/geminidataanalytics/apiv1beta/
   - /internal/generated/snippets/gkebackup/apiv1/
   - /internal/generated/snippets/gkeconnect/gateway/apiv1beta1/
   - /internal/generated/snippets/gkeconnect/gateway/apiv1/
@@ -315,6 +321,7 @@ deep-remove-regex:
   - /internal/generated/snippets/maintenance/api/apiv1beta/
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
+  - /internal/generated/snippets/managedkafka/schemaregistry/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
   - /internal/generated/snippets/maps/areainsights/apiv1/
   - /internal/generated/snippets/maps/fleetengine/apiv1/
@@ -404,6 +411,7 @@ deep-remove-regex:
   - /internal/generated/snippets/serviceusage/apiv1/
   - /internal/generated/snippets/shell/apiv1/
   - /internal/generated/snippets/shopping/css/apiv1/
+  - /internal/generated/snippets/shopping/merchant/accounts/apiv1/
   - /internal/generated/snippets/shopping/merchant/accounts/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/conversions/apiv1/
   - /internal/generated/snippets/shopping/merchant/conversions/apiv1beta/
@@ -411,9 +419,12 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/datasources/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/notifications/apiv1/
   - /internal/generated/snippets/shopping/merchant/notifications/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/ordertracking/apiv1/
   - /internal/generated/snippets/shopping/merchant/ordertracking/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/products/apiv1/
   - /internal/generated/snippets/shopping/merchant/products/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/productstudio/apiv1alpha/
+  - /internal/generated/snippets/shopping/merchant/promotions/apiv1/
   - /internal/generated/snippets/shopping/merchant/promotions/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/quota/apiv1/
   - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
@@ -421,6 +432,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/issueresolution/apiv1/
   - /internal/generated/snippets/shopping/merchant/issueresolution/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/reports/apiv1/
   - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reviews/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/lfp/apiv1/
@@ -483,6 +495,7 @@ deep-remove-regex:
   - /maintenance/api/apiv1beta/
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
+  - /managedkafka/schemaregistry/apiv1/
   - /maps/addressvalidation/apiv1/
   - /maps/areainsights/apiv1/
   - /maps/fleetengine/apiv1/
@@ -576,6 +589,7 @@ deep-remove-regex:
   - /serviceusage/apiv1/
   - /shell/apiv1/
   - /shopping/css/apiv1/
+  - /shopping/merchant/accounts/apiv1/
   - /shopping/merchant/accounts/apiv1beta/
   - /shopping/merchant/conversions/apiv1/
   - /shopping/merchant/conversions/apiv1beta/
@@ -583,9 +597,12 @@ deep-remove-regex:
   - /shopping/merchant/datasources/apiv1beta/
   - /shopping/merchant/notifications/apiv1/
   - /shopping/merchant/notifications/apiv1beta/
+  - /shopping/merchant/ordertracking/apiv1/
   - /shopping/merchant/ordertracking/apiv1beta/
+  - /shopping/merchant/products/apiv1/
   - /shopping/merchant/products/apiv1beta/
   - /shopping/merchant/productstudio/apiv1alpha/
+  - /shopping/merchant/promotions/apiv1/
   - /shopping/merchant/promotions/apiv1beta/
   - /shopping/merchant/quota/apiv1/
   - /shopping/merchant/quota/apiv1beta/
@@ -595,6 +612,7 @@ deep-remove-regex:
   - /shopping/merchant/issueresolution/apiv1beta/
   - /shopping/merchant/lfp/apiv1/
   - /shopping/merchant/lfp/apiv1beta/
+  - /shopping/merchant/reports/apiv1/
   - /shopping/merchant/reports/apiv1beta/
   - /shopping/merchant/reviews/apiv1beta/
   - /shopping/type/
@@ -800,6 +818,10 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/datapolicies/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/bigquery/datapolicies/v2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/bigquery/datapolicies/v2beta1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/bigquery/datatransfer/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/migration/v2/cloud.google.com/go
@@ -965,6 +987,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/functions/v2beta/cloud.google.com/go
     dest: /
+  - source: /google/cloud/geminidataanalytics/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/cloud/gkebackup/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/gkeconnect/gateway/v1beta1/cloud.google.com/go
@@ -1020,6 +1044,8 @@ deep-copy-regex:
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/managedkafka/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/managedkafka/schemaregistry/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
     dest: /
@@ -1211,6 +1237,8 @@ deep-copy-regex:
     dest: /
   - source: /google/shopping/css/v1/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/accounts/v1/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/accounts/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/conversions/v1/cloud.google.com/go
@@ -1225,11 +1253,17 @@ deep-copy-regex:
     dest: /
   - source: /google/shopping/merchant/notifications/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/ordertracking/v1/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/ordertracking/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/products/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/products/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/productstudio/v1alpha/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/promotions/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/promotions/v1beta/cloud.google.com/go
     dest: /
@@ -1248,6 +1282,8 @@ deep-copy-regex:
   - source: /google/shopping/merchant/lfp/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/reports/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/reports/v1beta/cloud.google.com/go
     dest: /

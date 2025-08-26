@@ -1,0 +1,18 @@
+{
+  "id": "google-cloud-secretmanager",
+  "apis": [
+    {
+      "path": "google/cloud/secretmanager/v1",
+    }
+  ],
+  "source_roots": [ "secretmanager" ],
+  "preserve_regex": [
+    "secretmanager/subdir/handwritten-file.go"
+  ],
+  "remove_regex": [
+    "secretmanager/generated-dir"
+  ],
+  "version": "0.0.0",
+  "tag_format": "{id}/v{version}",
+  "error": "An optional field to share error context back to Librarian."
+}

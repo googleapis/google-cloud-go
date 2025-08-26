@@ -1,5 +1,17 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.3...cloudbuild/v1.23.0) (2025-08-18)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add option to enable nested virtualization if available ([#12720](https://github.com/googleapis/google-cloud-go/issues/12720)) ([f45b222](https://github.com/googleapis/google-cloud-go/commit/f45b2228923d975fc89dde490c651d01d7b0d9ab))
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Update comments for `machine_type` and `disk_size_gb` ([f45b222](https://github.com/googleapis/google-cloud-go/commit/f45b2228923d975fc89dde490c651d01d7b0d9ab))
+
 ## [1.22.3](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.2...cloudbuild/v1.22.3) (2025-07-31)
 
 

@@ -42,7 +42,7 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 	// Gather all .proto files in the API's source directory.
 	entries, err := os.ReadDir(apiServiceDir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read API source directory %s: %w", apiServiceDir, err)
+		return nil, fmt.Errorf("librariangen: failed to read API source directory %s: %w", apiServiceDir, err)
 	}
 
 	var protoFiles []string
@@ -53,7 +53,7 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 	}
 
 	if len(protoFiles) == 0 {
-		return nil, fmt.Errorf("no .proto files found in %s", apiServiceDir)
+		return nil, fmt.Errorf("librariangen: no .proto files found in %s", apiServiceDir)
 	}
 
 	// Construct the protoc command arguments.
@@ -84,11 +84,16 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 	args := []string{
 		"protoc",
 		"--experimental_allow_proto3_optional",
-		// All generated files are written to the /output directory.
-		"--go_out=" + outputDir,
 	}
+	// All generated files are written to the /output directory.
+	// Which plugin(s) we use depends on whether the Bazel rule was go_grpc_library
+	// or go_proto_library:
+	// - If we're using go_rpc, we use the newer go plugin and the go-grpc plugin
+	// - Otherwise, use the "old" plugin (built explicitly in the Dockerfile)
 	if config.HasGoGRPC() {
-		args = append(args, "--go-grpc_out="+outputDir)
+		args = append(args, "--go_out="+outputDir, "--go-grpc_out="+outputDir, "--go-grpc_opt=require_unimplemented_servers=false")
+	} else {
+		args = append(args, "--go_v1_out="+outputDir, "--go_v1_opt=plugins=grpc")
 	}
 	args = append(args, "--go_gapic_out="+outputDir)
 
