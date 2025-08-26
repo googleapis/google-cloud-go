@@ -57,8 +57,7 @@ func run(args []string) error {
 			slog.Info("skipping existing module", "module", moduleName)
 			continue
 		}
-		err = addModule(repoRoot, state, moduleName)
-		if err != nil {
+		if err := addModule(repoRoot, state, moduleName); err != nil {
 			return err
 		}
 	}
