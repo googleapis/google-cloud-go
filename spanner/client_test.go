@@ -6782,6 +6782,42 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 }
 
+func TestClient_DelayedExcludeTxnFromChangeStreams(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+
+	// Randomly exclude the transaction from change streams.
+	exclude := time.Now().UnixNano()%2 == 0
+	// Start a transaction without an ExcludeTxnFromChangeStreams option, but register a callback that allows us to set
+	// it right before the transaction is actually started.
+	tx, err := NewReadWriteStmtBasedTransactionWithCallbackForOptions(ctx, client, TransactionOptions{}, func() TransactionOptions {
+		return TransactionOptions{ExcludeTxnFromChangeStreams: exclude}
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = tx.BufferWrite(ms)
+	if _, err := tx.Commit(ctx); err != nil {
+		t.Fatal(err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	beginRequests := requestsOfType(requests, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	if g, w := len(beginRequests), 1; g != w {
+		t.Fatalf("num BeginTransaction requests mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	beginRequest := beginRequests[0].(*sppb.BeginTransactionRequest)
+	if g, w := beginRequest.Options.ExcludeTxnFromChangeStreams, exclude; g != w {
+		t.Fatalf("exclude option mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 func TestParseServerTimingHeader(t *testing.T) {
 	tests := []struct {
 		name     string
