@@ -52,5 +52,5 @@ options:
 images:
   - us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-dev/librarian-go:infrastructure-public-image-$COMMIT_SHA
   - us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-dev/librarian-go:infrastructure-public-image-latest
-  - us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-dev/librarian-go:infrastructure-public-image-latest
+  - us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-dev/librarian-go:latest
 
