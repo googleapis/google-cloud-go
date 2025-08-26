@@ -100,13 +100,11 @@ func addModule(repoRoot string, state *LibrarianState, moduleName string) error 
 	}
 	library.Version = version
 
-	err = addAPIProtoPaths(repoRoot, moduleName, library)
-	if err != nil {
+	if err := addAPIProtoPaths(repoRoot, moduleName, library); err != nil {
 		return err
 	}
 
-	err = addGeneratedCodeRemovals(repoRoot, moduleRoot, library)
-	if err != nil {
+	if err := addGeneratedCodeRemovals(repoRoot, moduleRoot, library); err != nil {
 		return err
 	}
 
