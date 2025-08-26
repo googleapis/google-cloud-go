@@ -102,6 +102,7 @@ use (
 	./internal/librariangen
 	./internal/postprocessor
 	./internal/protoveneer
+	./internal/stategen	
 	./iot
 	./kms
 	./language
