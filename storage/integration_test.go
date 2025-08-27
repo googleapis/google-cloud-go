@@ -3574,12 +3574,11 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
 				}
 				// Check ProgressFunc was called if applicable
-				// Skip this until progressFunc bug is fixed.
-				// if tc.checkProgressOffsets != nil {
-				// 	if !slices.Equal(gotOffsets, tc.checkProgressOffsets) {
-				// 		t.Errorf("progressFunc calls: got %v, want %v", gotOffsets, tc.checkProgressOffsets)
-				// 	}
-				// }
+				if tc.checkProgressOffsets != nil {
+					if !slices.Equal(gotOffsets, tc.checkProgressOffsets) {
+						t.Errorf("progressFunc calls: got %v, want %v", gotOffsets, tc.checkProgressOffsets)
+					}
+				}
 				if w2.Attrs() == nil {
 					t.Fatalf("takeover writer attrs: expected attrs, got nil")
 				}

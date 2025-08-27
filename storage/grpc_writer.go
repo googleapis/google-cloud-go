@@ -340,7 +340,11 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		w.buf = w.buf[:0]
 	}
 	w.setSize(c.flushOffset)
-	w.progress(c.flushOffset)
+	// Only call progress if persisted size is updated (flush), not in cases where we get
+	// an object resource (takeover or finalize).
+	if c.resource == nil {
+		w.progress(c.flushOffset)
+	}
 }
 
 func (w *gRPCWriter) withCommandRetryDeadline(f func() error) error {
@@ -475,6 +479,8 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 			flush:       true,
 			finishWrite: true,
 		}
+		// Do not call progress func on a Close.
+		w.progress = func(int64) {}
 		if err := w.withCommandRetryDeadline(func() error {
 			if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 				return w.streamSender.err()
