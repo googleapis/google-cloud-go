@@ -580,8 +580,8 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.enableMultiplexedSessionForPartitionedOps = true
 	}
 
-	config.enableMultiplexedSessionForRW = config.enableMultiplexSession && config.enableMultiplexedSessionForRW
-	config.enableMultiplexedSessionForPartitionedOps = config.enableMultiplexSession && config.enableMultiplexedSessionForPartitionedOps
+	config.enableMultiplexedSessionForRW = config.SessionPoolConfig.enableMultiplexSession && config.enableMultiplexedSessionForRW
+	config.enableMultiplexedSessionForPartitionedOps = config.SessionPoolConfig.enableMultiplexSession && config.enableMultiplexedSessionForPartitionedOps
 
 	if config.IsExperimentalHost {
 		config.SessionPoolConfig.enableMultiplexSession = true

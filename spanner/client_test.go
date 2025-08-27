@@ -580,7 +580,7 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			},
 		},
 		{
-			name: "Given if multiplexed session is enabled, When executing R/W transactions, should always use regular session",
+			name: "Given if multiplexed session is enabled, When executing R/W transactions, should always use multiplex session",
 			test: func(client *Client) error {
 				ctx := context.Background()
 				// Test the read-write transaction
@@ -593,8 +593,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				return err
 			},
 			validate: func(server InMemSpannerServer) {
-				// Validate the regular session is used, toatl session created should be 25
-				expectedSessionCount := uint(26)
+				// Validate the regular session is used, total session created should be 1
+				expectedSessionCount := uint(1)
 				if !isMultiplexEnabled {
 					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
 				}
@@ -605,8 +605,7 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				for _, s := range reqs {
 					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						// Validate the session is not multiplexed
-						if !testEqual(false, strings.Contains(req.Session, "multiplexed")) {
+						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
 						}
 					}
@@ -1490,15 +1489,31 @@ func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement_AndThenSes
 	if expectedAttempts != attempts {
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
 	}
+	var want []interface{}
+	if isMultiplexEnabled {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			// when no session found error thrown in multiplex session
+			// it will fallback to regular session
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	} else {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
+	if err := compareRequests(want, requests); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -1540,15 +1555,32 @@ func TestClient_ReadWriteTransaction_AbortedForFirstStatement_AndThenSessionNotF
 	if expectedAttempts != attempts {
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
 	}
+	var want []interface{}
+	//if isMultiplexEnabled {
+	//	want = []interface{}{
+	//		&sppb.BatchCreateSessionsRequest{},
+	//		&sppb.ExecuteSqlRequest{},
+	//		&sppb.BeginTransactionRequest{},
+	//		// when no session found error thrown in multiplex session
+	//		// it will fallback to regular session
+	//		&sppb.BatchCreateSessionsRequest{},
+	//		&sppb.BeginTransactionRequest{},
+	//		&sppb.ExecuteSqlRequest{},
+	//		&sppb.CommitRequest{},
+	//	}
+	//} else {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	//}
+
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
+	if err := compareRequests(want, requests); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -1593,14 +1625,26 @@ func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement_DoesNotLea
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.BatchCreateSessionsRequest{}, // We need to create more sessions, as the one used first was destroyed.
-		&sppb.BeginTransactionRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
+	var want []interface{}
+	if isMultiplexEnabled {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	} else {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BatchCreateSessionsRequest{}, // We need to create more sessions, as the one used first was destroyed.
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
+	if err := compareRequests(want, requests); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -2465,6 +2509,9 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T
 }
 
 func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping regular session tests in multiplex session enabled tests")
+	}
 	t.Parallel()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
@@ -2937,20 +2984,16 @@ func TestClient_ReadWriteTransactionWithOptimisticLockMode_ExecuteSqlRequest(t *
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[1].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Transaction is not set to optimistic")
 	}
-	if requests[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[2].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Transaction is not set to optimistic")
 	}
-	if requests[3+muxCreateBuffer].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[3].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Begin Transaction is not set to optimistic")
 	}
-	if _, ok := requests[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming query to use transactionID from explicit begin transaction")
 	}
 }
@@ -2984,20 +3027,16 @@ func TestClient_ReadWriteTransactionWithOptimisticLockMode_ReadRequest(t *testin
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if requests[1+muxCreateBuffer].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[1].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Transaction is not set to optimistic")
 	}
-	if requests[2+muxCreateBuffer].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[2].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Transaction is not set to optimistic")
 	}
-	if requests[3+muxCreateBuffer].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[3].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Begin Transaction is not set to optimistic")
 	}
-	if _, ok := requests[4+muxCreateBuffer].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[4].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming read to use transactionID from explicit begin transaction")
 	}
 }
@@ -3531,17 +3570,13 @@ func TestClient_ReadWriteTransaction_FirstStatementAsQueryReturnsUnavailableRetr
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if _, ok := requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[1].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected streaming query to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[2].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected streaming query to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming query to use transactionID from explicit begin transaction")
 	}
 }
@@ -3585,17 +3620,13 @@ func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if _, ok := requests[1+muxCreateBuffer].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[1].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected streaming read to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[2+muxCreateBuffer].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[2].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming read to use transactionID from previous success request")
 	}
-	if requests[2+muxCreateBuffer].(*sppb.ReadRequest).ResumeToken == nil {
+	if requests[2].(*sppb.ReadRequest).ResumeToken == nil {
 		t.Fatal("expected streaming read to include resume token")
 	}
 }
@@ -3639,17 +3670,13 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnFirstStatement(t *testin
 	}
 	// The first statement will fail and not return a transaction id. This will trigger a retry of
 	// the entire transaction, and the retry will do an explicit BeginTransaction RPC.
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if _, ok := requests[1+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected first BatchUpdate to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[3+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[3].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected second BatchUpdate to use transactionID from explicit begin")
 	}
-	if _, ok := requests[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected second ExecuteSqlRequest to use transactionID from explicit begin")
 	}
 }
@@ -3692,14 +3719,10 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnSecondStatement(t *testi
 	}
 	// Although the batch DML returned an error, that error was for the second statement. That
 	// means that the transaction was started by the first statement.
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if _, ok := requests[1+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected BatchUpdate to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[2].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected ExecuteSqlRequest use transactionID from BatchUpdate request")
 	}
 }
@@ -6331,15 +6354,29 @@ func TestClient_ReadWriteTransactionWithTag_SessionNotFound(t *testing.T) {
 		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
 	}
 
+	var want []interface{}
+	if isMultiplexEnabled {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+		}
+	} else {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.CommitRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
+	if err := compareRequests(want, requests); err != nil {
 		t.Fatal(err)
 	}
 	muxCreateBuffer := 0
@@ -6393,23 +6430,19 @@ func TestClient_NestedReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if g, w := requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[1].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[2+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[3].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[4+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[6+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
 }
@@ -6456,26 +6489,22 @@ func TestClient_NestedReadWriteTransactionWithTag_OuterAbortedOnce(t *testing.T)
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if g, w := requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[1].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[2+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[4+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[5+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[5].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[6+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[8+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[8].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
 }
@@ -6521,27 +6550,23 @@ func TestClient_NestedReadWriteTransactionWithTag_InnerBlindWrite(t *testing.T) 
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
 
-	if g, w := requests[2+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[3].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[4+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[6+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[7+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[7].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[8+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[8].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
 }
@@ -6568,11 +6593,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_ExecuteSqlRe
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.ExecuteSqlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
@@ -6600,11 +6621,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BufferWrite(
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
@@ -6631,11 +6648,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BatchUpdate(
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
@@ -6697,11 +6710,7 @@ func TestClient_ApplyExcludeTxnFromChangeStreams(t *testing.T) {
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
