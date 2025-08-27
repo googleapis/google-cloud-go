@@ -3414,7 +3414,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{7 * MiB, 8 * MiB},
+				checkProgressOffsets: []int64{3 * MiB, 7 * MiB, 8 * MiB, 9 * MiB},
 			},
 			{
 				name:                "middle chunk takeover, small flush",
@@ -3456,7 +3456,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{4 * MiB, 8 * MiB},
+				checkProgressOffsets: []int64{0, 4 * MiB, 8 * MiB, 9 * MiB},
 			},
 			{
 				name:           "last byte takeover",
@@ -3574,12 +3574,11 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					t.Errorf("got object finalized at %v, want unfinalized", attrs.Finalized)
 				}
 				// Check ProgressFunc was called if applicable
-				// Skip this until progressFunc bug is fixed.
-				// if tc.checkProgressOffsets != nil {
-				// 	if !slices.Equal(gotOffsets, tc.checkProgressOffsets) {
-				// 		t.Errorf("progressFunc calls: got %v, want %v", gotOffsets, tc.checkProgressOffsets)
-				// 	}
-				// }
+				if tc.checkProgressOffsets != nil {
+					if !slices.Equal(gotOffsets, tc.checkProgressOffsets) {
+						t.Errorf("progressFunc calls: got %v, want %v", gotOffsets, tc.checkProgressOffsets)
+					}
+				}
 				if w2.Attrs() == nil {
 					t.Fatalf("takeover writer attrs: expected attrs, got nil")
 				}
