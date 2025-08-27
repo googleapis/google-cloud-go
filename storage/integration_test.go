@@ -3414,7 +3414,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{7 * MiB, 8 * MiB},
+				checkProgressOffsets: []int64{3 * MiB, 7 * MiB, 8 * MiB, 9 * MiB},
 			},
 			{
 				name:                "middle chunk takeover, small flush",
@@ -3456,7 +3456,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{4 * MiB, 8 * MiB},
+				checkProgressOffsets: []int64{0, 4 * MiB, 8 * MiB, 9 * MiB},
 			},
 			{
 				name:           "last byte takeover",
