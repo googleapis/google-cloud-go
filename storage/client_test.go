@@ -956,7 +956,9 @@ func TestOpenWriterEmulated(t *testing.T) {
 	})
 }
 
-func TestWriterOneshotNoProgressReportEmulated(t *testing.T) {
+// Test that Writer.ProgressFunc is called at the expected intervals, showing
+// consistency across HTTP and gRPC.
+func TestWriterProgressFuncEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
@@ -964,27 +966,52 @@ func TestWriterOneshotNoProgressReportEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
-		// Oneshot uploads can be forced with either a chunksize of 0, or a
-		// chunksize larger than the data size.
-		for _, chunksize := range []int{0, 16 * MiB} {
-			t.Run(fmt.Sprintf("data size %d chunksize %d", 3*MiB, chunksize), func(t *testing.T) {
-				prefix := time.Now().Nanosecond()
-				objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
-
+		cases := []struct {
+			name          string
+			chunkSize     int
+			expectedCalls []int64
+		}{
+			{
+				name:          "one shot, zero chunkSize",
+				chunkSize:     0,
+				expectedCalls: []int64{},
+			},
+			{
+				name:          "one shot, chunk larger than data",
+				chunkSize:     16 * MiB,
+				expectedCalls: []int64{},
+			},
+			{
+				name:          "resumable, obj size evenly divisible by chunkSize",
+				chunkSize:     1 * MiB,
+				expectedCalls: []int64{MiB, 2 * MiB, 3 * MiB},
+			},
+			{
+				name:          "resumable, obj size not divisible by chunkSize",
+				chunkSize:     2 * MiB,
+				expectedCalls: []int64{2 * MiB, 3 * MiB},
+			},
+		}
+		for _, c := range cases {
+			t.Run(c.name, func(t *testing.T) {
 				vc := &Client{tc: client}
-				obj := vc.Bucket(bucket).Object(objName)
+				obj := vc.Bucket(bucket).Object(c.name)
+
 				w := obj.NewWriter(ctx)
-				w.ChunkSize = chunksize
-				progressCalls := 0
-				w.ProgressFunc = func(int64) { progressCalls++ }
+				w.ChunkSize = c.chunkSize
+				var gotCalls []int64
+				w.ProgressFunc = func(off int64) {
+					gotCalls = append(gotCalls, off)
+				}
+
 				if _, err := w.Write(randomBytes3MiB); err != nil {
-					t.Fatalf("writer.Write: %v", err)
+					t.Fatalf("writing data: %v", err)
 				}
 				if err := w.Close(); err != nil {
-					t.Fatalf("writer.Close: %v", err)
+					t.Fatalf("closing writer: %v", err)
 				}
-				if progressCalls != 0 {
-					t.Errorf("ProgressFunc was called %d times, expected 0", progressCalls)
+				if slices.Compare(gotCalls, c.expectedCalls) != 0 {
+					t.Errorf("progressFunc: got calls at %v, want %v", gotCalls, c.expectedCalls)
 				}
 				attrs, err := obj.Attrs(ctx)
 				if err != nil {
@@ -996,6 +1023,7 @@ func TestWriterOneshotNoProgressReportEmulated(t *testing.T) {
 			})
 		}
 	})
+
 }
 
 func TestOpenAppendableWriterEmulated(t *testing.T) {
