@@ -1556,19 +1556,19 @@ func TestClient_ReadWriteTransaction_AbortedForFirstStatement_AndThenSessionNotF
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
 	}
 	var want []interface{}
-	//if isMultiplexEnabled {
-	//	want = []interface{}{
-	//		&sppb.BatchCreateSessionsRequest{},
-	//		&sppb.ExecuteSqlRequest{},
-	//		&sppb.BeginTransactionRequest{},
-	//		// when no session found error thrown in multiplex session
-	//		// it will fallback to regular session
-	//		&sppb.BatchCreateSessionsRequest{},
-	//		&sppb.BeginTransactionRequest{},
-	//		&sppb.ExecuteSqlRequest{},
-	//		&sppb.CommitRequest{},
-	//	}
-	//} else {
+	if isMultiplexEnabled {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			// when no session found error thrown in multiplex session
+			// it will fallback to regular session
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	} else {
 		want = []interface{}{
 			&sppb.BatchCreateSessionsRequest{},
 			&sppb.ExecuteSqlRequest{},
@@ -1577,7 +1577,7 @@ func TestClient_ReadWriteTransaction_AbortedForFirstStatement_AndThenSessionNotF
 			&sppb.ExecuteSqlRequest{},
 			&sppb.CommitRequest{},
 		}
-	//}
+	}
 
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests(want, requests); err != nil {
