@@ -3,6 +3,33 @@
 
 
 
+## [2.0.0-alpha1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.69.0...bigquery/v2.0.0-alpha1) (2025-08-27)
+
+
+### Features
+
+* **bigquery/reservation:** Add Reservation.max_slots field to Reservation proto, indicating the total max number of slots this reservation can use up to ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **bigquery/reservation:** Add Reservation.scaling_mode field and its corresponding enum message ScalingMode. This field should be used together with Reservation.max_slots ([f1de706](https://github.com/googleapis/google-cloud-go/commit/f1de7062db662aa6dfbf1e8cd2f0ac5df678e76d))
+* **bigquery/storage/managedwriter:** Allow overriding proto conversion mapping  ([#12579](https://github.com/googleapis/google-cloud-go/issues/12579)) ([ce9d29b](https://github.com/googleapis/google-cloud-go/commit/ce9d29bf2ca22877c64c9eea5b5c6489de141cc5)), refs [#12578](https://github.com/googleapis/google-cloud-go/issues/12578)
+* **bigquery/v2/apiv2_client:** Add the deprecated Connection() method ([#12546](https://github.com/googleapis/google-cloud-go/issues/12546)) ([7e28673](https://github.com/googleapis/google-cloud-go/commit/7e28673c9827527adbc964fe4741ee28ce5965e5))
+* **bigquery/v2:** Add CHANGES.md ([#12431](https://github.com/googleapis/google-cloud-go/issues/12431)) ([5259a3d](https://github.com/googleapis/google-cloud-go/commit/5259a3db180b701515d380afa91848d540cfa654))
+* **bigquery/v2:** Add interim BigQuery aggregated service client ([#12464](https://github.com/googleapis/google-cloud-go/issues/12464)) ([f133811](https://github.com/googleapis/google-cloud-go/commit/f1338111e54e0f06f19c21af9d9fff9684c16bb2))
+* **bigquery/v2:** Bump to 2x alpha ([#12435](https://github.com/googleapis/google-cloud-go/issues/12435)) ([b0a03b4](https://github.com/googleapis/google-cloud-go/commit/b0a03b454b4dcc7d52cd0d054226d6ba0ed2e864))
+* **bigquery/v2:** Expose additional job statistics about external service usage ([039e556](https://github.com/googleapis/google-cloud-go/commit/039e55642132b5fa28b4b6645f4b29a06b5ad032))
+* **bigquery/v2:** Expose new timestamp configuration options ([039e556](https://github.com/googleapis/google-cloud-go/commit/039e55642132b5fa28b4b6645f4b29a06b5ad032))
+* **bigquery/v2:** New clients ([#12462](https://github.com/googleapis/google-cloud-go/issues/12462)) ([f13c7e4](https://github.com/googleapis/google-cloud-go/commit/f13c7e46d86fd902582aec5ff2a48f3186c04974))
+* **bigquery/v2:** Rev alpha version ([#12437](https://github.com/googleapis/google-cloud-go/issues/12437)) ([b2e21f1](https://github.com/googleapis/google-cloud-go/commit/b2e21f11062ed4e31a2c85e08afc84db6a74cb94))
+* **bigquery:** Add load/extract job completion ratio ([#12471](https://github.com/googleapis/google-cloud-go/issues/12471)) ([3dab483](https://github.com/googleapis/google-cloud-go/commit/3dab483ad579c65ce520d6d9a2f8ad738ad68c9c))
+* **bigquery:** Load job and external table opts for custom time format, null markers and source column match ([#12470](https://github.com/googleapis/google-cloud-go/issues/12470)) ([67b0320](https://github.com/googleapis/google-cloud-go/commit/67b0320a54be1ba7bc64eeee47a9afff14faac5f))
+* **bigquery:** New clients ([#12711](https://github.com/googleapis/google-cloud-go/issues/12711)) ([a8feaf0](https://github.com/googleapis/google-cloud-go/commit/a8feaf07ac4b3a90c55ca576d1a28c0593c016c3))
+* **bigquery:** New clients ([#12722](https://github.com/googleapis/google-cloud-go/issues/12722)) ([a914ebe](https://github.com/googleapis/google-cloud-go/commit/a914ebe83e080fe3a53a6b840c2eb2cf8a96f344))
+
+
+### Documentation
+
+* **bigquery/v2:** Update scopes for RPCs in service config ([039e556](https://github.com/googleapis/google-cloud-go/commit/039e55642132b5fa28b4b6645f4b29a06b5ad032))
+* **bigquery/v2:** Updates to routines API documentation ([039e556](https://github.com/googleapis/google-cloud-go/commit/039e55642132b5fa28b4b6645f4b29a06b5ad032))
+
 ## [1.69.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.68.0...bigquery/v1.69.0) (2025-05-27)
 
 
@@ -1106,5 +1133,3 @@ cloud.google.com/go.
 
 This is the first tag to carve out bigquery as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
-
