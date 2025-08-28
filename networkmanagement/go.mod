@@ -1,6 +1,6 @@
 module cloud.google.com/go/networkmanagement
 
-go 1.23.0
+go 1.24.0
 
 require (
 	cloud.google.com/go/iam v1.5.2
