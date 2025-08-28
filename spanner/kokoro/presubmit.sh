@@ -44,11 +44,11 @@ set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 
 case $JOB_TYPE in
-integration-with-multiplexed-session )
-  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS=true
-  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW=true
-  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS=true
-  echo "running presubmit with multiplexed sessions enabled: $GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"
+integration-with-regular-session )
+  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS=false
+  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW=false
+  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS=false
+  echo "running presubmit with regular sessions enabled: $GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"
   ;;
 esac
 
