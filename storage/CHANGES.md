@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.56.1...storage/v1.57.0) (2025-08-28)
+
+
+### Features
+
+* **storage:** WithMeterProvider allows custom meter provider configuration ([#12668](https://github.com/googleapis/google-cloud-go/issues/12668)) ([7f574b0](https://github.com/googleapis/google-cloud-go/commit/7f574b01e0b454c1ef5c13e6a58075e394ee990d))
+
+
+### Bug Fixes
+
+* **storage:** Make Writer thread-safe. ([#12753](https://github.com/googleapis/google-cloud-go/issues/12753)) ([9ea380b](https://github.com/googleapis/google-cloud-go/commit/9ea380bea5b980a9054d201be4f315a195da2182))
+* **storage:** No progress report for oneshot write ([#12746](https://github.com/googleapis/google-cloud-go/issues/12746)) ([b97c286](https://github.com/googleapis/google-cloud-go/commit/b97c286ec369a10a81b1a8a3a1aae18b46d2dfbc))
+
 ## [1.56.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.56.0...storage/v1.56.1) (2025-08-19)
 
 
