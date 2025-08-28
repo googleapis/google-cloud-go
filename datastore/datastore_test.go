@@ -208,6 +208,152 @@ func TestQueryConstruction(t *testing.T) {
 	}
 }
 
+func TestPutWithOptions(t *testing.T) {
+	ctx := context.Background()
+	type S struct {
+		A int
+	}
+
+	key := NameKey("testKind", "test", nil)
+	src := &S{A: 1}
+	incTransform := Increment("A", 1)
+	if incTransform.err != nil {
+		t.Fatal(incTransform.err)
+	}
+
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	wantMutation := &pb.Mutation{
+		Operation: &pb.Mutation_Upsert{
+			Upsert: &pb.Entity{
+				Key: keyToProto(key),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+				},
+			},
+		},
+		PropertyTransforms: []*pb.PropertyTransform{incTransform.pb},
+	}
+
+	srv.addRPC(&pb.CommitRequest{
+		ProjectId:  "projectID",
+		DatabaseId: "",
+		Mode:       pb.CommitRequest_NON_TRANSACTIONAL,
+		Mutations:  []*pb.Mutation{wantMutation},
+	}, &pb.CommitResponse{
+		MutationResults: []*pb.MutationResult{{}},
+	})
+
+	_, err := client.PutWithOptions(ctx, &PutRequest{Key: key, Entity: src, Transforms: []PropertyTransform{incTransform}})
+	if err != nil {
+		t.Fatalf("PutWithOptions failed: %v", err)
+	}
+}
+
+func TestPutMultiWithOptions(t *testing.T) {
+	ctx := context.Background()
+	type S struct {
+		A int
+	}
+
+	keys := []*Key{
+		NameKey("testKind", "first", nil),
+		IncompleteKey("testKind", nil),
+		NameKey("testKind", "second", nil),
+	}
+	srcs := []interface{}{
+		&S{A: 1},
+		&S{A: 2},
+	}
+	incTransform := Increment("A", 1)
+	if incTransform.err != nil {
+		t.Fatal(incTransform.err)
+	}
+	errIncTransform := Increment("A", "1")
+	if errIncTransform.err == nil {
+		t.Fatalf("Expected non-nil err, got nil")
+	}
+	transforms := [][]PropertyTransform{
+		{incTransform},
+		{},
+		{errIncTransform},
+	}
+
+	// Expected mutations
+	mutations := []*pb.Mutation{
+		{ // Upsert with transform
+			Operation: &pb.Mutation_Upsert{
+				Upsert: &pb.Entity{
+					Key: keyToProto(keys[0]),
+					Properties: map[string]*pb.Value{
+						"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+					},
+				},
+			},
+			PropertyTransforms: []*pb.PropertyTransform{incTransform.pb},
+		},
+		{ // Insert without transform
+			Operation: &pb.Mutation_Insert{
+				Insert: &pb.Entity{
+					Key: keyToProto(keys[1]),
+					Properties: map[string]*pb.Value{
+						"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+					},
+				},
+			},
+		},
+	}
+
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	// Mock the Commit RPC
+	// The incomplete key will be completed by the service.
+	completedKey := IDKey("testKind", 123, nil)
+	srv.addRPC(&pb.CommitRequest{
+		ProjectId:           "projectID",
+		DatabaseId:          "",
+		Mode:                pb.CommitRequest_NON_TRANSACTIONAL,
+		TransactionSelector: nil,
+		Mutations:           mutations,
+	}, &pb.CommitResponse{
+		MutationResults: []*pb.MutationResult{
+			{},
+			{Key: keyToProto(completedKey)},
+		},
+	})
+
+	putReqs := []*PutRequest{
+		{Key: keys[0], Entity: srcs[0], Transforms: transforms[0]},
+		{Key: keys[1], Entity: srcs[1], Transforms: transforms[1]},
+	}
+
+	returnedKeys, err := client.PutMultiWithOptions(ctx, putReqs)
+	if err != nil {
+		t.Fatalf("PutMultiWithOptions failed: %v", err)
+	}
+
+	// Check returned keys
+	if !returnedKeys[0].Equal(keys[0]) {
+		t.Errorf("Returned key mismatch for complete key. got %v, want %v", returnedKeys[0], keys[0])
+	}
+	if returnedKeys[1].Incomplete() {
+		t.Errorf("Expected a complete key for the second entity, but got an incomplete one.")
+	}
+	if !returnedKeys[1].Equal(completedKey) {
+		t.Errorf("Returned key for incomplete key mismatch. got %v, want %v", returnedKeys[1], completedKey)
+	}
+
+	// Error scenario
+	putReqs = []*PutRequest{
+		{Key: keys[2], Entity: srcs[1], Transforms: transforms[2]},
+	}
+	returnedKeys, err = client.PutMultiWithOptions(ctx, putReqs)
+	if err == nil || returnedKeys != nil {
+		t.Fatalf("PutMultiWithOptions got: nil, want: error returnedKeys: %+v", returnedKeys)
+	}
+}
 func TestPutMultiTypes(t *testing.T) {
 	ctx := context.Background()
 	type S struct {

@@ -2659,3 +2659,159 @@ func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 }
+
+type TestEntity struct {
+	I    int
+	F    float64
+	T    time.Time
+	S    []string
+	Nums []int
+}
+
+func TestIntegration_Transforms(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	// Test PropertyTransform operations
+	t.Run("PropertyTransforms", func(t *testing.T) {
+		initial := &TestEntity{
+			I:    100,
+			F:    100.0,
+			S:    []string{"a", "b"},
+			Nums: []int{1, 2, 3, 1},
+		}
+		k, err := client.Put(ctx, IncompleteKey("Transform", nil), initial)
+		if err != nil {
+			t.Fatalf("Put: %v", err)
+		}
+		defer client.Delete(ctx, k)
+
+		transforms := []PropertyTransform{
+			Increment("I", 5),                    // I: 100 -> 105
+			Increment("F", -2.5),                 // F: 100.0 -> 97.5
+			SetToServerTime("T"),                 // T: zero -> now
+			Maximum("I", 110),                    // I: 105 -> 110
+			Minimum("F", 90.0),                   // F: 97.5 -> 90.0
+			AppendMissingElements("S", "c", "a"), // S: {"a", "b"} -> {"a", "b", "c"}
+			RemoveAllFromArray("Nums", 1, 4),     // Nums: {1, 2, 3, 1} -> {2, 3}
+		}
+
+		req := &PutRequest{
+			Key:        k,
+			Entity:     initial,
+			Transforms: transforms,
+		}
+		if _, err := client.PutWithOptions(ctx, req); err != nil {
+			t.Fatalf("PutWithOptions with transforms: %v", err)
+		}
+
+		var final TestEntity
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+
+		if final.I != 110 {
+			t.Errorf("got I=%d, want 110", final.I)
+		}
+		if final.F != 90.0 {
+			t.Errorf("got F=%f, want 90.0", final.F)
+		}
+		if time.Since(final.T) > 15*time.Second {
+			t.Errorf("Expected timestamp to be recent, but got %v", final.T)
+		}
+		sort.Strings(final.S)
+		if !testutil.Equal(final.S, []string{"a", "b", "c"}) {
+			t.Errorf("Append: got %v, want [a b c]", final.S)
+		}
+		sort.Ints(final.Nums)
+		if !testutil.Equal(final.Nums, []int{2, 3}) {
+			t.Errorf("Remove: got %v, want [2 3]", final.Nums)
+		}
+	})
+
+	// Test Transaction with PutMultiWithOptions
+	t.Run("Transaction", func(t *testing.T) {
+		keys := []*Key{
+			IncompleteKey("TransformTx", nil),
+			IncompleteKey("TransformTx", nil),
+		}
+
+		inc := Increment("I", 10)
+		if inc.err != nil {
+			t.Fatal(inc.err)
+		}
+		appendMissing := AppendMissingElements("Nums", 30)
+		if appendMissing.err != nil {
+			t.Fatal(appendMissing.err)
+		}
+
+		// Test both transaction.PutWithOptions and transaction.PutMultiWithOptions
+		pendingKeys := []*PendingKey{}
+		commit, err := client.RunInTransaction(ctx, func(tx *Transaction) error {
+			k, err := tx.PutWithOptions(&PutRequest{Key: keys[0], Entity: &TestEntity{I: 50}, Transforms: []PropertyTransform{inc}})
+			if err != nil {
+				return err
+			}
+			pendingKeys = append(pendingKeys, k)
+			defer client.Delete(ctx, k.key)
+
+			reqs := []*PutRequest{
+				{Key: keys[1], Entity: &TestEntity{Nums: []int{10, 20}}, Transforms: []PropertyTransform{appendMissing}},
+			}
+			putMultiPendingkeys, err := tx.PutMultiWithOptions(reqs)
+			pendingKeys = append(pendingKeys, putMultiPendingkeys...)
+			return err
+		})
+
+		resolvedKeys := []*Key{}
+		for _, pendingKey := range pendingKeys {
+			k := commit.Key(pendingKey)
+			resolvedKeys = append(resolvedKeys, k)
+			defer client.Delete(ctx, k)
+		}
+
+		if err != nil {
+			t.Fatalf("RunInTransaction: %v", err)
+		}
+
+		var results [2]TestEntity
+		if err := client.GetMulti(ctx, resolvedKeys, results[:]); err != nil {
+			t.Fatalf("GetMulti: %v", err)
+		}
+
+		if results[0].I != 60 {
+			t.Errorf("Tx Increment: got %d, want 60", results[0].I)
+		}
+		if !testutil.Equal(results[1].Nums, []int{10, 20, 30}) {
+			t.Errorf("Tx Append: got %v, want [10 20 30]", results[1].Nums)
+		}
+	})
+
+	// Test Mutation.WithTransforms
+	t.Run("Mutate", func(t *testing.T) {
+		k, err := client.Put(ctx, IncompleteKey("Transform", nil), &TestEntity{I: 10})
+		if err != nil {
+			t.Fatalf("Put: %v", err)
+		}
+		defer client.Delete(ctx, k)
+
+		inc := Increment("I", -5)
+		if inc.err != nil {
+			t.Fatal(inc.err)
+		}
+		mut := NewUpdate(k, &TestEntity{I: 10}).WithTransforms(inc)
+		_, err = client.Mutate(ctx, mut)
+		if err != nil {
+			t.Fatalf("Mutate: %v", err)
+		}
+
+		var final TestEntity
+		if err := client.Get(ctx, k, &final); err != nil {
+			t.Fatalf("Get: %v", err)
+		}
+		if final.I != 5 {
+			t.Errorf("got I=%d, want 5", final.I)
+		}
+	})
+}
