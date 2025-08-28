@@ -34,7 +34,7 @@
       "component": "profiler"
     },
     "pubsub": {
-      "component": "pubsub"
+      "component": "pubsub",
       "exclude-paths": ["pubsub/v2"]
     },
     "pubsub/v2": {
