@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.12.1...ai/v0.13.0) (2025-08-28)
+
+
+### Features
+
+* **ai/generativelanguage:** Add a flag whether the model supports thinking ([bfcae15](https://github.com/googleapis/google-cloud-go/commit/bfcae150e55e481cd161c2d85782205ba8126d08))
+* **ai/generativelanguage:** Add support for UrlContextMetadata ([bfcae15](https://github.com/googleapis/google-cloud-go/commit/bfcae150e55e481cd161c2d85782205ba8126d08))
+* **ai/generativelanguage:** Add support for video_metadata ([#12771](https://github.com/googleapis/google-cloud-go/issues/12771)) ([bfcae15](https://github.com/googleapis/google-cloud-go/commit/bfcae150e55e481cd161c2d85782205ba8126d08))
+
 ## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.12.0...ai/v0.12.1) (2025-06-04)
 
 
