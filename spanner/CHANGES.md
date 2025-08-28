@@ -1,5 +1,17 @@
 # Changes
 
+## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.84.1...spanner/v1.85.0) (2025-08-28)
+
+
+### Features
+
+* **spanner:** Enable multiplex sessions by default for all operations ([#12734](https://github.com/googleapis/google-cloud-go/issues/12734)) ([0491ba6](https://github.com/googleapis/google-cloud-go/commit/0491ba6f258600cc518a5a2c274caa0fb6105c8a))
+
+
+### Performance Improvements
+
+* **spanner:** Improve mutationProto allocations and performance ([#12740](https://github.com/googleapis/google-cloud-go/issues/12740)) ([2a4add5](https://github.com/googleapis/google-cloud-go/commit/2a4add5405205fea315b17e4f70096d4be78b506))
+
 ## [1.84.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.84.0...spanner/v1.84.1) (2025-08-06)
 
 
