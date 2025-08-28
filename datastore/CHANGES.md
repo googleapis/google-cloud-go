@@ -1,5 +1,12 @@
 # Changes
 
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.20.0...datastore/v1.20.1) (2025-08-28)
+
+
+### Bug Fixes
+
+* **datastore:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.19.0...datastore/v1.20.0) (2024-10-29)
 
 
