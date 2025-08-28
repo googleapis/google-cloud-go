@@ -423,6 +423,9 @@ type opTracer struct {
 
 	startTime time.Time
 
+	// Only for ReadRows. Time when the response headers are received in a streaming RPC.
+	firstRespTime time.Time
+
 	// gRPC status code of last completed attempt
 	status string
 
@@ -433,6 +436,10 @@ type opTracer struct {
 
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
+}
+
+func (o *opTracer) setFirstRespTime(t time.Time) {
+	o.firstRespTime = t
 }
 
 func (o *opTracer) setStatus(status string) {
@@ -665,6 +672,13 @@ func (mt *builtinMetricsTracer) recordOperationCompletion() {
 	// Record operation_latencies
 	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
 	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(opLatAttrs))
+
+	// Record first_reponse_latencies
+	firstRespLatAttrs, _ := mt.toOtelMetricAttrs(metricNameFirstRespLatencies)
+	if mt.method == metricMethodPrefix+methodNameReadRows {
+		elapsedTimeMs = convertToMs(mt.currOp.firstRespTime.Sub(mt.currOp.startTime))
+		mt.instrumentFirstRespLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(firstRespLatAttrs))
+	}
 
 	// Record retry_count
 	retryCntAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)

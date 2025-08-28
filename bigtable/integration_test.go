@@ -1008,6 +1008,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		metricNameOperationLatencies,
 		metricNameAttemptLatencies,
 		metricNameServerLatencies,
+		metricNameFirstRespLatencies,
 	}
 
 	// Try for 5m with 10s sleep between retries
