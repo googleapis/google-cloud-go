@@ -78,10 +78,22 @@ type ChatServiceClient interface {
 	// Creates a message in a Google Chat space. For an example, see [Send a
 	// message](https://developers.google.com/workspace/chat/create-messages).
 	//
-	// The `create()` method requires either [user
+	// Supports the following types of
+	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
+	//
+	// - [App
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	//
+	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// or [app
-	// authentication](https://developers.google.com/workspace/chat/authorize-import).
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.messages.create`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//
 	// Chat attributes the message sender differently depending on the type of
 	// authentication that you use in your request.
 	//
@@ -118,7 +130,13 @@ type ChatServiceClient interface {
 	// messages](https://developers.google.com/workspace/chat/api/guides/v1/messages/list).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...grpc.CallOption) (*ListMessagesResponse, error)
 	// Lists memberships in a space. For an example, see [List users and Google
 	// Chat apps in a
@@ -137,11 +155,23 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships` (requires
+	//     [administrator approval](https://support.google.com/a?p=chat-app-auth))
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     one of the following authorization scopes is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
 	ListMemberships(ctx context.Context, in *ListMembershipsRequest, opts ...grpc.CallOption) (*ListMembershipsResponse, error)
 	// Returns details about a membership. For an example, see
 	// [Get details about a user's or Google Chat app's
@@ -152,11 +182,21 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships` (requires
+	//     [administrator approval](https://support.google.com/a?p=chat-app-auth))
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     one of the following authorization scopes is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
 	GetMembership(ctx context.Context, in *GetMembershipRequest, opts ...grpc.CallOption) (*Membership, error)
 	// Returns details about a message.
 	// For an example, see [Get details about a
@@ -167,9 +207,14 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
 	//
 	// Note: Might return a message from a blocked member or space.
 	GetMessage(ctx context.Context, in *GetMessageRequest, opts ...grpc.CallOption) (*Message, error)
@@ -185,9 +230,15 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
 	//
 	// When using app authentication, requests can only update messages
 	// created by the calling Chat app.
@@ -201,9 +252,15 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
 	//
 	// When using app authentication, requests can only delete messages
 	// created by the calling Chat app.
@@ -214,15 +271,26 @@ type ChatServiceClient interface {
 	// For an example, see
 	// [Get metadata about a message
 	// attachment](https://developers.google.com/workspace/chat/get-media-attachments).
+	//
 	// Requires [app
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
 	// Uploads an attachment. For an example, see
 	// [Upload media as a file
 	// attachment](https://developers.google.com/workspace/chat/upload-media-attachments).
 	//
 	// Requires user
-	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.create`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	//
 	// You can upload attachments up to 200 MB. Certain file types aren't
 	// supported. For details, see [File types blocked by Google
@@ -238,9 +306,14 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
 	//
 	// To list all named spaces by Google Workspace organization, use the
 	// [`spaces.search()`](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
@@ -251,7 +324,13 @@ type ChatServiceClient interface {
 	//
 	// Requires [user
 	// authentication with administrator
-	// privileges](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).
+	// privileges](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
+	// and one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
+	//
 	// In the request, set `use_admin_access` to `true`.
 	SearchSpaces(ctx context.Context, in *SearchSpacesRequest, opts ...grpc.CallOption) (*SearchSpacesResponse, error)
 	// Returns details about a space. For an example, see
@@ -263,19 +342,33 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	//   - `https://www.googleapis.com/auth/chat.app.spaces` with [administrator
+	//     approval](https://support.google.com/a?p=chat-app-auth)
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     one of the following authorization scopes is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
+	//
+	// App authentication has the following limitations:
+	//
+	// - `space.access_settings` is only populated when using the
+	// `chat.app.spaces` scope.
+	// - `space.predefind_permission_settings` and `space.permission_settings` are
+	// only populated when using the `chat.app.spaces` scope, and only for
+	// spaces the app created.
 	GetSpace(ctx context.Context, in *GetSpaceRequest, opts ...grpc.CallOption) (*Space, error)
-	// Creates a space with no members. Can be used to create a named space, or a
+	// Creates a space. Can be used to create a named space, or a
 	// group chat in `Import mode`. For an example, see [Create a
 	// space](https://developers.google.com/workspace/chat/create-spaces).
-	//
-	//	If you receive the error message `ALREADY_EXISTS` when creating
-	//	a space, try a different `displayName`. An existing space within
-	//	the Google Workspace organization might already use this display name.
 	//
 	// Supports the following types of
 	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
@@ -283,13 +376,40 @@ type ChatServiceClient interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// and one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.app.spaces.create`
+	//   - `https://www.googleapis.com/auth/chat.app.spaces`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.create`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
 	//
 	// When authenticating as an app, the `space.customer` field must be set in
 	// the request.
+	//
+	// When authenticating as an app, the Chat app is added as a member of the
+	// space. However, unlike human authentication, the Chat app is not added as a
+	// space manager. By default, the Chat app can be removed from the space by
+	// all space members. To allow only space managers to remove the app from a
+	// space, set `space.permission_settings.manage_apps` to `managers_allowed`.
+	//
+	// Space membership upon creation depends on whether the space is created in
+	// `Import mode`:
+	//
+	// * **Import mode:** No members are created.
+	// * **All other modes:**  The calling user is added as a member. This is:
+	//
+	//   - The app itself when using app authentication.
+	//
+	//   - The human user when using user authentication.
+	//
+	//     If you receive the error message `ALREADY_EXISTS` when creating
+	//     a space, try a different `displayName`. An existing space within
+	//     the Google Workspace organization might already use this display name.
 	CreateSpace(ctx context.Context, in *CreateSpaceRequest, opts ...grpc.CallOption) (*Space, error)
 	// Creates a space and adds specified users to it. The calling user is
 	// automatically added to the space, and shouldn't be specified as a
@@ -342,7 +462,12 @@ type ChatServiceClient interface {
 	// might already use this display name.
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.create`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
 	SetUpSpace(ctx context.Context, in *SetUpSpaceRequest, opts ...grpc.CallOption) (*Space, error)
 	// Updates a space. For an example, see
 	// [Update a
@@ -358,12 +483,26 @@ type ChatServiceClient interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// and one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.app.spaces`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scopes is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
+	//
+	// App authentication has the following limitations:
+	//
+	// - To update either `space.predefined_permission_settings` or
+	// `space.permission_settings`, the app must be the space creator.
+	// - Updating the `space.access_settings.audience` is not supported for app
+	// authentication.
 	UpdateSpace(ctx context.Context, in *UpdateSpaceRequest, opts ...grpc.CallOption) (*Space, error)
 	// Deletes a named space. Always performs a cascading delete, which means
 	// that the space's child resources—like messages posted in the space and
@@ -376,21 +515,35 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// with [administrator
+	// approval](https://support.google.com/a?p=chat-app-auth) and the
+	// authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.delete` (only in
+	//     spaces the app created)
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.delete`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scope is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.delete`
 	DeleteSpace(ctx context.Context, in *DeleteSpaceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Completes the
 	// [import process](https://developers.google.com/workspace/chat/import-data)
 	// for the specified space and makes it visible to users.
 	//
-	// Requires [app
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-	// and domain-wide delegation. For more information, see [Authorize Google
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// and domain-wide delegation with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.import`
+	//
+	// For more information, see [Authorize Google
 	// Chat apps to import
 	// data](https://developers.google.com/workspace/chat/authorize-import).
 	CompleteImportSpace(ctx context.Context, in *CompleteImportSpaceRequest, opts ...grpc.CallOption) (*CompleteImportSpaceResponse, error)
@@ -409,14 +562,19 @@ type ChatServiceClient interface {
 	// returns the direct message space between the specified user and the
 	// authenticated user.
 	//
-	// // Supports the following types of
+	// Supports the following types of
 	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
 	FindDirectMessage(ctx context.Context, in *FindDirectMessageRequest, opts ...grpc.CallOption) (*Space, error)
 	// Creates a membership for the calling Chat app, a user, or a Google Group.
 	// Creating memberships for other Chat apps isn't supported.
@@ -431,21 +589,35 @@ type ChatServiceClient interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// and the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.memberships`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - `https://www.googleapis.com/auth/chat.memberships.app` (to add the
+	//     calling app to the space)
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scope is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
+	//
+	// App authentication is not supported for the following use cases:
+	//
+	// - Inviting users external to the Workspace organization that owns the
+	// space.
+	// - Adding a Google Group to a space.
+	// - Adding a Chat app to a space.
 	//
 	// For example usage, see:
 	//
 	// - [Invite or add a user to a
 	// space](https://developers.google.com/workspace/chat/create-members#create-user-membership).
-	//
 	// - [Invite or add a Google Group to a
 	// space](https://developers.google.com/workspace/chat/create-members#create-group-membership).
-	//
 	// - [Add the Chat app to a
 	// space](https://developers.google.com/workspace/chat/create-members#create-membership-calling-api).
 	CreateMembership(ctx context.Context, in *CreateMembershipRequest, opts ...grpc.CallOption) (*Membership, error)
@@ -457,13 +629,22 @@ type ChatServiceClient interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// with [administrator
+	// approval](https://support.google.com/a?p=chat-app-auth) and the
+	// authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.memberships` (only in
+	//     spaces the app created)
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scope is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
 	UpdateMembership(ctx context.Context, in *UpdateMembershipRequest, opts ...grpc.CallOption) (*Membership, error)
 	// Deletes a membership. For an example, see
 	// [Remove a user or a Google Chat app from a
@@ -475,33 +656,72 @@ type ChatServiceClient interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// and the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.memberships`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - `https://www.googleapis.com/auth/chat.memberships.app` (to remove
+	//     the calling app from the space)
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scope is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
+	//
+	// App authentication is not supported for the following use cases:
+	//
+	// - Removing a Google Group from a space.
+	// - Removing a Chat app from a space.
+	//
+	// To delete memberships for space managers, the requester
+	// must be a space manager. If you're using [app
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// the Chat app must be the space creator.
 	DeleteMembership(ctx context.Context, in *DeleteMembershipRequest, opts ...grpc.CallOption) (*Membership, error)
 	// Creates a reaction and adds it to a message. For an example, see
 	// [Add a reaction to a
 	// message](https://developers.google.com/workspace/chat/create-reactions).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions.create`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	CreateReaction(ctx context.Context, in *CreateReactionRequest, opts ...grpc.CallOption) (*Reaction, error)
 	// Lists reactions to a message. For an example, see
 	// [List reactions for a
 	// message](https://developers.google.com/workspace/chat/list-reactions).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
 	ListReactions(ctx context.Context, in *ListReactionsRequest, opts ...grpc.CallOption) (*ListReactionsResponse, error)
 	// Deletes a reaction to a message. For an example, see
 	// [Delete a
 	// reaction](https://developers.google.com/workspace/chat/delete-reactions).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	DeleteReaction(ctx context.Context, in *DeleteReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a custom emoji.
 	//
@@ -513,7 +733,11 @@ type ChatServiceClient interface {
 	// permissions](https://support.google.com/a/answer/12850085).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.customemojis`
 	CreateCustomEmoji(ctx context.Context, in *CreateCustomEmojiRequest, opts ...grpc.CallOption) (*CustomEmoji, error)
 	// Returns details about a custom emoji.
 	//
@@ -525,7 +749,12 @@ type ChatServiceClient interface {
 	// permissions](https://support.google.com/a/answer/12850085).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.customemojis.readonly`
+	//   - `https://www.googleapis.com/auth/chat.customemojis`
 	GetCustomEmoji(ctx context.Context, in *GetCustomEmojiRequest, opts ...grpc.CallOption) (*CustomEmoji, error)
 	// Lists custom emojis visible to the authenticated user.
 	//
@@ -537,7 +766,12 @@ type ChatServiceClient interface {
 	// permissions](https://support.google.com/a/answer/12850085).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.customemojis.readonly`
+	//   - `https://www.googleapis.com/auth/chat.customemojis`
 	ListCustomEmojis(ctx context.Context, in *ListCustomEmojisRequest, opts ...grpc.CallOption) (*ListCustomEmojisResponse, error)
 	// Deletes a custom emoji. By default, users can only delete custom emoji they
 	// created. [Emoji managers](https://support.google.com/a/answer/12850085)
@@ -553,7 +787,11 @@ type ChatServiceClient interface {
 	// permissions](https://support.google.com/a/answer/12850085).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.customemojis`
 	DeleteCustomEmoji(ctx context.Context, in *DeleteCustomEmojiRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Returns details about a user's read state within a space, used to identify
 	// read and unread messages. For an example, see [Get details about a user's
@@ -561,14 +799,23 @@ type ChatServiceClient interface {
 	// state](https://developers.google.com/workspace/chat/get-space-read-state).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
+	//   - `https://www.googleapis.com/auth/chat.users.readstate`
 	GetSpaceReadState(ctx context.Context, in *GetSpaceReadStateRequest, opts ...grpc.CallOption) (*SpaceReadState, error)
 	// Updates a user's read state within a space, used to identify read and
 	// unread messages. For an example, see [Update a user's space read
 	// state](https://developers.google.com/workspace/chat/update-space-read-state).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.readstate`
 	UpdateSpaceReadState(ctx context.Context, in *UpdateSpaceReadStateRequest, opts ...grpc.CallOption) (*SpaceReadState, error)
 	// Returns details about a user's read state within a thread, used to identify
 	// read and unread messages. For an example, see [Get details about a user's
@@ -576,7 +823,12 @@ type ChatServiceClient interface {
 	// state](https://developers.google.com/workspace/chat/get-thread-read-state).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
+	//   - `https://www.googleapis.com/auth/chat.users.readstate`
 	GetThreadReadState(ctx context.Context, in *GetThreadReadStateRequest, opts ...grpc.CallOption) (*ThreadReadState, error)
 	// Returns an event from a Google Chat space. The [event
 	// payload](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
@@ -589,7 +841,20 @@ type ChatServiceClient interface {
 	// object of the Space event data for this request.
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with an [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes)
+	// appropriate for reading the requested data:
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//
 	// To get an event, the authenticated user must be a member of the space.
 	//
 	// For an example, see [Get details about an
@@ -605,7 +870,20 @@ type ChatServiceClient interface {
 	// `Membership` resource.
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with an [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes)
+	// appropriate for reading the requested data:
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//
 	// To list events, the authenticated user must be a member of the space.
 	//
 	// For an example, see [List events from a Google Chat
@@ -616,14 +894,22 @@ type ChatServiceClient interface {
 	// setting](https://developers.google.com/workspace/chat/get-space-notification-setting).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.spacesettings`
 	GetSpaceNotificationSetting(ctx context.Context, in *GetSpaceNotificationSettingRequest, opts ...grpc.CallOption) (*SpaceNotificationSetting, error)
 	// Updates the space notification setting. For an example, see [Update
 	// the caller's space notification
 	// setting](https://developers.google.com/workspace/chat/update-space-notification-setting).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.spacesettings`
 	UpdateSpaceNotificationSetting(ctx context.Context, in *UpdateSpaceNotificationSettingRequest, opts ...grpc.CallOption) (*SpaceNotificationSetting, error)
 }
 
@@ -957,10 +1243,22 @@ type ChatServiceServer interface {
 	// Creates a message in a Google Chat space. For an example, see [Send a
 	// message](https://developers.google.com/workspace/chat/create-messages).
 	//
-	// The `create()` method requires either [user
+	// Supports the following types of
+	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
+	//
+	// - [App
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	//
+	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// or [app
-	// authentication](https://developers.google.com/workspace/chat/authorize-import).
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.messages.create`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//
 	// Chat attributes the message sender differently depending on the type of
 	// authentication that you use in your request.
 	//
@@ -997,7 +1295,13 @@ type ChatServiceServer interface {
 	// messages](https://developers.google.com/workspace/chat/api/guides/v1/messages/list).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error)
 	// Lists memberships in a space. For an example, see [List users and Google
 	// Chat apps in a
@@ -1016,11 +1320,23 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships` (requires
+	//     [administrator approval](https://support.google.com/a?p=chat-app-auth))
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     one of the following authorization scopes is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
 	ListMemberships(context.Context, *ListMembershipsRequest) (*ListMembershipsResponse, error)
 	// Returns details about a membership. For an example, see
 	// [Get details about a user's or Google Chat app's
@@ -1031,11 +1347,21 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships` (requires
+	//     [administrator approval](https://support.google.com/a?p=chat-app-auth))
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     one of the following authorization scopes is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
 	GetMembership(context.Context, *GetMembershipRequest) (*Membership, error)
 	// Returns details about a message.
 	// For an example, see [Get details about a
@@ -1046,9 +1372,14 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
 	//
 	// Note: Might return a message from a blocked member or space.
 	GetMessage(context.Context, *GetMessageRequest) (*Message, error)
@@ -1064,9 +1395,15 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
 	//
 	// When using app authentication, requests can only update messages
 	// created by the calling Chat app.
@@ -1080,9 +1417,15 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
 	//
 	// When using app authentication, requests can only delete messages
 	// created by the calling Chat app.
@@ -1093,15 +1436,26 @@ type ChatServiceServer interface {
 	// For an example, see
 	// [Get metadata about a message
 	// attachment](https://developers.google.com/workspace/chat/get-media-attachments).
+	//
 	// Requires [app
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	GetAttachment(context.Context, *GetAttachmentRequest) (*Attachment, error)
 	// Uploads an attachment. For an example, see
 	// [Upload media as a file
 	// attachment](https://developers.google.com/workspace/chat/upload-media-attachments).
 	//
 	// Requires user
-	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.create`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	//
 	// You can upload attachments up to 200 MB. Certain file types aren't
 	// supported. For details, see [File types blocked by Google
@@ -1117,9 +1471,14 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
 	//
 	// To list all named spaces by Google Workspace organization, use the
 	// [`spaces.search()`](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
@@ -1130,7 +1489,13 @@ type ChatServiceServer interface {
 	//
 	// Requires [user
 	// authentication with administrator
-	// privileges](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).
+	// privileges](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
+	// and one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
+	//
 	// In the request, set `use_admin_access` to `true`.
 	SearchSpaces(context.Context, *SearchSpacesRequest) (*SearchSpacesResponse, error)
 	// Returns details about a space. For an example, see
@@ -1142,19 +1507,33 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	//   - `https://www.googleapis.com/auth/chat.app.spaces` with [administrator
+	//     approval](https://support.google.com/a?p=chat-app-auth)
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     one of the following authorization scopes is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
+	//
+	// App authentication has the following limitations:
+	//
+	// - `space.access_settings` is only populated when using the
+	// `chat.app.spaces` scope.
+	// - `space.predefind_permission_settings` and `space.permission_settings` are
+	// only populated when using the `chat.app.spaces` scope, and only for
+	// spaces the app created.
 	GetSpace(context.Context, *GetSpaceRequest) (*Space, error)
-	// Creates a space with no members. Can be used to create a named space, or a
+	// Creates a space. Can be used to create a named space, or a
 	// group chat in `Import mode`. For an example, see [Create a
 	// space](https://developers.google.com/workspace/chat/create-spaces).
-	//
-	//	If you receive the error message `ALREADY_EXISTS` when creating
-	//	a space, try a different `displayName`. An existing space within
-	//	the Google Workspace organization might already use this display name.
 	//
 	// Supports the following types of
 	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
@@ -1162,13 +1541,40 @@ type ChatServiceServer interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// and one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.app.spaces.create`
+	//   - `https://www.googleapis.com/auth/chat.app.spaces`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.create`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
 	//
 	// When authenticating as an app, the `space.customer` field must be set in
 	// the request.
+	//
+	// When authenticating as an app, the Chat app is added as a member of the
+	// space. However, unlike human authentication, the Chat app is not added as a
+	// space manager. By default, the Chat app can be removed from the space by
+	// all space members. To allow only space managers to remove the app from a
+	// space, set `space.permission_settings.manage_apps` to `managers_allowed`.
+	//
+	// Space membership upon creation depends on whether the space is created in
+	// `Import mode`:
+	//
+	// * **Import mode:** No members are created.
+	// * **All other modes:**  The calling user is added as a member. This is:
+	//
+	//   - The app itself when using app authentication.
+	//
+	//   - The human user when using user authentication.
+	//
+	//     If you receive the error message `ALREADY_EXISTS` when creating
+	//     a space, try a different `displayName`. An existing space within
+	//     the Google Workspace organization might already use this display name.
 	CreateSpace(context.Context, *CreateSpaceRequest) (*Space, error)
 	// Creates a space and adds specified users to it. The calling user is
 	// automatically added to the space, and shouldn't be specified as a
@@ -1221,7 +1627,12 @@ type ChatServiceServer interface {
 	// might already use this display name.
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.create`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
 	SetUpSpace(context.Context, *SetUpSpaceRequest) (*Space, error)
 	// Updates a space. For an example, see
 	// [Update a
@@ -1237,12 +1648,26 @@ type ChatServiceServer interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// and one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.app.spaces`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scopes is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
+	//
+	// App authentication has the following limitations:
+	//
+	// - To update either `space.predefined_permission_settings` or
+	// `space.permission_settings`, the app must be the space creator.
+	// - Updating the `space.access_settings.audience` is not supported for app
+	// authentication.
 	UpdateSpace(context.Context, *UpdateSpaceRequest) (*Space, error)
 	// Deletes a named space. Always performs a cascading delete, which means
 	// that the space's child resources—like messages posted in the space and
@@ -1255,21 +1680,35 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// with [administrator
+	// approval](https://support.google.com/a?p=chat-app-auth) and the
+	// authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.delete` (only in
+	//     spaces the app created)
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.delete`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scope is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.delete`
 	DeleteSpace(context.Context, *DeleteSpaceRequest) (*emptypb.Empty, error)
 	// Completes the
 	// [import process](https://developers.google.com/workspace/chat/import-data)
 	// for the specified space and makes it visible to users.
 	//
-	// Requires [app
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-	// and domain-wide delegation. For more information, see [Authorize Google
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// and domain-wide delegation with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.import`
+	//
+	// For more information, see [Authorize Google
 	// Chat apps to import
 	// data](https://developers.google.com/workspace/chat/authorize-import).
 	CompleteImportSpace(context.Context, *CompleteImportSpaceRequest) (*CompleteImportSpaceResponse, error)
@@ -1288,14 +1727,19 @@ type ChatServiceServer interface {
 	// returns the direct message space between the specified user and the
 	// authenticated user.
 	//
-	// // Supports the following types of
+	// Supports the following types of
 	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.bot`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
 	FindDirectMessage(context.Context, *FindDirectMessageRequest) (*Space, error)
 	// Creates a membership for the calling Chat app, a user, or a Google Group.
 	// Creating memberships for other Chat apps isn't supported.
@@ -1310,21 +1754,35 @@ type ChatServiceServer interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// and the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.memberships`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - `https://www.googleapis.com/auth/chat.memberships.app` (to add the
+	//     calling app to the space)
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scope is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
+	//
+	// App authentication is not supported for the following use cases:
+	//
+	// - Inviting users external to the Workspace organization that owns the
+	// space.
+	// - Adding a Google Group to a space.
+	// - Adding a Chat app to a space.
 	//
 	// For example usage, see:
 	//
 	// - [Invite or add a user to a
 	// space](https://developers.google.com/workspace/chat/create-members#create-user-membership).
-	//
 	// - [Invite or add a Google Group to a
 	// space](https://developers.google.com/workspace/chat/create-members#create-group-membership).
-	//
 	// - [Add the Chat app to a
 	// space](https://developers.google.com/workspace/chat/create-members#create-membership-calling-api).
 	CreateMembership(context.Context, *CreateMembershipRequest) (*Membership, error)
@@ -1336,13 +1794,22 @@ type ChatServiceServer interface {
 	//
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// with [administrator
+	// approval](https://support.google.com/a?p=chat-app-auth) and the
+	// authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.memberships` (only in
+	//     spaces the app created)
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scope is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
 	UpdateMembership(context.Context, *UpdateMembershipRequest) (*Membership, error)
 	// Deletes a membership. For an example, see
 	// [Remove a user or a Google Chat app from a
@@ -1354,33 +1821,72 @@ type ChatServiceServer interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator approval](https://support.google.com/a?p=chat-app-auth)
-	// in [Developer Preview](https://developers.google.com/workspace/preview)
+	// and the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.memberships`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// You can authenticate and authorize this method with administrator
-	// privileges by setting the `use_admin_access` field in the request.
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//   - `https://www.googleapis.com/auth/chat.memberships.app` (to remove
+	//     the calling app from the space)
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces
+	//     only)
+	//   - User authentication grants administrator privileges when an
+	//     administrator account authenticates, `use_admin_access` is `true`, and
+	//     the following authorization scope is used:
+	//   - `https://www.googleapis.com/auth/chat.admin.memberships`
+	//
+	// App authentication is not supported for the following use cases:
+	//
+	// - Removing a Google Group from a space.
+	// - Removing a Chat app from a space.
+	//
+	// To delete memberships for space managers, the requester
+	// must be a space manager. If you're using [app
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// the Chat app must be the space creator.
 	DeleteMembership(context.Context, *DeleteMembershipRequest) (*Membership, error)
 	// Creates a reaction and adds it to a message. For an example, see
 	// [Add a reaction to a
 	// message](https://developers.google.com/workspace/chat/create-reactions).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions.create`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	CreateReaction(context.Context, *CreateReactionRequest) (*Reaction, error)
 	// Lists reactions to a message. For an example, see
 	// [List reactions for a
 	// message](https://developers.google.com/workspace/chat/list-reactions).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
 	ListReactions(context.Context, *ListReactionsRequest) (*ListReactionsResponse, error)
 	// Deletes a reaction to a message. For an example, see
 	// [Delete a
 	// reaction](https://developers.google.com/workspace/chat/delete-reactions).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	DeleteReaction(context.Context, *DeleteReactionRequest) (*emptypb.Empty, error)
 	// Creates a custom emoji.
 	//
@@ -1392,7 +1898,11 @@ type ChatServiceServer interface {
 	// permissions](https://support.google.com/a/answer/12850085).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.customemojis`
 	CreateCustomEmoji(context.Context, *CreateCustomEmojiRequest) (*CustomEmoji, error)
 	// Returns details about a custom emoji.
 	//
@@ -1404,7 +1914,12 @@ type ChatServiceServer interface {
 	// permissions](https://support.google.com/a/answer/12850085).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.customemojis.readonly`
+	//   - `https://www.googleapis.com/auth/chat.customemojis`
 	GetCustomEmoji(context.Context, *GetCustomEmojiRequest) (*CustomEmoji, error)
 	// Lists custom emojis visible to the authenticated user.
 	//
@@ -1416,7 +1931,12 @@ type ChatServiceServer interface {
 	// permissions](https://support.google.com/a/answer/12850085).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.customemojis.readonly`
+	//   - `https://www.googleapis.com/auth/chat.customemojis`
 	ListCustomEmojis(context.Context, *ListCustomEmojisRequest) (*ListCustomEmojisResponse, error)
 	// Deletes a custom emoji. By default, users can only delete custom emoji they
 	// created. [Emoji managers](https://support.google.com/a/answer/12850085)
@@ -1432,7 +1952,11 @@ type ChatServiceServer interface {
 	// permissions](https://support.google.com/a/answer/12850085).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.customemojis`
 	DeleteCustomEmoji(context.Context, *DeleteCustomEmojiRequest) (*emptypb.Empty, error)
 	// Returns details about a user's read state within a space, used to identify
 	// read and unread messages. For an example, see [Get details about a user's
@@ -1440,14 +1964,23 @@ type ChatServiceServer interface {
 	// state](https://developers.google.com/workspace/chat/get-space-read-state).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
+	//   - `https://www.googleapis.com/auth/chat.users.readstate`
 	GetSpaceReadState(context.Context, *GetSpaceReadStateRequest) (*SpaceReadState, error)
 	// Updates a user's read state within a space, used to identify read and
 	// unread messages. For an example, see [Update a user's space read
 	// state](https://developers.google.com/workspace/chat/update-space-read-state).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.readstate`
 	UpdateSpaceReadState(context.Context, *UpdateSpaceReadStateRequest) (*SpaceReadState, error)
 	// Returns details about a user's read state within a thread, used to identify
 	// read and unread messages. For an example, see [Get details about a user's
@@ -1455,7 +1988,12 @@ type ChatServiceServer interface {
 	// state](https://developers.google.com/workspace/chat/get-thread-read-state).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
+	//   - `https://www.googleapis.com/auth/chat.users.readstate`
 	GetThreadReadState(context.Context, *GetThreadReadStateRequest) (*ThreadReadState, error)
 	// Returns an event from a Google Chat space. The [event
 	// payload](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
@@ -1468,7 +2006,20 @@ type ChatServiceServer interface {
 	// object of the Space event data for this request.
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with an [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes)
+	// appropriate for reading the requested data:
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//
 	// To get an event, the authenticated user must be a member of the space.
 	//
 	// For an example, see [Get details about an
@@ -1484,7 +2035,20 @@ type ChatServiceServer interface {
 	// `Membership` resource.
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with an [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes)
+	// appropriate for reading the requested data:
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages.reactions`
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	//
 	// To list events, the authenticated user must be a member of the space.
 	//
 	// For an example, see [List events from a Google Chat
@@ -1495,14 +2059,22 @@ type ChatServiceServer interface {
 	// setting](https://developers.google.com/workspace/chat/get-space-notification-setting).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.spacesettings`
 	GetSpaceNotificationSetting(context.Context, *GetSpaceNotificationSettingRequest) (*SpaceNotificationSetting, error)
 	// Updates the space notification setting. For an example, see [Update
 	// the caller's space notification
 	// setting](https://developers.google.com/workspace/chat/update-space-notification-setting).
 	//
 	// Requires [user
-	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.spacesettings`
 	UpdateSpaceNotificationSetting(context.Context, *UpdateSpaceNotificationSettingRequest) (*SpaceNotificationSetting, error)
 }
 

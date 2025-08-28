@@ -201,3 +201,66 @@ type failingExporter struct {
 func (f *failingExporter) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
 	return fmt.Errorf("PermissionDenied")
 }
+
+func TestNewGRPCMetricContextWithCustomProvider(t *testing.T) {
+	// Create a manual reader for collecting metrics.
+	mr := metric.NewManualReader()
+
+	// Create a custom meter provider with the manual reader.
+	customProvider := metric.NewMeterProvider(
+		metric.WithReader(mr),
+	)
+	ctx := context.Background()
+
+	cfg := metricsConfig{
+		project:         "project-id",
+		meterProvider:   customProvider, // use custom provider
+		disableExporter: true,           // disable since this is a unit test
+	}
+
+	mc, err := newGRPCMetricContext(ctx, cfg)
+	if err != nil {
+		t.Errorf("newGRPCMetricContext: %v", err)
+	}
+	defer mc.close()
+
+	// Verify the provider in metricsContext is our custom provider.
+	if mc.provider != customProvider {
+		t.Errorf("metricsContext.provider = %v, want %v", mc.provider, customProvider)
+	}
+
+	// Now we can collect metrics from the manual reader that's registered with our custom provider.
+	rm := metricdata.ResourceMetrics{}
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Errorf("ManualReader.Collect: %v", err)
+	}
+}
+
+func TestNewGRPCMetricContextWithCustomProviderExporter(t *testing.T) {
+	// 1. Create a custom meter provider.
+	mr := metric.NewManualReader()
+	customProvider := metric.NewMeterProvider(
+		metric.WithReader(mr),
+	)
+	// 2. Create a custom `failingExporter`.
+	failingExp := &failingExporter{}
+	customExporter := metric.Exporter(failingExp)
+
+	// 3. Create the metrics context with both the custom provider and the custom exporter.
+	// The custom provider should take precedence and prevent the failing exporter from being used.
+	ctx := context.Background()
+	cfg := metricsConfig{
+		project:        "project-id",
+		meterProvider:  customProvider,
+		customExporter: &customExporter,
+	}
+
+	mc, err := newGRPCMetricContext(ctx, cfg)
+	if err != nil {
+		t.Errorf("newGRPCMetricContext: %v", err)
+	}
+	// 4. Verification: The `failingExporter` should not have been used.
+	// We expect the close to succeed, which means the failing exporter was not registered.
+	// If the failing exporter had been used, mc.close() would likely panic or return an error.
+	mc.close()
+}

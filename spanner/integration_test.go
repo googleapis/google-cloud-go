@@ -3675,6 +3675,8 @@ func TestIntegration_ReadErrors(t *testing.T) {
 // Test TransactionRunner. Test that transactions are aborted and retried as
 // expected.
 func TestIntegration_TransactionRunner(t *testing.T) {
+	// TODO(sakthivelmani): Enable the tests once b/422916293 is fixed
+	skipDirectPathTest(t)
 	skipEmulatorTest(t)
 	t.Parallel()
 
@@ -5893,11 +5895,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 }
 
 func TestIntegration_GFE_Latency(t *testing.T) {
-	if directPathEnabled, found := os.LookupEnv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); found {
-		if enabled, _ := strconv.ParseBool(directPathEnabled); enabled {
-			t.Skip("Skipping GFE tests when DirectPath is enabled")
-		}
-	}
+	skipDirectPathTest(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
@@ -6767,6 +6765,14 @@ func isEmulatorEnvSet() bool {
 func skipEmulatorTest(t *testing.T) {
 	if isEmulatorEnvSet() {
 		t.Skip("Skipping testing against the emulator.")
+	}
+}
+
+func skipDirectPathTest(t *testing.T) {
+	if directPathEnabled, found := os.LookupEnv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); found {
+		if enabled, _ := strconv.ParseBool(directPathEnabled); enabled {
+			t.Skip("Skipping GFE tests when DirectPath is enabled")
+		}
 	}
 }
 

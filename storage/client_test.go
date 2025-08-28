@@ -34,13 +34,18 @@ import (
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/experimental"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 var emulatorClients map[string]storageClient
@@ -951,6 +956,76 @@ func TestOpenWriterEmulated(t *testing.T) {
 	})
 }
 
+// Test that Writer.ProgressFunc is called at the expected intervals, showing
+// consistency across HTTP and gRPC.
+func TestWriterProgressFuncEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		cases := []struct {
+			name          string
+			chunkSize     int
+			expectedCalls []int64
+		}{
+			{
+				name:          "one shot, zero chunkSize",
+				chunkSize:     0,
+				expectedCalls: []int64{},
+			},
+			{
+				name:          "one shot, chunk larger than data",
+				chunkSize:     16 * MiB,
+				expectedCalls: []int64{},
+			},
+			{
+				name:          "resumable, obj size evenly divisible by chunkSize",
+				chunkSize:     1 * MiB,
+				expectedCalls: []int64{MiB, 2 * MiB, 3 * MiB},
+			},
+			{
+				name:          "resumable, obj size not divisible by chunkSize",
+				chunkSize:     2 * MiB,
+				expectedCalls: []int64{2 * MiB, 3 * MiB},
+			},
+		}
+		for _, c := range cases {
+			t.Run(c.name, func(t *testing.T) {
+				vc := &Client{tc: client}
+				obj := vc.Bucket(bucket).Object(c.name)
+
+				w := obj.NewWriter(ctx)
+				w.ChunkSize = c.chunkSize
+				var gotCalls []int64
+				w.ProgressFunc = func(off int64) {
+					gotCalls = append(gotCalls, off)
+				}
+
+				if _, err := w.Write(randomBytes3MiB); err != nil {
+					t.Fatalf("writing data: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("closing writer: %v", err)
+				}
+				if slices.Compare(gotCalls, c.expectedCalls) != 0 {
+					t.Errorf("progressFunc: got calls at %v, want %v", gotCalls, c.expectedCalls)
+				}
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if attrs.Size != 3*MiB {
+					t.Errorf("incorrect number of bytes written; got %v, want %v", attrs.Size, 3*MiB)
+				}
+			})
+		}
+	})
+
+}
+
 func TestOpenAppendableWriterEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
@@ -1441,6 +1516,293 @@ func TestWriterSmallFlushEmulated(t *testing.T) {
 		}
 
 	})
+}
+
+func TestWriterAsyncCancelEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Create test bucket.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		objName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		defer w.Close()
+
+		if _, err := w.Write(randomBytes3MiB); err != nil {
+			t.Fatalf("first w.Write(): %v", err)
+		}
+		// Cancel concurrently with an additional write
+		go cancel()
+		// We don't actually care if this succeeds or fails - it will blow up under
+		// the race detector if writes and cancels are not thread-safe.
+		w.Write(randomBytes3MiB)
+		// Make sure the cancel got processed.
+		<-ctx.Done()
+
+		// The writer close should observe the cancelled error.
+		if err := w.Close(); err != context.Canceled {
+			t.Errorf("w.Close(): got %v, want %v", err, context.Canceled)
+		}
+	})
+}
+
+func TestWriterCloseTwiceEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Create test bucket.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		objName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		obj := vc.Bucket(bucket).Object(objName)
+		w := obj.NewWriter(ctx)
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+		// Closing a writer twice is allowed!
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+
+		// The object is present with 0 contents.
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("obj.Attrs: %v", err)
+		}
+		if attrs.Size != 0 {
+			t.Errorf("incorrect object size; got %v, want 0", attrs.Size)
+		}
+	})
+}
+
+func TestWriterCloseWithErrorTwiceEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Create test bucket.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		objName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		obj := vc.Bucket(bucket).Object(objName)
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write(randomBytes3MiB); err != nil {
+			t.Errorf("w.Write(): %v", err)
+		}
+
+		errOne := errors.New("the first error")
+		if err := w.CloseWithError(errOne); err != nil {
+			// CloseWithError always returns nil
+			t.Fatalf("w.CloseWithError(errOne): %v", err)
+		}
+		if err := w.Close(); err != errOne {
+			t.Errorf("first w.Close(); got %v, want %v", err, errOne)
+		}
+
+		errTwo := errors.New("the second error")
+		if err := w.CloseWithError(errTwo); err != nil {
+			// CloseWithError always returns nil
+			t.Fatalf("w.CloseWithError(errOne): %v", err)
+		}
+		// The error is _not_ replaced by a subsequent call.
+		if err := w.Close(); err != errOne {
+			t.Errorf("second w.Close(); got %v, want %v", err, errTwo)
+		}
+	})
+}
+
+// customObjSizeReadStream intercepts BidiReadObjectResponse messages and
+// changes the object size in the BidiReadObjectResponse.Metadata to
+// customRecvSize.
+type customObjSizeReadStream struct {
+	grpc.ClientStream
+	hasReceivedMsg bool
+	customRecvSize int64
+}
+
+func (s *customObjSizeReadStream) RecvMsg(m any) error {
+	// The first message should contain the object info. After that, we can
+	// receive and parse messages as usual.
+	if s.hasReceivedMsg {
+		return s.ClientStream.RecvMsg(m)
+	}
+	s.hasReceivedMsg = true
+
+	// Unmarshal the message to get easy access to the metadata to modify.
+	// We then modify the msg, marshal it again, and convert back to mem.BufferSlice.
+	// This is an easy way for us to intercept and change the message.
+	err := s.ClientStream.RecvMsg(m)
+
+	databufs, ok := m.(*mem.BufferSlice)
+	if !ok {
+		return errors.New("unable to cast received message to mem.BufferSlice")
+	}
+
+	var bidiResp storagepb.BidiReadObjectResponse
+	if uErr := proto.Unmarshal(databufs.Materialize(), &bidiResp); uErr != nil {
+		return fmt.Errorf("failed to unmarshal BidiReadObjectResponse: %w", uErr)
+	}
+
+	if bidiResp.Metadata == nil {
+		return fmt.Errorf("nil metadata in the first message")
+	}
+
+	// Modify the message.
+	bidiResp.Metadata.Size = s.customRecvSize
+
+	// Marshal the modified message.
+	marshalled, mErr := proto.Marshal(&bidiResp)
+	if mErr != nil {
+		return fmt.Errorf("failed to marshal modified BidiReadObjectResponse: %w", mErr)
+	}
+
+	// Set the message on the pointer to be decoded by the normal read flow.
+	updatedMsg := mem.BufferSlice{mem.SliceBuffer(marshalled)}
+	if ptr, ok := m.(*mem.BufferSlice); ok {
+		*ptr = updatedMsg
+	}
+
+	return err
+}
+
+func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx := context.Background()
+	var receivedObjectSize int64 = 10
+
+	streamInterceptor := grpc.WithStreamInterceptor(
+		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+			if method == "/google.storage.v2.Storage/BidiReadObject" {
+				// Intercept the message and set the object size.
+				clientStream = &customObjSizeReadStream{ClientStream: clientStream, customRecvSize: receivedObjectSize}
+			}
+			return clientStream, err
+		})
+
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+
+	var (
+		contents = randomBytes9MiB
+		prefix   = time.Now().Nanosecond()
+		bucket   = fmt.Sprintf("bucket-%d", prefix)
+		objName  = fmt.Sprintf("%d-object", prefix)
+		o        = client.Bucket(bucket).Object(objName)
+	)
+
+	// Upload contents to unfinalized object.
+	if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+		t.Fatalf("creating test bucket: %v", err)
+	}
+	w := o.NewWriter(ctx)
+	w.Append = true
+	if _, err = w.Write(contents); err != nil {
+		t.Fatalf("writing test data: got %v; want ok", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("closing test data writer: got %v; want ok", err)
+	}
+
+	// Download content and validate.
+	buf := bytes.NewBuffer([]byte{})
+	r, err := o.NewRangeReader(ctx, 0, -1)
+	if err != nil {
+		t.Errorf("NewRangeReader: %v", err)
+	}
+
+	// Copy exactly the same amount of bytes as object size. This would
+	// trigger a seen == size check for the next copy.
+	if _, err := io.CopyN(buf, r, receivedObjectSize); err != nil {
+		t.Fatalf("io.CopyN: %v", err)
+	}
+
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+
+	if err := r.Close(); err != nil {
+		t.Errorf("r.Close: %v", err)
+	}
+
+	if gotBytes := buf.Bytes(); !bytes.Equal(gotBytes, contents) {
+		t.Errorf("content mismatch: got %v bytes, want %v bytes", len(gotBytes), len(contents))
+	}
+
+	// Download with an offset and length.
+	buf.Truncate(0)
+	off := receivedObjectSize
+	var length int64 = 1024 * 1024 * 3
+	r, err = o.NewRangeReader(ctx, off, length)
+	if err != nil {
+		t.Errorf("NewRangeReader: %v", err)
+	}
+	if _, err := io.CopyN(buf, r, receivedObjectSize); err != nil {
+		t.Fatalf("io.CopyN: %v", err)
+	}
+
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+	if err := r.Close(); err != nil {
+		t.Errorf("r.Close: %v", err)
+	}
+
+	if got, want := buf.Bytes(), contents[off:off+length]; !bytes.Equal(got, want) {
+		t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+	}
+
+	// Download with a negative offset.
+	buf.Truncate(0)
+	off = receivedObjectSize
+	r, err = o.NewRangeReader(ctx, -off, -1)
+	if err != nil {
+		t.Errorf("NewRangeReader: %v", err)
+	}
+	if _, err := io.CopyN(buf, r, receivedObjectSize); err != nil {
+		t.Fatalf("io.CopyN: %v", err)
+	}
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+	if err := r.Close(); err != nil {
+		t.Errorf("r.Close: %v", err)
+	}
+
+	// We get a smaller object size on the first call, so the offset and
+	// length are based on that. Ensure data integrity - we shouldn't get
+	// more bytes than expected, and we shouldn't get the wrong bytes.
+	wantOff := receivedObjectSize - off
+	wantEnd := receivedObjectSize
+
+	// The bytes we get from the emulator are incorrect since the intercept only
+	// changes the obj length post receive; the request will have already requested the incorrect bytes.
+	if got, want := buf.Bytes(), contents[wantOff:wantEnd]; len(got) != len(want) {
+		t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+	}
+
+	//	Retries.
+	// metadata.remain is likely inaccurate
 }
 
 func TestListNotificationsEmulated(t *testing.T) {

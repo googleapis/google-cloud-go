@@ -1,0 +1,287 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.geminidataanalytics.v1beta",
+  "libraryPackage": "cloud.google.com/go/geminidataanalytics/apiv1beta",
+  "services": {
+    "DataAgentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataAgentClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataAgent": {
+              "methods": [
+                "CreateDataAgent"
+              ]
+            },
+            "DeleteDataAgent": {
+              "methods": [
+                "DeleteDataAgent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataAgent": {
+              "methods": [
+                "GetDataAgent"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAccessibleDataAgents": {
+              "methods": [
+                "ListAccessibleDataAgents"
+              ]
+            },
+            "ListDataAgents": {
+              "methods": [
+                "ListDataAgents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "UpdateDataAgent": {
+              "methods": [
+                "UpdateDataAgent"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataAgentClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataAgent": {
+              "methods": [
+                "CreateDataAgent"
+              ]
+            },
+            "DeleteDataAgent": {
+              "methods": [
+                "DeleteDataAgent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataAgent": {
+              "methods": [
+                "GetDataAgent"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAccessibleDataAgents": {
+              "methods": [
+                "ListAccessibleDataAgents"
+              ]
+            },
+            "ListDataAgents": {
+              "methods": [
+                "ListDataAgents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "UpdateDataAgent": {
+              "methods": [
+                "UpdateDataAgent"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DataChatService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataChatClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "Chat": {
+              "methods": [
+                "Chat"
+              ]
+            },
+            "CreateConversation": {
+              "methods": [
+                "CreateConversation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetConversation": {
+              "methods": [
+                "GetConversation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConversations": {
+              "methods": [
+                "ListConversations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMessages": {
+              "methods": [
+                "ListMessages"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataChatClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "Chat": {
+              "methods": [
+                "Chat"
+              ]
+            },
+            "CreateConversation": {
+              "methods": [
+                "CreateConversation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetConversation": {
+              "methods": [
+                "GetConversation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConversations": {
+              "methods": [
+                "ListConversations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMessages": {
+              "methods": [
+                "ListMessages"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

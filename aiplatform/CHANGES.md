@@ -1,6 +1,125 @@
 # Changes
 
 
+## [1.99.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.98.0...aiplatform/v1.99.0) (2025-08-14)
+
+
+### Features
+
+* **aiplatform:** Add `gpu_partition_size` to `MachineSpec` ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+* **aiplatform:** Add option EndpointUserId and ModelUserId fields ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+* **aiplatform:** Migrate dedicated endpoint to be enabled by default ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+
+
+### Bug Fixes
+
+* **aiplatform:** Fields are not part of `oneof` ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `dedicated_endpoint_enabled` in message `.google.cloud.aiplatform.v1beta1.DeployRequest` is changed ([674eb0d](https://github.com/googleapis/google-cloud-go/commit/674eb0dcd1679abbffd9746276f49894115eac85))
+
+## [1.98.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.97.0...aiplatform/v1.98.0) (2025-08-12)
+
+
+### Features
+
+* **aiplatform:** Add API for Gen AI Evaluation in Tuning ([#12692](https://github.com/googleapis/google-cloud-go/issues/12692)) ([7616e81](https://github.com/googleapis/google-cloud-go/commit/7616e8128384e0ce9ee12fe3dd622e61a9785534))
+* **aiplatform:** Add direct_memories_source ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+* **aiplatform:** Add expiration for TTL for Memory and Sessions ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+* **aiplatform:** Add force_delete field to DeleteRagFile 'preview' API request for Vertex RAG ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **aiplatform:** Add Grounding with Google Maps tool ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+* **aiplatform:** Add option EndpointUserId and ModelUserId fields ([7616e81](https://github.com/googleapis/google-cloud-go/commit/7616e8128384e0ce9ee12fe3dd622e61a9785534))
+* **aiplatform:** Add support for CMEK, runtime controls, and PSC-I to Reasoning Engine protos ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+* **aiplatform:** Added document_name for vertex ai search as part of retrieved context from grounding chunk ([#12675](https://github.com/googleapis/google-cloud-go/issues/12675)) ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+* **aiplatform:** Expose RecommendSpecs api to vertex python SDK for Custom Weights Model deployment ([7616e81](https://github.com/googleapis/google-cloud-go/commit/7616e8128384e0ce9ee12fe3dd622e61a9785534))
+* **aiplatform:** Migrate dedicated endpoint to be enabled by default ([7616e81](https://github.com/googleapis/google-cloud-go/commit/7616e8128384e0ce9ee12fe3dd622e61a9785534))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `dedicated_endpoint_enabled` in message `.google.cloud.aiplatform.v1.DeployRequest` is changed ([7616e81](https://github.com/googleapis/google-cloud-go/commit/7616e8128384e0ce9ee12fe3dd622e61a9785534))
+* **aiplatform:** A comment for field monitored_resource_labels in message .google.cloud.aiplatform.v1beta1.AutoscalingMetricSpec is changed ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **aiplatform:** Add encryption_spec to ReasoningEngine ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+* **aiplatform:** Add psc_interface_config, min/max_instances, resource_limits, container_concurrency to ReasoningEngineSpec ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+* **aiplatform:** Update comment for allowed values for config models ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+
+## [1.97.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.96.0...aiplatform/v1.97.0) (2025-08-06)
+
+
+### Features
+
+* **aiplatform:** A new value NVIDIA_GB200 is added to enum AcceleratorType ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** A new value NVIDIA_GB200 is added to enum AcceleratorType ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** Add embedding_metadata to google.cloud.aiplatform.v1.Index ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** Add embedding_metadata to google.cloud.aiplatform.v1.Index ([#12643](https://github.com/googleapis/google-cloud-go/issues/12643)) ([039e556](https://github.com/googleapis/google-cloud-go/commit/039e55642132b5fa28b4b6645f4b29a06b5ad032))
+* **aiplatform:** Add exclude_domains for grounding with GoogleSearch and EnterpriseWebSearch ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** Add exclude_domains for grounding with GoogleSearch and EnterpriseWebSearch ([#12637](https://github.com/googleapis/google-cloud-go/issues/12637)) ([87815bf](https://github.com/googleapis/google-cloud-go/commit/87815bf66014cfd5f6aac93e4d642722e4d63569))
+* **aiplatform:** Add FeatureViewDirectWrite API in v1 ([#12645](https://github.com/googleapis/google-cloud-go/issues/12645)) ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+* **aiplatform:** Add field ReasoningEngine.encryption_spec ([0b74f43](https://github.com/googleapis/google-cloud-go/commit/0b74f43c6639e0e85c828145e867b0e98f4fdc96))
+* **aiplatform:** Add field ReasoningEngineSpec.service_account ([0b74f43](https://github.com/googleapis/google-cloud-go/commit/0b74f43c6639e0e85c828145e867b0e98f4fdc96))
+* **aiplatform:** Online Prediction DeployModel API to support custom metrics based autoscaling ([c3574a2](https://github.com/googleapis/google-cloud-go/commit/c3574a2b4448330a9d46bdc810ebdc090f2d7246))
+
+## [1.96.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.95.0...aiplatform/v1.96.0) (2025-07-31)
+
+
+### Features
+
+* **aiplatform:** Add `DeploymentStage` for CreateEndpointOperationMetadata and DeployModelOperationMetadata ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+* **aiplatform:** Add `DeploymentStage` for CreateEndpointOperationMetadata and DeployModelOperationMetadata ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+* **aiplatform:** Add enable_datapoint_upsert_logging to google.cloud.aiplatform.v1.DeployedIndex ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+* **aiplatform:** Add enable_datapoint_upsert_logging to google.cloud.aiplatform.v1.DeployedIndex ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+* **aiplatform:** Added the ability to use the Model Armor service for content sanitization ([#12623](https://github.com/googleapis/google-cloud-go/issues/12623)) ([768079e](https://github.com/googleapis/google-cloud-go/commit/768079ef67c0fa68e57f60249cc6dbe774631df1))
+* **aiplatform:** Adds DWS and spot VM feature support to custom batch predictions 2.0 ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
+
+### Documentation
+
+* **aiplatform:** Update MutateDeployedModel documentation ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+* **aiplatform:** Update MutateDeployedModel documentation ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
+
+## [1.95.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.94.0...aiplatform/v1.95.0) (2025-07-23)
+
+
+### Features
+
+* **aiplatform:** Add service_account to Reasoning Engine public protos ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **aiplatform:** Add service_account to Reasoning Engine public protos ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+
+### Bug Fixes
+
+* **aiplatform:** Remove gemini_template_config and request_column_name fields from DatasetService.AssessData and DatasetService.AssembleData ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
+## [1.94.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.93.0...aiplatform/v1.94.0) (2025-07-16)
+
+
+### Features
+
+* **aiplatform:** Add Aggregation Output in EvaluateDataset Get Operation Response ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** Add API for Managed OSS Fine Tuning ([#12552](https://github.com/googleapis/google-cloud-go/issues/12552)) ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** Add flexstart option to v1beta1 ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** Some comments changes in machine_resources.proto to v1beta1 ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** Vertex AI Model Garden custom model deploy Public Preview ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `boot_disk_type` in message `.google.cloud.aiplatform.v1beta1.DiskSpec` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `machine_spec` in message `.google.cloud.aiplatform.v1beta1.DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `max_replica_count` in message `.google.cloud.aiplatform.v1beta1.AutomaticResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `max_replica_count` in message `.google.cloud.aiplatform.v1beta1.DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `min_replica_count` in message `.google.cloud.aiplatform.v1beta1.AutomaticResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `min_replica_count` in message `.google.cloud.aiplatform.v1beta1.DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field `required_replica_count` in message `.google.cloud.aiplatform.v1beta1.DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** A comment for field learning_rate_multiplier in message .google.cloud.aiplatform.v1beta1.SupervisedHyperParameters is changed ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** A comment for field model in message .google.cloud.aiplatform.v1beta1.TunedModel is changed ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** A comment for field training_dataset_uri in message .google.cloud.aiplatform.v1beta1.SupervisedTuningSpec is changed ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** A comment for field validation_dataset_uri in message .google.cloud.aiplatform.v1beta1.SupervisedTuningSpec is changed ([622edbb](https://github.com/googleapis/google-cloud-go/commit/622edbbcb248142f545a717bf6aaaa5c91845a43))
+* **aiplatform:** A comment for message `DedicatedResources` is changed ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+* **aiplatform:** Add constraints for AggregationMetric enum and default value for flip_enabled field in AutoraterConfig ([8d76df5](https://github.com/googleapis/google-cloud-go/commit/8d76df5771277c582d5d074adf4753fbcfe26673))
+
 ## [1.93.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.92.0...aiplatform/v1.93.0) (2025-07-09)
 
 

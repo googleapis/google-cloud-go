@@ -48,7 +48,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := policysimulator.NewSimulatorClient(ctx)
+//	c, err := policysimulator.NewOrgPolicyViolationsPreviewClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -62,11 +62,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &policysimulatorpb.CreateReplayRequest{
+//	req := &policysimulatorpb.CreateOrgPolicyViolationsPreviewRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/policysimulator/apiv1/policysimulatorpb#CreateReplayRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/policysimulator/apiv1/policysimulatorpb#CreateOrgPolicyViolationsPreviewRequest.
 //	}
-//	op, err := c.CreateReplay(ctx, req)
+//	op, err := c.CreateOrgPolicyViolationsPreview(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -80,7 +80,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewSimulatorClient is used for authentication requests and
+// The ctx passed to NewOrgPolicyViolationsPreviewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

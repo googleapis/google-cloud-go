@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/osconfig/v1.14.6...osconfig/v1.15.0) (2025-08-12)
+
+
+### Features
+
+* **osconfig:** Add highest_upgradable_cve_severity field to Vulnerability report ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+
+
+### Documentation
+
+* **osconfig:** A comment for field `filter` in message `.google.cloud.osconfig.v1.ListVulnerabilityReportsRequest` is changed ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+* **osconfig:** A comment for field `update_time` in message `.google.cloud.osconfig.v1.VulnerabilityReport` is changed ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
+
 ## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/osconfig/v1.14.5...osconfig/v1.14.6) (2025-05-06)
 
 

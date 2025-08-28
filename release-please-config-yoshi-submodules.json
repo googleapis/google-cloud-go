@@ -126,6 +126,9 @@
         "config": {
             "component": "config"
         },
+        "configdelivery": {
+            "component": "configdelivery"
+        },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
         },
@@ -207,6 +210,9 @@
         "functions": {
             "component": "functions"
         },
+        "geminidataanalytics": {
+            "component": "geminidataanalytics"
+        },
         "gkebackup": {
             "component": "gkebackup"
         },
@@ -245,6 +251,9 @@
         },
         "language": {
             "component": "language"
+        },
+        "licensemanager": {
+            "component": "licensemanager"
         },
         "lifesciences": {
             "component": "lifesciences"

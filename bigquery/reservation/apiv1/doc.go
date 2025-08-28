@@ -17,7 +17,7 @@
 // Package reservation is an auto-generated package for the
 // BigQuery Reservation API.
 //
-// A service to modify your BigQuery flat-rate reservations.
+// A service to modify your BigQuery reservations.
 //
 // # General documentation
 //

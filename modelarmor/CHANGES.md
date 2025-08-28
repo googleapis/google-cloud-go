@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.5.0...modelarmor/v0.6.0) (2025-07-31)
+
+
+### Features
+
+* **modelarmor:** MultiLanguage Detection in Model Armor Floor Setting ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+* **modelarmor:** MultiLanguage Detection in Model Armor Floor Setting ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.4.0...modelarmor/v0.5.0) (2025-07-23)
+
+
+### Features
+
+* **modelarmor:** Add support for EnforcementType ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **modelarmor:** Add support for EnforcementType ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **modelarmor:** MultiLanguage Detection in Model Armor Floor Setting ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **modelarmor:** MultiLanguage Detection in Model Armor Floor Setting ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+
+### Documentation
+
+* **modelarmor:** Fix comment formatting ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **modelarmor:** Fix comment formatting ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.3.0...modelarmor/v0.4.0) (2025-07-09)
 
 

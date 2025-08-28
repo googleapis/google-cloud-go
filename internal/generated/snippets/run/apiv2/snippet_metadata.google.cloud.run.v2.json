@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/run/apiv2",
-    "version": "1.10.1",
+    "version": "1.12.0",
     "language": "GO",
     "apis": [
       {
@@ -2332,6 +2332,557 @@
         "client": {
           "shortName": "TasksClient",
           "fullName": "google.cloud.run.v2.TasksClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_CreateWorkerPool_sync",
+      "title": "run CreateWorkerPool Sample",
+      "description": "CreateWorkerPool creates a new WorkerPool in a given project and location.",
+      "file": "WorkerPoolsClient/CreateWorkerPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkerPool",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.CreateWorkerPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.CreateWorkerPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkerPoolOperation",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "CreateWorkerPool",
+          "fullName": "google.cloud.run.v2.WorkerPools.CreateWorkerPool",
+          "service": {
+            "shortName": "WorkerPools",
+            "fullName": "google.cloud.run.v2.WorkerPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_DeleteOperation_sync",
+      "title": "run DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "WorkerPoolsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_DeleteWorkerPool_sync",
+      "title": "run DeleteWorkerPool Sample",
+      "description": "DeleteWorkerPool deletes a WorkerPool.",
+      "file": "WorkerPoolsClient/DeleteWorkerPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkerPool",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.DeleteWorkerPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.DeleteWorkerPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteWorkerPoolOperation",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "DeleteWorkerPool",
+          "fullName": "google.cloud.run.v2.WorkerPools.DeleteWorkerPool",
+          "service": {
+            "shortName": "WorkerPools",
+            "fullName": "google.cloud.run.v2.WorkerPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_GetIamPolicy_sync",
+      "title": "run GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM Access Control policy currently in effect for the given\nCloud Run WorkerPool. This result does not include any inherited policies.",
+      "file": "WorkerPoolsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.run.v2.WorkerPools.GetIamPolicy",
+          "service": {
+            "shortName": "WorkerPools",
+            "fullName": "google.cloud.run.v2.WorkerPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_GetOperation_sync",
+      "title": "run GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "WorkerPoolsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_GetWorkerPool_sync",
+      "title": "run GetWorkerPool Sample",
+      "description": "GetWorkerPool gets information about a WorkerPool.",
+      "file": "WorkerPoolsClient/GetWorkerPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkerPool",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.GetWorkerPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.GetWorkerPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*runpb.WorkerPool",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "GetWorkerPool",
+          "fullName": "google.cloud.run.v2.WorkerPools.GetWorkerPool",
+          "service": {
+            "shortName": "WorkerPools",
+            "fullName": "google.cloud.run.v2.WorkerPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_ListOperations_sync",
+      "title": "run ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "WorkerPoolsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_ListWorkerPools_sync",
+      "title": "run ListWorkerPools Sample",
+      "description": "ListWorkerPools lists WorkerPools. Results are sorted by creation time, descending.",
+      "file": "WorkerPoolsClient/ListWorkerPools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkerPools",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.ListWorkerPools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.ListWorkerPoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkerPoolIterator",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "ListWorkerPools",
+          "fullName": "google.cloud.run.v2.WorkerPools.ListWorkerPools",
+          "service": {
+            "shortName": "WorkerPools",
+            "fullName": "google.cloud.run.v2.WorkerPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_SetIamPolicy_sync",
+      "title": "run SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM Access control policy for the specified WorkerPool. Overwrites\nany existing policy.",
+      "file": "WorkerPoolsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.run.v2.WorkerPools.SetIamPolicy",
+          "service": {
+            "shortName": "WorkerPools",
+            "fullName": "google.cloud.run.v2.WorkerPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_TestIamPermissions_sync",
+      "title": "run TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified Project.\n\nThere are no permissions required for making this API call.",
+      "file": "WorkerPoolsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.run.v2.WorkerPools.TestIamPermissions",
+          "service": {
+            "shortName": "WorkerPools",
+            "fullName": "google.cloud.run.v2.WorkerPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_UpdateWorkerPool_sync",
+      "title": "run UpdateWorkerPool Sample",
+      "description": "UpdateWorkerPool updates a WorkerPool.",
+      "file": "WorkerPoolsClient/UpdateWorkerPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkerPool",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.UpdateWorkerPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.UpdateWorkerPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateWorkerPoolOperation",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
+        },
+        "method": {
+          "shortName": "UpdateWorkerPool",
+          "fullName": "google.cloud.run.v2.WorkerPools.UpdateWorkerPool",
+          "service": {
+            "shortName": "WorkerPools",
+            "fullName": "google.cloud.run.v2.WorkerPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_WorkerPools_WaitOperation_sync",
+      "title": "run WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "WorkerPoolsClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.run.v2.WorkerPoolsClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "WorkerPoolsClient",
+          "fullName": "google.cloud.run.v2.WorkerPoolsClient"
         },
         "method": {
           "shortName": "WaitOperation",

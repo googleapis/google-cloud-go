@@ -1233,7 +1233,7 @@ func TestSchemaAdminClient(t *testing.T) {
 	_, _, srv, cleanup := newFake(ctx, t)
 	defer cleanup()
 
-	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1385,7 +1385,7 @@ func mustUpdateSubscription(ctx context.Context, t *testing.T, sc pb.SubscriberC
 // Note: be sure to call cleanup!
 func newFake(ctx context.Context, t *testing.T, opts ...ServerReactorOption) (pb.PublisherClient, pb.SubscriberClient, *Server, func()) {
 	srv := NewServer(opts...)
-	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}

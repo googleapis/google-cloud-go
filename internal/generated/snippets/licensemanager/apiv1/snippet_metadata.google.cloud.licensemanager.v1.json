@@ -1,0 +1,887 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/licensemanager/apiv1",
+    "version": "0.1.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.licensemanager.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_AggregateUsage_sync",
+      "title": "licensemanager AggregateUsage Sample",
+      "description": "AggregateUsage aggregates Usage per Instance for a Configuration.",
+      "file": "Client/AggregateUsage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregateUsage",
+        "fullName": "google.cloud.licensemanager.v1.Client.AggregateUsage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.AggregateUsageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UsageIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "AggregateUsage",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.AggregateUsage",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_CancelOperation_sync",
+      "title": "licensemanager CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.licensemanager.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_CreateConfiguration_sync",
+      "title": "licensemanager CreateConfiguration Sample",
+      "description": "CreateConfiguration creates a new Configuration in a given project and location.",
+      "file": "Client/CreateConfiguration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConfiguration",
+        "fullName": "google.cloud.licensemanager.v1.Client.CreateConfiguration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.CreateConfigurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateConfigurationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateConfiguration",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.CreateConfiguration",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_DeactivateConfiguration_sync",
+      "title": "licensemanager DeactivateConfiguration Sample",
+      "description": "DeactivateConfiguration deactivates the given configuration.",
+      "file": "Client/DeactivateConfiguration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeactivateConfiguration",
+        "fullName": "google.cloud.licensemanager.v1.Client.DeactivateConfiguration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.DeactivateConfigurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeactivateConfigurationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeactivateConfiguration",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.DeactivateConfiguration",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_DeleteConfiguration_sync",
+      "title": "licensemanager DeleteConfiguration Sample",
+      "description": "DeleteConfiguration deletes a single Configuration.",
+      "file": "Client/DeleteConfiguration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConfiguration",
+        "fullName": "google.cloud.licensemanager.v1.Client.DeleteConfiguration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.DeleteConfigurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteConfigurationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteConfiguration",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.DeleteConfiguration",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_DeleteOperation_sync",
+      "title": "licensemanager DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.licensemanager.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_GetConfiguration_sync",
+      "title": "licensemanager GetConfiguration Sample",
+      "description": "GetConfiguration gets details of a single Configuration.",
+      "file": "Client/GetConfiguration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConfiguration",
+        "fullName": "google.cloud.licensemanager.v1.Client.GetConfiguration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.GetConfigurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*licensemanagerpb.Configuration",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetConfiguration",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.GetConfiguration",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_GetInstance_sync",
+      "title": "licensemanager GetInstance Sample",
+      "description": "GetInstance gets details of a single Instance.",
+      "file": "Client/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.cloud.licensemanager.v1.Client.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*licensemanagerpb.Instance",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.GetInstance",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_GetLocation_sync",
+      "title": "licensemanager GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.licensemanager.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_GetOperation_sync",
+      "title": "licensemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.licensemanager.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_GetProduct_sync",
+      "title": "licensemanager GetProduct Sample",
+      "description": "GetProduct gets details of a single Product.",
+      "file": "Client/GetProduct/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProduct",
+        "fullName": "google.cloud.licensemanager.v1.Client.GetProduct",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.GetProductRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*licensemanagerpb.Product",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetProduct",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.GetProduct",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_ListConfigurations_sync",
+      "title": "licensemanager ListConfigurations Sample",
+      "description": "ListConfigurations lists Configurations in a given project and location.",
+      "file": "Client/ListConfigurations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConfigurations",
+        "fullName": "google.cloud.licensemanager.v1.Client.ListConfigurations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.ListConfigurationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConfigurationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListConfigurations",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.ListConfigurations",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_ListInstances_sync",
+      "title": "licensemanager ListInstances Sample",
+      "description": "ListInstances lists Instances in a given project and location.",
+      "file": "Client/ListInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstances",
+        "fullName": "google.cloud.licensemanager.v1.Client.ListInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.ListInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListInstances",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.ListInstances",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_ListLocations_sync",
+      "title": "licensemanager ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.licensemanager.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_ListOperations_sync",
+      "title": "licensemanager ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.licensemanager.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_ListProducts_sync",
+      "title": "licensemanager ListProducts Sample",
+      "description": "ListProducts lists Products in a given project and location.",
+      "file": "Client/ListProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProducts",
+        "fullName": "google.cloud.licensemanager.v1.Client.ListProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.ListProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProductIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListProducts",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.ListProducts",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_QueryConfigurationLicenseUsage_sync",
+      "title": "licensemanager QueryConfigurationLicenseUsage Sample",
+      "description": "QueryConfigurationLicenseUsage license Usage information for a Configuration.",
+      "file": "Client/QueryConfigurationLicenseUsage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryConfigurationLicenseUsage",
+        "fullName": "google.cloud.licensemanager.v1.Client.QueryConfigurationLicenseUsage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.QueryConfigurationLicenseUsageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*licensemanagerpb.QueryConfigurationLicenseUsageResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "QueryConfigurationLicenseUsage",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.QueryConfigurationLicenseUsage",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_ReactivateConfiguration_sync",
+      "title": "licensemanager ReactivateConfiguration Sample",
+      "description": "ReactivateConfiguration reactivates the given configuration.",
+      "file": "Client/ReactivateConfiguration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReactivateConfiguration",
+        "fullName": "google.cloud.licensemanager.v1.Client.ReactivateConfiguration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.ReactivateConfigurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReactivateConfigurationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ReactivateConfiguration",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.ReactivateConfiguration",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "licensemanager_v1_generated_LicenseManager_UpdateConfiguration_sync",
+      "title": "licensemanager UpdateConfiguration Sample",
+      "description": "UpdateConfiguration updates the parameters of a single Configuration.",
+      "file": "Client/UpdateConfiguration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConfiguration",
+        "fullName": "google.cloud.licensemanager.v1.Client.UpdateConfiguration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "licensemanagerpb.UpdateConfigurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateConfigurationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.licensemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateConfiguration",
+          "fullName": "google.cloud.licensemanager.v1.LicenseManager.UpdateConfiguration",
+          "service": {
+            "shortName": "LicenseManager",
+            "fullName": "google.cloud.licensemanager.v1.LicenseManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

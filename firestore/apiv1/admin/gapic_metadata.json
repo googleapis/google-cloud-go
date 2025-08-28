@@ -20,6 +20,11 @@
                 "CancelOperation"
               ]
             },
+            "CloneDatabase": {
+              "methods": [
+                "CloneDatabase"
+              ]
+            },
             "CreateBackupSchedule": {
               "methods": [
                 "CreateBackupSchedule"
@@ -198,6 +203,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CloneDatabase": {
+              "methods": [
+                "CloneDatabase"
               ]
             },
             "CreateBackupSchedule": {

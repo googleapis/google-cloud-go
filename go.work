@@ -48,6 +48,7 @@ use (
 	./compute/metadata
 	./confidentialcomputing
 	./config
+	./configdelivery
 	./contactcenterinsights
 	./container
 	./containeranalysis
@@ -78,6 +79,7 @@ use (
 	./financialservices
 	./firestore
 	./functions
+	./geminidataanalytics
 	./gkebackup
 	./gkeconnect
 	./gkehub
@@ -97,11 +99,14 @@ use (
 	./internal/gapicgen
 	./internal/generated/snippets
 	./internal/godocfx
+	./internal/librariangen
 	./internal/postprocessor
 	./internal/protoveneer
+	./internal/stategen	
 	./iot
 	./kms
 	./language
+	./licensemanager
 	./lifesciences
 	./logging
 	./longrunning

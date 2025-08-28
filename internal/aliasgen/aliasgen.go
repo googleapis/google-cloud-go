@@ -375,7 +375,7 @@ func (am *aliasGenerator) writeFuncs(w io.Writer) error {
 					return err
 				}
 			}
-			if _, err := fmt.Fprintf(w, p.name); err != nil {
+			if _, err := fmt.Fprintf(w, "%s", p.name); err != nil {
 				return err
 			}
 		}

@@ -1588,7 +1588,7 @@ func testReadWriteStmtBasedTransaction(t *testing.T, beginTransactionOption Begi
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
 		}
-		if g, w := tx.options.TransactionTag, "test"; g != w {
+		if g, w := tx.txOpts.TransactionTag, "test"; g != w {
 			t.Errorf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
 		}
 		rowCount, err = f(tx)
@@ -1690,7 +1690,8 @@ func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
@@ -1741,7 +1742,8 @@ func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSe
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
@@ -1804,7 +1806,8 @@ func TestReadWriteStmtBasedTransaction_SetsPrecommitToken(t *testing.T) {
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 

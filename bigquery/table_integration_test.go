@@ -199,7 +199,7 @@ func TestIntegration_TableMetadata(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// TODO(jba): check md more thorougly.
+	// TODO(jba): check md more thoroughly.
 	if got, want := md.FullID, fmt.Sprintf("%s:%s.%s", dataset.ProjectID, dataset.DatasetID, table.TableID); got != want {
 		t.Errorf("metadata.FullID: got %q, want %q", got, want)
 	}
