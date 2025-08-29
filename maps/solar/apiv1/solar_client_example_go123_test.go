@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package solar_test
+
+import (
+	solar "cloud.google.com/go/maps/solar/apiv1"
+)
