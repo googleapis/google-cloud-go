@@ -2,6 +2,18 @@
 
 
 
+## [0.122.0](https://github.com/googleapis/google-cloud-go/compare/v0.121.6...v0.122.0) (2025-08-28)
+
+
+### Features
+
+* **internal/librariangen:** Add release-init command ([#12751](https://github.com/googleapis/google-cloud-go/issues/12751)) ([52e84cc](https://github.com/googleapis/google-cloud-go/commit/52e84cc9a11077eb3c50a0b5fc9aa26361d63b47))
+
+
+### Bug Fixes
+
+* **internal/librariangen:** Fix goimports errors ([#12765](https://github.com/googleapis/google-cloud-go/issues/12765)) ([83bdaa4](https://github.com/googleapis/google-cloud-go/commit/83bdaa4ce4e42f8b4a29e2055fc4894d8c6b1e2c))
+
 ## [0.121.6](https://github.com/googleapis/google-cloud-go/compare/v0.121.5...v0.121.6) (2025-08-14)
 
 
