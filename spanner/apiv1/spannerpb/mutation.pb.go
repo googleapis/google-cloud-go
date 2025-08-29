@@ -145,21 +145,24 @@ type Mutation_Update struct {
 }
 
 type Mutation_InsertOrUpdate struct {
-	// Like [insert][google.spanner.v1.Mutation.insert], except that if the row already exists, then
-	// its column values are overwritten with the ones provided. Any
-	// column values not explicitly written are preserved.
+	// Like [insert][google.spanner.v1.Mutation.insert], except that if the row
+	// already exists, then its column values are overwritten with the ones
+	// provided. Any column values not explicitly written are preserved.
 	//
-	// When using [insert_or_update][google.spanner.v1.Mutation.insert_or_update], just as when using [insert][google.spanner.v1.Mutation.insert], all `NOT
-	// NULL` columns in the table must be given a value. This holds true
-	// even when the row already exists and will therefore actually be updated.
+	// When using
+	// [insert_or_update][google.spanner.v1.Mutation.insert_or_update], just as
+	// when using [insert][google.spanner.v1.Mutation.insert], all `NOT NULL`
+	// columns in the table must be given a value. This holds true even when the
+	// row already exists and will therefore actually be updated.
 	InsertOrUpdate *Mutation_Write `protobuf:"bytes,3,opt,name=insert_or_update,json=insertOrUpdate,proto3,oneof"`
 }
 
 type Mutation_Replace struct {
-	// Like [insert][google.spanner.v1.Mutation.insert], except that if the row already exists, it is
-	// deleted, and the column values provided are inserted
-	// instead. Unlike [insert_or_update][google.spanner.v1.Mutation.insert_or_update], this means any values not
-	// explicitly written become `NULL`.
+	// Like [insert][google.spanner.v1.Mutation.insert], except that if the row
+	// already exists, it is deleted, and the column values provided are
+	// inserted instead. Unlike
+	// [insert_or_update][google.spanner.v1.Mutation.insert_or_update], this
+	// means any values not explicitly written become `NULL`.
 	//
 	// In an interleaved table, if you create the child table with the
 	// `ON DELETE CASCADE` annotation, then replacing a parent row
@@ -184,7 +187,9 @@ func (*Mutation_Replace) isMutation_Operation() {}
 
 func (*Mutation_Delete_) isMutation_Operation() {}
 
-// Arguments to [insert][google.spanner.v1.Mutation.insert], [update][google.spanner.v1.Mutation.update], [insert_or_update][google.spanner.v1.Mutation.insert_or_update], and
+// Arguments to [insert][google.spanner.v1.Mutation.insert],
+// [update][google.spanner.v1.Mutation.update],
+// [insert_or_update][google.spanner.v1.Mutation.insert_or_update], and
 // [replace][google.spanner.v1.Mutation.replace] operations.
 type Mutation_Write struct {
 	state         protoimpl.MessageState
@@ -193,7 +198,8 @@ type Mutation_Write struct {
 
 	// Required. The table whose rows will be written.
 	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
-	// The names of the columns in [table][google.spanner.v1.Mutation.Write.table] to be written.
+	// The names of the columns in
+	// [table][google.spanner.v1.Mutation.Write.table] to be written.
 	//
 	// The list of columns must contain enough columns to allow
 	// Cloud Spanner to derive values for all primary key columns in the
@@ -202,11 +208,13 @@ type Mutation_Write struct {
 	// The values to be written. `values` can contain more than one
 	// list of values. If it does, then multiple rows are written, one
 	// for each entry in `values`. Each list in `values` must have
-	// exactly as many entries as there are entries in [columns][google.spanner.v1.Mutation.Write.columns]
-	// above. Sending multiple lists is equivalent to sending multiple
-	// `Mutation`s, each containing one `values` entry and repeating
-	// [table][google.spanner.v1.Mutation.Write.table] and [columns][google.spanner.v1.Mutation.Write.columns]. Individual values in each list are
-	// encoded as described [here][google.spanner.v1.TypeCode].
+	// exactly as many entries as there are entries in
+	// [columns][google.spanner.v1.Mutation.Write.columns] above. Sending
+	// multiple lists is equivalent to sending multiple `Mutation`s, each
+	// containing one `values` entry and repeating
+	// [table][google.spanner.v1.Mutation.Write.table] and
+	// [columns][google.spanner.v1.Mutation.Write.columns]. Individual values in
+	// each list are encoded as described [here][google.spanner.v1.TypeCode].
 	Values []*structpb.ListValue `protobuf:"bytes,3,rep,name=values,proto3" json:"values,omitempty"`
 }
 
@@ -269,12 +277,12 @@ type Mutation_Delete struct {
 
 	// Required. The table whose rows will be deleted.
 	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
-	// Required. The primary keys of the rows within [table][google.spanner.v1.Mutation.Delete.table] to delete.  The
-	// primary keys must be specified in the order in which they appear in the
-	// `PRIMARY KEY()` clause of the table's equivalent DDL statement (the DDL
-	// statement used to create the table).
-	// Delete is idempotent. The transaction will succeed even if some or all
-	// rows do not exist.
+	// Required. The primary keys of the rows within
+	// [table][google.spanner.v1.Mutation.Delete.table] to delete.  The primary
+	// keys must be specified in the order in which they appear in the `PRIMARY
+	// KEY()` clause of the table's equivalent DDL statement (the DDL statement
+	// used to create the table). Delete is idempotent. The transaction will
+	// succeed even if some or all rows do not exist.
 	KeySet *KeySet `protobuf:"bytes,2,opt,name=key_set,json=keySet,proto3" json:"key_set,omitempty"`
 }
 

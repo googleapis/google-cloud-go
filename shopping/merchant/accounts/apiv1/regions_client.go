@@ -43,11 +43,14 @@ var newRegionsClientHook clientHook
 
 // RegionsCallOptions contains the retry settings for each method of RegionsClient.
 type RegionsCallOptions struct {
-	GetRegion    []gax.CallOption
-	CreateRegion []gax.CallOption
-	UpdateRegion []gax.CallOption
-	DeleteRegion []gax.CallOption
-	ListRegions  []gax.CallOption
+	GetRegion          []gax.CallOption
+	CreateRegion       []gax.CallOption
+	BatchCreateRegions []gax.CallOption
+	UpdateRegion       []gax.CallOption
+	BatchUpdateRegions []gax.CallOption
+	DeleteRegion       []gax.CallOption
+	BatchDeleteRegions []gax.CallOption
+	ListRegions        []gax.CallOption
 }
 
 func defaultRegionsGRPCClientOptions() []option.ClientOption {
@@ -91,6 +94,18 @@ func defaultRegionsCallOptions() *RegionsCallOptions {
 				})
 			}),
 		},
+		BatchCreateRegions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		UpdateRegion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -103,7 +118,31 @@ func defaultRegionsCallOptions() *RegionsCallOptions {
 				})
 			}),
 		},
+		BatchUpdateRegions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchDeleteRegions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -154,6 +193,17 @@ func defaultRegionsRESTCallOptions() *RegionsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		BatchCreateRegions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		UpdateRegion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -165,7 +215,29 @@ func defaultRegionsRESTCallOptions() *RegionsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		BatchUpdateRegions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		DeleteRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		BatchDeleteRegions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -197,8 +269,11 @@ type internalRegionsClient interface {
 	Connection() *grpc.ClientConn
 	GetRegion(context.Context, *accountspb.GetRegionRequest, ...gax.CallOption) (*accountspb.Region, error)
 	CreateRegion(context.Context, *accountspb.CreateRegionRequest, ...gax.CallOption) (*accountspb.Region, error)
+	BatchCreateRegions(context.Context, *accountspb.BatchCreateRegionsRequest, ...gax.CallOption) (*accountspb.BatchCreateRegionsResponse, error)
 	UpdateRegion(context.Context, *accountspb.UpdateRegionRequest, ...gax.CallOption) (*accountspb.Region, error)
+	BatchUpdateRegions(context.Context, *accountspb.BatchUpdateRegionsRequest, ...gax.CallOption) (*accountspb.BatchUpdateRegionsResponse, error)
 	DeleteRegion(context.Context, *accountspb.DeleteRegionRequest, ...gax.CallOption) error
+	BatchDeleteRegions(context.Context, *accountspb.BatchDeleteRegionsRequest, ...gax.CallOption) error
 	ListRegions(context.Context, *accountspb.ListRegionsRequest, ...gax.CallOption) *RegionIterator
 }
 
@@ -252,16 +327,34 @@ func (c *RegionsClient) CreateRegion(ctx context.Context, req *accountspb.Create
 	return c.internalClient.CreateRegion(ctx, req, opts...)
 }
 
+// BatchCreateRegions creates one or more regions in your Merchant Center account.
+// Executing this method requires admin access.
+func (c *RegionsClient) BatchCreateRegions(ctx context.Context, req *accountspb.BatchCreateRegionsRequest, opts ...gax.CallOption) (*accountspb.BatchCreateRegionsResponse, error) {
+	return c.internalClient.BatchCreateRegions(ctx, req, opts...)
+}
+
 // UpdateRegion updates a region definition in your Merchant Center account.
 // Executing this method requires admin access.
 func (c *RegionsClient) UpdateRegion(ctx context.Context, req *accountspb.UpdateRegionRequest, opts ...gax.CallOption) (*accountspb.Region, error) {
 	return c.internalClient.UpdateRegion(ctx, req, opts...)
 }
 
+// BatchUpdateRegions updates one or more regions in your Merchant Center account.
+// Executing this method requires admin access.
+func (c *RegionsClient) BatchUpdateRegions(ctx context.Context, req *accountspb.BatchUpdateRegionsRequest, opts ...gax.CallOption) (*accountspb.BatchUpdateRegionsResponse, error) {
+	return c.internalClient.BatchUpdateRegions(ctx, req, opts...)
+}
+
 // DeleteRegion deletes a region definition from your Merchant Center account. Executing
 // this method requires admin access.
 func (c *RegionsClient) DeleteRegion(ctx context.Context, req *accountspb.DeleteRegionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRegion(ctx, req, opts...)
+}
+
+// BatchDeleteRegions deletes multiple regions by name from your Merchant Center account.
+// Executing this method requires admin access.
+func (c *RegionsClient) BatchDeleteRegions(ctx context.Context, req *accountspb.BatchDeleteRegionsRequest, opts ...gax.CallOption) error {
+	return c.internalClient.BatchDeleteRegions(ctx, req, opts...)
 }
 
 // ListRegions lists the regions in your Merchant Center account.
@@ -466,6 +559,24 @@ func (c *regionsGRPCClient) CreateRegion(ctx context.Context, req *accountspb.Cr
 	return resp, nil
 }
 
+func (c *regionsGRPCClient) BatchCreateRegions(ctx context.Context, req *accountspb.BatchCreateRegionsRequest, opts ...gax.CallOption) (*accountspb.BatchCreateRegionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCreateRegions[0:len((*c.CallOptions).BatchCreateRegions):len((*c.CallOptions).BatchCreateRegions)], opts...)
+	var resp *accountspb.BatchCreateRegionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.regionsClient.BatchCreateRegions, req, settings.GRPC, c.logger, "BatchCreateRegions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *regionsGRPCClient) UpdateRegion(ctx context.Context, req *accountspb.UpdateRegionRequest, opts ...gax.CallOption) (*accountspb.Region, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "region.name", url.QueryEscape(req.GetRegion().GetName()))}
 
@@ -484,6 +595,24 @@ func (c *regionsGRPCClient) UpdateRegion(ctx context.Context, req *accountspb.Up
 	return resp, nil
 }
 
+func (c *regionsGRPCClient) BatchUpdateRegions(ctx context.Context, req *accountspb.BatchUpdateRegionsRequest, opts ...gax.CallOption) (*accountspb.BatchUpdateRegionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchUpdateRegions[0:len((*c.CallOptions).BatchUpdateRegions):len((*c.CallOptions).BatchUpdateRegions)], opts...)
+	var resp *accountspb.BatchUpdateRegionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.regionsClient.BatchUpdateRegions, req, settings.GRPC, c.logger, "BatchUpdateRegions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *regionsGRPCClient) DeleteRegion(ctx context.Context, req *accountspb.DeleteRegionRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -493,6 +622,20 @@ func (c *regionsGRPCClient) DeleteRegion(ctx context.Context, req *accountspb.De
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = executeRPC(ctx, c.regionsClient.DeleteRegion, req, settings.GRPC, c.logger, "DeleteRegion")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *regionsGRPCClient) BatchDeleteRegions(ctx context.Context, req *accountspb.BatchDeleteRegionsRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchDeleteRegions[0:len((*c.CallOptions).BatchDeleteRegions):len((*c.CallOptions).BatchDeleteRegions)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.regionsClient.BatchDeleteRegions, req, settings.GRPC, c.logger, "BatchDeleteRegions")
 		return err
 	}, opts...)
 	return err
@@ -653,6 +796,63 @@ func (c *regionsRESTClient) CreateRegion(ctx context.Context, req *accountspb.Cr
 	return resp, nil
 }
 
+// BatchCreateRegions creates one or more regions in your Merchant Center account.
+// Executing this method requires admin access.
+func (c *regionsRESTClient) BatchCreateRegions(ctx context.Context, req *accountspb.BatchCreateRegionsRequest, opts ...gax.CallOption) (*accountspb.BatchCreateRegionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/regions:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCreateRegions[0:len((*c.CallOptions).BatchCreateRegions):len((*c.CallOptions).BatchCreateRegions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accountspb.BatchCreateRegionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateRegions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // UpdateRegion updates a region definition in your Merchant Center account.
 // Executing this method requires admin access.
 func (c *regionsRESTClient) UpdateRegion(ctx context.Context, req *accountspb.UpdateRegionRequest, opts ...gax.CallOption) (*accountspb.Region, error) {
@@ -718,6 +918,63 @@ func (c *regionsRESTClient) UpdateRegion(ctx context.Context, req *accountspb.Up
 	return resp, nil
 }
 
+// BatchUpdateRegions updates one or more regions in your Merchant Center account.
+// Executing this method requires admin access.
+func (c *regionsRESTClient) BatchUpdateRegions(ctx context.Context, req *accountspb.BatchUpdateRegionsRequest, opts ...gax.CallOption) (*accountspb.BatchUpdateRegionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/regions:batchUpdate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).BatchUpdateRegions[0:len((*c.CallOptions).BatchUpdateRegions):len((*c.CallOptions).BatchUpdateRegions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accountspb.BatchUpdateRegionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdateRegions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // DeleteRegion deletes a region definition from your Merchant Center account. Executing
 // this method requires admin access.
 func (c *regionsRESTClient) DeleteRegion(ctx context.Context, req *accountspb.DeleteRegionRequest, opts ...gax.CallOption) error {
@@ -750,6 +1007,48 @@ func (c *regionsRESTClient) DeleteRegion(ctx context.Context, req *accountspb.De
 		httpReq.Header = headers
 
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRegion")
+		return err
+	}, opts...)
+}
+
+// BatchDeleteRegions deletes multiple regions by name from your Merchant Center account.
+// Executing this method requires admin access.
+func (c *regionsRESTClient) BatchDeleteRegions(ctx context.Context, req *accountspb.BatchDeleteRegionsRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/regions:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteRegions")
 		return err
 	}, opts...)
 }

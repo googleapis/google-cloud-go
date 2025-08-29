@@ -64,6 +64,8 @@ type RetrieverCallOptions struct {
 	DeleteChunk       []gax.CallOption
 	BatchDeleteChunks []gax.CallOption
 	ListChunks        []gax.CallOption
+	CancelOperation   []gax.CallOption
+	DeleteOperation   []gax.CallOption
 	GetOperation      []gax.CallOption
 	ListOperations    []gax.CallOption
 }
@@ -281,6 +283,8 @@ func defaultRetrieverCallOptions() *RetrieverCallOptions {
 		},
 		BatchDeleteChunks: []gax.CallOption{},
 		ListChunks:        []gax.CallOption{},
+		CancelOperation:   []gax.CallOption{},
+		DeleteOperation:   []gax.CallOption{},
 		GetOperation:      []gax.CallOption{},
 		ListOperations:    []gax.CallOption{},
 	}
@@ -468,6 +472,8 @@ func defaultRetrieverRESTCallOptions() *RetrieverCallOptions {
 		},
 		BatchDeleteChunks: []gax.CallOption{},
 		ListChunks:        []gax.CallOption{},
+		CancelOperation:   []gax.CallOption{},
+		DeleteOperation:   []gax.CallOption{},
 		GetOperation:      []gax.CallOption{},
 		ListOperations:    []gax.CallOption{},
 	}
@@ -498,6 +504,8 @@ type internalRetrieverClient interface {
 	DeleteChunk(context.Context, *generativelanguagepb.DeleteChunkRequest, ...gax.CallOption) error
 	BatchDeleteChunks(context.Context, *generativelanguagepb.BatchDeleteChunksRequest, ...gax.CallOption) error
 	ListChunks(context.Context, *generativelanguagepb.ListChunksRequest, ...gax.CallOption) *ChunkIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -635,6 +643,16 @@ func (c *RetrieverClient) BatchDeleteChunks(ctx context.Context, req *generative
 // ListChunks lists all Chunks in a Document.
 func (c *RetrieverClient) ListChunks(ctx context.Context, req *generativelanguagepb.ListChunksRequest, opts ...gax.CallOption) *ChunkIterator {
 	return c.internalClient.ListChunks(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *RetrieverClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *RetrieverClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -1223,6 +1241,34 @@ func (c *retrieverGRPCClient) ListChunks(ctx context.Context, req *generativelan
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *retrieverGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *retrieverGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *retrieverGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
@@ -2407,6 +2453,76 @@ func (c *retrieverRESTClient) ListChunks(ctx context.Context, req *generativelan
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *retrieverRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
+	}, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *retrieverRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
