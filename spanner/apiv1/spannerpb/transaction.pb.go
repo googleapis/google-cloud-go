@@ -51,8 +51,9 @@ const (
 	// actually occurred in parallel. Spanner assigns commit timestamps that
 	// reflect the order of committed transactions to implement this property.
 	// Spanner offers a stronger guarantee than serializability called external
-	// consistency. For further details, please refer to
-	// https://cloud.google.com/spanner/docs/true-time-external-consistency#serializability.
+	// consistency. For more information, see
+	// [TrueTime and external
+	// consistency](https://cloud.google.com/spanner/docs/true-time-external-consistency#serializability).
 	TransactionOptions_SERIALIZABLE TransactionOptions_IsolationLevel = 1
 	// All reads performed during the transaction observe a consistent snapshot
 	// of the database, and the transaction is only successfully committed in
