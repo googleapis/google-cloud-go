@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package servicecontrol_test
-
-import (
-	servicecontrol "cloud.google.com/go/servicecontrol/apiv1"
-)
