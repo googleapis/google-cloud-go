@@ -74,7 +74,7 @@ jobs:
         retention-days: 1
     - uses: actions/checkout@v4
     - name: Download baseline package data
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}
