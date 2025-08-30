@@ -47,17 +47,25 @@ func run(args []string) error {
 		return errors.New("stategen: expected a root directory and at least one module")
 	}
 	repoRoot := args[0]
+
+	postProcessorConfigPath := filepath.Join(repoRoot, "internal/postprocessor/config.yaml")
+	ppc, err := loadPostProcessorConfig(postProcessorConfigPath)
+	if err != nil {
+		return err
+	}
+
 	stateFilePath := filepath.Join(repoRoot, ".librarian/state.yaml")
 	state, err := parseLibrarianState(stateFilePath)
 	if err != nil {
 		return err
 	}
+
 	for _, moduleName := range args[1:] {
 		if stateContainsModule(state, moduleName) {
 			slog.Info("skipping existing module", "module", moduleName)
 			continue
 		}
-		if err := addModule(repoRoot, state, moduleName); err != nil {
+		if err := addModule(repoRoot, ppc, state, moduleName); err != nil {
 			return err
 		}
 	}
@@ -73,7 +81,7 @@ func stateContainsModule(state *LibrarianState, moduleName string) bool {
 	return false
 }
 
-func addModule(repoRoot string, state *LibrarianState, moduleName string) error {
+func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState, moduleName string) error {
 	slog.Info("adding module", "module", moduleName)
 	moduleRoot := filepath.Join(repoRoot, moduleName)
 
@@ -99,9 +107,7 @@ func addModule(repoRoot string, state *LibrarianState, moduleName string) error 
 	}
 	library.Version = version
 
-	if err := addAPIProtoPaths(repoRoot, moduleName, library); err != nil {
-		return err
-	}
+	addAPIProtoPaths(ppc, moduleName, library)
 
 	if err := addGeneratedCodeRemovals(repoRoot, moduleRoot, library); err != nil {
 		return err
@@ -111,25 +117,19 @@ func addModule(repoRoot string, state *LibrarianState, moduleName string) error 
 	return nil
 }
 
-// addAPIProtoPaths walks the generates snippets directory to find the API proto paths for the library.
-func addAPIProtoPaths(repoRoot, moduleName string, library *LibraryState) error {
-	return filepath.WalkDir(filepath.Join(repoRoot, "internal/generated/snippets/"+moduleName), func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-		if match, _ := filepath.Match("snippet_metadata.*.json", d.Name()); match {
-			parts := strings.Split(d.Name(), ".")
-			parts = parts[1 : len(parts)-1]
+// addAPIProtoPaths uses the legacy post-processor config to determine which API paths contribute
+// to the specified module.
+func addAPIProtoPaths(ppc *postProcessorConfig, moduleName string, library *LibraryState) {
+	importPrefix := "cloud.google.com/go/" + moduleName + "/"
+
+	for _, serviceConfig := range ppc.ServiceConfigs {
+		if strings.HasPrefix(serviceConfig.ImportPath, importPrefix) {
 			api := &API{
-				Path: strings.Join(parts, "/"),
+				Path: serviceConfig.InputDirectory,
 			}
 			library.APIs = append(library.APIs, api)
 		}
-		return nil
-	})
+	}
 }
 
 // addApiPaths walk the module source directory to find the files to remove.
