@@ -25,19 +25,12 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/bazel"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/postprocessor"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/protoc"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
-	"gopkg.in/yaml.v3"
 )
-
-// TODO(quartzmo): The determination of whether a module is new or not should be
-// driven by configuration passed down from the orchestrating Librarian tool.
-// For now, we hardcode it to false, assuming we are always regenerating
-// existing modules.
-// See https://github.com/googleapis/librarian/issues/1022.
-const isNewModule = false
 
 // Test substitution vars.
 var (
@@ -93,7 +86,8 @@ func (c *Config) Validate() error {
 //  4. Flatten the output directory, moving the generated module(s) to the top
 //     level of the output directory (e.g., `/output/chronicle`).
 //  5. If the `DisablePostProcessor` flag is false, run the post-processor on the
-//     generated module(s) to add module files (`go.mod`, `README.md`, etc.).
+//     generated module(s), updating versions for snippet metadata,
+//     running go mod tidy etc.
 //
 // The `DisablePostProcessor` flag should always be false in production. It can be
 // true during development to inspect the "raw" protoc output before any
@@ -106,9 +100,15 @@ func Generate(ctx context.Context, cfg *Config) error {
 
 	generateReq, err := readGenerateReq(cfg.LibrarianDir)
 	if err != nil {
-		return fmt.Errorf("librariangen: failed to flatten output: %w", err)
+		return fmt.Errorf("librariangen: failed to read request: %w", err)
 	}
-	if err := invokeProtoc(ctx, cfg, generateReq); err != nil {
+	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
+	if err != nil {
+		return fmt.Errorf("librariangen: failed to load repo config: %w", err)
+	}
+	moduleConfig := repoConfig.GetModuleConfig(generateReq.ID)
+
+	if err := invokeProtoc(ctx, cfg, generateReq, moduleConfig); err != nil {
 		return fmt.Errorf("librariangen: gapic generation failed: %w", err)
 	}
 	if err := fixPermissions(cfg.OutputDir); err != nil {
@@ -118,26 +118,17 @@ func Generate(ctx context.Context, cfg *Config) error {
 		return fmt.Errorf("librariangen: failed to flatten output: %w", err)
 	}
 
+	if err := applyModuleVersion(cfg.OutputDir, moduleConfig.GetModulePath()); err != nil {
+		return fmt.Errorf("librariangen: failed to apply module version to output directories: %w", err)
+	}
+
 	if !cfg.DisablePostProcessor {
 		slog.Debug("librariangen: post-processor enabled")
 		if len(generateReq.APIs) == 0 {
 			return errors.New("librariangen: no APIs in request")
 		}
-		// Get the name of the service config YAML from the first API's BUILD.bazel file.
-		firstAPIServiceDir := filepath.Join(cfg.SourceDir, generateReq.APIs[0].Path)
-		bazelConfig, err := bazelParse(firstAPIServiceDir)
-		if err != nil {
-			return fmt.Errorf("librariangen: failed to parse BUILD.bazel for %s: %w", firstAPIServiceDir, err)
-		}
-		// Get the module title from the first API's service config YAML.
-		// This assumes all APIs in the request belong to the same module.
-		serviceYAMLPath := filepath.Join(firstAPIServiceDir, bazelConfig.ServiceYAML())
-		title, err := readTitleFromServiceYAML(serviceYAMLPath)
-		if err != nil {
-			return fmt.Errorf("librariangen: failed to read title from service yaml: %w", err)
-		}
 		moduleDir := filepath.Join(cfg.OutputDir, generateReq.ID)
-		if err := postProcess(ctx, generateReq, cfg.OutputDir, moduleDir, isNewModule, title); err != nil {
+		if err := postProcess(ctx, generateReq, cfg.OutputDir, moduleDir, moduleConfig); err != nil {
 			return fmt.Errorf("librariangen: post-processing failed: %w", err)
 		}
 	}
@@ -149,11 +140,15 @@ func Generate(ctx context.Context, cfg *Config) error {
 // invokeProtoc handles the protoc GAPIC generation logic for the 'generate' CLI command.
 // It reads a request file, and for each API specified, it invokes protoc
 // to generate the client library. It returns the module path and the path to the service YAML.
-func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Request) error {
+func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Request, moduleConfig *config.ModuleConfig) error {
 	for _, api := range generateReq.APIs {
 		apiServiceDir := filepath.Join(cfg.SourceDir, api.Path)
 		slog.Info("processing api", "service_dir", apiServiceDir)
 		bazelConfig, err := bazelParse(apiServiceDir)
+		apiConfig := moduleConfig.GetAPIConfig(api.Path)
+		if apiConfig.HasDisableGAPIC() {
+			bazelConfig.DisableGAPIC()
+		}
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to parse BUILD.bazel for %s: %w", apiServiceDir, err)
 		}
@@ -183,25 +178,6 @@ func readGenerateReq(librarianDir string) (*request.Request, error) {
 	return generateReq, nil
 }
 
-// readTitleFromServiceYAML reads the service YAML file and returns the title.
-func readTitleFromServiceYAML(path string) (string, error) {
-	slog.Debug("librariangen: reading service yaml", "path", path)
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return "", fmt.Errorf("librariangen: failed to read service yaml file: %w", err)
-	}
-	var serviceConfig struct {
-		Title string `yaml:"title"`
-	}
-	if err := yaml.Unmarshal(data, &serviceConfig); err != nil {
-		return "", fmt.Errorf("librariangen: failed to unmarshal service yaml: %w", err)
-	}
-	if serviceConfig.Title == "" {
-		return "", errors.New("librariangen: title not found in service yaml")
-	}
-	return serviceConfig.Title, nil
-}
-
 // fixPermissions recursively finds all .go files in the given directory and sets
 // their permissions to 0644.
 func fixPermissions(dir string) error {
@@ -227,21 +203,75 @@ func flattenOutput(outputDir string) error {
 	if _, err := os.Stat(goDir); os.IsNotExist(err) {
 		return fmt.Errorf("librariangen: go directory does not exist in path: %s", goDir)
 	}
-	files, err := os.ReadDir(goDir)
-	if err != nil {
-		return fmt.Errorf("librariangen: failed to read dir %s: %w", goDir, err)
-	}
-	for _, f := range files {
-		oldPath := filepath.Join(goDir, f.Name())
-		newPath := filepath.Join(outputDir, f.Name())
-		slog.Debug("librariangen: moving file", "from", oldPath, "to", newPath)
-		if err := os.Rename(oldPath, newPath); err != nil {
-			return fmt.Errorf("librariangen: failed to move %s to %s: %w", oldPath, newPath, err)
-		}
+	if err := moveFiles(goDir, outputDir); err != nil {
+		return err
 	}
 	// Remove the now-empty cloud.google.com directory.
 	if err := os.RemoveAll(filepath.Join(outputDir, "cloud.google.com")); err != nil {
 		return fmt.Errorf("librariangen: failed to remove cloud.google.com: %w", err)
+	}
+	return nil
+}
+
+// applyModuleVersion reorganizes the (already flattened) output directory
+// appropriately for versioned modules. For a module path of the form cloud.google.com/go/{id}/{version},
+// we expect to find /output/{id}/{version} and /output/internal/generated/snippets/{id}/{version}.
+// The content of these directories are be moved into /output/{id} and
+// /output/internal/generated/snippets/{id}
+func applyModuleVersion(outputDir, modulePath string) error {
+	parts := strings.Split(modulePath, "/")
+	// Just cloud.google.com/go/xyz
+	if len(parts) == 3 {
+		return nil
+	}
+	if len(parts) != 4 {
+		return fmt.Errorf("librariangen: unexpected module path format: %s", modulePath)
+	}
+	// e.g. dataproc
+	id := parts[2]
+	// e.g. v2
+	version := parts[3]
+
+	srcDir := filepath.Join(outputDir, id)
+	srcVersionDir := filepath.Join(srcDir, version)
+	snippetsDir := filepath.Join(outputDir, "internal", "generated", "snippets", id)
+	snippetsVersionDir := filepath.Join(snippetsDir, version)
+
+	if err := moveFiles(srcVersionDir, srcDir); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(srcVersionDir); err != nil {
+		return fmt.Errorf("librariangen: failed to remove %s: %w", srcVersionDir, err)
+	}
+
+	// This is hard-coded as we'd like to fix it by moving the snippets instead, at which
+	// point the condition can be removed.
+	if id == "recaptchaenterprise" {
+		return nil
+	}
+
+	if err := moveFiles(snippetsVersionDir, snippetsDir); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(snippetsVersionDir); err != nil {
+		return fmt.Errorf("librariangen: failed to remove %s: %w", snippetsVersionDir, err)
+	}
+	return nil
+}
+
+// moveFiles moves all files (and directories) from sourceDir to targetDir.
+func moveFiles(sourceDir, targetDir string) error {
+	files, err := os.ReadDir(sourceDir)
+	if err != nil {
+		return fmt.Errorf("librariangen: failed to read dir %s: %w", sourceDir, err)
+	}
+	for _, f := range files {
+		oldPath := filepath.Join(sourceDir, f.Name())
+		newPath := filepath.Join(targetDir, f.Name())
+		slog.Debug("librariangen: moving file", "from", oldPath, "to", newPath)
+		if err := os.Rename(oldPath, newPath); err != nil {
+			return fmt.Errorf("librariangen: failed to move %s to %s: %w", oldPath, newPath, err)
+		}
 	}
 	return nil
 }

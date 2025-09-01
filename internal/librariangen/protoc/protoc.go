@@ -35,6 +35,8 @@ type ConfigProvider interface {
 	HasDiregapic() bool
 	HasRESTNumericEnums() bool
 	HasGoGRPC() bool
+	HasGAPIC() bool
+	HasLegacyGRPC() bool
 }
 
 // Build constructs the full protoc command arguments for a given API.
@@ -58,27 +60,29 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 
 	// Construct the protoc command arguments.
 	var gapicOpts []string
-	gapicOpts = append(gapicOpts, "go-gapic-package="+config.GAPICImportPath())
-	if config.ServiceYAML() != "" {
-		gapicOpts = append(gapicOpts, fmt.Sprintf("api-service-config=%s", filepath.Join(apiServiceDir, config.ServiceYAML())))
-	}
-	if config.GRPCServiceConfig() != "" {
-		gapicOpts = append(gapicOpts, fmt.Sprintf("grpc-service-config=%s", filepath.Join(apiServiceDir, config.GRPCServiceConfig())))
-	}
-	if config.Transport() != "" {
-		gapicOpts = append(gapicOpts, fmt.Sprintf("transport=%s", config.Transport()))
-	}
-	if config.ReleaseLevel() != "" {
-		gapicOpts = append(gapicOpts, fmt.Sprintf("release-level=%s", config.ReleaseLevel()))
-	}
-	if config.HasMetadata() {
-		gapicOpts = append(gapicOpts, "metadata")
-	}
-	if config.HasDiregapic() {
-		gapicOpts = append(gapicOpts, "diregapic")
-	}
-	if config.HasRESTNumericEnums() {
-		gapicOpts = append(gapicOpts, "rest-numeric-enums")
+	if config.HasGAPIC() {
+		gapicOpts = append(gapicOpts, "go-gapic-package="+config.GAPICImportPath())
+		if config.ServiceYAML() != "" {
+			gapicOpts = append(gapicOpts, fmt.Sprintf("api-service-config=%s", filepath.Join(apiServiceDir, config.ServiceYAML())))
+		}
+		if config.GRPCServiceConfig() != "" {
+			gapicOpts = append(gapicOpts, fmt.Sprintf("grpc-service-config=%s", filepath.Join(apiServiceDir, config.GRPCServiceConfig())))
+		}
+		if config.Transport() != "" {
+			gapicOpts = append(gapicOpts, fmt.Sprintf("transport=%s", config.Transport()))
+		}
+		if config.ReleaseLevel() != "" {
+			gapicOpts = append(gapicOpts, fmt.Sprintf("release-level=%s", config.ReleaseLevel()))
+		}
+		if config.HasMetadata() {
+			gapicOpts = append(gapicOpts, "metadata")
+		}
+		if config.HasDiregapic() {
+			gapicOpts = append(gapicOpts, "diregapic")
+		}
+		if config.HasRESTNumericEnums() {
+			gapicOpts = append(gapicOpts, "rest-numeric-enums")
+		}
 	}
 
 	args := []string{
@@ -93,12 +97,17 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 	if config.HasGoGRPC() {
 		args = append(args, "--go_out="+outputDir, "--go-grpc_out="+outputDir, "--go-grpc_opt=require_unimplemented_servers=false")
 	} else {
-		args = append(args, "--go_v1_out="+outputDir, "--go_v1_opt=plugins=grpc")
+		args = append(args, "--go_v1_out="+outputDir)
+		if config.HasLegacyGRPC() {
+			args = append(args, "--go_v1_opt=plugins=grpc")
+		}
 	}
-	args = append(args, "--go_gapic_out="+outputDir)
+	if config.HasGAPIC() {
+		args = append(args, "--go_gapic_out="+outputDir)
 
-	for _, opt := range gapicOpts {
-		args = append(args, "--go_gapic_opt="+opt)
+		for _, opt := range gapicOpts {
+			args = append(args, "--go_gapic_opt="+opt)
+		}
 	}
 	args = append(args,
 		// The -I flag specifies the import path for protoc. All protos
