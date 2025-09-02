@@ -621,7 +621,7 @@ func TestClient(t *testing.T) {
 			t.Fatalf("o.validate() = nil, want error")
 		}
 		if err != nil && !tc.wantErr {
-			t.Fatalf(err.Error())
+			t.Fatal(err.Error())
 		}
 
 		if tc.wantClientChanged {

@@ -1232,7 +1232,7 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 		testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
 			gotDocs, err = test.q.Documents(ctx).GetAll()
 			if err != nil {
-				r.Errorf(err.Error())
+				r.Errorf("%s", err.Error())
 			}
 		})
 		if err != nil {
@@ -1432,7 +1432,7 @@ func TestIntegration_QueryUnary(t *testing.T) {
 			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
 				got, err := test.q.Documents(ctx).GetAll()
 				if err != nil {
-					r.Errorf(err.Error())
+					r.Errorf("%s", err.Error())
 					return
 				}
 				if len(got) != 1 {
