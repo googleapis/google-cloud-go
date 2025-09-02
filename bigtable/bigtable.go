@@ -1019,6 +1019,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		return errNegativeRowLimit
 	}
 
+	firstResponseRecorded := false
 	err = gaxInvokeWithRecorder(ctx, mt, methodNameReadRows, func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		if rowLimitSet && numRowsRead >= intialRowLimit {
 			return nil
@@ -1071,6 +1072,10 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		for {
 			proto.Reset(res)
 			err := stream.RecvMsg(res)
+			if !firstResponseRecorded && (err == nil || err == io.EOF) {
+				firstResponseRecorded = true
+				mt.currOp.setFirstRespTime(time.Now())
+			}
 			if err == io.EOF {
 				*trailerMD = stream.Trailer()
 				break

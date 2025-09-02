@@ -245,6 +245,9 @@ func TestPartitionQuery_Parallel(t *testing.T) {
 }
 
 func TestPartitionQuery_Multiplexed(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
@@ -309,6 +312,9 @@ func TestPartitionQuery_Multiplexed(t *testing.T) {
 }
 
 func TestPartitionRead_Multiplexed(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{

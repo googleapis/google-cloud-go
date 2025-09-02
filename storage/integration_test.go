@@ -3250,15 +3250,10 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 // Writer test for appendable uploads with and without finalization,
 // also validating Flush() at various offsets.
 func TestIntegration_WriterAppend(t *testing.T) {
-	t.Skip("b/402283880")
 	ctx := skipAllButZonal(context.Background(), "ZB test")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
-		bucketName := prefix + uidSpace.New()
-		bkt := client.Bucket(bucketName)
-
-		h.mustCreateZonalBucket(bkt, testutil.ProjID())
-		defer h.mustDeleteBucket(bkt)
+		bkt := client.Bucket(bucket)
 
 		testCases := []struct {
 			name        string
@@ -3392,15 +3387,10 @@ func TestIntegration_WriterAppend(t *testing.T) {
 // Writer test for append takeover of unfinalized object, including
 // calls to Flush() on takeover.
 func TestIntegration_WriterAppendTakeover(t *testing.T) {
-	t.Skip("b/402283880")
 	ctx := skipAllButZonal(context.Background(), "ZB test")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
-		bucketName := prefix + uidSpace.New()
-		bkt := client.Bucket(bucketName)
-
-		h.mustCreateZonalBucket(bkt, testutil.ProjID())
-		defer h.mustDeleteBucket(bkt)
+		bkt := client.Bucket(bucket)
 
 		testCases := []struct {
 			name                 string
@@ -3424,7 +3414,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{7 * MiB, 8 * MiB},
+				checkProgressOffsets: []int64{3 * MiB, 7 * MiB, 8 * MiB, 9 * MiB},
 			},
 			{
 				name:                "middle chunk takeover, small flush",
@@ -3466,7 +3456,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{4 * MiB, 8 * MiB},
+				checkProgressOffsets: []int64{0, 4 * MiB, 8 * MiB, 9 * MiB},
 			},
 			{
 				name:           "last byte takeover",
@@ -3601,15 +3591,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 }
 
 func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
-	t.Skip("b/402283880")
 	ctx := skipAllButZonal(context.Background(), "ZB test")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
-		bucketName := prefix + uidSpace.New()
-		bkt := client.Bucket(bucketName)
-
-		h.mustCreateZonalBucket(bkt, testutil.ProjID())
-		defer h.mustDeleteBucket(bkt)
+		bkt := client.Bucket(bucket)
 
 		objName := "object1"
 		obj := bkt.Object(objName)

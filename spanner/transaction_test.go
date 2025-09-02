@@ -304,6 +304,9 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 }
 
 func TestClient_ReadWriteTransaction_UnimplementedErrorWithMultiplexedSessionSwitchesToRegular(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
@@ -396,6 +399,9 @@ func TestClient_ReadWriteTransaction_UnimplementedErrorWithMultiplexedSessionSwi
 }
 
 func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
@@ -506,6 +512,9 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 }
 
 func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
@@ -598,6 +607,9 @@ func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
 }
 
 func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	cfg := SessionPoolConfig{
@@ -723,6 +735,9 @@ func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
 }
 
 func TestMutationOnlyCaseAborted(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 
@@ -838,20 +853,16 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if got, want := gotReqs[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	if got, want := gotReqs[1].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[2].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[4].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -1588,7 +1599,7 @@ func testReadWriteStmtBasedTransaction(t *testing.T, beginTransactionOption Begi
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
 		}
-		if g, w := tx.options.TransactionTag, "test"; g != w {
+		if g, w := tx.txOpts.TransactionTag, "test"; g != w {
 			t.Errorf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
 		}
 		rowCount, err = f(tx)
@@ -1679,6 +1690,9 @@ func TestReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 
 // Verify that requests in a ReadWriteStmtBasedTransaction uses multiplexed sessions when enabled
 func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	cfg := SessionPoolConfig{
@@ -1731,6 +1745,9 @@ func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
 
 // Verify that in ReadWriteStmtBasedTransaction when a transaction using a multiplexed session fails with ABORTED then during retry the previousTransactionID is passed
 func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSession_OnAbort(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	cfg := SessionPoolConfig{
@@ -1795,6 +1812,9 @@ func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSe
 
 // Verify that in ReadWriteStmtBasedTransaction, commit request has precommit token set when using multiplexed sessions
 func TestReadWriteStmtBasedTransaction_SetsPrecommitToken(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	cfg := SessionPoolConfig{
@@ -1883,20 +1903,16 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[3].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -1958,26 +1974,22 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[5].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[6+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[6].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[7+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+	if got, want := gotReqs[7].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -2194,9 +2206,6 @@ func compareRequestsWithConfig(want []interface{}, got []interface{}, config *Se
 		want[0], want[sessReq] = want[sessReq], want[0]
 	}
 	if isMultiplexEnabled || (config != nil && config.enableMultiplexSession) {
-		if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.CreateSessionRequest{}) {
-			want = append([]interface{}{&sppb.CreateSessionRequest{}}, want...)
-		}
 		if reflect.TypeOf(got[0]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 			muxSessionIndex := 0
 			for i := 0; i < len(got); i++ {
@@ -2206,6 +2215,20 @@ func compareRequestsWithConfig(want []interface{}, got []interface{}, config *Se
 				}
 			}
 			got[0], got[muxSessionIndex] = got[muxSessionIndex], got[0]
+		}
+		// With multiplex session enabled, if no SessionPoolConfig is configured then
+		// BatchCreationSessions will be not called. In such cases, only multiplex
+		//session will be created using CreateSession RPC
+		if reflect.TypeOf(want[0]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+			if len(got) > 1 && reflect.TypeOf(got[1]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+				want[0] = &sppb.CreateSessionRequest{}
+			}
+			if len(got) == 1 && reflect.TypeOf(got[0]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+				want[0] = &sppb.CreateSessionRequest{}
+			}
+			if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.CreateSessionRequest{}) {
+				want = append([]interface{}{&sppb.CreateSessionRequest{}}, want...)
+			}
 		}
 	}
 	if len(got) != len(want) {

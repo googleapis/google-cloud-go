@@ -12,7 +12,8 @@
       "component": "auth/oauth2adapt"
     },
     "bigquery": {
-      "component": "bigquery"
+      "component": "bigquery",
+      "exclude-paths": ["bigquery/v2"]
     },
     "bigtable": {
       "component": "bigtable"
