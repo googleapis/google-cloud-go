@@ -174,6 +174,7 @@ func process(mod indexEntry, workingDir, outDir string, namer *friendlyAPINamer,
 		"cloud.google.com/go/gsuiteaddons",
 
 		"google.golang.org/appengine/v2/cmd",
+		"cloud.google.com/go/spanner/benchmarks",
 	}
 	if hasPrefix(mod.Path, filter) {
 		log.Printf("%q filtered out, nothing to do: here is the filter: %q", mod.Path, filter)

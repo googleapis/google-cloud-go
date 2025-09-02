@@ -57,6 +57,10 @@ func Load(glob, workingDir string, filter []string) ([]Info, error) {
 		return nil, fmt.Errorf("pattern %q matched 0 packages", glob)
 	}
 
+	// To sort v1 modules before v2+
+	sort.Slice(allPkgs, func(i, j int) bool {
+		return allPkgs[i].PkgPath < allPkgs[j].PkgPath
+	})
 	module := allPkgs[0].Module
 	skippedModules := map[string]struct{}{}
 
