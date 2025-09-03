@@ -778,6 +778,21 @@
         "grpc": {
           "libraryClient": "RegionsClient",
           "rpcs": {
+            "BatchCreateRegions": {
+              "methods": [
+                "BatchCreateRegions"
+              ]
+            },
+            "BatchDeleteRegions": {
+              "methods": [
+                "BatchDeleteRegions"
+              ]
+            },
+            "BatchUpdateRegions": {
+              "methods": [
+                "BatchUpdateRegions"
+              ]
+            },
             "CreateRegion": {
               "methods": [
                 "CreateRegion"
@@ -808,6 +823,21 @@
         "rest": {
           "libraryClient": "RegionsClient",
           "rpcs": {
+            "BatchCreateRegions": {
+              "methods": [
+                "BatchCreateRegions"
+              ]
+            },
+            "BatchDeleteRegions": {
+              "methods": [
+                "BatchDeleteRegions"
+              ]
+            },
+            "BatchUpdateRegions": {
+              "methods": [
+                "BatchUpdateRegions"
+              ]
+            },
             "CreateRegion": {
               "methods": [
                 "CreateRegion"
