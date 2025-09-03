@@ -14,7 +14,11 @@
 
 package pkgload
 
-import "testing"
+import (
+	"testing"
+
+	"golang.org/x/tools/go/packages"
+)
 
 func TestPkgStatus(t *testing.T) {
 	tests := []struct {
@@ -70,5 +74,56 @@ func TestPkgStatus(t *testing.T) {
 		if got := pkgStatus(test.importPath, test.doc, test.version); got != test.want {
 			t.Errorf("pkgStatus(%q, %q, %q) got %q, want %q", test.importPath, test.doc, test.version, got, test.want)
 		}
+	}
+}
+
+func TestGetModulePath(t *testing.T) {
+	tests := []struct {
+		name string
+		pkgs []*packages.Package
+		want string
+	}{
+		{
+			name: "empty",
+			pkgs: []*packages.Package{},
+			want: "",
+		},
+		{
+			name: "no module",
+			pkgs: []*packages.Package{
+				{Module: nil},
+			},
+			want: "",
+		},
+		{
+			name: "module no path",
+			pkgs: []*packages.Package{
+				{Module: &packages.Module{}},
+			},
+			want: "",
+		},
+		{
+			name: "one with path",
+			pkgs: []*packages.Package{
+				{Module: &packages.Module{Path: "example.com/foo"}},
+			},
+			want: "example.com/foo",
+		},
+		{
+			name: "many",
+			pkgs: []*packages.Package{
+				{Module: nil},
+				{Module: &packages.Module{}},
+				{Module: &packages.Module{Path: "example.com/bar"}},
+			},
+			want: "example.com/bar",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getModulePath(tt.pkgs); got != tt.want {
+				t.Errorf("getModulePath() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
