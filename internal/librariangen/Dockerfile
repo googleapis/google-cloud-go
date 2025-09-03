@@ -21,7 +21,7 @@
 FROM marketplace.gcr.io/google/debian12:latest AS builder
 
 # Set environment variables for tool versions for easy updates.
-ENV GO_VERSION=1.24.6
+ENV GO_VERSION=1.24.0
 
 # Install build dependencies.
 RUN apt-get update && \
