@@ -21,7 +21,7 @@
 FROM marketplace.gcr.io/google/debian12:latest AS builder
 
 # Set environment variables for tool versions for easy updates.
-ENV GO_VERSION=1.23.0
+ENV GO_VERSION=1.24.0
 
 # Install build dependencies.
 RUN apt-get update && \
@@ -59,7 +59,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -v -o /librariangen .
 FROM marketplace.gcr.io/google/debian12:latest
 
 # Set environment variables for tool versions for easy updates.
-ENV GO_VERSION=1.23.0
+ENV GO_VERSION=1.24.6
 ENV PROTOC_VERSION=25.7
 ENV GO_PROTOC_PLUGIN_V1_VERSION=1.5.4
 ENV GO_PROTOC_PLUGIN_V2_VERSION=1.35.2

@@ -17,25 +17,16 @@ package postprocessor
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"fmt"
-	"html/template"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
-	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/module"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
-)
-
-// External string template vars.
-var (
-	//go:embed _README.md.txt
-	readmeTmpl string
-	//go:embed _version.go.txt
-	versionTmpl string
 )
 
 // Test substitution vars.
@@ -46,19 +37,12 @@ var (
 // PostProcess is the entrypoint for post-processing generated files. It runs
 // formatters and other tools to ensure code quality. The high-level steps are:
 //
-//  1. Run `goimports` to format the code.
-//  2. If `newModule` is true, perform one-time initialization for a new module
-//     by generating a placeholder `CHANGES.md`.
-//  3. Generate a module-level `internal/version.go`. This is required for both
-//     new and existing modules because client-level `version.go` files import
-//     it, and `go mod tidy` will fail without it.
-//  4. Generate a client-level `version.go` for each API version specified in
-//     the request.
-//  5. Generate a `README.md`.
-//  6. Run `go mod init`.
-//  8. Run `go mod tidy` to clean up the `go.mod` file.
-func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir string, newModule bool, title string) error {
-	slog.Debug("librariangen: starting post-processing", "directory", moduleDir, "new_module", newModule)
+//  1. Modify the generated snippets to specify the current version
+//  2. Run `go mod init`.
+//  3. Run `goimports` to format the code.
+//  4. Run `go mod tidy` to clean up the `go.mod` file.
+func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir string, moduleConfig *config.ModuleConfig) error {
+	slog.Debug("librariangen: starting post-processing", "directory", moduleDir)
 
 	if len(req.APIs) == 0 {
 		slog.Debug("librariangen: no APIs in request, skipping module initialization")
@@ -69,33 +53,11 @@ func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir
 		return fmt.Errorf("librariangen: no version for API: %s (required for post-processing)", req.ID)
 	}
 
-	// E.g. cloud.google.com/go/chronicle
-	modulePath := "cloud.google.com/go/" + req.ID
-
-	if newModule {
-		slog.Debug("librariangen: initializing new module")
-		if err := generateChanges(moduleDir); err != nil {
-			return fmt.Errorf("librariangen: failed to generate CHANGES.md: %w", err)
-		}
-	}
-	if err := module.GenerateInternalVersionFile(moduleDir, req.Version); err != nil {
-		return fmt.Errorf("librariangen: failed to generate internal/version.go: %w", err)
-	}
-
-	if err := generateClientVersionFiles(req, moduleDir, req.ID); err != nil {
-		return fmt.Errorf("librariangen: failed to generate client version files: %w", err)
-	}
-
-	if err := module.UpdateSnippetsMetadata(outputDir, req.ID, req.Version); err != nil {
+	if err := updateSnippetsMetadata(req, outputDir, moduleConfig); err != nil {
 		return fmt.Errorf("librariangen: failed to update snippets metadata: %w", err)
 	}
 
-	// The README should be updated on every run.
-	if err := generateReadme(moduleDir, modulePath, title); err != nil {
-		return fmt.Errorf("librariangen: failed to generate README.md: %w", err)
-	}
-
-	if err := goModInit(ctx, modulePath, moduleDir); err != nil {
+	if err := goModInit(ctx, moduleConfig.GetModulePath(), moduleDir); err != nil {
 		return fmt.Errorf("librariangen: failed to run 'go mod init': %w", err)
 	}
 
@@ -135,73 +97,41 @@ func goModTidy(ctx context.Context, dir string) error {
 	return execvRun(ctx, args, dir)
 }
 
-// generateReadme creates a README.md file for a new module.
-func generateReadme(path, modulePath, title string) error {
-	readmePath := filepath.Join(path, "README.md")
-	slog.Debug("librariangen: creating file", "path", readmePath)
-	readmeFile, err := os.Create(readmePath)
-	if err != nil {
-		return err
-	}
-	defer readmeFile.Close()
-	t := template.Must(template.New("readme").Parse(readmeTmpl))
-	readmeData := struct {
-		Name       string
-		ModulePath string
-	}{
-		Name:       title,
-		ModulePath: modulePath,
-	}
-	return t.Execute(readmeFile, readmeData)
-}
+// updateSnippetsMetadata updates all snippet files to populate the $VERSION placeholder.
+func updateSnippetsMetadata(req *request.Request, outputDir string, moduleConfig *config.ModuleConfig) error {
+	moduleName := req.ID
+	version := req.Version
 
-// generateChanges creates a CHANGES.md file for a new module.
-func generateChanges(moduleDir string) error {
-	changesPath := filepath.Join(moduleDir, "CHANGES.md")
-	slog.Debug("librariangen: creating file", "path", changesPath)
-	content := "# Changes\n"
-	return os.WriteFile(changesPath, []byte(content), 0644)
-}
+	slog.Debug("librariangen: updating snippets metadata")
+	snpDir := filepath.Join(outputDir, "internal", "generated", "snippets", moduleName)
 
-// generateClientVersionFiles iterates through the APIs in the request and
-// generates a version.go file for each corresponding client directory.
-func generateClientVersionFiles(req *request.Request, moduleDir, moduleName string) error {
 	for _, api := range req.APIs {
-		// E.g. google/cloud/chronicle/v1 -> apiv1
-		parts := strings.Split(api.Path, "/")
-		if len(parts) < 2 {
-			return fmt.Errorf("librariangen: unexpected API path format: %s", api.Path)
-		}
-		clientDirName := "api" + parts[len(parts)-1]
-		clientDir := filepath.Join(moduleDir, clientDirName)
-		if err := generateClientVersionFile(clientDir, moduleName); err != nil {
+		apiConfig := moduleConfig.GetAPIConfig(api.Path)
+		clientDirName, err := apiConfig.GetClientDirectory()
+		if err != nil {
 			return err
+		}
+
+		snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
+		path := filepath.Join(snpDir, clientDirName, snippetFile)
+		slog.Debug("librariangen: updating snippet metadata file", "path", path)
+		read, err := os.ReadFile(path)
+		if err != nil {
+			// If the snippet metadata doesn't exist, that's probably because this API path
+			// is proto-only (so the GAPIC generator hasn't run). Continue to the next API path.
+			if errors.Is(err, os.ErrNotExist) {
+				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", path)
+				continue
+			}
+			return err
+		}
+		if strings.Contains(string(read), "$VERSION") {
+			s := strings.Replace(string(read), "$VERSION", version, 1)
+			err = os.WriteFile(path, []byte(s), 0)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
-}
-
-// generateClientVersionFile creates a version.go file for a client.
-func generateClientVersionFile(clientDir, moduleName string) error {
-	if err := os.MkdirAll(clientDir, 0755); err != nil {
-		return err
-	}
-	versionPath := filepath.Join(clientDir, "version.go")
-	slog.Debug("librariangen: creating file", "path", versionPath)
-	t := template.Must(template.New("version").Parse(versionTmpl))
-	versionData := struct {
-		Year               int
-		Package            string
-		ModuleRootInternal string
-	}{
-		Year:               time.Now().Year(),
-		Package:            moduleName,
-		ModuleRootInternal: "cloud.google.com/go/" + moduleName + "/internal",
-	}
-	f, err := os.Create(versionPath)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	return t.Execute(f, versionData)
 }

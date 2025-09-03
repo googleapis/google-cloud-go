@@ -19,61 +19,33 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
 func TestPostProcess(t *testing.T) {
 	tests := []struct {
 		name                string
-		newModule           bool
 		mockexecvRun        func(ctx context.Context, args []string, dir string) error
-		wantFilesCreated    []string
-		wantFilesNotCreated []string
 		wantGoModInitCalled bool
 		wantGoModTidyCalled bool
 		wantErr             bool
 		noVersion           bool
 	}{
 		{
-			name:      "new module success",
-			newModule: true,
+			name: "success",
 			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				return nil
-			},
-			wantFilesCreated: []string{
-				"CHANGES.md",
-				"README.md",
-				"apiv1/version.go",
-				"apiv2/version.go",
 			},
 			wantGoModInitCalled: true,
 			wantGoModTidyCalled: true,
 			wantErr:             false,
 		},
 		{
-			name:      "existing module success",
-			newModule: false,
-			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
-				return nil
-			},
-			wantFilesCreated: []string{
-				"README.md",
-				"apiv1/version.go",
-				"apiv2/version.go",
-			},
-			wantFilesNotCreated: []string{
-				"go.mod",
-				"CHANGES.md",
-			},
-			wantGoModInitCalled: true,
-			wantGoModTidyCalled: true,
-			wantErr:             false,
-		},
-		{
-			name:      "goimports fails (fatal)",
-			newModule: false,
+			name: "goimports fails (fatal)",
 			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				if args[0] == "goimports" {
 					return errors.New("goimports failed")
@@ -85,8 +57,7 @@ func TestPostProcess(t *testing.T) {
 			wantErr:             true,
 		},
 		{
-			name:      "go mod init fails (fatal)",
-			newModule: true,
+			name: "go mod init fails (fatal)",
 			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				if args[0] == "go" && args[1] == "mod" && args[2] == "init" {
 					return errors.New("go mod init failed")
@@ -98,8 +69,7 @@ func TestPostProcess(t *testing.T) {
 			wantErr:             true,
 		},
 		{
-			name:      "go mod tidy fails (fatal)",
-			newModule: false,
+			name: "go mod tidy fails (fatal)",
 			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				if args[0] == "go" && args[1] == "mod" && args[2] == "tidy" {
 					return errors.New("go mod tidy failed")
@@ -124,13 +94,40 @@ func TestPostProcess(t *testing.T) {
 			outputDir := t.TempDir()
 			moduleDir := filepath.Join(outputDir, "chronicle")
 			if err := os.MkdirAll(moduleDir, 0755); err != nil {
-				t.Fatalf("failed to create moduleDir %v", err)
+				t.Fatalf("failed to create directory %s: %v", moduleDir, err)
 				return
 			}
-			// Create the snippets dir that UpdateSnippetsMetadata expects.
+
 			snippetsDir := filepath.Join(outputDir, "internal", "generated", "snippets", "chronicle")
-			if err := os.MkdirAll(snippetsDir, 0755); err != nil {
-				t.Fatalf("failed to create snippetsDir %v", err)
+
+			if err := createDirectories(t, moduleDir, snippetsDir, filepath.Join(snippetsDir, "sublevel1/sublevel2")); err != nil {
+				// Specific failure will have been logged already.
+				return
+			}
+
+			snippetMetadataFiles := []string{
+				"apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+				"apiv2/snippet_metadata.google.cloud.chronicle.v2.json",
+				"sublevel1/sublevel2/apiv1/snippet_metadata.google.cloud.chronicle.sublevel1.sublevel2.v1.json",
+				// This is *not* part of the request, so won't be modified.
+				"apiv3/snippet_metadata.google.cloud.chronicle.v3.json",
+			}
+			for _, snippetMetadataFile := range snippetMetadataFiles {
+				fullPath := filepath.Join(snippetsDir, snippetMetadataFile)
+				specificSnippetDir := filepath.Dir(fullPath)
+				if err := os.MkdirAll(specificSnippetDir, 0755); err != nil {
+					t.Fatalf("failed to create directory %s: %v", moduleDir, err)
+					return
+				}
+				content := "x\ny\nversion: $VERSION\na\nb\n"
+				if err := os.WriteFile(fullPath, []byte(content), 0644); err != nil {
+					t.Fatalf("failed to write file %s: %v", fullPath, err)
+					return
+				}
+			}
+
+			if err := os.MkdirAll(moduleDir, 0755); err != nil {
+				t.Fatalf("failed to create moduleDir %v", err)
 				return
 			}
 
@@ -150,6 +147,7 @@ func TestPostProcess(t *testing.T) {
 				APIs: []request.API{
 					{Path: "google/cloud/chronicle/v1"},
 					{Path: "google/cloud/chronicle/v2"},
+					{Path: "google/cloud/chronicle/sublevel1/sublevel2/v1"},
 				},
 				Version: "1.0.0",
 			}
@@ -158,7 +156,10 @@ func TestPostProcess(t *testing.T) {
 				req.Version = ""
 			}
 
-			if err := PostProcess(context.Background(), req, outputDir, moduleDir, tt.newModule, "Chronicle API"); (err != nil) != tt.wantErr {
+			moduleConfig := &config.ModuleConfig{
+				Name: "chronicle",
+			}
+			if err := PostProcess(context.Background(), req, outputDir, moduleDir, moduleConfig); (err != nil) != tt.wantErr {
 				t.Fatalf("PostProcess() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -173,17 +174,28 @@ func TestPostProcess(t *testing.T) {
 				t.Errorf("goModTidyCalled = %v; want %v", goModTidyCalled, tt.wantGoModTidyCalled)
 			}
 
-			for _, file := range tt.wantFilesCreated {
-				if _, err := os.Stat(filepath.Join(moduleDir, file)); os.IsNotExist(err) {
-					t.Errorf("file %s was not created", file)
+			for _, snippetMetadataFile := range snippetMetadataFiles {
+				path := filepath.Join(snippetsDir, snippetMetadataFile)
+				read, err := os.ReadFile(path)
+				if err != nil {
+					t.Errorf("Couldn't read snippet metadata file %s: %v", snippetMetadataFile, err)
 				}
-			}
-
-			for _, file := range tt.wantFilesNotCreated {
-				if _, err := os.Stat(filepath.Join(moduleDir, file)); !os.IsNotExist(err) {
-					t.Errorf("file %s was created, but should not have been", file)
+				wantModified := !strings.Contains(snippetMetadataFile, "v3")
+				gotModified := strings.Contains(string(read), req.Version)
+				if wantModified != gotModified {
+					t.Errorf("incorrect snippet metadata modification for %s; got = %v; want = %v", snippetMetadataFile, gotModified, wantModified)
 				}
 			}
 		})
 	}
+}
+
+func createDirectories(t *testing.T, directories ...string) error {
+	for _, directory := range directories {
+		if err := os.MkdirAll(directory, 0755); err != nil {
+			t.Fatalf("failed to create directory %s: %v", directory, err)
+			return err
+		}
+	}
+	return nil
 }
