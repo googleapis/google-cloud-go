@@ -689,19 +689,19 @@ type BackupVault_BackupRetentionPolicy struct {
 	// vault.
 	BackupMinimumEnforcedRetentionDays int32 `protobuf:"varint,1,opt,name=backup_minimum_enforced_retention_days,json=backupMinimumEnforcedRetentionDays,proto3" json:"backup_minimum_enforced_retention_days,omitempty"`
 	// Optional. Indicates if the daily backups are immutable.
-	// Atleast one of daily_backup_immutable, weekly_backup_immutable,
+	// At least one of daily_backup_immutable, weekly_backup_immutable,
 	// monthly_backup_immutable and manual_backup_immutable must be true.
 	DailyBackupImmutable bool `protobuf:"varint,2,opt,name=daily_backup_immutable,json=dailyBackupImmutable,proto3" json:"daily_backup_immutable,omitempty"`
 	// Optional. Indicates if the weekly backups are immutable.
-	// Atleast one of daily_backup_immutable, weekly_backup_immutable,
+	// At least one of daily_backup_immutable, weekly_backup_immutable,
 	// monthly_backup_immutable and manual_backup_immutable must be true.
 	WeeklyBackupImmutable bool `protobuf:"varint,3,opt,name=weekly_backup_immutable,json=weeklyBackupImmutable,proto3" json:"weekly_backup_immutable,omitempty"`
 	// Optional. Indicates if the monthly backups are immutable.
-	// Atleast one of daily_backup_immutable, weekly_backup_immutable,
+	// At least one of daily_backup_immutable, weekly_backup_immutable,
 	// monthly_backup_immutable and manual_backup_immutable must be true.
 	MonthlyBackupImmutable bool `protobuf:"varint,4,opt,name=monthly_backup_immutable,json=monthlyBackupImmutable,proto3" json:"monthly_backup_immutable,omitempty"`
 	// Optional. Indicates if the manual backups are immutable.
-	// Atleast one of daily_backup_immutable, weekly_backup_immutable,
+	// At least one of daily_backup_immutable, weekly_backup_immutable,
 	// monthly_backup_immutable and manual_backup_immutable must be true.
 	ManualBackupImmutable bool `protobuf:"varint,5,opt,name=manual_backup_immutable,json=manualBackupImmutable,proto3" json:"manual_backup_immutable,omitempty"`
 }
