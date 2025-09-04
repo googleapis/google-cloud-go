@@ -1,7 +1,7 @@
 # This state file is used for testing the 'generate' command.
 # It includes preserve_regex and remove_regex, which are critical inputs
 # for the generate lifecycle.
-image: image=gcr.io/cloud-go-infra/librariangen:latest
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
 libraries:
     - id: secretmanager
       version: 1.15.0
