@@ -2,6 +2,20 @@
 
 
 
+## [0.122.0](https://github.com/googleapis/google-cloud-go/compare/v0.121.6...v0.122.0) (2025-09-04)
+
+
+### Features
+
+* **internal/librariangen:** Add release-init command ([#12751](https://github.com/googleapis/google-cloud-go/issues/12751)) ([52e84cc](https://github.com/googleapis/google-cloud-go/commit/52e84cc9a11077eb3c50a0b5fc9aa26361d63b47))
+
+
+### Bug Fixes
+
+* **internal/godocfx:** Better support for v2 modules ([#12797](https://github.com/googleapis/google-cloud-go/issues/12797)) ([4bc8785](https://github.com/googleapis/google-cloud-go/commit/4bc878597a5e6bd97cf3ee2174f6df7fbdd2d47b))
+* **internal/godocfx:** Module detection when tidy errors ([#12801](https://github.com/googleapis/google-cloud-go/issues/12801)) ([83d46cd](https://github.com/googleapis/google-cloud-go/commit/83d46cdc5ed7cfbb94038e7fa1f787adfe532c74))
+* **internal/librariangen:** Fix goimports errors ([#12765](https://github.com/googleapis/google-cloud-go/issues/12765)) ([83bdaa4](https://github.com/googleapis/google-cloud-go/commit/83bdaa4ce4e42f8b4a29e2055fc4894d8c6b1e2c))
+
 ## [0.121.6](https://github.com/googleapis/google-cloud-go/compare/v0.121.5...v0.121.6) (2025-08-14)
 
 
