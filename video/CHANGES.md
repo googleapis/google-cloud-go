@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.25.0...video/v1.26.0) (2025-09-04)
+
+
+### Features
+
+* **video/transcoder:** Add support for automatically generating subtitle for input videos ([7e241f3](https://github.com/googleapis/google-cloud-go/commit/7e241f3c17e44e83f858ac142ebedc916330651e))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.24.0...video/v1.25.0) (2025-07-23)
 
 

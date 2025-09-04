@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.15.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.15.0...chat/v0.15.1) (2025-09-04)
+
+
+### Bug Fixes
+
+* **chat:** Changed field behavior for an existing field last_update_time in message .google.chat.v1.QuotedMessageMetadata ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** Changed field behavior for an existing field name in message .google.chat.v1.QuotedMessageMetadata ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
+
+### Documentation
+
+* **chat:** A comment for field customer in message .google.chat.v1.Space is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for field last_update_time in message .google.chat.v1.QuotedMessageMetadata is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for field name in message .google.chat.v1.QuotedMessageMetadata is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for field quoted_message_metadata in message .google.chat.v1.Message is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for field update_mask in message .google.chat.v1.UpdateMessageRequest is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for message QuotedMessageMetadata is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
 ## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.14.0...chat/v0.15.0) (2025-07-31)
 
 

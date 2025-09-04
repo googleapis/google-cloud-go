@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.4.0...config/v1.5.0) (2025-09-04)
+
+
+### Features
+
+* **config:** Added support for service maintained provider ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.2...config/v1.4.0) (2025-07-09)
 
 
