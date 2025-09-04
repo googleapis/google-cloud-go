@@ -83,7 +83,7 @@ func TestRetryApply(t *testing.T) {
 	errInjector := func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		if strings.HasSuffix(info.FullMethod, "MutateRow") && errCount < 3 {
 			errCount++
-			return nil, status.Errorf(code, errMsg)
+			return nil, status.Error(code, errMsg)
 		}
 		return handler(ctx, req)
 	}

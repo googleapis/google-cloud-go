@@ -1,6 +1,6 @@
 module cloud.google.com/go/spanner
 
-go 1.23.0
+go 1.24.0
 
 retract v1.76.0 // due to https://github.com/googleapis/google-cloud-go/issues/11630
 
