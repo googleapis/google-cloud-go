@@ -374,8 +374,8 @@ deep-remove-regex:
   - /internal/generated/snippets/pubsub/apiv1/
   - /internal/generated/snippets/pubsublite/apiv1/
   - /internal/generated/snippets/rapidmigrationassessment/apiv1/
-  - /internal/generated/snippets/recaptchaenterprise/v2/apiv1/
-  - /internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1/
+  - /internal/generated/snippets/recaptchaenterprise/apiv1/
+  - /internal/generated/snippets/recaptchaenterprise/apiv1beta1/
   - /internal/generated/snippets/recommendationengine/apiv1beta1/
   - /internal/generated/snippets/recommender/apiv1/
   - /internal/generated/snippets/recommender/apiv1beta1/
@@ -1162,11 +1162,11 @@ deep-copy-regex:
   - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/recaptchaenterprise/v2/apiv1
     dest: /recaptchaenterprise/apiv1
   - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/internal/generated/snippets/recaptchaenterprise/v2/apiv1
-    dest: /internal/generated/snippets/recaptchaenterprise/v2/apiv1
+    dest: /internal/generated/snippets/recaptchaenterprise/apiv1
   - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
     dest: /recaptchaenterprise/apiv1beta1
   - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1
-    dest: /internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1
+    dest: /internal/generated/snippets/recaptchaenterprise/apiv1beta1
   - source: /google/cloud/recommendationengine/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/recommender/v1/cloud.google.com/go

@@ -244,12 +244,6 @@ func applyModuleVersion(outputDir, modulePath string) error {
 		return fmt.Errorf("librariangen: failed to remove %s: %w", srcVersionDir, err)
 	}
 
-	// This is hard-coded as we'd like to fix it by moving the snippets instead, at which
-	// point the condition can be removed.
-	if id == "recaptchaenterprise" {
-		return nil
-	}
-
 	if err := moveFiles(snippetsVersionDir, snippetsDir); err != nil {
 		return err
 	}
