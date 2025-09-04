@@ -137,7 +137,9 @@ func (c *PublicCertificateAuthorityClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateExternalAccountKey creates a new ExternalAccountKey bound to the project.
+// CreateExternalAccountKey creates a new
+// ExternalAccountKey
+// bound to the project.
 func (c *PublicCertificateAuthorityClient) CreateExternalAccountKey(ctx context.Context, req *publiccapb.CreateExternalAccountKeyRequest, opts ...gax.CallOption) (*publiccapb.ExternalAccountKey, error) {
 	return c.internalClient.CreateExternalAccountKey(ctx, req, opts...)
 }
@@ -317,7 +319,9 @@ func (c *publicCertificateAuthorityGRPCClient) CreateExternalAccountKey(ctx cont
 	return resp, nil
 }
 
-// CreateExternalAccountKey creates a new ExternalAccountKey bound to the project.
+// CreateExternalAccountKey creates a new
+// ExternalAccountKey
+// bound to the project.
 func (c *publicCertificateAuthorityRESTClient) CreateExternalAccountKey(ctx context.Context, req *publiccapb.CreateExternalAccountKeyRequest, opts ...gax.CallOption) (*publiccapb.ExternalAccountKey, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetExternalAccountKey()

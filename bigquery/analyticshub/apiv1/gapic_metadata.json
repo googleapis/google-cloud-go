@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "ApproveQueryTemplate": {
+              "methods": [
+                "ApproveQueryTemplate"
+              ]
+            },
             "CreateDataExchange": {
               "methods": [
                 "CreateDataExchange"
@@ -20,6 +25,11 @@
                 "CreateListing"
               ]
             },
+            "CreateQueryTemplate": {
+              "methods": [
+                "CreateQueryTemplate"
+              ]
+            },
             "DeleteDataExchange": {
               "methods": [
                 "DeleteDataExchange"
@@ -28,6 +38,11 @@
             "DeleteListing": {
               "methods": [
                 "DeleteListing"
+              ]
+            },
+            "DeleteQueryTemplate": {
+              "methods": [
+                "DeleteQueryTemplate"
               ]
             },
             "DeleteSubscription": {
@@ -50,6 +65,11 @@
                 "GetListing"
               ]
             },
+            "GetQueryTemplate": {
+              "methods": [
+                "GetQueryTemplate"
+              ]
+            },
             "GetSubscription": {
               "methods": [
                 "GetSubscription"
@@ -68,6 +88,11 @@
             "ListOrgDataExchanges": {
               "methods": [
                 "ListOrgDataExchanges"
+              ]
+            },
+            "ListQueryTemplates": {
+              "methods": [
+                "ListQueryTemplates"
               ]
             },
             "ListSharedResourceSubscriptions": {
@@ -95,6 +120,11 @@
                 "SetIamPolicy"
               ]
             },
+            "SubmitQueryTemplate": {
+              "methods": [
+                "SubmitQueryTemplate"
+              ]
+            },
             "SubscribeDataExchange": {
               "methods": [
                 "SubscribeDataExchange"
@@ -118,6 +148,11 @@
             "UpdateListing": {
               "methods": [
                 "UpdateListing"
+              ]
+            },
+            "UpdateQueryTemplate": {
+              "methods": [
+                "UpdateQueryTemplate"
               ]
             }
           }
@@ -125,6 +160,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "ApproveQueryTemplate": {
+              "methods": [
+                "ApproveQueryTemplate"
+              ]
+            },
             "CreateDataExchange": {
               "methods": [
                 "CreateDataExchange"
@@ -135,6 +175,11 @@
                 "CreateListing"
               ]
             },
+            "CreateQueryTemplate": {
+              "methods": [
+                "CreateQueryTemplate"
+              ]
+            },
             "DeleteDataExchange": {
               "methods": [
                 "DeleteDataExchange"
@@ -143,6 +188,11 @@
             "DeleteListing": {
               "methods": [
                 "DeleteListing"
+              ]
+            },
+            "DeleteQueryTemplate": {
+              "methods": [
+                "DeleteQueryTemplate"
               ]
             },
             "DeleteSubscription": {
@@ -165,6 +215,11 @@
                 "GetListing"
               ]
             },
+            "GetQueryTemplate": {
+              "methods": [
+                "GetQueryTemplate"
+              ]
+            },
             "GetSubscription": {
               "methods": [
                 "GetSubscription"
@@ -183,6 +238,11 @@
             "ListOrgDataExchanges": {
               "methods": [
                 "ListOrgDataExchanges"
+              ]
+            },
+            "ListQueryTemplates": {
+              "methods": [
+                "ListQueryTemplates"
               ]
             },
             "ListSharedResourceSubscriptions": {
@@ -210,6 +270,11 @@
                 "SetIamPolicy"
               ]
             },
+            "SubmitQueryTemplate": {
+              "methods": [
+                "SubmitQueryTemplate"
+              ]
+            },
             "SubscribeDataExchange": {
               "methods": [
                 "SubscribeDataExchange"
@@ -233,6 +298,11 @@
             "UpdateListing": {
               "methods": [
                 "UpdateListing"
+              ]
+            },
+            "UpdateQueryTemplate": {
+              "methods": [
+                "UpdateQueryTemplate"
               ]
             }
           }
