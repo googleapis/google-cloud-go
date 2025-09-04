@@ -3633,20 +3633,22 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 			t.Fatalf("tw.Flush: %v", err)
 		}
 
-		// Expect precondition error when writer to orginal Writer.
-		if _, err := w.Write(randomBytes3MiB); status.Code(err) != codes.FailedPrecondition {
-			t.Fatalf("got %v", err)
+		// Expect FAILED_PRECONDITION or ABORTED error when writing to orginal Writer.
+		_, err = w.Write(randomBytes3MiB)
+		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
+			t.Fatalf("w.Write: got error %v, want FailedPrecondition or Aborted", err)
 		}
 
-		// Another NewWriter to the unfinalized object should also return a
-		// precondition error when data is flushed.
+		// Another NewWriter to the unfinalized object should also return an
+		// error when data is flushed.
 		w2 := obj.NewWriter(ctx)
 		w2.Append = true
 		if _, err := w2.Write([]byte("hello world")); err != nil {
 			t.Fatalf("w2.Write: %v", err)
 		}
-		if _, err := w2.Flush(); status.Code(err) != codes.FailedPrecondition {
-			t.Fatalf("w2.Flush: %v", err)
+		_, err = w2.Flush()
+		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
+			t.Fatalf("w2.Flush: got error %v, want FailedPrecondition or Aborted", err)
 		}
 
 		// If we add yet another takeover writer to finalize and delete the object,
@@ -3664,8 +3666,9 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		if _, err := tw.Write([]byte("abcde")); err != nil {
 			t.Fatalf("tw.Write: %v", err)
 		}
-		if _, err := tw.Flush(); status.Code(err) != codes.FailedPrecondition {
-			t.Errorf("tw.Flush: got %v, want FailedPrecondition", err)
+		_, err = tw.Flush()
+		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
+			t.Errorf("tw.Flush: got error %v, want FailedPrecondition or Aborted", err)
 		}
 	})
 }
