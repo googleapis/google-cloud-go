@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"errors"
 	"fmt"
 
 	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
@@ -33,6 +34,33 @@ type Mutation struct {
 func (m *Mutation) isDelete() bool {
 	_, ok := m.mut.Operation.(*pb.Mutation_Delete)
 	return ok
+}
+
+// WithTransforms adds one or more server-side property transformations to the mutation.
+// It can be called multiple times to add more transforms.
+// The order of transforms is preserved, first by the order of calls to WithTransforms,
+// and then by the order of transforms within a single call.
+func (m *Mutation) WithTransforms(transforms ...PropertyTransform) *Mutation {
+	if m.err != nil {
+		return m
+	}
+	if m.mut == nil {
+		m.err = errors.New("datastore: WithTransforms called on uninitialized mutation")
+		return m
+	}
+	if m.isDelete() {
+		m.err = errors.New("datastore: property transforms cannot be applied to a delete mutation")
+		return m
+	}
+
+	for _, transform := range transforms {
+		if transform.pb == nil {
+			m.err = errors.New("datastore: WithTransforms called with an uninitialized PropertyTransform")
+			return m
+		}
+		m.mut.PropertyTransforms = append(m.mut.PropertyTransforms, transform.pb)
+	}
+	return m
 }
 
 // NewInsert creates a Mutation that will save the entity src into the
@@ -117,6 +145,7 @@ func mutationProtos(muts []*Mutation) ([]*pb.Mutation, error) {
 	if merr != nil {
 		return nil, merr
 	}
+
 	var protos []*pb.Mutation
 	// Collect protos. Remove duplicate deletions (see deleteMutations).
 	seen := map[string]bool{}
