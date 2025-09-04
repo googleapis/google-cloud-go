@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.0.0...shopping/v1.1.0) (2025-09-04)
+
+
+### Features
+
+* **shopping/merchant/accounts:** Add batch operations for custom regions ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.25.0...shopping/v1.0.0) (2025-08-14)
 
 
