@@ -47,7 +47,25 @@ func (it *DatacenterConnectorIterator) All() iter.Seq2[*vmmigrationpb.Datacenter
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DiskMigrationJobIterator) All() iter.Seq2[*vmmigrationpb.DiskMigrationJob, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *GroupIterator) All() iter.Seq2[*vmmigrationpb.Group, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ImageImportIterator) All() iter.Seq2[*vmmigrationpb.ImageImport, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ImageImportJobIterator) All() iter.Seq2[*vmmigrationpb.ImageImportJob, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -78,6 +96,12 @@ func (it *ReplicationCycleIterator) All() iter.Seq2[*vmmigrationpb.ReplicationCy
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *SourceIterator) All() iter.Seq2[*vmmigrationpb.Source, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SourceStorageResourceIterator) All() iter.Seq2[*vmmigrationpb.SourceStorageResource, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
