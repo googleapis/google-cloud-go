@@ -1,4 +1,4 @@
-# Logging, Debugging and Telemetry
+# Logging, Testing, Debugging and Telemetry
 
 **Warning: The OpenCensus project is obsolete and was archived on July 31st,
 2023.** This means that any security vulnerabilities that are found will not be
