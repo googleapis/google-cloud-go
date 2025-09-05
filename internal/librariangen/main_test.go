@@ -58,9 +58,19 @@ func TestRun(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "build command",
+			name:    "build command no flags",
 			args:    []string{"build"},
 			wantErr: false,
+		},
+		{
+			name:    "build command with flags",
+			args:    []string{"build", "--repo=.", "--librarian=./.librarian"},
+			wantErr: false,
+		},
+		{
+			name:    "build command with wrong flag",
+			args:    []string{"build", "--output=."},
+			wantErr: true,
 		},
 		{
 			name:    "configure command",
