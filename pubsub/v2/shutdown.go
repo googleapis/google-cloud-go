@@ -14,6 +14,24 @@
 
 package pubsub
 
+import "time"
+
+// ShutdownOptions configures the shutdown behavior of the subscriber.
+type ShutdownOptions struct {
+	// Timeout specifies the time the subscriber should wait
+	// to shutdown before killing the process.
+	// In nack mode, this specifies how long to wait
+	// for messages to be nacked after shutdown is initiated.
+	//
+	// Set to zero to immediately shutdown.
+	// Set to a negative value to disable timeout.
+	Timeout time.Duration
+
+	// Behavior defines the strategy the subscriber should use when
+	// shutting down (wait or nack messages).
+	Behavior ShutdownBehavior
+}
+
 // ShutdownBehavior defines the strategy the subscriber should take when
 // shutting down. Current options are graceful shutdown vs nacking messages.
 type ShutdownBehavior int
