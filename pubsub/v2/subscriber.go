@@ -231,9 +231,8 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	if minExtPeriod < 0 {
 		minExtPeriod = DefaultReceiveSettings.MinDurationPerAckExtension
 	}
-	shutdown := s.ReceiveSettings.ShutdownOptions
-	if shutdown == nil {
-		shutdown = DefaultReceiveSettings.ShutdownOptions
+	if s.ReceiveSettings.ShutdownOptions == nil {
+		s.ReceiveSettings.ShutdownOptions = DefaultReceiveSettings.ShutdownOptions
 	}
 
 	var numGoroutines int
@@ -315,16 +314,20 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				// This channel's type is a slice, so it only needs to store 1 object.
 				// This is used to communicate the result of iter.receive.
 				msgChan := make(chan []*Message, 1)
+				errChan := make(chan error, 1)
 				doneChan := make(chan struct{})
 				go func() {
+					defer close(doneChan)
+					defer close(msgChan)
+					defer close(errChan)
 					msgs, err := iter.receive(maxToPull)
 					if errors.Is(err, io.EOF) {
+						errChan <- nil
 					}
 					if err != nil {
+						errChan <- err
 					}
 					msgChan <- msgs
-					close(doneChan)
-					close(msgChan)
 				}()
 
 				// Make message pulling dependent on iterator for context cancellation
@@ -332,6 +335,8 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				select {
 				case <-ctx2.Done():
 					return nil
+				case err := <-errChan:
+					return err
 				case <-doneChan:
 				}
 
@@ -505,8 +510,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		}
 	}()
 
-	err := group.Wait()
-	return err
+	return group.Wait()
 }
 
 type pullOptions struct {

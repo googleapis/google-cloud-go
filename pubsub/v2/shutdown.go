@@ -17,6 +17,8 @@ package pubsub
 import "time"
 
 // ShutdownOptions configures the shutdown behavior of the subscriber.
+// If not specified, the behavior will default to indefinite processing,
+// that is graceful shutdown with no timeout.
 type ShutdownOptions struct {
 	// Timeout specifies the time the subscriber should wait
 	// to shutdown before killing the process.
