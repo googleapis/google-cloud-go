@@ -149,16 +149,9 @@ type ReceiveSettings struct {
 	// processed concurrently, set MaxOutstandingMessages.
 	NumGoroutines int
 
-	// ShutdownTimeout specifies the time the subscriber should wait
-	// to shutdown before killing the process.
-	// Set to 0 to immediately shutdown.
-	// Set to negative value to disable a duration.
-	// Defaults to disabled.
-	ShutdownTimeout time.Duration
-
-	// ShutdownBehavior defines the strategy the subscriber should use when
-	// shutting down (graceful shutdown vs nack messages).
-	ShutdownBehavior ShutdownBehavior
+	// ShutdownOptions configures the shutdown behavior of the subscriber.
+	// If unset, the default behavior is to graceful shutdown with no timeout.
+	ShutdownOptions *ShutdownOptions
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
@@ -169,6 +162,10 @@ var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages:     1000,
 	MaxOutstandingBytes:        1e9, // 1G
 	NumGoroutines:              1,
+	ShutdownOptions: &ShutdownOptions{
+		Behavior: ShutdownBehaviorWaitForProcessing,
+		Timeout:  -1,
+	},
 }
 
 var errReceiveInProgress = errors.New("pubsub: Receive already in progress for this subscriber")
@@ -234,6 +231,10 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	if minExtPeriod < 0 {
 		minExtPeriod = DefaultReceiveSettings.MinDurationPerAckExtension
 	}
+	shutdown := s.ReceiveSettings.ShutdownOptions
+	if shutdown == nil {
+		shutdown = DefaultReceiveSettings.ShutdownOptions
+	}
 
 	var numGoroutines int
 	switch {
@@ -277,6 +278,11 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	ctx2, cancel2 := context.WithCancel(gctx)
 	defer cancel2()
 
+	// This context is for forcefully shutting down callbacks if ShutdownTimeout
+	// is exceeded.
+	shutdownKillCtx, shutdownKillCancel := context.WithCancel(context.Background())
+	defer shutdownKillCancel()
+
 	for i := 0; i < numGoroutines; i++ {
 		// The iterator does not use the context passed to Receive. If it did,
 		// canceling that context would immediately stop the iterator without
@@ -301,22 +307,43 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				var maxToPull int32 // maximum number of messages to pull
 				// If the context is done, don't pull more messages.
 				select {
-				case <-ctx.Done():
+				case <-ctx2.Done():
 					return nil
 				default:
 				}
 
-				msgs, err := iter.receive(maxToPull)
-				if errors.Is(err, io.EOF) {
+				// This channel's type is a slice, so it only needs to store 1 object.
+				// This is used to communicate the result of iter.receive.
+				msgChan := make(chan []*Message, 1)
+				doneChan := make(chan struct{})
+				go func() {
+					msgs, err := iter.receive(maxToPull)
+					if errors.Is(err, io.EOF) {
+					}
+					if err != nil {
+					}
+					msgChan <- msgs
+					close(doneChan)
+					close(msgChan)
+				}()
+
+				// Make message pulling dependent on iterator for context cancellation
+				// If the context is cancelled while pulling messages, stop calling Receive early.
+				select {
+				case <-ctx2.Done():
 					return nil
+				case <-doneChan:
 				}
-				if err != nil {
-					return err
+
+				var msgs []*Message
+				for _, m := range <-msgChan {
+					msgs = append(msgs, m)
 				}
+
 				// If context is done and messages have been pulled,
 				// nack them.
 				select {
-				case <-ctx.Done():
+				case <-ctx2.Done():
 					for _, m := range msgs {
 						m.Nack()
 					}
@@ -404,7 +431,19 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 							}
 						}
 						defer fc.release(ctx, msgLen)
-						f(otelCtx, m)
+
+						done := make(chan struct{})
+						go func() {
+							defer close(done)
+							f(otelCtx, m)
+						}()
+
+						select {
+						case <-done:
+							// Callback finished gracefully.
+						case <-shutdownKillCtx.Done():
+							// Shutdown timeout exceeded, stop waiting for callback.
+						}
 					}); err != nil {
 						wg.Done()
 						// TODO(hongalex): propagate these errors to an otel span.
@@ -424,21 +463,50 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	}
 
 	go func() {
+		// Detected cancellation (either user initiated or permanent error).
 		<-ctx2.Done()
-
-		// Wait for all iterators to stop.
+		// Stop all the pullstreams as the first thing we do to prevent new messages.
 		for _, p := range pairs {
-			p.iter.stop()
-			p.wg.Done()
+			p.iter.ps.cancel()
 		}
 
-		// This _must_ happen after every iterator has stopped, or some
-		// iterator will still have undelivered messages but the scheduler will
-		// already be shut down.
-		sched.Shutdown()
+		opts := s.ReceiveSettings.ShutdownOptions
+		// Once shutdown is initiated, start the timer for forceful shutdown.
+		if opts.Timeout == 0 {
+			shutdownKillCancel() // Immediate forceful shutdown.
+		} else if opts.Timeout > 0 {
+			time.AfterFunc(opts.Timeout, shutdownKillCancel)
+			for _, p := range pairs {
+				p.iter.nackInventory(shutdownKillCtx)
+			}
+		}
+
+		if opts.Timeout >= 0 {
+			go func() {
+				for _, p := range pairs {
+					// Since we aren't looking for graceful timeout, call wg.Done in
+					// order to free up the waitgroup sooner and exit sooner.
+					// In graceful timeout, iterators must stop before wg is done.
+					p.wg.Done()
+					p.iter.stop()
+				}
+				sched.Shutdown()
+			}()
+		} else if opts.Timeout < 0 {
+			// Either no options or specified or the user wants to graceful shutdown.
+			for _, p := range pairs {
+				p.iter.stop()
+				p.wg.Done()
+			}
+			// This _must_ happen after every iterator has stopped, or some
+			// iterator will still have undelivered messages but the scheduler will
+			// already be shut down.
+			sched.Shutdown()
+		}
 	}()
 
-	return group.Wait()
+	err := group.Wait()
+	return err
 }
 
 type pullOptions struct {
