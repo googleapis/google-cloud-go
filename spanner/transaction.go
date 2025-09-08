@@ -366,7 +366,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			if t.sh != nil {
 				t.sh.updateLastUseTime()
 			}
-			client, err := client.StreamingRead(ctx,
+			streamingClient, err := t.sh.getClient().StreamingRead(ctx,
 				&sppb.ReadRequest{
 					Session:             t.sh.getID(),
 					Transaction:         t.getTransactionSelector(),
@@ -385,11 +385,11 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
 					t.setTransactionID(nil)
-					return client, t.updateTxState(errInlineBeginTransactionFailed(err))
+					return streamingClient, t.updateTxState(errInlineBeginTransactionFailed(err))
 				}
-				return client, t.updateTxState(err)
+				return streamingClient, t.updateTxState(err)
 			}
-			md, err := client.Header()
+			md, err := streamingClient.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "ReadWithOptions"); err != nil {
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
@@ -398,7 +398,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			if metricErr := recordGFELatencyMetricsOT(ctx, md, "ReadWithOptions", t.otConfig); metricErr != nil {
 				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 			}
-			return client, err
+			return streamingClient, err
 		},
 		t.replaceSessionFunc,
 		setTransactionID,
@@ -706,15 +706,15 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			req.Transaction = t.getTransactionSelector()
 			t.sh.updateLastUseTime()
 
-			client, err := client.ExecuteStreamingSql(ctx, req, opts...)
+			streamingClient, err := sh.getClient().ExecuteStreamingSql(ctx, req, opts...)
 			if err != nil {
 				if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
 					t.setTransactionID(nil)
-					return client, t.updateTxState(errInlineBeginTransactionFailed(err))
+					return streamingClient, t.updateTxState(errInlineBeginTransactionFailed(err))
 				}
-				return client, t.updateTxState(err)
+				return streamingClient, t.updateTxState(err)
 			}
-			md, err := client.Header()
+			md, err := streamingClient.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
@@ -723,7 +723,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			if metricErr := recordGFELatencyMetricsOT(ctx, md, "query", t.otConfig); metricErr != nil {
 				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 			}
-			return client, err
+			return streamingClient, err
 		},
 		t.replaceSessionFunc,
 		setTransactionID,
