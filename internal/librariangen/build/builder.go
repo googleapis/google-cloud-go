@@ -83,7 +83,7 @@ func goBuild(ctx context.Context, dir, module string) error {
 // goTest builds all the code under the specified directory
 func goTest(ctx context.Context, dir, module string) error {
 	slog.Info("librariangen: testing", "module", module)
-	args := []string{"go", "test", "./..."}
+	args := []string{"go", "test", "./...", "-short"}
 	return execvRun(ctx, args, dir)
 }
 

@@ -119,7 +119,7 @@ func handleReleaseInit(ctx context.Context, args []string) error {
 // handleBuild parses flags for the build command and calls the builder.
 func handleBuild(ctx context.Context, args []string) error {
 	cfg := &build.Config{}
-	buildFlags := flag.NewFlagSet("generate", flag.ExitOnError)
+	buildFlags := flag.NewFlagSet("build", flag.ExitOnError)
 	buildFlags.StringVar(&cfg.LibrarianDir, "librarian", "/librarian", "Path to the librarian-tool input directory. Contains generate-request.json.")
 	buildFlags.StringVar(&cfg.RepoDir, "repo", "/repo", "Path to the root of the complete language repository.")
 	if err := buildFlags.Parse(args); err != nil {

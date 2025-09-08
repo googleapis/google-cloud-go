@@ -19,6 +19,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 )
 
@@ -82,33 +83,18 @@ func TestBuild(t *testing.T) {
 
 			var execvCount int
 			execvRun = func(ctx context.Context, args []string, dir string) error {
+				execvCount++
 				want := filepath.Join(e.repoDir, "foo")
 				if dir != want {
 					t.Errorf("execv called with wrong working directory %s; want %s", dir, want)
 				}
-				wantLen := 3
-				if len(args) != wantLen {
-					t.Errorf("execv called with %d args (%v); want %d", len(args), args, wantLen)
-					return nil
-				}
-				want = "go"
-				if args[0] != want {
-					t.Errorf("execv called with first arg %s; want %s", args[0], want)
-				}
-
-				want = "./..."
-				if args[2] != want {
-					t.Errorf("execv called with third arg %s; want %s", args[2], want)
-				}
-
-				execvCount++
-				switch args[1] {
-				case "build":
+				switch {
+				case slices.Equal(args, []string{"go", "build", "./..."}):
 					return tt.buildErr
-				case "test":
+				case slices.Equal(args, []string{"go", "test", "./...", "-short"}):
 					return tt.testErr
 				default:
-					t.Errorf("execv called with second arg %s; want test or build", args[1])
+					t.Errorf("execv called with unexpected args %v", args)
 					return nil
 				}
 			}
