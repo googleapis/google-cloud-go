@@ -23,6 +23,7 @@ import (
 	"os"
 	"strings"
 
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/build"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/generate"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/release"
 )
@@ -49,6 +50,7 @@ func main() {
 var (
 	generateFunc    = generate.Generate
 	releaseInitFunc = release.Init
+	buildFunc       = build.Build
 )
 
 // run executes the appropriate command based on the CLI's invocation arguments.
@@ -80,8 +82,7 @@ func run(ctx context.Context, args []string) error {
 		slog.Warn("librariangen: configure command is not yet implemented")
 		return nil
 	case "build":
-		slog.Warn("librariangen: build command is not yet implemented")
-		return nil
+		return handleBuild(ctx, flags)
 	default:
 		return fmt.Errorf("librariangen: unknown command: %s", cmd)
 	}
@@ -113,4 +114,16 @@ func handleReleaseInit(ctx context.Context, args []string) error {
 		return fmt.Errorf("librariangen: failed to parse flags: %w", err)
 	}
 	return releaseInitFunc(ctx, cfg)
+}
+
+// handleBuild parses flags for the build command and calls the builder.
+func handleBuild(ctx context.Context, args []string) error {
+	cfg := &build.Config{}
+	buildFlags := flag.NewFlagSet("build", flag.ExitOnError)
+	buildFlags.StringVar(&cfg.LibrarianDir, "librarian", "/librarian", "Path to the librarian-tool input directory. Contains generate-request.json.")
+	buildFlags.StringVar(&cfg.RepoDir, "repo", "/repo", "Path to the root of the complete language repository.")
+	if err := buildFlags.Parse(args); err != nil {
+		return fmt.Errorf("librariangen: failed to parse flags: %w", err)
+	}
+	return buildFunc(ctx, cfg)
 }
