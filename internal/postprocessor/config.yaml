@@ -31,6 +31,7 @@ modules:
   - bigtable
   - billing
   - binaryauthorization
+  - capacityplanner
   - certificatemanager
   - channel
   - chat
@@ -510,6 +511,9 @@ service-configs:
   - input-directory: google/cloud/binaryauthorization/v1beta1
     service-config: binaryauthorization_v1beta1.yaml
     import-path: cloud.google.com/go/binaryauthorization/apiv1beta1
+  - input-directory: google/cloud/capacityplanner/v1beta
+    service-config: capacityplanner_v1beta.yaml
+    import-path: cloud.google.com/go/capacityplanner/apiv1beta
   - input-directory: google/cloud/certificatemanager/v1
     service-config: certificatemanager_v1.yaml
     import-path: cloud.google.com/go/certificatemanager/apiv1

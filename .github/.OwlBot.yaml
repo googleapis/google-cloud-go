@@ -74,6 +74,7 @@ deep-remove-regex:
   - /billing/budgets/apiv1beta1/
   - /binaryauthorization/apiv1/
   - /binaryauthorization/apiv1beta1/
+  - /capacityplanner/apiv1beta/
   - /certificatemanager/apiv1/
   - /channel/apiv1/
   - /chat/apiv1/
@@ -225,6 +226,7 @@ deep-remove-regex:
   - /internal/generated/snippets/billing/budgets/apiv1beta1/
   - /internal/generated/snippets/binaryauthorization/apiv1/
   - /internal/generated/snippets/binaryauthorization/apiv1beta1/
+  - /internal/generated/snippets/capacityplanner/apiv1beta/
   - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/channel/apiv1/
   - /internal/generated/snippets/chat/apiv1/
@@ -851,6 +853,8 @@ deep-copy-regex:
   - source: /google/cloud/binaryauthorization/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/binaryauthorization/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/capacityplanner/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/certificatemanager/v1/cloud.google.com/go
     dest: /
