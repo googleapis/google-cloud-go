@@ -29,7 +29,6 @@ type bigtableClientMonitoredResource struct {
 	instance      string // instance
 	appProfile    string // app_profile
 	clientProject string // client_project
-	clientRegion  string // client_region
 	cloudPlatform string // cloud_platform
 	region        string // client_region
 	hostID        string // host_id
@@ -53,6 +52,7 @@ func (bmr *bigtableClientMonitoredResource) exporter() (metric.Exporter, error) 
 }
 
 func metricFormatter(m metricdata.Metrics) string {
+	// converts grpc.lb.rls.target_picks to `bigtable.googleapis.com/internal/client/grpc/lb/rls/target_picks`
 	return bigtableClientMetricPrefix + strings.ReplaceAll(string(m.Name), ".", "/")
 }
 
@@ -168,8 +168,7 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*metricsCont
 		interval = cfg.interval
 	}
 	meterOpts = append(meterOpts,
-		// Metric views update histogram boundaries to be relevant to GCS
-		// otherwise default OTel histogram boundaries are used.
+		// customer histogram boundaries
 		metric.WithView(
 			createHistogramView("grpc.client.attempt.duration", latencyHistogramBoundaries()),
 		))
@@ -217,7 +216,6 @@ type exporterLogSuppressor struct {
 
 // Implements OTel SDK metric.Exporter interface to prevent noisy logs from
 // lack of credentials after initial failure.
-// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric@v1.28.0#Exporter
 func (e *exporterLogSuppressor) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
 	if err := e.Exporter.Export(ctx, rm); err != nil && !e.emittedFailure {
 		if strings.Contains(err.Error(), "PermissionDenied") {
@@ -230,23 +228,8 @@ func (e *exporterLogSuppressor) Export(ctx context.Context, rm *metricdata.Resou
 }
 
 func latencyHistogramBoundaries() []float64 {
-	boundaries := []float64{}
-	boundary := 0.0
-	increment := 0.002
-	// 2ms buckets for first 100ms, so we can have higher resolution for uploads and downloads in the 100 KiB range
-	for i := 0; i < 50; i++ {
-		boundaries = append(boundaries, boundary)
-		// increment by 2ms
-		boundary += increment
-	}
-	// For the remaining buckets do 10 10ms, 10 20ms, and so on, up until 5 minutes
-	for i := 0; i < 150 && boundary < 300; i++ {
-		boundaries = append(boundaries, boundary)
-		if i != 0 && i%10 == 0 {
-			increment *= 2
-		}
-		boundary += increment
-	}
+	// numbers in seconds
+	boundaries := []float64{0.0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.008, 0.01, 0.013, 0.016, 0.02, 0.025, 0.03, 0.04, 0.05, 0.065, 0.08, 0.1, 0.13, 0.16, 0.2, 0.25, 0.3, 0.4, 0.5, 0.65, 0.8, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 400.0, 800.0, 1600.0, 3200.0} // max is 53.3 minutes
 	return boundaries
 }
 
