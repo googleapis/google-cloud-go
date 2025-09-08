@@ -186,6 +186,8 @@ type metricInfo struct {
 type builtinMetricsTracerFactory struct {
 	enabled bool
 
+	clientOpts []option.ClientOption
+
 	// To be called on client close
 	shutdown func()
 
@@ -241,7 +243,30 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		return disabledMetricsTracerFactory, nil
 	}
 	meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
-	tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
+	// Enable Otel metrics collection
+	otelContext, err := newOtelMetricsContext(ctx, metricsConfig{
+		project:         project,
+		instance:        instance,
+		appProfile:      appProfile,
+		clientName:      clientName,
+		clientUID:       clientUID,
+		clientProject:   project,
+		interval:        defaultSamplePeriod,
+		customExporter:  nil,
+		manualReader:    nil,
+		disableExporter: false,
+		resourceOpts:    nil,
+	})
+
+	if err == nil {
+		tracerFactory.clientOpts = otelContext.clientOpts
+	}
+	tracerFactory.shutdown = func() {
+		if otelContext != nil {
+			otelContext.close()
+		}
+		meterProvider.Shutdown(ctx)
+	}
 
 	// Create meter and instruments
 	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
