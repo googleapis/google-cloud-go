@@ -824,7 +824,7 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 				ipubsub.SetAckResult(ar, AcknowledgeStatusOther, errors.New("modack retry failed"))
 			}
 			if logOnInvalid {
-				("automatic lease modack retry failed for following IDs: %v", ackIDs)
+				log.Printf("automatic lease modack retry failed for following IDs: %v", ackIDs)
 			}
 			return
 		}
