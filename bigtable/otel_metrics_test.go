@@ -59,6 +59,8 @@ func TestOtelMetricsContext(t *testing.T) {
 	ctx := context.Background()
 	mr := metric.NewManualReader()
 	attrs := []attribute.KeyValue{
+		{Key: "cloud.account.id",
+			Value: attribute.StringValue("client-project-id")},
 		{Key: "cloud.region",
 			Value: attribute.StringValue("us-central1")},
 		{Key: "cloud.platform",
@@ -74,7 +76,6 @@ func TestOtelMetricsContext(t *testing.T) {
 		appProfile:      "app-profile",
 		clientName:      "client-name",
 		clientUID:       "client-uid",
-		clientProject:   "client-project-id",
 		manualReader:    mr,
 		disableExporter: true, // disable since this is a unit test
 		resourceOpts:    []resource.Option{resource.WithAttributes(attrs...)},

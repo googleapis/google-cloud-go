@@ -72,24 +72,25 @@ func metricFormatter(m metricdata.Metrics) string {
 	return bigtableClientMetricPrefix + strings.ReplaceAll(string(m.Name), ".", "/")
 }
 
-func newBigtableClientMonitoredResource(ctx context.Context, project, clientProject, appProfile, instance, clientName, clientUID string, opts ...resource.Option) (*bigtableClientMonitoredResource, error) {
+func newBigtableClientMonitoredResource(ctx context.Context, project, appProfile, instance, clientName, clientUID string, opts ...resource.Option) (*bigtableClientMonitoredResource, error) {
 	detectedAttrs, err := resource.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 	smr := &bigtableClientMonitoredResource{
-		project:       project,
-		instance:      instance,
-		appProfile:    appProfile,
-		clientName:    clientName,
-		clientUID:     clientUID,
-		clientProject: clientProject,
+		project:    project,
+		instance:   instance,
+		appProfile: appProfile,
+		clientName: clientName,
+		clientUID:  clientUID,
 	}
 	s := detectedAttrs.Set()
 	// Attempt to use resource detector project id if project id wasn't
 	// identified using ADC as a last resort. Otherwise metrics cannot be started.
 	if p, present := s.Value("cloud.account.id"); present {
-		smr.project = p.AsString()
+		smr.clientProject = p.AsString()
+	} else {
+		smr.clientProject = "unknown"
 	}
 	if v, ok := s.Value("cloud.platform"); ok {
 		smr.cloudPlatform = v.AsString()
@@ -149,7 +150,6 @@ type metricsConfig struct {
 	appProfile      string // app_profile
 	clientName      string // client_name
 	clientUID       string // uuid
-	clientProject   string // client_project``
 	interval        time.Duration
 	customExporter  *metric.Exporter
 	manualReader    *metric.ManualReader // used by tests
@@ -167,7 +167,7 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*metricsCont
 		} else {
 			ropts = []resource.Option{resource.WithDetectors(gcp.NewDetector())}
 		}
-		smr, err := newBigtableClientMonitoredResource(ctx, cfg.project, cfg.clientProject, cfg.appProfile, cfg.instance, cfg.clientName, cfg.clientUID, ropts...)
+		smr, err := newBigtableClientMonitoredResource(ctx, cfg.project, cfg.appProfile, cfg.instance, cfg.clientName, cfg.clientUID, ropts...)
 		if err != nil {
 			return nil, err
 		}

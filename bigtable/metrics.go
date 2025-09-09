@@ -250,7 +250,6 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		appProfile:      appProfile,
 		clientName:      clientName,
 		clientUID:       clientUID,
-		clientProject:   project,
 		interval:        defaultSamplePeriod,
 		customExporter:  nil,
 		manualReader:    nil,
