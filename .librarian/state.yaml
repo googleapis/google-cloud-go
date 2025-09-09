@@ -34,3 +34,4 @@ libraries:
         - ^aiplatform/apiv1beta1/gapic_metadata\.json$
         - ^aiplatform/apiv1beta1/helpers\.go$
         - ^aiplatform/apiv1beta1/aiplatformpb/.*$
+      tag_format: "{id}/v{version}"
