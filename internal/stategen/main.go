@@ -93,8 +93,6 @@ func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState,
 			"internal/generated/snippets/" + moduleName,
 		},
 		RemoveRegex: []string{
-			"^" + moduleName + "/go\\.mod$",
-			"^" + moduleName + "/go\\.sum$",
 			"^internal/generated/snippets/" + moduleName + "/",
 		},
 	}

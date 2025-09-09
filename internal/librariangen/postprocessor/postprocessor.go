@@ -38,9 +38,7 @@ var (
 // formatters and other tools to ensure code quality. The high-level steps are:
 //
 //  1. Modify the generated snippets to specify the current version
-//  2. Run `go mod init`.
-//  3. Run `goimports` to format the code.
-//  4. Run `go mod tidy` to clean up the `go.mod` file.
+//  2. Run `goimports` to format the code.
 func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir string, moduleConfig *config.ModuleConfig) error {
 	slog.Debug("librariangen: starting post-processing", "directory", moduleDir)
 
@@ -57,16 +55,8 @@ func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir
 		return fmt.Errorf("librariangen: failed to update snippets metadata: %w", err)
 	}
 
-	if err := goModInit(ctx, moduleConfig.GetModulePath(), moduleDir); err != nil {
-		return fmt.Errorf("librariangen: failed to run 'go mod init': %w", err)
-	}
-
 	if err := goimports(ctx, moduleDir); err != nil {
 		return fmt.Errorf("librariangen: failed to run 'goimports': %w", err)
-	}
-
-	if err := goModTidy(ctx, moduleDir); err != nil {
-		return fmt.Errorf("librariangen: failed to run 'go mod tidy': %w", err)
 	}
 
 	slog.Debug("librariangen: post-processing finished successfully")
@@ -80,20 +70,6 @@ func goimports(ctx context.Context, dir string) error {
 	// The `.` argument will make goimports process all go files in the directory
 	// and its subdirectories. The -w flag writes results back to source files.
 	args := []string{"goimports", "-w", "."}
-	return execvRun(ctx, args, dir)
-}
-
-// goModInit initializes a go.mod file in the given directory.
-func goModInit(ctx context.Context, modulePath, dir string) error {
-	slog.Debug("librariangen: running go mod init", "directory", dir, "modulePath", modulePath)
-	args := []string{"go", "mod", "init", modulePath}
-	return execvRun(ctx, args, dir)
-}
-
-// goModTidy tidies the go.mod file, adding missing and removing unused dependencies.
-func goModTidy(ctx context.Context, dir string) error {
-	slog.Debug("librariangen: running go mod tidy", "directory", dir)
-	args := []string{"go", "mod", "tidy"}
 	return execvRun(ctx, args, dir)
 }
 
