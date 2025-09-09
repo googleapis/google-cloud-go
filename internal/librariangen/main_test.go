@@ -72,6 +72,11 @@ func TestRun(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "build command with bad flag",
+			args:    []string{"build", "--output=."},
+			wantErr: true,
+		},
+		{
 			name:    "configure command",
 			args:    []string{"configure"},
 			wantErr: false,
@@ -87,6 +92,11 @@ func TestRun(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "generate command with bad flag",
+			args:    []string{"generate", "--repo=."},
+			wantErr: true,
+		},
+		{
 			name:    "release-init command no flags",
 			args:    []string{"release-init"},
 			wantErr: false,
@@ -95,6 +105,11 @@ func TestRun(t *testing.T) {
 			name:    "release-init command with flags",
 			args:    []string{"release-init", "--repo=.", "--output=./build_out"},
 			wantErr: false,
+		},
+		{
+			name:    "release-init command with bad flag",
+			args:    []string{"release-init", "--source=."},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

@@ -91,7 +91,7 @@ func run(ctx context.Context, args []string) error {
 // handleGenerate parses flags for the generate command and calls the generator.
 func handleGenerate(ctx context.Context, args []string) error {
 	cfg := &generate.Config{}
-	generateFlags := flag.NewFlagSet("generate", flag.ExitOnError)
+	generateFlags := flag.NewFlagSet("generate", flag.ContinueOnError)
 	generateFlags.StringVar(&cfg.LibrarianDir, "librarian", "/librarian", "Path to the librarian-tool input directory. Contains generate-request.json.")
 	generateFlags.StringVar(&cfg.InputDir, "input", "/input", "Path to the .librarian/generator-input directory from the language repository.")
 	generateFlags.StringVar(&cfg.OutputDir, "output", "/output", "Path to the empty directory where librariangen writes its output.")
@@ -106,7 +106,7 @@ func handleGenerate(ctx context.Context, args []string) error {
 // handleReleaseInit parses flags for the release-init command and calls the release tool.
 func handleReleaseInit(ctx context.Context, args []string) error {
 	cfg := &release.Config{}
-	releaseFlags := flag.NewFlagSet("release-init", flag.ExitOnError)
+	releaseFlags := flag.NewFlagSet("release-init", flag.ContinueOnError)
 	releaseFlags.StringVar(&cfg.LibrarianDir, "librarian", "/librarian", "Path to the librarian-tool input directory. Contains release-init-request.json.")
 	releaseFlags.StringVar(&cfg.RepoDir, "repo", "/repo", "Path to the language repository checkout.")
 	releaseFlags.StringVar(&cfg.OutputDir, "output", "/output", "Path to the empty directory where librariangen writes its output.")
@@ -119,7 +119,7 @@ func handleReleaseInit(ctx context.Context, args []string) error {
 // handleBuild parses flags for the build command and calls the builder.
 func handleBuild(ctx context.Context, args []string) error {
 	cfg := &build.Config{}
-	buildFlags := flag.NewFlagSet("build", flag.ExitOnError)
+	buildFlags := flag.NewFlagSet("build", flag.ContinueOnError)
 	buildFlags.StringVar(&cfg.LibrarianDir, "librarian", "/librarian", "Path to the librarian-tool input directory. Contains generate-request.json.")
 	buildFlags.StringVar(&cfg.RepoDir, "repo", "/repo", "Path to the root of the complete language repository.")
 	if err := buildFlags.Parse(args); err != nil {
