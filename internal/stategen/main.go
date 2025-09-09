@@ -97,6 +97,7 @@ func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState,
 			"^" + moduleName + "/go\\.sum$",
 			"^internal/generated/snippets/" + moduleName + "/",
 		},
+		TagFormat: "{id}/v{version}",
 	}
 
 	version, err := loadVersion(moduleRoot)
