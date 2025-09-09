@@ -306,7 +306,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				var maxToPull int32 // maximum number of messages to pull
 				// If the context is done, don't pull more messages.
 				select {
-				case <-ctx2.Done():
+				case <-ctx.Done():
 					return nil
 				default:
 				}
@@ -317,17 +317,19 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				errChan := make(chan error, 1)
 				doneChan := make(chan struct{})
 				go func() {
-					defer close(doneChan)
 					defer close(msgChan)
 					defer close(errChan)
 					msgs, err := iter.receive(maxToPull)
 					if errors.Is(err, io.EOF) {
 						errChan <- nil
+						return
 					}
 					if err != nil {
 						errChan <- err
+						return
 					}
 					msgChan <- msgs
+					close(doneChan)
 				}()
 
 				// Make message pulling dependent on iterator for context cancellation
