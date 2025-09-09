@@ -2,12 +2,12 @@ image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian
 libraries:
     - id: aiplatform
       version: 1.100.0
-      last_generated_commit: ""
+      last_generated_commit: 8727b5ba7f23fbbfddda58239e8bc6b547e05878
       apis:
         - path: google/cloud/aiplatform/v1
-          service_config: ""
+          service_config: aiplatform_v1.yaml
         - path: google/cloud/aiplatform/v1beta1
-          service_config: ""
+          service_config: aiplatform_v1beta1.yaml
       source_roots:
         - aiplatform
         - internal/generated/snippets/aiplatform
@@ -34,4 +34,4 @@ libraries:
         - ^aiplatform/apiv1beta1/gapic_metadata\.json$
         - ^aiplatform/apiv1beta1/helpers\.go$
         - ^aiplatform/apiv1beta1/aiplatformpb/.*$
-      tag_format: "{id}/v{version}"
+      tag_format: '{id}/v{version}'
