@@ -1614,8 +1614,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		return c.NewRangeReaderReadObject(ctx, params, opts...)
 	}
 
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewRangeReader")
-	defer func() { trace.EndSpan(ctx, err) }()
+	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader")
+	defer func() { endSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
 
