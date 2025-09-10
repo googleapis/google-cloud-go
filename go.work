@@ -33,6 +33,7 @@ use (
 	./bigtable
 	./billing
 	./binaryauthorization
+	./capacityplanner
 	./certificatemanager
 	./channel
 	./chat
@@ -102,7 +103,7 @@ use (
 	./internal/librariangen
 	./internal/postprocessor
 	./internal/protoveneer
-	./internal/stategen	
+	./internal/stategen
 	./iot
 	./kms
 	./language
