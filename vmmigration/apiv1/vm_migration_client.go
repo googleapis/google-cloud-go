@@ -52,6 +52,7 @@ type CallOptions struct {
 	UpdateSource              []gax.CallOption
 	DeleteSource              []gax.CallOption
 	FetchInventory            []gax.CallOption
+	FetchStorageInventory     []gax.CallOption
 	ListUtilizationReports    []gax.CallOption
 	GetUtilizationReport      []gax.CallOption
 	CreateUtilizationReport   []gax.CallOption
@@ -70,6 +71,7 @@ type CallOptions struct {
 	ResumeMigration           []gax.CallOption
 	PauseMigration            []gax.CallOption
 	FinalizeMigration         []gax.CallOption
+	ExtendMigration           []gax.CallOption
 	CreateCloneJob            []gax.CallOption
 	CancelCloneJob            []gax.CallOption
 	ListCloneJobs             []gax.CallOption
@@ -92,6 +94,20 @@ type CallOptions struct {
 	DeleteTargetProject       []gax.CallOption
 	ListReplicationCycles     []gax.CallOption
 	GetReplicationCycle       []gax.CallOption
+	ListImageImports          []gax.CallOption
+	GetImageImport            []gax.CallOption
+	CreateImageImport         []gax.CallOption
+	DeleteImageImport         []gax.CallOption
+	ListImageImportJobs       []gax.CallOption
+	GetImageImportJob         []gax.CallOption
+	CancelImageImportJob      []gax.CallOption
+	CreateDiskMigrationJob    []gax.CallOption
+	ListDiskMigrationJobs     []gax.CallOption
+	GetDiskMigrationJob       []gax.CallOption
+	UpdateDiskMigrationJob    []gax.CallOption
+	DeleteDiskMigrationJob    []gax.CallOption
+	RunDiskMigrationJob       []gax.CallOption
+	CancelDiskMigrationJob    []gax.CallOption
 	GetLocation               []gax.CallOption
 	ListLocations             []gax.CallOption
 	CancelOperation           []gax.CallOption
@@ -135,6 +151,9 @@ func defaultCallOptions() *CallOptions {
 		FetchInventory: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		FetchStorageInventory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListUtilizationReports: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -187,6 +206,9 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		FinalizeMigration: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExtendMigration: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		CreateCloneJob: []gax.CallOption{
@@ -253,6 +275,48 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetReplicationCycle: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListImageImports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetImageImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateImageImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteImageImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListImageImportJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetImageImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelImageImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDiskMigrationJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RunDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelDiskMigrationJob: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:     []gax.CallOption{},
@@ -284,6 +348,9 @@ func defaultRESTCallOptions() *CallOptions {
 		FetchInventory: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		FetchStorageInventory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListUtilizationReports: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -336,6 +403,9 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		FinalizeMigration: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExtendMigration: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		CreateCloneJob: []gax.CallOption{
@@ -404,6 +474,48 @@ func defaultRESTCallOptions() *CallOptions {
 		GetReplicationCycle: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListImageImports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetImageImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateImageImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteImageImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListImageImportJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetImageImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelImageImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDiskMigrationJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RunDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelDiskMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -427,6 +539,7 @@ type internalClient interface {
 	DeleteSource(context.Context, *vmmigrationpb.DeleteSourceRequest, ...gax.CallOption) (*DeleteSourceOperation, error)
 	DeleteSourceOperation(name string) *DeleteSourceOperation
 	FetchInventory(context.Context, *vmmigrationpb.FetchInventoryRequest, ...gax.CallOption) (*vmmigrationpb.FetchInventoryResponse, error)
+	FetchStorageInventory(context.Context, *vmmigrationpb.FetchStorageInventoryRequest, ...gax.CallOption) *SourceStorageResourceIterator
 	ListUtilizationReports(context.Context, *vmmigrationpb.ListUtilizationReportsRequest, ...gax.CallOption) *UtilizationReportIterator
 	GetUtilizationReport(context.Context, *vmmigrationpb.GetUtilizationReportRequest, ...gax.CallOption) (*vmmigrationpb.UtilizationReport, error)
 	CreateUtilizationReport(context.Context, *vmmigrationpb.CreateUtilizationReportRequest, ...gax.CallOption) (*CreateUtilizationReportOperation, error)
@@ -457,6 +570,8 @@ type internalClient interface {
 	PauseMigrationOperation(name string) *PauseMigrationOperation
 	FinalizeMigration(context.Context, *vmmigrationpb.FinalizeMigrationRequest, ...gax.CallOption) (*FinalizeMigrationOperation, error)
 	FinalizeMigrationOperation(name string) *FinalizeMigrationOperation
+	ExtendMigration(context.Context, *vmmigrationpb.ExtendMigrationRequest, ...gax.CallOption) (*ExtendMigrationOperation, error)
+	ExtendMigrationOperation(name string) *ExtendMigrationOperation
 	CreateCloneJob(context.Context, *vmmigrationpb.CreateCloneJobRequest, ...gax.CallOption) (*CreateCloneJobOperation, error)
 	CreateCloneJobOperation(name string) *CreateCloneJobOperation
 	CancelCloneJob(context.Context, *vmmigrationpb.CancelCloneJobRequest, ...gax.CallOption) (*CancelCloneJobOperation, error)
@@ -491,6 +606,28 @@ type internalClient interface {
 	DeleteTargetProjectOperation(name string) *DeleteTargetProjectOperation
 	ListReplicationCycles(context.Context, *vmmigrationpb.ListReplicationCyclesRequest, ...gax.CallOption) *ReplicationCycleIterator
 	GetReplicationCycle(context.Context, *vmmigrationpb.GetReplicationCycleRequest, ...gax.CallOption) (*vmmigrationpb.ReplicationCycle, error)
+	ListImageImports(context.Context, *vmmigrationpb.ListImageImportsRequest, ...gax.CallOption) *ImageImportIterator
+	GetImageImport(context.Context, *vmmigrationpb.GetImageImportRequest, ...gax.CallOption) (*vmmigrationpb.ImageImport, error)
+	CreateImageImport(context.Context, *vmmigrationpb.CreateImageImportRequest, ...gax.CallOption) (*CreateImageImportOperation, error)
+	CreateImageImportOperation(name string) *CreateImageImportOperation
+	DeleteImageImport(context.Context, *vmmigrationpb.DeleteImageImportRequest, ...gax.CallOption) (*DeleteImageImportOperation, error)
+	DeleteImageImportOperation(name string) *DeleteImageImportOperation
+	ListImageImportJobs(context.Context, *vmmigrationpb.ListImageImportJobsRequest, ...gax.CallOption) *ImageImportJobIterator
+	GetImageImportJob(context.Context, *vmmigrationpb.GetImageImportJobRequest, ...gax.CallOption) (*vmmigrationpb.ImageImportJob, error)
+	CancelImageImportJob(context.Context, *vmmigrationpb.CancelImageImportJobRequest, ...gax.CallOption) (*CancelImageImportJobOperation, error)
+	CancelImageImportJobOperation(name string) *CancelImageImportJobOperation
+	CreateDiskMigrationJob(context.Context, *vmmigrationpb.CreateDiskMigrationJobRequest, ...gax.CallOption) (*CreateDiskMigrationJobOperation, error)
+	CreateDiskMigrationJobOperation(name string) *CreateDiskMigrationJobOperation
+	ListDiskMigrationJobs(context.Context, *vmmigrationpb.ListDiskMigrationJobsRequest, ...gax.CallOption) *DiskMigrationJobIterator
+	GetDiskMigrationJob(context.Context, *vmmigrationpb.GetDiskMigrationJobRequest, ...gax.CallOption) (*vmmigrationpb.DiskMigrationJob, error)
+	UpdateDiskMigrationJob(context.Context, *vmmigrationpb.UpdateDiskMigrationJobRequest, ...gax.CallOption) (*UpdateDiskMigrationJobOperation, error)
+	UpdateDiskMigrationJobOperation(name string) *UpdateDiskMigrationJobOperation
+	DeleteDiskMigrationJob(context.Context, *vmmigrationpb.DeleteDiskMigrationJobRequest, ...gax.CallOption) (*DeleteDiskMigrationJobOperation, error)
+	DeleteDiskMigrationJobOperation(name string) *DeleteDiskMigrationJobOperation
+	RunDiskMigrationJob(context.Context, *vmmigrationpb.RunDiskMigrationJobRequest, ...gax.CallOption) (*RunDiskMigrationJobOperation, error)
+	RunDiskMigrationJobOperation(name string) *RunDiskMigrationJobOperation
+	CancelDiskMigrationJob(context.Context, *vmmigrationpb.CancelDiskMigrationJobRequest, ...gax.CallOption) (*CancelDiskMigrationJobOperation, error)
+	CancelDiskMigrationJobOperation(name string) *CancelDiskMigrationJobOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -589,6 +726,16 @@ func (c *Client) DeleteSourceOperation(name string) *DeleteSourceOperation {
 // opposed to listing the MigratingVms resources in the vmmigration service.
 func (c *Client) FetchInventory(ctx context.Context, req *vmmigrationpb.FetchInventoryRequest, opts ...gax.CallOption) (*vmmigrationpb.FetchInventoryResponse, error) {
 	return c.internalClient.FetchInventory(ctx, req, opts...)
+}
+
+// FetchStorageInventory list remote source’s inventory of storage resources.
+// The remote source is another cloud vendor (e.g. AWS, Azure).
+// The inventory describes the list of existing storage resources in that
+// source. Note that this operation lists the resources on the remote source,
+// as opposed to listing the MigratingVms resources in the vmmigration
+// service.
+func (c *Client) FetchStorageInventory(ctx context.Context, req *vmmigrationpb.FetchStorageInventoryRequest, opts ...gax.CallOption) *SourceStorageResourceIterator {
+	return c.internalClient.FetchStorageInventory(ctx, req, opts...)
 }
 
 // ListUtilizationReports lists Utilization Reports of the given Source.
@@ -761,6 +908,17 @@ func (c *Client) FinalizeMigrationOperation(name string) *FinalizeMigrationOpera
 	return c.internalClient.FinalizeMigrationOperation(name)
 }
 
+// ExtendMigration extend the migrating VM time to live.
+func (c *Client) ExtendMigration(ctx context.Context, req *vmmigrationpb.ExtendMigrationRequest, opts ...gax.CallOption) (*ExtendMigrationOperation, error) {
+	return c.internalClient.ExtendMigration(ctx, req, opts...)
+}
+
+// ExtendMigrationOperation returns a new ExtendMigrationOperation from a given name.
+// The name must be that of a previously created ExtendMigrationOperation, possibly from a different process.
+func (c *Client) ExtendMigrationOperation(name string) *ExtendMigrationOperation {
+	return c.internalClient.ExtendMigrationOperation(name)
+}
+
 // CreateCloneJob initiates a Clone of a specific migrating VM.
 func (c *Client) CreateCloneJob(ctx context.Context, req *vmmigrationpb.CreateCloneJobRequest, opts ...gax.CallOption) (*CreateCloneJobOperation, error) {
 	return c.internalClient.CreateCloneJob(ctx, req, opts...)
@@ -783,7 +941,8 @@ func (c *Client) CancelCloneJobOperation(name string) *CancelCloneJobOperation {
 	return c.internalClient.CancelCloneJobOperation(name)
 }
 
-// ListCloneJobs lists CloneJobs of a given migrating VM.
+// ListCloneJobs lists the CloneJobs of a migrating VM. Only 25 most recent CloneJobs are
+// listed.
 func (c *Client) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListCloneJobsRequest, opts ...gax.CallOption) *CloneJobIterator {
 	return c.internalClient.ListCloneJobs(ctx, req, opts...)
 }
@@ -817,7 +976,8 @@ func (c *Client) CancelCutoverJobOperation(name string) *CancelCutoverJobOperati
 	return c.internalClient.CancelCutoverJobOperation(name)
 }
 
-// ListCutoverJobs lists CutoverJobs of a given migrating VM.
+// ListCutoverJobs lists the CutoverJobs of a migrating VM. Only 25 most recent CutoverJobs
+// are listed.
 func (c *Client) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.ListCutoverJobsRequest, opts ...gax.CallOption) *CutoverJobIterator {
 	return c.internalClient.ListCutoverJobs(ctx, req, opts...)
 }
@@ -958,6 +1118,124 @@ func (c *Client) ListReplicationCycles(ctx context.Context, req *vmmigrationpb.L
 // GetReplicationCycle gets details of a single ReplicationCycle.
 func (c *Client) GetReplicationCycle(ctx context.Context, req *vmmigrationpb.GetReplicationCycleRequest, opts ...gax.CallOption) (*vmmigrationpb.ReplicationCycle, error) {
 	return c.internalClient.GetReplicationCycle(ctx, req, opts...)
+}
+
+// ListImageImports lists ImageImports in a given project.
+func (c *Client) ListImageImports(ctx context.Context, req *vmmigrationpb.ListImageImportsRequest, opts ...gax.CallOption) *ImageImportIterator {
+	return c.internalClient.ListImageImports(ctx, req, opts...)
+}
+
+// GetImageImport gets details of a single ImageImport.
+func (c *Client) GetImageImport(ctx context.Context, req *vmmigrationpb.GetImageImportRequest, opts ...gax.CallOption) (*vmmigrationpb.ImageImport, error) {
+	return c.internalClient.GetImageImport(ctx, req, opts...)
+}
+
+// CreateImageImport creates a new ImageImport in a given project.
+func (c *Client) CreateImageImport(ctx context.Context, req *vmmigrationpb.CreateImageImportRequest, opts ...gax.CallOption) (*CreateImageImportOperation, error) {
+	return c.internalClient.CreateImageImport(ctx, req, opts...)
+}
+
+// CreateImageImportOperation returns a new CreateImageImportOperation from a given name.
+// The name must be that of a previously created CreateImageImportOperation, possibly from a different process.
+func (c *Client) CreateImageImportOperation(name string) *CreateImageImportOperation {
+	return c.internalClient.CreateImageImportOperation(name)
+}
+
+// DeleteImageImport deletes a single ImageImport.
+func (c *Client) DeleteImageImport(ctx context.Context, req *vmmigrationpb.DeleteImageImportRequest, opts ...gax.CallOption) (*DeleteImageImportOperation, error) {
+	return c.internalClient.DeleteImageImport(ctx, req, opts...)
+}
+
+// DeleteImageImportOperation returns a new DeleteImageImportOperation from a given name.
+// The name must be that of a previously created DeleteImageImportOperation, possibly from a different process.
+func (c *Client) DeleteImageImportOperation(name string) *DeleteImageImportOperation {
+	return c.internalClient.DeleteImageImportOperation(name)
+}
+
+// ListImageImportJobs lists ImageImportJobs in a given project.
+func (c *Client) ListImageImportJobs(ctx context.Context, req *vmmigrationpb.ListImageImportJobsRequest, opts ...gax.CallOption) *ImageImportJobIterator {
+	return c.internalClient.ListImageImportJobs(ctx, req, opts...)
+}
+
+// GetImageImportJob gets details of a single ImageImportJob.
+func (c *Client) GetImageImportJob(ctx context.Context, req *vmmigrationpb.GetImageImportJobRequest, opts ...gax.CallOption) (*vmmigrationpb.ImageImportJob, error) {
+	return c.internalClient.GetImageImportJob(ctx, req, opts...)
+}
+
+// CancelImageImportJob initiates the cancellation of a running clone job.
+func (c *Client) CancelImageImportJob(ctx context.Context, req *vmmigrationpb.CancelImageImportJobRequest, opts ...gax.CallOption) (*CancelImageImportJobOperation, error) {
+	return c.internalClient.CancelImageImportJob(ctx, req, opts...)
+}
+
+// CancelImageImportJobOperation returns a new CancelImageImportJobOperation from a given name.
+// The name must be that of a previously created CancelImageImportJobOperation, possibly from a different process.
+func (c *Client) CancelImageImportJobOperation(name string) *CancelImageImportJobOperation {
+	return c.internalClient.CancelImageImportJobOperation(name)
+}
+
+// CreateDiskMigrationJob creates a new disk migration job in a given Source.
+func (c *Client) CreateDiskMigrationJob(ctx context.Context, req *vmmigrationpb.CreateDiskMigrationJobRequest, opts ...gax.CallOption) (*CreateDiskMigrationJobOperation, error) {
+	return c.internalClient.CreateDiskMigrationJob(ctx, req, opts...)
+}
+
+// CreateDiskMigrationJobOperation returns a new CreateDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created CreateDiskMigrationJobOperation, possibly from a different process.
+func (c *Client) CreateDiskMigrationJobOperation(name string) *CreateDiskMigrationJobOperation {
+	return c.internalClient.CreateDiskMigrationJobOperation(name)
+}
+
+// ListDiskMigrationJobs lists DiskMigrationJobs in a given Source.
+func (c *Client) ListDiskMigrationJobs(ctx context.Context, req *vmmigrationpb.ListDiskMigrationJobsRequest, opts ...gax.CallOption) *DiskMigrationJobIterator {
+	return c.internalClient.ListDiskMigrationJobs(ctx, req, opts...)
+}
+
+// GetDiskMigrationJob gets details of a single DiskMigrationJob.
+func (c *Client) GetDiskMigrationJob(ctx context.Context, req *vmmigrationpb.GetDiskMigrationJobRequest, opts ...gax.CallOption) (*vmmigrationpb.DiskMigrationJob, error) {
+	return c.internalClient.GetDiskMigrationJob(ctx, req, opts...)
+}
+
+// UpdateDiskMigrationJob updates the parameters of a single DiskMigrationJob.
+func (c *Client) UpdateDiskMigrationJob(ctx context.Context, req *vmmigrationpb.UpdateDiskMigrationJobRequest, opts ...gax.CallOption) (*UpdateDiskMigrationJobOperation, error) {
+	return c.internalClient.UpdateDiskMigrationJob(ctx, req, opts...)
+}
+
+// UpdateDiskMigrationJobOperation returns a new UpdateDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created UpdateDiskMigrationJobOperation, possibly from a different process.
+func (c *Client) UpdateDiskMigrationJobOperation(name string) *UpdateDiskMigrationJobOperation {
+	return c.internalClient.UpdateDiskMigrationJobOperation(name)
+}
+
+// DeleteDiskMigrationJob deletes a single DiskMigrationJob.
+func (c *Client) DeleteDiskMigrationJob(ctx context.Context, req *vmmigrationpb.DeleteDiskMigrationJobRequest, opts ...gax.CallOption) (*DeleteDiskMigrationJobOperation, error) {
+	return c.internalClient.DeleteDiskMigrationJob(ctx, req, opts...)
+}
+
+// DeleteDiskMigrationJobOperation returns a new DeleteDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created DeleteDiskMigrationJobOperation, possibly from a different process.
+func (c *Client) DeleteDiskMigrationJobOperation(name string) *DeleteDiskMigrationJobOperation {
+	return c.internalClient.DeleteDiskMigrationJobOperation(name)
+}
+
+// RunDiskMigrationJob runs the disk migration job.
+func (c *Client) RunDiskMigrationJob(ctx context.Context, req *vmmigrationpb.RunDiskMigrationJobRequest, opts ...gax.CallOption) (*RunDiskMigrationJobOperation, error) {
+	return c.internalClient.RunDiskMigrationJob(ctx, req, opts...)
+}
+
+// RunDiskMigrationJobOperation returns a new RunDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created RunDiskMigrationJobOperation, possibly from a different process.
+func (c *Client) RunDiskMigrationJobOperation(name string) *RunDiskMigrationJobOperation {
+	return c.internalClient.RunDiskMigrationJobOperation(name)
+}
+
+// CancelDiskMigrationJob cancels the disk migration job.
+func (c *Client) CancelDiskMigrationJob(ctx context.Context, req *vmmigrationpb.CancelDiskMigrationJobRequest, opts ...gax.CallOption) (*CancelDiskMigrationJobOperation, error) {
+	return c.internalClient.CancelDiskMigrationJob(ctx, req, opts...)
+}
+
+// CancelDiskMigrationJobOperation returns a new CancelDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created CancelDiskMigrationJobOperation, possibly from a different process.
+func (c *Client) CancelDiskMigrationJobOperation(name string) *CancelDiskMigrationJobOperation {
+	return c.internalClient.CancelDiskMigrationJobOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -1320,6 +1598,52 @@ func (c *gRPCClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) FetchStorageInventory(ctx context.Context, req *vmmigrationpb.FetchStorageInventoryRequest, opts ...gax.CallOption) *SourceStorageResourceIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "source", url.QueryEscape(req.GetSource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchStorageInventory[0:len((*c.CallOptions).FetchStorageInventory):len((*c.CallOptions).FetchStorageInventory)], opts...)
+	it := &SourceStorageResourceIterator{}
+	req = proto.Clone(req).(*vmmigrationpb.FetchStorageInventoryRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.SourceStorageResource, string, error) {
+		resp := &vmmigrationpb.FetchStorageInventoryResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchStorageInventory, req, settings.GRPC, c.logger, "FetchStorageInventory")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetResources(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) ListUtilizationReports(ctx context.Context, req *vmmigrationpb.ListUtilizationReportsRequest, opts ...gax.CallOption) *UtilizationReportIterator {
@@ -1750,6 +2074,26 @@ func (c *gRPCClient) FinalizeMigration(ctx context.Context, req *vmmigrationpb.F
 		return nil, err
 	}
 	return &FinalizeMigrationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ExtendMigration(ctx context.Context, req *vmmigrationpb.ExtendMigrationRequest, opts ...gax.CallOption) (*ExtendMigrationOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "migrating_vm", url.QueryEscape(req.GetMigratingVm()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExtendMigration[0:len((*c.CallOptions).ExtendMigration):len((*c.CallOptions).ExtendMigration)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExtendMigration, req, settings.GRPC, c.logger, "ExtendMigration")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExtendMigrationOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2314,6 +2658,358 @@ func (c *gRPCClient) GetReplicationCycle(ctx context.Context, req *vmmigrationpb
 	return resp, nil
 }
 
+func (c *gRPCClient) ListImageImports(ctx context.Context, req *vmmigrationpb.ListImageImportsRequest, opts ...gax.CallOption) *ImageImportIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListImageImports[0:len((*c.CallOptions).ListImageImports):len((*c.CallOptions).ListImageImports)], opts...)
+	it := &ImageImportIterator{}
+	req = proto.Clone(req).(*vmmigrationpb.ListImageImportsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ImageImport, string, error) {
+		resp := &vmmigrationpb.ListImageImportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListImageImports, req, settings.GRPC, c.logger, "ListImageImports")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetImageImports(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetImageImport(ctx context.Context, req *vmmigrationpb.GetImageImportRequest, opts ...gax.CallOption) (*vmmigrationpb.ImageImport, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetImageImport[0:len((*c.CallOptions).GetImageImport):len((*c.CallOptions).GetImageImport)], opts...)
+	var resp *vmmigrationpb.ImageImport
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetImageImport, req, settings.GRPC, c.logger, "GetImageImport")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateImageImport(ctx context.Context, req *vmmigrationpb.CreateImageImportRequest, opts ...gax.CallOption) (*CreateImageImportOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateImageImport[0:len((*c.CallOptions).CreateImageImport):len((*c.CallOptions).CreateImageImport)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateImageImport, req, settings.GRPC, c.logger, "CreateImageImport")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateImageImportOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteImageImport(ctx context.Context, req *vmmigrationpb.DeleteImageImportRequest, opts ...gax.CallOption) (*DeleteImageImportOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteImageImport[0:len((*c.CallOptions).DeleteImageImport):len((*c.CallOptions).DeleteImageImport)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteImageImport, req, settings.GRPC, c.logger, "DeleteImageImport")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteImageImportOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListImageImportJobs(ctx context.Context, req *vmmigrationpb.ListImageImportJobsRequest, opts ...gax.CallOption) *ImageImportJobIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListImageImportJobs[0:len((*c.CallOptions).ListImageImportJobs):len((*c.CallOptions).ListImageImportJobs)], opts...)
+	it := &ImageImportJobIterator{}
+	req = proto.Clone(req).(*vmmigrationpb.ListImageImportJobsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ImageImportJob, string, error) {
+		resp := &vmmigrationpb.ListImageImportJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListImageImportJobs, req, settings.GRPC, c.logger, "ListImageImportJobs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetImageImportJobs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetImageImportJob(ctx context.Context, req *vmmigrationpb.GetImageImportJobRequest, opts ...gax.CallOption) (*vmmigrationpb.ImageImportJob, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetImageImportJob[0:len((*c.CallOptions).GetImageImportJob):len((*c.CallOptions).GetImageImportJob)], opts...)
+	var resp *vmmigrationpb.ImageImportJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetImageImportJob, req, settings.GRPC, c.logger, "GetImageImportJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CancelImageImportJob(ctx context.Context, req *vmmigrationpb.CancelImageImportJobRequest, opts ...gax.CallOption) (*CancelImageImportJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelImageImportJob[0:len((*c.CallOptions).CancelImageImportJob):len((*c.CallOptions).CancelImageImportJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CancelImageImportJob, req, settings.GRPC, c.logger, "CancelImageImportJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CancelImageImportJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateDiskMigrationJob(ctx context.Context, req *vmmigrationpb.CreateDiskMigrationJobRequest, opts ...gax.CallOption) (*CreateDiskMigrationJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDiskMigrationJob[0:len((*c.CallOptions).CreateDiskMigrationJob):len((*c.CallOptions).CreateDiskMigrationJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateDiskMigrationJob, req, settings.GRPC, c.logger, "CreateDiskMigrationJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListDiskMigrationJobs(ctx context.Context, req *vmmigrationpb.ListDiskMigrationJobsRequest, opts ...gax.CallOption) *DiskMigrationJobIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDiskMigrationJobs[0:len((*c.CallOptions).ListDiskMigrationJobs):len((*c.CallOptions).ListDiskMigrationJobs)], opts...)
+	it := &DiskMigrationJobIterator{}
+	req = proto.Clone(req).(*vmmigrationpb.ListDiskMigrationJobsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.DiskMigrationJob, string, error) {
+		resp := &vmmigrationpb.ListDiskMigrationJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDiskMigrationJobs, req, settings.GRPC, c.logger, "ListDiskMigrationJobs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDiskMigrationJobs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetDiskMigrationJob(ctx context.Context, req *vmmigrationpb.GetDiskMigrationJobRequest, opts ...gax.CallOption) (*vmmigrationpb.DiskMigrationJob, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDiskMigrationJob[0:len((*c.CallOptions).GetDiskMigrationJob):len((*c.CallOptions).GetDiskMigrationJob)], opts...)
+	var resp *vmmigrationpb.DiskMigrationJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetDiskMigrationJob, req, settings.GRPC, c.logger, "GetDiskMigrationJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateDiskMigrationJob(ctx context.Context, req *vmmigrationpb.UpdateDiskMigrationJobRequest, opts ...gax.CallOption) (*UpdateDiskMigrationJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "disk_migration_job.name", url.QueryEscape(req.GetDiskMigrationJob().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDiskMigrationJob[0:len((*c.CallOptions).UpdateDiskMigrationJob):len((*c.CallOptions).UpdateDiskMigrationJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateDiskMigrationJob, req, settings.GRPC, c.logger, "UpdateDiskMigrationJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteDiskMigrationJob(ctx context.Context, req *vmmigrationpb.DeleteDiskMigrationJobRequest, opts ...gax.CallOption) (*DeleteDiskMigrationJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDiskMigrationJob[0:len((*c.CallOptions).DeleteDiskMigrationJob):len((*c.CallOptions).DeleteDiskMigrationJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteDiskMigrationJob, req, settings.GRPC, c.logger, "DeleteDiskMigrationJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) RunDiskMigrationJob(ctx context.Context, req *vmmigrationpb.RunDiskMigrationJobRequest, opts ...gax.CallOption) (*RunDiskMigrationJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RunDiskMigrationJob[0:len((*c.CallOptions).RunDiskMigrationJob):len((*c.CallOptions).RunDiskMigrationJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RunDiskMigrationJob, req, settings.GRPC, c.logger, "RunDiskMigrationJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RunDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CancelDiskMigrationJob(ctx context.Context, req *vmmigrationpb.CancelDiskMigrationJobRequest, opts ...gax.CallOption) (*CancelDiskMigrationJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelDiskMigrationJob[0:len((*c.CallOptions).CancelDiskMigrationJob):len((*c.CallOptions).CancelDiskMigrationJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CancelDiskMigrationJob, req, settings.GRPC, c.logger, "CancelDiskMigrationJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CancelDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2847,6 +3543,93 @@ func (c *restClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 		return nil, e
 	}
 	return resp, nil
+}
+
+// FetchStorageInventory list remote source’s inventory of storage resources.
+// The remote source is another cloud vendor (e.g. AWS, Azure).
+// The inventory describes the list of existing storage resources in that
+// source. Note that this operation lists the resources on the remote source,
+// as opposed to listing the MigratingVms resources in the vmmigration
+// service.
+func (c *restClient) FetchStorageInventory(ctx context.Context, req *vmmigrationpb.FetchStorageInventoryRequest, opts ...gax.CallOption) *SourceStorageResourceIterator {
+	it := &SourceStorageResourceIterator{}
+	req = proto.Clone(req).(*vmmigrationpb.FetchStorageInventoryRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.SourceStorageResource, string, error) {
+		resp := &vmmigrationpb.FetchStorageInventoryResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchStorageInventory", req.GetSource())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetForceRefresh() {
+			params.Add("forceRefresh", fmt.Sprintf("%v", req.GetForceRefresh()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("type", fmt.Sprintf("%v", req.GetType()))
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchStorageInventory")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetResources(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ListUtilizationReports lists Utilization Reports of the given Source.
@@ -3987,6 +4770,65 @@ func (c *restClient) FinalizeMigration(ctx context.Context, req *vmmigrationpb.F
 	}, nil
 }
 
+// ExtendMigration extend the migrating VM time to live.
+func (c *restClient) ExtendMigration(ctx context.Context, req *vmmigrationpb.ExtendMigrationRequest, opts ...gax.CallOption) (*ExtendMigrationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:extendMigration", req.GetMigratingVm())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "migrating_vm", url.QueryEscape(req.GetMigratingVm()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExtendMigration")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ExtendMigrationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CreateCloneJob initiates a Clone of a specific migrating VM.
 func (c *restClient) CreateCloneJob(ctx context.Context, req *vmmigrationpb.CreateCloneJobRequest, opts ...gax.CallOption) (*CreateCloneJobOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -4110,7 +4952,8 @@ func (c *restClient) CancelCloneJob(ctx context.Context, req *vmmigrationpb.Canc
 	}, nil
 }
 
-// ListCloneJobs lists CloneJobs of a given migrating VM.
+// ListCloneJobs lists the CloneJobs of a migrating VM. Only 25 most recent CloneJobs are
+// listed.
 func (c *restClient) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListCloneJobsRequest, opts ...gax.CallOption) *CloneJobIterator {
 	it := &CloneJobIterator{}
 	req = proto.Clone(req).(*vmmigrationpb.ListCloneJobsRequest)
@@ -4367,7 +5210,8 @@ func (c *restClient) CancelCutoverJob(ctx context.Context, req *vmmigrationpb.Ca
 	}, nil
 }
 
-// ListCutoverJobs lists CutoverJobs of a given migrating VM.
+// ListCutoverJobs lists the CutoverJobs of a migrating VM. Only 25 most recent CutoverJobs
+// are listed.
 func (c *restClient) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.ListCutoverJobsRequest, opts ...gax.CallOption) *CutoverJobIterator {
 	it := &CutoverJobIterator{}
 	req = proto.Clone(req).(*vmmigrationpb.ListCutoverJobsRequest)
@@ -5408,6 +6252,892 @@ func (c *restClient) GetReplicationCycle(ctx context.Context, req *vmmigrationpb
 	return resp, nil
 }
 
+// ListImageImports lists ImageImports in a given project.
+func (c *restClient) ListImageImports(ctx context.Context, req *vmmigrationpb.ListImageImportsRequest, opts ...gax.CallOption) *ImageImportIterator {
+	it := &ImageImportIterator{}
+	req = proto.Clone(req).(*vmmigrationpb.ListImageImportsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ImageImport, string, error) {
+		resp := &vmmigrationpb.ListImageImportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/imageImports", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListImageImports")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetImageImports(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetImageImport gets details of a single ImageImport.
+func (c *restClient) GetImageImport(ctx context.Context, req *vmmigrationpb.GetImageImportRequest, opts ...gax.CallOption) (*vmmigrationpb.ImageImport, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetImageImport[0:len((*c.CallOptions).GetImageImport):len((*c.CallOptions).GetImageImport)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &vmmigrationpb.ImageImport{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetImageImport")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateImageImport creates a new ImageImport in a given project.
+func (c *restClient) CreateImageImport(ctx context.Context, req *vmmigrationpb.CreateImageImportRequest, opts ...gax.CallOption) (*CreateImageImportOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetImageImport()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/imageImports", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("imageImportId", fmt.Sprintf("%v", req.GetImageImportId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateImageImport")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateImageImportOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteImageImport deletes a single ImageImport.
+func (c *restClient) DeleteImageImport(ctx context.Context, req *vmmigrationpb.DeleteImageImportRequest, opts ...gax.CallOption) (*DeleteImageImportOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteImageImport")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteImageImportOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListImageImportJobs lists ImageImportJobs in a given project.
+func (c *restClient) ListImageImportJobs(ctx context.Context, req *vmmigrationpb.ListImageImportJobsRequest, opts ...gax.CallOption) *ImageImportJobIterator {
+	it := &ImageImportJobIterator{}
+	req = proto.Clone(req).(*vmmigrationpb.ListImageImportJobsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ImageImportJob, string, error) {
+		resp := &vmmigrationpb.ListImageImportJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/imageImportJobs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListImageImportJobs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetImageImportJobs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetImageImportJob gets details of a single ImageImportJob.
+func (c *restClient) GetImageImportJob(ctx context.Context, req *vmmigrationpb.GetImageImportJobRequest, opts ...gax.CallOption) (*vmmigrationpb.ImageImportJob, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetImageImportJob[0:len((*c.CallOptions).GetImageImportJob):len((*c.CallOptions).GetImageImportJob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &vmmigrationpb.ImageImportJob{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetImageImportJob")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CancelImageImportJob initiates the cancellation of a running clone job.
+func (c *restClient) CancelImageImportJob(ctx context.Context, req *vmmigrationpb.CancelImageImportJobRequest, opts ...gax.CallOption) (*CancelImageImportJobOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelImageImportJob")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CancelImageImportJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateDiskMigrationJob creates a new disk migration job in a given Source.
+func (c *restClient) CreateDiskMigrationJob(ctx context.Context, req *vmmigrationpb.CreateDiskMigrationJobRequest, opts ...gax.CallOption) (*CreateDiskMigrationJobOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDiskMigrationJob()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/diskMigrationJobs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("diskMigrationJobId", fmt.Sprintf("%v", req.GetDiskMigrationJobId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDiskMigrationJob")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDiskMigrationJobs lists DiskMigrationJobs in a given Source.
+func (c *restClient) ListDiskMigrationJobs(ctx context.Context, req *vmmigrationpb.ListDiskMigrationJobsRequest, opts ...gax.CallOption) *DiskMigrationJobIterator {
+	it := &DiskMigrationJobIterator{}
+	req = proto.Clone(req).(*vmmigrationpb.ListDiskMigrationJobsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.DiskMigrationJob, string, error) {
+		resp := &vmmigrationpb.ListDiskMigrationJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/diskMigrationJobs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDiskMigrationJobs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDiskMigrationJobs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDiskMigrationJob gets details of a single DiskMigrationJob.
+func (c *restClient) GetDiskMigrationJob(ctx context.Context, req *vmmigrationpb.GetDiskMigrationJobRequest, opts ...gax.CallOption) (*vmmigrationpb.DiskMigrationJob, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDiskMigrationJob[0:len((*c.CallOptions).GetDiskMigrationJob):len((*c.CallOptions).GetDiskMigrationJob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &vmmigrationpb.DiskMigrationJob{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDiskMigrationJob")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateDiskMigrationJob updates the parameters of a single DiskMigrationJob.
+func (c *restClient) UpdateDiskMigrationJob(ctx context.Context, req *vmmigrationpb.UpdateDiskMigrationJobRequest, opts ...gax.CallOption) (*UpdateDiskMigrationJobOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDiskMigrationJob()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDiskMigrationJob().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "disk_migration_job.name", url.QueryEscape(req.GetDiskMigrationJob().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDiskMigrationJob")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteDiskMigrationJob deletes a single DiskMigrationJob.
+func (c *restClient) DeleteDiskMigrationJob(ctx context.Context, req *vmmigrationpb.DeleteDiskMigrationJobRequest, opts ...gax.CallOption) (*DeleteDiskMigrationJobOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDiskMigrationJob")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RunDiskMigrationJob runs the disk migration job.
+func (c *restClient) RunDiskMigrationJob(ctx context.Context, req *vmmigrationpb.RunDiskMigrationJobRequest, opts ...gax.CallOption) (*RunDiskMigrationJobOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:run", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RunDiskMigrationJob")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RunDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CancelDiskMigrationJob cancels the disk migration job.
+func (c *restClient) CancelDiskMigrationJob(ctx context.Context, req *vmmigrationpb.CancelDiskMigrationJobRequest, opts ...gax.CallOption) (*CancelDiskMigrationJobOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelDiskMigrationJob")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CancelDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -5800,6 +7530,42 @@ func (c *restClient) CancelCutoverJobOperation(name string) *CancelCutoverJobOpe
 	}
 }
 
+// CancelDiskMigrationJobOperation returns a new CancelDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created CancelDiskMigrationJobOperation, possibly from a different process.
+func (c *gRPCClient) CancelDiskMigrationJobOperation(name string) *CancelDiskMigrationJobOperation {
+	return &CancelDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CancelDiskMigrationJobOperation returns a new CancelDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created CancelDiskMigrationJobOperation, possibly from a different process.
+func (c *restClient) CancelDiskMigrationJobOperation(name string) *CancelDiskMigrationJobOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CancelDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CancelImageImportJobOperation returns a new CancelImageImportJobOperation from a given name.
+// The name must be that of a previously created CancelImageImportJobOperation, possibly from a different process.
+func (c *gRPCClient) CancelImageImportJobOperation(name string) *CancelImageImportJobOperation {
+	return &CancelImageImportJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CancelImageImportJobOperation returns a new CancelImageImportJobOperation from a given name.
+// The name must be that of a previously created CancelImageImportJobOperation, possibly from a different process.
+func (c *restClient) CancelImageImportJobOperation(name string) *CancelImageImportJobOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CancelImageImportJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateCloneJobOperation returns a new CreateCloneJobOperation from a given name.
 // The name must be that of a previously created CreateCloneJobOperation, possibly from a different process.
 func (c *gRPCClient) CreateCloneJobOperation(name string) *CreateCloneJobOperation {
@@ -5854,6 +7620,24 @@ func (c *restClient) CreateDatacenterConnectorOperation(name string) *CreateData
 	}
 }
 
+// CreateDiskMigrationJobOperation returns a new CreateDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created CreateDiskMigrationJobOperation, possibly from a different process.
+func (c *gRPCClient) CreateDiskMigrationJobOperation(name string) *CreateDiskMigrationJobOperation {
+	return &CreateDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateDiskMigrationJobOperation returns a new CreateDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created CreateDiskMigrationJobOperation, possibly from a different process.
+func (c *restClient) CreateDiskMigrationJobOperation(name string) *CreateDiskMigrationJobOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateGroupOperation returns a new CreateGroupOperation from a given name.
 // The name must be that of a previously created CreateGroupOperation, possibly from a different process.
 func (c *gRPCClient) CreateGroupOperation(name string) *CreateGroupOperation {
@@ -5867,6 +7651,24 @@ func (c *gRPCClient) CreateGroupOperation(name string) *CreateGroupOperation {
 func (c *restClient) CreateGroupOperation(name string) *CreateGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGroupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateImageImportOperation returns a new CreateImageImportOperation from a given name.
+// The name must be that of a previously created CreateImageImportOperation, possibly from a different process.
+func (c *gRPCClient) CreateImageImportOperation(name string) *CreateImageImportOperation {
+	return &CreateImageImportOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateImageImportOperation returns a new CreateImageImportOperation from a given name.
+// The name must be that of a previously created CreateImageImportOperation, possibly from a different process.
+func (c *restClient) CreateImageImportOperation(name string) *CreateImageImportOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateImageImportOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -5962,6 +7764,24 @@ func (c *restClient) DeleteDatacenterConnectorOperation(name string) *DeleteData
 	}
 }
 
+// DeleteDiskMigrationJobOperation returns a new DeleteDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created DeleteDiskMigrationJobOperation, possibly from a different process.
+func (c *gRPCClient) DeleteDiskMigrationJobOperation(name string) *DeleteDiskMigrationJobOperation {
+	return &DeleteDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteDiskMigrationJobOperation returns a new DeleteDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created DeleteDiskMigrationJobOperation, possibly from a different process.
+func (c *restClient) DeleteDiskMigrationJobOperation(name string) *DeleteDiskMigrationJobOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteGroupOperation returns a new DeleteGroupOperation from a given name.
 // The name must be that of a previously created DeleteGroupOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
@@ -5975,6 +7795,24 @@ func (c *gRPCClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
 func (c *restClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGroupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteImageImportOperation returns a new DeleteImageImportOperation from a given name.
+// The name must be that of a previously created DeleteImageImportOperation, possibly from a different process.
+func (c *gRPCClient) DeleteImageImportOperation(name string) *DeleteImageImportOperation {
+	return &DeleteImageImportOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteImageImportOperation returns a new DeleteImageImportOperation from a given name.
+// The name must be that of a previously created DeleteImageImportOperation, possibly from a different process.
+func (c *restClient) DeleteImageImportOperation(name string) *DeleteImageImportOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteImageImportOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -6052,6 +7890,24 @@ func (c *restClient) DeleteUtilizationReportOperation(name string) *DeleteUtiliz
 	}
 }
 
+// ExtendMigrationOperation returns a new ExtendMigrationOperation from a given name.
+// The name must be that of a previously created ExtendMigrationOperation, possibly from a different process.
+func (c *gRPCClient) ExtendMigrationOperation(name string) *ExtendMigrationOperation {
+	return &ExtendMigrationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExtendMigrationOperation returns a new ExtendMigrationOperation from a given name.
+// The name must be that of a previously created ExtendMigrationOperation, possibly from a different process.
+func (c *restClient) ExtendMigrationOperation(name string) *ExtendMigrationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ExtendMigrationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // FinalizeMigrationOperation returns a new FinalizeMigrationOperation from a given name.
 // The name must be that of a previously created FinalizeMigrationOperation, possibly from a different process.
 func (c *gRPCClient) FinalizeMigrationOperation(name string) *FinalizeMigrationOperation {
@@ -6124,6 +7980,24 @@ func (c *restClient) ResumeMigrationOperation(name string) *ResumeMigrationOpera
 	}
 }
 
+// RunDiskMigrationJobOperation returns a new RunDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created RunDiskMigrationJobOperation, possibly from a different process.
+func (c *gRPCClient) RunDiskMigrationJobOperation(name string) *RunDiskMigrationJobOperation {
+	return &RunDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RunDiskMigrationJobOperation returns a new RunDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created RunDiskMigrationJobOperation, possibly from a different process.
+func (c *restClient) RunDiskMigrationJobOperation(name string) *RunDiskMigrationJobOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RunDiskMigrationJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // StartMigrationOperation returns a new StartMigrationOperation from a given name.
 // The name must be that of a previously created StartMigrationOperation, possibly from a different process.
 func (c *gRPCClient) StartMigrationOperation(name string) *StartMigrationOperation {
@@ -6137,6 +8011,24 @@ func (c *gRPCClient) StartMigrationOperation(name string) *StartMigrationOperati
 func (c *restClient) StartMigrationOperation(name string) *StartMigrationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartMigrationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateDiskMigrationJobOperation returns a new UpdateDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created UpdateDiskMigrationJobOperation, possibly from a different process.
+func (c *gRPCClient) UpdateDiskMigrationJobOperation(name string) *UpdateDiskMigrationJobOperation {
+	return &UpdateDiskMigrationJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDiskMigrationJobOperation returns a new UpdateDiskMigrationJobOperation from a given name.
+// The name must be that of a previously created UpdateDiskMigrationJobOperation, possibly from a different process.
+func (c *restClient) UpdateDiskMigrationJobOperation(name string) *UpdateDiskMigrationJobOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDiskMigrationJobOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
