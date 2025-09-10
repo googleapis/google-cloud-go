@@ -65,7 +65,6 @@ modules:
   - devicestreaming
   - dialogflow
   - discoveryengine
-  - dlp
   - documentai
   - domains
   - edgecontainer
@@ -1282,9 +1281,6 @@ service-configs:
   - input-directory: google/monitoring/v3
     service-config: monitoring.yaml
     import-path: cloud.google.com/go/monitoring/apiv3/v2
-  - input-directory: google/privacy/dlp/v2
-    service-config: dlp_v2.yaml
-    import-path: cloud.google.com/go/dlp/apiv2
   - input-directory: google/pubsub/v1
     service-config: pubsub_v1.yaml
     import-path: cloud.google.com/go/pubsub/v2/apiv1
