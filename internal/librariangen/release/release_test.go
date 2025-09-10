@@ -120,8 +120,8 @@ func TestInit(t *testing.T) {
 					"id": "secretmanager", "version": "1.16.0", "release_triggered": true,
 					"apis": [{"path": "google/cloud/secretmanager/v1"}],
 					"changes": [
-						{"type": "feat", "subject": "add new GetSecret API"},
-						{"type": "fix", "subject": "correct typo in documentation"}
+						{"type": "feat", "description": "add new GetSecret API"},
+						{"type": "fix", "description": "correct typo in documentation"}
 					]
 				}]
 			}`,
@@ -141,7 +141,7 @@ func TestInit(t *testing.T) {
 		},
 		{
 			name:        "changelog already up-to-date",
-			requestJSON: `{ "libraries": [ { "id": "secretmanager", "version": "1.16.0", "release_triggered": true, "apis": [{"path": "google/cloud/secretmanager/v1"}], "changes": [{"type": "feat", "subject": "add new GetSecret API"}] } ] }`,
+			requestJSON: `{ "libraries": [ { "id": "secretmanager", "version": "1.16.0", "release_triggered": true, "apis": [{"path": "google/cloud/secretmanager/v1"}], "changes": [{"type": "feat", "description": "add new GetSecret API"}] } ] }`,
 			initialRepoContent: map[string]string{
 				"secretmanager/CHANGES.md": "# Changes\n\n### 1.16.0\n- Already there.",
 				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"version": "1.15.0"}`,

@@ -117,7 +117,7 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 		if changesByType[change.Type] == nil {
 			changesByType[change.Type] = make(map[string]bool)
 		}
-		changesByType[change.Type][change.Subject] = true
+		changesByType[change.Type][change.Description] = true
 	}
 
 	for _, section := range changelogSections {
@@ -213,7 +213,7 @@ type Library struct {
 // Change represents a single commit change for a library.
 type Change struct {
 	Type             string `json:"type"`
-	Subject          string `json:"subject"`
+	Description      string `json:"description"`
 	Body             string `json:"body"`
 	PiperCLNumber    string `json:"piper_cl_number"`
 	SourceCommitHash string `json:"source_commit_hash"`
