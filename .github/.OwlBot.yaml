@@ -126,7 +126,6 @@ deep-remove-regex:
   - /discoveryengine/apiv1/
   - /discoveryengine/apiv1beta/
   - /discoveryengine/apiv1alpha/
-  - /dlp/apiv2/
   - /documentai/apiv1/
   - /documentai/apiv1beta3/
   - /domains/apiv1beta1/
@@ -277,7 +276,6 @@ deep-remove-regex:
   - /internal/generated/snippets/discoveryengine/apiv1/
   - /internal/generated/snippets/discoveryengine/apiv1beta/
   - /internal/generated/snippets/discoveryengine/apiv1alpha/
-  - /internal/generated/snippets/dlp/apiv2/
   - /internal/generated/snippets/documentai/apiv1/
   - /internal/generated/snippets/documentai/apiv1beta3/
   - /internal/generated/snippets/domains/apiv1beta1/
@@ -956,8 +954,6 @@ deep-copy-regex:
   - source: /google/cloud/discoveryengine/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/discoveryengine/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/privacy/dlp/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/documentai/v1/cloud.google.com/go
     dest: /
