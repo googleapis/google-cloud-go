@@ -17,12 +17,11 @@ package module
 
 import (
 	_ "embed"
+	"fmt"
 	"html/template"
 	"log/slog"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
 	"time"
 )
 
@@ -47,55 +46,14 @@ func GenerateInternalVersionFile(moduleDir, version string) error {
 		Year:    time.Now().Year(),
 		Version: version,
 	}
+	if err := os.MkdirAll(filepath.Dir(versionPath), 0755); err != nil {
+		return fmt.Errorf("librariangen: creating directory for version file: %w", err)
+	}
+
 	f, err := os.Create(versionPath)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 	return t.Execute(f, internalVersionData)
-}
-
-// UpdateSnippetsMetadata updates the library version in all snippet metadata files,
-// replacing the old version or the $VERSION placeholder.
-func UpdateSnippetsMetadata(outputDir, moduleName, version string) error {
-	slog.Debug("librariangen: updating snippets metadata")
-	snpDir := filepath.Join(outputDir, "internal", "generated", "snippets", moduleName)
-	err := filepath.WalkDir(snpDir, func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-		if match, _ := filepath.Match("snippet_metadata.*.json", d.Name()); match {
-			read, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			content := string(read)
-			var newContent string
-			var oldVersion string
-
-			if strings.Contains(content, "$VERSION") {
-				newContent = strings.Replace(content, "$VERSION", version, 1)
-				oldVersion = "$VERSION"
-			} else {
-				// This regex finds a version string like "1.2.3".
-				re := regexp.MustCompile(`\d+\.\d+\.\d+`)
-				if foundVersion := re.FindString(content); foundVersion != "" {
-					newContent = strings.Replace(content, foundVersion, version, 1)
-					oldVersion = foundVersion
-				}
-			}
-
-			if newContent != "" {
-				slog.Info("librariangen: updating version in snippets metadata file", "path", path, "old", oldVersion, "new", version)
-				if err := os.WriteFile(path, []byte(newContent), 0); err != nil {
-					return err
-				}
-			}
-		}
-		return nil
-	})
-	return err
 }
