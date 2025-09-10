@@ -101,7 +101,7 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 		return fmt.Errorf("librariangen: reading changelog: %w", err)
 	}
 
-	versionString := fmt.Sprintf("### %s", lib.Version)
+	versionString := fmt.Sprintf("## %s", lib.Version)
 	if bytes.Contains(oldContent, []byte(versionString)) {
 		slog.Info("librariangen: changelog already up-to-date", "path", relativeChangelogPath, "version", lib.Version)
 		return nil
@@ -109,8 +109,10 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 
 	var newEntry bytes.Buffer
 
-	date := t.Format("2006-01-02")
-	fmt.Fprintf(&newEntry, "%s (%s)\n\n", versionString, date)
+	tag := fmt.Sprintf("%s/v%s", lib.ID, lib.Version)
+	encodedTag := strings.ReplaceAll(tag, "/", "%2F")
+	releaseURL := "https://github.com/googleapis/google-cloud-go/releases/tag/" + encodedTag
+	fmt.Fprintf(&newEntry, "## %s(%s)\n\n", lib.Version, releaseURL)
 
 	changesByType := make(map[string]map[string]bool)
 	for _, change := range lib.Changes {
@@ -125,7 +127,7 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 		if len(subjects) == 0 {
 			continue
 		}
-		fmt.Fprintf(&newEntry, "#### %s\n\n", section.Section)
+		fmt.Fprintf(&newEntry, "### %s\n\n", section.Section)
 		for subj := range subjects {
 			fmt.Fprintf(&newEntry, "* %s\n", subj)
 		}
