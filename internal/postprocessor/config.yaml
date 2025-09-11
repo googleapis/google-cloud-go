@@ -1331,6 +1331,7 @@ skip-module-scan-paths:
   - bigquery/v2
   - bigtable
   - datastore
+  - dlp
   - errorreporting
   - firestore
   - logging
