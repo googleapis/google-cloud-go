@@ -1,5 +1,22 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.24.0...retail/v1.25.0) (2025-09-11)
+
+
+### Features
+
+* **retail:** Release the conversational search public SDK ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **retail:** Release the latest conversational search public SDK ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+
+### Documentation
+
+* **retail:** A comment for enum `Mode` is changed ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **retail:** A comment for enum value `CONVERSATIONAL_FILTER_ONLY` in enum `Mode` is changed ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **retail:** A comment for enum value `DISABLED` in enum `Mode` is changed ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **retail:** A comment for enum value `ENABLED` in enum `Mode` is changed ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **retail:** A comment for field `user_query_types` in message `.google.cloud.retail.v2alpha.ConversationalSearchResponse` is changed ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.23.0...retail/v1.24.0) (2025-07-31)
 
 
