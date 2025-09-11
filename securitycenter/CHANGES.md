@@ -1,5 +1,12 @@
 # Changes
 
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.37.0...securitycenter/v1.38.0) (2025-09-11)
+
+
+### Features
+
+* **securitycenter:** Add GCE to DeploymentPlatform enum ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.36.2...securitycenter/v1.37.0) (2025-07-09)
 
 

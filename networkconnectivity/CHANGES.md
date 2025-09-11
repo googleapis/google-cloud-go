@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.18.0...networkconnectivity/v1.19.0) (2025-09-11)
+
+
+### Features
+
+* **networkconnectivity:** Introduce DataTransfer APIs ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.17.1...networkconnectivity/v1.18.0) (2025-07-23)
 
 
