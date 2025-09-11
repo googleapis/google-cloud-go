@@ -129,7 +129,7 @@ type internalCmekClient interface {
 // CmekClient is a client for interacting with Cloud Dataplex API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Dataplex Cmek Service
+// Dataplex Universal Catalog Customer Managed Encryption Keys (CMEK) Service
 type CmekClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCmekClient
@@ -270,7 +270,7 @@ type cmekGRPCClient struct {
 // NewCmekClient creates a new cmek service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Dataplex Cmek Service
+// Dataplex Universal Catalog Customer Managed Encryption Keys (CMEK) Service
 func NewCmekClient(ctx context.Context, opts ...option.ClientOption) (*CmekClient, error) {
 	clientOpts := defaultCmekGRPCClientOptions()
 	if newCmekClientHook != nil {
@@ -362,7 +362,7 @@ type cmekRESTClient struct {
 
 // NewCmekRESTClient creates a new cmek service rest client.
 //
-// Dataplex Cmek Service
+// Dataplex Universal Catalog Customer Managed Encryption Keys (CMEK) Service
 func NewCmekRESTClient(ctx context.Context, opts ...option.ClientOption) (*CmekClient, error) {
 	clientOpts := append(defaultCmekRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

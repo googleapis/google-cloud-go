@@ -883,7 +883,7 @@ type Environment_InfrastructureSpec_OsImageRuntime struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Dataplex Image version.
+	// Required. Dataplex Universal Catalog Image version.
 	ImageVersion string `protobuf:"bytes,1,opt,name=image_version,json=imageVersion,proto3" json:"image_version,omitempty"`
 	// Optional. List of Java jars to be included in the runtime environment.
 	// Valid input includes Cloud Storage URIs to Jar binaries.
