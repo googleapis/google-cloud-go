@@ -32,6 +32,8 @@ import (
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/module"
 )
 
+var now = time.Now
+
 // Config holds the configuration for the release-init command.
 type Config struct {
 	LibrarianDir string
@@ -66,7 +68,7 @@ func Init(ctx context.Context, cfg *Config) error {
 
 		moduleDir := filepath.Join(cfg.OutputDir, lib.ID)
 		slog.Info("librariangen: processing library for release", "id", lib.ID, "version", lib.Version)
-		if err := updateChangelog(cfg, lib, time.Now().UTC()); err != nil {
+		if err := updateChangelog(cfg, lib, now().UTC()); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update changelog for %s: %w", lib.ID, err))
 		}
 		if err := module.GenerateInternalVersionFile(moduleDir, lib.Version); err != nil {
@@ -101,7 +103,7 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 		return fmt.Errorf("librariangen: reading changelog: %w", err)
 	}
 
-	versionString := fmt.Sprintf("### %s", lib.Version)
+	versionString := fmt.Sprintf("## [%s]", lib.Version)
 	if bytes.Contains(oldContent, []byte(versionString)) {
 		slog.Info("librariangen: changelog already up-to-date", "path", relativeChangelogPath, "version", lib.Version)
 		return nil
@@ -109,8 +111,11 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 
 	var newEntry bytes.Buffer
 
+	tag := fmt.Sprintf("%s/v%s", lib.ID, lib.Version)
+	encodedTag := strings.ReplaceAll(tag, "/", "%2F")
+	releaseURL := "https://github.com/googleapis/google-cloud-go/releases/tag/" + encodedTag
 	date := t.Format("2006-01-02")
-	fmt.Fprintf(&newEntry, "%s (%s)\n\n", versionString, date)
+	fmt.Fprintf(&newEntry, "## [%s](%s) (%s)\n\n", lib.Version, releaseURL, date)
 
 	changesByType := make(map[string]map[string]bool)
 	for _, change := range lib.Changes {
@@ -125,7 +130,7 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 		if len(subjects) == 0 {
 			continue
 		}
-		fmt.Fprintf(&newEntry, "#### %s\n\n", section.Section)
+		fmt.Fprintf(&newEntry, "### %s\n\n", section.Section)
 		for subj := range subjects {
 			fmt.Fprintf(&newEntry, "* %s\n", subj)
 		}
