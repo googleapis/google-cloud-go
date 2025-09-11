@@ -183,6 +183,9 @@
         "discoveryengine": {
             "component": "discoveryengine"
         },
+        "dlp": {
+            "component": "dlp"
+        },
         "documentai": {
             "component": "documentai"
         },
