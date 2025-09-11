@@ -277,7 +277,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	ctx2, cancel2 := context.WithCancel(gctx)
 	defer cancel2()
 
-	// This context is for forcefully shutting down callbacks if ShutdownTimeout
+	// This context is for forcefully shutting down the application if ShutdownTimeout
 	// is exceeded.
 	shutdownKillCtx, shutdownKillCancel := context.WithCancel(context.Background())
 	defer shutdownKillCancel()
@@ -311,14 +311,10 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				default:
 				}
 
-				// This channel's type is a slice, so it only needs to store 1 object.
 				// This is used to communicate the result of iter.receive.
-				msgChan := make(chan []*Message, 1)
-				errChan := make(chan error, 1)
-				doneChan := make(chan struct{})
+				msgChan := make(chan []*Message)
+				errChan := make(chan error)
 				go func() {
-					defer close(msgChan)
-					defer close(errChan)
 					msgs, err := iter.receive(maxToPull)
 					if errors.Is(err, io.EOF) {
 						errChan <- nil
@@ -329,28 +325,23 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 						return
 					}
 					msgChan <- msgs
-					close(doneChan)
 				}()
 
 				// Make message pulling dependent on iterator for context cancellation
 				// If the context is cancelled while pulling messages, stop calling Receive early.
+				var msgs []*Message
 				select {
-				case <-ctx2.Done():
+				case <-ctx.Done():
 					return nil
 				case err := <-errChan:
 					return err
-				case <-doneChan:
-				}
-
-				var msgs []*Message
-				for _, m := range <-msgChan {
-					msgs = append(msgs, m)
+				case msgs = <-msgChan:
 				}
 
 				// If context is done and messages have been pulled,
 				// nack them.
 				select {
-				case <-ctx2.Done():
+				case <-ctx.Done():
 					for _, m := range msgs {
 						m.Nack()
 					}
@@ -477,30 +468,30 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 			p.iter.ps.cancel()
 		}
 
-		opts := s.ReceiveSettings.ShutdownOptions
+		shutdownOpts := s.ReceiveSettings.ShutdownOptions
 		// Once shutdown is initiated, start the timer for forceful shutdown.
-		if opts.Timeout == 0 {
+		if shutdownOpts.Timeout == 0 {
 			shutdownKillCancel() // Immediate forceful shutdown.
-		} else if opts.Timeout > 0 {
-			time.AfterFunc(opts.Timeout, shutdownKillCancel)
+		} else if shutdownOpts.Timeout > 0 {
+			time.AfterFunc(shutdownOpts.Timeout, shutdownKillCancel)
 			for _, p := range pairs {
 				p.iter.nackInventory(shutdownKillCtx)
 			}
 		}
 
-		if opts.Timeout >= 0 {
+		if shutdownOpts.Timeout >= 0 { // Timed shutdown
 			go func() {
 				for _, p := range pairs {
-					// Since we aren't looking for graceful timeout, call wg.Done in
-					// order to free up the waitgroup sooner and exit sooner.
-					// In graceful timeout, iterators must stop before wg is done.
+					// Since we aren't looking for graceful timeout, call
+					// each iterator.stop asynchronously.
+					go func() {
+						p.iter.stop()
+					}()
 					p.wg.Done()
-					p.iter.stop()
 				}
 				sched.Shutdown()
 			}()
-		} else if opts.Timeout < 0 {
-			// Either no options or specified or the user wants to graceful shutdown.
+		} else if shutdownOpts.Timeout < 0 { // Graceful shutdown
 			for _, p := range pairs {
 				p.iter.stop()
 				p.wg.Done()
