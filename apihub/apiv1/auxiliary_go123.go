@@ -47,6 +47,12 @@ func (it *AttributeIterator) All() iter.Seq2[*apihubpb.Attribute, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *CurationIterator) All() iter.Seq2[*apihubpb.Curation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *DependencyIterator) All() iter.Seq2[*apihubpb.Dependency, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -54,6 +60,18 @@ func (it *DependencyIterator) All() iter.Seq2[*apihubpb.Dependency, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *DeploymentIterator) All() iter.Seq2[*apihubpb.Deployment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiscoveredApiObservationIterator) All() iter.Seq2[*apihubpb.DiscoveredApiObservation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiscoveredApiOperationIterator) All() iter.Seq2[*apihubpb.DiscoveredApiOperation, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -78,6 +96,18 @@ func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PluginInstanceIterator) All() iter.Seq2[*apihubpb.PluginInstance, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PluginIterator) All() iter.Seq2[*apihubpb.Plugin, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

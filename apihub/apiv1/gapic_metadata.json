@@ -20,6 +20,11 @@
                 "CreateApi"
               ]
             },
+            "CreateApiOperation": {
+              "methods": [
+                "CreateApiOperation"
+              ]
+            },
             "CreateAttribute": {
               "methods": [
                 "CreateAttribute"
@@ -48,6 +53,11 @@
             "DeleteApi": {
               "methods": [
                 "DeleteApi"
+              ]
+            },
+            "DeleteApiOperation": {
+              "methods": [
+                "DeleteApiOperation"
               ]
             },
             "DeleteAttribute": {
@@ -190,6 +200,11 @@
                 "UpdateApi"
               ]
             },
+            "UpdateApiOperation": {
+              "methods": [
+                "UpdateApiOperation"
+              ]
+            },
             "UpdateAttribute": {
               "methods": [
                 "UpdateAttribute"
@@ -213,6 +228,114 @@
             "UpdateVersion": {
               "methods": [
                 "UpdateVersion"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ApiHubCollect": {
+      "clients": {
+        "rest": {
+          "libraryClient": "ApiHubCollectClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CollectApiData": {
+              "methods": [
+                "CollectApiData"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ApiHubCurate": {
+      "clients": {
+        "rest": {
+          "libraryClient": "ApiHubCurateClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCuration": {
+              "methods": [
+                "CreateCuration"
+              ]
+            },
+            "DeleteCuration": {
+              "methods": [
+                "DeleteCuration"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetCuration": {
+              "methods": [
+                "GetCuration"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCurations": {
+              "methods": [
+                "ListCurations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCuration": {
+              "methods": [
+                "UpdateCuration"
               ]
             }
           }
@@ -283,10 +406,10 @@
         }
       }
     },
-    "ApiHubPlugin": {
+    "ApiHubDiscovery": {
       "clients": {
         "rest": {
-          "libraryClient": "ApiHubPluginClient",
+          "libraryClient": "ApiHubDiscoveryClient",
           "rpcs": {
             "CancelOperation": {
               "methods": [
@@ -298,14 +421,108 @@
                 "DeleteOperation"
               ]
             },
+            "GetDiscoveredApiObservation": {
+              "methods": [
+                "GetDiscoveredApiObservation"
+              ]
+            },
+            "GetDiscoveredApiOperation": {
+              "methods": [
+                "GetDiscoveredApiOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDiscoveredApiObservations": {
+              "methods": [
+                "ListDiscoveredApiObservations"
+              ]
+            },
+            "ListDiscoveredApiOperations": {
+              "methods": [
+                "ListDiscoveredApiOperations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ApiHubPlugin": {
+      "clients": {
+        "rest": {
+          "libraryClient": "ApiHubPluginClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePlugin": {
+              "methods": [
+                "CreatePlugin"
+              ]
+            },
+            "CreatePluginInstance": {
+              "methods": [
+                "CreatePluginInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePlugin": {
+              "methods": [
+                "DeletePlugin"
+              ]
+            },
+            "DeletePluginInstance": {
+              "methods": [
+                "DeletePluginInstance"
+              ]
+            },
             "DisablePlugin": {
               "methods": [
                 "DisablePlugin"
               ]
             },
+            "DisablePluginInstanceAction": {
+              "methods": [
+                "DisablePluginInstanceAction"
+              ]
+            },
             "EnablePlugin": {
               "methods": [
                 "EnablePlugin"
+              ]
+            },
+            "EnablePluginInstanceAction": {
+              "methods": [
+                "EnablePluginInstanceAction"
+              ]
+            },
+            "ExecutePluginInstanceAction": {
+              "methods": [
+                "ExecutePluginInstanceAction"
               ]
             },
             "GetLocation": {
@@ -323,6 +540,11 @@
                 "GetPlugin"
               ]
             },
+            "GetPluginInstance": {
+              "methods": [
+                "GetPluginInstance"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -331,6 +553,21 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListPluginInstances": {
+              "methods": [
+                "ListPluginInstances"
+              ]
+            },
+            "ListPlugins": {
+              "methods": [
+                "ListPlugins"
+              ]
+            },
+            "UpdatePluginInstance": {
+              "methods": [
+                "UpdatePluginInstance"
               ]
             }
           }
@@ -463,6 +700,11 @@
             "CreateApiHubInstance": {
               "methods": [
                 "CreateApiHubInstance"
+              ]
+            },
+            "DeleteApiHubInstance": {
+              "methods": [
+                "DeleteApiHubInstance"
               ]
             },
             "DeleteOperation": {

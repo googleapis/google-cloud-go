@@ -21,7 +21,11 @@
 package apihubpb
 
 import (
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -628,4 +632,170 @@ func file_google_cloud_apihub_v1_host_project_registration_service_proto_init() 
 	file_google_cloud_apihub_v1_host_project_registration_service_proto_rawDesc = nil
 	file_google_cloud_apihub_v1_host_project_registration_service_proto_goTypes = nil
 	file_google_cloud_apihub_v1_host_project_registration_service_proto_depIdxs = nil
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConnInterface
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion6
+
+// HostProjectRegistrationServiceClient is the client API for HostProjectRegistrationService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type HostProjectRegistrationServiceClient interface {
+	// Create a host project registration.
+	// A Google cloud project can be registered as a host project if it is not
+	// attached as a runtime project to another host project.
+	// A project can be registered as a host project only once. Subsequent
+	// register calls for the same project will fail.
+	CreateHostProjectRegistration(ctx context.Context, in *CreateHostProjectRegistrationRequest, opts ...grpc.CallOption) (*HostProjectRegistration, error)
+	// Get a host project registration.
+	GetHostProjectRegistration(ctx context.Context, in *GetHostProjectRegistrationRequest, opts ...grpc.CallOption) (*HostProjectRegistration, error)
+	// Lists host project registrations.
+	ListHostProjectRegistrations(ctx context.Context, in *ListHostProjectRegistrationsRequest, opts ...grpc.CallOption) (*ListHostProjectRegistrationsResponse, error)
+}
+
+type hostProjectRegistrationServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewHostProjectRegistrationServiceClient(cc grpc.ClientConnInterface) HostProjectRegistrationServiceClient {
+	return &hostProjectRegistrationServiceClient{cc}
+}
+
+func (c *hostProjectRegistrationServiceClient) CreateHostProjectRegistration(ctx context.Context, in *CreateHostProjectRegistrationRequest, opts ...grpc.CallOption) (*HostProjectRegistration, error) {
+	out := new(HostProjectRegistration)
+	err := c.cc.Invoke(ctx, "/google.cloud.apihub.v1.HostProjectRegistrationService/CreateHostProjectRegistration", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostProjectRegistrationServiceClient) GetHostProjectRegistration(ctx context.Context, in *GetHostProjectRegistrationRequest, opts ...grpc.CallOption) (*HostProjectRegistration, error) {
+	out := new(HostProjectRegistration)
+	err := c.cc.Invoke(ctx, "/google.cloud.apihub.v1.HostProjectRegistrationService/GetHostProjectRegistration", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostProjectRegistrationServiceClient) ListHostProjectRegistrations(ctx context.Context, in *ListHostProjectRegistrationsRequest, opts ...grpc.CallOption) (*ListHostProjectRegistrationsResponse, error) {
+	out := new(ListHostProjectRegistrationsResponse)
+	err := c.cc.Invoke(ctx, "/google.cloud.apihub.v1.HostProjectRegistrationService/ListHostProjectRegistrations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// HostProjectRegistrationServiceServer is the server API for HostProjectRegistrationService service.
+type HostProjectRegistrationServiceServer interface {
+	// Create a host project registration.
+	// A Google cloud project can be registered as a host project if it is not
+	// attached as a runtime project to another host project.
+	// A project can be registered as a host project only once. Subsequent
+	// register calls for the same project will fail.
+	CreateHostProjectRegistration(context.Context, *CreateHostProjectRegistrationRequest) (*HostProjectRegistration, error)
+	// Get a host project registration.
+	GetHostProjectRegistration(context.Context, *GetHostProjectRegistrationRequest) (*HostProjectRegistration, error)
+	// Lists host project registrations.
+	ListHostProjectRegistrations(context.Context, *ListHostProjectRegistrationsRequest) (*ListHostProjectRegistrationsResponse, error)
+}
+
+// UnimplementedHostProjectRegistrationServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedHostProjectRegistrationServiceServer struct {
+}
+
+func (*UnimplementedHostProjectRegistrationServiceServer) CreateHostProjectRegistration(context.Context, *CreateHostProjectRegistrationRequest) (*HostProjectRegistration, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateHostProjectRegistration not implemented")
+}
+func (*UnimplementedHostProjectRegistrationServiceServer) GetHostProjectRegistration(context.Context, *GetHostProjectRegistrationRequest) (*HostProjectRegistration, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHostProjectRegistration not implemented")
+}
+func (*UnimplementedHostProjectRegistrationServiceServer) ListHostProjectRegistrations(context.Context, *ListHostProjectRegistrationsRequest) (*ListHostProjectRegistrationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListHostProjectRegistrations not implemented")
+}
+
+func RegisterHostProjectRegistrationServiceServer(s *grpc.Server, srv HostProjectRegistrationServiceServer) {
+	s.RegisterService(&_HostProjectRegistrationService_serviceDesc, srv)
+}
+
+func _HostProjectRegistrationService_CreateHostProjectRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateHostProjectRegistrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostProjectRegistrationServiceServer).CreateHostProjectRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.cloud.apihub.v1.HostProjectRegistrationService/CreateHostProjectRegistration",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostProjectRegistrationServiceServer).CreateHostProjectRegistration(ctx, req.(*CreateHostProjectRegistrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostProjectRegistrationService_GetHostProjectRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetHostProjectRegistrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostProjectRegistrationServiceServer).GetHostProjectRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.cloud.apihub.v1.HostProjectRegistrationService/GetHostProjectRegistration",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostProjectRegistrationServiceServer).GetHostProjectRegistration(ctx, req.(*GetHostProjectRegistrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostProjectRegistrationService_ListHostProjectRegistrations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListHostProjectRegistrationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostProjectRegistrationServiceServer).ListHostProjectRegistrations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.cloud.apihub.v1.HostProjectRegistrationService/ListHostProjectRegistrations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostProjectRegistrationServiceServer).ListHostProjectRegistrations(ctx, req.(*ListHostProjectRegistrationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _HostProjectRegistrationService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "google.cloud.apihub.v1.HostProjectRegistrationService",
+	HandlerType: (*HostProjectRegistrationServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateHostProjectRegistration",
+			Handler:    _HostProjectRegistrationService_CreateHostProjectRegistration_Handler,
+		},
+		{
+			MethodName: "GetHostProjectRegistration",
+			Handler:    _HostProjectRegistrationService_GetHostProjectRegistration_Handler,
+		},
+		{
+			MethodName: "ListHostProjectRegistrations",
+			Handler:    _HostProjectRegistrationService_ListHostProjectRegistrations_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "google/cloud/apihub/v1/host_project_registration_service.proto",
 }

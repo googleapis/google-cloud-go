@@ -46,6 +46,7 @@ var newProvisioningClientHook clientHook
 // ProvisioningCallOptions contains the retry settings for each method of ProvisioningClient.
 type ProvisioningCallOptions struct {
 	CreateApiHubInstance []gax.CallOption
+	DeleteApiHubInstance []gax.CallOption
 	GetApiHubInstance    []gax.CallOption
 	LookupApiHubInstance []gax.CallOption
 	GetLocation          []gax.CallOption
@@ -61,6 +62,7 @@ func defaultProvisioningRESTCallOptions() *ProvisioningCallOptions {
 		CreateApiHubInstance: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		DeleteApiHubInstance: []gax.CallOption{},
 		GetApiHubInstance: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -99,6 +101,8 @@ type internalProvisioningClient interface {
 	Connection() *grpc.ClientConn
 	CreateApiHubInstance(context.Context, *apihubpb.CreateApiHubInstanceRequest, ...gax.CallOption) (*CreateApiHubInstanceOperation, error)
 	CreateApiHubInstanceOperation(name string) *CreateApiHubInstanceOperation
+	DeleteApiHubInstance(context.Context, *apihubpb.DeleteApiHubInstanceRequest, ...gax.CallOption) (*DeleteApiHubInstanceOperation, error)
+	DeleteApiHubInstanceOperation(name string) *DeleteApiHubInstanceOperation
 	GetApiHubInstance(context.Context, *apihubpb.GetApiHubInstanceRequest, ...gax.CallOption) (*apihubpb.ApiHubInstance, error)
 	LookupApiHubInstance(context.Context, *apihubpb.LookupApiHubInstanceRequest, ...gax.CallOption) (*apihubpb.LookupApiHubInstanceResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -158,6 +162,17 @@ func (c *ProvisioningClient) CreateApiHubInstance(ctx context.Context, req *apih
 // The name must be that of a previously created CreateApiHubInstanceOperation, possibly from a different process.
 func (c *ProvisioningClient) CreateApiHubInstanceOperation(name string) *CreateApiHubInstanceOperation {
 	return c.internalClient.CreateApiHubInstanceOperation(name)
+}
+
+// DeleteApiHubInstance deletes the API hub instance.
+func (c *ProvisioningClient) DeleteApiHubInstance(ctx context.Context, req *apihubpb.DeleteApiHubInstanceRequest, opts ...gax.CallOption) (*DeleteApiHubInstanceOperation, error) {
+	return c.internalClient.DeleteApiHubInstance(ctx, req, opts...)
+}
+
+// DeleteApiHubInstanceOperation returns a new DeleteApiHubInstanceOperation from a given name.
+// The name must be that of a previously created DeleteApiHubInstanceOperation, possibly from a different process.
+func (c *ProvisioningClient) DeleteApiHubInstanceOperation(name string) *DeleteApiHubInstanceOperation {
+	return c.internalClient.DeleteApiHubInstanceOperation(name)
 }
 
 // GetApiHubInstance gets details of a single API Hub instance.
@@ -351,6 +366,59 @@ func (c *provisioningRESTClient) CreateApiHubInstance(ctx context.Context, req *
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &CreateApiHubInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteApiHubInstance deletes the API hub instance.
+func (c *provisioningRESTClient) DeleteApiHubInstance(ctx context.Context, req *apihubpb.DeleteApiHubInstanceRequest, opts ...gax.CallOption) (*DeleteApiHubInstanceOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteApiHubInstance")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteApiHubInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -800,6 +868,16 @@ func (c *provisioningRESTClient) ListOperations(ctx context.Context, req *longru
 func (c *provisioningRESTClient) CreateApiHubInstanceOperation(name string) *CreateApiHubInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApiHubInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteApiHubInstanceOperation returns a new DeleteApiHubInstanceOperation from a given name.
+// The name must be that of a previously created DeleteApiHubInstanceOperation, possibly from a different process.
+func (c *provisioningRESTClient) DeleteApiHubInstanceOperation(name string) *DeleteApiHubInstanceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteApiHubInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

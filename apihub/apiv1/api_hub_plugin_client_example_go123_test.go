@@ -22,9 +22,62 @@ import (
 	"context"
 
 	apihub "cloud.google.com/go/apihub/apiv1"
+	apihubpb "cloud.google.com/go/apihub/apiv1/apihubpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+func ExampleApiHubPluginClient_ListPluginInstances_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apihub.NewApiHubPluginRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apihubpb.ListPluginInstancesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apihub/apiv1/apihubpb#ListPluginInstancesRequest.
+	}
+	for resp, err := range c.ListPluginInstances(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleApiHubPluginClient_ListPlugins_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apihub.NewApiHubPluginRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apihubpb.ListPluginsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apihub/apiv1/apihubpb#ListPluginsRequest.
+	}
+	for resp, err := range c.ListPlugins(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
 
 func ExampleApiHubPluginClient_ListLocations_all() {
 	ctx := context.Background()
