@@ -1,5 +1,4 @@
-
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +16,8 @@ package trustboundary
 
 import (
 	"context"
-	"reflect"
+	"strings"
 	"testing"
-
-	
 )
 
 func TestNewExternalAccountTrustBoundaryConfigProvider(t *testing.T) {
@@ -32,66 +29,60 @@ func TestNewExternalAccountTrustBoundaryConfigProvider(t *testing.T) {
 		wantErr        string
 	}{
 		{
-			name:           "workload identity pool with explicit universe domain",
+			name:           "workload identity pool with matching explicit universe domain",
 			audience:       "//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
-			universeDomain: "example.com",
+			universeDomain: "googleapis.com",
 			wantProvider: &workloadIdentityPoolConfigProvider{
 				projectNumber:  "12345",
 				poolID:         "my-pool",
-				universeDomain: "example.com",
+				universeDomain: "googleapis.com",
 			},
 		},
 		{
 			name:           "workload identity pool with universe domain from audience",
-			audience:       "//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
+			audience:       "//iam.custom.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
 			universeDomain: "",
 			wantProvider: &workloadIdentityPoolConfigProvider{
 				projectNumber:  "12345",
 				poolID:         "my-pool",
-				universeDomain: "googleapis.com",
+				universeDomain: "custom.com",
 			},
 		},
 		{
-			name:           "workload identity pool with non-matching universe in audience",
+			name:           "workload identity pool with non-matching universe domain",
 			audience:       "//iam.custom.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
-			universeDomain: "",
-			wantErr:        "trustboundary: unknown audience format: //iam.custom.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
+			universeDomain: "example.com",
+			wantErr:        "provided universe domain (\"example.com\") does not match domain in audience",
 		},
 		{
-			name:           "workforce pool with explicit universe domain",
+			name:           "workforce pool with matching explicit universe domain",
 			audience:       "//iam.googleapis.com/locations/global/workforcePools/my-pool",
-			universeDomain: "example.com",
+			universeDomain: "googleapis.com",
 			wantProvider: &workforcePoolConfigProvider{
 				poolID:         "my-pool",
-				universeDomain: "example.com",
+				universeDomain: "googleapis.com",
 			},
 		},
 		{
 			name:           "workforce pool with universe domain from audience",
-			audience:       "//iam.googleapis.com/locations/global/workforcePools/my-pool",
+			audience:       "//iam.custom.com/locations/global/workforcePools/my-pool",
 			universeDomain: "",
 			wantProvider: &workforcePoolConfigProvider{
 				poolID:         "my-pool",
-				universeDomain: "googleapis.com",
+				universeDomain: "custom.com",
 			},
 		},
 		{
-			name:           "workforce pool with non-matching universe in audience",
+			name:           "workforce pool with non-matching universe domain",
 			audience:       "//iam.custom.com/locations/global/workforcePools/my-pool",
-			universeDomain: "",
-			wantErr:        "trustboundary: unknown audience format: //iam.custom.com/locations/global/workforcePools/my-pool",
-		},
-		{
-			name:           "audience does not contain universe, fallback to default, but fails match",
-			audience:       "projects/123/workloadIdentityPools/my-pool",
-			universeDomain: "",
-			wantErr:        "trustboundary: unknown audience format: projects/123/workloadIdentityPools/my-pool",
+			universeDomain: "example.com",
+			wantErr:        "provided universe domain (\"example.com\") does not match domain in audience",
 		},
 		{
 			name:           "unknown audience format",
 			audience:       "invalid-audience-format",
 			universeDomain: "",
-			wantErr:        "trustboundary: unknown audience format: invalid-audience-format",
+			wantErr:        "unknown audience format",
 		},
 	}
 
@@ -100,7 +91,7 @@ func TestNewExternalAccountTrustBoundaryConfigProvider(t *testing.T) {
 			provider, err := NewExternalAccountTrustBoundaryConfigProvider(tt.audience, tt.universeDomain)
 
 			if tt.wantErr != "" {
-				if err == nil || err.Error() != tt.wantErr {
+				if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
 					t.Errorf("NewExternalAccountTrustBoundaryConfigProvider() error = %v, wantErr %q", err, tt.wantErr)
 				}
 				return
@@ -108,8 +99,25 @@ func TestNewExternalAccountTrustBoundaryConfigProvider(t *testing.T) {
 			if err != nil {
 				t.Fatalf("NewExternalAccountTrustBoundaryConfigProvider() unexpected error: %v", err)
 			}
-			if !reflect.DeepEqual(provider, tt.wantProvider) {
-				t.Errorf("NewExternalAccountTrustBoundaryConfigProvider() provider = %v, want %v", provider, tt.wantProvider)
+			switch want := tt.wantProvider.(type) {
+			case *workloadIdentityPoolConfigProvider:
+				got, ok := provider.(*workloadIdentityPoolConfigProvider)
+				if !ok {
+					t.Fatalf("NewExternalAccountTrustBoundaryConfigProvider() got provider type %T, want %T", provider, want)
+				}
+				if *got != *want {
+					t.Errorf("NewExternalAccountTrustBoundaryConfigProvider() got = %v, want %v", got, want)
+				}
+			case *workforcePoolConfigProvider:
+				got, ok := provider.(*workforcePoolConfigProvider)
+				if !ok {
+					t.Fatalf("NewExternalAccountTrustBoundaryConfigProvider() got provider type %T, want %T", provider, want)
+				}
+				if *got != *want {
+					t.Errorf("NewExternalAccountTrustBoundaryConfigProvider() got = %v, want %v", got, want)
+				}
+			default:
+				t.Fatalf("unexpected provider type in test setup: %T", want)
 			}
 		})
 	}

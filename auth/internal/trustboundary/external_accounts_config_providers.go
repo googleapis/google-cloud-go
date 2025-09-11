@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ import (
 	"context"
 	"fmt"
 	"regexp"
-
-	"cloud.google.com/go/auth/internal"
 )
 
 const (
@@ -28,36 +26,50 @@ const (
 )
 
 var (
-	workforceAudiencePattern = regexp.MustCompile(`//iam.googleapis.com/locations/global/workforcePools/([^/]+)`)
-	workloadAudiencePattern  = regexp.MustCompile(`//iam.googleapis.com/projects/([^/]+)/locations/global/workloadIdentityPools/([^/]+)`)
-	universeDomainPattern    = regexp.MustCompile(`//iam.([^/]+)/`)
+	workforceAudiencePattern = regexp.MustCompile(`//iam\.([^/]+)/locations/global/workforcePools/([^/]+)`)
+	workloadAudiencePattern  = regexp.MustCompile(`//iam\.([^/]+)/projects/([^/]+)/locations/global/workloadIdentityPools/([^/]+)`)
 )
 
 // NewExternalAccountTrustBoundaryConfigProvider creates a new ConfigProvider for external accounts.
-func NewExternalAccountTrustBoundaryConfigProvider(audience, universeDomain string) (ConfigProvider, error) {
-	if universeDomain == "" {
-		matches := universeDomainPattern.FindStringSubmatch(audience)
-		if len(matches) > 1 {
-			universeDomain = matches[1]
+func NewExternalAccountTrustBoundaryConfigProvider(audience, inputUniverseDomain string) (ConfigProvider, error) {
+	var audienceDomain, projectNumber, poolID string
+	var isWorkload bool
+
+	matches := workloadAudiencePattern.FindStringSubmatch(audience)
+	if len(matches) == 4 { // Expecting full match, domain, projectNumber, poolID
+		audienceDomain = matches[1]
+		projectNumber = matches[2]
+		poolID = matches[3]
+		isWorkload = true
+	} else {
+		matches = workforceAudiencePattern.FindStringSubmatch(audience)
+		if len(matches) == 3 { // Expecting full match, domain, poolID
+			audienceDomain = matches[1]
+			poolID = matches[2]
+			isWorkload = false
 		} else {
-			universeDomain = internal.DefaultUniverseDomain
+			return nil, fmt.Errorf("trustboundary: unknown audience format: %q", audience)
 		}
 	}
 
-	if matches := workloadAudiencePattern.FindStringSubmatch(audience); len(matches) > 0 {
+	effectiveUniverseDomain := inputUniverseDomain
+	if effectiveUniverseDomain == "" {
+		effectiveUniverseDomain = audienceDomain
+	} else if audienceDomain != "" && effectiveUniverseDomain != audienceDomain {
+		return nil, fmt.Errorf("trustboundary: provided universe domain (%q) does not match domain in audience (%q)", inputUniverseDomain, audienceDomain)
+	}
+
+	if isWorkload {
 		return &workloadIdentityPoolConfigProvider{
-			projectNumber:  matches[1],
-			poolID:         matches[2],
-			universeDomain: universeDomain,
+			projectNumber:  projectNumber,
+			poolID:         poolID,
+			universeDomain: effectiveUniverseDomain,
 		}, nil
 	}
-	if matches := workforceAudiencePattern.FindStringSubmatch(audience); len(matches) > 0 {
-		return &workforcePoolConfigProvider{
-			poolID:         matches[1],
-			universeDomain: universeDomain,
-		}, nil
-	}
-	return nil, fmt.Errorf("trustboundary: unknown audience format: %s", audience)
+	return &workforcePoolConfigProvider{
+		poolID:         poolID,
+		universeDomain: effectiveUniverseDomain,
+	}, nil
 }
 
 type workforcePoolConfigProvider struct {
