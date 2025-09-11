@@ -284,7 +284,7 @@ type CreateDataScanRequest struct {
 	// Required. The resource name of the parent location:
 	// `projects/{project}/locations/{location_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. DataScan resource.
 	DataScan *DataScan `protobuf:"bytes,2,opt,name=data_scan,json=dataScan,proto3" json:"data_scan,omitempty"`
@@ -436,7 +436,7 @@ type DeleteDataScanRequest struct {
 	// Required. The resource name of the dataScan:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. If set to true, any child resources of this data scan will also
 	// be deleted. (Otherwise, the request will only work if the data scan has no
@@ -497,7 +497,7 @@ type GetDataScanRequest struct {
 	// Required. The resource name of the dataScan:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Select the DataScan view to return. Defaults to `BASIC`.
 	View GetDataScanRequest_DataScanView `protobuf:"varint,2,opt,name=view,proto3,enum=google.cloud.dataplex.v1.GetDataScanRequest_DataScanView" json:"view,omitempty"`
@@ -556,7 +556,7 @@ type ListDataScansRequest struct {
 	// Required. The resource name of the parent location:
 	// `projects/{project}/locations/{location_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of dataScans to return. The service may return
 	// fewer than this value. If unspecified, at most 500 scans will be returned.
@@ -714,7 +714,7 @@ type RunDataScanRequest struct {
 	// Required. The resource name of the DataScan:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`.
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	//
 	// Only **OnDemand** data scans are allowed.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -813,7 +813,7 @@ type GetDataScanJobRequest struct {
 	// Required. The resource name of the DataScanJob:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}/jobs/{data_scan_job_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Select the DataScanJob view to return. Defaults to `BASIC`.
 	View GetDataScanJobRequest_DataScanJobView `protobuf:"varint,2,opt,name=view,proto3,enum=google.cloud.dataplex.v1.GetDataScanJobRequest_DataScanJobView" json:"view,omitempty"`
@@ -872,7 +872,7 @@ type ListDataScanJobsRequest struct {
 	// Required. The resource name of the parent environment:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of DataScanJobs to return. The service may return
 	// fewer than this value. If unspecified, at most 10 DataScanJobs will be
@@ -1077,8 +1077,8 @@ type GenerateDataQualityRulesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The data quality rules that Dataplex generates based on the results
-	// of a data profiling scan.
+	// The data quality rules that Dataplex Universal Catalog generates based on
+	// the results of a data profiling scan.
 	Rule []*DataQualityRule `protobuf:"bytes,1,rep,name=rule,proto3" json:"rule,omitempty"`
 }
 
@@ -1143,7 +1143,7 @@ type DataScan struct {
 	// Output only. Identifier. The relative resource name of the scan, of the
 	// form: `projects/{project}/locations/{location_id}/dataScans/{datascan_id}`,
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. System generated globally unique ID for the scan. This ID will
 	// be different if the scan is deleted and re-created with the same name.
@@ -1425,7 +1425,7 @@ type DataScanJob struct {
 	// the form:
 	// `projects/{project}/locations/{location_id}/dataScans/{datascan_id}/jobs/{job_id}`,
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. System generated globally unique ID for the DataScanJob.
 	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`

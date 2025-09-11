@@ -81,6 +81,9 @@
         "binaryauthorization": {
             "component": "binaryauthorization"
         },
+        "capacityplanner": {
+            "component": "capacityplanner"
+        },
         "certificatemanager": {
             "component": "certificatemanager"
         },
@@ -179,6 +182,9 @@
         },
         "discoveryengine": {
             "component": "discoveryengine"
+        },
+        "dlp": {
+            "component": "dlp"
         },
         "documentai": {
             "component": "documentai"

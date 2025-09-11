@@ -55,6 +55,11 @@
                 "GetFolderIntelligenceConfig"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetManagedFolder": {
               "methods": [
                 "GetManagedFolder"
@@ -103,6 +108,16 @@
             "ResumeAnywhereCache": {
               "methods": [
                 "ResumeAnywhereCache"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAnywhereCache": {
@@ -175,6 +190,11 @@
                 "GetFolderIntelligenceConfig"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetManagedFolder": {
               "methods": [
                 "GetManagedFolder"
@@ -223,6 +243,16 @@
             "ResumeAnywhereCache": {
               "methods": [
                 "ResumeAnywhereCache"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAnywhereCache": {

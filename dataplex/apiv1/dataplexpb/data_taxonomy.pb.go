@@ -732,7 +732,7 @@ type ListDataTaxonomiesRequest struct {
 
 	// Required. The resource name of the DataTaxonomy location, of the form:
 	// projects/{project_number}/locations/{location_id}
-	// where `location_id` refers to a GCP region.
+	// where `location_id` refers to a Google Cloud region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of DataTaxonomies to return. The service may
 	// return fewer than this value. If unspecified, at most 10 DataTaxonomies

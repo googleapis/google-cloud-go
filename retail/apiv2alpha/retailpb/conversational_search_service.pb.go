@@ -40,16 +40,19 @@ const (
 )
 
 // Enum to control Conversational Filtering mode.
+// A single conversation session including multiple turns supports modes for
+// Conversational Search OR Conversational Filtering without
+// Conversational Search, but not both.
 type ConversationalSearchRequest_ConversationalFilteringSpec_Mode int32
 
 const (
 	// Default value.
 	ConversationalSearchRequest_ConversationalFilteringSpec_MODE_UNSPECIFIED ConversationalSearchRequest_ConversationalFilteringSpec_Mode = 0
-	// Disable Conversational Filtering.
+	// Disables Conversational Filtering when using Conversational Search.
 	ConversationalSearchRequest_ConversationalFilteringSpec_DISABLED ConversationalSearchRequest_ConversationalFilteringSpec_Mode = 1
-	// Enabled Conversational Filtering with default Conversational Search.
+	// Enables Conversational Filtering when using Conversational Search.
 	ConversationalSearchRequest_ConversationalFilteringSpec_ENABLED ConversationalSearchRequest_ConversationalFilteringSpec_Mode = 2
-	// Enabled Conversational Filtering without default Conversational Search.
+	// Enables Conversational Filtering without Conversational Search.
 	ConversationalSearchRequest_ConversationalFilteringSpec_CONVERSATIONAL_FILTER_ONLY ConversationalSearchRequest_ConversationalFilteringSpec_Mode = 3
 )
 
@@ -354,9 +357,6 @@ type ConversationalSearchResponse struct {
 	//
 	// Supported values are:
 	//
-	// - "ADVERSARIAL"
-	// - "CHITCHAT"
-	// - "JAILBREAK"
 	// - "ORDER_SUPPORT"
 	// - "SIMPLE_PRODUCT_SEARCH"
 	// - "INTENT_REFINEMENT"
