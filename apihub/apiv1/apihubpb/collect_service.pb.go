@@ -22,11 +22,7 @@ package apihubpb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -951,86 +947,4 @@ func file_google_cloud_apihub_v1_collect_service_proto_init() {
 	file_google_cloud_apihub_v1_collect_service_proto_rawDesc = nil
 	file_google_cloud_apihub_v1_collect_service_proto_goTypes = nil
 	file_google_cloud_apihub_v1_collect_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ApiHubCollectClient is the client API for ApiHubCollect service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ApiHubCollectClient interface {
-	// Collect API data from a source and push it to Hub's collect layer.
-	CollectApiData(ctx context.Context, in *CollectApiDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-}
-
-type apiHubCollectClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewApiHubCollectClient(cc grpc.ClientConnInterface) ApiHubCollectClient {
-	return &apiHubCollectClient{cc}
-}
-
-func (c *apiHubCollectClient) CollectApiData(ctx context.Context, in *CollectApiDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.apihub.v1.ApiHubCollect/CollectApiData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ApiHubCollectServer is the server API for ApiHubCollect service.
-type ApiHubCollectServer interface {
-	// Collect API data from a source and push it to Hub's collect layer.
-	CollectApiData(context.Context, *CollectApiDataRequest) (*longrunningpb.Operation, error)
-}
-
-// UnimplementedApiHubCollectServer can be embedded to have forward compatible implementations.
-type UnimplementedApiHubCollectServer struct {
-}
-
-func (*UnimplementedApiHubCollectServer) CollectApiData(context.Context, *CollectApiDataRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CollectApiData not implemented")
-}
-
-func RegisterApiHubCollectServer(s *grpc.Server, srv ApiHubCollectServer) {
-	s.RegisterService(&_ApiHubCollect_serviceDesc, srv)
-}
-
-func _ApiHubCollect_CollectApiData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CollectApiDataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiHubCollectServer).CollectApiData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.apihub.v1.ApiHubCollect/CollectApiData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiHubCollectServer).CollectApiData(ctx, req.(*CollectApiDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ApiHubCollect_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.apihub.v1.ApiHubCollect",
-	HandlerType: (*ApiHubCollectServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CollectApiData",
-			Handler:    _ApiHubCollect_CollectApiData_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/apihub/v1/collect_service.proto",
 }
