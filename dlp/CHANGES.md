@@ -1,5 +1,11 @@
 # Changes
 
+### 1.25.0 (2025-09-11)
+
+#### Features
+
+* 
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.23.0...dlp/v1.24.0) (2025-06-25)
 
 
