@@ -204,7 +204,40 @@ func handleExternalAccount(f *credsfile.ExternalAccountFile, opts *DetectOptions
 	if f.ServiceAccountImpersonation != nil {
 		externalOpts.ServiceAccountImpersonationLifetimeSeconds = f.ServiceAccountImpersonation.TokenLifetimeSeconds
 	}
-	return externalaccount.NewTokenProvider(externalOpts)
+	tp, err := externalaccount.NewTokenProvider(externalOpts)
+	if err != nil {
+		return nil, err
+	}
+
+	trustBoundaryEnabled, err := trustboundary.IsEnabled()
+	if err != nil {
+		return nil, err
+	}
+
+	if trustBoundaryEnabled {
+		ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+		var tbConfigProvider trustboundary.ConfigProvider
+
+		if f.ServiceAccountImpersonationURL == "" {
+			// No impersonation, this is a direct external account credential.
+			// The trust boundary is based on the workload/workforce pool.
+			var err error
+			tbConfigProvider, err = trustboundary.NewExternalAccountTrustBoundaryConfigProvider(f.Audience, ud)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			// Impersonation is used. The trust boundary is based on the target service account.
+			targetSAEmail, err := impersonate.ExtractServiceAccountEmail(f.ServiceAccountImpersonationURL)
+			if err != nil {
+				return nil, fmt.Errorf("credentials: could not extract target service account email for trust boundary: %w", err)
+			}
+			tbConfigProvider = trustboundary.NewServiceAccountTrustBoundaryConfig(targetSAEmail, ud)
+		}
+
+		return trustboundary.NewProvider(opts.client(), tbConfigProvider, opts.logger(), tp)
+	}
+	return tp, nil
 }
 
 func handleExternalAccountAuthorizedUser(f *credsfile.ExternalAccountAuthorizedUserFile, opts *DetectOptions) (auth.TokenProvider, error) {
@@ -219,7 +252,26 @@ func handleExternalAccountAuthorizedUser(f *credsfile.ExternalAccountAuthorizedU
 		Client:       opts.client(),
 		Logger:       opts.logger(),
 	}
-	return externalaccountuser.NewTokenProvider(externalOpts)
+	tp, err := externalaccountuser.NewTokenProvider(externalOpts)
+	if err != nil {
+		return nil, err
+	}
+
+	trustBoundaryEnabled, err := trustboundary.IsEnabled()
+	if err != nil {
+		return nil, err
+	}
+
+	if trustBoundaryEnabled {
+		ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+		tbConfigProvider, err := trustboundary.NewExternalAccountTrustBoundaryConfigProvider(f.Audience, ud)
+		if err != nil {
+			return nil, err
+		}
+		return trustboundary.NewProvider(opts.client(), tbConfigProvider, opts.logger(), tp)
+
+	}
+	return tp, nil
 }
 
 func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
