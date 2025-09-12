@@ -1,5 +1,11 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.25.0) (2025-09-12)
+
+### Features
+
+* add invoke_route_prefix to ModelContainerSpec in aiplatform v1 models.proto (#12502)
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.23.0...dlp/v1.24.0) (2025-06-25)
 
 
