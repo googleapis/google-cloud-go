@@ -2,6 +2,31 @@
 
 
 
+## 0.1.0 (2025-09-12)
+
+
+### Features
+
+* **civil:** Implement database/sql.Scanner|Valuer ([#1145](https://github.com/googleapis/google-cloud-go/issues/1145)) ([#11808](https://github.com/googleapis/google-cloud-go/issues/11808)) ([cbe4419](https://github.com/googleapis/google-cloud-go/commit/cbe4419c17f677c05f3f52c2080861adce705db4))
+* **debugger:** Remove debugger/apiv2 client ([#12050](https://github.com/googleapis/google-cloud-go/issues/12050)) ([af8641e](https://github.com/googleapis/google-cloud-go/commit/af8641e7d011349afa774b668b30a95b007fd076))
+
+
+### Bug Fixes
+
+* **civil:** Add support for civil.Date, civil.Time and civil.DateTime arguments to their respective Scan methods ([#12240](https://github.com/googleapis/google-cloud-go/issues/12240)) ([7127ce9](https://github.com/googleapis/google-cloud-go/commit/7127ce9992f890667f2c8f75c924136b0e94f115)), refs [#12060](https://github.com/googleapis/google-cloud-go/issues/12060)
+* **internal/librariangen:** Fix Dockerfile permissions for go mod tidy ([#12704](https://github.com/googleapis/google-cloud-go/issues/12704)) ([0e70a0b](https://github.com/googleapis/google-cloud-go/commit/0e70a0b6afccc016c67337f340e2755fe7a476ca))
+* **internal/librariangen:** Get README title from service config yaml ([#12676](https://github.com/googleapis/google-cloud-go/issues/12676)) ([b3b8f70](https://github.com/googleapis/google-cloud-go/commit/b3b8f70a15ae477885f3ecc92e01ae37b7505de3))
+* **internal/librariangen:** Update source_paths to source_roots in generate-request.json ([#12691](https://github.com/googleapis/google-cloud-go/issues/12691)) ([2adb6f9](https://github.com/googleapis/google-cloud-go/commit/2adb6f9a67f21fba32371fb4b3dcfb7204309560))
+* **internal/postprocessor:** Add git ([#12524](https://github.com/googleapis/google-cloud-go/issues/12524)) ([82030ee](https://github.com/googleapis/google-cloud-go/commit/82030eec5d66f25ebc3fee1fda4b45ced370fc2b))
+* **readme:** Update authentication section ([#11918](https://github.com/googleapis/google-cloud-go/issues/11918)) ([2fda860](https://github.com/googleapis/google-cloud-go/commit/2fda86031820ad7d29322f03ad6f34871ad5ff59))
+* **third_party/pkgsite:** Increase comment size limit ([#11877](https://github.com/googleapis/google-cloud-go/issues/11877)) ([587b5cc](https://github.com/googleapis/google-cloud-go/commit/587b5ccc684ad99cb9eeba897304b7143564d423))
+
+
+### Documentation
+
+* **impersonate:** Address TODO in impersonate/example_test.go ([#12401](https://github.com/googleapis/google-cloud-go/issues/12401)) ([dd096ec](https://github.com/googleapis/google-cloud-go/commit/dd096ec81944e785b9245fda7e7b46e9908cfe8f))
+* **internal/generated:** Remove outdated pubsub snippets ([#12284](https://github.com/googleapis/google-cloud-go/issues/12284)) ([0338a40](https://github.com/googleapis/google-cloud-go/commit/0338a40d70206317d319e69911be0321fbb54e3f))
+
 ## [0.121.6](https://github.com/googleapis/google-cloud-go/compare/v0.121.5...v0.121.6) (2025-08-14)
 
 
