@@ -346,6 +346,270 @@ func TestToProtoValue_Errors(t *testing.T) {
 	}
 }
 
+// Helper struct for IsZero() method testing
+type StructWithIsZero struct {
+	ID     int
+	Data   string
+	isZero bool // internal flag to control IsZero()
+}
+
+func (s StructWithIsZero) IsZero() bool {
+	return s.isZero
+}
+
+// Example test struct
+type TestStructForOmitZero struct {
+	// Primitives
+	IntVal   int       `firestore:"IntVal,omitzero"`
+	StrVal   string    `firestore:"StrVal,omitzero"`
+	BoolVal  bool      `firestore:"BoolVal,omitzero"`
+	FloatVal float64   `firestore:"FloatVal,omitzero"`
+	TimeVal  time.Time `firestore:"TimeVal,omitzero"`
+	// Pointers
+	PtrIntVal    *int              `firestore:"PtrIntVal,omitzero"`
+	PtrStructVal *StructWithIsZero `firestore:"PtrStructVal,omitzero"`
+	// Slices/Maps
+	SliceVal []string          `firestore:"SliceVal,omitzero"`
+	MapVal   map[string]string `firestore:"MapVal,omitzero"`
+	// IsZero method
+	CustomIsZero    StructWithIsZero  `firestore:"CustomIsZero,omitzero"`
+	PtrCustomIsZero *StructWithIsZero `firestore:"PtrCustomIsZero,omitzero"`
+	// omitempty and omitzero
+	BothEmptyZeroStr string `firestore:"BothEmptyZeroStr,omitempty,omitzero"`
+	OnlyOmitEmptyStr string `firestore:"OnlyOmitEmptyStr,omitempty"`
+	// No omitzero
+	NoOmitZeroInt int `firestore:"NoOmitZeroInt"`
+}
+
+func TestToProtoValue_OmitZeroTag(t *testing.T) {
+	zeroIntVal := 0
+	nonZeroIntVal := 42
+	nonZeroTimeVal := time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	tests := []struct {
+		name     string
+		instance TestStructForOmitZero
+		want     *pb.Value
+	}{
+		{
+			name: "All zero values with omitzero",
+			instance: TestStructForOmitZero{
+				IntVal:           0,
+				StrVal:           "",
+				BoolVal:          false,
+				FloatVal:         0.0,
+				TimeVal:          time.Time{},
+				PtrIntVal:        nil,
+				PtrStructVal:     nil,
+				SliceVal:         nil,
+				MapVal:           nil,
+				CustomIsZero:     StructWithIsZero{ID: 1, Data: "not zero but IsZero returns true", isZero: true},
+				PtrCustomIsZero:  &StructWithIsZero{ID: 2, Data: "also not zero but IsZero true", isZero: true},
+				BothEmptyZeroStr: "",
+				OnlyOmitEmptyStr: "",
+				NoOmitZeroInt:    0, // This should be included
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0), // Only this and OnlyOmitEmptyStr (if non-empty, which it is not here) should remain
+			}),
+		},
+		{
+			name: "All zero values with omitzero - empty non-nil slice and map",
+			instance: TestStructForOmitZero{
+				IntVal:           0,
+				StrVal:           "",
+				BoolVal:          false,
+				FloatVal:         0.0,
+				TimeVal:          time.Time{},
+				PtrIntVal:        nil,
+				PtrStructVal:     nil,
+				SliceVal:         []string{},
+				MapVal:           map[string]string{},
+				CustomIsZero:     StructWithIsZero{ID: 1, Data: "not zero but IsZero returns true", isZero: true},
+				PtrCustomIsZero:  &StructWithIsZero{ID: 2, Data: "also not zero but IsZero true", isZero: true},
+				BothEmptyZeroStr: "",
+				OnlyOmitEmptyStr: "",
+				NoOmitZeroInt:    0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0),
+			}),
+		},
+		{
+			name: "Non-zero values with omitzero",
+			instance: TestStructForOmitZero{
+				IntVal:           1,
+				StrVal:           "foo",
+				BoolVal:          true,
+				FloatVal:         1.1,
+				TimeVal:          nonZeroTimeVal,
+				PtrIntVal:        &nonZeroIntVal,
+				PtrStructVal:     &StructWithIsZero{ID: 3, Data: "non-zero struct", isZero: false},
+				SliceVal:         []string{"a"},
+				MapVal:           map[string]string{"k": "v"},
+				CustomIsZero:     StructWithIsZero{ID: 4, Data: "I am not zero", isZero: false},
+				PtrCustomIsZero:  &StructWithIsZero{ID: 5, Data: "I am also not zero", isZero: false},
+				BothEmptyZeroStr: "not empty or zero",
+				OnlyOmitEmptyStr: "not empty",
+				NoOmitZeroInt:    5,
+			},
+			want: mapval(map[string]*pb.Value{
+				"IntVal":           intval(1),
+				"StrVal":           strval("foo"),
+				"BoolVal":          boolval(true),
+				"FloatVal":         floatval(1.1),
+				"TimeVal":          tsval(nonZeroTimeVal),
+				"PtrIntVal":        intval(nonZeroIntVal),
+				"PtrStructVal":     mapval(map[string]*pb.Value{"ID": intval(3), "Data": strval("non-zero struct")}),
+				"SliceVal":         arrayval(strval("a")),
+				"MapVal":           mapval(map[string]*pb.Value{"k": strval("v")}),
+				"CustomIsZero":     mapval(map[string]*pb.Value{"ID": intval(4), "Data": strval("I am not zero")}),
+				"PtrCustomIsZero":  mapval(map[string]*pb.Value{"ID": intval(5), "Data": strval("I am also not zero")}),
+				"BothEmptyZeroStr": strval("not empty or zero"),
+				"OnlyOmitEmptyStr": strval("not empty"),
+				"NoOmitZeroInt":    intval(5),
+			}),
+		},
+		{
+			name: "Pointer to zero value",
+			instance: TestStructForOmitZero{
+				PtrIntVal:     &zeroIntVal, // Pointer to 0
+				NoOmitZeroInt: 0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0), // PtrIntVal should be omitted
+			}),
+		},
+		{
+			name: "Pointer to zero value struct (IsZero returns true)",
+			instance: TestStructForOmitZero{
+				PtrStructVal:  &StructWithIsZero{ID: 0, Data: "", isZero: true},
+				NoOmitZeroInt: 0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0), // PtrStructVal should be omitted
+			}),
+		},
+		{
+			name: "Pointer to non-zero value struct (IsZero returns false)",
+			instance: TestStructForOmitZero{
+				PtrStructVal:  &StructWithIsZero{ID: 1, Data: "data", isZero: false},
+				NoOmitZeroInt: 0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"PtrStructVal":  mapval(map[string]*pb.Value{"ID": intval(1), "Data": strval("data")}),
+				"NoOmitZeroInt": intval(0),
+			}),
+		},
+		{
+			name: "IsZero returns false for a Go zero value struct",
+			instance: TestStructForOmitZero{
+				CustomIsZero:  StructWithIsZero{ID: 0, Data: "", isZero: false}, // Go zero, but IsZero() is false
+				NoOmitZeroInt: 0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"CustomIsZero":  mapval(map[string]*pb.Value{"ID": intval(0), "Data": strval("")}), // Should be included
+				"NoOmitZeroInt": intval(0),
+			}),
+		},
+		{
+			name: "IsZero returns true for a non-Go zero value struct",
+			instance: TestStructForOmitZero{
+				CustomIsZero:  StructWithIsZero{ID: 1, Data: "stuff", isZero: true}, // Not Go zero, but IsZero() is true
+				NoOmitZeroInt: 0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0), // CustomIsZero should be omitted
+			}),
+		},
+		{
+			name: "BothEmptyZeroStr: empty string (omitted by omitempty and omitzero)",
+			instance: TestStructForOmitZero{
+				BothEmptyZeroStr: "",
+				NoOmitZeroInt:    0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0),
+			}),
+		},
+		{
+			name: "BothEmptyZeroStr: non-empty string (included)",
+			instance: TestStructForOmitZero{
+				BothEmptyZeroStr: "text",
+				NoOmitZeroInt:    0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"BothEmptyZeroStr": strval("text"),
+				"NoOmitZeroInt":    intval(0),
+			}),
+		},
+		{
+			name: "OnlyOmitEmptyStr: empty string (omitted by omitempty)",
+			instance: TestStructForOmitZero{
+				OnlyOmitEmptyStr: "",
+				NoOmitZeroInt:    0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0),
+			}),
+		},
+		{
+			name: "OnlyOmitEmptyStr: non-empty string (included)",
+			instance: TestStructForOmitZero{
+				OnlyOmitEmptyStr: "text",
+				NoOmitZeroInt:    0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"OnlyOmitEmptyStr": strval("text"),
+				"NoOmitZeroInt":    intval(0),
+			}),
+		},
+		{
+			name: "PtrCustomIsZero: nil pointer",
+			instance: TestStructForOmitZero{
+				PtrCustomIsZero: nil,
+				NoOmitZeroInt:   0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0),
+			}),
+		},
+		{
+			name: "PtrCustomIsZero: non-nil, IsZero returns true",
+			instance: TestStructForOmitZero{
+				PtrCustomIsZero: &StructWithIsZero{ID: 7, Data: "non-zero but IsZero true", isZero: true},
+				NoOmitZeroInt:   0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"NoOmitZeroInt": intval(0),
+			}),
+		},
+		{
+			name: "PtrCustomIsZero: non-nil, IsZero returns false",
+			instance: TestStructForOmitZero{
+				PtrCustomIsZero: &StructWithIsZero{ID: 8, Data: "actually not zero", isZero: false},
+				NoOmitZeroInt:   0,
+			},
+			want: mapval(map[string]*pb.Value{
+				"PtrCustomIsZero": mapval(map[string]*pb.Value{"ID": intval(8), "Data": strval("actually not zero")}),
+				"NoOmitZeroInt":   intval(0),
+			}),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, _, err := toProtoValue(reflect.ValueOf(tt.instance))
+			if err != nil {
+				t.Fatalf("toProtoValue() error = %v", err)
+			}
+			if !testEqual(got, tt.want) {
+				t.Errorf("toProtoValue() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestToProtoValue_SawTransform(t *testing.T) {
 	for i, in := range []interface{}{
 		map[string]interface{}{"a": ServerTimestamp},
