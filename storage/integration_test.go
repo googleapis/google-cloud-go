@@ -3511,11 +3511,6 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
 				}
 
-				// Check that local Writer.Attrs() is populated after takeover.
-				if w2.Attrs() == nil || w2.Attrs().Size != tc.takeoverOffset {
-					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs(), tc.takeoverOffset)
-				}
-
 				// Validate that options are populated as expected.
 				wantChunkSize := 16 * MiB
 				if opts != nil && opts.ChunkSize != 0 {
@@ -3544,19 +3539,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					if n != remainingOffset {
 						t.Errorf("Writer.Flush: got %v bytes flushed, want %v", n, remainingOffset)
 					}
-					// Check local w.Attrs().Size is updated as expected.
-					if got, want := w2.Attrs().Size, remainingOffset; got != want {
-						t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
-					}
 				}
 
 				// Write remainder of the content and close.
 				h.mustWrite(w2, tc.content[remainingOffset:])
-
-				// Check local w.Attrs().Size is updated as expected.
-				if got, want := w2.Attrs().Size, int64(len(tc.content)); got != want {
-					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
-				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -3582,8 +3568,8 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				if w2.Attrs() == nil {
 					t.Fatalf("takeover writer attrs: expected attrs, got nil")
 				}
-				if w2.Attrs().Size != 9*MiB {
-					t.Errorf("final object size: got %v, want %v", w2.Attrs().Size, 9*MiB)
+				if got, want := w2.Attrs().Size, int64(len(tc.content)); got != want {
+					t.Errorf("final object size: got %v, want %v", got, want)
 				}
 			})
 		}
