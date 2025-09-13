@@ -68,7 +68,7 @@ func TestStreamingPullMultipleFetches(t *testing.T) {
 
 func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer, msgs []*pb.ReceivedMessage) {
 	sub := client.Subscriber("S")
-	gotMsgs, err := pullN(context.Background(), sub, len(msgs), 0, func(_ context.Context, m *Message) {
+	gotMsgs, err := pullN(context.Background(), sub, len(msgs), 0*time.Second, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
 			t.Fatalf("pullN err: %v", err)
@@ -184,7 +184,6 @@ func TestStreamingPullCancel(t *testing.T) {
 
 func TestStreamingPullRetry(t *testing.T) {
 	// Check that we retry on io.EOF or Unavailable.
-	t.Parallel()
 	client, server := newMock(t)
 	defer server.srv.Close()
 	defer client.Close()

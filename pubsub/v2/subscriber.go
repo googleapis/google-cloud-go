@@ -328,7 +328,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				}()
 
 				// Make message pulling dependent on iterator for context cancellation
-				// If the context is cancelled while pulling messages, stop calling Receive early.
+				// If the context is cancelled while pulling messages, stop reading from stream early.
 				var msgs []*Message
 				select {
 				case <-ctx.Done():
@@ -463,16 +463,20 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	go func() {
 		// Detected cancellation (either user initiated or permanent error).
 		<-ctx2.Done()
-		// Stop all the pullstreams as the first thing we do to prevent new messages.
-		for _, p := range pairs {
-			p.iter.ps.cancel()
-		}
 
 		shutdownOpts := s.ReceiveSettings.ShutdownOptions
 		// Once shutdown is initiated, start the timer for forceful shutdown.
 		if shutdownOpts.Timeout == 0 {
+			// Stop all the pullstreams as the first thing we do to prevent new messages.
+			for _, p := range pairs {
+				p.iter.ps.cancel()
+			}
 			shutdownKillCancel() // Immediate forceful shutdown.
 		} else if shutdownOpts.Timeout > 0 {
+			// Stop all the pullstreams as the first thing we do to prevent new messages.
+			for _, p := range pairs {
+				p.iter.ps.cancel()
+			}
 			time.AfterFunc(shutdownOpts.Timeout, shutdownKillCancel)
 			for _, p := range pairs {
 				p.iter.nackInventory(shutdownKillCtx)
