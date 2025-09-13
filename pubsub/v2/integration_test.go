@@ -317,7 +317,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 				return
 			default:
 				publisher.Publish(ctx, &Message{Data: []byte("some msg")})
-				time.Sleep(time.Second)
+				time.Sleep(1 * time.Second)
 			}
 		}
 	}()
@@ -325,7 +325,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 	go func() {
 		err = sub.Receive(ctx, func(_ context.Context, msg *Message) {
 			cancel()
-			time.AfterFunc(5*time.Second, msg.Ack)
+			msg.Ack()
 		})
 		close(doneReceiving)
 	}()
