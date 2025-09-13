@@ -69,6 +69,34 @@ func ExampleInstancesClient_AddAccessConfig() {
 	}
 }
 
+func ExampleInstancesClient_AddNetworkInterface() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.AddNetworkInterfaceInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddNetworkInterfaceInstanceRequest.
+	}
+	op, err := c.AddNetworkInterface(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleInstancesClient_AddResourcePolicies() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -236,6 +264,34 @@ func ExampleInstancesClient_DeleteAccessConfig() {
 		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteAccessConfigInstanceRequest.
 	}
 	op, err := c.DeleteAccessConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleInstancesClient_DeleteNetworkInterface() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.DeleteNetworkInterfaceInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteNetworkInterfaceInstanceRequest.
+	}
+	op, err := c.DeleteNetworkInterface(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

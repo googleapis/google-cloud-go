@@ -477,6 +477,13 @@ func (c *serviceAttachmentsRESTClient) Get(ctx context.Context, req *computepb.G
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/serviceAttachments/%v", req.GetProject(), req.GetRegion(), req.GetServiceAttachment())
 
+	params := url.Values{}
+	if req != nil && req.ShowNatIps != nil {
+		params.Add("showNatIps", fmt.Sprintf("%v", req.GetShowNatIps()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "service_attachment", url.QueryEscape(req.GetServiceAttachment()))}
 
