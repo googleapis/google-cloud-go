@@ -1284,7 +1284,6 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 // This feature is in preview and is not yet available for general use.
 func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context, opts *AppendableWriterOpts) (*Writer, int64, error) {
 	ctx, _ = startSpan(ctx, "Object.WriterFromAppendableObject")
-
 	if o.gen < 0 {
 		return nil, 0, errors.New("storage: ObjectHandle.Generation must be set to use NewWriterFromAppendableObject")
 	}
