@@ -18,8 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	"cloud.google.com/go/internal/trace"
 )
 
 // CopierFrom creates a Copier that can copy src to dst.
