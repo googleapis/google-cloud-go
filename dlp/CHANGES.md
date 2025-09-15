@@ -1,5 +1,11 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.25.0) (2025-09-12)
+
+### Features
+
+* [dlp] add LocationSupport,Domain,DocumentFallbackLocation
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.23.0...dlp/v1.24.0) (2025-06-25)
 
 
