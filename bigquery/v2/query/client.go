@@ -75,12 +75,12 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 		return nil, fmt.Errorf("failed to run query: %w", err)
 	}
 
-	q, err := newQueryJobFromQueryResponse(c, res)
+	q, err := newQueryJobFromQueryResponse(ctx, c, res)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run query: %w", err)
 	}
 
-	go q.waitForQueryBackground(ctx, opts)
+	go q.waitForQueryBackground(opts)
 
 	return q, nil
 }
@@ -112,19 +112,26 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 		return nil, fmt.Errorf("failed to insert query: %w", err)
 	}
 
-	q, err := newQueryJobFromJobReference(c, job.JobReference)
+	q, err := newQueryJobFromJobReference(ctx, c, job.JobReference)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start query job: %w", err)
 	}
 
-	go q.waitForQueryBackground(ctx, opts)
+	go q.waitForQueryBackground(opts)
 
 	return q, nil
 }
 
 // AttachJob set up a query job to be read from an existing one.
-func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...ReadOption) (*Query, error) {
-	return newQueryJobFromJobReference(c, jobRef)
+func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
+	q, err := newQueryJobFromJobReference(ctx, c, jobRef)
+	if err != nil {
+		return nil, fmt.Errorf("failed to attach query job: %w", err)
+	}
+
+	go q.waitForQueryBackground(opts)
+
+	return q, nil
 }
 
 // Close closes the connection to the API service. The user should invoke this when

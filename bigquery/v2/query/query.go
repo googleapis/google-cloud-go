@@ -33,6 +33,7 @@ type Query struct {
 	location  string
 	queryID   string
 
+	ctx   context.Context // context for background pooling
 	mu    sync.RWMutex
 	ready chan struct{}
 	err   error
@@ -44,9 +45,10 @@ type Query struct {
 	numDMLAffectedRows int64
 }
 
-func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*Query, error) {
+func newQueryJobFromQueryResponse(ctx context.Context, c *Client, res *bigquerypb.QueryResponse) (*Query, error) {
 	q := &Query{
 		c:       c,
+		ctx:     ctx,
 		queryID: res.QueryId,
 		ready:   make(chan struct{}),
 	}
@@ -69,11 +71,11 @@ func newQueryJobFromQueryResponse(c *Client, res *bigquerypb.QueryResponse) (*Qu
 	return q, nil
 }
 
-func newQueryJobFromJobReference(c *Client, jobRef *bigquerypb.JobReference) (*Query, error) {
+func newQueryJobFromJobReference(ctx context.Context, c *Client, jobRef *bigquerypb.JobReference) (*Query, error) {
 	res := &bigquerypb.QueryResponse{
 		JobReference: jobRef,
 	}
-	return newQueryJobFromQueryResponse(c, res)
+	return newQueryJobFromQueryResponse(ctx, c, res)
 }
 
 // Read returns a RowIterator for the query results.
@@ -89,31 +91,42 @@ func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, err
 }
 
 // Wait waits for the query to complete.
-func (q *Query) Wait(ctx context.Context, opts ...gax.CallOption) error {
+func (q *Query) Wait(opts ...gax.CallOption) error {
 	select {
 	case <-q.ready:
 		return q.err
-	case <-ctx.Done():
-		return ctx.Err()
+	case <-q.ctx.Done():
+		return q.ctx.Err()
 	}
 }
 
-func (q *Query) waitForQueryBackground(ctx context.Context, opts []gax.CallOption) {
+// Cancel the query and stops running it.
+func (q *Query) Cancel(ctx context.Context, opts ...gax.CallOption) (*bigquerypb.JobCancelResponse, error) {
+	return q.c.c.CancelJob(ctx, &bigquerypb.CancelJobRequest{
+		ProjectId: q.projectID,
+		JobId:     q.jobID,
+		Location:  q.location,
+	}, opts...)
+}
+
+func (q *Query) waitForQueryBackground(opts []gax.CallOption) {
 	for !q.complete {
-		err := q.waitForQuery(ctx, opts)
+		err := q.waitForQuery(q.ctx, opts)
 		if err != nil {
 			q.mu.Lock()
 			q.err = err
 			close(q.ready)
 			q.mu.Unlock()
+			return
 		}
 		select {
 		case <-time.After(1 * time.Second): // TODO: exponetial backoff
-		case <-ctx.Done():
+		case <-q.ctx.Done():
 			q.mu.Lock()
-			q.err = ctx.Err()
+			q.err = q.ctx.Err()
 			close(q.ready)
 			q.mu.Unlock()
+			return
 		}
 	}
 	q.mu.Lock()

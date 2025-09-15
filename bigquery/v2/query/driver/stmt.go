@@ -51,7 +51,7 @@ func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (drive
 	if err != nil {
 		return nil, err
 	}
-	if err := q.Wait(ctx); err != nil {
+	if err := q.Wait(); err != nil {
 		return nil, err
 	}
 	return &result{
@@ -70,7 +70,7 @@ func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (driv
 	if err != nil {
 		return nil, err
 	}
-	err = q.Wait(ctx)
+	err = q.Wait()
 	if err != nil {
 		return nil, err
 	}

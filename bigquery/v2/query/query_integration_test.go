@@ -17,6 +17,7 @@ package query
 import (
 	"context"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -38,7 +39,7 @@ func TestRunQuery(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Run() error: %v", err)
 			}
-			err = q.Wait(ctx)
+			err = q.Wait()
 			if err != nil {
 				t.Fatalf("Wait() error: %v", err)
 			}
@@ -53,6 +54,57 @@ func TestRunQuery(t *testing.T) {
 			}
 
 			assertRowCount(t, it, 1)
+		})
+	}
+}
+
+func TestCancelWaitQuery(t *testing.T) {
+	if len(testClients) == 0 {
+		t.Skip("integration tests skipped")
+	}
+	for k, client := range testClients {
+		t.Run(k, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+			defer cancel()
+
+			req := client.FromSQL("SELECT num FROM UNNEST(GENERATE_ARRAY(1,1000000)) as num")
+			req.QueryRequest.UseQueryCache = wrapperspb.Bool(false)
+			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_REQUIRED
+			req.QueryRequest.TimeoutMs = wrapperspb.UInt32(500)
+
+			wctx, wcancel := context.WithCancel(ctx)
+			q, err := client.StartQuery(wctx, req)
+			if err != nil {
+				t.Fatalf("Run() error: %v", err)
+			}
+
+			go func(t *testing.T) {
+				err = q.Wait()
+				if err == nil {
+					t.Logf("Wait() should throw an error: %v", err)
+				}
+			}(t)
+
+			time.Sleep(1 * time.Second)
+			wcancel()
+
+			res, err := q.Cancel(ctx)
+			if err != nil {
+				t.Fatalf("Cancel() error: %v", err)
+			}
+
+			t.Logf("job cancelled(%s): %v", res.Kind, res.Job.Status)
+
+			// Re-attache and see if it was cancelled
+			q, err = client.AttachJob(ctx, q.JobReference())
+			if err != nil {
+				t.Fatalf("AttachJob() error: %v", err)
+			}
+
+			err = q.Wait()
+			if err != nil {
+				t.Logf("Wait() error: %v", err)
+			}
 		})
 	}
 }
@@ -73,7 +125,7 @@ func TestReadQueryJob(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Run() error: %v", err)
 			}
-			err = q.Wait(ctx)
+			err = q.Wait()
 			if err != nil {
 				t.Fatalf("Wait() error: %v", err)
 			}
@@ -118,7 +170,7 @@ func TestInsertQueryJob(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Run() error: %v", err)
 			}
-			err = q.Wait(ctx)
+			err = q.Wait()
 			if err != nil {
 				t.Fatalf("Wait() error: %v", err)
 			}

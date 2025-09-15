@@ -48,7 +48,7 @@ func TestReadNestedObject(t *testing.T) {
 					if err != nil {
 						t.Fatalf("Run() error: %v", err)
 					}
-					err = q.Wait(ctx)
+					err = q.Wait()
 					if err != nil {
 						t.Fatalf("Wait() error: %v", err)
 					}
@@ -166,7 +166,7 @@ func TestReadNativeTypes(t *testing.T) {
 					if err != nil {
 						t.Fatalf("Run() error: %v", err)
 					}
-					err = q.Wait(ctx)
+					err = q.Wait()
 					if err != nil {
 						t.Fatalf("Wait() error: %v", err)
 					}
@@ -237,7 +237,7 @@ func TestReadTypes(t *testing.T) {
 							if err != nil {
 								t.Fatalf("Run() error: %v", err)
 							}
-							err = q.Wait(ctx)
+							err = q.Wait()
 							if err != nil {
 								t.Fatalf("Wait() error: %v", err)
 							}
