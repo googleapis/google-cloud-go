@@ -95,7 +95,7 @@ func TestQueryCancelWait(t *testing.T) {
 			go func(t *testing.T) {
 				err = q.Wait()
 				if err == nil {
-					t.Logf("Wait() should throw an error: %v", err)
+					t.Errorf("Wait() should throw an error: %v", err)
 				}
 			}(t)
 
