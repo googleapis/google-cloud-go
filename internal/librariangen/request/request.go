@@ -20,37 +20,51 @@ import (
 	"os"
 )
 
-// Request corresponds to a librarian request (e.g., generate-request.json).
-// It is unmarshalled from the generate-request.json file.
-type Request struct {
-	ID      string `json:"id"`
+// Library is the combination of all the fields used by CLI requests and responses.
+// Each CLI command has its own request/response type, but they all use Library.
+type Library struct {
+	ID      string `json:"id,omitempty"`
 	Version string `json:"version,omitempty"`
-	APIs    []API  `json:"apis"`
+	APIs    []API  `json:"apis,omitempty"`
 	// SourcePaths are the directories to which librarian contributes code.
 	// For Go, this is typically the Go module directory.
-	SourcePaths []string `json:"source_roots"`
+	SourcePaths []string `json:"source_roots,omitempty"`
 	// PreserveRegex are files/directories to leave untouched during generation.
 	// This is useful for preserving handwritten helper files or customizations.
-	PreserveRegex []string `json:"preserve_regex"`
+	PreserveRegex []string `json:"preserve_regex,omitempty"`
 	// RemoveRegex are files/directories to remove during generation.
-	RemoveRegex []string `json:"remove_regex"`
+	RemoveRegex []string `json:"remove_regex,omitempty"`
+	// Changes are the changes being released (in a release request)
+	Changes []*Change `json:"changes,omitempty"`
+	// ReleaseTriggered indicates whether this library is being released (in a release request)
+	ReleaseTriggered bool `json:"release_triggered,omitempty"`
 }
 
-// API corresponds to a single API definition within a librarian request.
+// API corresponds to a single API definition within a librarian request/response.
 type API struct {
-	Path          string `json:"path"`
-	ServiceConfig string `json:"service_config"`
+	Path          string `json:"path,omitempty"`
+	ServiceConfig string `json:"service_config,omitempty"`
 }
 
-// Parse reads a generate-request.json file from the given path and unmarshals
-// it into a Request struct.
-func Parse(path string) (*Request, error) {
+// Change represents a single commit change for a library.
+type Change struct {
+	Type             string `json:"type"`
+	Subject          string `json:"subject"`
+	Body             string `json:"body"`
+	PiperCLNumber    string `json:"piper_cl_number"`
+	SourceCommitHash string `json:"source_commit_hash"`
+}
+
+// ParseLibrary reads a file from the given path and unmarshals
+// it into a Library struct. This is used for build and generate, where the requests
+// are simply the library, with no wrapping.
+func ParseLibrary(path string) (*Library, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("librariangen: failed to read request file from %s: %w", path, err)
 	}
 
-	var req Request
+	var req Library
 	if err := json.Unmarshal(data, &req); err != nil {
 		return nil, fmt.Errorf("librariangen: failed to unmarshal request file %s: %w", path, err)
 	}
