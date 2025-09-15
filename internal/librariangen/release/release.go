@@ -49,7 +49,7 @@ func Init(ctx context.Context, cfg *Config) error {
 		return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to read request: %w", err))
 	}
 
-	var req ReleaseRequest
+	var req Request
 	if err := json.Unmarshal(b, &req); err != nil {
 		return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to unmarshal request: %w", err))
 	}
@@ -186,7 +186,7 @@ func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 
 func writeErrorResponse(dir string, err error) error {
 	slog.Error("release.Init: failed", "error", err)
-	resp := ReleaseResponse{Error: err.Error()}
+	resp := Response{Error: err.Error()}
 	b, marshErr := json.MarshalIndent(resp, "", "  ")
 	if marshErr != nil {
 		slog.Error("failed to marshal error response", "error", marshErr)
@@ -199,12 +199,12 @@ func writeErrorResponse(dir string, err error) error {
 	return err
 }
 
-// ReleaseRequest is the structure of the release-init-request.json file.
-type ReleaseRequest struct {
+// Request is the structure of the release-init-request.json file.
+type Request struct {
 	Libraries []*request.Library `json:"libraries"`
 }
 
-// ReleaseResponse is the structure of the release-init-response.json file.
-type ReleaseResponse struct {
+// Response is the structure of the release-init-response.json file.
+type Response struct {
 	Error string `json:"error,omitempty"`
 }
