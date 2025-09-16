@@ -22,6 +22,7 @@ package metadata // import "cloud.google.com/go/compute/metadata"
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -62,20 +63,24 @@ var (
 )
 
 var defaultClient = &Client{
-	hc:     newDefaultHTTPClient(),
-	logger: slog.New(noOpHandler{}),
+	hc:        newDefaultHTTPClient(true),
+	subClient: newDefaultHTTPClient(false),
+	logger:    slog.New(noOpHandler{}),
 }
 
-func newDefaultHTTPClient() *http.Client {
+func newDefaultHTTPClient(enableIdleTimeout bool) *http.Client {
+	transport := &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout:   2 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).Dial,
+	}
+	if enableIdleTimeout {
+		transport.IdleConnTimeout = 60 * time.Second
+	}
 	return &http.Client{
-		Transport: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout:   2 * time.Second,
-				KeepAlive: 30 * time.Second,
-			}).Dial,
-			IdleConnTimeout: 60 * time.Second,
-		},
-		Timeout: 5 * time.Second,
+		Transport: transport,
+		Timeout:   5 * time.Second,
 	}
 }
 
@@ -350,8 +355,12 @@ func strsContains(ss []string, s string) bool {
 
 // A Client provides metadata.
 type Client struct {
-	hc     *http.Client
-	logger *slog.Logger
+	hc *http.Client
+	// subClient by default is a HTTP Client that is only used for subscribe
+	// methods that should not specify a timeout. If the user specifies a client
+	// this with be the same as 'hc'.
+	subClient *http.Client
+	logger    *slog.Logger
 }
 
 // Options for configuring a [Client].
@@ -404,14 +413,16 @@ func NewWithOptions(opts *Options) *Client {
 
 	// Handle isolated client creation.
 	client := opts.Client
+	subClient := opts.Client
 	if client == nil {
-		client = newDefaultHTTPClient()
+		client = newDefaultHTTPClient(true)
+		subClient = newDefaultHTTPClient(false)
 	}
 	logger := opts.Logger
 	if logger == nil {
 		logger = slog.New(noOpHandler{})
 	}
-	return &Client{hc: client, logger: logger}
+	return &Client{hc: client, subClient: subClient, logger: logger}
 }
 
 // NOTE: metadataRequestStrategy is assigned to a variable for test stubbing purposes.
@@ -495,6 +506,10 @@ func (c *Client) OnGCEWithContext(ctx context.Context) bool {
 // getETag returns a value from the metadata service as well as the associated ETag.
 // This func is otherwise equivalent to Get.
 func (c *Client) getETag(ctx context.Context, suffix string) (value, etag string, err error) {
+	return c.getETagWithSubClient(ctx, suffix, false)
+}
+
+func (c *Client) getETagWithSubClient(ctx context.Context, suffix string, enableSubClient bool) (value, etag string, err error) {
 	// Using a fixed IP makes it very difficult to spoof the metadata service in
 	// a container, which is an important use-case for local testing of cloud
 	// deployments. To enable spoofing of the metadata service, the environment
@@ -521,9 +536,13 @@ func (c *Client) getETag(ctx context.Context, suffix string) (value, etag string
 	var reqErr error
 	var body []byte
 	retryer := newRetryer()
+	hc := c.hc
+	if enableSubClient {
+		hc = c.subClient
+	}
 	for {
 		c.logger.DebugContext(ctx, "metadata request", "request", httpRequest(req, nil))
-		res, reqErr = c.hc.Do(req)
+		res, reqErr = hc.Do(req)
 		var code int
 		if res != nil {
 			code = res.StatusCode
@@ -869,7 +888,7 @@ func (c *Client) SubscribeWithContext(ctx context.Context, suffix string, fn fun
 	const failedSubscribeSleep = time.Second * 5
 
 	// First check to see if the metadata value exists at all.
-	val, lastETag, err := c.getETag(ctx, suffix)
+	val, lastETag, err := c.getETagWithSubClient(ctx, suffix, true)
 	if err != nil {
 		return err
 	}
@@ -885,8 +904,11 @@ func (c *Client) SubscribeWithContext(ctx context.Context, suffix string, fn fun
 		suffix += "?wait_for_change=true&last_etag="
 	}
 	for {
-		val, etag, err := c.getETag(ctx, suffix+url.QueryEscape(lastETag))
+		val, etag, err := c.getETagWithSubClient(ctx, suffix+url.QueryEscape(lastETag), true)
 		if err != nil {
+			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+				return err
+			}
 			if _, deleted := err.(NotDefinedError); !deleted {
 				time.Sleep(failedSubscribeSleep)
 				continue // Retry on other errors.
