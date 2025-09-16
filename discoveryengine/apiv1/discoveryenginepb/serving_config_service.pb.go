@@ -21,11 +21,7 @@
 package discoveryenginepb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -246,90 +242,4 @@ func file_google_cloud_discoveryengine_v1_serving_config_service_proto_init() {
 	file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1_serving_config_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1_serving_config_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ServingConfigServiceClient is the client API for ServingConfigService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ServingConfigServiceClient interface {
-	// Updates a ServingConfig.
-	//
-	// Returns a NOT_FOUND error if the ServingConfig does not exist.
-	UpdateServingConfig(ctx context.Context, in *UpdateServingConfigRequest, opts ...grpc.CallOption) (*ServingConfig, error)
-}
-
-type servingConfigServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewServingConfigServiceClient(cc grpc.ClientConnInterface) ServingConfigServiceClient {
-	return &servingConfigServiceClient{cc}
-}
-
-func (c *servingConfigServiceClient) UpdateServingConfig(ctx context.Context, in *UpdateServingConfigRequest, opts ...grpc.CallOption) (*ServingConfig, error) {
-	out := new(ServingConfig)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1.ServingConfigService/UpdateServingConfig", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ServingConfigServiceServer is the server API for ServingConfigService service.
-type ServingConfigServiceServer interface {
-	// Updates a ServingConfig.
-	//
-	// Returns a NOT_FOUND error if the ServingConfig does not exist.
-	UpdateServingConfig(context.Context, *UpdateServingConfigRequest) (*ServingConfig, error)
-}
-
-// UnimplementedServingConfigServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedServingConfigServiceServer struct {
-}
-
-func (*UnimplementedServingConfigServiceServer) UpdateServingConfig(context.Context, *UpdateServingConfigRequest) (*ServingConfig, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateServingConfig not implemented")
-}
-
-func RegisterServingConfigServiceServer(s *grpc.Server, srv ServingConfigServiceServer) {
-	s.RegisterService(&_ServingConfigService_serviceDesc, srv)
-}
-
-func _ServingConfigService_UpdateServingConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateServingConfigRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ServingConfigServiceServer).UpdateServingConfig(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1.ServingConfigService/UpdateServingConfig",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServingConfigServiceServer).UpdateServingConfig(ctx, req.(*UpdateServingConfigRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ServingConfigService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1.ServingConfigService",
-	HandlerType: (*ServingConfigServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "UpdateServingConfig",
-			Handler:    _ServingConfigService_UpdateServingConfig_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/discoveryengine/v1/serving_config_service.proto",
 }

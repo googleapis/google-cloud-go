@@ -23,6 +23,7 @@ import (
 
 	bigquery "cloud.google.com/go/bigquery/v2/apiv2"
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func ExampleDatasetClient_ListDatasets_all() {
