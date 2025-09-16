@@ -148,10 +148,10 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 					shortHash = shortHash[:7]
 				}
 				commitURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/commit/%s", change.SourceCommitHash)
-				commitLink = fmt.Sprintf(" ([%s](%s))", shortHash, commitURL)
+				commitLink = fmt.Sprintf("([%s](%s))", shortHash, commitURL)
 			}
 
-			fmt.Fprintf(&newEntry, "* **%s:** %s%s\n", lib.ID, change.Subject, commitLink)
+			fmt.Fprintf(&newEntry, "* %s %s\n", change.Subject, commitLink)
 
 		}
 		newEntry.WriteString("\n")
