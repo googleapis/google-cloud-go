@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.6](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.2.5...commerce/v1.2.6) (2025-09-16)
+
+
+### Bug Fixes
+
+* **commerce:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.2.5](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.2.4...commerce/v1.2.5) (2025-05-29)
 
 
@@ -168,4 +175,3 @@
 * **commerce:** Start generating apiv1 ([#8322](https://github.com/googleapis/google-cloud-go/issues/8322)) ([db4f48b](https://github.com/googleapis/google-cloud-go/commit/db4f48bc9d5366f524f1fce82f2fea8094ea8c1e))
 
 ## Changes
-

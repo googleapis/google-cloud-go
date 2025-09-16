@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/configdelivery/v0.1.0...configdelivery/v0.1.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **configdelivery:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## 0.1.0 (2025-07-31)
 
 
@@ -13,4 +20,3 @@
 * **configdelivery:** Mark Variant's resources field as input only ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
 
 ## Changes
-

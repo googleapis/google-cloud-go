@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.10.0...confidentialcomputing/v1.10.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.9.2...confidentialcomputing/v1.10.0) (2025-09-04)
 
 
@@ -240,4 +247,3 @@
 ### Features
 
 * **confidentialcomputing:** Start generating apiv1alpha1 ([#7846](https://github.com/googleapis/google-cloud-go/issues/7846)) ([d0a5d6e](https://github.com/googleapis/google-cloud-go/commit/d0a5d6eda292a7c87ec6d1a4147b037970242641))
-

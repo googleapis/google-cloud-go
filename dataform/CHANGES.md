@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.12.0...dataform/v0.12.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **dataform:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.11.2...dataform/v0.12.0) (2025-05-21)
 
 
@@ -239,4 +246,3 @@
 
 * **dataform:** remove unused filter field from alpha2 version of API before release ([8a1ad06](https://github.com/googleapis/google-cloud-go/commit/8a1ad06572a65afa91a0a77a85b849e766876671))
 * **dataform:** start generating apiv1alpha2 ([#6299](https://github.com/googleapis/google-cloud-go/issues/6299)) ([1c434c6](https://github.com/googleapis/google-cloud-go/commit/1c434c6657b9bd8529760681c95aef9373c66120))
-

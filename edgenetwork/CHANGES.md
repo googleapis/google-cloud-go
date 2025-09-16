@@ -2,6 +2,13 @@
 
 
 
+## [1.2.7](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.2.6...edgenetwork/v1.2.7) (2025-09-16)
+
+
+### Bug Fixes
+
+* **edgenetwork:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.2.6](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.2.5...edgenetwork/v1.2.6) (2025-04-15)
 
 
@@ -140,4 +147,3 @@
 * **edgenetwork:** New client(s) ([#8996](https://github.com/googleapis/google-cloud-go/issues/8996)) ([8e63c70](https://github.com/googleapis/google-cloud-go/commit/8e63c70b423e8c10ecd617ccf81fa0662f8f91b5))
 
 ## Changes
-

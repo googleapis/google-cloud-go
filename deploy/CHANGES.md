@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.27.3](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.27.2...deploy/v1.27.3) (2025-09-16)
+
+
+### Bug Fixes
+
+* **deploy:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.27.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.27.1...deploy/v1.27.2) (2025-05-13)
 
 
@@ -432,4 +439,3 @@
 ## v0.1.0
 
 - feat(deploy): start generating clients
-

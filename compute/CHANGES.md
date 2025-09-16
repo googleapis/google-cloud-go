@@ -1,5 +1,12 @@
 # Changes
 
+## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.46.0...compute/v1.47.0) (2025-09-16)
+
+
+### Features
+
+* **compute:** Update Compute Engine v1 API to revision 20250902 ([ae768e5](https://github.com/googleapis/google-cloud-go/commit/ae768e514ff4f145d855292512605bd79a75c3c9))
+
 ## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.45.0...compute/v1.46.0) (2025-09-11)
 
 
