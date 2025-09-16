@@ -92,6 +92,7 @@ modules:
   - language
   - licensemanager
   - lifesciences
+  - locationfinder
   - logging
   - longrunning
   - lustre
@@ -724,6 +725,9 @@ service-configs:
   - input-directory: google/cloud/lifesciences/v2beta
     service-config: lifesciences_v2beta.yaml
     import-path: cloud.google.com/go/lifesciences/apiv2beta
+  - input-directory: google/cloud/locationfinder/v1
+    service-config: cloudlocationfinder_v1.yaml
+    import-path: cloud.google.com/go/locationfinder/apiv1
   - input-directory: google/cloud/lustre/v1
     service-config: lustre_v1.yaml
     import-path: cloud.google.com/go/lustre/apiv1
