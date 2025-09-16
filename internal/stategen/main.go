@@ -15,9 +15,12 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -54,6 +57,11 @@ func run(args []string) error {
 		return err
 	}
 
+	googleapisCommit, err := findLatestGoogleapisCommit()
+	if err != nil {
+		return err
+	}
+
 	stateFilePath := filepath.Join(repoRoot, ".librarian/state.yaml")
 	state, err := parseLibrarianState(stateFilePath)
 	if err != nil {
@@ -65,11 +73,36 @@ func run(args []string) error {
 			slog.Info("skipping existing module", "module", moduleName)
 			continue
 		}
-		if err := addModule(repoRoot, ppc, state, moduleName); err != nil {
+		if err := addModule(repoRoot, ppc, state, moduleName, googleapisCommit); err != nil {
 			return err
 		}
 	}
 	return saveLibrarianState(stateFilePath, state)
+}
+
+func findLatestGoogleapisCommit() (string, error) {
+	// We don't need authentication for this API call, fortunately.
+	resp, err := http.Get("https://api.github.com/repos/googleapis/googleapis/branches/master")
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("failed to fetch branch metadata for googleapis: %d", resp.StatusCode)
+	}
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	var branch GitHubBranch
+	if err := json.Unmarshal(respBody, &branch); err != nil {
+		return "", err
+	}
+	hash := branch.Commit.Hash
+	if hash == "" {
+		return "", errors.New("failed to fetch hash from GitHub API response")
+	}
+	slog.Info("Fetched googleapis head commit", "hash", hash)
+	return hash, nil
 }
 
 func stateContainsModule(state *LibrarianState, moduleName string) bool {
@@ -81,13 +114,14 @@ func stateContainsModule(state *LibrarianState, moduleName string) bool {
 	return false
 }
 
-func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState, moduleName string) error {
+func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState, moduleName, googleapisCommit string) error {
 	slog.Info("adding module", "module", moduleName)
 	moduleRoot := filepath.Join(repoRoot, moduleName)
 
 	// Start off with the basics which need
 	library := &LibraryState{
-		ID: moduleName,
+		ID:                  moduleName,
+		LastGeneratedCommit: googleapisCommit,
 		SourceRoots: []string{
 			moduleName,
 			"internal/generated/snippets/" + moduleName,
@@ -187,4 +221,18 @@ func loadVersion(moduleRoot string) (string, error) {
 		return "", fmt.Errorf("stategen: last line of version file not in expected format for module: %s", versionPath)
 	}
 	return versionParts[1], nil
+}
+
+// GitHubBranch is the representation of a repository branch as returned by the GitHub
+// API. We only need the commit.
+type GitHubBranch struct {
+	// Commit is the commit at the head of the branch
+	Commit GitHubCommit `json:"commit"`
+}
+
+// GitHubCommit is the representation of a commit as returned by the GitHub
+// API. We only need the SHA.
+type GitHubCommit struct {
+	// Hash is the SHA-256 hash of the commit
+	Hash string `json:"sha"`
 }
