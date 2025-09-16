@@ -167,7 +167,7 @@ func (p *LeastLoadedChannelPool) selectLeastLoadedRandomofTwo() int {
 
 func (p *LeastLoadedChannelPool) selectLeastLoaded() int {
 	// if the conn num < connThreshold, iterates over conn map
-	if p.Num() > connThreshold {
+	if p.Num() < connThreshold {
 		return p.selectLeastLoadedIterative()
 	}
 	// otherwise, pick random two and select the one
