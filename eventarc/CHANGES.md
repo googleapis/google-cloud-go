@@ -1,5 +1,17 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.5...eventarc/v1.16.0) (2025-09-16)
+
+
+### Features
+
+* **eventarc:** Add new fields to Eventarc resources ([ae768e5](https://github.com/googleapis/google-cloud-go/commit/ae768e514ff4f145d855292512605bd79a75c3c9))
+
+
+### Documentation
+
+* **eventarc:** Correct some comments ([ae768e5](https://github.com/googleapis/google-cloud-go/commit/ae768e514ff4f145d855292512605bd79a75c3c9))
+
 ## [1.15.5](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.4...eventarc/v1.15.5) (2025-04-15)
 
 

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.4](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.4.3...edgecontainer/v1.4.4) (2025-09-16)
+
+
+### Bug Fixes
+
+* **edgecontainer:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.4.3](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.4.2...edgecontainer/v1.4.3) (2025-04-15)
 
 
@@ -200,4 +207,3 @@
 * **edgecontainer:** Start generating apiv1 ([#6694](https://github.com/googleapis/google-cloud-go/issues/6694)) ([6bc9b69](https://github.com/googleapis/google-cloud-go/commit/6bc9b69ca4dd910a9801f07bbc2b8abfdabe8628))
 
 ## Changes
-

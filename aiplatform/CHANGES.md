@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.102.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.101.0...aiplatform/v1.102.0) (2025-09-16)
+
+
+### Features
+
+* **aiplatform:** Add private_model_server_enabled to in Endpoint.proto ([ae768e5](https://github.com/googleapis/google-cloud-go/commit/ae768e514ff4f145d855292512605bd79a75c3c9))
+
 ## [1.101.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.100.0...aiplatform/v1.101.0) (2025-09-11)
 
 

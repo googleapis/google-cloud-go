@@ -2,6 +2,13 @@
 
 
 
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.21.0...discoveryengine/v1.21.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.20.0...discoveryengine/v1.21.0) (2025-09-11)
 
 
@@ -538,4 +545,3 @@
 * **discoveryengine:** Start generating apiv1beta ([#7427](https://github.com/googleapis/google-cloud-go/issues/7427)) ([0d289a0](https://github.com/googleapis/google-cloud-go/commit/0d289a07106226b4398935357ab0f30a3a30340d))
 
 ## Changes
-

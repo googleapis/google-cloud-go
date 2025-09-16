@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.15.0...datastream/v1.15.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **datastream:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.14.1...datastream/v1.15.0) (2025-08-12)
 
 
@@ -377,4 +384,3 @@
 
 This is the first tag to carve out datastream as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
