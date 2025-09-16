@@ -33,6 +33,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -55,6 +56,7 @@ const (
 	queryExpiredViolationType        = "PREPARED_QUERY_EXPIRED"
 	preparedQueryExpireEarlyDuration = time.Second
 	methodNameReadRows               = "ReadRows"
+	defaultBigtableConnPool          = 4
 )
 
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
@@ -146,11 +148,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// TODO(b/372244283): Remove after b/358175516 has been fixed
 	o = append(o, internaloption.EnableAsyncRefreshDryRun(metricsTracerFactory.newAsyncRefreshErrHandler()))
 
-	connPool, err := gtransport.DialPool(ctx, o...)
-	if err != nil {
-		return nil, err
-	}
-
 	disableRetryInfo := false
 
 	// If DISABLE_RETRY_INFO=1, library does not base retry decision and back off time on server returned RetryInfo value.
@@ -162,9 +159,39 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		retryOption = clientOnlyRetryOption
 		executeQueryRetryOption = clientOnlyExecuteQueryRetryOption
 	}
+
+	enableBigtableConnPool, _ := strconv.ParseBool(os.Getenv("ENABLE_BIGTABLE_CONN_POOL"))
+	if !enableBigtableConnPool {
+		// use to regular ConnPool
+		connPool, err := gtransport.DialPool(ctx, o...)
+		if err != nil {
+			return nil, err
+		}
+		return &Client{
+			connPool:                connPool,
+			client:                  btpb.NewBigtableClient(connPool),
+			project:                 project,
+			instance:                instance,
+			appProfile:              config.AppProfile,
+			metricsTracerFactory:    metricsTracerFactory,
+			disableRetryInfo:        disableRetryInfo,
+			retryOption:             retryOption,
+			executeQueryRetryOption: executeQueryRetryOption,
+			enableDirectAccess:      enableDirectAccess,
+		}, nil
+	}
+
+	// Use bigtableConnPool
+	bigtableConnPool, err := btransport.NewLeastLoadedChannelPool(defaultBigtableConnPool, func() (*grpc.ClientConn, error) {
+		return gtransport.Dial(ctx, o...)
+	})
+
+	if err != nil {
+		return nil, err
+	}
 	return &Client{
-		connPool:                connPool,
-		client:                  btpb.NewBigtableClient(connPool),
+		connPool:                bigtableConnPool,
+		client:                  btpb.NewBigtableClient(bigtableConnPool),
 		project:                 project,
 		instance:                instance,
 		appProfile:              config.AppProfile,
@@ -174,6 +201,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		executeQueryRetryOption: executeQueryRetryOption,
 		enableDirectAccess:      enableDirectAccess,
 	}, nil
+
 }
 
 // Close closes the Client.
