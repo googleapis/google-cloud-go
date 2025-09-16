@@ -139,7 +139,7 @@ func TestInit(t *testing.T) {
 			},
 			wantChangelogSubstr: "## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0) (2025-09-11)\n\n### Features\n\n* **secretmanager:** add new GetSecret API ([abcdef1](https://github.com/googleapis/google-cloud-go/commit/abcdef123456))\n* **secretmanager:** another feature ([zxcvbn0](https://github.com/googleapis/google-cloud-go/commit/zxcvbn098765))\n\n### Bug Fixes\n\n* **secretmanager:** correct typo in documentation ([123456a](https://github.com/googleapis/google-cloud-go/commit/123456abcdef))\n\n",
 			wantVersion:         "1.16.0",
-			wantSnippetVersion:  "\"version\": \"1.16.0\"",
+			wantSnippetVersion:  `"version": "1.16.0"`,
 		},
 		{
 			name:                "release not triggered",
@@ -151,11 +151,11 @@ func TestInit(t *testing.T) {
 			requestJSON: `{ "libraries": [ { "id": "secretmanager", "version": "1.16.0", "release_triggered": true, "apis": [{"path": "google/cloud/secretmanager/v1"}], "changes": [{"type": "feat", "subject": "add new GetSecret API"}] } ] }`,
 			initialRepoContent: map[string]string{
 				"secretmanager/CHANGES.md": "# Changes\n\n## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0)\n- Already there.",
-				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{\"version\": \"1.15.0\"}`,
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"version": "1.15.0"}`,
 			},
 			changelogAlreadyUpToDate: true,
 			wantVersion:              "1.16.0",
-			wantSnippetVersion:       `\"version\": \"1.16.0\"`,
+			wantSnippetVersion:       `"version": "1.16.0"`,
 		},
 		{
 			name:        "malformed json",
