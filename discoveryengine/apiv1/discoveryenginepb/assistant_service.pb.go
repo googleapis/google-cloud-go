@@ -21,11 +21,7 @@
 package discoveryenginepb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -906,113 +902,4 @@ func file_google_cloud_discoveryengine_v1_assistant_service_proto_init() {
 	file_google_cloud_discoveryengine_v1_assistant_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1_assistant_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1_assistant_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// AssistantServiceClient is the client API for AssistantService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type AssistantServiceClient interface {
-	// Assists the user with a query in a streaming fashion.
-	StreamAssist(ctx context.Context, in *StreamAssistRequest, opts ...grpc.CallOption) (AssistantService_StreamAssistClient, error)
-}
-
-type assistantServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAssistantServiceClient(cc grpc.ClientConnInterface) AssistantServiceClient {
-	return &assistantServiceClient{cc}
-}
-
-func (c *assistantServiceClient) StreamAssist(ctx context.Context, in *StreamAssistRequest, opts ...grpc.CallOption) (AssistantService_StreamAssistClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_AssistantService_serviceDesc.Streams[0], "/google.cloud.discoveryengine.v1.AssistantService/StreamAssist", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &assistantServiceStreamAssistClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type AssistantService_StreamAssistClient interface {
-	Recv() (*StreamAssistResponse, error)
-	grpc.ClientStream
-}
-
-type assistantServiceStreamAssistClient struct {
-	grpc.ClientStream
-}
-
-func (x *assistantServiceStreamAssistClient) Recv() (*StreamAssistResponse, error) {
-	m := new(StreamAssistResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// AssistantServiceServer is the server API for AssistantService service.
-type AssistantServiceServer interface {
-	// Assists the user with a query in a streaming fashion.
-	StreamAssist(*StreamAssistRequest, AssistantService_StreamAssistServer) error
-}
-
-// UnimplementedAssistantServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedAssistantServiceServer struct {
-}
-
-func (*UnimplementedAssistantServiceServer) StreamAssist(*StreamAssistRequest, AssistantService_StreamAssistServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamAssist not implemented")
-}
-
-func RegisterAssistantServiceServer(s *grpc.Server, srv AssistantServiceServer) {
-	s.RegisterService(&_AssistantService_serviceDesc, srv)
-}
-
-func _AssistantService_StreamAssist_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(StreamAssistRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(AssistantServiceServer).StreamAssist(m, &assistantServiceStreamAssistServer{stream})
-}
-
-type AssistantService_StreamAssistServer interface {
-	Send(*StreamAssistResponse) error
-	grpc.ServerStream
-}
-
-type assistantServiceStreamAssistServer struct {
-	grpc.ServerStream
-}
-
-func (x *assistantServiceStreamAssistServer) Send(m *StreamAssistResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-var _AssistantService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1.AssistantService",
-	HandlerType: (*AssistantServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "StreamAssist",
-			Handler:       _AssistantService_StreamAssist_Handler,
-			ServerStreams: true,
-		},
-	},
-	Metadata: "google/cloud/discoveryengine/v1/assistant_service.proto",
 }

@@ -1534,7 +1534,7 @@ type ListMessageBusesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent collection to list triggers on.
+	// Required. The parent collection to list message buses on.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return on each page.
 	//
@@ -1835,7 +1835,7 @@ type CreateMessageBusRequest struct {
 	// Required. The message bus to create.
 	MessageBus *MessageBus `protobuf:"bytes,2,opt,name=message_bus,json=messageBus,proto3" json:"message_bus,omitempty"`
 	// Required. The user-provided ID to be assigned to the MessageBus. It should
-	// match the format (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$)
+	// match the format `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
 	MessageBusId string `protobuf:"bytes,3,opt,name=message_bus_id,json=messageBusId,proto3" json:"message_bus_id,omitempty"`
 	// Optional. If set, validate the request and preview the review, but do not
 	// post it.
@@ -2272,7 +2272,7 @@ type CreateEnrollmentRequest struct {
 	// Required. The enrollment to create.
 	Enrollment *Enrollment `protobuf:"bytes,2,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
 	// Required. The user-provided ID to be assigned to the Enrollment. It should
-	// match the format (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+	// match the format `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
 	EnrollmentId string `protobuf:"bytes,3,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
 	// Optional. If set, validate the request and preview the review, but do not
 	// post it.
@@ -2708,7 +2708,8 @@ type CreatePipelineRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The pipeline to create.
 	Pipeline *Pipeline `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
-	// Required. The user-provided ID to be assigned to the Pipeline.
+	// Required. The user-provided ID to be assigned to the Pipeline. It should
+	// match the format `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
 	PipelineId string `protobuf:"bytes,3,opt,name=pipeline_id,json=pipelineId,proto3" json:"pipeline_id,omitempty"`
 	// Optional. If set, validate the request and preview the review, but do not
 	// post it.
@@ -3145,7 +3146,7 @@ type CreateGoogleApiSourceRequest struct {
 	// Required. The google api source to create.
 	GoogleApiSource *GoogleApiSource `protobuf:"bytes,2,opt,name=google_api_source,json=googleApiSource,proto3" json:"google_api_source,omitempty"`
 	// Required. The user-provided ID to be assigned to the GoogleApiSource. It
-	// should match the format (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+	// should match the format `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
 	GoogleApiSourceId string `protobuf:"bytes,3,opt,name=google_api_source_id,json=googleApiSourceId,proto3" json:"google_api_source_id,omitempty"`
 	// Optional. If set, validate the request and preview the review, but do not
 	// post it.
@@ -4897,7 +4898,9 @@ type EventarcClient interface {
 	CreateChannelConnection(ctx context.Context, in *CreateChannelConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Delete a single ChannelConnection.
 	DeleteChannelConnection(ctx context.Context, in *DeleteChannelConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Get a GoogleChannelConfig
+	// Get a GoogleChannelConfig.
+	// The name of the GoogleChannelConfig in the response is ALWAYS coded with
+	// projectID.
 	GetGoogleChannelConfig(ctx context.Context, in *GetGoogleChannelConfigRequest, opts ...grpc.CallOption) (*GoogleChannelConfig, error)
 	// Update a single GoogleChannelConfig
 	UpdateGoogleChannelConfig(ctx context.Context, in *UpdateGoogleChannelConfigRequest, opts ...grpc.CallOption) (*GoogleChannelConfig, error)
@@ -5338,7 +5341,9 @@ type EventarcServer interface {
 	CreateChannelConnection(context.Context, *CreateChannelConnectionRequest) (*longrunningpb.Operation, error)
 	// Delete a single ChannelConnection.
 	DeleteChannelConnection(context.Context, *DeleteChannelConnectionRequest) (*longrunningpb.Operation, error)
-	// Get a GoogleChannelConfig
+	// Get a GoogleChannelConfig.
+	// The name of the GoogleChannelConfig in the response is ALWAYS coded with
+	// projectID.
 	GetGoogleChannelConfig(context.Context, *GetGoogleChannelConfigRequest) (*GoogleChannelConfig, error)
 	// Update a single GoogleChannelConfig
 	UpdateGoogleChannelConfig(context.Context, *UpdateGoogleChannelConfigRequest) (*GoogleChannelConfig, error)

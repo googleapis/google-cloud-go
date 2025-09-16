@@ -22,12 +22,8 @@ package discoveryenginepb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -726,126 +722,4 @@ func file_google_cloud_discoveryengine_v1_user_license_service_proto_init() {
 	file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDesc = nil
 	file_google_cloud_discoveryengine_v1_user_license_service_proto_goTypes = nil
 	file_google_cloud_discoveryengine_v1_user_license_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// UserLicenseServiceClient is the client API for UserLicenseService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type UserLicenseServiceClient interface {
-	// Lists the User Licenses.
-	ListUserLicenses(ctx context.Context, in *ListUserLicensesRequest, opts ...grpc.CallOption) (*ListUserLicensesResponse, error)
-	// Updates the User License.
-	// This method is used for batch assign/unassign licenses to users.
-	BatchUpdateUserLicenses(ctx context.Context, in *BatchUpdateUserLicensesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-}
-
-type userLicenseServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewUserLicenseServiceClient(cc grpc.ClientConnInterface) UserLicenseServiceClient {
-	return &userLicenseServiceClient{cc}
-}
-
-func (c *userLicenseServiceClient) ListUserLicenses(ctx context.Context, in *ListUserLicensesRequest, opts ...grpc.CallOption) (*ListUserLicensesResponse, error) {
-	out := new(ListUserLicensesResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1.UserLicenseService/ListUserLicenses", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userLicenseServiceClient) BatchUpdateUserLicenses(ctx context.Context, in *BatchUpdateUserLicensesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.discoveryengine.v1.UserLicenseService/BatchUpdateUserLicenses", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// UserLicenseServiceServer is the server API for UserLicenseService service.
-type UserLicenseServiceServer interface {
-	// Lists the User Licenses.
-	ListUserLicenses(context.Context, *ListUserLicensesRequest) (*ListUserLicensesResponse, error)
-	// Updates the User License.
-	// This method is used for batch assign/unassign licenses to users.
-	BatchUpdateUserLicenses(context.Context, *BatchUpdateUserLicensesRequest) (*longrunningpb.Operation, error)
-}
-
-// UnimplementedUserLicenseServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedUserLicenseServiceServer struct {
-}
-
-func (*UnimplementedUserLicenseServiceServer) ListUserLicenses(context.Context, *ListUserLicensesRequest) (*ListUserLicensesResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListUserLicenses not implemented")
-}
-func (*UnimplementedUserLicenseServiceServer) BatchUpdateUserLicenses(context.Context, *BatchUpdateUserLicensesRequest) (*longrunningpb.Operation, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method BatchUpdateUserLicenses not implemented")
-}
-
-func RegisterUserLicenseServiceServer(s *grpc.Server, srv UserLicenseServiceServer) {
-	s.RegisterService(&_UserLicenseService_serviceDesc, srv)
-}
-
-func _UserLicenseService_ListUserLicenses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListUserLicensesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserLicenseServiceServer).ListUserLicenses(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1.UserLicenseService/ListUserLicenses",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserLicenseServiceServer).ListUserLicenses(ctx, req.(*ListUserLicensesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserLicenseService_BatchUpdateUserLicenses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BatchUpdateUserLicensesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserLicenseServiceServer).BatchUpdateUserLicenses(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.discoveryengine.v1.UserLicenseService/BatchUpdateUserLicenses",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserLicenseServiceServer).BatchUpdateUserLicenses(ctx, req.(*BatchUpdateUserLicensesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _UserLicenseService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.discoveryengine.v1.UserLicenseService",
-	HandlerType: (*UserLicenseServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ListUserLicenses",
-			Handler:    _UserLicenseService_ListUserLicenses_Handler,
-		},
-		{
-			MethodName: "BatchUpdateUserLicenses",
-			Handler:    _UserLicenseService_BatchUpdateUserLicenses_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/discoveryengine/v1/user_license_service.proto",
 }
