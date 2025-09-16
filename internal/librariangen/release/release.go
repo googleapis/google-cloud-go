@@ -25,6 +25,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -117,22 +118,41 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 	date := t.Format("2006-01-02")
 	fmt.Fprintf(&newEntry, "## [%s](%s) (%s)\n\n", lib.Version, releaseURL, date)
 
-	changesByType := make(map[string]map[string]bool)
+	changesByType := make(map[string]map[string]*Change)
 	for _, change := range lib.Changes {
 		if changesByType[change.Type] == nil {
-			changesByType[change.Type] = make(map[string]bool)
+			changesByType[change.Type] = make(map[string]*Change)
 		}
-		changesByType[change.Type][change.Subject] = true
+		changesByType[change.Type][change.Subject] = change
 	}
 
 	for _, section := range changelogSections {
-		subjects := changesByType[section.Type]
-		if len(subjects) == 0 {
+		subjectsMap := changesByType[section.Type]
+		if len(subjectsMap) == 0 {
 			continue
 		}
 		fmt.Fprintf(&newEntry, "### %s\n\n", section.Section)
-		for subj := range subjects {
-			fmt.Fprintf(&newEntry, "* %s\n", subj)
+
+		var subjects []string
+		for subj := range subjectsMap {
+			subjects = append(subjects, subj)
+		}
+		sort.Strings(subjects)
+
+		for _, subj := range subjects {
+			change := subjectsMap[subj]
+			var commitLink string
+			if change.SourceCommitHash != "" {
+				shortHash := change.SourceCommitHash
+				if len(shortHash) > 7 {
+					shortHash = shortHash[:7]
+				}
+				commitURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/commit/%s", change.SourceCommitHash)
+				commitLink = fmt.Sprintf("([%s](%s))", shortHash, commitURL)
+			}
+
+			fmt.Fprintf(&newEntry, "* %s %s\n", change.Subject, commitLink)
+
 		}
 		newEntry.WriteString("\n")
 	}

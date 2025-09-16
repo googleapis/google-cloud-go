@@ -126,8 +126,9 @@ func TestInit(t *testing.T) {
 					"id": "secretmanager", "version": "1.16.0", "release_triggered": true,
 					"apis": [{"path": "google/cloud/secretmanager/v1"}],
 					"changes": [
-						{"type": "feat", "subject": "add new GetSecret API"},
-						{"type": "fix", "subject": "correct typo in documentation"}
+						{"type": "feat", "subject": "another feature", "source_commit_hash": "zxcvbn098765"},
+						{"type": "fix", "subject": "correct typo in documentation", "source_commit_hash": "123456abcdef"},
+						{"type": "feat", "subject": "add new GetSecret API", "source_commit_hash": "abcdef123456"}
 					]
 				}]
 			}`,
@@ -136,12 +137,9 @@ func TestInit(t *testing.T) {
 				"secretmanager/internal/version.go": `package internal; const Version = "1.15.0"`,
 				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"version": "1.15.0"}`,
 			},
-			// This wantChangelogSubstr expectation intentionally includes two newline literals.
-			wantChangelogSubstr: `## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0) (2025-09-11)
-
-`,
-			wantVersion:        "1.16.0",
-			wantSnippetVersion: `"version": "1.16.0"`,
+			wantChangelogSubstr: "## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0) (2025-09-11)\n\n### Features\n\n* add new GetSecret API ([abcdef1](https://github.com/googleapis/google-cloud-go/commit/abcdef123456))\n* another feature ([zxcvbn0](https://github.com/googleapis/google-cloud-go/commit/zxcvbn098765))\n\n### Bug Fixes\n\n* correct typo in documentation ([123456a](https://github.com/googleapis/google-cloud-go/commit/123456abcdef))\n\n",
+			wantVersion:         "1.16.0",
+			wantSnippetVersion:  `"version": "1.16.0"`,
 		},
 		{
 			name:                "release not triggered",
