@@ -37,7 +37,10 @@ import (
 const (
 	bigtableClientMonitoredResourceName = "bigtable_client"
 	bigtableClientMetricPrefix          = "bigtable.googleapis.com/internal/client/"
+	unKnownAtttr                        = "unknown"
 )
+
+var latenciesBoundaries = []float64{0.0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.008, 0.01, 0.013, 0.016, 0.02, 0.025, 0.03, 0.04, 0.05, 0.065, 0.08, 0.1, 0.13, 0.16, 0.2, 0.25, 0.3, 0.4, 0.5, 0.65, 0.8, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 400.0, 800.0, 1600.0, 3200.0} // max is 53.3 minutes
 
 // bigtable_client monitored resource labels
 type bigtableClientMonitoredResource struct {
@@ -72,6 +75,13 @@ func metricFormatter(m metricdata.Metrics) string {
 	return bigtableClientMetricPrefix + strings.ReplaceAll(string(m.Name), ".", "/")
 }
 
+func getAttribute(s *attribute.Set, key attribute.Key, defaultValue string) string {
+	if val, ok := s.Value(key); ok {
+		return val.AsString()
+	}
+	return defaultValue
+}
+
 func newBigtableClientMonitoredResource(ctx context.Context, project, appProfile, instance, clientName, clientUID string, opts ...resource.Option) (*bigtableClientMonitoredResource, error) {
 	detectedAttrs, err := resource.New(ctx, opts...)
 	if err != nil {
@@ -87,35 +97,17 @@ func newBigtableClientMonitoredResource(ctx context.Context, project, appProfile
 	s := detectedAttrs.Set()
 	// Attempt to use resource detector project id if project id wasn't
 	// identified using ADC as a last resort. Otherwise metrics cannot be started.
-	if p, present := s.Value("cloud.account.id"); present {
-		smr.clientProject = p.AsString()
-	} else {
-		smr.clientProject = "unknown"
-	}
-	if v, ok := s.Value("cloud.platform"); ok {
-		smr.cloudPlatform = v.AsString()
-	} else {
-		smr.cloudPlatform = "unknown"
-	}
-	if v, ok := s.Value("host.id"); ok {
-		smr.hostID = v.AsString()
-		// cloud run / cloud functions have faas.id instead of host.id
-	} else if v, ok := s.Value("faas.id"); ok {
-		smr.hostID = v.AsString()
-	} else {
-		smr.hostID = "unknown"
-	}
 
-	if v, ok := s.Value("cloud.region"); ok {
-		smr.region = v.AsString()
-	} else {
-		smr.region = "global"
+	smr.clientProject = getAttribute(s, "cloud.account.id", unKnownAtttr)
+	smr.cloudPlatform = getAttribute(s, "cloud.platform", unKnownAtttr)
+	smr.hostName = getAttribute(s, "host.name", unKnownAtttr)
+	smr.hostID = getAttribute(s, "host.id", unKnownAtttr)
+	if smr.hostID == "unknown" {
+		// cloud run / cloud functions have faas.id instead of host.id
+
+		smr.hostID = getAttribute(s, "faas.id", unKnownAtttr)
 	}
-	if v, ok := s.Value("host.name"); ok {
-		smr.hostName = v.AsString()
-	} else {
-		smr.hostName = "unknown"
-	}
+	smr.region = getAttribute(s, "cloud.region", "global")
 	smr.resource, err = resource.New(ctx, resource.WithAttributes([]attribute.KeyValue{
 		{Key: "gcp.resource_type", Value: attribute.StringValue(bigtableClientMonitoredResourceName)},
 		{Key: "project_id", Value: attribute.StringValue(project)},
@@ -186,7 +178,7 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*metricsCont
 	meterOpts = append(meterOpts,
 		// customer histogram boundaries
 		metric.WithView(
-			createHistogramView("grpc.client.attempt.duration", latencyHistogramBoundaries()),
+			createHistogramView("grpc.client.attempt.duration", latenciesBoundaries),
 		))
 	if cfg.manualReader != nil {
 		meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
@@ -241,12 +233,6 @@ func (e *exporterLogSuppressor) Export(ctx context.Context, rm *metricdata.Resou
 		return err
 	}
 	return nil
-}
-
-func latencyHistogramBoundaries() []float64 {
-	// numbers in seconds
-	boundaries := []float64{0.0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.008, 0.01, 0.013, 0.016, 0.02, 0.025, 0.03, 0.04, 0.05, 0.065, 0.08, 0.1, 0.13, 0.16, 0.2, 0.25, 0.3, 0.4, 0.5, 0.65, 0.8, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 400.0, 800.0, 1600.0, 3200.0} // max is 53.3 minutes
-	return boundaries
 }
 
 func createHistogramView(name string, boundaries []float64) metric.View {

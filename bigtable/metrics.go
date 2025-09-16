@@ -257,6 +257,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		resourceOpts:    nil,
 	})
 
+	// the error from newOtelMetricsContext is silently ignored since metrics are not critical to client creation.
 	if err == nil {
 		tracerFactory.clientOpts = otelContext.clientOpts
 	}
