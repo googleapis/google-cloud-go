@@ -13,3 +13,4 @@
 * **configdelivery:** Mark Variant's resources field as input only ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
 
 ## Changes
+
