@@ -392,7 +392,7 @@ func NewClient(c *http.Client) *Client {
 		return defaultClient
 	}
 	// Return a new client with a no-op logger for backward compatibility.
-	return &Client{hc: c, logger: slog.New(noOpHandler{})}
+	return &Client{hc: c, subClient: c, logger: slog.New(noOpHandler{})}
 }
 
 // NewWithOptions returns a Client that is configured with the provided Options.
