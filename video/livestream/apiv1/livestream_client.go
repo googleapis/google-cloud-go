@@ -47,43 +47,46 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateChannel    []gax.CallOption
-	ListChannels     []gax.CallOption
-	GetChannel       []gax.CallOption
-	DeleteChannel    []gax.CallOption
-	UpdateChannel    []gax.CallOption
-	StartChannel     []gax.CallOption
-	StopChannel      []gax.CallOption
-	CreateInput      []gax.CallOption
-	ListInputs       []gax.CallOption
-	GetInput         []gax.CallOption
-	DeleteInput      []gax.CallOption
-	UpdateInput      []gax.CallOption
-	CreateEvent      []gax.CallOption
-	ListEvents       []gax.CallOption
-	GetEvent         []gax.CallOption
-	DeleteEvent      []gax.CallOption
-	ListClips        []gax.CallOption
-	GetClip          []gax.CallOption
-	CreateClip       []gax.CallOption
-	DeleteClip       []gax.CallOption
-	CreateDvrSession []gax.CallOption
-	ListDvrSessions  []gax.CallOption
-	GetDvrSession    []gax.CallOption
-	DeleteDvrSession []gax.CallOption
-	UpdateDvrSession []gax.CallOption
-	CreateAsset      []gax.CallOption
-	DeleteAsset      []gax.CallOption
-	GetAsset         []gax.CallOption
-	ListAssets       []gax.CallOption
-	GetPool          []gax.CallOption
-	UpdatePool       []gax.CallOption
-	GetLocation      []gax.CallOption
-	ListLocations    []gax.CallOption
-	CancelOperation  []gax.CallOption
-	DeleteOperation  []gax.CallOption
-	GetOperation     []gax.CallOption
-	ListOperations   []gax.CallOption
+	CreateChannel     []gax.CallOption
+	ListChannels      []gax.CallOption
+	GetChannel        []gax.CallOption
+	DeleteChannel     []gax.CallOption
+	UpdateChannel     []gax.CallOption
+	StartChannel      []gax.CallOption
+	StopChannel       []gax.CallOption
+	StartDistribution []gax.CallOption
+	StopDistribution  []gax.CallOption
+	CreateInput       []gax.CallOption
+	ListInputs        []gax.CallOption
+	GetInput          []gax.CallOption
+	DeleteInput       []gax.CallOption
+	UpdateInput       []gax.CallOption
+	PreviewInput      []gax.CallOption
+	CreateEvent       []gax.CallOption
+	ListEvents        []gax.CallOption
+	GetEvent          []gax.CallOption
+	DeleteEvent       []gax.CallOption
+	ListClips         []gax.CallOption
+	GetClip           []gax.CallOption
+	CreateClip        []gax.CallOption
+	DeleteClip        []gax.CallOption
+	CreateDvrSession  []gax.CallOption
+	ListDvrSessions   []gax.CallOption
+	GetDvrSession     []gax.CallOption
+	DeleteDvrSession  []gax.CallOption
+	UpdateDvrSession  []gax.CallOption
+	CreateAsset       []gax.CallOption
+	DeleteAsset       []gax.CallOption
+	GetAsset          []gax.CallOption
+	ListAssets        []gax.CallOption
+	GetPool           []gax.CallOption
+	UpdatePool        []gax.CallOption
+	GetLocation       []gax.CallOption
+	ListLocations     []gax.CallOption
+	CancelOperation   []gax.CallOption
+	DeleteOperation   []gax.CallOption
+	GetOperation      []gax.CallOption
+	ListOperations    []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -142,6 +145,12 @@ func defaultCallOptions() *CallOptions {
 		StopChannel: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		StartDistribution: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopDistribution: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		CreateInput: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -173,6 +182,9 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateInput: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PreviewInput: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		CreateEvent: []gax.CallOption{
@@ -229,15 +241,51 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateClip:       []gax.CallOption{},
-		DeleteClip:       []gax.CallOption{},
-		CreateDvrSession: []gax.CallOption{},
-		ListDvrSessions:  []gax.CallOption{},
-		GetDvrSession:    []gax.CallOption{},
-		DeleteDvrSession: []gax.CallOption{},
-		UpdateDvrSession: []gax.CallOption{},
-		CreateAsset:      []gax.CallOption{},
-		DeleteAsset:      []gax.CallOption{},
+		CreateClip: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteClip: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateDvrSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDvrSessions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDvrSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteDvrSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDvrSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAsset: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -274,7 +322,9 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdatePool:      []gax.CallOption{},
+		UpdatePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -323,6 +373,12 @@ func defaultRESTCallOptions() *CallOptions {
 		StopChannel: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		StartDistribution: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopDistribution: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		CreateInput: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -352,6 +408,9 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateInput: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PreviewInput: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		CreateEvent: []gax.CallOption{
@@ -404,15 +463,49 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateClip:       []gax.CallOption{},
-		DeleteClip:       []gax.CallOption{},
-		CreateDvrSession: []gax.CallOption{},
-		ListDvrSessions:  []gax.CallOption{},
-		GetDvrSession:    []gax.CallOption{},
-		DeleteDvrSession: []gax.CallOption{},
-		UpdateDvrSession: []gax.CallOption{},
-		CreateAsset:      []gax.CallOption{},
-		DeleteAsset:      []gax.CallOption{},
+		CreateClip: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteClip: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateDvrSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDvrSessions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetDvrSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteDvrSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDvrSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAsset: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -446,7 +539,9 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdatePool:      []gax.CallOption{},
+		UpdatePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -473,6 +568,10 @@ type internalClient interface {
 	StartChannelOperation(name string) *StartChannelOperation
 	StopChannel(context.Context, *livestreampb.StopChannelRequest, ...gax.CallOption) (*StopChannelOperation, error)
 	StopChannelOperation(name string) *StopChannelOperation
+	StartDistribution(context.Context, *livestreampb.StartDistributionRequest, ...gax.CallOption) (*StartDistributionOperation, error)
+	StartDistributionOperation(name string) *StartDistributionOperation
+	StopDistribution(context.Context, *livestreampb.StopDistributionRequest, ...gax.CallOption) (*StopDistributionOperation, error)
+	StopDistributionOperation(name string) *StopDistributionOperation
 	CreateInput(context.Context, *livestreampb.CreateInputRequest, ...gax.CallOption) (*CreateInputOperation, error)
 	CreateInputOperation(name string) *CreateInputOperation
 	ListInputs(context.Context, *livestreampb.ListInputsRequest, ...gax.CallOption) *InputIterator
@@ -481,6 +580,7 @@ type internalClient interface {
 	DeleteInputOperation(name string) *DeleteInputOperation
 	UpdateInput(context.Context, *livestreampb.UpdateInputRequest, ...gax.CallOption) (*UpdateInputOperation, error)
 	UpdateInputOperation(name string) *UpdateInputOperation
+	PreviewInput(context.Context, *livestreampb.PreviewInputRequest, ...gax.CallOption) (*livestreampb.PreviewInputResponse, error)
 	CreateEvent(context.Context, *livestreampb.CreateEventRequest, ...gax.CallOption) (*livestreampb.Event, error)
 	ListEvents(context.Context, *livestreampb.ListEventsRequest, ...gax.CallOption) *EventIterator
 	GetEvent(context.Context, *livestreampb.GetEventRequest, ...gax.CallOption) (*livestreampb.Event, error)
@@ -628,6 +728,29 @@ func (c *Client) StopChannelOperation(name string) *StopChannelOperation {
 	return c.internalClient.StopChannelOperation(name)
 }
 
+// StartDistribution starts distribution which delivers outputs to the destination indicated by
+// the Distribution configuration.
+func (c *Client) StartDistribution(ctx context.Context, req *livestreampb.StartDistributionRequest, opts ...gax.CallOption) (*StartDistributionOperation, error) {
+	return c.internalClient.StartDistribution(ctx, req, opts...)
+}
+
+// StartDistributionOperation returns a new StartDistributionOperation from a given name.
+// The name must be that of a previously created StartDistributionOperation, possibly from a different process.
+func (c *Client) StartDistributionOperation(name string) *StartDistributionOperation {
+	return c.internalClient.StartDistributionOperation(name)
+}
+
+// StopDistribution stops the specified distribution.
+func (c *Client) StopDistribution(ctx context.Context, req *livestreampb.StopDistributionRequest, opts ...gax.CallOption) (*StopDistributionOperation, error) {
+	return c.internalClient.StopDistribution(ctx, req, opts...)
+}
+
+// StopDistributionOperation returns a new StopDistributionOperation from a given name.
+// The name must be that of a previously created StopDistributionOperation, possibly from a different process.
+func (c *Client) StopDistributionOperation(name string) *StopDistributionOperation {
+	return c.internalClient.StopDistributionOperation(name)
+}
+
 // CreateInput creates an input with the provided unique ID in the specified region.
 func (c *Client) CreateInput(ctx context.Context, req *livestreampb.CreateInputRequest, opts ...gax.CallOption) (*CreateInputOperation, error) {
 	return c.internalClient.CreateInput(ctx, req, opts...)
@@ -669,6 +792,11 @@ func (c *Client) UpdateInput(ctx context.Context, req *livestreampb.UpdateInputR
 // The name must be that of a previously created UpdateInputOperation, possibly from a different process.
 func (c *Client) UpdateInputOperation(name string) *UpdateInputOperation {
 	return c.internalClient.UpdateInputOperation(name)
+}
+
+// PreviewInput preview the streaming content of the specified input.
+func (c *Client) PreviewInput(ctx context.Context, req *livestreampb.PreviewInputRequest, opts ...gax.CallOption) (*livestreampb.PreviewInputResponse, error) {
+	return c.internalClient.PreviewInput(ctx, req, opts...)
 }
 
 // CreateEvent creates an event with the provided unique ID in the specified channel.
@@ -1208,6 +1336,46 @@ func (c *gRPCClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 	}, nil
 }
 
+func (c *gRPCClient) StartDistribution(ctx context.Context, req *livestreampb.StartDistributionRequest, opts ...gax.CallOption) (*StartDistributionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StartDistribution[0:len((*c.CallOptions).StartDistribution):len((*c.CallOptions).StartDistribution)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StartDistribution, req, settings.GRPC, c.logger, "StartDistribution")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &StartDistributionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) StopDistribution(ctx context.Context, req *livestreampb.StopDistributionRequest, opts ...gax.CallOption) (*StopDistributionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StopDistribution[0:len((*c.CallOptions).StopDistribution):len((*c.CallOptions).StopDistribution)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StopDistribution, req, settings.GRPC, c.logger, "StopDistribution")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &StopDistributionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) CreateInput(ctx context.Context, req *livestreampb.CreateInputRequest, opts ...gax.CallOption) (*CreateInputOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1330,6 +1498,24 @@ func (c *gRPCClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 	return &UpdateInputOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) PreviewInput(ctx context.Context, req *livestreampb.PreviewInputRequest, opts ...gax.CallOption) (*livestreampb.PreviewInputResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PreviewInput[0:len((*c.CallOptions).PreviewInput):len((*c.CallOptions).PreviewInput)], opts...)
+	var resp *livestreampb.PreviewInputResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.PreviewInput, req, settings.GRPC, c.logger, "PreviewInput")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) CreateEvent(ctx context.Context, req *livestreampb.CreateEventRequest, opts ...gax.CallOption) (*livestreampb.Event, error) {
@@ -2402,6 +2588,125 @@ func (c *restClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 	}, nil
 }
 
+// StartDistribution starts distribution which delivers outputs to the destination indicated by
+// the Distribution configuration.
+func (c *restClient) StartDistribution(ctx context.Context, req *livestreampb.StartDistributionRequest, opts ...gax.CallOption) (*StartDistributionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:startdistribution", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartDistribution")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &StartDistributionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// StopDistribution stops the specified distribution.
+func (c *restClient) StopDistribution(ctx context.Context, req *livestreampb.StopDistributionRequest, opts ...gax.CallOption) (*StopDistributionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:stopdistribution", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StopDistribution")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &StopDistributionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CreateInput creates an input with the provided unique ID in the specified region.
 func (c *restClient) CreateInput(ctx context.Context, req *livestreampb.CreateInputRequest, opts ...gax.CallOption) (*CreateInputOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2724,6 +3029,62 @@ func (c *restClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// PreviewInput preview the streaming content of the specified input.
+func (c *restClient) PreviewInput(ctx context.Context, req *livestreampb.PreviewInputRequest, opts ...gax.CallOption) (*livestreampb.PreviewInputResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:preview", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PreviewInput[0:len((*c.CallOptions).PreviewInput):len((*c.CallOptions).PreviewInput)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &livestreampb.PreviewInputResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PreviewInput")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CreateEvent creates an event with the provided unique ID in the specified channel.
@@ -4449,6 +4810,24 @@ func (c *restClient) StartChannelOperation(name string) *StartChannelOperation {
 	}
 }
 
+// StartDistributionOperation returns a new StartDistributionOperation from a given name.
+// The name must be that of a previously created StartDistributionOperation, possibly from a different process.
+func (c *gRPCClient) StartDistributionOperation(name string) *StartDistributionOperation {
+	return &StartDistributionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// StartDistributionOperation returns a new StartDistributionOperation from a given name.
+// The name must be that of a previously created StartDistributionOperation, possibly from a different process.
+func (c *restClient) StartDistributionOperation(name string) *StartDistributionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StartDistributionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // StopChannelOperation returns a new StopChannelOperation from a given name.
 // The name must be that of a previously created StopChannelOperation, possibly from a different process.
 func (c *gRPCClient) StopChannelOperation(name string) *StopChannelOperation {
@@ -4462,6 +4841,24 @@ func (c *gRPCClient) StopChannelOperation(name string) *StopChannelOperation {
 func (c *restClient) StopChannelOperation(name string) *StopChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopChannelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// StopDistributionOperation returns a new StopDistributionOperation from a given name.
+// The name must be that of a previously created StopDistributionOperation, possibly from a different process.
+func (c *gRPCClient) StopDistributionOperation(name string) *StopDistributionOperation {
+	return &StopDistributionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// StopDistributionOperation returns a new StopDistributionOperation from a given name.
+// The name must be that of a previously created StopDistributionOperation, possibly from a different process.
+func (c *restClient) StopDistributionOperation(name string) *StopDistributionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StopDistributionOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
