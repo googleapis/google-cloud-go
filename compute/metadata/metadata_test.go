@@ -458,6 +458,16 @@ func TestNewWithOptions(t *testing.T) {
 	}
 }
 
+func TestNewWithOptions_UseDefaultClient(t *testing.T) {
+	client := NewWithOptions(&Options{UseDefaultClient: true})
+	if client.hc != defaultClient.hc {
+		t.Errorf("NewWithOptions(UseDefaultClient: true).hc = %p, want %p", client.hc, defaultClient.hc)
+	}
+	if client.subClient != defaultClient.subClient {
+		t.Errorf("NewWithOptions(UseDefaultClient: true).subClient = %p, want %p", client.subClient, defaultClient.subClient)
+	}
+}
+
 func TestSubscribeUsesSubscribeClient(t *testing.T) {
 	subscribeClientUsed := make(chan bool, 1)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

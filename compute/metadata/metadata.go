@@ -409,7 +409,7 @@ func NewWithOptions(opts *Options) *Client {
 		if logger == nil {
 			logger = slog.New(noOpHandler{})
 		}
-		return &Client{hc: defaultClient.hc, logger: logger}
+		return &Client{hc: defaultClient.hc, subClient: defaultClient.subClient, logger: logger}
 	}
 
 	// Handle isolated client creation.
