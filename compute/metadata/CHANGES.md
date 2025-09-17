@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/compute/metadata/v0.8.2...compute/metadata/v0.8.3) (2025-09-17)
+
+
+### Bug Fixes
+
+* **compute/metadata:** Disable Client timeouts for subscription client ([#12910](https://github.com/googleapis/google-cloud-go/issues/12910)) ([187a58a](https://github.com/googleapis/google-cloud-go/commit/187a58a540494e1e8562b046325b8cad8cf7af4a))
+
 ## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/compute/metadata/v0.8.1...compute/metadata/v0.8.2) (2025-09-17)
 
 
