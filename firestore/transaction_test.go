@@ -38,6 +38,8 @@ func TestRunTransaction(t *testing.T) {
 	beginReq := &pb.BeginTransactionRequest{Database: db}
 	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
 	commitReq := &pb.CommitRequest{Database: db, Transaction: tid}
+	rollbackReq := &pb.RollbackRequest{Database: db, Transaction: tid}
+
 	// Empty transaction.
 	srv.addRPC(beginReq, beginRes)
 	srv.addRPC(commitReq, &pb.CommitResponse{CommitTime: aTimestamp})
@@ -140,6 +142,8 @@ func TestRunTransaction(t *testing.T) {
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
 	srv.addRPC(commitReq, status.Errorf(codes.Aborted, ""))
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
+
 	srv.addRPC(
 		&pb.BeginTransactionRequest{
 			Database: db,
@@ -442,6 +446,8 @@ func TestRunTransaction_Retries(t *testing.T) {
 	const db = "projects/projectID/databases/(default)"
 	tid := []byte{1}
 
+	rollbackReq := &pb.RollbackRequest{Database: db, Transaction: tid}
+
 	srv.addRPC(
 		&pb.BeginTransactionRequest{Database: db},
 		&pb.BeginTransactionResponse{Transaction: tid},
@@ -472,6 +478,8 @@ func TestRunTransaction_Retries(t *testing.T) {
 		},
 		status.Errorf(codes.Aborted, "something failed! please retry me!"),
 	)
+
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 
 	srv.addRPC(
 		&pb.BeginTransactionRequest{
