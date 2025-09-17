@@ -5592,12 +5592,30 @@ func encodeProtoEnumArray(len int, at func(int) reflect.Value) (*proto3.Value, e
 	return listProto(vs...), nil
 }
 
+// spannerTag contains metadata about a struct field's spanner tag.
+type spannerTag struct {
+	// ReadOnly is true if the field should be excluded from writes (read-only).
+	ReadOnly bool
+}
+
 func spannerTagParser(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
 	if s := t.Get("spanner"); s != "" {
 		if s == "-" {
 			return "", false, nil, nil
 		}
-		return s, true, nil, nil
+		if s == "->" {
+			tag := spannerTag{ReadOnly: true}
+			return "", true, tag, nil
+		}
+		parts := strings.Split(s, ";")
+		name = parts[0]
+		tag := spannerTag{}
+		for _, part := range parts[1:] {
+			if part == "->" || strings.ToLower(part) == "readonly" {
+				tag.ReadOnly = true
+			}
+		}
+		return name, true, tag, nil
 	}
 	return "", true, nil, nil
 }
