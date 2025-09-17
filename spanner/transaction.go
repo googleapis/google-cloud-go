@@ -2025,7 +2025,9 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 		// up here. Context errors (deadline exceeded / canceled) during
 		// commits are also not rolled back.
 		if !errDuringCommit {
-			t.rollback(ctx)
+			// Use a fresh context without a timeout for the rollback to prevent
+			// the rollback from being cancelled / skipped.
+			t.rollback(context.Background())
 		}
 		return resp, err
 	}
