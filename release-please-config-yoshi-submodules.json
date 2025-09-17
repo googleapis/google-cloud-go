@@ -258,6 +258,9 @@
         "lifesciences": {
             "component": "lifesciences"
         },
+        "locationfinder": {
+            "component": "locationfinder"
+        },
         "longrunning": {
             "component": "longrunning"
         },

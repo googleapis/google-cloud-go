@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package ordertracking_test
-
-import (
-	ordertracking "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta"
-)
