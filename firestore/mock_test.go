@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -44,6 +45,11 @@ type mockServer struct {
 type reqItem struct {
 	wantReq proto.Message
 	adjust  func(gotReq proto.Message)
+}
+
+func (r reqItem) String() string {
+	bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(r.wantReq)
+	return "\n" + string(r.wantReq.ProtoReflect().Descriptor().Name()) + string(bytes)
 }
 
 func newMockServer() (_ *mockServer, cleanup func(), _ error) {
@@ -69,6 +75,10 @@ func newMockServer() (_ *mockServer, cleanup func(), _ error) {
 // Passing nil for wantReq disables the request check.
 func (s *mockServer) addRPC(wantReq proto.Message, resp interface{}) {
 	s.addRPCAdjust(wantReq, resp, nil)
+}
+
+func (s *mockServer) isEmpty() bool {
+	return len(s.reqItems) == 0
 }
 
 // addRPCAdjust is like addRPC, but accepts a function that can be used

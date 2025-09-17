@@ -165,10 +165,19 @@ func TestTransactionErrors(t *testing.T) {
 	defer cleanup()
 
 	var (
-		tid        = []byte{1}
-		unknownErr = status.Errorf(codes.Unknown, "so sad")
-		beginReq   = &pb.BeginTransactionRequest{
+		tid                   = []byte{1}
+		unknownErr            = status.Errorf(codes.Unknown, "not so sad. retryable")
+		failedPreconditionErr = status.Errorf(codes.FailedPrecondition, "so sad. not retryable.")
+		beginReq              = &pb.BeginTransactionRequest{
 			Database: db,
+		}
+		beginRetryReq = &pb.BeginTransactionRequest{
+			Database: db,
+			Options: &pb.TransactionOptions{
+				Mode: &pb.TransactionOptions_ReadWrite_{
+					ReadWrite: &pb.TransactionOptions_ReadWrite{RetryTransaction: tid},
+				},
+			},
 		}
 		beginRes = &pb.BeginTransactionResponse{Transaction: tid}
 		getReq   = &pb.BatchGetDocumentsRequest{
@@ -176,181 +185,221 @@ func TestTransactionErrors(t *testing.T) {
 			Documents:           []string{db + "/documents/C/a"},
 			ConsistencySelector: &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid},
 		}
+		get = func(_ context.Context, tx *Transaction) error {
+			_, err := tx.Get(c.Doc("C/a"))
+			return err
+		}
+		getRes = []interface{}{
+			&pb.BatchGetDocumentsResponse{
+				Result: &pb.BatchGetDocumentsResponse_Found{Found: &pb.Document{
+					Name:       "projects/projectID/databases/(default)/documents/C/a",
+					CreateTime: aTimestamp,
+					UpdateTime: aTimestamp2,
+				}},
+				ReadTime: aTimestamp2,
+			},
+		}
 		rollbackReq = &pb.RollbackRequest{Database: db, Transaction: tid}
 		commitReq   = &pb.CommitRequest{Database: db, Transaction: tid}
+		commitRes   = &pb.CommitResponse{CommitTime: aTimestamp}
 	)
 
-	// BeginTransaction has a permanent error.
-	srv.addRPC(beginReq, unknownErr)
-	err := c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil })
-	if status.Code(err) != codes.Unknown {
-		t.Errorf("got <%v>, want Unknown", err)
-	}
-
-	// Get has a permanent error.
-	get := func(_ context.Context, tx *Transaction) error {
-		_, err := tx.Get(c.Doc("C/a"))
-		return err
-	}
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(getReq, unknownErr)
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
-	err = c.RunTransaction(ctx, get)
-	if status.Code(err) != codes.Unknown {
-		t.Errorf("got <%v>, want Unknown", err)
-	}
-
-	// Get has a permanent error, but the rollback fails. We still
-	// return Get's error.
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(getReq, unknownErr)
-	srv.addRPC(rollbackReq, status.Errorf(codes.FailedPrecondition, ""))
-	err = c.RunTransaction(ctx, get)
-	if status.Code(err) != codes.Unknown {
-		t.Errorf("got <%v>, want Unknown", err)
-	}
-
-	// Commit has a permanent error.
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(getReq, []interface{}{
-		&pb.BatchGetDocumentsResponse{
-			Result: &pb.BatchGetDocumentsResponse_Found{Found: &pb.Document{
-				Name:       "projects/projectID/databases/(default)/documents/C/a",
-				CreateTime: aTimestamp,
-				UpdateTime: aTimestamp2,
-			}},
-			ReadTime: aTimestamp2,
-		},
+	t.Run("BeginTransaction has a permanent error", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, unknownErr)
+		err := c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil })
+		if status.Code(err) != codes.Unknown {
+			t.Errorf("got <%v>, want Unknown", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
+		}
 	})
-	srv.addRPC(commitReq, unknownErr)
-	err = c.RunTransaction(ctx, get)
-	if status.Code(err) != codes.Unknown {
-		t.Errorf("got <%v>, want Unknown", err)
-	}
 
-	// Read after write.
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
-	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
-		if err := tx.Delete(c.Doc("C/a")); err != nil {
-			return err
+	t.Run("Get has a retryable error", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(getReq, unknownErr)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		srv.addRPC(beginRetryReq, beginRes)
+		srv.addRPC(getReq, getRes)
+		srv.addRPC(commitReq, commitRes)
+		err := c.RunTransaction(ctx, get)
+		if err != nil {
+			t.Errorf("got <%v>, want nil", err)
 		}
-		if _, err := tx.Get(c.Doc("C/a")); err != nil {
-			return err
+		if !srv.isEmpty() {
+			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
 		}
-		return nil
 	})
-	if err != errReadAfterWrite {
-		t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
-	}
 
-	// Read after write, with query.
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
-	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
-		if err := tx.Delete(c.Doc("C/a")); err != nil {
-			return err
+	t.Run("Get has a permanent error", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(getReq, failedPreconditionErr)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, get)
+		if status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("got <%v>, want FailedPrecondition", err)
 		}
-		it := tx.Documents(c.Collection("C").Select("x"))
-		defer it.Stop()
-		if _, err := it.Next(); err != iterator.Done {
-			return err
-		}
-		return nil
 	})
-	if err != errReadAfterWrite {
-		t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
-	}
 
-	// Read after write, with query and GetAll.
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
-	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
-		if err := tx.Delete(c.Doc("C/a")); err != nil {
-			return err
+	t.Run("Get has a permanent error, but the rollback fails", func(t *testing.T) {
+		// We still return Get's error.
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(getReq, failedPreconditionErr)
+		srv.addRPC(rollbackReq, status.Errorf(codes.Unimplemented, ""))
+		err := c.RunTransaction(ctx, get)
+		if status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("got <%v>, want FailedPrecondition", err)
 		}
-		_, err := tx.Documents(c.Collection("C").Select("x")).GetAll()
-		return err
 	})
-	if err != errReadAfterWrite {
-		t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
-	}
 
-	// Read after write fails even if the user ignores the read's error.
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
-	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
-		if err := tx.Delete(c.Doc("C/a")); err != nil {
-			return err
+	t.Run("Commit has a permanent error", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(getReq, getRes)
+		srv.addRPC(commitReq, failedPreconditionErr)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, get)
+		if status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("got <%v>, want FailedPrecondition", err)
 		}
-		if _, err := tx.Get(c.Doc("C/a")); err != nil {
-			return err
-		}
-		return nil
 	})
-	if err != errReadAfterWrite {
-		t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
-	}
 
-	// Write in read-only transaction.
-	srv.reset()
-	srv.addRPC(
-		&pb.BeginTransactionRequest{
-			Database: db,
-			Options: &pb.TransactionOptions{
-				Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
-			},
-		},
-		beginRes,
-	)
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
-	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
-		return tx.Delete(c.Doc("C/a"))
-	}, ReadOnly)
-	if err != errWriteReadOnly {
-		t.Errorf("got <%v>, want <%v>", err, errWriteReadOnly)
-	}
+	t.Run("Read after write", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+			if err := tx.Delete(c.Doc("C/a")); err != nil {
+				return err
+			}
+			if _, err := tx.Get(c.Doc("C/a")); err != nil {
+				return err
+			}
+			return nil
+		})
+		if err != errReadAfterWrite {
+			t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
+		}
+	})
 
-	// Too many retries.
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(commitReq, status.Errorf(codes.Aborted, ""))
-	srv.addRPC(
-		&pb.BeginTransactionRequest{
-			Database: db,
-			Options: &pb.TransactionOptions{
-				Mode: &pb.TransactionOptions_ReadWrite_{
-					ReadWrite: &pb.TransactionOptions_ReadWrite{RetryTransaction: tid},
+	t.Run("Read after write, with query", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+			if err := tx.Delete(c.Doc("C/a")); err != nil {
+				return err
+			}
+			it := tx.Documents(c.Collection("C").Select("x"))
+			defer it.Stop()
+			if _, err := it.Next(); err != iterator.Done {
+				return err
+			}
+			return nil
+		})
+		if err != errReadAfterWrite {
+			t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
+		}
+	})
+
+	t.Run("Read after write, with query and GetAll", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+			if err := tx.Delete(c.Doc("C/a")); err != nil {
+				return err
+			}
+			_, err := tx.Documents(c.Collection("C").Select("x")).GetAll()
+			return err
+		})
+		if err != errReadAfterWrite {
+			t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
+		}
+	})
+
+	t.Run("Read after write fails even if the user ignores the read's error", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+			if err := tx.Delete(c.Doc("C/a")); err != nil {
+				return err
+			}
+			if _, err := tx.Get(c.Doc("C/a")); err != nil {
+				return err
+			}
+			return nil
+		})
+		if err != errReadAfterWrite {
+			t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
+		}
+	})
+
+	t.Run("Write in read-only transaction", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(
+			&pb.BeginTransactionRequest{
+				Database: db,
+				Options: &pb.TransactionOptions{
+					Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 				},
 			},
-		},
-		beginRes,
-	)
-	srv.addRPC(commitReq, status.Errorf(codes.Aborted, ""))
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
-	err = c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil },
-		MaxAttempts(2))
-	if status.Code(err) != codes.Aborted {
-		t.Errorf("got <%v>, want Aborted", err)
-	}
-
-	// Nested transaction.
-	srv.reset()
-	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
-	err = c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
-		return c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil })
+			beginRes,
+		)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+			return tx.Delete(c.Doc("C/a"))
+		}, ReadOnly)
+		if err != errWriteReadOnly {
+			t.Errorf("got <%v>, want <%v>", err, errWriteReadOnly)
+		}
 	})
-	if got, want := err, errNestedTransaction; got != want {
-		t.Errorf("got <%v>, want <%v>", got, want)
-	}
+
+	t.Run("Too many retries", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(commitReq, status.Errorf(codes.Aborted, ""))
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		srv.addRPC(
+			&pb.BeginTransactionRequest{
+				Database: db,
+				Options: &pb.TransactionOptions{
+					Mode: &pb.TransactionOptions_ReadWrite_{
+						ReadWrite: &pb.TransactionOptions_ReadWrite{RetryTransaction: tid},
+					},
+				},
+			},
+			beginRes,
+		)
+		srv.addRPC(commitReq, status.Errorf(codes.Aborted, ""))
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		err := c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil },
+			MaxAttempts(2))
+		if status.Code(err) != codes.Aborted {
+			t.Errorf("got <%v>, want Aborted", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
+		}
+	})
+
+	t.Run("Nested transaction", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			return c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil })
+		})
+		if got, want := err, errNestedTransaction; got != want {
+			t.Errorf("got <%v>, want <%v>", got, want)
+		}
+	})
 }
 
 func TestTransactionGetAll(t *testing.T) {
