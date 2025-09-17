@@ -15,6 +15,8 @@
 package firestore
 
 import (
+	"errors"
+	"fmt"
 	"reflect"
 	"sort"
 	"strings"
@@ -335,5 +337,31 @@ func TestExtractTransformPathsErrors(t *testing.T) {
 	_, err := extractTransforms(reflect.ValueOf(S{}), nil)
 	if err == nil {
 		t.Error("got nil, want error")
+	}
+}
+
+func TestDataAtFieldNotFound(t *testing.T) {
+	_, err := testDoc.DataAt("c")
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+	fmt.Println(err)
+	var e *FieldNotFoundError
+	if !errors.As(err, &e) {
+		t.Fatalf("got error of type %T, want *FieldNotFoundError", err)
+	}
+	if e.Path != "c" {
+		t.Errorf("e.Path = %q; want %q", e.Path, "c")
+	}
+
+	_, err = testDoc.DataAt("b.y")
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+	if !errors.As(err, &e) {
+		t.Fatalf("got error of type %T, want *FieldNotFoundError", err)
+	}
+	if e.Path != "b.y" {
+		t.Errorf("e.Path = %q; want %q", e.Path, "b.y")
 	}
 }
