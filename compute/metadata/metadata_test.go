@@ -354,6 +354,9 @@ func TestNewClient(t *testing.T) {
 				if got.hc != tt.wantHC {
 					t.Errorf("NewClient().hc = %p, want %p", got.hc, tt.wantHC)
 				}
+				if got.subClient != tt.wantHC {
+					t.Errorf("NewClient().hc = %p, want %p", got.hc, tt.wantHC)
+				}
 			}
 		})
 	}
@@ -424,6 +427,9 @@ func TestNewWithOptions(t *testing.T) {
 				if got.hc != tt.wantHC {
 					t.Errorf("NewWithOptions().hc = %p, want %p", got.hc, tt.wantHC)
 				}
+				if got.subClient != tt.wantHC {
+					t.Errorf("NewWithOptions().hc = %p, want %p", got.hc, tt.wantHC)
+				}
 			}
 			if tt.hasCustomLogger {
 				if got.logger != customLogger {
@@ -481,7 +487,7 @@ func TestSubscribeUsesSubscribeClient(t *testing.T) {
 		logger:    slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 
 	c.SubscribeWithContext(ctx, "some/path", func(ctx context.Context, v string, ok bool) error {
@@ -494,7 +500,7 @@ func TestSubscribeUsesSubscribeClient(t *testing.T) {
 		if !used {
 			t.Error("Subscribe did not use the subscribe client")
 		}
-	case <-ctx.Done():
+	case <-time.After(5 * time.Second):
 		// This can happen if the request from the client is never sent.
 		t.Fatal("Test timed out")
 	}
