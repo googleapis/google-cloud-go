@@ -68,20 +68,21 @@ var defaultClient = &Client{
 	logger:    slog.New(noOpHandler{}),
 }
 
-func newDefaultHTTPClient(enableIdleTimeout bool) *http.Client {
+func newDefaultHTTPClient(enableTimeouts bool) *http.Client {
 	transport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout:   2 * time.Second,
 			KeepAlive: 30 * time.Second,
 		}).Dial,
 	}
-	if enableIdleTimeout {
-		transport.IdleConnTimeout = 60 * time.Second
-	}
-	return &http.Client{
+	c := &http.Client{
 		Transport: transport,
-		Timeout:   5 * time.Second,
 	}
+	if enableTimeouts {
+		transport.IdleConnTimeout = 60 * time.Second
+		c.Timeout = 5 * time.Second
+	}
+	return c
 }
 
 // NotDefinedError is returned when requested metadata is not defined.
