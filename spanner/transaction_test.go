@@ -835,6 +835,52 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	}
 }
 
+func TestReadWriteTransactionUsesNewContextForRollback(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 10,
+			MaxOpened: 10,
+		},
+	})
+	defer teardown()
+
+	pool, err := NewFixedSizeTransactionPool(client, 5, TransactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := pool.RegisterPool(client); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
+	defer cancel()
+
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{MinimumExecutionTime: 100 * time.Millisecond})
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		_, err := transaction.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if g, w := ErrCode(err), codes.DeadlineExceeded; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("execute count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	rollbackRequests := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbackRequests), 1; g != w {
+		t.Fatalf("rollback count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 // shouldHaveReceived asserts that exactly expectedRequests were present in
 // the server's ReceivedRequests channel. It only looks at type, not contents.
 //
@@ -906,6 +952,16 @@ loop:
 		}
 	}
 	return reqs
+}
+
+func requestsOfType(requests []interface{}, t reflect.Type) []interface{} {
+	res := make([]interface{}, 0)
+	for _, req := range requests {
+		if reflect.TypeOf(req) == t {
+			res = append(res, req)
+		}
+	}
+	return res
 }
 
 func newAbortedErrorWithMinimalRetryDelay() error {
