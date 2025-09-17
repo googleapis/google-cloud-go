@@ -21,11 +21,7 @@
 package gatewaypb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -382,88 +378,4 @@ func file_google_cloud_gkeconnect_gateway_v1beta1_control_proto_init() {
 	file_google_cloud_gkeconnect_gateway_v1beta1_control_proto_rawDesc = nil
 	file_google_cloud_gkeconnect_gateway_v1beta1_control_proto_goTypes = nil
 	file_google_cloud_gkeconnect_gateway_v1beta1_control_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// GatewayControlClient is the client API for GatewayControl service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type GatewayControlClient interface {
-	// GenerateCredentials provides connection information that allows a user to
-	// access the specified membership using Connect Gateway.
-	GenerateCredentials(ctx context.Context, in *GenerateCredentialsRequest, opts ...grpc.CallOption) (*GenerateCredentialsResponse, error)
-}
-
-type gatewayControlClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewGatewayControlClient(cc grpc.ClientConnInterface) GatewayControlClient {
-	return &gatewayControlClient{cc}
-}
-
-func (c *gatewayControlClient) GenerateCredentials(ctx context.Context, in *GenerateCredentialsRequest, opts ...grpc.CallOption) (*GenerateCredentialsResponse, error) {
-	out := new(GenerateCredentialsResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.gkeconnect.gateway.v1beta1.GatewayControl/GenerateCredentials", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// GatewayControlServer is the server API for GatewayControl service.
-type GatewayControlServer interface {
-	// GenerateCredentials provides connection information that allows a user to
-	// access the specified membership using Connect Gateway.
-	GenerateCredentials(context.Context, *GenerateCredentialsRequest) (*GenerateCredentialsResponse, error)
-}
-
-// UnimplementedGatewayControlServer can be embedded to have forward compatible implementations.
-type UnimplementedGatewayControlServer struct {
-}
-
-func (*UnimplementedGatewayControlServer) GenerateCredentials(context.Context, *GenerateCredentialsRequest) (*GenerateCredentialsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateCredentials not implemented")
-}
-
-func RegisterGatewayControlServer(s *grpc.Server, srv GatewayControlServer) {
-	s.RegisterService(&_GatewayControl_serviceDesc, srv)
-}
-
-func _GatewayControl_GenerateCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateCredentialsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayControlServer).GenerateCredentials(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.gkeconnect.gateway.v1beta1.GatewayControl/GenerateCredentials",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayControlServer).GenerateCredentials(ctx, req.(*GenerateCredentialsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _GatewayControl_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.gkeconnect.gateway.v1beta1.GatewayControl",
-	HandlerType: (*GatewayControlServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GenerateCredentials",
-			Handler:    _GatewayControl_GenerateCredentials_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/gkeconnect/gateway/v1beta1/control.proto",
 }
