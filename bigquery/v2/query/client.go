@@ -57,12 +57,7 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 		req.QueryRequest.RequestId = uid.NewSpace("request", nil).New()
 	}
 
-	res, err := c.c.Query(ctx, req, opts...)
-	if err != nil {
-		return nil, fmt.Errorf("failed to run query: %w", err)
-	}
-
-	return newQueryJobFromQueryResponse(ctx, c, res)
+	return newQueryJobFromQueryRequest(ctx, c, req, opts...), nil
 }
 
 // StartQueryJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
@@ -72,24 +67,20 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 		return nil, fmt.Errorf("job is not a query")
 	}
 
-	if job.Id == "" {
-		job.Id = uid.NewSpace("job", nil).New()
+	jobRef := job.GetJobReference()
+	if jobRef == nil {
+		jobRef = &bigquerypb.JobReference{}
+	}
+	if jobRef.JobId == "" {
+		jobRef.JobId = uid.NewSpace("job", nil).New()
 	}
 
-	job, err := c.c.InsertJob(ctx, &bigquerypb.InsertJobRequest{
-		ProjectId: c.projectID,
-		Job:       job,
-	}, opts...)
-	if err != nil {
-		return nil, fmt.Errorf("failed to insert query: %w", err)
-	}
-
-	return c.AttachJob(ctx, job.JobReference, opts...)
+	return newQueryJobFromJob(ctx, c, c.projectID, job, opts...), nil
 }
 
 // AttachJob set up a query job to be read from an existing one.
 func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
-	return newQueryJobFromJobReference(ctx, c, jobRef, opts...)
+	return newQueryJobFromJobReference(ctx, c, jobRef, opts...), nil
 }
 
 // Close closes the connection to the API service. The user should invoke this when

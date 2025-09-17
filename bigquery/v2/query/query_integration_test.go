@@ -46,9 +46,10 @@ func TestRunQuery(t *testing.T) {
 			}
 			q, err := client.StartQuery(ctx, req)
 			if err != nil {
-				t.Fatalf("Run() error: %v", err)
+				t.Fatalf("StartQuery() error: %v", err)
 			}
-			err = q.Wait()
+
+			err = q.Wait(ctx)
 			if err != nil {
 				t.Fatalf("Wait() error: %v", err)
 			}
@@ -89,17 +90,19 @@ func TestQueryCancelWait(t *testing.T) {
 			wctx, wcancel := context.WithCancel(ctx)
 			q, err := client.StartQuery(wctx, req)
 			if err != nil {
-				t.Fatalf("Run() error: %v", err)
+				t.Fatalf("StartQuery() error: %v", err)
 			}
 
 			go func(t *testing.T) {
-				err = q.Wait()
+				err = q.Wait(ctx)
 				if err == nil {
 					t.Errorf("Wait() should throw an error: %v", err)
 				}
 			}(t)
 
-			time.Sleep(600 * time.Millisecond)
+			for q.JobReference() == nil {
+				time.Sleep(100 * time.Millisecond)
+			}
 			wcancel()
 
 			if q.Complete() {
@@ -107,17 +110,17 @@ func TestQueryCancelWait(t *testing.T) {
 			}
 
 			// Re-attach and wait again
-			q, err = client.AttachJob(ctx, q.JobReference())
+			nq, err := client.AttachJob(ctx, q.JobReference())
 			if err != nil {
 				t.Fatalf("AttachJob() error: %v", err)
 			}
 
-			err = q.Wait()
+			err = nq.Wait(ctx)
 			if err != nil {
 				t.Fatalf("Wait() error: %v", err)
 			}
 
-			if !q.Complete() {
+			if !nq.Complete() {
 				t.Fatalf("Complete() should be true after Wait()")
 			}
 
@@ -144,9 +147,10 @@ func TestInsertQueryJob(t *testing.T) {
 				},
 			})
 			if err != nil {
-				t.Fatalf("Run() error: %v", err)
+				t.Fatalf("StartQueryJob() error: %v", err)
 			}
-			err = q.Wait()
+
+			err = q.Wait(ctx)
 			if err != nil {
 				t.Fatalf("Wait() error: %v", err)
 			}

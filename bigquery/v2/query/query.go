@@ -42,15 +42,109 @@ type Query struct {
 	cachedTotalRows uint64
 }
 
-// Create Query handler from jobs.query response and start background pooling job
-func newQueryJobFromQueryResponse(ctx context.Context, c *Client, res *bigquerypb.QueryResponse, opts ...gax.CallOption) (*Query, error) {
+// Create Query handler using jobs.query request and start background pooling job
+func newQueryJobFromQueryRequest(ctx context.Context, c *Client, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) *Query {
 	q := &Query{
-		c:       c,
-		ctx:     ctx,
-		queryID: res.QueryId,
-		ready:   make(chan struct{}),
+		c:     c,
+		ctx:   ctx,
+		ready: make(chan struct{}),
 	}
-	err := q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
+	go q.runQuery(req, opts)
+
+	return q
+}
+
+// Create Query handler using jobs.insert request and start background pooling job
+func newQueryJobFromJob(ctx context.Context, c *Client, projectID string, job *bigquerypb.Job, opts ...gax.CallOption) *Query {
+	q := &Query{
+		c:         c,
+		ctx:       ctx,
+		ready:     make(chan struct{}),
+		projectID: projectID,
+	}
+	go q.insertQuery(job, opts)
+
+	return q
+}
+
+// Create Query handler from JobReference response and start background pooling job
+func newQueryJobFromJobReference(ctx context.Context, c *Client, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) *Query {
+	q := &Query{
+		c:     c,
+		ctx:   ctx,
+		ready: make(chan struct{}),
+	}
+	q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
+		JobReference: jobRef,
+	})
+
+	go q.waitForQueryBackground(opts)
+
+	return q
+}
+
+// Read returns a RowIterator for the query results.
+func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, error) {
+	// TODO: proper setup iterator
+	return &RowIterator{}, nil
+}
+
+// Wait waits for the query to complete.
+// The context.Context parameter is used for cancelling just this particular call to Wait.
+// It's basically a shortcut for using the exposed channel and wait for the query to be done.
+func (q *Query) Wait(ctx context.Context) error {
+	select {
+	case <-q.Done():
+		return q.Err()
+	case <-ctx.Done():
+		return q.Err()
+	}
+}
+
+// Done exposes the internal channel to notify for when the query is ready.
+// See Wait method for shortcut for waiting for a query to be executed and get
+// the last error.
+func (q *Query) Done(opts ...gax.CallOption) <-chan struct{} {
+	return q.ready
+}
+
+// Err holds last error that happened with the given query execution.
+// See Wait method for shortcut for waiting for a query to be executed and get
+// the last error.
+func (q *Query) Err() error {
+	if q.ctx.Err() != nil {
+		return q.ctx.Err()
+	}
+	return q.err
+}
+
+func (q *Query) insertQuery(job *bigquerypb.Job, opts []gax.CallOption) {
+	res, err := q.c.c.InsertJob(q.ctx, &bigquerypb.InsertJobRequest{
+		ProjectId: q.projectID,
+		Job:       job,
+	}, opts...)
+
+	if err != nil {
+		q.markDone(err)
+		return
+	}
+
+	q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
+		JobReference: res.JobReference,
+	})
+
+	go q.waitForQueryBackground(opts)
+}
+
+func (q *Query) runQuery(req *bigquerypb.PostQueryRequest, opts []gax.CallOption) {
+	res, err := q.c.c.Query(q.ctx, req, opts...)
+	if err != nil {
+		q.markDone(err)
+		return
+	}
+	q.queryID = res.GetQueryId()
+
+	q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
 		Schema:              res.Schema,
 		PageToken:           res.PageToken,
 		TotalRows:           res.TotalRows,
@@ -62,37 +156,8 @@ func newQueryJobFromQueryResponse(ctx context.Context, c *Client, res *bigqueryp
 		TotalBytesProcessed: res.TotalBytesProcessed,
 		NumDmlAffectedRows:  res.NumDmlAffectedRows,
 	})
-	if err != nil {
-		return nil, err
-	}
 
 	go q.waitForQueryBackground(opts)
-
-	return q, nil
-}
-
-// Create Query handler from JobReference response and start background pooling job
-func newQueryJobFromJobReference(ctx context.Context, c *Client, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
-	res := &bigquerypb.QueryResponse{
-		JobReference: jobRef,
-	}
-	return newQueryJobFromQueryResponse(ctx, c, res, opts...)
-}
-
-// Read returns a RowIterator for the query results.
-func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, error) {
-	// TODO: proper setup iterator
-	return &RowIterator{}, nil
-}
-
-// Wait waits for the query to complete.
-func (q *Query) Wait(opts ...gax.CallOption) error {
-	select {
-	case <-q.ready:
-		return q.err
-	case <-q.ctx.Done():
-		return q.ctx.Err()
-	}
 }
 
 func (q *Query) waitForQueryBackground(opts []gax.CallOption) {
@@ -133,10 +198,11 @@ func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
 		return err
 	}
 
-	return q.consumeQueryResponse(res)
+	q.consumeQueryResponse(res)
+	return nil
 }
 
-func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) error {
+func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
@@ -158,8 +224,6 @@ func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) er
 	}
 
 	// TODO: save schema, page token, total rows and parse rows
-
-	return nil
 }
 
 // QueryID returns the auto-generated ID for the query.
