@@ -1,24 +1,24 @@
 image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
 libraries:
-    - id: dlp
-      version: 1.25.0
-      last_generated_commit: f8776fec04e336527ba7279d960105533a1c4e21
-      apis:
-        - path: google/privacy/dlp/v2
-          service_config: dlp_v2.yaml
-      source_roots:
-        - dlp
-        - internal/generated/snippets/dlp
-      preserve_regex: []
-      remove_regex:
-        - ^internal/generated/snippets/dlp/
-        - ^dlp/apiv2/[^/]*_client\.go$
-        - ^dlp/apiv2/[^/]*_client_example_go123_test\.go$
-        - ^dlp/apiv2/[^/]*_client_example_test\.go$
-        - ^dlp/apiv2/auxiliary\.go$
-        - ^dlp/apiv2/auxiliary_go123\.go$
-        - ^dlp/apiv2/doc\.go$
-        - ^dlp/apiv2/gapic_metadata\.json$
-        - ^dlp/apiv2/helpers\.go$
-        - ^dlp/apiv2/dlppb/.*$
-      tag_format: '{id}/v{version}'
+  - id: dlp
+    version: 1.25.0
+    last_generated_commit: c4e80cd2d3321cc37cf1c3713bb02529857728d1
+    apis:
+      - path: google/privacy/dlp/v2
+        service_config: dlp_v2.yaml
+    source_roots:
+      - dlp
+      - internal/generated/snippets/dlp
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/dlp/
+      - ^dlp/apiv2/[^/]*_client\.go$
+      - ^dlp/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^dlp/apiv2/[^/]*_client_example_test\.go$
+      - ^dlp/apiv2/auxiliary\.go$
+      - ^dlp/apiv2/auxiliary_go123\.go$
+      - ^dlp/apiv2/doc\.go$
+      - ^dlp/apiv2/gapic_metadata\.json$
+      - ^dlp/apiv2/helpers\.go$
+      - ^dlp/apiv2/dlppb/.*$
+    tag_format: '{id}/v{version}'
