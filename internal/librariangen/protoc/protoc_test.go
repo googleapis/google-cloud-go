@@ -189,7 +189,7 @@ func TestBuild(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req := &request.Request{
+			req := &request.Library{
 				ID: tt.reqID,
 			}
 			api := &request.API{

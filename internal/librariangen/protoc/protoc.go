@@ -40,7 +40,7 @@ type ConfigProvider interface {
 }
 
 // Build constructs the full protoc command arguments for a given API.
-func Build(lib *request.Request, api *request.API, apiServiceDir string, config ConfigProvider, sourceDir, outputDir string) ([]string, error) {
+func Build(lib *request.Library, api *request.API, apiServiceDir string, config ConfigProvider, sourceDir, outputDir string) ([]string, error) {
 	// Gather all .proto files in the API's source directory.
 	entries, err := os.ReadDir(apiServiceDir)
 	if err != nil {

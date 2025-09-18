@@ -28,7 +28,7 @@ import (
 // Test substitution vars.
 var (
 	execvRun     = execv.Run
-	requestParse = request.Parse
+	requestParse = request.ParseLibrary
 )
 
 // Config holds the internal librariangen configuration for the build command.
@@ -90,7 +90,7 @@ func goTest(ctx context.Context, dir, module string) error {
 // readBuildReq reads generate-request.json from the librarian-tool input directory.
 // The request file tells librariangen which library and APIs to generate.
 // It is prepared by the Librarian tool and mounted at /librarian.
-func readBuildReq(librarianDir string) (*request.Request, error) {
+func readBuildReq(librarianDir string) (*request.Library, error) {
 	reqPath := filepath.Join(librarianDir, "build-request.json")
 	slog.Debug("librariangen: reading build request", "path", reqPath)
 

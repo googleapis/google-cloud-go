@@ -101,7 +101,7 @@ func TestPostProcess(t *testing.T) {
 
 			execvRun = tt.mockexecvRun
 
-			req := &request.Request{
+			req := &request.Library{
 				ID: "chronicle",
 				APIs: []request.API{
 					{Path: "google/cloud/chronicle/v1"},

@@ -19,18 +19,17 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
-	"regexp"
 	"sort"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/module"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
 var now = time.Now
@@ -75,7 +74,7 @@ func Init(ctx context.Context, cfg *Config) error {
 		if err := module.GenerateInternalVersionFile(moduleDir, lib.Version); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update version for %s: %w", lib.ID, err))
 		}
-		if err := updateSnippetsMetadata(lib, cfg.RepoDir, cfg.OutputDir, moduleConfig); err != nil {
+		if err := module.UpdateSnippetsMetadata(lib, cfg.RepoDir, cfg.OutputDir, moduleConfig); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update snippet version for %s: %w", lib.ID, err))
 		}
 	}
@@ -94,7 +93,7 @@ var changelogSections = []struct {
 	{Type: "docs", Section: "Documentation"},
 }
 
-func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
+func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 	relativeChangelogPath := filepath.Join(lib.ID, "CHANGES.md")
 	slog.Info("librariangen: updating changelog", "path", relativeChangelogPath)
 
@@ -118,10 +117,10 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 	date := t.Format("2006-01-02")
 	fmt.Fprintf(&newEntry, "## [%s](%s) (%s)\n\n", lib.Version, releaseURL, date)
 
-	changesByType := make(map[string]map[string]*Change)
+	changesByType := make(map[string]map[string]*request.Change)
 	for _, change := range lib.Changes {
 		if changesByType[change.Type] == nil {
-			changesByType[change.Type] = make(map[string]*Change)
+			changesByType[change.Type] = make(map[string]*request.Change)
 		}
 		changesByType[change.Type][change.Subject] = change
 	}
@@ -222,97 +221,10 @@ func writeErrorResponse(dir string, err error) error {
 
 // Request is the structure of the release-init-request.json file.
 type Request struct {
-	Libraries []*Library `json:"libraries"`
-}
-
-// Library represents a single library in the release request.
-type Library struct {
-	ID               string    `json:"id"`
-	Version          string    `json:"version"`
-	Changes          []*Change `json:"changes"`
-	APIs             []*API    `json:"apis"`
-	SourceRoots      []string  `json:"source_roots"`
-	ReleaseTriggered bool      `json:"release_triggered"`
-}
-
-// Change represents a single commit change for a library.
-type Change struct {
-	Type             string `json:"type"`
-	Subject          string `json:"subject"`
-	Body             string `json:"body"`
-	PiperCLNumber    string `json:"piper_cl_number"`
-	SourceCommitHash string `json:"source_commit_hash"`
-}
-
-// API represents an API definition for a library.
-type API struct {
-	Path string `json:"path"`
+	Libraries []*request.Library `json:"libraries"`
 }
 
 // Response is the structure of the release-init-response.json file.
 type Response struct {
 	Error string `json:"error,omitempty"`
-}
-
-// updateSnippetsMetadata updates all snippet files to populate the $VERSION placeholder, copying them from
-// the repo directory to the output directory.
-// TODO(https://github.com/googleapis/librarian/issues/2023): move this to module.go (and remove the code
-// in postprocessor.go) when we have a common Library representation etc.
-func updateSnippetsMetadata(lib *Library, repoDir string, outputDir string, moduleConfig *config.ModuleConfig) error {
-	moduleName := lib.ID
-	version := lib.Version
-
-	slog.Debug("librariangen: updating snippets metadata")
-	snpDir := filepath.Join("internal", "generated", "snippets", moduleName)
-
-	for _, api := range lib.APIs {
-		apiConfig := moduleConfig.GetAPIConfig(api.Path)
-		clientDirName, err := apiConfig.GetClientDirectory()
-		if err != nil {
-			return err
-		}
-
-		snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
-		path := filepath.Join(snpDir, clientDirName, snippetFile)
-		slog.Info("librariangen: updating snippet metadata file", "path", path)
-		read, err := os.ReadFile(filepath.Join(repoDir, path))
-		if err != nil {
-			// If the snippet metadata doesn't exist, that's probably because this API path
-			// is proto-only (so the GAPIC generator hasn't run). Continue to the next API path.
-			if errors.Is(err, os.ErrNotExist) {
-				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", path)
-				continue
-			}
-			return err
-		}
-
-		content := string(read)
-		var newContent string
-		var oldVersion string
-
-		if strings.Contains(content, "$VERSION") {
-			newContent = strings.Replace(content, "$VERSION", version, 1)
-			oldVersion = "$VERSION"
-		} else {
-			// This regex finds a version string like "1.2.3".
-			re := regexp.MustCompile(`\d+\.\d+\.\d+`)
-			if foundVersion := re.FindString(content); foundVersion != "" {
-				newContent = strings.Replace(content, foundVersion, version, 1)
-				oldVersion = foundVersion
-			}
-		}
-
-		if newContent != "" {
-			destPath := filepath.Join(outputDir, path)
-			slog.Info("librariangen: updating version in snippets metadata file", "destPath", path, "old", oldVersion, "new", version)
-			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
-				return fmt.Errorf("librariangen: creating directory for snippet file: %w", err)
-			}
-			err = os.WriteFile(destPath, []byte(newContent), 0644)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
 }
